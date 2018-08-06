@@ -6156,12 +6156,14 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
     ---rewrite Nat.mod_small in H3; [ | easy ].
        rewrite nA_split_first in Hj.
      +++assert (H6 : u (n + 1) = rad - 2) by flia H3; clear H3 H5.
+        move H6 before H1.
         rewrite H6 in Hj.
         replace (n1 - n - 2) with (s1 - 1) in Hj by flia Hs1.
         apply Nat.lt_add_lt_sub_l in Hj.
         rewrite <- Nat.mul_sub_distr_r in Hj.
         replace (rad - 1 - (rad - 2)) with 1 in Hj by flia Hr.
         rewrite Nat.mul_1_l, <- Nat.add_1_r in Hj.
+        move Hj before H4.
 ...
      +++rewrite Hn1.
         destruct rad; [ easy | simpl; flia ].
