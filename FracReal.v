@@ -6141,18 +6141,8 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
     ---rewrite Hn1.
        destruct rad; [ easy | simpl; flia ].
     **rewrite Nat_mod_less_small in Hj.
-    ---idtac.
-...
-apply Nat.lt_sub_lt_add_l in Hj.
-...
-replace s1 with (s1 - 1 + 1) in Hj.
-rewrite Nat.add_sub in Hj.
-rewrite Nat.pow_add_r in Hj.
-rewrite Nat.mul_comm in Hj.
-rewrite <- Nat.mul_add_distr_r in Hj.
-...
-rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in Hj.
-...
+    ---apply Nat.nlt_ge in H4.
+       ...
     ---split; [ flia H4 | ].
        specialize (nA_upper_bound_for_add u n n1 Hur) as H5.
        rewrite <- Hs1 in H5.
@@ -6161,8 +6151,27 @@ rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in Hj.
        flia Hr H5 H6.
    ++apply Nat.nlt_ge in H4.
      rewrite Nat_mod_less_small in H2.
-     specialize (Hur 0); rewrite Nat.add_0_r in Hur.
-     flia Hur H2 H4 Hr.
+    **specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+      flia Hur H2 H4 Hr.
+    **split; [ easy | ].
+      specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+      flia Hr Hur.
+  --apply Nat.nlt_ge in H3.
+    rewrite Nat_div_less_small in H2.
+   ++ ... (* pas gagné *)
+   ++split; [ easy | ].
+     specialize (nA_upper_bound_for_add u (n + 1) n2) as H4.
+     rewrite <- Hs2 in H4.
+     assert (H : ∀ k, u (n + 1 + k + 1) ≤ 2 * (rad - 1)). {
+       intros l.
+       replace (n + 1 + l + 1) with (n + (1 + l) + 1) by flia.
+       apply Hur.
+     }
+     specialize (H4 H); clear H.
+     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
+     specialize (Nat.pow_nonzero rad s2 radix_ne_0) as H5.
+     flia Hr H4 H5.
+ + ...
 ...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
