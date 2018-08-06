@@ -6105,6 +6105,11 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
   remember (rad * (n + 3)) as n1 eqn:Hn1.
   remember (n1 - n - 1) as s1 eqn:Hs1.
   move s1 before n1.
+revert n1 Hn1 Hs1 Hj.
+induction s1; intros.
+rewrite Hn1 in Hs1.
+destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
+rewrite Nat.sub_succ, Nat.sub_0_r in Hj.
   specialize (Hn 1) as H2.
   unfold d2n, numbers_to_digits in H2.
   destruct (LPO_fst (A_ge_1 u (n + 1))) as [H3| H3].
@@ -6130,11 +6135,11 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
     destruct (lt_dec (u (n + 1)) rad) as [H4| H4].
    ++rewrite Nat.mod_small in H2; [ | easy ].
      clear H4.
-     destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H4| H4].
+     destruct (lt_dec (nA n n1 u) (rad ^ S s1)) as [H4| H4].
     **rewrite Nat.mod_small in Hj; [ | easy ].
       apply Nat.nle_gt in Hj; apply Hj; clear Hj.
       rewrite nA_split_first.
-    ---replace (n1 - n - 2) with (s1 - 1) by flia Hs1.
+    ---replace (n1 - n - 2) with s1 by flia Hs1.
        rewrite H2.
        apply Nat.le_add_r.
     ---rewrite Hn1.
@@ -6142,7 +6147,7 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
     **rewrite Nat_mod_less_small in Hj.
     ---apply Nat.nlt_ge in H4.
        rewrite nA_split_first in H4.
-     +++replace (n1 - n - 2) with (s1 - 1) in H4 by flia Hs1.
+     +++replace (n1 - n - 2) with s1 in H4 by flia Hs1.
 ...
      +++rewrite Hn1.
         destruct rad; [ easy | simpl; flia ].
