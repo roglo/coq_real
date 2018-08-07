@@ -6183,12 +6183,12 @@ rewrite Nat_sub_sub_swap.
 replace (S s1 + rad * (k + 1) - S s1) with (rad * (k + 1)) by flia.
 rewrite Nat.sub_add; [ flia | ].
 destruct rad; [ easy | simpl; flia ].
-...
-
 apply A_ge_1_false_iff in Hk.
 rewrite <- Hn2 in Hk.
 rewrite <- Hs2 in Hk.
 rewrite Nat_mod_less_small in Hk.
+(* je crois que ça marche pas, il y aurait donc un problème avec le
+   modèle *)
 ...
      +++rewrite Hn1.
         destruct rad; [ easy | simpl; flia ].
