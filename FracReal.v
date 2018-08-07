@@ -6187,8 +6187,11 @@ apply A_ge_1_false_iff in Hk.
 rewrite <- Hn2 in Hk.
 rewrite <- Hs2 in Hk.
 rewrite Nat_mod_less_small in Hk.
-(* je crois que ça marche pas, il y aurait donc un problème avec le
-   modèle *)
+(* on doit pouvoir en déduire que u(n+2)=u(n+3)=...=u(n1-1)=9,
+   que u(n1)≥ 9 et qu'il faut qu'en n1, il y ait une retenue et
+   que le reste, de n1+1 à n2, ne soit pas nul ; et alors, pas
+   de contradiction. Je crois que ça marche pas, il y aurait
+   donc un problème avec le modèle *)
 ...
      +++rewrite Hn1.
         destruct rad; [ easy | simpl; flia ].
