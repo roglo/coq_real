@@ -6141,6 +6141,7 @@ destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
   destruct (lt_dec (u (n + 1)) rad) as [H5| H5].
   *rewrite Nat.mod_small in Hun1; [ clear H5 | easy ].
    apply Nat.nle_gt in Hj; apply Hj; clear Hj.
+...
    rewrite nA_split_first.
   --rewrite Hun1.
     replace (n1 - n - 2) with (s1 - 1) by flia Hs1.
