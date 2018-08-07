@@ -6092,15 +6092,15 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn.
-specialize (Hn 0) as H1.
-unfold numbers_to_digits, d2n in H1.
-rewrite Nat.add_0_r in H1.
-destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
+specialize (Hn 0) as Hun.
+unfold numbers_to_digits, d2n in Hun.
+rewrite Nat.add_0_r in Hun.
+destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in Hun.
 -now revert Hn; apply not_numbers_to_digits_all_9_all_ge_1.
--destruct H2 as (j & Hjj & Hj); simpl in H1.
+-destruct H2 as (j & Hjj & Hj); simpl in Hun.
  destruct j.
  +clear Hjj.
-  rewrite Nat.add_0_r in H1.
+  rewrite Nat.add_0_r in Hun.
   apply A_ge_1_false_iff in Hj.
   rewrite Nat.add_0_r, Nat.pow_1_r in Hj.
   remember (rad * (n + 3)) as n1 eqn:Hn1.
@@ -6109,8 +6109,8 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
 (**)
   destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
   *rewrite Nat.mod_small in Hj; [ | easy ].
-   rewrite Nat.div_small in H1; [ | easy ].
-   rewrite Nat.add_0_r in H1.
+   rewrite Nat.div_small in Hun; [ | easy ].
+   rewrite Nat.add_0_r in Hun.
    specialize (Hn 1) as H3.
    unfold d2n, numbers_to_digits in H3.
    destruct (LPO_fst (A_ge_1 u (n + 1))) as [H4| H4].
@@ -6155,9 +6155,9 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
       destruct (lt_dec (u (n + 1) + 1) rad) as [H5| H5].
     ---rewrite Nat.mod_small in H3; [ | easy ].
        rewrite nA_split_first in Hj.
-     +++assert (H6 : u (n + 1) = rad - 2) by flia H3; clear H3 H5.
-        move H6 before H1.
-        rewrite H6 in Hj.
+     +++assert (Hun1 : u (n + 1) = rad - 2) by flia H3; clear H3 H5.
+        move Hun1 before Hun.
+        rewrite Hun1 in Hj.
         replace (n1 - n - 2) with (s1 - 1) in Hj by flia Hs1.
         apply Nat.lt_add_lt_sub_l in Hj.
         rewrite <- Nat.mul_sub_distr_r in Hj.
