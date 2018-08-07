@@ -6192,6 +6192,33 @@ rewrite Nat_mod_less_small in Hk.
    que le reste, de n1+1 à n2, ne soit pas nul ; et alors, pas
    de contradiction. Je crois que ça marche pas, il y aurait
    donc un problème avec le modèle *)
+(* à moins qu'il faille faire une itération de plus (Hn 2) *)
+specialize (Hn 2) as Hun2.
+unfold d2n, numbers_to_digits in Hun2.
+destruct (LPO_fst (A_ge_1 u (n + 2))) as [H5| H5].
+simpl in Hun2.
+    assert (Hn' : ∀ k, d2n (numbers_to_digits u) ((n + 2) + k) = rad - 1). {
+      intros k2.
+      replace (n + 2 + k2) with (n + (2 + k2)) by flia.
+      apply Hn.
+    }
+    revert Hn'.
+    apply not_numbers_to_digits_all_9_all_ge_1; [ | easy | easy ].
+    intros k2.
+    replace (n + 2 + k2 + 1) with (n + (2 + k2) + 1) by flia.
+    apply Hur.
+  destruct H5 as (k2 & Hjk2 & Hk2); simpl in Hun2.
+    remember (rad * (n + 2 + k2 + 3)) as n3 eqn:Hn3.
+    remember (n3 - (n + 2) - 1) as s3 eqn:Hs3.
+    move n3 before s2; move s3 before n3.
+    destruct (lt_dec (nA (n + 2) n3 u) (rad ^ s3)) as [H1| H1].
+   rewrite Nat.div_small in Hun2; [ | easy ].
+     rewrite Nat.add_0_r in Hun2.
+     destruct (lt_dec (u (n + 2)) rad) as [H5| H5].
+    rewrite Nat.mod_small in Hun2; [ | easy ].
+      clear H5.
+      move Hun2 before Hun1.
+(* bon ; casse-couilles *)
 ...
      +++rewrite Hn1.
         destruct rad; [ easy | simpl; flia ].
