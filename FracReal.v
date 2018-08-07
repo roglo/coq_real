@@ -6164,6 +6164,27 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in Hun.
         replace (rad - 1 - (rad - 2)) with 1 in Hj by flia Hr.
         rewrite Nat.mul_1_l, <- Nat.add_1_r in Hj.
         move Hj before H4.
+apply (Nat.mul_lt_mono_pos_r (rad ^ (s2 - s1 + 1))) in Hj.
+2: now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+rewrite <- Nat.pow_add_r in Hj.
+assert (Hss : s2 = s1 + rad * (k + 1) - 1). {
+  rewrite Hs1, Hs2, Hn1, Hn2.
+  destruct rad; [ easy | simpl; flia ].
+}
+move Hss before Hs2.
+replace (s1 - 1 + (s2 - s1 + 1)) with s2 in Hj.
+Focus 2.
+rewrite Hss.
+destruct s1.
+rewrite Hn1 in Hs1.
+destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
+rewrite Nat.sub_succ, Nat.sub_0_r.
+rewrite Nat_sub_sub_swap.
+replace (S s1 + rad * (k + 1) - S s1) with (rad * (k + 1)) by flia.
+rewrite Nat.sub_add; [ flia | ].
+destruct rad; [ easy | simpl; flia ].
+...
+
 apply A_ge_1_false_iff in Hk.
 rewrite <- Hn2 in Hk.
 rewrite <- Hs2 in Hk.
