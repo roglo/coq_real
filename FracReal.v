@@ -6204,6 +6204,7 @@ destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
        (* u(n+1)=u(n+2)=u(n+3)=9 *)
 (* à force d'y avoir une infinité de 9, le but va finir par
    marcher ; s'il y a plus de "j+1" 9, par exemple. *)
+(* ou alors on peut contredire Hj1 au bout de "j1+1" 9 *)
        ...
     ---apply Nat.nlt_ge in H5.
        specialize (Hur 2).
@@ -6296,8 +6297,32 @@ destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
     destruct (lt_dec (u (n + 2)) rad) as [H5| H5].
    ++rewrite Nat.mod_small in Hun2; [ clear H5 | easy ].
      (* u(n+1)=8 u(n+2)=9 *)
-     (* je vois pas où ça déconne, là *)
-     ...
+     specialize (HAF 3) as Hun3.
+     destruct Hun3 as (j3 & Hjj3 & Hj3 & Hun3).
+     remember (rad * (n + 3 + j3 + 3)) as n4 eqn:Hn4.
+     remember (n4 - (n + 3) - 1) as s4 eqn:Hs4.
+     move n4 before s3; move s4 before n4.
+     move j3 before j2; move Hj3 before Hj2.
+     move Hun3 before Hun2.
+     move Hjj3 before Hjj2.
+     destruct (lt_dec (nA (n + 3) n4 u) (rad ^ s4)) as [H3| H3].
+    **rewrite Nat.div_small in Hun3; [ | easy ].
+      rewrite Nat.mod_small in Hj3; [ | easy ].
+      clear H3.
+      rewrite Nat.add_0_r in Hun3.
+      destruct (lt_dec (u (n + 3)) rad) as [H5| H5].
+    ---rewrite Nat.mod_small in Hun3; [ clear H5 | easy ].
+       (* u(n+1)=8 u(n+2)=u(n+3)=9 *)
+       (* à force d'avoir des 9, Hj2 va finir par être faux *)
+       ...
+    ---apply Nat.nlt_ge in H5.
+       specialize (Hur 2).
+       replace (n + 2 + 1) with (n + 3) in Hur by flia.
+       rewrite Nat_mod_less_small in Hun3; [ flia Hr Hun3 Hur | ].
+       split; [ easy | flia Hr Hur ].
+    **apply Nat.nlt_ge in H3.
+      (* cf Nat_mod_less_small et Nat_div_less_small *)
+      ...
    ++apply Nat.nlt_ge in H5.
      specialize (Hur 1).
      replace (n + 1 + 1) with (n + 2) in Hur by flia.
