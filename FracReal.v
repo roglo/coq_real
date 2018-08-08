@@ -3139,6 +3139,7 @@ destruct m.
  +unfold n.
   destruct rad; [ easy | simpl; flia ].
 Qed.
+*)
 
 Theorem Nat_pow_sub_1_mul_pow : ∀ n a b,
   (n ^ a - 1) * n ^ b = n ^ (a + b) - n ^ b.
@@ -3148,6 +3149,7 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
+(*
 Theorem nA_upper_bound_for_op {r : radix} (rg := nat_ord_ring) : ∀ u i k,
   let n := rad * (i + k + 3) in
   (∀ j, i < j < n → u j ≤ (j + 1) * (rad - 1) ^ 2)
@@ -6200,6 +6202,8 @@ destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
       destruct (lt_dec (u (n + 3)) rad) as [H5| H5].
     ---rewrite Nat.mod_small in Hun3; [ clear H5 | easy ].
        (* u(n+1)=u(n+2)=u(n+3)=9 *)
+(* à force d'y avoir une infinité de 9, le but va finir par
+   marcher ; s'il y a plus de "j+1" 9, par exemple. *)
        ...
     ---apply Nat.nlt_ge in H5.
        specialize (Hur 2).
@@ -6273,9 +6277,35 @@ destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
   destruct (lt_dec (u (n + 1) + 1) rad) as [H3| H3].
   *rewrite Nat.mod_small in Hun1; [ clear H3 | easy ].
    assert (H : u (n + 1) = rad - 2) by flia Hun1.
-    clear Hun1; rename H into Hun1; move Hun1 before Hun.
-    (* u(n+1)=8 *)
-    ...
+   clear Hun1; rename H into Hun1; move Hun1 before Hun.
+   (* u(n+1)=8 *)
+   specialize (HAF 2) as Hun2.
+   destruct Hun2 as (j2 & Hjj2 & Hj2 & Hun2).
+   remember (rad * (n + 2 + j2 + 3)) as n3 eqn:Hn3.
+   remember (n3 - (n + 2) - 1) as s3 eqn:Hs3.
+   move n3 before s2; move s3 before n3.
+   move j2 before j1.
+   move Hun2 before Hun1.
+   move Hjj2 before Hjj1.
+   move Hj1 before Hjj2; move Hj2 before Hj1.
+   destruct (lt_dec (nA (n + 2) n3 u) (rad ^ s3)) as [H3| H3].
+  --rewrite Nat.div_small in Hun2; [ | easy ].
+    rewrite Nat.mod_small in Hj2; [ | easy ].
+    clear H3.
+    rewrite Nat.add_0_r in Hun2.
+    destruct (lt_dec (u (n + 2)) rad) as [H5| H5].
+   ++rewrite Nat.mod_small in Hun2; [ clear H5 | easy ].
+     (* u(n+1)=8 u(n+2)=9 *)
+     (* je vois pas où ça déconne, là *)
+     ...
+   ++apply Nat.nlt_ge in H5.
+     specialize (Hur 1).
+     replace (n + 1 + 1) with (n + 2) in Hur by flia.
+     rewrite Nat_mod_less_small in Hun2; [ flia Hr Hun2 Hur | ].
+     split; [ easy | flia Hr Hur ].
+  -- apply Nat.nlt_ge in H3.
+     (* cf Nat_mod_less_small et Nat_div_less_small *)
+     ...
   *apply Nat.nlt_ge in H3.
    specialize (Hur 0); rewrite Nat.add_0_r in Hur.
    rewrite Nat_mod_less_small in Hun1.
