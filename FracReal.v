@@ -6193,6 +6193,8 @@ destruct (lt_dec (nA (n + k + 1) n1 u) (rad ^ s1)) as [H4| H4].
  assert (Hur1 : u (n + k + 2) ≥ rad - 1). {
    apply Nat.nlt_ge; intros H.
    apply Nat.nlt_ge in H4; apply H4; clear H4.
+   clear - Hur Hs1 Hn1 H.
+   specialize radix_ge_2 as Hr.
    replace (n1 - (n + k + 1) - 2) with (s1 - 1) by flia Hs1.
    apply Nat.lt_le_pred in H.
    replace (pred (rad - 1)) with (rad - 2) in H by flia.
