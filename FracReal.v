@@ -6154,13 +6154,14 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn k.
-specialize (eq_all_numbers_to_digits_9_cond u n Hur Hn (k + 1)) as Hun1.
+specialize (eq_all_numbers_to_digits_9_cond u n Hur Hn) as HAF.
+specialize (HAF (k + 1)) as Hun1.
 destruct Hun1 as (j1 & Hjj1 & Hj1 & Hun1); simpl in Hun1.
 rewrite Nat.add_assoc in Hj1, Hun1.
-remember (rad * (n + k + 1 + j1 + 3)) as n2 eqn:Hn2.
-remember (n2 - (n + k + 1) - 1) as s2 eqn:Hs2.
-move s2 before n2.
-destruct (lt_dec (nA (n + k + 1) n2 u) (rad ^ s2)) as [H4| H4].
+remember (rad * (n + k + 1 + j1 + 3)) as n1 eqn:Hn1.
+remember (n1 - (n + k + 1) - 1) as s1 eqn:Hs1.
+move s1 before n1.
+destruct (lt_dec (nA (n + k + 1) n1 u) (rad ^ s1)) as [H4| H4].
 -rewrite Nat.div_small in Hun1; [ | easy ].
  rewrite Nat.mod_small in Hj1; [ | easy ].
  clear H4.
@@ -6173,10 +6174,10 @@ destruct (lt_dec (nA (n + k + 1) n2 u) (rad ^ s2)) as [H4| H4].
   rewrite Nat_mod_less_small in Hun1; [ flia Hur Hun1 Hr | ].
   split; [ easy | flia Hr Hur ].
 -apply Nat.nlt_ge in H4.
- assert (H : rad ^ s2 ≤ nA (n + k + 1) n2 u < 2 * rad ^ s2). {
+ assert (H : rad ^ s1 ≤ nA (n + k + 1) n1 u < 2 * rad ^ s1). {
    split; [ easy | ].
-   specialize (nA_upper_bound_for_add u (n + k + 1) n2) as H5.
-   rewrite <- Hs2 in H5.
+   specialize (nA_upper_bound_for_add u (n + k + 1) n1) as H5.
+   rewrite <- Hs1 in H5.
    assert (H : ∀ j, u (n + k + 1 + j + 1) ≤ 2 * (rad - 1)). {
      intros j.
      replace (n + k + 1 + j + 1) with (n + (k + 1 + j) + 1) by flia.
@@ -6184,7 +6185,7 @@ destruct (lt_dec (nA (n + k + 1) n2 u) (rad ^ s2)) as [H4| H4].
    }
    specialize (H5 H); clear H.
    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H5.
-   specialize (Nat.pow_nonzero rad s2 radix_ne_0) as H6.
+   specialize (Nat.pow_nonzero rad s1 radix_ne_0) as H6.
    flia Hr H5 H6.
  }
  rewrite Nat_div_less_small in Hun1; [ | easy ].
