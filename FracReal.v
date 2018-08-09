@@ -6148,7 +6148,7 @@ Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
   → ∀ k,
      u (n + k + 1) = rad - 2 ∧ u (n + k + 2) ≥ rad - 1 ∨
-     u (n + k + 1) = rad - 1 ∧ u (n + k + 2) ≤ rad - 1 ∨
+     u (n + k + 1) = rad - 1 ∨
      u (n + k + 1) = 2 * (rad - 1) ∧ u (n + k + 2) ≥ rad - 1.
 Proof.
 intros *.
@@ -6168,11 +6168,7 @@ destruct (lt_dec (nA (n + k + 1) n1 u) (rad ^ s1)) as [H4| H4].
  rewrite Nat.add_0_r in Hun1.
  destruct (lt_dec (u (n + k + 1)) rad) as [H5| H5].
  +rewrite Nat.mod_small in Hun1; [ clear H5 | easy ].
-  right; left.
-  split; [ easy | ].
-  apply Nat.nlt_ge; intros Hun2.
-  apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
-...
+  now right; left.
  +apply Nat.nlt_ge in H5.
   specialize (Hur k).
   rewrite Nat_mod_less_small in Hun1; [ flia Hur Hun1 Hr | ].
