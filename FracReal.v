@@ -6205,6 +6205,24 @@ destruct (lt_dec (nA (n + k + 1) n1 u) (rad ^ s1)) as [H4| H4].
   *split; [ easy | flia Hr Hur ].
 Qed.
 
+Theorem glop {r : radix} : ∀ u n,
+  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
+  → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
+  → ∀ j,
+     u (n + j + 1) = rad - 2 ∧
+     (∀ k, u (n + j + k + 2) = 2 * (rad - 2)) ∨
+     u (n + j + 1) = rad - 1 ∨
+     u (n + j + 1) = 2 * (rad - 1).
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hn j.
+specialize (eq_all_numbers_to_digits_9 u n Hur Hn j) as H1.
+destruct H1 as [H1| H1]; [ left | now right ].
+split; [ easy | intros k ].
+specialize (eq_all_numbers_to_digits_9_cond u n Hur Hn) as HAF.
+specialize (HAF j) as Hunj.
+
 ...
 
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
