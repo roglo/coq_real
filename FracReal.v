@@ -6213,13 +6213,7 @@ destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
 -apply Nat.nlt_ge in H2.
  rewrite Nat_mod_less_small in Hj.
  +idtac.
-(*
-  Hj : nA n n1 u - rad ^ s1 < (rad ^ S j - 1) * rad ^ (s1 - S j)
-  Hun : (u n + nA n n1 u / rad ^ s1) mod rad = rad - 1
-  H2 : rad ^ s1 ≤ nA n n1 u
-  ============================
-*)
-  ...
+...
  +split; [ easy | ].
   specialize (nA_upper_bound_for_add u n n1 Hur) as H5.
   rewrite <- Hs1 in H5.
