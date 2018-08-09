@@ -6143,6 +6143,91 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H2| H2]; simpl in Huni.
  exists j; easy.
 Qed.
 
+Theorem glop {r : radix} : ∀ u n,
+  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
+  → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
+  → u (n + 1) = rad - 2 ∨ u (n + 1) = rad - 1 ∨ u (n + 1) = 2 * (rad - 1).
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hn.
+specialize (eq_all_numbers_to_digits_9 u n Hur Hn) as HAF.
+specialize (HAF 0) as Hun.
+destruct Hun as (j & Hjj & Hj & Hun); simpl in Hun.
+rewrite Nat.add_0_r in Hjj, Hun, Hj.
+remember (rad * (n + j + 3)) as n1 eqn:Hn1.
+remember (n1 - n - 1) as s1 eqn:Hs1.
+move s1 before n1.
+destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
+-rewrite Nat.mod_small in Hj; [ | easy ].
+ rewrite Nat.div_small in Hun; [ | easy ].
+ rewrite Nat.add_0_r in Hun.
+ specialize (HAF 1) as Hun1.
+ destruct Hun1 as (j1 & Hjj1 & Hj1 & Hun1); simpl in Hun1.
+ remember (rad * (n + 1 + j1 + 3)) as n2 eqn:Hn2.
+ remember (n2 - (n + 1) - 1) as s2 eqn:Hs2.
+ move n2 before s1; move s2 before n2.
+ destruct (lt_dec (nA (n + 1) n2 u) (rad ^ s2)) as [H4| H4].
+ +rewrite Nat.div_small in Hun1; [ | easy ].
+  rewrite Nat.mod_small in Hj1; [ | easy ].
+  clear H4.
+  rewrite Nat.add_0_r in Hun1.
+  move Hun1 before Hun.
+  destruct (lt_dec (u (n + 1)) rad) as [H5| H5].
+  *rewrite Nat.mod_small in Hun1; [ clear H5 | easy ].
+   now right; left.
+  *apply Nat.nlt_ge in H5.
+   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+   rewrite Nat_mod_less_small in Hun1; [ flia Hur Hun1 Hr | ].
+   split; [ easy | flia Hr Hur ].
+ +apply Nat.nlt_ge in H4.
+  assert (H : rad ^ s2 ≤ nA (n + 1) n2 u < 2 * rad ^ s2). {
+    split; [ easy | ].
+    specialize (nA_upper_bound_for_add u (n + 1) n2) as H5.
+    rewrite <- Hs2 in H5.
+    assert (H : ∀ k, u (n + 1 + k + 1) ≤ 2 * (rad - 1)). {
+      intros l.
+      replace (n + 1 + l + 1) with (n + (1 + l) + 1) by flia.
+      apply Hur.
+    }
+    specialize (H5 H); clear H.
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H5.
+    specialize (Nat.pow_nonzero rad s2 radix_ne_0) as H6.
+    flia Hr H5 H6.
+  }
+  rewrite Nat_div_less_small in Hun1; [ | easy ].
+  rewrite Nat_mod_less_small in Hj1; [ clear H | easy ].
+  destruct (lt_dec (u (n + 1) + 1) rad) as [H3| H3].
+  *rewrite Nat.mod_small in Hun1; [ clear H3 | easy ].
+   assert (H : u (n + 1) = rad - 2) by flia Hun1.
+   clear Hun1; rename H into Hun1; move Hun1 before Hun.
+   now left.
+  *apply Nat.nlt_ge in H3.
+   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+   rewrite Nat_mod_less_small in Hun1.
+  --assert (H : u (n + 1) = 2 * (rad - 1)) by flia Hun1.
+    clear Hun1; rename H into Hun1; move Hun1 before Hun.
+    (* u(n+1)=18 *)
+    now right; right.
+  --split; [ easy | flia Hr Hur ].
+-apply Nat.nlt_ge in H2.
+ rewrite Nat_mod_less_small in Hj.
+ +idtac.
+(*
+  Hj : nA n n1 u - rad ^ s1 < (rad ^ S j - 1) * rad ^ (s1 - S j)
+  Hun : (u n + nA n n1 u / rad ^ s1) mod rad = rad - 1
+  H2 : rad ^ s1 ≤ nA n n1 u
+  ============================
+*)
+  ...
+ +split; [ easy | ].
+  specialize (nA_upper_bound_for_add u n n1 Hur) as H5.
+  rewrite <- Hs1 in H5.
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H5.
+  specialize (Nat.pow_nonzero rad s1 radix_ne_0) as H6.
+  flia Hr H5 H6.
+...
+
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → ¬ (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1).
