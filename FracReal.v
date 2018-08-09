@@ -6113,6 +6113,36 @@ destruct H3 as [H3| [H3| H3]].
   now rewrite H2 in Hk.
 Qed.
 
+Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
+  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
+  → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
+  → ∀ i, ∃ j,
+  (∀ k, k < j → A_ge_1 u (n + i) k = true) ∧
+  let n1 := rad * (n + i + j + 3) in
+  let s1 := n1 - (n + i) - 1 in
+  nA (n + i) n1 u mod rad ^ s1 < (rad ^ S j - 1) * rad ^ (s1 - S j) ∧
+  (u (n + i) + nA (n + i) n1 u / rad ^ s1) mod rad = rad - 1.
+Proof.
+intros * Hur Hn *.
+specialize (Hn i) as Huni.
+unfold numbers_to_digits, d2n in Huni.
+destruct (LPO_fst (A_ge_1 u (n + i))) as [H2| H2]; simpl in Huni.
+-assert (Hn' : ∀ k, d2n (numbers_to_digits u) ((n + i) + k) = rad - 1). {
+   intros k.
+   replace ((n + i) + k) with (n + (i + k)) by flia.
+   apply Hn.
+ }
+ exfalso; revert Hn'.
+ apply not_numbers_to_digits_all_9_all_ge_1; [ | easy | easy ].
+ intros k.
+ replace (n + i + k + 1) with (n + (i + k) + 1) by flia.
+ apply Hur.
+-destruct H2 as (j & Hjj & Hj).
+ simpl in Huni.
+ apply A_ge_1_false_iff in Hj.
+ exists j; easy.
+Qed.
+
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → ¬ (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1).
@@ -6120,31 +6150,7 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn.
-assert (HAF : ∀ i, ∃ j,
-  (∀ k, k < j → A_ge_1 u (n + i) k = true) ∧
-  let n1 := rad * (n + i + j + 3) in
-  let s1 := n1 - (n + i) - 1 in
-  nA (n + i) n1 u mod rad ^ s1 < (rad ^ S j - 1) * rad ^ (s1 - S j) ∧
-  (u (n + i) + nA (n + i) n1 u / rad ^ s1) mod rad = rad - 1). {
-  intros.
-  specialize (Hn i) as Huni.
-  unfold numbers_to_digits, d2n in Huni.
-  destruct (LPO_fst (A_ge_1 u (n + i))) as [H2| H2]; simpl in Huni.
-  -assert (Hn' : ∀ k, d2n (numbers_to_digits u) ((n + i) + k) = rad - 1). {
-     intros k.
-     replace ((n + i) + k) with (n + (i + k)) by flia.
-     apply Hn.
-   }
-   exfalso; revert Hn'.
-   apply not_numbers_to_digits_all_9_all_ge_1; [ | easy | easy ].
-   intros k.
-   replace (n + i + k + 1) with (n + (i + k) + 1) by flia.
-   apply Hur.
-  -destruct H2 as (j & Hjj & Hj).
-   simpl in Huni.
-   apply A_ge_1_false_iff in Hj.
-   exists j; easy.
-}
+specialize (eq_all_numbers_to_digits_9 u n Hur Hn) as HAF.
 specialize (HAF 0) as Hun.
 destruct Hun as (j & Hjj & Hj & Hun); simpl in Hun.
 rewrite Nat.add_0_r in Hjj, Hun, Hj.
