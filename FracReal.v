@@ -6169,7 +6169,6 @@ destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
   destruct (lt_dec (u (n + 1)) rad) as [H5| H5].
   *rewrite Nat.mod_small in Hun1; [ clear H5 | easy ].
    (* u(n+1)=9 *)
-   apply Nat.nle_gt in Hj; apply Hj; clear Hj.
    specialize (HAF 2) as Hun2.
    destruct Hun2 as (j2 & Hjj2 & Hj2 & Hun2).
    remember (rad * (n + 2 + j2 + 3)) as n3 eqn:Hn3.
@@ -6202,8 +6201,8 @@ destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
       destruct (lt_dec (u (n + 3)) rad) as [H5| H5].
     ---rewrite Nat.mod_small in Hun3; [ clear H5 | easy ].
        (* u(n+1)=u(n+2)=u(n+3)=9 *)
-(* à force d'y avoir une infinité de 9, le but va finir par
-   marcher ; s'il y a plus de "j+1" 9, par exemple. *)
+(* à force d'y avoir une infinité de 9, Hj peut finir par
+   déborder ; s'il y a plus de "j+1" 9, par exemple. *)
 (* ou alors on peut contredire Hj1 au bout de "j1+1" 9 *)
        ...
     ---apply Nat.nlt_ge in H5.
@@ -6337,6 +6336,7 @@ destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
   --assert (H : u (n + 1) = 2 * (rad - 1)) by flia Hun1.
     clear Hun1; rename H into Hun1; move Hun1 before Hun.
     (* u(n+1)=18 *)
+    exfalso.
     apply Nat.nle_gt in H2; apply H2; clear H2.
     rewrite nA_split_first.
    ++rewrite Hun1.
