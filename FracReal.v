@@ -6151,9 +6151,12 @@ Theorem eq_all_numbers_to_digits_9_cond1 {r : radix} : ∀ u i n s j,
   → j < s
   → nA i n u mod rad ^ s < (rad ^ S j - 1) * rad ^ (s - S j)
   → (u i + nA i n u / rad ^ s) mod rad = rad - 1
-  → u i = rad - 1 ∧ u (i + 1) ≠ 2 * (rad - 1)
-   ∨ u i = rad - 2 ∧ u (i + 1) ≥ rad - 1
-   ∨ u i = 2 * (rad - 1) ∧ u (i + 1) ≥ rad - 1.
+  → if lt_dec (nA i n u) (rad ^ s) then
+       u i = rad - 1 ∧ u (i + 1) ≠ 2 * (rad - 1)
+     else if lt_dec (u i) (rad - 1) then
+       u i = rad - 2 ∧ u (i + 1) ≥ rad - 1
+     else
+       u i = 2 * (rad - 1) ∧ u (i + 1) ≥ rad - 1.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -6190,7 +6193,7 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H4| H4].
      +rewrite Nat.add_sub_assoc; [ flia | easy ].
     -flia Hs1 Hs1z.
   }
-  now left.
+  easy.
  +apply Nat.nlt_ge in H5.
   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
   rewrite Nat_mod_less_small in Hun1; [ flia Hur Hun1 Hr | ].
@@ -6247,19 +6250,19 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H4| H4].
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
    -flia Hs1 Hs1z.
  }
- destruct (lt_dec (u i + 1) rad) as [H3| H3].
- +rewrite Nat.mod_small in Hun1; [ clear H3 | easy ].
+ destruct (lt_dec (u i) (rad - 1)) as [H3| H3].
+ +rewrite Nat.mod_small in Hun1; [ clear H3 | flia H3 ].
   assert (H : u i = rad - 2) by flia Hun1.
   clear Hun1; rename H into Hun1.
-  now right; left.
+  easy.
  +apply Nat.nlt_ge in H3.
   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
   rewrite Nat_mod_less_small in Hun1.
   *assert (H : u i = 2 * (rad - 1)) by flia Hun1.
    clear Hun1; rename H into Hun1.
    (* u(n+1)=18 *)
-   now right; right.
-  *split; [ easy | flia Hr Hur ].
+   easy.
+  *split; [ flia H3 | flia Hr Hur ].
 Qed.
 
 Theorem eq_all_numbers_to_digits_9_cond2 {r : radix} : ∀ u n,
@@ -6281,12 +6284,23 @@ remember (rad * (n + k + 1 + j1 + 3)) as n1 eqn:Hn1.
 remember (n1 - (n + k + 1) - 1) as s1 eqn:Hs1.
 move s1 before n1.
 replace (n + k + 2) with (n + k + 1 + 1) by flia.
-eapply eq_all_numbers_to_digits_9_cond1; try eassumption.
--intros j.
- replace (n + k + 1 + j) with (n + (k + j) + 1) by flia.
- apply Hur.
--rewrite Hs1, Hn1.
- destruct rad; [ easy | simpl; flia ].
+specialize (eq_all_numbers_to_digits_9_cond1 u (n + k + 1) n1 s1 j1) as H1.
+assert (H : ∀ j, u (n + k + 1 + j) ≤ 2 * (rad - 1)). {
+  intros j.
+  replace (n + k + 1 + j) with (n + (k + j) + 1) by flia.
+  apply Hur.
+}
+specialize (H1 H Hs1); clear H.
+assert (H : j1 < s1). {
+  rewrite Hs1, Hn1.
+  destruct rad; [ easy | simpl; flia ].
+}
+specialize (H1 H Hj1 Hun1); clear H.
+destruct (lt_dec (nA (n + k + 1) n1 u) (rad ^ s1)) as [H2| H2].
+-now left.
+-destruct (lt_dec (u (n + k + 1)) (rad - 1)) as [H3| H3].
+ +now right; left.
+ +now right; right.
 Qed.
 
 Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
