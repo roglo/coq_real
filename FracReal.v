@@ -6143,12 +6143,12 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H2| H2]; simpl in Huni.
  exists j; easy.
 Qed.
 
-Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
+Theorem eq_all_numbers_to_digits_9_cond2 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
   → ∀ k,
      u (n + k + 1) = rad - 2 ∧ u (n + k + 2) ≥ rad - 1 ∨
-     u (n + k + 1) = rad - 1 ∨
+     u (n + k + 1) = rad - 1 ∧ u (n + k + 2) ≠ 2 * (rad - 1) ∨
      u (n + k + 1) = 2 * (rad - 1) ∧ u (n + k + 2) ≥ rad - 1.
 Proof.
 intros *.
@@ -6168,16 +6168,38 @@ destruct (lt_dec (nA (n + k + 1) n1 u) (rad ^ s1)) as [H4| H4].
  rewrite Nat.add_0_r in Hun1.
  destruct (lt_dec (u (n + k + 1)) rad) as [H5| H5].
  +rewrite Nat.mod_small in Hun1; [ clear H5 | easy ].
-assert (Hur2 : u (n + k + 2) ≠ 2 * (rad - 1)). {
-  intros H.
-  apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
-  rewrite nA_split_first.
-  -replace (n + k + 1 + 1) with (n + k + 2) by flia.
-   replace (n1 - (n + k + 1) - 2) with (s1 - 1) by flia Hs1.
-   rewrite H.
-   apply le_plus_trans.
-...
-}
+  assert (Hur2 : u (n + k + 2) ≠ 2 * (rad - 1)). {
+    intros H.
+    apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
+    rewrite nA_split_first.
+    -replace (n + k + 1 + 1) with (n + k + 2) by flia.
+     replace (n1 - (n + k + 1) - 2) with (s1 - 1) by flia Hs1.
+     rewrite H.
+     apply le_plus_trans.
+     rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+     rewrite <- Nat.pow_add_r.
+     replace (S j1 + (s1 - S j1)) with s1.
+     +rewrite <- Nat.mul_assoc, Nat.mul_sub_distr_r, Nat.mul_1_l.
+      rewrite <- Nat.pow_succ_r'.
+      rewrite <- Nat.sub_succ_l.
+      *rewrite Nat.sub_succ, Nat.sub_0_r.
+       rewrite Nat.mul_sub_distr_l.
+       replace (2 * rad ^ s1) with (rad ^ s1 + rad ^ s1) by flia.
+       rewrite <- Nat.add_sub_assoc; [ flia | ].
+       destruct s1.
+       --rewrite Hn1 in Hs1.
+         destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
+       --rewrite Nat.sub_succ, Nat.sub_0_r.
+         rewrite Nat.pow_succ_r'.
+         now apply Nat.mul_le_mono_r.
+      *rewrite Hs1, Hn1.
+       destruct rad; [ easy | simpl; flia ].
+     +rewrite Nat.add_sub_assoc; [ flia | ].
+      rewrite Hs1, Hn1.
+      destruct rad; [ easy | simpl; flia ].
+    -rewrite Hn1.
+     destruct rad; [ easy | simpl; flia ].
+  }
   now right; left.
  +apply Nat.nlt_ge in H5.
   specialize (Hur k).
