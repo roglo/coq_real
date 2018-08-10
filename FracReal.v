@@ -6117,7 +6117,9 @@ Theorem eq_all_numbers_to_digits_9_cond {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
   → ∀ i, ∃ j,
+(*
   (∀ k, k < j → A_ge_1 u (n + i) k = true) ∧
+*)
   let n1 := rad * (n + i + j + 3) in
   let s1 := n1 - (n + i) - 1 in
   nA (n + i) n1 u mod rad ^ s1 < (rad ^ S j - 1) * rad ^ (s1 - S j) ∧
@@ -6156,7 +6158,7 @@ specialize radix_ge_2 as Hr.
 intros Hur Hn k.
 specialize (eq_all_numbers_to_digits_9_cond u n Hur Hn) as HAF.
 specialize (HAF (k + 1)) as Hun1.
-destruct Hun1 as (j1 & Hjj1 & Hj1 & Hun1); simpl in Hun1.
+destruct Hun1 as (j1 (*& Hjj1*) & Hj1 & Hun1); simpl in Hun1.
 rewrite Nat.add_assoc in Hj1, Hun1.
 remember (rad * (n + k + 1 + j1 + 3)) as n1 eqn:Hn1.
 remember (n1 - (n + k + 1) - 1) as s1 eqn:Hs1.
