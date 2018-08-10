@@ -6168,12 +6168,12 @@ destruct (lt_dec (nA (n + k + 1) n1 u) (rad ^ s1)) as [H4| H4].
  rewrite Nat.add_0_r in Hun1.
  destruct (lt_dec (u (n + k + 1)) rad) as [H5| H5].
  +rewrite Nat.mod_small in Hun1; [ clear H5 | easy ].
-assert (Hur2 : u (n + k + 2) ≤ rad - 1). {
-  apply Nat.nlt_ge; intros H.
+assert (Hur2 : u (n + k + 2) ≠ 2 * (rad - 1)). {
+  intros H.
   apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
-...
   rewrite nA_split_first.
   -replace (n + k + 1 + 1) with (n + k + 2) by flia.
+   rewrite H.
 ...
 }
   now right; left.
