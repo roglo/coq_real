@@ -6173,7 +6173,9 @@ assert (Hur2 : u (n + k + 2) ≠ 2 * (rad - 1)). {
   apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
   rewrite nA_split_first.
   -replace (n + k + 1 + 1) with (n + k + 2) by flia.
+   replace (n1 - (n + k + 1) - 2) with (s1 - 1) by flia Hs1.
    rewrite H.
+   apply le_plus_trans.
 ...
 }
   now right; left.
