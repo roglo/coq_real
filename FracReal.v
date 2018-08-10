@@ -6279,6 +6279,45 @@ destruct (lt_dec (nA (n + k + 1) n1 u) (rad ^ s1)) as [H4| H4].
   *split; [ easy | flia Hr Hur ].
 Qed.
 
+Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
+  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
+  → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
+  → ∀ k,
+     u (n + k + 1) = rad - 2 ∧
+       (u (n + k + 2) = rad - 1 ∨ u (n + k + 2) = 2 * (rad - 1)) ∨
+     u (n + k + 1) = rad - 1 ∧
+       (u (n + k + 2) = rad - 2 ∨ u (n + k + 2) = rad - 1) ∨
+     u (n + k + 1) = 2 * (rad - 1) ∧
+       (u (n + k + 2) = rad - 1 ∨ u (n + k + 2) = 2 * (rad - 1)).
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hn k.
+specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn k) as H.
+destruct H as [H| [H| H]]; destruct H as (H1, H2).
+-left; split; [ easy | ].
+ specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
+ replace (n + (k + 1) + 1) with (n + k + 2) in H by flia.
+ destruct H as [H| [H| H]]; destruct H as (H3, H4).
+ +rewrite H3 in H2; flia Hr H2.
+ +now left.
+ +now right.
+-right; left; split; [ easy | ].
+ specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
+ replace (n + (k + 1) + 1) with (n + k + 2) in H by flia.
+ destruct H as [H| [H| H]]; destruct H as (H3, H4).
+ +now left.
+ +now right.
+ +easy.
+-right; right; split; [ easy | ].
+ specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
+ replace (n + (k + 1) + 1) with (n + k + 2) in H by flia.
+ destruct H as [H| [H| H]]; destruct H as (H3, H4).
+ +rewrite H3 in H2; flia Hr H2.
+ +now left.
+ +now right.
+Qed.
+
 ...
 
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
