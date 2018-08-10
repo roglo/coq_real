@@ -6151,8 +6151,8 @@ Theorem eq_all_numbers_to_digits_9_cond1 {r : radix} : ∀ u i n1 s1 j1,
   → j1 < s1
   → nA i n1 u mod rad ^ s1 < (rad ^ S j1 - 1) * rad ^ (s1 - S j1)
   → (u i + nA i n1 u / rad ^ s1) mod rad = rad - 1
-  → u i = rad - 2 ∧ u (i + 1) ≥ rad - 1
-   ∨ u i = rad - 1 ∧ u (i + 1) ≠ 2 * (rad - 1)
+  → u i = rad - 1 ∧ u (i + 1) ≠ 2 * (rad - 1)
+   ∨ u i = rad - 2 ∧ u (i + 1) ≥ rad - 1
    ∨ u i = 2 * (rad - 1) ∧ u (i + 1) ≥ rad - 1.
 Proof.
 intros *.
@@ -6190,7 +6190,7 @@ destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H4| H4].
      +rewrite Nat.add_sub_assoc; [ flia | easy ].
     -flia Hs1 Hs1z.
   }
-  now right; left.
+  now left.
  +apply Nat.nlt_ge in H5.
   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
   rewrite Nat_mod_less_small in Hun1; [ flia Hur Hun1 Hr | ].
@@ -6251,7 +6251,7 @@ destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H4| H4].
  +rewrite Nat.mod_small in Hun1; [ clear H3 | easy ].
   assert (H : u i = rad - 2) by flia Hun1.
   clear Hun1; rename H into Hun1.
-  now left.
+  now right; left.
  +apply Nat.nlt_ge in H3.
   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
   rewrite Nat_mod_less_small in Hun1.
@@ -6266,8 +6266,8 @@ Theorem eq_all_numbers_to_digits_9_cond2 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
   → ∀ k,
-     u (n + k + 1) = rad - 2 ∧ u (n + k + 2) ≥ rad - 1 ∨
      u (n + k + 1) = rad - 1 ∧ u (n + k + 2) ≠ 2 * (rad - 1) ∨
+     u (n + k + 1) = rad - 2 ∧ u (n + k + 2) ≥ rad - 1 ∨
      u (n + k + 1) = 2 * (rad - 1) ∧ u (n + k + 2) ≥ rad - 1.
 Proof.
 intros *.
@@ -6293,10 +6293,10 @@ Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
   → ∀ k,
-     u (n + k + 1) = rad - 2 ∧
-       (u (n + k + 2) = rad - 1 ∨ u (n + k + 2) = 2 * (rad - 1)) ∨
      u (n + k + 1) = rad - 1 ∧
        (u (n + k + 2) = rad - 2 ∨ u (n + k + 2) = rad - 1) ∨
+     u (n + k + 1) = rad - 2 ∧
+       (u (n + k + 2) = rad - 1 ∨ u (n + k + 2) = 2 * (rad - 1)) ∨
      u (n + k + 1) = 2 * (rad - 1) ∧
        (u (n + k + 2) = rad - 1 ∨ u (n + k + 2) = 2 * (rad - 1)).
 Proof.
@@ -6309,22 +6309,22 @@ destruct H as [H| [H| H]]; destruct H as (H1, H2).
  specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
  replace (n + (k + 1) + 1) with (n + k + 2) in H by flia.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
- +rewrite H3 in H2; flia Hr H2.
- +now left.
  +now right.
+ +now left.
+ +easy.
 -right; left; split; [ easy | ].
  specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
  replace (n + (k + 1) + 1) with (n + k + 2) in H by flia.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
  +now left.
+ +rewrite H3 in H2; flia Hr H2.
  +now right.
- +easy.
 -right; right; split; [ easy | ].
  specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
  replace (n + (k + 1) + 1) with (n + k + 2) in H by flia.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
- +rewrite H3 in H2; flia Hr H2.
  +now left.
+ +rewrite H3 in H2; flia Hr H2.
  +now right.
 Qed.
 
