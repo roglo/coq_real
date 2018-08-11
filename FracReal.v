@@ -6319,11 +6319,8 @@ assert (H : j < s1). {
   destruct rad; [ easy | simpl; flia ].
 }
 specialize (H1 H Hj Hun); clear H.
-destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2].
--now left.
--destruct (lt_dec (u i) (rad - 1)) as [H3| H3].
- +now right; left.
- +now right; right.
+destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2]; [ now left | right ].
+destruct (lt_dec (u i) (rad - 1)) as [H3| H3]; [ now left | now right ].
 Qed.
 
 Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
