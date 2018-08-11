@@ -6278,27 +6278,28 @@ specialize radix_ge_2 as Hr.
 intros Hur Hn k.
 specialize (eq_all_numbers_to_digits_9_cond u n Hur Hn) as HAF.
 specialize (HAF (k + 1)) as Hun1.
-destruct Hun1 as (j1 (*& Hjj1*) & Hj1 & Hun1); simpl in Hun1.
-rewrite Nat.add_assoc in Hj1, Hun1.
-remember (rad * (n + k + 1 + j1 + 3)) as n1 eqn:Hn1.
+destruct Hun1 as (j (*& Hjj1*) & Hj & Hun); simpl in Hun.
+rewrite Nat.add_assoc in Hj, Hun.
+remember (rad * (n + k + 1 + j + 3)) as n1 eqn:Hn1.
 remember (n1 - (n + k + 1) - 1) as s1 eqn:Hs1.
 move s1 before n1.
 replace (n + k + 2) with (n + k + 1 + 1) by flia.
-specialize (eq_all_numbers_to_digits_9_cond1 u (n + k + 1) n1 s1 j1) as H1.
-assert (H : ∀ j, u (n + k + 1 + j) ≤ 2 * (rad - 1)). {
-  intros j.
-  replace (n + k + 1 + j) with (n + (k + j) + 1) by flia.
+remember (n + k + 1) as i eqn:Hi.
+specialize (eq_all_numbers_to_digits_9_cond1 u i n1 s1 j) as H1.
+assert (H : ∀ j, u (i + j) ≤ 2 * (rad - 1)). {
+  intros l; subst i.
+  replace (n + k + 1 + l) with (n + (k + l) + 1) by flia.
   apply Hur.
 }
 specialize (H1 H Hs1); clear H.
-assert (H : j1 < s1). {
+assert (H : j < s1). {
   rewrite Hs1, Hn1.
   destruct rad; [ easy | simpl; flia ].
 }
-specialize (H1 H Hj1 Hun1); clear H.
-destruct (lt_dec (nA (n + k + 1) n1 u) (rad ^ s1)) as [H2| H2].
+specialize (H1 H Hj Hun); clear H.
+destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2].
 -now left.
--destruct (lt_dec (u (n + k + 1)) (rad - 1)) as [H3| H3].
+-destruct (lt_dec (u i) (rad - 1)) as [H3| H3].
  +now right; left.
  +now right; right.
 Qed.
