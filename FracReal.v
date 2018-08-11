@@ -6265,6 +6265,28 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H4| H4].
   *split; [ flia H3 | flia Hr Hur ].
 Qed.
 
+Theorem glop {r : radix} : ∀ u n,
+  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
+  → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
+  → ∀ k, ∃ j,  ∀ i n1 s1,
+     i = n + k + 1 →
+     n1 = rad * (i + j + 3) →
+     s1 = n1 - i - 1 →
+     nA i n1 u mod rad ^ s1 < (rad ^ S j - 1) * rad ^ (s1 - S j) ∧
+     (u i + nA i n1 u / rad ^ s1) mod rad = rad - 1.
+Proof.
+intros * Hur Hn k.
+specialize (eq_all_numbers_to_digits_9_cond u n Hur Hn) as HAF.
+specialize (HAF (k + 1)) as Hun1.
+destruct Hun1 as (j (*& Hjj1*) & Hj & Hun); simpl in Hun.
+exists j.
+intros * Hi Hn1 Hs1.
+rewrite Nat.add_assoc in Hj, Hun.
+rewrite <- Hi in Hj, Hun.
+rewrite <- Hn1, <- Hs1 in Hj, Hun.
+easy.
+Qed.
+
 Theorem eq_all_numbers_to_digits_9_cond2 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
