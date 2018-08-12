@@ -6330,6 +6330,9 @@ replace (n + k + 2) with (n + k + 1 + 1) in Hj2, Hun2 by flia.
 rewrite <- Hi in Hj2, Hun2.
 destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2].
 -assert (H4 : nA (i + 1) n2 u < rad ^ s2). {
+   move Hj at bottom.
+   rewrite Nat.mod_small in Hj; [ | easy ].
+   apply (Nat.mul_lt_mono_pos_r (rad ^ (s2 - s1))) in Hj.
 ...
  }
  rewrite Nat.div_small in Hun2; [ | easy ].
