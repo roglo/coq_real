@@ -6338,24 +6338,26 @@ intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn k.
 specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn k) as H.
+remember (n + k + 1) as i eqn:Hi.
+replace (n + k + 2) with (i + 1) in H |-* by flia Hi.
 destruct H as [H| [H| H]]; destruct H as (H1, H2).
 -left; split; [ easy | ].
  specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
- replace (n + (k + 1) + 1) with (n + k + 2) in H by flia.
+ replace (n + (k + 1)) with i in H by flia Hi.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
  +now right.
  +now left.
  +easy.
 -right; left; split; [ easy | ].
  specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
- replace (n + (k + 1) + 1) with (n + k + 2) in H by flia.
+ replace (n + (k + 1)) with i in H by flia Hi.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
  +now left.
  +rewrite H3 in H2; flia Hr H2.
  +now right.
 -right; right; split; [ easy | ].
  specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
- replace (n + (k + 1) + 1) with (n + k + 2) in H by flia.
+ replace (n + (k + 1)) with i in H by flia Hi.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
  +now left.
  +rewrite H3 in H2; flia Hr H2.
