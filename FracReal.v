@@ -6332,6 +6332,15 @@ destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2].
 -assert (H4 : nA (i + 1) n2 u < rad ^ s2). {
    move Hj at bottom.
    rewrite Nat.mod_small in Hj; [ | easy ].
+   apply lt_trans with
+     (m := ((rad ^ j - 1) * rad ^ (s1 - S j) + 1) * rad ^ (s2 - s1)).
+   -idtac.
+...
+rewrite nA_split with (e := n1).
+rewrite nA_split_first in Hj.
+replace (n1 - i - 2) with (s1 - 1) in Hj by flia Hs1.
+replace (S i) with (i + 1) in Hj by apply Nat.add_1_r.
+...
    apply (Nat.mul_lt_mono_pos_r (rad ^ (s2 - s1))) in Hj.
    rewrite nA_split_first in Hj.
    replace (n1 - i - 2) with (s1 - 1) in Hj by flia Hs1.
