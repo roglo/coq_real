@@ -6300,7 +6300,7 @@ specialize radix_ge_2 as Hr.
 intros Hur Hn k.
 specialize (eq_all_numbers_to_digits_9_cond u n Hur Hn) as HAF.
 specialize (HAF (k + 1)) as Hun1.
-destruct Hun1 as (j (*& Hjj1*) & Hj & Hun); simpl in Hun.
+destruct Hun1 as (j & Hj & Hun); simpl in Hun.
 rewrite Nat.add_assoc in Hj, Hun.
 remember (rad * (n + k + 1 + j + 3)) as n1 eqn:Hn1.
 remember (n1 - (n + k + 1) - 1) as s1 eqn:Hs1.
@@ -6319,6 +6319,23 @@ assert (H : j < s1). {
   destruct rad; [ easy | simpl; flia ].
 }
 specialize (H1 H Hj Hun); clear H.
+(**)
+specialize (HAF (k + 2)) as Hun2.
+destruct Hun2 as (j2 & Hj2 & Hun2); simpl in Hun2.
+rewrite Nat.add_assoc in Hj2, Hun2.
+remember (rad * (n + k + 2 + j2 + 3)) as n2 eqn:Hn2.
+remember (n2 - (n + k + 2) - 1) as s2 eqn:Hs2.
+move s2 before n2.
+replace (n + k + 2) with (n + k + 1 + 1) in Hj2, Hun2 by flia.
+rewrite <- Hi in Hj2, Hun2.
+destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2].
+-assert (H4 : nA (i + 1) n2 u < rad ^ s2). {
+...
+ }
+ rewrite Nat.div_small in Hun2; [ | easy ].
+ rewrite Nat.add_0_r in Hun2.
+...
+(**)
 destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2]; [ now left | right ].
 destruct (lt_dec (u i) (rad - 1)) as [H3| H3]; [ now left | now right ].
 Qed.
