@@ -6333,6 +6333,12 @@ destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2].
    move Hj at bottom.
    rewrite Nat.mod_small in Hj; [ | easy ].
    apply (Nat.mul_lt_mono_pos_r (rad ^ (s2 - s1))) in Hj.
+   rewrite nA_split_first in Hj.
+   replace (n1 - i - 2) with (s1 - 1) in Hj by flia Hs1.
+   rewrite Nat.mul_add_distr_r in Hj.
+   do 2 rewrite <- Nat.mul_assoc, <- Nat.pow_add_r in Hj.
+   replace (s1 - 1 + (s2 - s1)) with (s2 - 1) in Hj.
+   replace (s1 - S j + (s2 - s1)) with (s2 - S j) in Hj.
 ...
  }
  rewrite Nat.div_small in Hun2; [ | easy ].
