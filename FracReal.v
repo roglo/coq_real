@@ -6332,9 +6332,32 @@ destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2].
 -assert (H4 : nA (i + 1) n2 u < rad ^ s2). {
    move Hj at bottom.
    rewrite Nat.mod_small in Hj; [ | easy ].
-   apply lt_trans with
+...
+   apply le_lt_trans with
      (m := ((rad ^ j - 1) * rad ^ (s1 - S j) + 1) * rad ^ (s2 - s1)).
    -idtac.
+    specialize (nA_upper_bound_for_add u (i + 1) n2) as H3.
+    assert (H : ∀ k, u (i + 1 + k + 1) ≤ 2 * (rad - 1)). {
+      intros l; subst i.
+      replace (n + k + 1 + 1 + l) with (n + (k + 1 + 1 + l)) by flia.
+      apply Hur.
+    }
+    specialize (H3 H); clear H.
+    eapply Nat.le_trans; [ apply H3 | ].
+    replace (n + k + 2) with (i + 1) in Hs2 by flia Hi.
+    rewrite <- Hs2.
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+    rewrite <- Nat.mul_assoc, <- Nat.pow_add_r.
+    replace (s1 - S j + (s2 - s1)) with (s2 - S j).
+    +rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+     rewrite <- Nat.pow_add_r.
+     replace (j + (s2 - S j)) with (s2 - 1).
+     *idtac.
+...
+nA_upper_bound_for_add:
+  ∀ (r : radix) (rg : ord_ring := nat_ord_ring) (u : nat → nat) (i n : nat),
+    (∀ k : nat, u (i + k + 1) ≤ 2 * (rad - 1))
+    → nA i n u ≤ 2 * (rad ^ (n - i - 1) - 1)
 ...
 rewrite nA_split with (e := n1).
 rewrite nA_split_first in Hj.
