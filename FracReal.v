@@ -6332,6 +6332,26 @@ destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2].
 -assert (H4 : nA (i + 1) n2 u < rad ^ s2). {
    move Hj at bottom.
    rewrite Nat.mod_small in Hj; [ | easy ].
+   assert
+     (H3 :
+      nA i n2 u <
+      (rad ^ S j - 1) * rad ^ (s1 - S j) * rad ^ (n2 - n1) +
+      nA (n1 - 1) n2 u). {
+     rewrite (nA_split _ _ _ n1).
+     -apply Nat.add_lt_mono_r.
+      apply Nat.mul_lt_mono_pos_r; [ | easy ].
+      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+     -split.
+      +rewrite Hn1.
+       destruct rad; [ easy | simpl; flia ].
+      +rewrite Hn1, Hn2.
+(* chiasse de pute, j2 n'est pas forcément plus grand que j *)
+...
+     apply (Nat.mul_lt_mono_pos_r (rad ^ (s2 - s1))) in Hj.
+     -eapply Nat.lt_trans; [ apply Hj | ].
+      apply Nat.mul_lt_mono_pos_l.
+      +admit.
+      +idtac.
 ...
    apply le_lt_trans with
      (m := ((rad ^ j - 1) * rad ^ (s1 - S j) + 1) * rad ^ (s2 - s1)).
