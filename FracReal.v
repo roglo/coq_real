@@ -6326,8 +6326,8 @@ rewrite Nat.add_assoc in Hj2, Hun2.
 remember (rad * (n + k + 2 + j2 + 3)) as n2 eqn:Hn2.
 remember (n2 - (n + k + 2) - 1) as s2 eqn:Hs2.
 move s2 before n2.
-replace (n + k + 2) with (n + k + 1 + 1) in Hj2, Hun2 by flia.
-rewrite <- Hi in Hj2, Hun2.
+replace (n + k + 2) with (n + k + 1 + 1) in Hn2, Hs2, Hj2, Hun2 by flia.
+rewrite <- Hi in Hn2, Hs2, Hj2, Hun2.
 destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2].
 -assert (H4 : nA (i + 1) n2 u < rad ^ s2). {
    move Hj at bottom.
@@ -6344,7 +6344,6 @@ destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2].
     }
     specialize (H3 H); clear H.
     eapply Nat.le_trans; [ apply H3 | ].
-    replace (n + k + 2) with (i + 1) in Hs2 by flia Hi.
     rewrite <- Hs2.
     rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
     rewrite <- Nat.mul_assoc, <- Nat.pow_add_r.
