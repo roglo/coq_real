@@ -6320,6 +6320,39 @@ assert (H : j < s1). {
 }
 specialize (H1 H Hj Hun); clear H.
 destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2]; [ now left | right ].
+(**)
+apply Nat.nlt_ge in H2.
+Theorem pouet {r : radix} : ∀ u i n,
+  rad ^ (n - i - 1) ≤ nA i n u
+  → ∃ j,
+    (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
+    u (i + j + 1) ≥ rad - 1.
+Admitted.
+rewrite Hs1 in H2.
+specialize (pouet _ _ _ H2) as H3.
+rewrite <- Hs1 in H2.
+destruct H3 as (j2 & Hkj2 & Hj2).
+...
+destruct (lt_dec (u i) (rad - 1)) as [H3| H3]; [ | now right ].
+destruct (Nat.eq_dec (u (i + 1)) (rad - 1)) as [H4| H4].
+-idtac.
+ rewrite nA_split_first in H2.
+ +rewrite H4 in H2.
+  replace (n1 - i - 2) with (s1 - 1) in H2 by flia Hs1.
+  replace (S i) with (i + 1) in H2 by flia.
+...
+ specialize (HAF (k + 2)) as Hun2.
+ destruct Hun2 as (j2 & Hj2 & Hun2).
+ replace (n + (k + 2)) with (i + 1) in Hj2, Hun2 by flia Hi.
+ remember (rad * (i + 1 + j2 + 3)) as n2 eqn:Hn2.
+ remember (n2 - (i + 1) - 1) as s2 eqn:Hs2.
+ move s2 before n2.
+ rewrite H4 in Hun2.
+ destruct (lt_dec (nA (i + 1) n2 u) (rad ^ s2)) as [H5| H5].
+ +rewrite Nat.mod_small in Hj2; [ | easy ].
+  clear Hun2.
+
+...
 destruct (lt_dec (u i) (rad - 1)) as [H3| H3]; [ now left | now right ].
 Qed.
 
