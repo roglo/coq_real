@@ -6291,9 +6291,11 @@ Theorem pouet {r : radix} : ∀ u i n,
   rad ^ (n - i - 1) ≤ nA i n u
   → ∃ j,
     (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
-    u (i + j + 1) ≥ rad - 1.
+    u (i + j + 1) ≥ rad.
 Proof.
-intros * Hra.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hra.
 remember (n - i - 1) as m eqn:Hm.
 symmetry in Hm.
 revert i n Hm Hra.
@@ -6303,6 +6305,17 @@ induction m; intros.
 -destruct n; [ easy | ].
  assert (Hm' : n - i - 1 = m) by flia Hm.
  destruct (le_dec (i + 1) n) as [Hin| Hin].
+(**)
+ +idtac.
+  rewrite nA_split_first in Hra; [ | flia Hin ].
+  destruct (le_dec rad (u (i + 1))) as [H1| H1].
+  *exists 0.
+   split; [ now intros | ].
+   now rewrite Nat.add_0_r.
+  *apply Nat.nle_gt in H1.
+   replace (S n - i - 2) with m in Hra by flia Hm.
+
+...
  +rewrite nA_split_last in Hra; [ | flia Hin ].
   rewrite Nat.sub_succ, Nat.sub_0_r in Hra.
   destruct (le_dec (rad ^ m) (nA i n u)) as [H1| H1].
