@@ -6367,8 +6367,6 @@ induction m; intros.
      apply Nat.pow_le_mono_r; [ easy | apply Nat.le_succ_diag_r ].
 Qed.
 
-...
-
 Theorem eq_all_numbers_to_digits_9_cond2 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
@@ -6405,9 +6403,15 @@ destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2]; [ now left | right ].
 (**)
 apply Nat.nlt_ge in H2.
 rewrite Hs1 in H2.
-specialize (pouet _ _ _ H2) as H3.
+specialize (A_ge_rad_pow u i n1) as H3.
+assert (H : ∀ k, u (S i + k + 1) ≤ 2 * (rad - 1)). {
+  intros l; rewrite Hi.
+  replace (S (n + k + 1) + l) with (n + (k + l + 2)) by flia.
+  apply Hur.
+}
+specialize (H3 H H2); clear H.
 rewrite <- Hs1 in H2.
-destruct H3 as (j2 & Hkj2 & Hj2).
+destruct H3 as (j2 & Hj2 & Hkj2 & Hjr2).
 ...
 destruct (lt_dec (u i) (rad - 1)) as [H3| H3]; [ | now right ].
 destruct (Nat.eq_dec (u (i + 1)) (rad - 1)) as [H4| H4].
