@@ -6308,6 +6308,11 @@ induction m; intros.
   destruct (le_dec (rad ^ m) (nA i n u)) as [H1| H1].
   *now apply (IHm _ n).
   *apply Nat.nle_gt in H1.
+   destruct (Nat.eq_dec (u n) 0) as [H2| H2].
+  --rewrite H2, Nat.add_0_r in Hra; simpl in Hra.
+    apply Nat.mul_le_mono_pos_l in Hra; [ | easy ].
+    now apply Nat.nlt_ge in Hra.
+  --idtac.
 
 ...
 
