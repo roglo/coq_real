@@ -6294,15 +6294,21 @@ Theorem pouet {r : radix} : ∀ u i n,
     u (i + j + 1) ≥ rad - 1.
 Proof.
 intros * Hra.
-revert n Hra.
-induction i; intros.
--rewrite Nat.sub_0_r in Hra.
- induction n.
- +simpl in Hra.
-  unfold nA in Hra.
-  rewrite summation_empty in Hra; [ easy | flia ].
- +rewrite nA_split_last in Hra.
+remember (n - i - 1) as m eqn:Hm.
+symmetry in Hm.
+revert i n Hm Hra.
+induction m; intros.
+-unfold nA in Hra.
+ rewrite summation_empty in Hra; [ easy | flia Hm ].
+-destruct n; [ easy | ].
+ assert (Hm' : n - i - 1 = m) by flia Hm.
+ destruct (le_dec (i + 1) n) as [Hin| Hin].
+ +rewrite nA_split_last in Hra; [ | flia Hin ].
   rewrite Nat.sub_succ, Nat.sub_0_r in Hra.
+  destruct (le_dec (rad ^ m) (nA i n u)) as [H1| H1].
+  *now apply (IHm _ n).
+  *apply Nat.nle_gt in H1.
+
 ...
 
 Theorem eq_all_numbers_to_digits_9_cond2 {r : radix} : ∀ u n,
