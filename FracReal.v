@@ -6306,7 +6306,6 @@ induction m; intros.
 -destruct n; [ easy | ].
  assert (Hm' : n - i - 1 = m) by flia Hm.
  destruct (le_dec (i + 1) n) as [Hin| Hin].
-(**)
  +rewrite nA_split_first in Hra; [ | flia Hin ].
   destruct (le_dec rad (u (i + 1))) as [H1| H1].
   *exists 0.
@@ -6363,7 +6362,17 @@ induction m; intros.
       apply Nat.pow_le_mono_r; [ easy | apply Nat.le_succ_diag_r ].
    ++rewrite <- Nat.pow_succ_r'.
       apply Nat.pow_le_mono_r; [ easy | apply Nat.le_succ_diag_r ].
- +idtac.
+ +assert (Hni : n = i + 1) by flia Hm Hin.
+  assert (Hmz : m = 0) by flia Hm' Hin.
+  exfalso; apply Nat.nlt_ge in Hra.
+  apply Hra; clear Hra.
+  rewrite Hmz; simpl; rewrite Nat.mul_1_r.
+  unfold nA.
+  rewrite Nat.sub_succ, Nat.sub_0_r.
+  rewrite Hni.
+  rewrite summation_only_one.
+  rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+(* fuck *)
 ...
 
 Theorem eq_all_numbers_to_digits_9_cond2 {r : radix} : ∀ u n,
