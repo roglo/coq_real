@@ -6287,7 +6287,7 @@ rewrite <- Hn1, <- Hs1 in Hj, Hun.
 easy.
 Qed.
 
-Theorem pouet {r : radix} : ∀ u i n,
+Theorem A_ge_rad_pow {r : radix} : ∀ u i n,
   (∀ k, u (S i + k + 1) ≤ 2 * (rad - 1))
   → rad ^ (n - i - 1) ≤ nA i n u
   → ∃ j,
@@ -6305,34 +6305,34 @@ induction m; intros.
  rewrite summation_empty in Hra; [ easy | flia Hm ].
 -destruct n; [ easy | ].
  assert (Hm' : n - i - 1 = m) by flia Hm.
- destruct (le_dec (i + 1) n) as [Hin| Hin].
- +rewrite nA_split_first in Hra; [ | flia Hin ].
-  destruct (le_dec rad (u (i + 1))) as [H1| H1].
-  *exists 0.
-   split; [ now intros | ].
-   now rewrite Nat.add_0_r.
-  *apply Nat.nle_gt in H1.
-   replace (S n - i - 2) with m in Hra by flia Hm.
-   destruct (le_dec (u (i + 1)) (rad - 2)) as [H2| H2].
-  --exfalso; apply Nat.nlt_ge in Hra.
-    apply Hra; clear Hra.
-    specialize (nA_upper_bound_for_add u (S i) (S n) Hur) as H3.
-    replace (S n - S i - 1) with m in H3 by flia Hm'.
-    apply le_lt_trans with (m := (rad - 2) * rad ^ m + 2 * (rad ^ m - 1)).
-   ++apply Nat.add_le_mono; [ | easy ].
-     now apply Nat.mul_le_mono_r.
-   ++rewrite Nat.mul_sub_distr_r, Nat.mul_sub_distr_l, Nat.mul_1_r.
-     rewrite Nat.add_sub_assoc.
-    **rewrite Nat.sub_add.
-    ---apply Nat.sub_lt; [ | flia ].
-       simpl; replace 2 with (2 * 1) by flia.
-       apply Nat.mul_le_mono; [ easy | ].
-       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-    ---now apply Nat.mul_le_mono_r.
-    **replace 2 with (2 * 1) at 1 by flia.
+ destruct (le_dec (i + 1) n) as [Hin| Hin]; [ | flia Hin Hm ].
+ rewrite nA_split_first in Hra; [ | flia Hin ].
+ destruct (le_dec rad (u (i + 1))) as [H1| H1].
+ +exists 0.
+  split; [ now intros | ].
+  now rewrite Nat.add_0_r.
+ +apply Nat.nle_gt in H1.
+  replace (S n - i - 2) with m in Hra by flia Hm.
+  destruct (le_dec (u (i + 1)) (rad - 2)) as [H2| H2].
+  *exfalso; apply Nat.nlt_ge in Hra.
+   apply Hra; clear Hra.
+   specialize (nA_upper_bound_for_add u (S i) (S n) Hur) as H3.
+   replace (S n - S i - 1) with m in H3 by flia Hm'.
+   apply le_lt_trans with (m := (rad - 2) * rad ^ m + 2 * (rad ^ m - 1)).
+  --apply Nat.add_le_mono; [ | easy ].
+    now apply Nat.mul_le_mono_r.
+  --rewrite Nat.mul_sub_distr_r, Nat.mul_sub_distr_l, Nat.mul_1_r.
+    rewrite Nat.add_sub_assoc.
+   ++rewrite Nat.sub_add.
+    **apply Nat.sub_lt; [ | flia ].
+      simpl; replace 2 with (2 * 1) by flia.
       apply Nat.mul_le_mono; [ easy | ].
       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-  --assert (H3 : u (i + 1) = rad - 1) by flia H1 H2.
+    **now apply Nat.mul_le_mono_r.
+   ++replace 2 with (2 * 1) at 1 by flia.
+     apply Nat.mul_le_mono; [ easy | ].
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *assert (H3 : u (i + 1) = rad - 1) by flia H1 H2.
     clear H1 H2.
     specialize (IHm (S i) (S n)) as H1.
     rewrite Nat.sub_succ in H1.
@@ -6345,34 +6345,25 @@ induction m; intros.
     rewrite H3 in Hra.
     rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in Hra.
     rewrite <- Nat.add_sub_swap in Hra.
-   ++apply Nat.add_le_mono_r with (p := rad ^ m) in Hra.
+   --apply Nat.add_le_mono_r with (p := rad ^ m) in Hra.
      rewrite Nat.sub_add in Hra.
-    **apply Nat.add_le_mono_l in Hra.
+    ++apply Nat.add_le_mono_l in Hra.
       specialize (H1 Hra).
       destruct H1 as (j & Hkj & Hj).
       exists (j + 1).
       split.
-    ---intros k Hk.
+     **intros k Hk.
        destruct k; [ now rewrite Nat.add_0_r | ].
        replace (i + S k) with (S i + k) by flia.
        apply Hkj; flia Hk.
-    ---now replace (i + (j + 1)) with (S i + j) by flia.
-    **apply le_plus_trans.
+     **now replace (i + (j + 1)) with (S i + j) by flia.
+    ++apply le_plus_trans.
       rewrite <- Nat.pow_succ_r'.
       apply Nat.pow_le_mono_r; [ easy | apply Nat.le_succ_diag_r ].
-   ++rewrite <- Nat.pow_succ_r'.
-      apply Nat.pow_le_mono_r; [ easy | apply Nat.le_succ_diag_r ].
- +assert (Hni : n = i + 1) by flia Hm Hin.
-  assert (Hmz : m = 0) by flia Hm' Hin.
-  exfalso; apply Nat.nlt_ge in Hra.
-  apply Hra; clear Hra.
-  rewrite Hmz; simpl; rewrite Nat.mul_1_r.
-  unfold nA.
-  rewrite Nat.sub_succ, Nat.sub_0_r.
-  rewrite Hni.
-  rewrite summation_only_one.
-  rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
-(* fuck *)
+   --rewrite <- Nat.pow_succ_r'.
+     apply Nat.pow_le_mono_r; [ easy | apply Nat.le_succ_diag_r ].
+Qed.
+
 ...
 
 Theorem eq_all_numbers_to_digits_9_cond2 {r : radix} : ∀ u n,
