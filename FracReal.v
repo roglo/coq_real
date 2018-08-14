@@ -6291,6 +6291,7 @@ Theorem A_ge_rad_pow {r : radix} : ∀ u i n,
   (∀ k, u (S i + k + 1) ≤ 2 * (rad - 1))
   → rad ^ (n - i - 1) ≤ nA i n u
   → ∃ j,
+    j < n - i - 1 ∧
     (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
     u (i + j + 1) ≥ rad.
 Proof.
@@ -6309,6 +6310,7 @@ induction m; intros.
  rewrite nA_split_first in Hra; [ | flia Hin ].
  destruct (le_dec rad (u (i + 1))) as [H1| H1].
  +exists 0.
+  split; [ apply Nat.lt_0_succ | ].
   split; [ now intros | ].
   now rewrite Nat.add_0_r.
  +apply Nat.nle_gt in H1.
@@ -6349,8 +6351,9 @@ induction m; intros.
      rewrite Nat.sub_add in Hra.
     ++apply Nat.add_le_mono_l in Hra.
       specialize (H1 Hra).
-      destruct H1 as (j & Hkj & Hj).
+      destruct H1 as (j & Hjm & Hkj & Hj).
       exists (j + 1).
+      split; [ flia Hjm | ].
       split.
      **intros k Hk.
        destruct k; [ now rewrite Nat.add_0_r | ].
