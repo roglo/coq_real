@@ -6287,6 +6287,24 @@ rewrite <- Hn1, <- Hs1 in Hj, Hun.
 easy.
 Qed.
 
+Theorem pouet {r : radix} : ∀ u i n,
+  rad ^ (n - i - 1) ≤ nA i n u
+  → ∃ j,
+    (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
+    u (i + j + 1) ≥ rad - 1.
+Proof.
+intros * Hra.
+revert n Hra.
+induction i; intros.
+-rewrite Nat.sub_0_r in Hra.
+ induction n.
+ +simpl in Hra.
+  unfold nA in Hra.
+  rewrite summation_empty in Hra; [ easy | flia ].
+ +rewrite nA_split_last in Hra.
+  rewrite Nat.sub_succ, Nat.sub_0_r in Hra.
+...
+
 Theorem eq_all_numbers_to_digits_9_cond2 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
@@ -6322,12 +6340,6 @@ specialize (H1 H Hj Hun); clear H.
 destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2]; [ now left | right ].
 (**)
 apply Nat.nlt_ge in H2.
-Theorem pouet {r : radix} : ∀ u i n,
-  rad ^ (n - i - 1) ≤ nA i n u
-  → ∃ j,
-    (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
-    u (i + j + 1) ≥ rad - 1.
-Admitted.
 rewrite Hs1 in H2.
 specialize (pouet _ _ _ H2) as H3.
 rewrite <- Hs1 in H2.
