@@ -6370,10 +6370,10 @@ Qed.
 Theorem eq_all_numbers_to_digits_9_cond2 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
-  → ∀ k,
-     u (n + k + 1) = rad - 1 ∧ u (n + k + 2) ≠ 2 * (rad - 1) ∨
-     u (n + k + 1) = rad - 2 ∧ u (n + k + 2) ≥ rad - 1 ∨
-     u (n + k + 1) = 2 * (rad - 1) ∧ u (n + k + 2) ≥ rad - 1.
+  → ∀ k (i := n + k + 1),
+     u i = rad - 1 ∧ u (i + 1) ≠ 2 * (rad - 1) ∨
+      (u i = rad - 2 ∨ u i = 2 * (rad - 1)) ∧
+       ∃ j, (∀ l, l < j → u (i + l + 1) = rad - 1) ∧ u (i + j + 1) ≥ rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -6400,7 +6400,6 @@ assert (H : j < s1). {
 }
 specialize (H1 H Hj Hun); clear H.
 destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2]; [ now left | right ].
-(**)
 apply Nat.nlt_ge in H2.
 rewrite Hs1 in H2.
 specialize (A_ge_rad_pow u i n1) as H3.
