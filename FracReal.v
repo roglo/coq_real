@@ -6288,17 +6288,18 @@ easy.
 Qed.
 
 Theorem pouet {r : radix} : ∀ u i n,
-  rad ^ (n - i - 1) ≤ nA i n u
+  (∀ k, u (S i + k + 1) ≤ 2 * (rad - 1))
+  → rad ^ (n - i - 1) ≤ nA i n u
   → ∃ j,
     (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
     u (i + j + 1) ≥ rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hra.
+intros Hur Hra.
 remember (n - i - 1) as m eqn:Hm.
 symmetry in Hm.
-revert i n Hm Hra.
+revert i n Hur Hm Hra.
 induction m; intros.
 -unfold nA in Hra.
  rewrite summation_empty in Hra; [ easy | flia Hm ].
@@ -6306,27 +6307,63 @@ induction m; intros.
  assert (Hm' : n - i - 1 = m) by flia Hm.
  destruct (le_dec (i + 1) n) as [Hin| Hin].
 (**)
- +idtac.
-  rewrite nA_split_first in Hra; [ | flia Hin ].
+ +rewrite nA_split_first in Hra; [ | flia Hin ].
   destruct (le_dec rad (u (i + 1))) as [H1| H1].
   *exists 0.
    split; [ now intros | ].
    now rewrite Nat.add_0_r.
   *apply Nat.nle_gt in H1.
    replace (S n - i - 2) with m in Hra by flia Hm.
-
-...
- +rewrite nA_split_last in Hra; [ | flia Hin ].
-  rewrite Nat.sub_succ, Nat.sub_0_r in Hra.
-  destruct (le_dec (rad ^ m) (nA i n u)) as [H1| H1].
-  *now apply (IHm _ n).
-  *apply Nat.nle_gt in H1.
-   destruct (Nat.eq_dec (u n) 0) as [H2| H2].
-  --rewrite H2, Nat.add_0_r in Hra; simpl in Hra.
-    apply Nat.mul_le_mono_pos_l in Hra; [ | easy ].
-    now apply Nat.nlt_ge in Hra.
-  --idtac.
-
+   destruct (le_dec (u (i + 1)) (rad - 2)) as [H2| H2].
+  --exfalso; apply Nat.nlt_ge in Hra.
+    apply Hra; clear Hra.
+    specialize (nA_upper_bound_for_add u (S i) (S n) Hur) as H3.
+    replace (S n - S i - 1) with m in H3 by flia Hm'.
+    apply le_lt_trans with (m := (rad - 2) * rad ^ m + 2 * (rad ^ m - 1)).
+   ++apply Nat.add_le_mono; [ | easy ].
+     now apply Nat.mul_le_mono_r.
+   ++rewrite Nat.mul_sub_distr_r, Nat.mul_sub_distr_l, Nat.mul_1_r.
+     rewrite Nat.add_sub_assoc.
+    **rewrite Nat.sub_add.
+    ---apply Nat.sub_lt; [ | flia ].
+       simpl; replace 2 with (2 * 1) by flia.
+       apply Nat.mul_le_mono; [ easy | ].
+       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+    ---now apply Nat.mul_le_mono_r.
+    **replace 2 with (2 * 1) at 1 by flia.
+      apply Nat.mul_le_mono; [ easy | ].
+      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  --assert (H3 : u (i + 1) = rad - 1) by flia H1 H2.
+    clear H1 H2.
+    specialize (IHm (S i) (S n)) as H1.
+    rewrite Nat.sub_succ in H1.
+    assert (H : ∀ k, u (S (S i) + k + 1) ≤ 2 * (rad - 1)). {
+      intros k.
+      replace (S (S i) + k) with (S i + S k) by flia.
+      apply Hur.
+    }
+    specialize (H1 H Hm'); clear H.
+    rewrite H3 in Hra.
+    rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in Hra.
+    rewrite <- Nat.add_sub_swap in Hra.
+   ++apply Nat.add_le_mono_r with (p := rad ^ m) in Hra.
+     rewrite Nat.sub_add in Hra.
+    **apply Nat.add_le_mono_l in Hra.
+      specialize (H1 Hra).
+      destruct H1 as (j & Hkj & Hj).
+      exists (j + 1).
+      split.
+    ---intros k Hk.
+       destruct k; [ now rewrite Nat.add_0_r | ].
+       replace (i + S k) with (S i + k) by flia.
+       apply Hkj; flia Hk.
+    ---now replace (i + (j + 1)) with (S i + j) by flia.
+    **apply le_plus_trans.
+      rewrite <- Nat.pow_succ_r'.
+      apply Nat.pow_le_mono_r; [ easy | apply Nat.le_succ_diag_r ].
+   ++rewrite <- Nat.pow_succ_r'.
+      apply Nat.pow_le_mono_r; [ easy | apply Nat.le_succ_diag_r ].
+ +idtac.
 ...
 
 Theorem eq_all_numbers_to_digits_9_cond2 {r : radix} : ∀ u n,
