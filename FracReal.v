@@ -6372,8 +6372,10 @@ Theorem eq_all_numbers_to_digits_9_cond2 {r : radix} : ∀ u n,
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
   → ∀ k (i := n + k + 1),
      u i = rad - 1 ∧ u (i + 1) ≠ 2 * (rad - 1) ∨
-      (u i = rad - 2 ∨ u i = 2 * (rad - 1)) ∧
-       ∃ j, (∀ l, l < j → u (i + l + 1) = rad - 1) ∧ u (i + j + 1) ≥ rad.
+     u i = rad - 2 ∧
+       (∃ j, (∀ l, l < j → u (i + l + 1) = rad - 1) ∧ u (i + j + 1) ≥ rad) ∨
+     u i = 2 * (rad - 1) ∧
+       (∃ j, (∀ l, l < j → u (i + l + 1) = rad - 1) ∧ u (i + j + 1) ≥ rad).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -6411,28 +6413,9 @@ assert (H : ∀ k, u (S i + k + 1) ≤ 2 * (rad - 1)). {
 specialize (H3 H H2); clear H.
 rewrite <- Hs1 in H2.
 destruct H3 as (j2 & Hj2 & Hkj2 & Hjr2).
-...
-destruct (lt_dec (u i) (rad - 1)) as [H3| H3]; [ | now right ].
-destruct (Nat.eq_dec (u (i + 1)) (rad - 1)) as [H4| H4].
--idtac.
- rewrite nA_split_first in H2.
- +rewrite H4 in H2.
-  replace (n1 - i - 2) with (s1 - 1) in H2 by flia Hs1.
-  replace (S i) with (i + 1) in H2 by flia.
-...
- specialize (HAF (k + 2)) as Hun2.
- destruct Hun2 as (j2 & Hj2 & Hun2).
- replace (n + (k + 2)) with (i + 1) in Hj2, Hun2 by flia Hi.
- remember (rad * (i + 1 + j2 + 3)) as n2 eqn:Hn2.
- remember (n2 - (i + 1) - 1) as s2 eqn:Hs2.
- move s2 before n2.
- rewrite H4 in Hun2.
- destruct (lt_dec (nA (i + 1) n2 u) (rad ^ s2)) as [H5| H5].
- +rewrite Nat.mod_small in Hj2; [ | easy ].
-  clear Hun2.
-
-...
-destruct (lt_dec (u i) (rad - 1)) as [H3| H3]; [ now left | now right ].
+destruct (lt_dec (u i) (rad - 1)) as [H3| H3].
+-left; split; [ easy | now exists j2 ].
+-right; split; [ easy | now exists j2 ].
 Qed.
 
 Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
@@ -6451,7 +6434,7 @@ specialize radix_ge_2 as Hr.
 intros Hur Hn k.
 specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn k) as H.
 remember (n + k + 1) as i eqn:Hi.
-replace (n + k + 2) with (i + 1) in H |-* by flia Hi.
+replace (n + k + 2) with (i + 1) by flia Hi.
 destruct H as [H| [H| H]]; destruct H as (H1, H2).
 -left; split; [ easy | ].
  specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
@@ -6461,18 +6444,30 @@ destruct H as [H| [H| H]]; destruct H as (H1, H2).
  +now left.
  +easy.
 -right; left; split; [ easy | ].
+ destruct H2 as (j2 & Hlj2 & Hj2).
  specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
  replace (n + (k + 1)) with i in H by flia Hi.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
  +now left.
- +rewrite H3 in H2; flia Hr H2.
+ +exfalso; destruct j2.
+  *rewrite Nat.add_0_r in Hj2.
+   rewrite H3 in Hj2; flia Hr Hj2.
+  *specialize (Hlj2 0 (Nat.lt_0_succ j2)).
+   rewrite Nat.add_0_r, H3 in Hlj2.
+   flia Hr Hlj2.
  +now right.
 -right; right; split; [ easy | ].
+ destruct H2 as (j2 & Hlj2 & Hj2).
  specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
  replace (n + (k + 1)) with i in H by flia Hi.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
  +now left.
- +rewrite H3 in H2; flia Hr H2.
+ +exfalso; destruct j2.
+  *rewrite Nat.add_0_r in Hj2.
+   rewrite H3 in Hj2; flia Hr Hj2.
+  *specialize (Hlj2 0 (Nat.lt_0_succ j2)).
+   rewrite Nat.add_0_r, H3 in Hlj2.
+   flia Hr Hlj2.
  +now right.
 Qed.
 
