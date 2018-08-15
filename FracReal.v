@@ -6514,6 +6514,18 @@ destruct H as [H| [H| H]]; [ now left | | ].
  +rewrite H1 in H2; flia Hr H2.
 Qed.
 
+Definition is_num_9_strict_after {r : radix} u i j :=
+  if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false.
+
+Theorem is_num_9_strict_after_all_9 {r : radix} : ∀ u i,
+  (∀ j, is_num_9_strict_after u i j = true)
+  → (∀ k, u (i + k + 1) = rad - 1).
+Proof.
+intros * Hm9 *.
+specialize (Hm9 k); unfold is_num_9_strict_after in Hm9.
+now destruct (Nat.eq_dec (u (i + k + 1)) (rad - 1)).
+Qed.
+
 Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
@@ -6528,7 +6540,10 @@ intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn.
 specialize (eq_all_numbers_to_digits_9_cond4 u n Hur Hn) as HAF.
-(* use LPO to see if all 9 *)
+destruct (LPO_fst (is_num_9_strict_after u n)) as [H1| H1].
+-specialize (is_num_9_strict_after_all_9 u n H1) as H2.
+ now left.
+-destruct H1 as (i & Hji & Hi).
 ...
 specialize (HAF 0) as H1.
 rewrite Nat.add_0_r in H1.
