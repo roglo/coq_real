@@ -6588,8 +6588,45 @@ destruct (LPO_fst (is_num_9_strict_after u n)) as [H1| H1].
   --rewrite H3 in IHk; flia Hr IHk.
   --rewrite H3 in IHk; flia Hr IHk.
   --now replace (n + k + 1 + 1) with (n + S k + 1) in H4 by flia.
- +idtac.
+ +specialize (Hji i (Nat.lt_succ_diag_r i)) as H1.
+  apply is_num_9_strict_after_true_iff in H1.
+  right; right.
+  exists (S i).
+  split.
+  *intros k Hk.
+   specialize (Hji _ Hk).
+   now apply is_num_9_strict_after_true_iff in Hji.
+  *replace (n + S i + 1) with (n + i + 2) in Hi |-* by flia.
+   specialize (HAF i) as H2.
+   destruct H2 as [H2| [H2| H2]]; destruct H2 as (H2, H3).
+  --replace (n + i + 1 + 1) with (n + i + 2) in H3 by flia.
+    destruct H3 as [H3| H3].
+   ++split; [ easy | ].
+     intros k.
+     induction k.
+    **rewrite Nat.add_0_r.
+      replace (n + S i + 2) with (n + i + 3) by flia.
+      specialize (HAF (i + 1)) as H4.
+      destruct H4 as [H4| [H4| H4]]; destruct H4 as (H4, H5).
+    ---replace (n + (i + 1) + 1) with (n + i + 2) in H4 by flia.
+       rewrite H3 in H4; flia Hr H4.
+    ---now replace (n + (i + 1) + 1 + 1) with (n + i + 3) in H5 by flia.
+    ---now replace (n + (i + 1) + 1 + 1) with (n + i + 3) in H5 by flia.
+    **specialize (HAF (i + k + 1)) as H4.
+      replace (n + S i + k + 2) with (n + i + k + 3) in IHk by flia.
+      replace (n + S i + S k + 2) with (n + i + k + 4) by flia.
+      replace (n + (i + k + 1) + 1) with (n + i + k + 2) in H4 by flia.
+      destruct H4 as [H4| [H4| H4]]; destruct H4 as (H4, H5).
+    ---replace (n + i + k + 2 + 1) with (n + i + k + 3) in H5 by flia.
+       destruct H5 as [H5| H5]; rewrite H5 in IHk; flia Hr IHk.
+    ---idtac.
 ...
+
+       rewrite H3 in H4; flia Hr H4.
+    ---now replace (n + (i + 1) + 1 + 1) with (n + i + 3) in H5 by flia.
+    ---now replace (n + (i + 1) + 1 + 1) with (n + i + 3) in H5 by flia.
+...
+      replace (n + S i + 1) with (n + i + 1 + 1) in H3 by flia.
  destruct (eq_nat_dec (u (n + i + 1)) (rad - 2)) as [H1| H1].
  +idtac.
 ...
