@@ -6418,7 +6418,9 @@ destruct (lt_dec (u i) (rad - 1)) as [H3| H3].
 -right; split; [ easy | now exists j2 ].
 Qed.
 
-Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
+(* faire pareil pour u i = 2 * (rad - 1) *)
+...
+Theorem eq_all_numbers_to_digits_9_cond3 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
   → ∀ k (i := n + k + 1),
@@ -6448,9 +6450,6 @@ destruct H as [H| [H| H]]; destruct H as (H1, H2).
 -right; left; split; [ easy | ].
  destruct H2 as (j2 & Hlj2 & Hj2).
  exists j2.
- (* en fait, ici, j2 ne peut valoir que 0, parce que sinon, on aurait
-   un 9 suivi d'un 18, ce qui n'est pas possible d'après le cas 1 ;
-   un prochain théorème devrait en tenir compte *)
  split; [ easy | ].
  specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (i + j2 - n)) as H.
  replace (n + (i + j2 - n)) with (i + j2) in H by flia Hi.
@@ -6471,6 +6470,39 @@ destruct H as [H| [H| H]]; destruct H as (H1, H2).
    rewrite Nat.add_0_r, H3 in Hlj2.
    flia Hr Hlj2.
  +now right.
+Qed.
+
+Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
+  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
+  → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
+  → ∀ k (i := n + k + 1),
+     u i = rad - 1 ∧
+       (u (i + 1) = rad - 2 ∨ u (i + 1) = rad - 1) ∨
+     u i = rad - 2 ∧ u (i + 1) = 2 * (rad - 1) ∨
+     u i = 2 * (rad - 1) ∧
+       (u (i + 1) = rad - 1 ∨ u (i + 1) = 2 * (rad - 1)).
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hn k.
+specialize (eq_all_numbers_to_digits_9_cond3 u n Hur Hn k) as H.
+remember (n + k + 1) as i eqn:Hi.
+destruct H as [H| [H| H]]; [ now left | | now right; right ].
+right; left.
+destruct H as (Hui & j & Hlj & Hj).
+split; [ easy | ].
+destruct j; [ now rewrite Nat.add_0_r in Hj | ].
+specialize (Hlj j (Nat.lt_succ_diag_r j)) as H1.
+specialize (eq_all_numbers_to_digits_9_cond3 u n Hur Hn (k + j + 1)) as H.
+rewrite Hi in Hj.
+replace (n + (k + j + 1) + 1) with (n + k + 1 + S j) in H by flia.
+replace (n + k + 1 + S j) with (i + j + 1) in H, Hj by flia Hi.
+destruct H as [H| [H| H]]; destruct H as (H2, H3).
+-exfalso.
+ rewrite Hj in H3.
+ destruct H3 as [H3| H3]; flia Hr H3.
+-rewrite H1 in H2; flia Hr H2.
+-rewrite H1 in H2; flia Hr H2.
 Qed.
 
 ...
