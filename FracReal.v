@@ -6555,6 +6555,23 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn.
+specialize (Hn 0) as H1.
+unfold d2n, numbers_to_digits in H1.
+rewrite Nat.add_0_r in H1.
+destruct (LPO_fst (A_ge_1 u n)) as [H2| H2].
+-now apply A_ge_1_add_all_true_if.
+-destruct H2 as (j & Hjj & Hj).
+ simpl in H1.
+ apply A_ge_1_false_iff in Hj.
+ remember (rad * (n + j + 3)) as n1 eqn:Hn1.
+ remember (n1 - n - 1) as s1 eqn:Hs1.
+ move s1 before n1.
+ specialize (eq_all_numbers_to_digits_9_cond1 u n n1 s1 j) as H2.
+...
+
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hn.
 specialize (eq_all_numbers_to_digits_9_cond4 u n Hur Hn) as HAF.
 destruct (LPO_fst (is_num_9_strict_after u n)) as [H1| H1].
 -specialize (is_num_9_strict_after_all_9 u n H1) as H2.
@@ -6623,6 +6640,10 @@ destruct (LPO_fst (is_num_9_strict_after u n)) as [H1| H1].
   --rewrite H1 in H2; flia Hr H2.
   --rewrite H1 in H2; flia Hr H2.
 Qed.
+
+Inspect 1.
+Check A_ge_1_add_all_true_if.
+...
 
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
