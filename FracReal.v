@@ -6683,6 +6683,11 @@ destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
    apply Nat.nle_gt in Hj1.
    apply Hj1; clear Hj1.
 (*
+   destruct (lt_dec j 2) as [Hj| Hj].
+  --unfold nA.
+    rewrite summation_eq_compat with
+      (h := λ k, (rad - 1) * rad ^ (n + j - k)).
+...
    rewrite nA_split with (e := n + j + 1).
   --unfold nA at 1.
     rewrite summation_rtl.
@@ -6711,6 +6716,45 @@ destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
       (h := λ k, (rad - 1) * rad ^ (n1 - 1 - k)).
    ++rewrite <- summation_mul_distr_l.
      remember S as f; simpl; subst f.
+     destruct (zerop j) as [Hj| Hj].
+    **rewrite Hj, Nat.add_0_r.
+      rewrite summation_empty; [ | flia ].
+      remember S as f; simpl; subst f.
+      rewrite Nat.mul_0_r, Nat.add_0_l.
+      rewrite summation_split_first.
+    ---destruct (le_dec (S (n + 1)) (n + 1)) as [H1| H1]; [ flia H1 | ].
+       clear H1; remember S as f; simpl; subst f.
+       destruct (Nat.eq_dec (S (n + 1)) (n + 2)) as [H1| H1]; [ | flia H1 ].
+       clear H1.
+       rewrite summation_eq_compat with
+         (h := λ k, 2 * (rad - 1) * rad ^ (n1 - 1 - k)).
+     +++rewrite <- summation_mul_distr_l.
+        remember S as f; simpl; subst f.
+        replace (n1 - 1 - S (n + 1)) with (s1 - 1) by flia Hs1.
+        rewrite summation_rtl.
+        rewrite summation_shift.
+      ***rewrite summation_eq_compat with (h := λ k, rad ^ k).
+      ----replace (n1 - 1 - S (S (n + 1))) with (s1 - 2) by flia Hs1.
+          rewrite <- Nat.mul_assoc.
+          rewrite <- power_summation_sub_1; [ | easy ].
+          rewrite <- Nat.sub_succ_l.
+       ++++rewrite Nat.sub_succ.
+           rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+           rewrite Nat.add_sub_assoc.
+        ****remember (rad ^ S j1 - 1) as x eqn:Hx.
+            rewrite Nat.mul_sub_distr_r; subst x.
+            rewrite Nat.sub_add.
+        -----rewrite <- Nat.pow_succ_r'.
+...
+       ++++rewrite Hs1, Hn1.
+           destruct rad; [ easy | simpl; flia ].
+      ----intros i Hi; f_equal; flia Hi.
+      ***rewrite Hn1.
+         destruct rad; [ easy | simpl; flia ].
+     +++intros i Hi; f_equal.
+        destruct (le_dec i (n + 1)) as [H1| H1]; [ flia Hi H1 | ].
+        destruct (Nat.eq_dec i (n + 2)) as [H2| H2]; [ flia Hi H2 | easy ].
+    ---idtac.
 ...
    ++intros i Hi.
      destruct (le_dec i (n + j + 1)) as [H1| H1]; [ easy | flia Hi H1 ].
