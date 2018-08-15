@@ -6421,13 +6421,13 @@ Qed.
 Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
-  → ∀ k,
-     u (n + k + 1) = rad - 1 ∧
-       (u (n + k + 2) = rad - 2 ∨ u (n + k + 2) = rad - 1) ∨
-     u (n + k + 1) = rad - 2 ∧
-       (u (n + k + 2) = rad - 1 ∨ u (n + k + 2) = 2 * (rad - 1)) ∨
-     u (n + k + 1) = 2 * (rad - 1) ∧
-       (u (n + k + 2) = rad - 1 ∨ u (n + k + 2) = 2 * (rad - 1)).
+  → ∀ k (i := n + k + 1),
+     u i = rad - 1 ∧
+       (u (i + 1) = rad - 2 ∨ u (i + 1) = rad - 1) ∨
+     u i = rad - 2 ∧
+       (u (i + 1) = rad - 1 ∨ u (i + 1) = 2 * (rad - 1)) ∨
+     u i = 2 * (rad - 1) ∧
+       (u (i + 1) = rad - 1 ∨ u (i + 1) = 2 * (rad - 1)).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
