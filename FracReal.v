@@ -6418,8 +6418,6 @@ destruct (lt_dec (u i) (rad - 1)) as [H3| H3].
 -right; split; [ easy | now exists j2 ].
 Qed.
 
-(* faire pareil pour u i = 2 * (rad - 1) *)
-...
 Theorem eq_all_numbers_to_digits_9_cond3 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
@@ -6431,7 +6429,9 @@ Theorem eq_all_numbers_to_digits_9_cond3 {r : radix} : ∀ u n,
            (∀ l, l < j → u (i + l + 1) = rad - 1) ∧
            u (i + j + 1) = 2 * (rad - 1)) ∨
      u i = 2 * (rad - 1) ∧
-       (u (i + 1) = rad - 1 ∨ u (i + 1) = 2 * (rad - 1)).
+       (∃ j,
+           (∀ l, l < j → u (i + l + 1) = rad - 1) ∧
+           u (i + j + 1) = 2 * (rad - 1)).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -6459,53 +6459,60 @@ destruct H as [H| [H| H]]; destruct H as (H1, H2).
  +easy.
 -right; right; split; [ easy | ].
  destruct H2 as (j2 & Hlj2 & Hj2).
- specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
- replace (n + (k + 1)) with i in H by flia Hi.
+ exists j2.
+ specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (i + j2 - n)) as H.
+ replace (n + (i + j2 - n)) with (i + j2) in H by flia Hi.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
- +now left.
- +exfalso; destruct j2.
-  *rewrite Nat.add_0_r in Hj2.
-   rewrite H3 in Hj2; flia Hr Hj2.
-  *specialize (Hlj2 0 (Nat.lt_0_succ j2)).
-   rewrite Nat.add_0_r, H3 in Hlj2.
-   flia Hr Hlj2.
- +now right.
+ +rewrite H3 in Hj2; flia Hr Hj2.
+ +rewrite H3 in Hj2; flia Hr Hj2.
+ +easy.
 Qed.
 
 Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
   → ∀ k (i := n + k + 1),
-     u i = rad - 1 ∧
-       (u (i + 1) = rad - 2 ∨ u (i + 1) = rad - 1) ∨
+     u i = rad - 1 ∧ (u (i + 1) = rad - 2 ∨ u (i + 1) = rad - 1) ∨
      u i = rad - 2 ∧ u (i + 1) = 2 * (rad - 1) ∨
-     u i = 2 * (rad - 1) ∧
-       (u (i + 1) = rad - 1 ∨ u (i + 1) = 2 * (rad - 1)).
+     u i = 2 * (rad - 1) ∧ u (i + 1) = 2 * (rad - 1).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn k.
 specialize (eq_all_numbers_to_digits_9_cond3 u n Hur Hn k) as H.
 remember (n + k + 1) as i eqn:Hi.
-destruct H as [H| [H| H]]; [ now left | | now right; right ].
-right; left.
-destruct H as (Hui & j & Hlj & Hj).
-split; [ easy | ].
-destruct j; [ now rewrite Nat.add_0_r in Hj | ].
-specialize (Hlj j (Nat.lt_succ_diag_r j)) as H1.
-specialize (eq_all_numbers_to_digits_9_cond3 u n Hur Hn (k + j + 1)) as H.
-rewrite Hi in Hj.
-replace (n + (k + j + 1) + 1) with (n + k + 1 + S j) in H by flia.
-replace (n + k + 1 + S j) with (i + j + 1) in H, Hj by flia Hi.
-destruct H as [H| [H| H]]; destruct H as (H2, H3).
--exfalso.
- rewrite Hj in H3.
- destruct H3 as [H3| H3]; flia Hr H3.
--rewrite H1 in H2; flia Hr H2.
--rewrite H1 in H2; flia Hr H2.
+destruct H as [H| [H| H]]; [ now left | | ].
+-right; left.
+ destruct H as (Hui & j & Hlj & Hj).
+ split; [ easy | ].
+ destruct j; [ now rewrite Nat.add_0_r in Hj | ].
+ specialize (Hlj j (Nat.lt_succ_diag_r j)) as H1.
+ specialize (eq_all_numbers_to_digits_9_cond3 u n Hur Hn (k + j + 1)) as H.
+ rewrite Hi in Hj.
+ replace (n + (k + j + 1) + 1) with (n + k + 1 + S j) in H by flia.
+ replace (n + k + 1 + S j) with (i + j + 1) in H, Hj by flia Hi.
+ destruct H as [H| [H| H]]; destruct H as (H2, H3).
+ +exfalso.
+  rewrite Hj in H3.
+  destruct H3 as [H3| H3]; flia Hr H3.
+ +rewrite H1 in H2; flia Hr H2.
+ +rewrite H1 in H2; flia Hr H2.
+-right; right.
+ destruct H as (Hui & j & Hlj & Hj).
+ split; [ easy | ].
+ destruct j; [ now rewrite Nat.add_0_r in Hj | ].
+ specialize (Hlj j (Nat.lt_succ_diag_r j)) as H1.
+ specialize (eq_all_numbers_to_digits_9_cond3 u n Hur Hn (k + j + 1)) as H.
+ rewrite Hi in Hj.
+ replace (n + (k + j + 1) + 1) with (n + k + 1 + S j) in H by flia.
+ replace (n + k + 1 + S j) with (i + j + 1) in H, Hj by flia Hi.
+ destruct H as [H| [H| H]]; destruct H as (H2, H3).
+ +exfalso.
+  rewrite Hj in H3.
+  destruct H3 as [H3| H3]; flia Hr H3.
+ +rewrite H1 in H2; flia Hr H2.
+ +rewrite H1 in H2; flia Hr H2.
 Qed.
-
-...
 
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
@@ -6514,11 +6521,12 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn.
+specialize (eq_all_numbers_to_digits_9 u n Hur Hn) as Hall.
 specialize (eq_all_numbers_to_digits_9_cond u n Hur Hn) as HAF.
 (* le HAF 0 ci-dessous ne sert à rien, autant commencer par HAF 1 *)
 specialize (HAF 0) as Hun.
-destruct Hun as (j & Hjj & Hj & Hun); simpl in Hun.
-rewrite Nat.add_0_r in Hjj, Hun, Hj.
+destruct Hun as (j (*& Hjj*) & Hj & Hun); simpl in Hun.
+rewrite Nat.add_0_r in (*Hjj,*) Hun, Hj.
 remember (rad * (n + j + 3)) as n1 eqn:Hn1.
 remember (n1 - n - 1) as s1 eqn:Hs1.
 move s1 before n1.
@@ -6527,7 +6535,7 @@ destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
  rewrite Nat.div_small in Hun; [ | easy ].
  rewrite Nat.add_0_r in Hun.
  specialize (HAF 1) as Hun1.
- destruct Hun1 as (j1 & Hjj1 & Hj1 & Hun1); simpl in Hun1.
+ destruct Hun1 as (j1 (*& Hjj1*) & Hj1 & Hun1); simpl in Hun1.
  remember (rad * (n + 1 + j1 + 3)) as n2 eqn:Hn2.
  remember (n2 - (n + 1) - 1) as s2 eqn:Hs2.
  move n2 before s1; move s2 before n2.
@@ -6540,6 +6548,15 @@ destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
   destruct (lt_dec (u (n + 1)) rad) as [H5| H5].
   *rewrite Nat.mod_small in Hun1; [ clear H5 | easy ].
    (* u(n+1)=9 *)
+specialize (Hall 0) as H1.
+rewrite Nat.add_0_r in H1.
+destruct H1 as [H1| [H1| H1]].
+replace (n + 1 + 1) with (n + 2) in H1 by flia.
+destruct H1 as (_, H1).
+(* en fait, il faut chercher une contradiction avec Hj ; pour cela, il
+   me faut un autre lemme qui dit qu'il y a une infinité de 9 ou bien
+   un nombre fini de 9 suivi d'un 8 et d'une infinité de 18 *)
+...
    specialize (HAF 2) as Hun2.
    destruct Hun2 as (j2 & Hjj2 & Hj2 & Hun2).
    remember (rad * (n + 2 + j2 + 3)) as n3 eqn:Hn3.
