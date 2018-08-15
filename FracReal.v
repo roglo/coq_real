@@ -6468,7 +6468,7 @@ destruct H as [H| [H| H]]; destruct H as (H1, H2).
  +easy.
 Qed.
 
-Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
+Theorem eq_all_numbers_to_digits_9_cond4 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
   → ∀ k (i := n + k + 1),
@@ -6513,6 +6513,77 @@ destruct H as [H| [H| H]]; [ now left | | ].
  +rewrite H1 in H2; flia Hr H2.
  +rewrite H1 in H2; flia Hr H2.
 Qed.
+
+Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
+  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
+  → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
+  → (∀ k, u (n + k + 1) = rad - 1) ∨
+     (∀ k, u (n + k + 1) = 2 * (rad - 1)) ∨
+     (∃ j,
+       (∀ k, k < j → u (n + k + 1) = rad - 1) ∧
+       u (n + j + 1) = rad - 2 ∧
+       (∀ k, u (n + j + k + 2) = 2 * (rad - 1))).
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hn.
+specialize (eq_all_numbers_to_digits_9_cond4 u n Hur Hn) as HAF.
+(* use LPO to see if all 9 *)
+...
+specialize (HAF 0) as H1.
+rewrite Nat.add_0_r in H1.
+destruct H1 as [H1| [H1| H1]].
+-destruct H1 as (H1, H2).
+ destruct H2 as [H2| H2].
+ +right; right.
+  exists 1.
+  split.
+  *intros k Hk.
+   replace k with 0 by flia Hk.
+   now rewrite Nat.add_0_r.
+  *split; [ easy | ].
+   intros k.
+   specialize (HAF 1) as H3.
+   destruct H3 as [H3| [H3| H3]].
+  --destruct H3 as (H3, H4).
+    rewrite H2 in H3.
+    flia Hr H3.
+  --destruct H3 as (_, H4).
+    replace (n + 1 + 1 + 1) with (n + 3) in H4 by flia.
+    replace (n + 1 + k + 2) with (n + k + 3) by flia.
+    induction k; [ now rewrite Nat.add_0_r | ].
+    replace (n + S k + 3) with (n + k + 4) by flia.
+    specialize (HAF (k + 2)) as H3.
+    destruct H3 as [H3| [H3| H3]].
+   ++replace (n + (k + 2) + 1) with (n + k + 3) in H3 by flia.
+     destruct H3 as (H3, H5).
+     rewrite IHk in H3.
+     flia Hr H3.
+   ++replace (n + (k + 2) + 1) with (n + k + 3) in H3 by flia.
+     destruct H3 as (H3, H5).
+     rewrite IHk in H3.
+     flia Hr H3.
+   ++replace (n + (k + 2) + 1 + 1) with (n + k + 4) in H3 by flia.
+     easy.
+  --destruct H3 as (_, H4).
+    replace (n + 1 + 1 + 1) with (n + 3) in H4 by flia.
+    replace (n + 1 + k + 2) with (n + k + 3) by flia.
+    induction k; [ now rewrite Nat.add_0_r | ].
+    replace (n + S k + 3) with (n + k + 4) by flia.
+    specialize (HAF (k + 2)) as H3.
+    destruct H3 as [H3| [H3| H3]].
+   ++replace (n + (k + 2) + 1) with (n + k + 3) in H3 by flia.
+     destruct H3 as (H3, H5).
+     rewrite IHk in H3.
+     flia Hr H3.
+   ++replace (n + (k + 2) + 1) with (n + k + 3) in H3 by flia.
+     destruct H3 as (H3, H5).
+     rewrite IHk in H3.
+     flia Hr H3.
+   ++replace (n + (k + 2) + 1 + 1) with (n + k + 4) in H3 by flia.
+     easy.
+ +idtac.
+...
 
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
