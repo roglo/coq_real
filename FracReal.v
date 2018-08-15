@@ -6447,18 +6447,17 @@ destruct H as [H| [H| H]]; destruct H as (H1, H2).
  +easy.
 -right; left; split; [ easy | ].
  destruct H2 as (j2 & Hlj2 & Hj2).
- specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
- replace (n + (k + 1)) with i in H by flia Hi.
+ exists j2.
+ (* en fait, ici, j2 ne peut valoir que 0, parce que sinon, on aurait
+   un 9 suivi d'un 18, ce qui n'est pas possible d'après le cas 1 ;
+   un prochain théorème devrait en tenir compte *)
+ split; [ easy | ].
+ specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (i + j2 - n)) as H.
+ replace (n + (i + j2 - n)) with (i + j2) in H by flia Hi.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
-...
- +now left.
- +exfalso; destruct j2.
-  *rewrite Nat.add_0_r in Hj2.
-   rewrite H3 in Hj2; flia Hr Hj2.
-  *specialize (Hlj2 0 (Nat.lt_0_succ j2)).
-   rewrite Nat.add_0_r, H3 in Hlj2.
-   flia Hr Hlj2.
- +now right.
+ +rewrite H3 in Hj2; flia Hr Hj2.
+ +rewrite H3 in Hj2; flia Hr Hj2.
+ +easy.
 -right; right; split; [ easy | ].
  destruct H2 as (j2 & Hlj2 & Hj2).
  specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
