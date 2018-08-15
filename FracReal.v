@@ -6600,101 +6600,29 @@ destruct (LPO_fst (is_num_9_strict_after u n)) as [H1| H1].
    specialize (HAF i) as H2.
    destruct H2 as [H2| [H2| H2]]; destruct H2 as (H2, H3).
   --replace (n + i + 1 + 1) with (n + i + 2) in H3 by flia.
-    destruct H3 as [H3| H3].
-   ++split; [ easy | ].
-     intros k.
-     induction k.
-    **rewrite Nat.add_0_r.
-      replace (n + S i + 2) with (n + i + 3) by flia.
-      specialize (HAF (i + 1)) as H4.
-      destruct H4 as [H4| [H4| H4]]; destruct H4 as (H4, H5).
-    ---replace (n + (i + 1) + 1) with (n + i + 2) in H4 by flia.
-       rewrite H3 in H4; flia Hr H4.
-    ---now replace (n + (i + 1) + 1 + 1) with (n + i + 3) in H5 by flia.
-    ---now replace (n + (i + 1) + 1 + 1) with (n + i + 3) in H5 by flia.
-    **specialize (HAF (i + k + 1)) as H4.
-      replace (n + S i + k + 2) with (n + i + k + 3) in IHk by flia.
-      replace (n + S i + S k + 2) with (n + i + k + 4) by flia.
-      replace (n + (i + k + 1) + 1) with (n + i + k + 2) in H4 by flia.
-      destruct H4 as [H4| [H4| H4]]; destruct H4 as (H4, H5).
-    ---replace (n + i + k + 2 + 1) with (n + i + k + 3) in H5 by flia.
-       destruct H5 as [H5| H5]; rewrite H5 in IHk; flia Hr IHk.
-    ---idtac.
-...
-
-       rewrite H3 in H4; flia Hr H4.
-    ---now replace (n + (i + 1) + 1 + 1) with (n + i + 3) in H5 by flia.
-    ---now replace (n + (i + 1) + 1 + 1) with (n + i + 3) in H5 by flia.
-...
-      replace (n + S i + 1) with (n + i + 1 + 1) in H3 by flia.
- destruct (eq_nat_dec (u (n + i + 1)) (rad - 2)) as [H1| H1].
- +idtac.
-...
- +right; left.
-  intros k.
-  destruct (lt_dec k i) as [H2| H2].
-  *specialize (Hji _ H2) as H3.
-   apply is_num_9_strict_after_true_iff in H3.
-...
-  specialize (HAF (k - i - 1)) as H2.
-  destruct H2 as [H2| [H2| H2]]; destruct H2 as (H2, H3).
-  *now rewrite H2 in Hi.
-  *idtac.
-...
-specialize (HAF 0) as H1.
-rewrite Nat.add_0_r in H1.
-destruct H1 as [H1| [H1| H1]].
--destruct H1 as (H1, H2).
- destruct H2 as [H2| H2].
- +right; right.
-  exists 1.
-  split.
-  *intros k Hk.
-   replace k with 0 by flia Hk.
-   now rewrite Nat.add_0_r.
-  *split; [ easy | ].
-   intros k.
-   specialize (HAF 1) as H3.
-   destruct H3 as [H3| [H3| H3]].
-  --destruct H3 as (H3, H4).
-    rewrite H2 in H3.
-    flia Hr H3.
-  --destruct H3 as (_, H4).
-    replace (n + 1 + 1 + 1) with (n + 3) in H4 by flia.
-    replace (n + 1 + k + 2) with (n + k + 3) by flia.
-    induction k; [ now rewrite Nat.add_0_r | ].
-    replace (n + S k + 3) with (n + k + 4) by flia.
-    specialize (HAF (k + 2)) as H3.
-    destruct H3 as [H3| [H3| H3]].
-   ++replace (n + (k + 2) + 1) with (n + k + 3) in H3 by flia.
-     destruct H3 as (H3, H5).
-     rewrite IHk in H3.
-     flia Hr H3.
-   ++replace (n + (k + 2) + 1) with (n + k + 3) in H3 by flia.
-     destruct H3 as (H3, H5).
-     rewrite IHk in H3.
-     flia Hr H3.
-   ++replace (n + (k + 2) + 1 + 1) with (n + k + 4) in H3 by flia.
-     easy.
-  --destruct H3 as (_, H4).
-    replace (n + 1 + 1 + 1) with (n + 3) in H4 by flia.
-    replace (n + 1 + k + 2) with (n + k + 3) by flia.
-    induction k; [ now rewrite Nat.add_0_r | ].
-    replace (n + S k + 3) with (n + k + 4) by flia.
-    specialize (HAF (k + 2)) as H3.
-    destruct H3 as [H3| [H3| H3]].
-   ++replace (n + (k + 2) + 1) with (n + k + 3) in H3 by flia.
-     destruct H3 as (H3, H5).
-     rewrite IHk in H3.
-     flia Hr H3.
-   ++replace (n + (k + 2) + 1) with (n + k + 3) in H3 by flia.
-     destruct H3 as (H3, H5).
-     rewrite IHk in H3.
-     flia Hr H3.
-   ++replace (n + (k + 2) + 1 + 1) with (n + k + 4) in H3 by flia.
-     easy.
- +idtac.
-...
+    destruct H3 as [H3| H3]; [ | easy ].
+    split; [ easy | ].
+    intros k.
+    induction k.
+   ++rewrite Nat.add_0_r.
+     replace (n + S i + 2) with (n + i + 3) by flia.
+     specialize (HAF (i + 1)) as H4.
+     destruct H4 as [H4| [H4| H4]]; destruct H4 as (H4, H5).
+    **replace (n + (i + 1) + 1) with (n + i + 2) in H4 by flia.
+      rewrite H3 in H4; flia Hr H4.
+    **now replace (n + (i + 1) + 1 + 1) with (n + i + 3) in H5 by flia.
+    **now replace (n + (i + 1) + 1 + 1) with (n + i + 3) in H5 by flia.
+   ++replace (n + S i + k + 2) with (n + i + k + 3) in IHk by flia.
+     replace (n + S i + S k + 2) with (n + i + k + 4) by flia.
+     specialize (HAF (i + k + 2)) as H4.
+     replace (n + (i + k + 2) + 1) with (n + i + k + 3) in H4 by flia.
+     destruct H4 as [H4| [H4| H4]]; destruct H4 as (H4, H5).
+    **rewrite H4 in IHk; flia Hr IHk.
+    **rewrite H4 in IHk; flia Hr IHk.
+    **now replace (n + i + k + 3 + 1) with (n + i + k + 4) in H5 by flia.
+  --rewrite H1 in H2; flia Hr H2.
+  --rewrite H1 in H2; flia Hr H2.
+Qed.
 
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
@@ -6705,31 +6633,44 @@ specialize radix_ge_2 as Hr.
 intros Hur Hn.
 specialize (eq_all_numbers_to_digits_9 u n Hur Hn) as Hall.
 specialize (eq_all_numbers_to_digits_9_cond u n Hur Hn) as HAF.
-(* le HAF 0 ci-dessous ne sert à rien, autant commencer par HAF 1 *)
-specialize (HAF 0) as Hun.
-destruct Hun as (j (*& Hjj*) & Hj & Hun); simpl in Hun.
-rewrite Nat.add_0_r in (*Hjj,*) Hun, Hj.
-remember (rad * (n + j + 3)) as n1 eqn:Hn1.
-remember (n1 - n - 1) as s1 eqn:Hs1.
+specialize (HAF 1) as Hun1.
+destruct Hun1 as (j1 & Hj1 & Hun1); simpl in Hun1.
+remember (rad * (n + 1 + j1 + 3)) as n1 eqn:Hn1.
+remember (n1 - (n + 1) - 1) as s1 eqn:Hs1.
 move s1 before n1.
-destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
--rewrite Nat.mod_small in Hj; [ | easy ].
- rewrite Nat.div_small in Hun; [ | easy ].
- rewrite Nat.add_0_r in Hun.
- specialize (HAF 1) as Hun1.
- destruct Hun1 as (j1 (*& Hjj1*) & Hj1 & Hun1); simpl in Hun1.
- remember (rad * (n + 1 + j1 + 3)) as n2 eqn:Hn2.
- remember (n2 - (n + 1) - 1) as s2 eqn:Hs2.
- move n2 before s1; move s2 before n2.
- destruct (lt_dec (nA (n + 1) n2 u) (rad ^ s2)) as [H4| H4].
- +rewrite Nat.div_small in Hun1; [ | easy ].
-  rewrite Nat.mod_small in Hj1; [ | easy ].
-  clear H4.
-  rewrite Nat.add_0_r in Hun1.
-  move Hun1 before Hun.
-  destruct (lt_dec (u (n + 1)) rad) as [H5| H5].
-  *rewrite Nat.mod_small in Hun1; [ clear H5 | easy ].
-   (* u(n+1)=9 *)
+destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
+-rewrite Nat.div_small in Hun1; [ | easy ].
+ rewrite Nat.mod_small in Hj1; [ | easy ].
+ clear H1.
+ rewrite Nat.add_0_r in Hun1.
+ destruct (lt_dec (u (n + 1)) rad) as [H1| H1].
+ +rewrite Nat.mod_small in Hun1; [ clear H1 | easy ].
+  (* u(n+1)=9 *)
+  destruct Hall as [Hall| [Hall| Hall]].
+  *idtac.
+   (* Hall va être en contradiction avec Hj1 *)
+   ...
+  *specialize (Hall 0); rewrite Nat.add_0_r in Hall.
+   flia Hr Hall Hun1.
+  *destruct Hall as (j & Hkj & Huj & Hall).
+   destruct j; [ rewrite Nat.add_0_r in Huj; flia Hr Huj Hun1 | ].
+   ...
+ +apply Nat.nlt_ge in H1.
+  specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+  rewrite Nat_mod_less_small in Hun1; [ flia Hr Hur Hun1 | ].
+  split; [ easy | flia Hr Hur ].
+-apply Nat.nlt_ge in H1.
+ rewrite Nat_mod_less_small in Hj1.
+ (* mouais... à voir... ou alors utiliser A_ge_rad_pow comme ci-dessous *)
+...
+(*
+ rewrite Nat_div_less_small in Hun1.
+*)
+ specialize (A_ge_rad_pow u (n + 1) n1) as H2.
+ rewrite <- Hs1 in H2.
+
+...
+
 specialize (Hall 0) as H1.
 rewrite Nat.add_0_r in H1.
 destruct H1 as [H1| [H1| H1]].
