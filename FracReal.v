@@ -6425,7 +6425,9 @@ Theorem eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
      u i = rad - 1 ∧
        (u (i + 1) = rad - 2 ∨ u (i + 1) = rad - 1) ∨
      u i = rad - 2 ∧
-       (u (i + 1) = rad - 1 ∨ u (i + 1) = 2 * (rad - 1)) ∨
+       (∃ j,
+           (∀ l, l < j → u (i + l + 1) = rad - 1) ∧
+           u (i + j + 1) = 2 * (rad - 1)) ∨
      u i = 2 * (rad - 1) ∧
        (u (i + 1) = rad - 1 ∨ u (i + 1) = 2 * (rad - 1)).
 Proof.
@@ -6448,6 +6450,7 @@ destruct H as [H| [H| H]]; destruct H as (H1, H2).
  specialize (eq_all_numbers_to_digits_9_cond2 u n Hur Hn (k + 1)) as H.
  replace (n + (k + 1)) with i in H by flia Hi.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
+...
  +now left.
  +exfalso; destruct j2.
   *rewrite Nat.add_0_r in Hj2.
