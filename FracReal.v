@@ -6526,6 +6526,14 @@ specialize (Hm9 k); unfold is_num_9_strict_after in Hm9.
 now destruct (Nat.eq_dec (u (i + k + 1)) (rad - 1)).
 Qed.
 
+Theorem is_num_9_strict_after_true_iff {r : radix} : ∀ i j u,
+  is_num_9_strict_after u i j = true ↔ u (i + j + 1) = rad - 1.
+Proof.
+intros.
+unfold is_num_9_strict_after.
+now destruct (Nat.eq_dec (u (i + j + 1)) (rad - 1)).
+Qed.
+
 Theorem is_num_9_strict_after_false_iff {r : radix} : ∀ i j u,
   is_num_9_strict_after u i j = false ↔ u (i + j + 1) ≠ rad - 1.
 Proof.
@@ -6553,9 +6561,43 @@ destruct (LPO_fst (is_num_9_strict_after u n)) as [H1| H1].
  now left.
 -destruct H1 as (i & Hji & Hi).
  apply is_num_9_strict_after_false_iff in Hi.
+ destruct i.
+ +specialize (HAF 0) as H1.
+  rewrite Nat.add_0_r in Hi, H1.
+  destruct H1 as [H1| [H1| H1]]; destruct H1 as (H1, H2).
+  *easy.
+  *right; right.
+   exists 0.
+   rewrite Nat.add_0_r.
+   split; [ now intros | ].
+   split; [ easy | ].
+   replace (n + 1 + 1) with (n + 2) in H2 by flia.
+   intros k.
+   induction k; [ now rewrite Nat.add_0_r | ].
+   specialize (HAF (k + 1)) as H3.
+   replace (n + (k + 1) + 1) with (n + k + 2) in H3 by flia.
+   destruct H3 as [H3| [H3| H3]]; destruct H3 as (H3, H4).
+  --rewrite H3 in IHk; flia Hr IHk.
+  --rewrite H3 in IHk; flia Hr IHk.
+  --now replace (n + k + 2 + 1) with (n + S k + 2) in H4 by flia.
+  *right; left.
+   intros k.
+   induction k; [ now rewrite Nat.add_0_r | ].
+   specialize (HAF k) as H3.
+   destruct H3 as [H3| [H3| H3]]; destruct H3 as (H3, H4).
+  --rewrite H3 in IHk; flia Hr IHk.
+  --rewrite H3 in IHk; flia Hr IHk.
+  --now replace (n + k + 1 + 1) with (n + S k + 1) in H4 by flia.
+ +idtac.
+...
  destruct (eq_nat_dec (u (n + i + 1)) (rad - 2)) as [H1| H1].
+ +idtac.
+...
  +right; left.
   intros k.
+  destruct (lt_dec k i) as [H2| H2].
+  *specialize (Hji _ H2) as H3.
+   apply is_num_9_strict_after_true_iff in H3.
 ...
   specialize (HAF (k - i - 1)) as H2.
   destruct H2 as [H2| [H2| H2]]; destruct H2 as (H2, H3).
