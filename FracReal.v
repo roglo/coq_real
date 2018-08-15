@@ -6647,14 +6647,40 @@ destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
  +rewrite Nat.mod_small in Hun1; [ clear H1 | easy ].
   (* u(n+1)=9 *)
   destruct Hall as [Hall| [Hall| Hall]].
-  *idtac.
-   (* Hall va être en contradiction avec Hj1 *)
-   ...
+  *apply Nat.nle_gt in Hj1.
+   apply Hj1; clear Hj1.
+   unfold nA.
+   rewrite summation_eq_compat with
+     (h := λ j, (rad - 1) * rad ^ (n1 - 1 - j)).
+  --rewrite <- summation_mul_distr_l.
+    remember S as f; simpl; subst f.
+    rewrite summation_rtl, summation_shift.
+   ++replace (n1 - 1 - (n + 1 + 1)) with (s1 - 1) by flia Hs1.
+     rewrite summation_eq_compat with (h := λ i, rad ^ i).
+    **rewrite <- power_summation_sub_1; [ | easy ].
+      rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+      rewrite <- Nat.pow_add_r.
+      replace (S j1 + (s1 - S j1)) with s1.
+    ---rewrite <- Nat.sub_succ_l.
+     +++rewrite Nat.sub_succ, Nat.sub_0_r.
+        apply Nat.sub_le_mono_l.
+        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+     +++destruct s1; [ | flia ].
+        rewrite Hn1 in Hs1.
+        destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
+    ---rewrite Hs1, Hn1.
+       destruct rad; [ easy | simpl; flia ].
+    **intros i Hi; f_equal; flia Hs1 Hi.
+   ++rewrite Hn1.
+     destruct rad; [ easy | simpl; flia ].
+  --intros i Hi; f_equal.
+    specialize (Hall (i - n - 1)).
+    now replace (n + (i - n - 1) + 1) with i in Hall by flia Hi.
   *specialize (Hall 0); rewrite Nat.add_0_r in Hall.
    flia Hr Hall Hun1.
   *destruct Hall as (j & Hkj & Huj & Hall).
    destruct j; [ rewrite Nat.add_0_r in Huj; flia Hr Huj Hun1 | ].
-   ...
+...
  +apply Nat.nlt_ge in H1.
   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
   rewrite Nat_mod_less_small in Hun1; [ flia Hr Hur Hun1 | ].
