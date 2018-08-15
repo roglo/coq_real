@@ -6680,7 +6680,28 @@ destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
    flia Hr Hall Hun1.
   *destruct Hall as (j & Hkj & Huj & Hall).
    destruct j; [ rewrite Nat.add_0_r in Huj; flia Hr Huj Hun1 | ].
+   apply Nat.nle_gt in Hj1.
+   apply Hj1; clear Hj1.
+   unfold nA.
+   rewrite summation_eq_compat with
+     (h := λ k,
+        (if le_dec k (n + j + 1) then rad - 1
+         else if eq_nat_dec k (n + j + 2) then rad - 2
+         else 2 * (rad - 1)) *
+        rad ^ (n1 - 1 - k)).
+  --idtac.
 ...
+  --intros k Hk; f_equal.
+    destruct (le_dec k (n + j + 1)) as [H1| H1].
+   ++specialize (Hkj (k - n - 1)) as H2.
+     replace (n + (k - n - 1) + 1) with k in H2 by flia Hk.
+     apply H2; flia H1 Hk.
+   ++apply Nat.nle_gt in H1.
+     destruct (eq_nat_dec k (n + j + 2)) as [H2| H2].
+    **now replace (n + S j + 1) with k in Huj by flia H2.
+    **specialize (Hall (k - n - j - 3)) as H3.
+      replace (n + S j + (k - n - j - 3) + 2) with k in H3; [ easy | ].
+      flia H1 H2.
  +apply Nat.nlt_ge in H1.
   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
   rewrite Nat_mod_less_small in Hun1; [ flia Hr Hur Hun1 | ].
