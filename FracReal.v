@@ -6713,7 +6713,6 @@ rewrite summation_eq_compat with
      rewrite Nat.mul_assoc.
      rewrite <- power_summation_sub_1; [ | easy ].
      replace (S (j - 1)) with j by flia Hj.
-(**)
      destruct (eq_nat_dec (n + j + 1) (n1 - 1)) as [H1| H1].
     **rewrite H1, summation_empty; [ | apply Nat.lt_succ_diag_r ].
       rewrite Nat.add_0_r.
@@ -6734,6 +6733,24 @@ rewrite summation_eq_compat with
       replace (n + j + 2) with (x + 1) by flia Heqx.
       destruct (le_dec (S x) x) as [H2| H2]; [ flia H2 | clear H2 ].
       destruct (eq_nat_dec (S x) (x + 1)) as [H2| H2]; [ clear H2 | flia H2 ].
+      destruct (le_dec (S (S x)) (n1 - 1)) as [H2| H2].
+    ---rewrite summation_eq_compat with
+         (h := λ i, 2 * (rad - 1) * (rad ^ (n1 - 1 - i))).
+     +++rewrite <- summation_mul_distr_l.
+        remember S as f; simpl; subst f.
+        rewrite summation_rtl.
+        rewrite summation_shift; [ | easy ].
+        rewrite summation_eq_compat with (h := λ i, rad ^ i).
+      ***rewrite <- Nat.mul_assoc.
+         rewrite <- power_summation_sub_1; [ | easy ].
+         replace (n1 - 1 - S x) with (s1 - j - 1) by flia Hs1 Heqx.
+         replace (S (n1 - 1 - S (S x))) with (s1 - j - 1) by flia Hs1 H2 Heqx.
+         subst x.
+...
+      ***intros i Hi; f_equal; flia Hi.
+     +++intros i Hi.
+        destruct (le_dec i x) as [H3| H3]; [ flia Hi H3 | ].
+        destruct (eq_nat_dec i (x + 1)) as [H4| H4]; [ flia Hi H4 | easy ].
 ...
    ++intros i Hi; rewrite <- Nat.pow_add_r; f_equal.
      rewrite Hs1; flia Hnn Hi.
