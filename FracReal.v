@@ -6715,6 +6715,15 @@ destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
      replace (n + (i - n - 1) + 1) with i in H1 by flia Hi.
      apply H1; flia Hi.
 *)
+Check glop.
+rewrite Hs1.
+apply glop with (j0 := j); [ | | | ].
+--rewrite Hn1.
+  destruct rad; [ easy | simpl; flia ].
+--intros k Hk; rewrite Nat.add_shuffle0; now apply Hkj.
+--now replace (n + 1 + j) with (n + S j) by flia.
+--intros k.
+  replace (n + 1 + j) with (n + S j) by flia; apply Hall.
 ...
    unfold nA.
    rewrite summation_eq_compat with
