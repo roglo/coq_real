@@ -6785,6 +6785,7 @@ apply glop with (j0 := j); [ | | | ].
 ...
 *)
    clear HAF Hn Hr Hur.
+   (* reprendre le lemme "glop" à partir de là *)
 ...
    specialize radix_ge_2 as Hr.
    unfold nA.
