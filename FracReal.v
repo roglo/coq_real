@@ -6653,9 +6653,32 @@ rewrite summation_eq_compat with
    replace (n1 - 1 - (n + 1 + 1)) with (s1 - 1) by flia Hs1.
    rewrite summation_eq_compat with
      (h := λ i, 2 * (rad - 1) * rad ^ (n1 - 1 - i)).
-  --idtac.
-...
-  --intros i Hi.
+  --rewrite <- summation_mul_distr_l.
+    remember S as f; simpl; subst f.
+    rewrite summation_rtl.
+    rewrite summation_shift.
+   **rewrite summation_eq_compat with (h := λ k, rad ^ k).
+   ---replace (n1 - 1 - S (n + 1 + 1)) with (s1 - 2) by flia Hs1.
+      rewrite <- Nat.mul_assoc.
+      rewrite <- power_summation_sub_1; [ | easy ].
+      rewrite <- Nat.sub_succ_l.
+    +++rewrite Nat.sub_succ.
+       rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+       rewrite Nat.add_sub_assoc.
+     ***remember (rad ^ S j1 - 1) as x eqn:Hx.
+        rewrite Nat.mul_sub_distr_r; subst x.
+        rewrite Nat.sub_add; [ | now apply Nat.mul_le_mono_r ].
+        rewrite <- Nat.pow_succ_r'.
+        ...
+     ***replace 2 with (2 * 1) at 1 by flia.
+        apply Nat.mul_le_mono_l.
+        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+    +++rewrite Hs1, Hn1.
+       destruct rad; [ easy | simpl; flia ].
+   ---intros i Hi; f_equal; flia Hi.
+   **rewrite Hn1.
+     destruct rad; [ easy | simpl; flia ].
+  --intros i Hi; f_equal.
     destruct (le_dec i (n + 1)) as [H1| H1]; [ flia Hi H1 | ].
     destruct (Nat.eq_dec i (n + 2)) as [H2| H2]; [ flia Hi H2 | easy ].
   *rewrite Hn1.
@@ -6670,7 +6693,8 @@ rewrite summation_eq_compat with
     ...
   --intros i Hi.
     destruct (le_dec i (n + j + 1)) as [H1| H1]; [ easy | flia Hi H1 ].
-  * ...
+  *idtac.
+   ...
 -intros k Hk; f_equal.
  destruct (le_dec k (n + j + 1)) as [H1| H1].
  +specialize (Hkj (k - n - 1)) as H2.
@@ -6798,7 +6822,7 @@ apply glop with (j0 := j); [ | | | ].
             rewrite Nat.mul_sub_distr_r; subst x.
             rewrite Nat.sub_add; [ | now apply Nat.mul_le_mono_r ].
             rewrite <- Nat.pow_succ_r'.
-            admit.
+            ...
         ****replace 2 with (2 * 1) at 1 by flia.
             apply Nat.mul_le_mono_l.
             now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
@@ -6812,7 +6836,7 @@ apply glop with (j0 := j); [ | | | ].
         destruct (Nat.eq_dec i (n + 2)) as [H2| H2]; [ flia Hi H2 | easy ].
     ---rewrite Hn1.
        destruct rad; [ easy | simpl; flia ].
-    **admit.
+    ** ...
    ++intros i Hi.
      destruct (le_dec i (n + j + 1)) as [H1| H1]; [ easy | flia Hi H1 ].
    ++split.
