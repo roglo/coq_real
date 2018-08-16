@@ -6669,7 +6669,22 @@ rewrite summation_eq_compat with
         rewrite Nat.mul_sub_distr_r; subst x.
         rewrite Nat.sub_add; [ | now apply Nat.mul_le_mono_r ].
         rewrite <- Nat.pow_succ_r'.
-        ...
+        replace (S (s1 - 1)) with s1.
+     ----rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+         rewrite <- Nat.pow_add_r.
+         replace (S j1 + (s1 - S j1)) with s1.
+      ++++apply Nat.sub_le_mono_l.
+          destruct (zerop (s1 - S j1)) as [Hsj| Hsj].
+       ****rewrite Hs1, Hn1 in Hsj.
+           destruct rad; [ easy | simpl in Hsj; flia Hsj ].
+       ****destruct (s1 - S j1) as [| x]; [ flia Hsj | simpl ].
+           replace 2 with (2 * 1) by flia.
+           apply Nat.mul_le_mono; [ easy | ].
+           now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+      ++++rewrite Hs1, Hn1.
+          destruct rad; [ easy | simpl; flia ].
+     ----rewrite Hs1, Hn1.
+         destruct rad; [ easy | simpl; flia ].
      ***replace 2 with (2 * 1) at 1 by flia.
         apply Nat.mul_le_mono_l.
         now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
