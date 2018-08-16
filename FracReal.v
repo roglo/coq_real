@@ -6653,46 +6653,36 @@ rewrite summation_eq_compat with
    replace (n1 - 1 - (n + 1 + 1)) with (s1 - 1) by flia Hs1.
    rewrite summation_eq_compat with
      (h := λ i, 2 * (rad - 1) * rad ^ (n1 - 1 - i)).
-  --admit.
+  --idtac.
+...
   --intros i Hi.
     destruct (le_dec i (n + 1)) as [H1| H1]; [ flia Hi H1 | ].
     destruct (Nat.eq_dec i (n + 2)) as [H2| H2]; [ flia Hi H2 | easy ].
   *rewrite Hn1.
    destruct rad; [ easy | simpl; flia ].
- +rewrite summation_split with (e := n + j + 1).
-  *remember S as f; simpl; subst f.
+ +destruct (le_dec (n + j + 1) (n1 - 1)) as [Hnn| Hnn].
+  *rewrite summation_split with (e := n + j + 1); [ | flia Hj Hnn ].
+   remember S as f; simpl; subst f.
    rewrite summation_eq_compat with
        (h := λ k, (rad - 1) * rad ^ (n1 - 1 - k)).
   --rewrite <- summation_mul_distr_l.
     remember S as f; simpl; subst f.
-    admit.
+    ...
   --intros i Hi.
     destruct (le_dec i (n + j + 1)) as [H1| H1]; [ easy | flia Hi H1 ].
-  *split; [ flia Hj | ].
+  * ...
+-intros k Hk; f_equal.
+ destruct (le_dec k (n + j + 1)) as [H1| H1].
+ +specialize (Hkj (k - n - 1)) as H2.
+  replace (n + (k - n - 1) + 1) with k in H2 by flia Hk.
+  apply H2; flia H1 Hk.
+ +apply Nat.nle_gt in H1.
+  destruct (eq_nat_dec k (n + j + 2)) as [H2| H2].
+  **now replace (n + S j + 1) with k in Huj by flia H2.
+  **specialize (Hall (k - n - j - 3)) as H3.
+    replace (n + S j + (k - n - j - 3) + 2) with k in H3; [ easy | ].
+    flia H1 H2.
 ...
-
-
-  ++idtac.
-...
-  ++split.
-   **admit.
-   **rewrite Hn1.
-     destruct rad; [ easy | ].
-
-    admit.
---intros k Hk; f_equal.
-  destruct (le_dec k (n + j + 1)) as [H1| H1].
-  ++specialize (Hkj (k - n - 1)) as H2.
-    replace (n + (k - n - 1) + 1) with k in H2 by flia Hk.
-    apply H2; flia H1 Hk.
-  ++apply Nat.nle_gt in H1.
-    destruct (eq_nat_dec k (n + j + 2)) as [H2| H2].
-    **now replace (n + S j + 1) with k in Huj by flia H2.
-    **specialize (Hall (k - n - j - 3)) as H3.
-      replace (n + S j + (k - n - j - 3) + 2) with k in H3; [ easy | ].
-      flia H1 H2.
-...
-*)
 
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
