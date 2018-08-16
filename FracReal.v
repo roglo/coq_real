@@ -6712,7 +6712,20 @@ rewrite summation_eq_compat with
    ++rewrite <- summation_mul_distr_r.
      rewrite Nat.mul_assoc.
      rewrite <- power_summation_sub_1; [ | easy ].
-...
+     replace (S (j - 1)) with j by flia Hj.
+     destruct (eq_nat_dec (S (n + j + 1)) (n1 - 1)) as [H1| H1].
+    **rewrite H1, summation_only_one.
+      rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+      destruct (le_dec (n1 - 1) (n + j + 1)) as [H2| H2]; [ flia H1 H2 | ].
+      destruct (eq_nat_dec (n1 - 1) (n + j + 2)) as [H3| H3]; [ | flia H1 H3 ].
+      assert (Hjj : S j1 ≤ j). {
+        rewrite Hn1 in H3.
+        destruct rad; [ easy | simpl in H3; flia H3 ].
+      }
+      apply le_plus_trans.
+      ...
+    **idtac.
+      ...
    ++intros i Hi; rewrite <- Nat.pow_add_r; f_equal.
      rewrite Hs1; flia Hnn Hi.
   --intros i Hi.
