@@ -6265,6 +6265,7 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H4| H4].
   *split; [ flia H3 | flia Hr Hur ].
 Qed.
 
+(*
 Theorem glop {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1)
@@ -6286,6 +6287,7 @@ rewrite <- Hi in Hj, Hun.
 rewrite <- Hn1, <- Hs1 in Hj, Hun.
 easy.
 Qed.
+*)
 
 Theorem A_ge_rad_pow {r : radix} : ∀ u i n,
   (∀ k, u (S i + k + 1) ≤ 2 * (rad - 1))
@@ -6624,6 +6626,16 @@ destruct (LPO_fst (is_num_9_strict_after u n)) as [H1| H1].
   --rewrite H1 in H2; flia Hr H2.
 Qed.
 
+Theorem glop {r : radix} : ∀ u i n j (s1 := n - i - 1) j1,
+  j1 < s1
+  → (∀ k, k < S j → u (i + k) = rad - 1)
+  → u (i + j + 1) = rad - 2
+  → (∀ k, u (i + j + k + 2) = 2 * (rad - 1))
+  → (rad ^ j1 - 1) * rad ^ (s1 - j1) ≤ nA i n u.
+Proof.
+intros * Hjs Hbef Hwhi Haft.
+...
+
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → ¬ (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1).
@@ -6703,6 +6715,7 @@ destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
      replace (n + (i - n - 1) + 1) with i in H1 by flia Hi.
      apply H1; flia Hi.
 *)
+...
    unfold nA.
    rewrite summation_eq_compat with
      (h := λ k,
