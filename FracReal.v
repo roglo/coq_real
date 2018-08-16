@@ -6723,7 +6723,13 @@ rewrite summation_eq_compat with
         destruct rad; [ easy | simpl in H3; flia H3 ].
       }
       apply le_plus_trans.
-      ...
+      do 2 rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+      do 2 rewrite <- Nat.pow_add_r.
+      replace (S j1 + (s1 - S j1)) with s1 by flia Hs1 H3 Hjj.
+      replace (j + (s1 - j)) with s1 by flia Hs1 H3.
+      apply Nat.sub_le_mono_l.
+      apply Nat.pow_le_mono_r; [ easy | ].
+      now apply Nat.sub_le_mono_l.
     **idtac.
       ...
    ++intros i Hi; rewrite <- Nat.pow_add_r; f_equal.
