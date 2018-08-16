@@ -6705,7 +6705,16 @@ rewrite summation_eq_compat with
        (h := λ k, (rad - 1) * rad ^ (n1 - 1 - k)).
   --rewrite <- summation_mul_distr_l.
     remember S as f; simpl; subst f.
-    ...
+    rewrite summation_rtl.
+    rewrite summation_shift; [ | flia Hj ].
+    replace (n + j + 1 - (n + 1 + 1)) with (j - 1) by flia.
+    rewrite summation_eq_compat with (h := λ i, rad ^ i * rad ^ (s1 - j)).
+   ++rewrite <- summation_mul_distr_r.
+     rewrite Nat.mul_assoc.
+     rewrite <- power_summation_sub_1; [ | easy ].
+...
+   ++intros i Hi; rewrite <- Nat.pow_add_r; f_equal.
+     rewrite Hs1; flia Hnn Hi.
   --intros i Hi.
     destruct (le_dec i (n + j + 1)) as [H1| H1]; [ easy | flia Hi H1 ].
   *idtac.
