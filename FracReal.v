@@ -6626,7 +6626,7 @@ destruct (LPO_fst (is_num_9_strict_after u n)) as [H1| H1].
   --rewrite H1 in H2; flia Hr H2.
 Qed.
 
-Theorem glop {r : radix} : ∀ u n j j1 n1 s1,
+Theorem u_9_8_18_nA_ge_999000 {r : radix} : ∀ u n j j1 n1 s1,
   (∀ k, k < S j → u (n + k + 1) = rad - 1)
   → u (n + S j + 1) = rad - 2
   → (∀ k, u (n + S j + k + 2) = 2 * (rad - 1))
@@ -6636,7 +6636,7 @@ Theorem glop {r : radix} : ∀ u n j j1 n1 s1,
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hkj Huj Hall Hn1 Hs1.
+intros Hbef Hwhi Haft Hn1 Hs1.
 unfold nA.
 assert (Hsjs1 : S j1 + (s1 - S j1) = s1). {
   rewrite Hs1, Hn1.
@@ -6796,24 +6796,29 @@ rewrite summation_eq_compat with
   --rewrite <- summation_mul_distr_l.
     rewrite summation_rtl.
     rewrite summation_shift; [ | flia Hs1 Hsjs1 ].
+    replace (n1 - 1 - (n + 1 + 1)) with (s1 - 1) by flia Hs1.
     rewrite summation_eq_compat with (h := λ i, rad ^ i).
-   ++idtac.
-     ...
-   ++intros i Hi; f_equal; flia Hi.
+   ++rewrite <- power_summation_sub_1; [ | easy ].
+     replace (S (s1 - 1)) with s1 by flia Hs12.
+     rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+     rewrite <- Nat.pow_add_r, Hsjs1.
+     apply Nat.sub_le_mono_l.
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+   ++intros i Hi; f_equal; flia Hs1 Hi.
   --intros i Hi.
     destruct (le_dec i (n + j + 1)) as [H1| H1]; [ easy | flia Hnn Hi H1 ].
 -intros k Hk; f_equal.
  destruct (le_dec k (n + j + 1)) as [H1| H1].
- +specialize (Hkj (k - n - 1)) as H2.
+ +specialize (Hbef (k - n - 1)) as H2.
   replace (n + (k - n - 1) + 1) with k in H2 by flia Hk.
   apply H2; flia H1 Hk.
  +apply Nat.nle_gt in H1.
   destruct (eq_nat_dec k (n + j + 2)) as [H2| H2].
-  **now replace (n + S j + 1) with k in Huj by flia H2.
-  **specialize (Hall (k - n - j - 3)) as H3.
+  **now replace (n + S j + 1) with k in Hwhi by flia H2.
+  **specialize (Haft (k - n - j - 3)) as H3.
     replace (n + S j + (k - n - j - 3) + 2) with k in H3; [ easy | ].
     flia H1 H2.
-...
+Qed.
 
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
@@ -6873,94 +6878,7 @@ destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
    destruct j; [ rewrite Nat.add_0_r in Huj; flia Hr Huj Hun1 | ].
    apply Nat.nle_gt in Hj1.
    apply Hj1; clear Hj1.
-   clear HAF Hn Hr Hur Hun1.
-(*
-Check glop.
-rewrite Hs1.
-apply glop with (j0 := j); [ | | | ].
---rewrite Hn1.
-  destruct rad; [ easy | simpl; flia ].
---intros k Hk; rewrite Nat.add_shuffle0; now apply Hkj.
---now replace (n + 1 + j) with (n + S j) by flia.
---intros k.
-  replace (n + 1 + j) with (n + S j) by flia; apply Hall.
-...
-*)
-   specialize radix_ge_2 as Hr.
-   unfold nA.
-   rewrite summation_eq_compat with
-     (h := λ k,
-        (if le_dec k (n + j + 1) then rad - 1
-         else if eq_nat_dec k (n + j + 2) then rad - 2
-         else 2 * (rad - 1)) *
-        rad ^ (n1 - 1 - k)).
-  --rewrite summation_split with (e := n + j + 1).
-    remember S as f; simpl; subst f.
-    rewrite summation_eq_compat with
-      (h := λ k, (rad - 1) * rad ^ (n1 - 1 - k)).
-   ++rewrite <- summation_mul_distr_l.
-     remember S as f; simpl; subst f.
-     destruct (zerop j) as [Hj| Hj].
-    **rewrite Hj, Nat.add_0_r.
-      rewrite summation_empty; [ | flia ].
-      remember S as f; simpl; subst f.
-      rewrite Nat.mul_0_r, Nat.add_0_l.
-      rewrite summation_split_first.
-    ---destruct (le_dec (S (n + 1)) (n + 1)) as [H1| H1]; [ flia H1 | ].
-       clear H1; remember S as f; simpl; subst f.
-       destruct (Nat.eq_dec (S (n + 1)) (n + 2)) as [H1| H1]; [ | flia H1 ].
-       clear H1.
-       rewrite summation_eq_compat with
-         (h := λ k, 2 * (rad - 1) * rad ^ (n1 - 1 - k)).
-     +++rewrite <- summation_mul_distr_l.
-        remember S as f; simpl; subst f.
-        replace (n1 - 1 - S (n + 1)) with (s1 - 1) by flia Hs1.
-        rewrite summation_rtl.
-        rewrite summation_shift.
-      ***rewrite summation_eq_compat with (h := λ k, rad ^ k).
-      ----replace (n1 - 1 - S (S (n + 1))) with (s1 - 2) by flia Hs1.
-          rewrite <- Nat.mul_assoc.
-          rewrite <- power_summation_sub_1; [ | easy ].
-          rewrite <- Nat.sub_succ_l.
-       ++++rewrite Nat.sub_succ.
-           rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-           rewrite Nat.add_sub_assoc.
-        ****remember (rad ^ S j1 - 1) as x eqn:Hx.
-            rewrite Nat.mul_sub_distr_r; subst x.
-            rewrite Nat.sub_add; [ | now apply Nat.mul_le_mono_r ].
-            rewrite <- Nat.pow_succ_r'.
-            ...
-        ****replace 2 with (2 * 1) at 1 by flia.
-            apply Nat.mul_le_mono_l.
-            now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-       ++++rewrite Hs1, Hn1.
-           destruct rad; [ easy | simpl; flia ].
-      ----intros i Hi; f_equal; flia Hi.
-      ***rewrite Hn1.
-         destruct rad; [ easy | simpl; flia ].
-     +++intros i Hi; f_equal.
-        destruct (le_dec i (n + 1)) as [H1| H1]; [ flia Hi H1 | ].
-        destruct (Nat.eq_dec i (n + 2)) as [H2| H2]; [ flia Hi H2 | easy ].
-    ---rewrite Hn1.
-       destruct rad; [ easy | simpl; flia ].
-    ** ...
-   ++intros i Hi.
-     destruct (le_dec i (n + j + 1)) as [H1| H1]; [ easy | flia Hi H1 ].
-   ++split.
-...
-
-  --intros k Hk; f_equal.
-    destruct (le_dec k (n + j + 1)) as [H1| H1].
-   ++specialize (Hkj (k - n - 1)) as H2.
-     replace (n + (k - n - 1) + 1) with k in H2 by flia Hk.
-     apply H2; flia H1 Hk.
-   ++apply Nat.nle_gt in H1.
-     destruct (eq_nat_dec k (n + j + 2)) as [H2| H2].
-    **now replace (n + S j + 1) with k in Huj by flia H2.
-    **specialize (Hall (k - n - j - 3)) as H3.
-      replace (n + S j + (k - n - j - 3) + 2) with k in H3; [ easy | ].
-      flia H1 H2.
-...
+   now apply (u_9_8_18_nA_ge_999000 _ _ j).
  +apply Nat.nlt_ge in H1.
   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
   rewrite Nat_mod_less_small in Hun1; [ flia Hr Hur Hun1 | ].
