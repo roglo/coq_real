@@ -6790,8 +6790,18 @@ rewrite summation_eq_compat with
      rewrite Hs1; flia Hnn Hi.
   --intros i Hi.
     destruct (le_dec i (n + j + 1)) as [H1| H1]; [ easy | flia Hi H1 ].
-  *idtac.
-   ...
+  *apply Nat.nle_gt in Hnn.
+   rewrite summation_eq_compat with
+     (h := λ i, (rad - 1) * rad ^ (n1 - 1 - i)).
+  --rewrite <- summation_mul_distr_l.
+    rewrite summation_rtl.
+    rewrite summation_shift; [ | flia Hs1 Hsjs1 ].
+    rewrite summation_eq_compat with (h := λ i, rad ^ i).
+   ++idtac.
+     ...
+   ++intros i Hi; f_equal; flia Hi.
+  --intros i Hi.
+    destruct (le_dec i (n + j + 1)) as [H1| H1]; [ easy | flia Hnn Hi H1 ].
 -intros k Hk; f_equal.
  destruct (le_dec k (n + j + 1)) as [H1| H1].
  +specialize (Hkj (k - n - 1)) as H2.
