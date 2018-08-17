@@ -6646,6 +6646,15 @@ assert (Hs12 : 2 ≤ s1). {
   rewrite Hs1, Hn1.
   destruct rad; [ easy | simpl; flia ].
 }
+assert (H2rsj : 2 ≤ rad ^ (s1 - S j1)). {
+  destruct (zerop (s1 - S j1)) as [Hsj| Hsj].
+  -rewrite Hs1, Hn1 in Hsj.
+   destruct rad; [ easy | simpl in Hsj; flia Hsj ].
+  -destruct (s1 - S j1) as [| x]; [ flia Hsj | simpl ].
+   replace 2 with (2 * 1) by flia.
+   apply Nat.mul_le_mono; [ easy | ].
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+}
 rewrite summation_eq_compat with
     (h := λ k,
           (if le_dec k (n + j + 1) then rad - 1
@@ -6680,14 +6689,7 @@ rewrite summation_eq_compat with
        replace (S (s1 - 1)) with s1 by flia Hs12.
        rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
        rewrite <- Nat.pow_add_r, Hsjs1.
-       apply Nat.sub_le_mono_l.
-       destruct (zerop (s1 - S j1)) as [Hsj| Hsj].
-     ***rewrite Hs1, Hn1 in Hsj.
-        destruct rad; [ easy | simpl in Hsj; flia Hsj ].
-     ***destruct (s1 - S j1) as [| x]; [ flia Hsj | simpl ].
-        replace 2 with (2 * 1) by flia.
-        apply Nat.mul_le_mono; [ easy | ].
-        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+       now apply Nat.sub_le_mono_l.
     +++replace 2 with (2 * 1) at 1 by flia.
        apply Nat.mul_le_mono_l.
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
@@ -6753,16 +6755,8 @@ rewrite summation_eq_compat with
          rewrite Nat.add_sub_assoc.
       ----rewrite Nat.sub_add.
        ++++rewrite Nat.add_sub_assoc.
-        ****rewrite Nat.sub_add.
-        -----apply Nat.sub_le_mono_l.
-             remember (s1 - S j1) as x eqn:Hx.
-             destruct x.
-         +++++rewrite Hs1, Hn1 in Hx.
-              destruct rad; [ easy | simpl in Hx; flia Hx ].
-         +++++simpl; replace 2 with (2 * 1) by flia.
-              apply Nat.mul_le_mono; [ easy | ].
-              now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-        -----apply Nat.pow_le_mono_r; [ easy | flia ].
+        ****rewrite Nat.sub_add; [ now apply Nat.sub_le_mono_l | ].
+            apply Nat.pow_le_mono_r; [ easy | flia ].
         ****remember (s1 - j) as x eqn:Hx.
             destruct x; [ flia Hs1 H2 Hx | ].
             simpl; replace 2 with (2 * 1) by flia.
