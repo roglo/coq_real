@@ -7084,6 +7084,27 @@ specialize (freal_normalized_cases x) as [H1| H1].
      specialize (digit_lt_radix (freal y (i + 1 + k + 1))) as H5.
      flia H4 H5.
    ++destruct H1 as (k & Hjk & Hk).
+     apply is_9_strict_after_false_iff in Hk.
+...
+     rewrite Hnxy, Hxy.
+     unfold freal_unorm_add; simpl.
+     unfold freal_add_to_seq.
+     unfold numbers_to_digits.
+     destruct (LPO_fst (A_ge_1 (freal_add_series nx y) i)) as [H1| H1].
+    **simpl.
+      destruct (LPO_fst (A_ge_1 (freal_add_series x y) i)) as [H2| H2].
+    ---simpl.
+Search (∀ _, A_ge_1 _ _ _ = true).
+A_ge_1_add_all_true_if:
+  ∀ (r : radix) (u : nat → nat) (i : nat),
+    (∀ k : nat, u (i + k + 1) ≤ 2 * (rad - 1))
+    → (∀ k : nat, A_ge_1 u i k = true)
+      → (∀ k : nat, u (i + k + 1) = rad - 1)
+        ∨ (∀ k : nat, u (i + k + 1) = 2 * (rad - 1))
+          ∨ (∃ j : nat,
+               (∀ k : nat, k < j → u (i + k + 1) = rad - 1)
+               ∧ u (i + j + 1) = rad - 2
+                 ∧ (∀ k : nat, u (i + j + k + 2) = 2 * (rad - 1)))
      ...
  +idtac.
   ...
