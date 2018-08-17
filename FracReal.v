@@ -7085,6 +7085,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
      flia H4 H5.
    ++destruct H1 as (k & Hjk & Hk).
      apply is_9_strict_after_false_iff in Hk.
+     apply Nat.succ_le_mono in Hni.
      rewrite Hnxy, Hxy.
      unfold freal_unorm_add; simpl.
      unfold freal_add_to_seq.
@@ -7096,6 +7097,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
      move s1 before n1.
      destruct (LPO_fst (A_ge_1 v i)) as [H1| H1].
     **simpl.
+(* perhaps useful, I don't know
       specialize (A_ge_1_add_all_true_if v) as H2.
       specialize (H2 i).
       assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
@@ -7106,8 +7108,10 @@ specialize (freal_normalized_cases x) as [H1| H1].
         flia H4 H5.
       }
       specialize (H2 H H1); clear H.
+*)
       destruct (LPO_fst (A_ge_1 u i)) as [H3| H3].
     ---simpl.
+(* perhaps useful, I don't know
        specialize (A_ge_1_add_all_true_if u) as H4.
        specialize (H4 i).
        assert (H : ∀ k, u (i + k + 1) ≤ 2 * (rad - 1)). {
@@ -7118,6 +7122,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
          flia H5 H6.
        }
        specialize (H4 H H3); clear H.
+*)
        unfold u at 1.
        unfold v at 1.
        unfold freal_add_series, sequence_add.
@@ -7131,7 +7136,16 @@ specialize (freal_normalized_cases x) as [H1| H1].
        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
        f_equal; f_equal.
        do 2 (rewrite Nat.add_comm; symmetry).
-       ...
+       destruct (eq_nat_dec i n) as [Hni2| Hni2].
+     +++subst i; clear Hni.
+        rewrite Hwhi, <- Nat.add_1_r.
+        rewrite <- Nat.add_assoc.
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        f_equal; f_equal.
+...
+     +++idtac.
+        ...
     ---idtac.
        ...
     **idtac.
