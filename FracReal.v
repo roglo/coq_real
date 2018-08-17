@@ -6746,12 +6746,44 @@ rewrite summation_eq_compat with
          replace (n1 - 1 - S x) with (s1 - j - 1) by flia Hs1 Heqx.
          replace (S (n1 - 1 - S (S x))) with (s1 - j - 1) by flia Hs1 H2 Heqx.
          subst x.
-...
+         do 2 rewrite Nat.mul_sub_distr_r, <- Nat.pow_add_r, Nat.mul_1_l.
+         replace (S j1 + (s1 - S j1)) with s1.
+      ----replace (j + (s1 - j)) with s1 by flia Hs1 Hnn.
+          rewrite Nat.mul_sub_distr_r.
+          rewrite <- Nat.pow_succ_r'.
+          replace (S (s1 - j - 1)) with (s1 - j) by flia Hs1 Hnn H1.
+          rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+          rewrite Nat.add_sub_assoc.
+       ++++rewrite Nat.sub_add.
+        ****rewrite Nat.add_sub_assoc.
+        -----rewrite Nat.sub_add.
+         +++++apply Nat.sub_le_mono_l.
+              remember (s1 - S j1) as x eqn:Hx.
+              destruct x.
+          *****rewrite Hs1, Hn1 in Hx.
+               destruct rad; [ easy | simpl in Hx; flia Hx ].
+          *****simpl; replace 2 with (2 * 1) by flia.
+               apply Nat.mul_le_mono; [ easy | ].
+               now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+         +++++apply Nat.pow_le_mono_r; [ easy | flia ].
+        -----remember (s1 - j) as x eqn:Hx.
+             destruct x; [ flia Hs1 H2 Hx | ].
+             simpl; replace 2 with (2 * 1) by flia.
+             apply Nat.mul_le_mono; [ easy | ].
+             now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+        ****idtac.
+            ...
+       ++++replace 2 with (2 * 1) by flia.
+           apply Nat.mul_le_mono_l.
+           now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+      ----rewrite Hs1, Hn1.
+          destruct rad; [ easy | simpl; flia ].
       ***intros i Hi; f_equal; flia Hi.
      +++intros i Hi.
         destruct (le_dec i x) as [H3| H3]; [ flia Hi H3 | ].
         destruct (eq_nat_dec i (x + 1)) as [H4| H4]; [ flia Hi H4 | easy ].
-...
+    ---idtac.
+       ...
    ++intros i Hi; rewrite <- Nat.pow_add_r; f_equal.
      rewrite Hs1; flia Hnn Hi.
   --intros i Hi.
