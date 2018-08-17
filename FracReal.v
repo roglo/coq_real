@@ -6893,230 +6893,62 @@ destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
  }
  specialize (H2 H H1); clear H.
  destruct H2 as (j & Hjs & Hkj & Huj).
-...
-
- rewrite Nat_mod_less_small in Hj1.
- (* mouais... à voir... ou alors utiliser A_ge_rad_pow comme ci-dessous *)
-...
-(*
- rewrite Nat_div_less_small in Hun1.
-*)
- specialize (A_ge_rad_pow u (n + 1) n1) as H2.
- rewrite <- Hs1 in H2.
-
-...
-
-specialize (Hall 0) as H1.
-rewrite Nat.add_0_r in H1.
-destruct H1 as [H1| [H1| H1]].
-replace (n + 1 + 1) with (n + 2) in H1 by flia.
-destruct H1 as (_, H1).
-(* en fait, il faut chercher une contradiction avec Hj ; pour cela, il
-   me faut un autre lemme qui dit qu'il y a une infinité de 9 ou bien
-   un nombre fini de 9 suivi d'un 8 et d'une infinité de 18 *)
-...
-   specialize (HAF 2) as Hun2.
-   destruct Hun2 as (j2 & Hjj2 & Hj2 & Hun2).
-   remember (rad * (n + 2 + j2 + 3)) as n3 eqn:Hn3.
-   remember (n3 - (n + 2) - 1) as s3 eqn:Hs3.
-   move n3 before s2; move s3 before n3.
-   move j2 before j1.
-   move Hun2 before Hun1.
-   move Hjj2 before Hjj1.
-   move Hj1 before Hjj2; move Hj2 before Hj1.
-   destruct (lt_dec (nA (n + 2) n3 u) (rad ^ s3)) as [H3| H3].
-  --rewrite Nat.div_small in Hun2; [ | easy ].
-    rewrite Nat.mod_small in Hj2; [ | easy ].
-    clear H3.
-    rewrite Nat.add_0_r in Hun2.
-    destruct (lt_dec (u (n + 2)) rad) as [H5| H5].
-   ++rewrite Nat.mod_small in Hun2; [ clear H5 | easy ].
-     (* u(n+1)=u(n+2)=9 *)
-     specialize (HAF 3) as Hun3.
-     destruct Hun3 as (j3 & Hjj3 & Hj3 & Hun3).
-     remember (rad * (n + 3 + j3 + 3)) as n4 eqn:Hn4.
-     remember (n4 - (n + 3) - 1) as s4 eqn:Hs4.
-     move n4 before s3; move s4 before n4.
-     move j3 before j2; move Hun3 before Hun2.
-     move Hjj3 before Hjj2; move Hj3 before Hj2.
-     destruct (lt_dec (nA (n + 3) n4 u) (rad ^ s4)) as [H4| H4].
-    **rewrite Nat.div_small in Hun3; [ | easy ].
-      rewrite Nat.mod_small in Hj3; [ | easy ].
-      clear H4.
-      rewrite Nat.add_0_r in Hun3.
-      destruct (lt_dec (u (n + 3)) rad) as [H5| H5].
-    ---rewrite Nat.mod_small in Hun3; [ clear H5 | easy ].
-       (* u(n+1)=u(n+2)=u(n+3)=9 *)
-(* à force d'y avoir une infinité de 9, Hj peut finir par
-   déborder ; s'il y a plus de "j+1" 9, par exemple. *)
-(* ou alors on peut contredire Hj1 au bout de "j1+1" 9 *)
-       ...
-    ---apply Nat.nlt_ge in H5.
-       specialize (Hur 2).
-       replace (n + 2 + 1) with (n + 3) in Hur by flia.
-       rewrite Nat_mod_less_small in Hun3; [ flia Hr Hur Hun3 | ].
-       split; [ easy | flia Hr Hur ].
-    **apply Nat.nlt_ge in H4.
-      assert (H : rad ^ s4 ≤ nA (n + 3) n4 u < 2 * rad ^ s4). {
-        split; [ easy | ].
-        specialize (nA_upper_bound_for_add u (n + 3) n4) as H5.
-        rewrite <- Hs4 in H5.
-        assert (H : ∀ k, u (n + 3 + k + 1) ≤ 2 * (rad - 1)). {
-          intros l.
-          replace (n + 3 + l + 1) with (n + (3 + l) + 1) by flia.
-          apply Hur.
-        }
-        specialize (H5 H); clear H.
-        rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H5.
-        specialize (Nat.pow_nonzero rad s4 radix_ne_0) as H6.
-        flia Hr H5 H6.
-      }
-      rewrite Nat_div_less_small in Hun3; [ | easy ].
-      rewrite Nat_mod_less_small in Hj3; [ clear H | easy ].
-      (* u(n+1)=9, u(n+2)=9, u(n+3)=8 or 18 *)
-      ...
-   ++apply Nat.nlt_ge in H5.
-     specialize (Hur 1).
-     replace (n + 1 + 1) with (n + 2) in Hur by flia.
-     rewrite Nat_mod_less_small in Hun2; [ flia Hr Hur Hun2 | ].
-     split; [ easy | flia Hr Hur ].
-  --apply Nat.nlt_ge in H3.
-    assert (H : rad ^ s3 ≤ nA (n + 2) n3 u < 2 * rad ^ s3). {
-      split; [ easy | ].
-      specialize (nA_upper_bound_for_add u (n + 2) n3) as H5.
-      rewrite <- Hs3 in H5.
-      assert (H : ∀ k, u (n + 2 + k + 1) ≤ 2 * (rad - 1)). {
-        intros l.
-        replace (n + 2 + l + 1) with (n + (2 + l) + 1) by flia.
-        apply Hur.
-      }
-      specialize (H5 H); clear H.
-      rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H5.
-      specialize (Nat.pow_nonzero rad s3 radix_ne_0) as H6.
-      flia Hr H5 H6.
+ destruct j.
+ +rewrite Nat.add_0_r in Huj; clear Hkj.
+  destruct Hall as [Hall| [Hall| Hall]].
+  *specialize (Hall 1); rewrite Hall in Huj; flia Hr Huj.
+  *rewrite Nat_mod_less_small in Hj1.
+  --apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
+    assert (Hjs1 : S j1 < s1). {
+      rewrite Hs1, Hn1.
+      destruct rad; [ easy | simpl; flia ].
     }
-    rewrite Nat_div_less_small in Hun2; [ | easy ].
-    rewrite Nat_mod_less_small in Hj2; [ clear H | easy ].
-    (* u(n+1)=9, u(n+2)=8 or 18 *)
-    ...
-  *apply Nat.nlt_ge in H5.
-   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
-   rewrite Nat_mod_less_small in Hun1; [ flia Hur Hun1 Hr | ].
-   split; [ easy | flia Hr Hur ].
- +apply Nat.nlt_ge in H4.
-  assert (H : rad ^ s2 ≤ nA (n + 1) n2 u < 2 * rad ^ s2). {
-    split; [ easy | ].
-    specialize (nA_upper_bound_for_add u (n + 1) n2) as H5.
-    rewrite <- Hs2 in H5.
+    rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+    rewrite <- Nat.pow_add_r.
+    replace (S j1 + (s1 - S j1)) with s1 by flia Hjs1.
+    rewrite nA_eq_compat with (v := λ k, 2 * (rad - 1)).
+   ++unfold nA.
+     rewrite <- summation_mul_distr_l.
+     rewrite summation_rtl.
+     rewrite summation_shift.
+    **remember S as f; simpl; subst f.
+      replace (n1 - 1 - (n + 1 + 1)) with (s1 - 1) by flia Hs1.
+      rewrite summation_eq_compat with (h := λ i, rad ^ i).
+    ---rewrite <- Nat.mul_assoc.
+       rewrite <- power_summation_sub_1; [ | easy ].
+       replace (S (s1 - 1)) with s1 by flia Hjs.
+       rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+       rewrite Nat_sub_sub_swap.
+       replace (2 * rad ^ s1 - rad ^ s1) with (rad ^ s1) by flia.
+       apply Nat.sub_le_mono_l.
+       destruct (zerop (s1 - S j1)) as [H2| H2]; [ flia Hjs1 H2 | ].
+       destruct (s1 - S j1); [ easy | ].
+       simpl; replace 2 with (2 * 1) by flia.
+       apply Nat.mul_le_mono; [ easy | ].
+       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+    ---intros i Hi; f_equal; flia Hs1 Hi.
+    **rewrite Hn1.
+      destruct rad; [ easy | simpl; flia ].
+   ++intros j Hj.
+     specialize (Hall (j - n - 1)).
+     now replace (n + (j - n - 1) + 1) with j in Hall by flia Hj.
+  --split; [ easy | ].
+    specialize (nA_upper_bound_for_add u (n + 1) n1) as H2.
+    rewrite <- Hs1 in H2.
     assert (H : ∀ k, u (n + 1 + k + 1) ≤ 2 * (rad - 1)). {
-      intros l.
-      replace (n + 1 + l + 1) with (n + (1 + l) + 1) by flia.
+      intros k.
+      replace (n + 1 + k) with (n + (1 + k)) by flia.
       apply Hur.
     }
-    specialize (H5 H); clear H.
-    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H5.
-    specialize (Nat.pow_nonzero rad s2 radix_ne_0) as H6.
-    flia Hr H5 H6.
-  }
-  rewrite Nat_div_less_small in Hun1; [ | easy ].
-  rewrite Nat_mod_less_small in Hj1; [ clear H | easy ].
-  destruct (lt_dec (u (n + 1) + 1) rad) as [H3| H3].
-  *rewrite Nat.mod_small in Hun1; [ clear H3 | easy ].
-   assert (H : u (n + 1) = rad - 2) by flia Hun1.
-   clear Hun1; rename H into Hun1; move Hun1 before Hun.
-   (* u(n+1)=8 *)
-   specialize (HAF 2) as Hun2.
-   destruct Hun2 as (j2 & Hjj2 & Hj2 & Hun2).
-   remember (rad * (n + 2 + j2 + 3)) as n3 eqn:Hn3.
-   remember (n3 - (n + 2) - 1) as s3 eqn:Hs3.
-   move n3 before s2; move s3 before n3.
-   move j2 before j1.
-   move Hun2 before Hun1.
-   move Hjj2 before Hjj1.
-   move Hj1 before Hjj2; move Hj2 before Hj1.
-   destruct (lt_dec (nA (n + 2) n3 u) (rad ^ s3)) as [H3| H3].
-  --rewrite Nat.div_small in Hun2; [ | easy ].
-    rewrite Nat.mod_small in Hj2; [ | easy ].
-    clear H3.
-    rewrite Nat.add_0_r in Hun2.
-    destruct (lt_dec (u (n + 2)) rad) as [H5| H5].
-   ++rewrite Nat.mod_small in Hun2; [ clear H5 | easy ].
-     (* u(n+1)=8 u(n+2)=9 *)
-     specialize (HAF 3) as Hun3.
-     destruct Hun3 as (j3 & Hjj3 & Hj3 & Hun3).
-     remember (rad * (n + 3 + j3 + 3)) as n4 eqn:Hn4.
-     remember (n4 - (n + 3) - 1) as s4 eqn:Hs4.
-     move n4 before s3; move s4 before n4.
-     move j3 before j2; move Hj3 before Hj2.
-     move Hun3 before Hun2.
-     move Hjj3 before Hjj2.
-     destruct (lt_dec (nA (n + 3) n4 u) (rad ^ s4)) as [H3| H3].
-    **rewrite Nat.div_small in Hun3; [ | easy ].
-      rewrite Nat.mod_small in Hj3; [ | easy ].
-      clear H3.
-      rewrite Nat.add_0_r in Hun3.
-      destruct (lt_dec (u (n + 3)) rad) as [H5| H5].
-    ---rewrite Nat.mod_small in Hun3; [ clear H5 | easy ].
-       (* u(n+1)=8 u(n+2)=u(n+3)=9 *)
-       (* à force d'avoir des 9, Hj2 va finir par être faux *)
-       ...
-    ---apply Nat.nlt_ge in H5.
-       specialize (Hur 2).
-       replace (n + 2 + 1) with (n + 3) in Hur by flia.
-       rewrite Nat_mod_less_small in Hun3; [ flia Hr Hun3 Hur | ].
-       split; [ easy | flia Hr Hur ].
-    **apply Nat.nlt_ge in H3.
-      (* cf Nat_mod_less_small et Nat_div_less_small *)
-      ...
-   ++apply Nat.nlt_ge in H5.
-     specialize (Hur 1).
-     replace (n + 1 + 1) with (n + 2) in Hur by flia.
-     rewrite Nat_mod_less_small in Hun2; [ flia Hr Hun2 Hur | ].
-     split; [ easy | flia Hr Hur ].
-  -- apply Nat.nlt_ge in H3.
-     (* cf Nat_mod_less_small et Nat_div_less_small *)
-     ...
-  *apply Nat.nlt_ge in H3.
-   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
-   rewrite Nat_mod_less_small in Hun1.
-  --assert (H : u (n + 1) = 2 * (rad - 1)) by flia Hun1.
-    clear Hun1; rename H into Hun1; move Hun1 before Hun.
-    (* u(n+1)=18 *)
-    exfalso.
-    apply Nat.nle_gt in H2; apply H2; clear H2.
-    rewrite nA_split_first.
-   ++rewrite Hun1.
-     replace (n1 - n - 2) with (s1 - 1) by flia Hs1.
-     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-     simpl; rewrite Nat.add_0_r.
-     rewrite <- Nat.add_sub_assoc; [ | easy ].
-     rewrite Nat.mul_add_distr_r.
-     rewrite <- Nat.pow_succ_r'.
-     rewrite <- Nat.sub_succ_l.
-    **rewrite Nat.sub_succ, Nat.sub_0_r.
-      rewrite <- Nat.add_assoc.
-      apply Nat_add_le_r.
-    **rewrite Hs1, Hn1.
-      destruct rad; [ easy | simpl; flia ].
-   ++rewrite Hn1.
-     destruct rad; [ easy | simpl; flia ].
-  --split; [ easy | flia Hr Hur ].
--apply Nat.nlt_ge in H2.
- rewrite Nat_mod_less_small in Hj.
+    specialize (H2 H); clear H.
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H2.
+    eapply le_lt_trans; [ apply H2 | ].
+    specialize (Nat.pow_nonzero rad s1 radix_ne_0) as H.
+    flia H2 H.
+  *destruct Hall as (j & Hbef & Hwhi & Haft).
+   ...
  +idtac.
-(*
-  Hj : nA n n1 u - rad ^ s1 < (rad ^ S j - 1) * rad ^ (s1 - S j)
-  Hun : (u n + nA n n1 u / rad ^ s1) mod rad = rad - 1
-  H2 : rad ^ s1 ≤ nA n n1 u
-  ============================
-*)
   ...
- +split; [ easy | ].
-  specialize (nA_upper_bound_for_add u n n1 Hur) as H5.
-  rewrite <- Hs1 in H5.
-  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H5.
-  specialize (Nat.pow_nonzero rad s1 radix_ne_0) as H6.
-  flia Hr H5 H6.
 ...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
