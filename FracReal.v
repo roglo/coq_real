@@ -6642,6 +6642,10 @@ assert (Hsjs1 : S j1 + (s1 - S j1) = s1). {
   rewrite Hs1, Hn1.
   destruct rad; [ easy | simpl; flia ].
 }
+assert (Hs12 : 2 ≤ s1). {
+  rewrite Hs1, Hn1.
+  destruct rad; [ easy | simpl; flia ].
+}
 rewrite summation_eq_compat with
     (h := λ k,
           (if le_dec k (n + j + 1) then rad - 1
@@ -6665,32 +6669,28 @@ rewrite summation_eq_compat with
    ---replace (n1 - 1 - S (n + 1 + 1)) with (s1 - 2) by flia Hs1.
       rewrite <- Nat.mul_assoc.
       rewrite <- power_summation_sub_1; [ | easy ].
-      rewrite <- Nat.sub_succ_l.
-    +++rewrite Nat.sub_succ.
-       rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-       rewrite Nat.add_sub_assoc.
-     ***remember (rad ^ S j1 - 1) as x eqn:Hx.
-        rewrite Nat.mul_sub_distr_r; subst x.
-        rewrite Nat.sub_add; [ | now apply Nat.mul_le_mono_r ].
-        rewrite <- Nat.pow_succ_r'.
-        replace (S (s1 - 1)) with s1.
-     ----rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-         rewrite <- Nat.pow_add_r, Hsjs1.
-         apply Nat.sub_le_mono_l.
-         destruct (zerop (s1 - S j1)) as [Hsj| Hsj].
-      ++++rewrite Hs1, Hn1 in Hsj.
-          destruct rad; [ easy | simpl in Hsj; flia Hsj ].
-      ++++destruct (s1 - S j1) as [| x]; [ flia Hsj | simpl ].
-          replace 2 with (2 * 1) by flia.
-          apply Nat.mul_le_mono; [ easy | ].
-          now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-     ----rewrite Hs1, Hn1.
-         destruct rad; [ easy | simpl; flia ].
-     ***replace 2 with (2 * 1) at 1 by flia.
-        apply Nat.mul_le_mono_l.
+      rewrite <- Nat.sub_succ_l; [ | easy ].
+      rewrite Nat.sub_succ.
+      rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+      rewrite Nat.add_sub_assoc.
+    +++remember (rad ^ S j1 - 1) as x eqn:Hx.
+       rewrite Nat.mul_sub_distr_r; subst x.
+       rewrite Nat.sub_add; [ | now apply Nat.mul_le_mono_r ].
+       rewrite <- Nat.pow_succ_r'.
+       replace (S (s1 - 1)) with s1 by flia Hs12.
+       rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+       rewrite <- Nat.pow_add_r, Hsjs1.
+       apply Nat.sub_le_mono_l.
+       destruct (zerop (s1 - S j1)) as [Hsj| Hsj].
+     ***rewrite Hs1, Hn1 in Hsj.
+        destruct rad; [ easy | simpl in Hsj; flia Hsj ].
+     ***destruct (s1 - S j1) as [| x]; [ flia Hsj | simpl ].
+        replace 2 with (2 * 1) by flia.
+        apply Nat.mul_le_mono; [ easy | ].
         now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-    +++rewrite Hs1, Hn1.
-       destruct rad; [ easy | simpl; flia ].
+    +++replace 2 with (2 * 1) at 1 by flia.
+       apply Nat.mul_le_mono_l.
+       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
    ---intros i Hi; f_equal; flia Hi.
    **rewrite Hn1.
      destruct rad; [ easy | simpl; flia ].
@@ -6718,17 +6718,13 @@ rewrite summation_eq_compat with
     **rewrite H1, summation_empty; [ | apply Nat.lt_succ_diag_r ].
       rewrite Nat.add_0_r.
       remember S as f; simpl; subst f.
-      assert (Hjj : S j1 ≤ j). {
-        rewrite Hn1 in H1.
-        destruct rad; [ easy | simpl in H1; flia H1 ].
-      }
       do 2 rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
       do 2 rewrite <- Nat.pow_add_r.
       rewrite Hsjs1.
       replace (j + (s1 - j)) with s1 by flia Hs1 H1.
       apply Nat.sub_le_mono_l.
       apply Nat.pow_le_mono_r; [ easy | ].
-      now apply Nat.sub_le_mono_l.
+      apply Nat.sub_le_mono_l; flia Hsjs1 Hs1 H1.
     **rewrite summation_split_first; [ | flia Hnn H1 ].
       remember (n + j + 1) as x.
       replace (n + j + 2) with (x + 1) by flia Heqx.
