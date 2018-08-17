@@ -6884,6 +6884,17 @@ destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
   rewrite Nat_mod_less_small in Hun1; [ flia Hr Hur Hun1 | ].
   split; [ easy | flia Hr Hur ].
 -apply Nat.nlt_ge in H1.
+ specialize (A_ge_rad_pow u (n + 1) n1) as H2.
+ rewrite <- Hs1 in H2.
+ assert (H : ∀ k, u (S (n + 1) + k + 1) ≤ 2 * (rad - 1)). {
+   intros k.
+   replace (S (n + 1) + k) with (n + (k + 2)) by flia.
+   apply Hur.
+ }
+ specialize (H2 H H1); clear H.
+ destruct H2 as (j & Hjs & Hkj & Huj).
+...
+
  rewrite Nat_mod_less_small in Hj1.
  (* mouais... à voir... ou alors utiliser A_ge_rad_pow comme ci-dessous *)
 ...
