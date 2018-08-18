@@ -7237,7 +7237,6 @@ apply A_ge_1_false_iff in Hm.
         rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
         f_equal; f_equal.
 *)
-        ...
     **idtac.
       ...
  +idtac.
