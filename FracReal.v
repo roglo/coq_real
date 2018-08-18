@@ -7039,6 +7039,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
    unfold digit_sequence_normalize.
    destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
   --specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
+    exfalso.
     assert (H1 : ∀ k, dig (numbers_to_digits (fd2n y) (S n + k)) = rad - 1). {
       intros k.
       specialize (H2 (S n + k - S i)) as H1.
@@ -7055,7 +7056,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
        unfold freal_add_series, sequence_add.
        now rewrite Hnaft.
     }
-    exfalso.
     assert (H3 : ∀ k, fd2n (freal_normalize y) (S n + k) = rad - 1). {
       intros k.
       unfold fd2n.
@@ -7067,6 +7067,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
     exists (S n); easy.
   --destruct H1 as (j & Hjj & Hj).
     apply is_9_strict_after_false_iff in Hj.
+...
     destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H1| H1].
    ++specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
      assert (H3 : ∀ k, d2n (freal xy) (i + 1 + k) = rad - 1). {
