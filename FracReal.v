@@ -7129,7 +7129,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
         unfold fd2n in Hiaft; rewrite Hiaft in H; flia Hr H.
     ---destruct H1 as (i & Hji & Hi); simpl.
        destruct (LPO_fst (A_ge_1 u n)) as [H1| H1].
-     +++exfalso.
+     +++(*exfalso*)simpl.
         specialize (A_ge_1_add_all_true_if u) as H2.
         specialize (H2 n).
         assert (H : ∀ k, u (n + k + 1) ≤ 2 * (rad - 1)). {
@@ -7141,16 +7141,16 @@ specialize (freal_normalized_cases x) as [H1| H1].
         }
         specialize (H2 H H1); clear H.
         destruct H2 as [H2| [H2| H2]].
-      ***idtac.
-         specialize (H2 k).
-         move Hk at bottom.
-         rewrite Hxy in Hk.
-         unfold freal_unorm_add in Hk; simpl in Hk.
-         unfold freal_add_to_seq in Hk.
-         fold u in Hk.
+      ***unfold u, freal_add_series, sequence_add in H2.
+         assert (H3 : ∀ k, fd2n y (n + k + 1) = 0). {
+           intros l.
+           specialize (H2 l).
+           specialize (Haft l).
+           replace (S n + l) with (n + l + 1) in Haft by flia.
+           rewrite Haft in H2.
+           flia H2.
+         }
 ...
-
-specialize (Hy9 (n + 1)) as (i & Hi).
         specialize (H2 i).
         specialize (Hnaft i).
         replace (S n + i) with (n + i + 1) in Hnaft by flia.
