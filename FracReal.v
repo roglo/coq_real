@@ -7215,6 +7215,28 @@ specialize (freal_normalized_cases x) as [H1| H1].
          rewrite Nat.add_shuffle0 in Hl.
          now rewrite H in Hl.
      +++destruct H1 as (m & Hmi & Hm); simpl.
+apply A_ge_1_false_iff in Hm.
+(* either y=0 and Hm is contradicted because nA=999..999
+   or y≠0 and nA≥1000..000 then nA/... in goal is 1 *)
+        ...
+(*
+        unfold u at 1.
+        unfold v at 1.
+        unfold freal_add_series, sequence_add.
+        do 4 rewrite <- Nat.add_assoc.
+        do 2 (rewrite Nat.add_comm; symmetry).
+        do 2 rewrite <- Nat.add_assoc.
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        f_equal; f_equal.
+        do 2 rewrite Nat.add_assoc.
+        do 2 (rewrite Nat.add_comm; symmetry).
+        rewrite Hwhi, <- Nat.add_1_r.
+        rewrite <- Nat.add_assoc.
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        f_equal; f_equal.
+*)
         ...
     **idtac.
       ...
