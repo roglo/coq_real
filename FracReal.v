@@ -7129,7 +7129,27 @@ specialize (freal_normalized_cases x) as [H1| H1].
         unfold fd2n in Hiaft; rewrite Hiaft in H; flia Hr H.
     ---destruct H1 as (i & Hji & Hi); simpl.
        destruct (LPO_fst (A_ge_1 u n)) as [H1| H1].
-     +++(*exfalso*)simpl.
+     +++simpl.
+        unfold u at 1.
+        unfold v at 1.
+        unfold freal_add_series, sequence_add.
+        do 4 rewrite <- Nat.add_assoc.
+        do 2 (rewrite Nat.add_comm; symmetry).
+        do 3 rewrite <- Nat.add_assoc.
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        f_equal; f_equal.
+        do 2 rewrite Nat.add_assoc.
+        do 2 (rewrite Nat.add_comm; symmetry).
+        rewrite Hwhi, <- Nat.add_1_r.
+        rewrite <- Nat.add_assoc.
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        f_equal; f_equal.
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        f_equal; f_equal.
+...
         specialize (A_ge_1_add_all_true_if u) as H2.
         specialize (H2 n).
         assert (H : ∀ k, u (n + k + 1) ≤ 2 * (rad - 1)). {
@@ -7151,36 +7171,8 @@ specialize (freal_normalized_cases x) as [H1| H1].
            flia H2.
          }
 ...
-        specialize (H2 i).
-        specialize (Hnaft i).
-        replace (S n + i) with (n + i + 1) in Hnaft by flia.
-        replace (n + 1 + i) with (n + i + 1) in Hi by flia.
-        now rewrite Hnaft, Nat.add_0_l in H2.
-     +++specialize (H2 0); rewrite Nat.add_0_r in H2.
-        specialize (Hnaft 0); rewrite Nat.add_0_r, <- Nat.add_1_r in Hnaft.
-        rewrite Hnaft, Nat.add_0_l in H2.
-        specialize (digit_lt_radix (freal y (n + 1))) as H.
-        unfold fd2n in H2; rewrite H2 in H; flia Hr H.
-     +++destruct H2 as (i & Hibef & Hiwhi & Hiaft).
-        specialize (Hnaft (i + 1)).
-        specialize (Hiaft 0).
-        replace (S n + (i + 1)) with (n + i + 2) in Hnaft by flia.
-        rewrite Nat.add_0_r in Hiaft.
-        rewrite Hnaft, Nat.add_0_l in Hiaft.
-        specialize (digit_lt_radix (freal y (n + i + 2))) as H.
-        unfold fd2n in Hiaft; rewrite Hiaft in H; flia Hr H.
-...
-        unfold u at 1.
-        unfold v at 1.
-        unfold freal_add_series, sequence_add.
-        do 4 rewrite <- Nat.add_assoc.
-        do 2 (rewrite Nat.add_comm; symmetry).
-        do 4 rewrite <- Nat.add_assoc.
-        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-        f_equal; f_equal.
-        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+         rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+         rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
         f_equal; f_equal.
         do 2 (rewrite Nat.add_comm; symmetry).
         rewrite Hwhi, <- Nat.add_1_r.
