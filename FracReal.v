@@ -7067,7 +7067,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
     exists (S n); easy.
   --destruct H1 as (j & Hjj & Hj).
     apply is_9_strict_after_false_iff in Hj.
-...
     destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H1| H1].
    ++specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
      assert (H3 : ∀ k, d2n (freal xy) (i + 1 + k) = rad - 1). {
@@ -7086,6 +7085,10 @@ specialize (freal_normalized_cases x) as [H1| H1].
      flia H4 H5.
    ++destruct H1 as (k & Hjk & Hk).
      apply is_9_strict_after_false_iff in Hk.
+(**)
+     destruct (eq_nat_dec i n) as [Hin| Hin].
+    **clear Hni; subst i.
+...
      apply Nat.succ_le_mono in Hni.
      rewrite Hnxy, Hxy.
      unfold freal_unorm_add; simpl.
