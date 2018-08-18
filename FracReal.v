@@ -7141,9 +7141,9 @@ specialize (freal_normalized_cases x) as [H1| H1].
         }
         specialize (H2 H H1); clear H.
         destruct H2 as [H2| [H2| H2]].
-      ***unfold u, freal_add_series, sequence_add in H2.
-         assert (H3 : ∀ k, fd2n y (n + k + 1) = 0). {
+      ***assert (H3 : ∀ k, fd2n y (n + k + 1) = 0). {
            intros l.
+           unfold u, freal_add_series, sequence_add in H2.
            specialize (H2 l).
            specialize (Haft l).
            replace (S n + l) with (n + l + 1) in Haft by flia.
