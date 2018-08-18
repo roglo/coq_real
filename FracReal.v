@@ -7088,60 +7088,56 @@ specialize (freal_normalized_cases x) as [H1| H1].
 (**)
      destruct (eq_nat_dec i n) as [Hin| Hin].
     **clear Hni; subst i.
-...
-     apply Nat.succ_le_mono in Hni.
-     rewrite Hnxy, Hxy.
-     unfold freal_unorm_add; simpl.
-     unfold freal_add_to_seq.
-     set (u := freal_add_series x y).
-     set (v := freal_add_series nx y).
-     unfold numbers_to_digits.
-     remember (rad * (i + 3)) as n1 eqn:Hn1.
-     remember (n1 - i - 1) as s1 eqn:Hs1.
-     move s1 before n1.
-     destruct (LPO_fst (A_ge_1 v i)) as [H1| H1].
-    **simpl.
-(* perhaps useful, I don't know
-      specialize (A_ge_1_add_all_true_if v) as H2.
-      specialize (H2 i).
-      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
-        intros l; unfold v.
-        unfold freal_add_series, sequence_add, fd2n.
-        specialize (digit_lt_radix (freal nx (i + l + 1))) as H4.
-        specialize (digit_lt_radix (freal y (i + l + 1))) as H5.
-        flia H4 H5.
-      }
-      specialize (H2 H H1); clear H.
-*)
-      destruct (LPO_fst (A_ge_1 u i)) as [H3| H3].
+      rewrite Hnxy, Hxy.
+      unfold freal_unorm_add; simpl.
+      unfold freal_add_to_seq.
+      set (u := freal_add_series x y).
+      set (v := freal_add_series nx y).
+      unfold numbers_to_digits.
+      remember (rad * (n + 3)) as n1 eqn:Hn1.
+      remember (n1 - n - 1) as s1 eqn:Hs1.
+      move s1 before n1.
+      destruct (LPO_fst (A_ge_1 v n)) as [H1| H1].
     ---simpl.
 (* perhaps useful, I don't know
-       specialize (A_ge_1_add_all_true_if u) as H4.
-       specialize (H4 i).
-       assert (H : ∀ k, u (i + k + 1) ≤ 2 * (rad - 1)). {
-         intros l; unfold u.
+       specialize (A_ge_1_add_all_true_if v) as H2.
+       specialize (H2 n).
+       assert (H : ∀ k, v (n + k + 1) ≤ 2 * (rad - 1)). {
+         intros l; unfold v.
          unfold freal_add_series, sequence_add, fd2n.
-         specialize (digit_lt_radix (freal x (i + l + 1))) as H5.
-         specialize (digit_lt_radix (freal y (i + l + 1))) as H6.
-         flia H5 H6.
+         specialize (digit_lt_radix (freal nx (n + l + 1))) as H4.
+         specialize (digit_lt_radix (freal y (n + l + 1))) as H5.
+         flia H4 H5.
        }
-       specialize (H4 H H3); clear H.
+       specialize (H2 H H1); clear H.
 *)
-       unfold u at 1.
-       unfold v at 1.
-       unfold freal_add_series, sequence_add.
-       do 4 rewrite <- Nat.add_assoc.
-       do 2 (rewrite Nat.add_comm; symmetry).
-       do 4 rewrite <- Nat.add_assoc.
-       rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-       rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-       f_equal; f_equal.
-       rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-       rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-       f_equal; f_equal.
-       do 2 (rewrite Nat.add_comm; symmetry).
-       destruct (eq_nat_dec i n) as [Hni2| Hni2].
-     +++subst i; clear Hni.
+       destruct (LPO_fst (A_ge_1 u n)) as [H3| H3].
+     +++simpl.
+(* perhaps useful, I don't know
+        specialize (A_ge_1_add_all_true_if u) as H4.
+        specialize (H4 n).
+        assert (H : ∀ k, u (n + k + 1) ≤ 2 * (rad - 1)). {
+          intros l; unfold u.
+          unfold freal_add_series, sequence_add, fd2n.
+          specialize (digit_lt_radix (freal x (n + l + 1))) as H5.
+          specialize (digit_lt_radix (freal y (n + l + 1))) as H6.
+          flia H5 H6.
+        }
+        specialize (H4 H H3); clear H.
+*)
+        unfold u at 1.
+        unfold v at 1.
+        unfold freal_add_series, sequence_add.
+        do 4 rewrite <- Nat.add_assoc.
+        do 2 (rewrite Nat.add_comm; symmetry).
+        do 4 rewrite <- Nat.add_assoc.
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        f_equal; f_equal.
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        f_equal; f_equal.
+        do 2 (rewrite Nat.add_comm; symmetry).
         rewrite Hwhi, <- Nat.add_1_r.
         rewrite <- Nat.add_assoc.
         rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
