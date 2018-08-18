@@ -7149,7 +7149,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
         rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
         rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
         f_equal; f_equal.
-...
         specialize (A_ge_1_add_all_true_if u) as H2.
         specialize (H2 n).
         assert (H : ∀ k, u (n + k + 1) ≤ 2 * (rad - 1)). {
@@ -7170,21 +7169,53 @@ specialize (freal_normalized_cases x) as [H1| H1].
            rewrite Haft in H2.
            flia H2.
          }
-...
-         rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-         rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-        f_equal; f_equal.
-        do 2 (rewrite Nat.add_comm; symmetry).
-        rewrite Hwhi, <- Nat.add_1_r.
-        rewrite <- Nat.add_assoc.
-        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-        f_equal; f_equal.
-...
-     +++idtac.
+         rewrite Nat.div_small.
+      ----rewrite Nat.div_small; [ easy | ].
+          apply nA_dig_seq_ub.
+       ++++intros l Hl.
+           unfold u, freal_add_series, sequence_add.
+           specialize (H3 (l - n - 1)).
+           replace (n + (l - n - 1) + 1) with l in H3 by flia Hl.
+           rewrite H3, Nat.add_0_r.
+           apply digit_lt_radix.
+       ++++destruct rad; [ easy | simpl; flia ].
+      ----apply nA_dig_seq_ub.
+       ++++intros l Hl.
+           unfold v, freal_add_series, sequence_add.
+           specialize (H3 (l - n - 1)).
+           replace (n + (l - n - 1) + 1) with l in H3 by flia Hl.
+           rewrite H3, Nat.add_0_r.
+           apply digit_lt_radix.
+       ++++destruct rad; [ easy | simpl; flia ].
+      ***exfalso.
+         (* according to H2 and Haft, y ends with 999...
+            which is contradicted with Hy9 *)
+         assert (H : ∀ k, fd2n y (n + k + 1) = rad - 1). {
+           intros l.
+           specialize (H2 l).
+           specialize (Haft l).
+           replace (S n + l) with (n + l + 1) in Haft by flia.
+           unfold u, freal_add_series, sequence_add in H2.
+           rewrite Haft in H2; flia H2.
+         }
+         specialize (Hy9 (n + 1)) as (l & Hl).
+         replace (n + 1 + l) with (n + l + 1) in Hl by flia.
+         now rewrite H in Hl.
+      ***exfalso.
+         destruct H2 as (m & Hmbef & Hmwhi & Hmaft).
+         assert (H : ∀ k, fd2n y (n + m + k + 2) = rad - 1). {
+           intros l.
+           specialize (Hmaft l).
+           specialize (Haft (m + l + 1)).
+           replace (S n + (m + l + 1)) with (n + m + l + 2) in Haft by flia.
+           unfold u, freal_add_series, sequence_add in Hmaft.
+           rewrite Haft in Hmaft; flia Hmaft.
+         }
+         specialize (Hy9 (n + m + 2)) as (l & Hl).
+         rewrite Nat.add_shuffle0 in Hl.
+         now rewrite H in Hl.
+     +++destruct H1 as (m & Hmi & Hm); simpl.
         ...
-    ---idtac.
-       ...
     **idtac.
       ...
  +idtac.
