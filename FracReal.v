@@ -7030,6 +7030,26 @@ rewrite H; clear H.
 specialize (freal_unorm_add_comm x y) as H.
 rewrite H; clear H.
 unfold freal_norm_eq.
+remember (freal_unorm_add x (freal_unorm_add y z)) as xayz eqn:Hxayz.
+remember (freal_unorm_add z (freal_unorm_add y x)) as zayx eqn:Hzayx.
+move zayx before xayz.
+destruct (LPO_fst (has_same_digits xayz zayx)) as [H1| H1]; [ easy | ].
+destruct H1 as (i & Hji & Hi).
+apply has_same_digits_false_iff in Hi; apply Hi; clear Hi.
+rewrite Hxayz, Hzayx.
+unfold freal_unorm_add at 1 3.
+unfold fd2n; simpl.
+unfold freal_add_to_seq.
+remember (freal_unorm_add y z) as yz eqn:Hyz.
+remember (freal_unorm_add y x) as yx eqn:Hyx.
+move yx before yz.
+move Hyx before Hyz.
+remember (freal_add_series x yz) as xyz eqn:Hxyz.
+remember (freal_add_series z yx) as zyx eqn:Hzyx.
+move zyx before xyz.
+unfold propagate_carries.
+destruct (LPO_fst (A_ge_1 xyz i)) as [H1| H1].
+-simpl.
 ...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
