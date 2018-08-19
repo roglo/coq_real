@@ -1079,6 +1079,11 @@ Definition freal_mul_to_seq {r : radix} (a b : FracReal) :=
 
 Definition freal_unorm_add {r : radix} x y := {| freal := freal_add_to_seq x y |}.
 
+(* est-ce que c'est vraiment nécessaire de normaliser a et b avant de
+   les additionner ? j'ai démontré plus loin que 'propagate_carries'
+   rendait toujours un nombre normalisé (il ne peut pas se terminer
+   par une infinité de 9 (not_propagate_carries_all_9) *)
+...
 Definition freal_add {r : radix} (a b : FracReal) :=
   freal_unorm_add (freal_normalize a) (freal_normalize b).
 
@@ -7218,6 +7223,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
 apply A_ge_1_false_iff in Hm.
 (* either y=0 and Hm is contradicted because nA=999..999
    or y≠0 and nA≥1000..000 then nA/... in goal is 1 *)
+Abort. (*
         ...
 (*
         unfold u at 1.
@@ -7241,6 +7247,7 @@ apply A_ge_1_false_iff in Hm.
       ...
  +idtac.
   ...
+*)
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
