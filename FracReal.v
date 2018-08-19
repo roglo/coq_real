@@ -1083,9 +1083,10 @@ Definition freal_unorm_add {r : radix} x y := {| freal := freal_add_to_seq x y |
    les additionner ? j'ai démontré plus loin que 'propagate_carries'
    rendait toujours un nombre normalisé (il ne peut pas se terminer
    par une infinité de 9 (not_propagate_carries_all_9) *)
-...
 Definition freal_add {r : radix} (a b : FracReal) :=
   freal_unorm_add (freal_normalize a) (freal_normalize b).
+
+Print freal_add.
 
 Arguments freal_add _ a%F b%F.
 
@@ -1286,14 +1287,14 @@ destruct (LPO_fst (A_ge_1 xy i)) as [Hxy| Hxy].
 Qed.
 *)
 
-Theorem dig_norm_add_comm {r : radix} : ∀ x y i,
-  freal (freal_normalize (x + y)) i = freal (freal_normalize (y + x)) i.
+Theorem dig_norm_unorm_add_comm {r : radix} : ∀ x y i,
+  freal (freal_normalize (freal_unorm_add x y)) i =
+  freal (freal_normalize (freal_unorm_add y x)) i.
 Proof.
 intros.
-unfold freal_normalize.
-remember (freal (x + y)) as xy.
-remember (freal (y + x)) as yx.
-simpl.
+unfold freal_normalize; simpl.
+remember (freal_add_to_seq x y) as xy.
+remember (freal_add_to_seq y x) as yx.
 unfold digit_sequence_normalize.
 destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
 -destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
@@ -1339,6 +1340,13 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
   now unfold d2n in Hyx.
  +subst xy yx; simpl.
   apply freal_add_to_seq_i_comm.
+Qed.
+
+Theorem dig_norm_add_comm {r : radix} : ∀ x y i,
+  freal (freal_normalize (x + y)) i = freal (freal_normalize (y + x)) i.
+Proof.
+intros.
+apply dig_norm_unorm_add_comm.
 Qed.
 
 (*
@@ -1411,20 +1419,27 @@ unfold has_same_digits.
 now destruct (Nat.eq_dec (fd2n x i) (fd2n y i)).
 Qed.
 
-Theorem freal_add_comm {r : radix} : ∀ x y : FracReal, (x + y = y + x)%F.
+Theorem freal_unorm_add_comm {r : radix} : ∀ x y : FracReal,
+  freal_eq (freal_unorm_add x y) (freal_unorm_add y x).
 Proof.
 intros.
 unfold freal_eq.
 unfold freal_norm_eq.
-remember (freal_normalize (x + y)) as nxy eqn:Hnxy.
-remember (freal_normalize (y + x)) as nyx eqn:Hnyx.
+remember (freal_normalize (freal_unorm_add x y)) as nxy eqn:Hnxy.
+remember (freal_normalize (freal_unorm_add y x)) as nyx eqn:Hnyx.
 destruct (LPO_fst (has_same_digits nxy nyx)) as [H| H]; [ easy | ].
 exfalso.
 destruct H as (i & Hji & Hi).
 apply has_same_digits_false_iff in Hi.
 apply Hi; clear Hi.
 subst nxy nyx; unfold fd2n; f_equal.
-apply dig_norm_add_comm.
+apply dig_norm_unorm_add_comm.
+Qed.
+
+Theorem freal_add_comm {r : radix} : ∀ x y : FracReal, (x + y = y + x)%F.
+Proof.
+intros.
+apply freal_unorm_add_comm.
 Qed.
 
 (*
@@ -6980,6 +6995,19 @@ destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
      replace (n + S (S j)) with (n + 1 + S j) in Hbef by flia.
      rewrite Hbef in Huj; flia Hr Huj.
 Qed.
+
+Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
+  freal_eq
+    (freal_unorm_add x (freal_unorm_add y z))
+    (freal_unorm_add (freal_unorm_add x y) z).
+Proof.
+intros.
+specialize (freal_unorm_add_comm (x + y)%F z) as H.
+rewrite H; clear H.
+specialize (freal_add_comm x y) as H.
+rewrite H; clear H.
+unfold freal_add; simpl.
+...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
   (freal_unorm_add (freal_normalize x) y = freal_unorm_add x y)%F.
