@@ -7002,9 +7002,10 @@ Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
     (freal_unorm_add (freal_unorm_add x y) z).
 Proof.
 intros.
-specialize (freal_unorm_add_comm (x + y)%F z) as H.
+specialize (freal_unorm_add_comm (freal_unorm_add x y) z) as H.
 rewrite H; clear H.
-specialize (freal_add_comm x y) as H.
+specialize (freal_unorm_add_comm x y) as H.
+...
 rewrite H; clear H.
 unfold freal_add; simpl.
 ...
