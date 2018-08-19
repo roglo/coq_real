@@ -2235,6 +2235,8 @@ intros x y Hxy.
 unfold freal_eq, freal_norm_eq in Hxy |-*.
 remember (freal_normalize x) as nx eqn:Hnx.
 remember (freal_normalize y) as ny eqn:Hny.
+intros i; symmetry; apply Hxy.
+(*
 destruct (LPO_fst (has_same_digits ny nx)) as [Hs| Hs]; [ easy | exfalso ].
 destruct (LPO_fst (has_same_digits nx ny)) as [Ht| Ht]; [ clear Hxy | easy ].
 destruct Hs as (i & Hji & Hyx).
@@ -2243,6 +2245,7 @@ unfold has_same_digits in Ht, Hyx.
 destruct (Nat.eq_dec (fd2n ny i) (fd2n nx i)) as [H1| H1]; [ easy | ].
 destruct (Nat.eq_dec (fd2n nx i) (fd2n ny i)) as [H2| H2]; [ | easy ].
 now symmetry in H2.
+*)
 Qed.
 
 Theorem freal_eq_trans {r : radix} : transitive _ freal_eq.
@@ -2252,6 +2255,9 @@ unfold freal_eq, freal_norm_eq in Hxy, Hyz |-*.
 remember (freal_normalize x) as nx eqn:Hnx.
 remember (freal_normalize y) as ny eqn:Hny.
 remember (freal_normalize z) as nz eqn:Hnz.
+intros i.
+now rewrite Hxy, Hyz.
+(*
 destruct (LPO_fst (has_same_digits nx ny)) as [Hx| Hx]; [ clear Hxy | easy ].
 destruct (LPO_fst (has_same_digits ny nz)) as [Hy| Hy]; [ clear Hyz | easy ].
 destruct (LPO_fst (has_same_digits nx nz)) as [Hz| Hz]; [ easy | exfalso ].
@@ -2264,6 +2270,7 @@ destruct (Nat.eq_dec (fd2n ny i) (fd2n nz i)) as [H2| H2]; [ | easy ].
 destruct (Nat.eq_dec (fd2n nx i) (fd2n nz i)) as [H3| H3]; [ easy | ].
 apply H3.
 now transitivity (fd2n ny i).
+*)
 Qed.
 
 Add Parametric Relation {r : radix} : (FracReal) freal_eq
@@ -2589,9 +2596,12 @@ Theorem freal_eq_normalized_eq {r : radix} : ∀ x y,
 Proof.
 intros.
 unfold freal_eq, freal_norm_eq.
+split; intros Hxy *; apply digit_eq_eq, Hxy.
+(*
 remember (freal_normalize x) as nx eqn:Hnx.
 remember (freal_normalize y) as ny eqn:Hny.
 split; intros Hxy *.
+-apply digit_eq_eq, Hxy.
 -destruct (LPO_fst (has_same_digits nx ny)) as [H1| H1]; [ clear Hxy | easy ].
  specialize (H1 i).
  unfold has_same_digits in H1.
@@ -2602,6 +2612,7 @@ split; intros Hxy *.
  apply has_same_digits_false_iff in Hi.
  exfalso; apply Hi; unfold has_same_digits.
  apply digit_eq_eq, Hxy.
+*)
 Qed.
 
 Add Parametric Morphism {r : radix} : freal_add
@@ -5200,6 +5211,8 @@ Theorem freal_norm_eq_sym {r : radix} : symmetric _ freal_norm_eq.
 Proof.
 intros x y Hxy.
 unfold freal_norm_eq in Hxy |-*.
+intros i; symmetry; apply Hxy.
+(*
 destruct (LPO_fst (has_same_digits y x)) as [Hs| Hs]; [ easy | exfalso ].
 destruct (LPO_fst (has_same_digits x y)) as [Ht| Ht]; [ clear Hxy | easy ].
 destruct Hs as (i & Hji & Hyx).
@@ -5208,12 +5221,16 @@ unfold has_same_digits in Ht, Hyx.
 destruct (Nat.eq_dec (fd2n y i) (fd2n x i)) as [H1| H1]; [ easy | ].
 destruct (Nat.eq_dec (fd2n x i) (fd2n y i)) as [H2| H2]; [ | easy ].
 now symmetry in H2.
+*)
 Qed.
 
 Theorem freal_norm_eq_trans {r : radix} : transitive _ freal_norm_eq.
 Proof.
 intros x y z Hxy Hyz.
 unfold freal_norm_eq in Hxy, Hyz |-*.
+intros i.
+now rewrite Hxy, Hyz.
+(*
 destruct (LPO_fst (has_same_digits x y)) as [Hx| Hx]; [ clear Hxy | easy ].
 destruct (LPO_fst (has_same_digits y z)) as [Hy| Hy]; [ clear Hyz | easy ].
 destruct (LPO_fst (has_same_digits x z)) as [Hz| Hz]; [ easy | exfalso ].
@@ -5226,6 +5243,7 @@ destruct (Nat.eq_dec (fd2n y i) (fd2n z i)) as [H2| H2]; [ | easy ].
 destruct (Nat.eq_dec (fd2n x i) (fd2n z i)) as [H3| H3]; [ easy | ].
 apply H3.
 now transitivity (fd2n y i).
+*)
 Qed.
 
 Add Parametric Relation {r : radix} : (FracReal) freal_norm_eq
@@ -5258,12 +5276,15 @@ specialize (proj1 (freal_normalized_eq_iff x nx) H1) as H2.
 destruct H2 as [H2| [H2| H2]]; [ | | now right ].
 -left.
  unfold freal_norm_eq.
+ now intros i; apply digit_eq_eq; rewrite H2.
+(*
  destruct (LPO_fst (has_same_digits nx x)) as [| H3]; [ easy | ].
  destruct H3 as (i & Hji & Hi).
  apply has_same_digits_false_iff in Hi.
  unfold fd2n in Hi.
  specialize (H2 i).
  now rewrite H2 in Hi.
+*)
 -unfold freal_norm_not_norm_eq in H2.
  destruct H2 as (k & Hbef & Hwhi & Hxaft & Hnxaft).
  specialize (normalized_not_999 x) as H2.
@@ -5314,6 +5335,7 @@ Add Parametric Morphism {r : radix} : freal_normalize
 Proof.
 intros x y Hxy.
 unfold freal_norm_eq in Hxy |-*.
+...
 destruct (LPO_fst (has_same_digits x y)) as [H| ]; [ clear Hxy | easy ].
 specialize (all_eq_seq_all_eq x y H) as H1; clear H.
 remember (freal_normalize x) as nx eqn:Hnx.
