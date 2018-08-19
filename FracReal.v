@@ -5335,7 +5335,8 @@ Add Parametric Morphism {r : radix} : freal_normalize
 Proof.
 intros x y Hxy.
 unfold freal_norm_eq in Hxy |-*.
-...
+intros i.
+(*
 destruct (LPO_fst (has_same_digits x y)) as [H| ]; [ clear Hxy | easy ].
 specialize (all_eq_seq_all_eq x y H) as H1; clear H.
 remember (freal_normalize x) as nx eqn:Hnx.
@@ -5346,35 +5347,37 @@ destruct H2 as (i & Hij & Hi).
 apply has_same_digits_false_iff in Hi.
 apply Hi; clear Hi.
 subst nx ny.
+*)
 unfold fd2n, freal_normalize; simpl.
 unfold digit_sequence_normalize.
+unfold fd2n in Hxy.
 destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
 -destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H3| H3].
  +destruct (lt_dec (S (d2n (freal x) i)) rad) as [H4| H4].
   *simpl.
    destruct (lt_dec (S (d2n (freal y) i)) rad) as [H5| H5].
   --simpl; unfold d2n.
-    now rewrite H1.
+    now rewrite Hxy.
   --unfold d2n in H4, H5.
-    now rewrite H1 in H4.
+    now rewrite Hxy in H4.
   *destruct (lt_dec (S (d2n (freal y) i)) rad) as [H5| ]; [ | easy ].
    unfold d2n in H4, H5.
-   now rewrite H1 in H4.
+   now rewrite Hxy in H4.
  +exfalso.
   destruct H3 as (j & Hjj & Hj).
   specialize (H2 j).
   apply is_9_strict_after_true_iff in H2.
   apply is_9_strict_after_false_iff in Hj.
   unfold d2n in H2, Hj.
-  now rewrite H1 in H2.
+  now rewrite Hxy in H2.
 -destruct H2 as (j & Hjj & Hj).
  destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H2| H2].
  +specialize (H2 j).
   apply is_9_strict_after_true_iff in H2.
   apply is_9_strict_after_false_iff in Hj.
   unfold d2n in H2, Hj.
-  now rewrite H1 in Hj.
- +now rewrite H1.
+  now rewrite Hxy in Hj.
+ +now rewrite Hxy.
 Qed.
 
 Add Parametric Morphism {r : radix} : freal_unorm_add
@@ -5383,6 +5386,7 @@ Add Parametric Morphism {r : radix} : freal_unorm_add
 Proof.
 intros x y Hxy x' y' Hxy'.
 unfold freal_norm_eq in Hxy, Hxy'.
+...
 destruct (LPO_fst (has_same_digits x y)) as [H1| ]; [ clear Hxy | easy ].
 destruct (LPO_fst (has_same_digits x' y')) as [H2| ]; [ clear Hxy' | easy ].
 specialize (all_eq_seq_all_eq x y H1) as H3; clear H1.
