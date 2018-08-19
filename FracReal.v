@@ -1287,6 +1287,71 @@ destruct (LPO_fst (A_ge_1 xy i)) as [Hxy| Hxy].
 Qed.
 *)
 
+Theorem dig_unorm_add_comm {r : radix} : ∀ x y i,
+  freal (freal_unorm_add x y) i = freal (freal_unorm_add y x) i.
+Proof.
+intros; simpl.
+unfold freal_add_to_seq.
+...
+
+remember (freal_add_to_seq x y) as xy.
+remember (freal_add_to_seq y x) as yx.
+unfold digit_sequence_normalize.
+destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
+-destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
+ +unfold freal_add in Heqxy; simpl in Heqxy.
+  unfold freal_add in Heqyx; simpl in Heqyx.
+  destruct (lt_dec (S (d2n xy i)) rad) as [Hrxy| Hrxy].
+  *subst xy; simpl in Hrxy; simpl.
+   destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx].
+  --unfold freal_add in Heqyx; simpl in Heqyx.
+    subst yx; simpl in Hryx; simpl.
+    apply digit_eq_eq; unfold d2n.
+    remember freal_add_to_seq as f; simpl; subst f.
+    now rewrite freal_add_to_seq_i_comm.
+  --subst yx; simpl in Hryx.
+    unfold d2n in Hryx.
+    now rewrite freal_add_to_seq_i_comm in Hryx.
+  *destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx]; [ | easy ].
+   exfalso.
+   subst xy yx; simpl in Hryx; unfold d2n in Hryx.
+   now rewrite freal_add_to_seq_i_comm in Hryx.
+ +destruct Hyx as (k & Hjk & Hk); clear Hjk.
+  unfold freal_add in Heqyx; simpl in Heqyx.
+  subst yx; simpl in Hk; simpl.
+  unfold freal_add in Heqxy; simpl in Heqxy.
+  subst xy; simpl in Hxy; simpl.
+  apply is_9_strict_after_false_iff in Hk.
+  unfold d2n in Hk.
+  rewrite freal_add_to_seq_i_comm in Hk.
+  specialize (Hxy k).
+  apply is_9_strict_after_true_iff in Hxy.
+  now unfold d2n in Hxy.
+-destruct Hxy as (k & Hjk & Hk).
+ unfold freal_add in Heqxy; simpl in Heqxy.
+ unfold freal_add in Heqyx; simpl in Heqyx.
+ destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
+ +exfalso; clear Hjk.
+  subst xy yx; simpl in Hk, Hyx; unfold d2n in Hk; simpl.
+  apply is_9_strict_after_false_iff in Hk.
+  unfold d2n in Hk.
+  rewrite freal_add_to_seq_i_comm in Hk.
+  specialize (Hyx k).
+  apply is_9_strict_after_true_iff in Hyx.
+  now unfold d2n in Hyx.
+ +subst xy yx; simpl.
+  apply freal_add_to_seq_i_comm.
+Qed.
+
+Theorem dig_norm_add_comm {r : radix} : ∀ x y i,
+  freal (freal_normalize (x + y)) i = freal (freal_normalize (y + x)) i.
+Proof.
+intros.
+apply dig_norm_unorm_add_comm.
+Qed.
+
+...
+
 Theorem dig_norm_unorm_add_comm {r : radix} : ∀ x y i,
   freal (freal_normalize (freal_unorm_add x y)) i =
   freal (freal_normalize (freal_unorm_add y x)) i.
@@ -1417,6 +1482,30 @@ Proof.
 intros.
 unfold has_same_digits.
 now destruct (Nat.eq_dec (fd2n x i) (fd2n y i)).
+Qed.
+
+Theorem freal_unorm_add_comm {r : radix} : ∀ x y : FracReal,
+  freal_norm_eq (freal_unorm_add x y) (freal_unorm_add y x).
+Proof.
+intros.
+unfold freal_norm_eq.
+remember (freal_unorm_add x y) as nxy eqn:Hnxy.
+remember (freal_unorm_add y x) as nyx eqn:Hnyx.
+destruct (LPO_fst (has_same_digits nxy nyx)) as [H| H]; [ easy | ].
+exfalso.
+destruct H as (i & Hji & Hi).
+apply has_same_digits_false_iff in Hi.
+apply Hi; clear Hi.
+subst nxy nyx; unfold fd2n; f_equal.
+Check dig_norm_unorm_add_comm.
+...
+apply dig_norm_unorm_add_comm.
+Qed.
+
+Theorem freal_add_comm {r : radix} : ∀ x y : FracReal, (x + y = y + x)%F.
+Proof.
+intros.
+apply freal_unorm_add_comm.
 Qed.
 
 Theorem freal_unorm_add_comm {r : radix} : ∀ x y : FracReal,
