@@ -7026,12 +7026,10 @@ Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
 Proof.
 intros.
 specialize (freal_unorm_add_comm (freal_unorm_add x y) z) as H.
-...
 rewrite H; clear H.
 specialize (freal_unorm_add_comm x y) as H.
-...
 rewrite H; clear H.
-unfold freal_add; simpl.
+unfold freal_norm_eq.
 ...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
