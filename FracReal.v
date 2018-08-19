@@ -6997,12 +6997,13 @@ destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
 Qed.
 
 Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
-  freal_eq
+  freal_norm_eq
     (freal_unorm_add x (freal_unorm_add y z))
     (freal_unorm_add (freal_unorm_add x y) z).
 Proof.
 intros.
 specialize (freal_unorm_add_comm (freal_unorm_add x y) z) as H.
+...
 rewrite H; clear H.
 specialize (freal_unorm_add_comm x y) as H.
 ...
