@@ -266,11 +266,15 @@ Arguments freal_normalize r x%F.
 Definition has_same_digits {r : radix} x y i :=
   if Nat.eq_dec (fd2n x i) (fd2n y i) then true else false.
 
+(*
 Definition freal_norm_eq {r : radix} x y :=
   match LPO_fst (has_same_digits x y) with
   | inl _ => True
   | inr _ => False
   end.
+*)
+Definition freal_norm_eq {r : radix} x y := ∀ i, fd2n x i = fd2n y i.
+(**)
 
 (*
 Definition freal_norm_lt {r : radix} x y :=
@@ -1433,11 +1437,14 @@ intros.
 unfold freal_norm_eq.
 remember (freal_unorm_add x y) as nxy eqn:Hnxy.
 remember (freal_unorm_add y x) as nyx eqn:Hnyx.
+intros i.
+(*
 destruct (LPO_fst (has_same_digits nxy nyx)) as [H| H]; [ easy | ].
 exfalso.
 destruct H as (i & Hji & Hi).
 apply has_same_digits_false_iff in Hi.
 apply Hi; clear Hi.
+*)
 subst nxy nyx; unfold fd2n; f_equal.
 apply dig_unorm_add_comm.
 Qed.
@@ -1450,11 +1457,14 @@ unfold freal_eq.
 unfold freal_norm_eq.
 remember (freal_normalize (freal_unorm_add x y)) as nxy eqn:Hnxy.
 remember (freal_normalize (freal_unorm_add y x)) as nyx eqn:Hnyx.
+intros i.
+(*
 destruct (LPO_fst (has_same_digits nxy nyx)) as [H| H]; [ easy | ].
 exfalso.
 destruct H as (i & Hji & Hi).
 apply has_same_digits_false_iff in Hi.
 apply Hi; clear Hi.
+*)
 subst nxy nyx; unfold fd2n; f_equal.
 apply dig_norm_unorm_add_comm.
 Qed.
