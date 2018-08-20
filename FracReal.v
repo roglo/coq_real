@@ -1473,30 +1473,26 @@ Theorem nA_all_9 {r : radix} : ∀ u i n,
   → nA i n u = rad ^ (n - i - 1) - 1.
 Proof.
 intros * Hj.
-...
 unfold nA.
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
- rewrite <- summation_mul_distr_l.
+-rewrite <- summation_mul_distr_l.
  destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin].
-  rewrite summation_shift; [ | easy ].
+ +rewrite summation_shift; [ | easy ].
   rewrite summation_rtl.
   rewrite summation_eq_compat with (h := λ j, rad ^ j).
-   apply Nat.succ_inj_wd.
+  *apply Nat.succ_inj_wd.
    rewrite <- Nat.add_1_l.
    rewrite <- power_summation; [ symmetry | easy ].
    rewrite <- Nat.sub_succ_l; [ | now apply Nat_pow_ge_1 ].
    rewrite Nat.sub_succ, Nat.sub_0_r.
    f_equal; flia Hin.
-
-   intros k Hk; f_equal; flia Hk.
-
-  replace (n - i - 1) with 0 by flia Hin.
+  *intros k Hk; f_equal; flia Hk.
+ +replace (n - i - 1) with 0 by flia Hin.
   rewrite summation_empty; [ | flia Hin ].
   rewrite Nat.mul_0_r; simpl; flia.
-
- intros j Hij.
+-intros j Hij.
  replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
- now rewrite Hj.
+ rewrite Hj; [ easy | flia Hij ].
 Qed.
 
 Theorem nA_all_18 {r : radix} : ∀ u i n,
@@ -1562,14 +1558,41 @@ destruct (le_dec (i + j + 1) (n - 1)) as [H1| H1].
   replace (i + j + 1 - 1) with (i + j) by flia.
   replace (i + j + 2 - (i + j + 1)) with 1 by flia.
   rewrite Nat.pow_1_r.
-...
   rewrite nA_all_9.
-  *admit.
-  *intros k.
-   apply Hbef.
-...
--idtac.
- ...
+  *replace (i + j + 1 - i - 1) with j by flia.
+   unfold nA at 1.
+   replace (i + j + 2 - 1) with (i + j + 1) by flia.
+   rewrite summation_only_one, Hwhi.
+   rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+   rewrite nA_all_18.
+  --replace (n - (i + j + 1) - 1) with (n - i - j - 2) by flia.
+    replace (n - (i + j + 2)) with (n - i - j - 2) by flia.
+    rewrite Nat.mul_sub_distr_r, Nat.add_sub_assoc; [ | easy ].
+    rewrite Nat.mul_1_l, Nat.sub_add.
+   ++rewrite Nat.mul_sub_distr_r, Nat.mul_sub_distr_l, Nat.mul_1_r.
+     rewrite Nat.add_sub_assoc.
+    **rewrite Nat.sub_add.
+    ---rewrite <- Nat.mul_assoc, <- Nat.pow_succ_r'.
+       rewrite <- Nat.pow_add_r.
+       f_equal; f_equal; flia H1.
+    ---apply Nat.mul_le_mono_r.
+       replace 2 with (1 * 2) at 1 by flia.
+       apply Nat.mul_le_mono; [ | easy ].
+       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+    **replace 2 with (2 * 1) at 1 by flia.
+      apply Nat.mul_le_mono_l.
+      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+   ++replace rad with (1 * rad) at 1 by flia.
+     apply Nat.mul_le_mono_r.
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  --intros k.
+    replace (i + j + 1 + k + 1) with (i + j + k + 2) by flia.
+    apply Haft.
+  *intros k Hk.
+   apply Hbef; flia Hk.
+-apply nA_all_9.
+ intros k Hk.
+ apply Hbef; flia H1 Hk.
 Qed.
 
 (*
@@ -6093,14 +6116,14 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
    apply A_ge_1_add_all_true_if in H2.
   --destruct H1 as [H1| [H1| H1]].
    ++rewrite Nat.div_small.
-    **admit.
+    ** ...
     **rewrite nA_all_9; [ | easy | easy ].
       apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
    ++rewrite Nat_div_less_small.
-    **admit.
+    ** ...
     **split.
-    ---admit.
+    --- ...
     ---rewrite nA_all_18; [ | easy | easy ].
        rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
        apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
@@ -6109,7 +6132,7 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
    ++destruct H1 as (j1 & H1bef & H1whi & H1aft).
      rewrite Nat.div_small.
-    **admit.
+    ** ...
     **idtac.
 ...
 
