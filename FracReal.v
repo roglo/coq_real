@@ -1469,10 +1469,11 @@ apply Hu; flia Hk Hj.
 Qed.
 
 Theorem nA_all_9 {r : radix} : ∀ u i n,
-  (∀ j, u (i + j + 1) = rad - 1)
+  (∀ j, i + j + 1 < n → u (i + j + 1) = rad - 1)
   → nA i n u = rad ^ (n - i - 1) - 1.
 Proof.
 intros * Hj.
+...
 unfold nA.
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
  rewrite <- summation_mul_distr_l.
@@ -1530,7 +1531,9 @@ Theorem nA_9_8_all_18 {r : radix} : ∀ u i n j,
        if le_dec (i + j + 1) (n - 1) then rad ^ (n - i - 1) - 2
        else rad ^ (n - i - 1) - 1.
 Proof.
-intros * Hbef Hwhi Haft.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hbef Hwhi Haft.
 destruct (le_dec (i + j + 1) (n - 1)) as [H1| H1].
 -rewrite nA_split with (e := i + j + 2); [ | flia H1 ].
  replace (i + j + 2 - 1) with (i + j + 1) by flia.
@@ -1540,12 +1543,31 @@ destruct (le_dec (i + j + 1) (n - 1)) as [H1| H1].
   unfold nA at 1.
   replace (i + 2 - 1) with (i + 1) by flia.
   rewrite summation_only_one, Hwhi.
-  ...
+  rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+  rewrite nA_all_18.
+  *replace (n - (i + 1) - 1) with (n - i - 2) by flia.
+   replace (n - (i + 2)) with (n - i - 2) by flia.
+   rewrite Nat.mul_sub_distr_r, Nat.mul_sub_distr_l, Nat.mul_1_r.
+   rewrite Nat.add_sub_assoc.
+  --rewrite Nat.sub_add.
+   ++rewrite <- Nat.pow_succ_r'; f_equal; f_equal; flia H1.
+   ++apply Nat.mul_le_mono_r; flia Hr.
+  --replace 2 with (2 * 1) at 1 by flia.
+    apply Nat.mul_le_mono_l.
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *intros j.
+   replace (i + 1 + j + 1) with (i + j + 2) by flia.
+   apply Haft.
  +rewrite nA_split with (e := i + j + 1); [ | flia H1 Hj ].
   replace (i + j + 1 - 1) with (i + j) by flia.
   replace (i + j + 2 - (i + j + 1)) with 1 by flia.
   rewrite Nat.pow_1_r.
-  ...
+...
+  rewrite nA_all_9.
+  *admit.
+  *intros k.
+   apply Hbef.
+...
 -idtac.
  ...
 Qed.
