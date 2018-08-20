@@ -6110,21 +6110,21 @@ move z_yx before x_yz.
 unfold propagate_carries.
 destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
 -simpl.
+ remember (rad * (i + 3)) as n1 eqn:Hn1.
+ remember (n1 - i - 1) as s1 eqn:Hs1.
+ move s1 before n1.
+ assert (Hr2s1 : 2 ≤ rad ^ s1). {
+   destruct s1.
+   -rewrite Hn1 in Hs1.
+    destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
+   -simpl.
+    replace 2 with (2 * 1) by flia.
+    apply Nat.mul_le_mono; [ easy | ].
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+ }
  apply A_ge_1_add_all_true_if in H1.
  +destruct (LPO_fst (A_ge_1 z_yx i)) as [H2| H2].
   *simpl.
-   remember (rad * (i + 3)) as n1 eqn:Hn1.
-   remember (n1 - i - 1) as s1 eqn:Hs1.
-   move s1 before n1.
-   assert (Hr2 : 2 ≤ rad ^ s1). {
-     destruct s1.
-     -rewrite Hn1 in Hs1.
-      destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
-     -simpl.
-      replace 2 with (2 * 1) by flia.
-      apply Nat.mul_le_mono; [ easy | ].
-      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-   }
    apply A_ge_1_add_all_true_if in H2.
   --destruct H1 as [H1| [H1| H1]].
    ++rewrite Nat.div_small.
@@ -6133,24 +6133,24 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
     ---rewrite Nat.div_small.
      +++rewrite Nat.add_0_r.
         ...
-     +++rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2 | easy ].
+     +++rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---rewrite Nat_div_less_small.
      +++ ...
-     +++rewrite nA_all_18; [ rewrite <- Hs1; flia Hr2 | easy ].
+     +++rewrite nA_all_18; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---destruct H2 as (j2 & H2bef & H2whi & H2aft).
        rewrite nA_9_8_all_18 with (j := j2); [ | easy | easy | easy ].
        rewrite <- Hs1.
        destruct (le_dec (i + j2 + 1) (n1 - 1)) as [H2| H2].
-     +++rewrite Nat.div_small; [ | flia Hr2 ].
+     +++rewrite Nat.div_small; [ | flia Hr2s1 ].
         rewrite Nat.add_0_r.
         ...
-     +++ ...
-    **rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2 | easy ].
+     +++rewrite Nat.div_small; [ | flia Hr2s1 ].
+        rewrite Nat.add_0_r.
+        ...
+    **rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
    ++rewrite Nat_div_less_small.
     ** ...
-    **split.
-    --- ...
-    ---rewrite nA_all_18; [ rewrite <- Hs1; flia Hr2 | easy ].
+    **rewrite nA_all_18; [ rewrite <- Hs1; flia Hr2s1 | easy ].
    ++destruct H1 as (j1 & H1bef & H1whi & H1aft).
      rewrite Nat.div_small.
     **rewrite Nat.add_0_r.
@@ -6158,8 +6158,8 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
     **destruct (le_dec (i + j1 + 1) (n1 - 1)) as [H1| H1].
     ---rewrite nA_9_8_all_18 with (j := j1); [ | easy | easy | easy ].
        destruct (le_dec (i + j1 + 1) (n1 - 1)) as [H3| H3]; [ | easy ].
-       rewrite <- Hs1; flia Hr2.
-    ---rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2 | ].
+       rewrite <- Hs1; flia Hr2s1.
+    ---rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | ].
        intros k Hk.
        apply H1bef; flia H1 Hk.
   --intros k; rewrite Hzyx.
