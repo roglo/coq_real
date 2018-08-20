@@ -6132,14 +6132,17 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
       destruct H2 as [H2| [H2| H2]].
     ---rewrite Nat.div_small.
      +++rewrite Nat.add_0_r.
+        (* 11 *)
         ...
      +++rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---rewrite Nat_div_less_small.
-     +++...
+     +++(* 12 *)
+        ...
      +++rewrite nA_all_18; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---destruct H2 as (j2 & H2bef & H2whi & H2aft).
        rewrite Nat.div_small.
      +++rewrite Nat.add_0_r.
+        (* 13 *)
         ...
      +++rewrite nA_9_8_all_18 with (j := j2); [ | easy | easy | easy ].
         rewrite <- Hs1.
@@ -6149,14 +6152,17 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
     **destruct H2 as [H2| [H2| H2]].
     ---rewrite Nat.div_small.
      +++rewrite Nat.add_0_r.
+        (* 21, symmetric of 12 *)
         ...
      +++rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---rewrite Nat_div_less_small.
-     +++...
+     +++(* 22 *)
+        ...
      +++rewrite nA_all_18; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---destruct H2 as (j2 & H2bef & H2whi & H2aft).
        rewrite Nat.div_small.
      +++rewrite Nat.add_0_r.
+        (* 23 *)
         ...
      +++rewrite nA_9_8_all_18 with (j := j2); [ | easy | easy | easy ].
         rewrite <- Hs1.
@@ -6168,14 +6174,17 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
       destruct H2 as [H2| [H2| H2]].
     ---rewrite Nat.div_small.
      +++rewrite Nat.add_0_r.
+        (* 31, symmetric of 13 *)
         ...
      +++rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---rewrite Nat_div_less_small.
-     +++...
+     +++(* 32, symmetric of 23 *)
+        ...
      +++rewrite nA_all_18; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---destruct H2 as (j2 & H2bef & H2whi & H2aft).
        rewrite Nat.div_small.
      +++rewrite Nat.add_0_r.
+        (* 33 *)
         ...
      +++rewrite nA_9_8_all_18 with (j := j2); [ | easy | easy | easy ].
         rewrite <- Hs1.
@@ -6186,11 +6195,18 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
   --intros k; rewrite Hzyx.
     apply freal_add_series_le_twice_pred.
   *destruct H2 as (j2 & Hjj2 & Hj2); simpl.
-   ...
+   destruct H1 as [H1| [H1| H1]].
+  --...
+  --...
+  --...
  +intros k; rewrite Hxyz.
   apply freal_add_series_le_twice_pred.
 -destruct H1 as (j1 & Hjj1 & Hj1); simpl.
- ...
+ destruct (LPO_fst (A_ge_1 z_yx i)) as [H2| H2].
+ +simpl.
+  ...
+ +destruct H2 as (j2 & Hjj2 & Hj2); simpl.
+  ...
 Qed.
 
 ...
