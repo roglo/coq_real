@@ -6036,6 +6036,8 @@ move zyx before xyz.
 unfold propagate_carries.
 destruct (LPO_fst (A_ge_1 xyz i)) as [H1| H1].
 -simpl.
+ destruct (LPO_fst (A_ge_1 zyx i)) as [H2| H2].
+ +simpl.
 ...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
