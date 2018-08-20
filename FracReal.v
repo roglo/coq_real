@@ -1477,10 +1477,12 @@ Theorem nA_9_8_all_18 {r : radix} : ∀ u i n j,
   (∀ k, k < j → u (i + k + 1) = rad - 1)
   → u (i + j + 1) = rad - 2
   → (∀ k, u (i + j + k + 2) = 2 * (rad - 1))
-  → nA i n u = rad ^ (n - i - 1) - 1 ∨
-     nA i n u = rad ^ (n - i - 1) - 2.
+  → nA i n u =
+       if le_dec (i + j + 1) (n - 1) then rad ^ (n - i - 1) - 2
+       else rad ^ (n - i - 1) - 1.
 Proof.
 intros * Hbef Hwhi Haft.
+destruct (le_dec (i + j + 1) (n - 1)) as [H1| H1].
 ...
 
 (*
