@@ -5386,7 +5386,9 @@ Add Parametric Morphism {r : radix} : freal_unorm_add
 Proof.
 intros x y Hxy x' y' Hxy'.
 unfold freal_norm_eq in Hxy, Hxy'.
-...
+unfold freal_norm_eq.
+intros i.
+(*
 destruct (LPO_fst (has_same_digits x y)) as [H1| ]; [ clear Hxy | easy ].
 destruct (LPO_fst (has_same_digits x' y')) as [H2| ]; [ clear Hxy' | easy ].
 specialize (all_eq_seq_all_eq x y H1) as H3; clear H1.
@@ -5398,13 +5400,15 @@ destruct (LPO_fst (has_same_digits xx' yy')) as [| H1]; [ easy | ].
 destruct H1 as (i & Hij & Hi).
 apply has_same_digits_false_iff in Hi; apply Hi; clear Hi.
 subst xx' yy'.
+*)
 unfold fd2n, freal_unorm_add.
+unfold fd2n in Hxy, Hxy'.
 f_equal; simpl.
 unfold freal_add_to_seq.
 apply propagate_carries_eq_compat.
 intros j.
 unfold freal_add_series, sequence_add, fd2n.
-now rewrite H3, H4.
+now rewrite Hxy, Hxy'.
 Qed.
 
 (*
@@ -7066,6 +7070,8 @@ rewrite H; clear H.
 specialize (freal_unorm_add_comm x y) as H.
 rewrite H; clear H.
 unfold freal_norm_eq.
+intros i.
+(*
 remember (freal_unorm_add x (freal_unorm_add y z)) as xayz eqn:Hxayz.
 remember (freal_unorm_add z (freal_unorm_add y x)) as zayx eqn:Hzayx.
 move zayx before xayz.
@@ -7073,6 +7079,7 @@ destruct (LPO_fst (has_same_digits xayz zayx)) as [H1| H1]; [ easy | ].
 destruct H1 as (i & Hji & Hi).
 apply has_same_digits_false_iff in Hi; apply Hi; clear Hi.
 rewrite Hxayz, Hzayx.
+*)
 unfold freal_unorm_add at 1 3.
 unfold fd2n; simpl.
 unfold freal_add_to_seq.
