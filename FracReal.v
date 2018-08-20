@@ -1386,6 +1386,55 @@ easy.
 Qed.
 *)
 
+Theorem nA_split_first {r : radix} : ∀ i n u,
+  i + 1 ≤ n - 1
+  → nA i n u = u (i + 1) * rad ^ (n - i - 2) + nA (S i) n u.
+Proof.
+intros * Hin.
+unfold nA.
+rewrite summation_split_first; [ | easy ].
+simpl; f_equal; f_equal; f_equal; flia.
+Qed.
+
+Theorem nA_split_last {r : radix} : ∀ i n u,
+  i + 1 ≤ n - 1
+  → nA i n u = rad * nA i (n - 1) u + u (n - 1).
+Proof.
+intros * Hin.
+unfold nA.
+replace (n - 1) with (S (n - 1 - 1)) at 1 by lia.
+rewrite summation_split_last; [ | flia Hin ].
+simpl; f_equal.
+-rewrite summation_mul_distr_l; simpl.
+ apply summation_eq_compat.
+ intros j Hj.
+ rewrite Nat.mul_assoc, Nat.mul_shuffle0, Nat.mul_comm.
+ f_equal.
+ replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+ rewrite <- Nat.pow_add_r; f_equal.
+ flia Hj.
+-replace (n - 1 - S (n - 1 - 1)) with 0 by flia Hin.
+ rewrite Nat.pow_0_r, Nat.mul_1_r; f_equal.
+ flia Hin.
+Qed.
+
+Theorem nA_split {r : radix} : ∀ u i n e,
+  i + 1 ≤ e - 1 ≤ n - 1
+  → nA i n u = nA i e u * rad ^ (n - e) + nA (e - 1) n u.
+Proof.
+intros * Hin.
+unfold nA.
+rewrite summation_split with (e0 := e - 1); [ | easy ].
+simpl; f_equal.
++rewrite summation_mul_distr_r.
+ apply summation_eq_compat.
+ intros j Hj; simpl.
+ rewrite <- Nat.mul_assoc; f_equal.
+ rewrite <- Nat.pow_add_r.
+ now replace (e - 1 - j + (n - e)) with (n - 1 - j) by flia Hin Hj.
++now rewrite Nat.add_1_r.
+Qed.
+
 Theorem Nat_pow_ge_1 : ∀ a b, 0 < a → 1 ≤ a ^ b.
 Proof.
 intros * Ha.
@@ -1483,7 +1532,23 @@ Theorem nA_9_8_all_18 {r : radix} : ∀ u i n j,
 Proof.
 intros * Hbef Hwhi Haft.
 destruct (le_dec (i + j + 1) (n - 1)) as [H1| H1].
-...
+-rewrite nA_split with (e := i + j + 2); [ | flia H1 ].
+ replace (i + j + 2 - 1) with (i + j + 1) by flia.
+ destruct (zerop j) as [Hj| Hj].
+ +subst j; clear Hbef.
+  rewrite Nat.add_0_r in H1, Haft, Hwhi |-*.
+  unfold nA at 1.
+  replace (i + 2 - 1) with (i + 1) by flia.
+  rewrite summation_only_one, Hwhi.
+  ...
+ +rewrite nA_split with (e := i + j + 1); [ | flia H1 Hj ].
+  replace (i + j + 1 - 1) with (i + j) by flia.
+  replace (i + j + 2 - (i + j + 1)) with 1 by flia.
+  rewrite Nat.pow_1_r.
+  ...
+-idtac.
+ ...
+Qed.
 
 (*
 Theorem freal_normalize_0 {r : radix} : ∀ i,
@@ -2078,55 +2143,6 @@ Add Parametric Relation {r : radix} : (FracReal) freal_eq
  symmetry proved by freal_eq_sym
  transitivity proved by freal_eq_trans
  as freal_eq_rel.
-
-Theorem nA_split_first {r : radix} : ∀ i n u,
-  i + 1 ≤ n - 1
-  → nA i n u = u (i + 1) * rad ^ (n - i - 2) + nA (S i) n u.
-Proof.
-intros * Hin.
-unfold nA.
-rewrite summation_split_first; [ | easy ].
-simpl; f_equal; f_equal; f_equal; flia.
-Qed.
-
-Theorem nA_split_last {r : radix} : ∀ i n u,
-  i + 1 ≤ n - 1
-  → nA i n u = rad * nA i (n - 1) u + u (n - 1).
-Proof.
-intros * Hin.
-unfold nA.
-replace (n - 1) with (S (n - 1 - 1)) at 1 by lia.
-rewrite summation_split_last; [ | flia Hin ].
-simpl; f_equal.
--rewrite summation_mul_distr_l; simpl.
- apply summation_eq_compat.
- intros j Hj.
- rewrite Nat.mul_assoc, Nat.mul_shuffle0, Nat.mul_comm.
- f_equal.
- replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
- rewrite <- Nat.pow_add_r; f_equal.
- flia Hj.
--replace (n - 1 - S (n - 1 - 1)) with 0 by flia Hin.
- rewrite Nat.pow_0_r, Nat.mul_1_r; f_equal.
- flia Hin.
-Qed.
-
-Theorem nA_split {r : radix} : ∀ u i n e,
-  i + 1 ≤ e - 1 ≤ n - 1
-  → nA i n u = nA i e u * rad ^ (n - e) + nA (e - 1) n u.
-Proof.
-intros * Hin.
-unfold nA.
-rewrite summation_split with (e0 := e - 1); [ | easy ].
-simpl; f_equal.
-+rewrite summation_mul_distr_r.
- apply summation_eq_compat.
- intros j Hj; simpl.
- rewrite <- Nat.mul_assoc; f_equal.
- rewrite <- Nat.pow_add_r.
- now replace (e - 1 - j + (n - e)) with (n - 1 - j) by flia Hin Hj.
-+now rewrite Nat.add_1_r.
-Qed.
 
 Theorem all_eq_seq_all_eq {r : radix} : ∀ x y,
   (∀ k, has_same_digits x y k = true) → (∀ k, freal x k = freal y k).
