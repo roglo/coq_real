@@ -6030,14 +6030,18 @@ remember (freal_unorm_add y z) as yz eqn:Hyz.
 remember (freal_unorm_add y x) as yx eqn:Hyx.
 move yx before yz.
 move Hyx before Hyz.
-remember (freal_add_series x yz) as xyz eqn:Hxyz.
-remember (freal_add_series z yx) as zyx eqn:Hzyx.
-move zyx before xyz.
+remember (freal_add_series x yz) as x_yz eqn:Hxyz.
+remember (freal_add_series z yx) as z_yx eqn:Hzyx.
+move z_yx before x_yz.
 unfold propagate_carries.
-destruct (LPO_fst (A_ge_1 xyz i)) as [H1| H1].
+destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
 -simpl.
- destruct (LPO_fst (A_ge_1 zyx i)) as [H2| H2].
- +simpl.
+ apply A_ge_1_add_all_true_if in H1.
+ +destruct (LPO_fst (A_ge_1 z_yx i)) as [H2| H2].
+  *simpl.
+   apply A_ge_1_add_all_true_if in H2.
+  --idtac.
+
 ...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
