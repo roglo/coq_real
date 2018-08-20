@@ -1443,7 +1443,6 @@ rewrite summation_eq_compat with (h := λ j, 2 * (rad - 1) * rad ^ (n - 1 - j)).
  now rewrite Hj.
 Qed.
 
-(*
 Theorem nA_all_9 {r : radix} : 0 < rad → ∀ u i n,
   (∀ j, u (i + j + 1) = rad - 1)
   → nA i n u = rad ^ (n - i - 1) - 1.
@@ -1474,6 +1473,7 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
  now rewrite Hj.
 Qed.
 
+(*
 Theorem freal_normalize_0 {r : radix} : ∀ i,
   dig (freal (freal_normalize 0) i) = 0.
 Proof.
@@ -6017,6 +6017,7 @@ Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
     (freal_unorm_add (freal_unorm_add x y) z).
 Proof.
 intros.
+specialize radix_ge_2 as Hr.
 specialize (freal_unorm_add_comm (freal_unorm_add x y) z) as H.
 rewrite H; clear H.
 specialize (freal_unorm_add_comm x y) as H.
@@ -6040,8 +6041,26 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
  +destruct (LPO_fst (A_ge_1 z_yx i)) as [H2| H2].
   *simpl.
    apply A_ge_1_add_all_true_if in H2.
-  --idtac.
-
+  --destruct H1 as [H1| [H1| H1]].
+   ++rewrite Nat.div_small.
+    **admit.
+    **rewrite nA_all_9; [ | easy | easy ].
+      apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
+      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+   ++rewrite Nat_div_less_small.
+    **admit.
+    **split.
+    ---admit.
+    ---rewrite nA_all_18; [ | easy | easy ].
+       rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+       apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
+       replace 2 with (2 * 1) at 1 by flia.
+       apply Nat.mul_le_mono_l.
+       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+   ++destruct H1 as (j1 & H1bef & H1whi & H1aft).
+     rewrite Nat.div_small.
+    **admit.
+    **idtac.
 ...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
