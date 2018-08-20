@@ -6138,15 +6138,12 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
      +++...
      +++rewrite nA_all_18; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---destruct H2 as (j2 & H2bef & H2whi & H2aft).
-       rewrite nA_9_8_all_18 with (j := j2); [ | easy | easy | easy ].
-       rewrite <- Hs1.
-       destruct (le_dec (i + j2 + 1) (n1 - 1)) as [H2| H2].
-     +++rewrite Nat.div_small; [ | flia Hr2s1 ].
-        rewrite Nat.add_0_r.
+       rewrite Nat.div_small.
+     +++rewrite Nat.add_0_r.
         ...
-     +++rewrite Nat.div_small; [ | flia Hr2s1 ].
-        rewrite Nat.add_0_r.
-        ...
+     +++rewrite nA_9_8_all_18 with (j := j2); [ | easy | easy | easy ].
+        rewrite <- Hs1.
+        destruct (le_dec (i + j2 + 1) (n1 - 1)); flia Hr2s1.
     **rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
    ++rewrite Nat_div_less_small.
     **destruct H2 as [H2| [H2| H2]].
@@ -6158,15 +6155,12 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
      +++...
      +++rewrite nA_all_18; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---destruct H2 as (j2 & H2bef & H2whi & H2aft).
-       rewrite nA_9_8_all_18 with (j := j2); [ | easy | easy | easy ].
-       rewrite <- Hs1.
-       destruct (le_dec (i + j2 + 1) (n1 - 1)) as [H2| H2].
-     +++rewrite Nat.div_small; [ | flia Hr2s1 ].
-        rewrite Nat.add_0_r.
+       rewrite Nat.div_small.
+     +++rewrite Nat.add_0_r.
         ...
-     +++rewrite Nat.div_small; [ | flia Hr2s1 ].
-        rewrite Nat.add_0_r.
-        ...
+     +++rewrite nA_9_8_all_18 with (j := j2); [ | easy | easy | easy ].
+        rewrite <- Hs1.
+        destruct (le_dec (i + j2 + 1) (n1 - 1)); flia Hr2s1.
     **rewrite nA_all_18; [ rewrite <- Hs1; flia Hr2s1 | easy ].
    ++destruct H1 as (j1 & H1bef & H1whi & H1aft).
      rewrite Nat.div_small.
@@ -6180,22 +6174,15 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
      +++...
      +++rewrite nA_all_18; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---destruct H2 as (j2 & H2bef & H2whi & H2aft).
-       rewrite nA_9_8_all_18 with (j := j2); [ | easy | easy | easy ].
-       rewrite <- Hs1.
-       destruct (le_dec (i + j2 + 1) (n1 - 1)) as [H2| H2].
-     +++rewrite Nat.div_small; [ | flia Hr2s1 ].
-        rewrite Nat.add_0_r.
+       rewrite Nat.div_small.
+     +++rewrite Nat.add_0_r.
         ...
-     +++rewrite Nat.div_small; [ | flia Hr2s1 ].
-        rewrite Nat.add_0_r.
-        ...
-    **destruct (le_dec (i + j1 + 1) (n1 - 1)) as [H1| H1].
-    ---rewrite nA_9_8_all_18 with (j := j1); [ | easy | easy | easy ].
-       destruct (le_dec (i + j1 + 1) (n1 - 1)) as [H3| H3]; [ | easy ].
-       rewrite <- Hs1; flia Hr2s1.
-    ---rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | ].
-       intros k Hk.
-       apply H1bef; flia H1 Hk.
+     +++rewrite nA_9_8_all_18 with (j := j2); [ | easy | easy | easy ].
+        rewrite <- Hs1.
+        destruct (le_dec (i + j2 + 1) (n1 - 1)); flia Hr2s1.
+    **rewrite nA_9_8_all_18 with (j := j1); [ | easy | easy | easy ].
+      rewrite <- Hs1.
+      destruct (le_dec (i + j1 + 1) (n1 - 1)); flia Hr2s1.
   --intros k; rewrite Hzyx.
     apply freal_add_series_le_twice_pred.
   *destruct H2 as (j2 & Hjj2 & Hj2); simpl.
