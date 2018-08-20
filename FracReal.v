@@ -1419,35 +1419,11 @@ apply Nat.le_add_le_sub_l.
 apply Hu; flia Hk Hj.
 Qed.
 
-Theorem nA_all_18 {r : radix} : 0 < rad → ∀ u i n,
-  (∀ j, u (i + j + 1) = 2 * (rad - 1))
-  → nA i n u = 2 * (rad ^ (n - i - 1) - 1).
-Proof.
-intros Hr * Hj.
-unfold nA.
-rewrite summation_eq_compat with (h := λ j, 2 * (rad - 1) * rad ^ (n - 1 - j)).
--rewrite <- summation_mul_distr_l.
- destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin].
- +rewrite summation_shift; [ | easy ].
-  rewrite summation_rtl.
-  rewrite summation_eq_compat with (h := λ j, rad ^ j).
-  *rewrite <- Nat.mul_assoc.
-   rewrite <- power_summation_sub_1; [ | easy ].
-   f_equal; f_equal; f_equal; flia Hin.
-  *intros k Hk; f_equal; flia Hk.
- +replace (n - i - 1) with 0 by flia Hin.
-  rewrite summation_empty; [ | flia Hin ].
-  rewrite Nat.mul_0_r; simpl; flia.
--intros j Hij.
- replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
- now rewrite Hj.
-Qed.
-
-Theorem nA_all_9 {r : radix} : 0 < rad → ∀ u i n,
+Theorem nA_all_9 {r : radix} : ∀ u i n,
   (∀ j, u (i + j + 1) = rad - 1)
   → nA i n u = rad ^ (n - i - 1) - 1.
 Proof.
-intros Hr * Hj.
+intros * Hj.
 unfold nA.
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
  rewrite <- summation_mul_distr_l.
@@ -1472,6 +1448,40 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
  replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
  now rewrite Hj.
 Qed.
+
+Theorem nA_all_18 {r : radix} : ∀ u i n,
+  (∀ j, u (i + j + 1) = 2 * (rad - 1))
+  → nA i n u = 2 * (rad ^ (n - i - 1) - 1).
+Proof.
+intros * Hj.
+unfold nA.
+rewrite summation_eq_compat with (h := λ j, 2 * (rad - 1) * rad ^ (n - 1 - j)).
+-rewrite <- summation_mul_distr_l.
+ destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin].
+ +rewrite summation_shift; [ | easy ].
+  rewrite summation_rtl.
+  rewrite summation_eq_compat with (h := λ j, rad ^ j).
+  *rewrite <- Nat.mul_assoc.
+   rewrite <- power_summation_sub_1; [ | easy ].
+   f_equal; f_equal; f_equal; flia Hin.
+  *intros k Hk; f_equal; flia Hk.
+ +replace (n - i - 1) with 0 by flia Hin.
+  rewrite summation_empty; [ | flia Hin ].
+  rewrite Nat.mul_0_r; simpl; flia.
+-intros j Hij.
+ replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
+ now rewrite Hj.
+Qed.
+
+Theorem nA_9_8_all_18 {r : radix} : ∀ u i n j,
+  (∀ k, k < j → u (i + k + 1) = rad - 1)
+  → u (i + j + 1) = rad - 2
+  → (∀ k, u (i + j + k + 2) = 2 * (rad - 1))
+  → nA i n u = rad ^ (n - i - 1) - 1 ∨
+     nA i n u = rad ^ (n - i - 1) - 2.
+Proof.
+intros * Hbef Hwhi Haft.
+...
 
 (*
 Theorem freal_normalize_0 {r : radix} : ∀ i,
