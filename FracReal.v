@@ -5192,7 +5192,7 @@ destruct H3 as [H3| [H3| H3]].
   remember (n2 - (n + (j + 1)) - 1) as s2 eqn:Hs2.
   move s2 before n2.
   rewrite Nat.add_assoc, Hjwhi in H3.
-  specialize (nA_all_18 radix_gt_0 u (n + j + 1) n2) as H5.
+  specialize (nA_all_18 u (n + j + 1) n2) as H5.
   rewrite Nat.add_assoc in Hs2.
   rewrite <- Hs2 in H5.
   assert (H : ∀ k, u (n + j + 1 + k + 1) = 2 * (rad - 1)). {
@@ -6117,14 +6117,14 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
   --destruct H1 as [H1| [H1| H1]].
    ++rewrite Nat.div_small.
     ** ...
-    **rewrite nA_all_9; [ | easy | easy ].
+    **rewrite nA_all_9; [ | easy ].
       apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
    ++rewrite Nat_div_less_small.
     ** ...
     **split.
     --- ...
-    ---rewrite nA_all_18; [ | easy | easy ].
+    ---rewrite nA_all_18; [ | easy ].
        rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
        apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
        replace 2 with (2 * 1) at 1 by flia.
@@ -6133,7 +6133,31 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
    ++destruct H1 as (j1 & H1bef & H1whi & H1aft).
      rewrite Nat.div_small.
     ** ...
-    **idtac.
+    **remember (rad * (i + 3)) as n1 eqn:Hn1.
+      destruct (le_dec (i + j1 + 1) (n1 - 1)) as [H1| H1].
+    ---erewrite nA_9_8_all_18; [ | eassumption | easy | easy ].
+       destruct (le_dec (i + j1 + 1) (n1 - 1)) as [H3| H3]; [ | easy ].
+       apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
+       replace (n1 - i - 1) with (n1 - i - 2 + 1) by flia H1.
+       rewrite Nat.pow_add_r, Nat.pow_1_r.
+       replace 2 with (1 * 2) at 1 by flia.
+       apply Nat.mul_le_mono; [ | easy ].
+       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+    ---rewrite nA_all_9.
+     +++apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
+        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+     +++intros k Hk.
+        apply H1bef; flia H1 Hk.
+  --intros k; rewrite Hzyx.
+    apply freal_add_series_le_twice_pred.
+  *destruct H2 as (j2 & Hjj2 & Hj2); simpl.
+   ...
+ +intros k; rewrite Hxyz.
+  apply freal_add_series_le_twice_pred.
+-destruct H1 as (j1 & Hjj1 & Hj1); simpl.
+ ...
+Qed.
+
 ...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
