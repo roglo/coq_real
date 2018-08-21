@@ -30,7 +30,11 @@ Theorem eq_add_series_eq {r : radix} : ∀ x y n a,
   → (∀ k, fd2n x (n + k + 1) = a)
   → ∀ k, fd2n y (n + k + 1) = 0.
 Proof.
-...
+intros * Hxy Hx *.
+specialize (Hxy k).
+specialize (Hx k).
+unfold freal_add_series, sequence_add in Hxy; lia.
+Qed.
 
 Theorem glop {r : radix} : ∀ x y z i,
   (∀ k, freal_add_series x (freal_unorm_add y z) (i + k + 1) = rad - 1)
@@ -84,8 +88,6 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
      exfalso.
      apply eq_add_series_18_eq_9 in H4.
      destruct H4 as (H4, H5).
-Admitted. (*
-...
      specialize (eq_add_series_eq _ _ _ _ H3 H4) as H6.
 ...
 
@@ -147,6 +149,7 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
     ---rewrite Nat.div_small.
      +++rewrite Nat.add_0_r.
         (* 11 *)
+...
         subst; now apply glop.
      +++rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---rewrite Nat_div_less_small.
