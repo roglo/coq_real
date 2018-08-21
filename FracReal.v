@@ -133,6 +133,9 @@ Arguments fd2n _ x%F i%nat.
 
 (* *)
 
+Theorem fold_fd2n {r : radix} : ∀ x i, dig (freal x i) = fd2n x i.
+Proof. easy. Qed.
+
 Theorem power_summation (rg := nat_ord_ring) : ∀ a n,
   0 < a
   → a ^ S n = 1 + (a - 1) * Σ (i = 0, n), a ^ i.
@@ -6084,6 +6087,62 @@ destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
      rewrite Hbef in Huj; flia Hr Huj.
 Qed.
 
+Theorem glop {r : radix} : ∀ x y z i,
+  (∀ k, freal_add_series x (freal_unorm_add y z) (i + k + 1) = rad - 1)
+  → (∀ k, freal_add_series z (freal_unorm_add y x) (i + k + 1) = rad - 1)
+  → (freal_add_series x (freal_unorm_add y z) i + 1) mod rad =
+     (freal_add_series z (freal_unorm_add y x) i + 1) mod rad.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros H1 H2.
+rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+f_equal; f_equal.
+unfold freal_add_series, sequence_add.
+unfold freal_unorm_add, freal_add_to_seq, fd2n; simpl.
+unfold propagate_carries.
+remember (rad * (i + 3)) as n1 eqn:Hn1.
+remember (n1 - i - 1) as s1 eqn:Hs1.
+move s1 before n1.
+assert (Hr2s1 : 2 ≤ rad ^ s1). {
+  destruct s1.
+  -rewrite Hn1 in Hs1.
+   destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
+  -simpl.
+   replace 2 with (2 * 1) by flia.
+   apply Nat.mul_le_mono; [ easy | ].
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+}
+destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
+-simpl.
+ apply A_ge_1_add_all_true_if in H3.
+ destruct (LPO_fst (A_ge_1 (freal_add_series y x) i)) as [H4| H4].
+ +simpl.
+  apply A_ge_1_add_all_true_if in H4.
+  *rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
+   rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
+   unfold freal_add_series at 1 3.
+   unfold sequence_add, fd2n.
+   do 6 rewrite Nat.add_assoc.
+   do 3 rewrite fold_fd2n.
+   replace (fd2n z i + fd2n y i + fd2n x i) with
+       (fd2n x i + fd2n y i + fd2n z i) by flia.
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   f_equal; f_equal.
+   destruct H3 as [H3| [H3| H3]].
+  --rewrite nA_all_9; [ | intros; apply H3 ].
+    destruct H4 as [H4| [H4| H4]].
+   ++rewrite nA_all_9; [ easy | intros; apply H4 ].
+   ++rewrite nA_all_18; [ | intros; apply H4 ].
+     rewrite <- Hs1.
+     rewrite Nat.div_small; [ | flia Hr2s1 ].
+     (* should imply x=y=0.999..., z=0.000... and contradict H2 *)
+...
+  *intros; apply freal_add_series_le_twice_pred.
+...
+
 Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
   freal_norm_eq
     (freal_unorm_add x (freal_unorm_add y z))
@@ -6133,7 +6192,8 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
     ---rewrite Nat.div_small.
      +++rewrite Nat.add_0_r.
         (* 11 *)
-        ...
+...
+        subst; now apply glop.
      +++rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---rewrite Nat_div_less_small.
      +++(* 12 *)
