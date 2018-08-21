@@ -36,7 +36,33 @@ specialize (Hx k).
 unfold freal_add_series, sequence_add in Hxy; lia.
 Qed.
 
-Theorem glop {r : radix} : ∀ x y z i,
+Theorem add_assoc_case_11_1 {r : radix } : ∀ x y z i,
+  (∀ k, freal_add_series z (freal_unorm_add y x) (i + k + 1) = rad - 1)
+  → (∀ k, freal_add_series y z (i + k + 1) = rad - 1)
+  → (∀ k, freal_add_series y x (i + k + 1) = 2 * (rad - 1))
+  → False.
+Proof.
+intros * H2 H3 H4.
+specialize (eq_add_series_18_eq_9 _ _ _ H4) as Hxy.
+destruct Hxy as (Hy, Hx).
+specialize (eq_add_series_eq _ _ _ _ H3 Hy) as Hz.
+unfold freal_unorm_add in H2.
+unfold freal_add_to_seq in H2.
+unfold freal_add_series at 1 in H2.
+unfold sequence_add in H2; simpl in H2.
+unfold fd2n at 2 in H2; simpl in H2.
+remember (freal_add_series y x) as yx eqn:Hyx.
+assert (H5 : ∀ k, d2n (propagate_carries yx) (i + 1 + k) = rad - 1). {
+  intros k.
+  specialize (H2 k).
+  rewrite Hz in H2.
+  now replace (i + k + 1) with (i + 1 + k) in H2 by flia.
+}
+apply not_propagate_carries_all_9 in H5; [ easy | ].
+intros k; subst yx; apply freal_add_series_le_twice_pred.
+Qed.
+
+Theorem add_assoc_case_11 {r : radix} : ∀ x y z i,
   (∀ k, freal_add_series x (freal_unorm_add y z) (i + k + 1) = rad - 1)
   → (∀ k, freal_add_series z (freal_unorm_add y x) (i + k + 1) = rad - 1)
   → (freal_add_series x (freal_unorm_add y z) i + 1) mod rad =
@@ -84,28 +110,30 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
   --rewrite nA_all_9; [ | intros; apply H3 ].
     destruct H4 as [H4| [H4| H4]].
    ++rewrite nA_all_9; [ easy | intros; apply H4 ].
-   ++exfalso.
-     specialize (eq_add_series_18_eq_9 _ _ _ H4) as Hxy.
-     destruct Hxy as (Hy, Hx).
-     specialize (eq_add_series_eq _ _ _ _ H3 Hy) as Hz.
-     unfold freal_unorm_add in H2.
-     unfold freal_add_to_seq in H2.
-     unfold freal_add_series at 1 in H2.
-     unfold sequence_add in H2; simpl in H2.
-     unfold fd2n at 2 in H2; simpl in H2.
-     remember (freal_add_series y x) as yx eqn:Hyx.
-     assert (H5 : ∀ k, d2n (propagate_carries yx) (i + 1 + k) = rad - 1). {
-       intros k.
-       specialize (H2 k).
-       rewrite Hz in H2.
-       now replace (i + k + 1) with (i + 1 + k) in H2 by flia.
-     }
-     apply not_propagate_carries_all_9 in H5; [ easy | ].
-     intros k; subst yx; apply freal_add_series_le_twice_pred.
+   ++exfalso; now apply (add_assoc_case_11_1 x y z i).
    ++destruct H4 as (j & Hjbef & Hjwhi & Hjaft).
      rewrite <- Hs1.
      rewrite Nat.div_small; [ | flia Hr2s1 ].
-      ...
+     rewrite nA_9_8_all_18 with (j0 := j); [ | easy | easy | easy ].
+     rewrite <- Hs1.
+     destruct (le_dec (i + j + 1) (n1 - 1)) as [H4| H4].
+    **rewrite Nat.div_small; [ easy | flia Hr2s1 ].
+    **rewrite Nat.div_small; [ easy | flia Hr2s1 ].
+  --rewrite nA_all_18; [ | apply H3 ].
+    rewrite <- Hs1.
+    rewrite Nat_div_less_small; [ | flia Hr2s1 ].
+    destruct H4 as [H4| [H4| H4]].
+   ++exfalso; now apply (add_assoc_case_11_1 z y x i).
+   ++rewrite nA_all_18; [ | apply H4 ].
+     rewrite <- Hs1.
+     rewrite Nat_div_less_small; [ easy | flia Hr2s1 ].
+   ++exfalso.
+     destruct H4 as (j2 & H2bef & H2whi & H2aft).
+     specialize (eq_add_series_18_eq_9 _ _ _ H3) as Hxy.
+     destruct Hxy as (Hy, Hx).
+     unfold freal_add_series, sequence_add in H2whi.
+     rewrite Hy in H2whi; flia Hr H2whi.
+  --idtac.
 ...
   *intros; apply freal_add_series_le_twice_pred.
 ...
@@ -160,7 +188,7 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
      +++rewrite Nat.add_0_r.
         (* 11 *)
 ...
-        subst; now apply glop.
+        subst; now apply add_assoc_case_11.
      +++rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
     ---rewrite Nat_div_less_small.
      +++(* 12 *)
