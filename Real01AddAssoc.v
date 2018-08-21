@@ -239,6 +239,11 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
         --apply Nat.sub_le_mono_l.
           now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
     }
+    apply Nat.nle_gt in Hj2; apply Hj2; clear Hj2.
+    apply le_trans with (m := nA i n2 (fd2n x)).
+   ++rewrite nA_all_9; [ | intros j Hj; apply Hx ].
+     rewrite <- Hs2.
+
 ...
 
 Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
