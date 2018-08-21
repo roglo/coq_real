@@ -96,22 +96,22 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
      unfold fd2n in H2; simpl in H2.
      unfold freal_add_to_seq in H2.
      unfold propagate_carries in H2.
-     remember (rad * (i + 0 + 1 + 3)) as n2 eqn:Hn2.
-     remember (n2 - (i + 0 + 1) - 1) as s2 eqn:Hs2.
-     move s2 before n2.
-     assert (Hr2 : 2 ≤ rad ^ s2). {
-       destruct s2.
-       -rewrite Hn2 in Hs2.
-        clear H2.
-        destruct rad; [ easy | simpl in Hs2; flia Hs2 ].
-       -simpl.
-        replace 2 with (2 * 1) by flia.
-        apply Nat.mul_le_mono; [ easy | ].
-        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-     }
      destruct (LPO_fst (A_ge_1 (freal_add_series y x) (i + 0 + 1))) as
          [H7| H7].
     **simpl in H2.
+      remember (rad * (i + 0 + 1 + 3)) as n2 eqn:Hn2.
+      remember (n2 - (i + 0 + 1) - 1) as s2 eqn:Hs2.
+      move s2 before n2.
+      assert (Hr2 : 2 ≤ rad ^ s2). {
+        destruct s2.
+        -rewrite Hn2 in Hs2.
+         clear H2.
+         destruct rad; [ easy | simpl in Hs2; flia Hs2 ].
+        -simpl.
+         replace 2 with (2 * 1) by flia.
+         apply Nat.mul_le_mono; [ easy | ].
+         now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+      }
       unfold freal_add_series at 1 in H2.
       unfold sequence_add in H2.
       rewrite H5, H4 in H2.
@@ -127,6 +127,24 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
       simpl in H2.
       unfold freal_add_series at 1, sequence_add in H2.
       rewrite H5, H4 in H2.
+      remember (rad * (i + 0 + 1 + j + 3)) as n2 eqn:Hn2.
+      remember (n2 - (i + 0 + 1) - 1) as s2 eqn:Hs2.
+      move s2 before n2.
+      assert (Hr2 : 2 ≤ rad ^ s2). {
+        destruct s2.
+        -rewrite Hn2 in Hs2.
+         clear H2.
+         destruct rad; [ easy | simpl in Hs2; flia Hs2 ].
+        -simpl.
+         replace 2 with (2 * 1) by flia.
+         apply Nat.mul_le_mono; [ easy | ].
+         now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+      }
+rewrite Nat_div_less_small in H2.
+Focus 2.
+rewrite nA_all_18 in H2.
+rewrite <- Hs2 in H2.
+
       ...
 ...
   *intros; apply freal_add_series_le_twice_pred.
