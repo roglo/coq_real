@@ -114,7 +114,7 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
    ++destruct H4 as (j & Hjbef & Hjwhi & Hjaft).
      rewrite <- Hs1.
      rewrite Nat.div_small; [ | flia Hr2s1 ].
-     rewrite nA_9_8_all_18 with (j0 := j); [ | easy | easy | easy ].
+     rewrite (nA_9_8_all_18 j); [ | easy | easy | easy ].
      rewrite <- Hs1.
      destruct (le_dec (i + j + 1) (n1 - 1)) as [H4| H4].
     **rewrite Nat.div_small; [ easy | flia Hr2s1 ].
@@ -133,9 +133,28 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
      destruct Hxy as (Hy, Hx).
      unfold freal_add_series, sequence_add in H2whi.
      rewrite Hy in H2whi; flia Hr H2whi.
-  --idtac.
-...
+  --destruct H3 as (j1 & H1bef & H1whi & H1aft).
+    rewrite (nA_9_8_all_18 j1); [ | easy | easy | easy ].
+    rewrite <- Hs1.
+    rewrite Nat.div_small.
+   ++destruct H4 as [H4| [H4| H4]].
+    **rewrite nA_all_9; [ | intros; apply H4 ].
+      rewrite <- Hs1.
+      rewrite Nat.div_small; [ easy | flia Hr2s1 ].
+    **exfalso.
+      apply eq_add_series_18_eq_9 in H4.
+      destruct H4 as (Hy & Hx).
+      unfold freal_add_series, sequence_add in H1whi.
+      rewrite Hy in H1whi; flia Hr H1whi.
+    **destruct H4 as (j2 & H2bef & H2whi & H2aft).
+      rewrite (nA_9_8_all_18 j2); [ | easy | easy | easy ].
+      rewrite <- Hs1.
+      destruct (le_dec (i + j2 + 1) (n1 - 1)) as [H3| H3].
+    ---rewrite Nat.div_small; [ easy | flia Hr2s1 ].
+    ---rewrite Nat.div_small; [ easy | flia Hr2s1 ].
+   ++destruct (le_dec (i + j1 + 1) (n1 - 1)); flia Hr2s1.
   *intros; apply freal_add_series_le_twice_pred.
+ +destruct H4 as (j2 & Hjj2 & Hj2); simpl.
 ...
 
 Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
@@ -199,7 +218,7 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
      +++rewrite Nat.add_0_r.
         (* 13 *)
         ...
-     +++rewrite nA_9_8_all_18 with (j := j2); [ | easy | easy | easy ].
+     +++rewrite (nA_9_8_all_18 j2); [ | easy | easy | easy ].
         rewrite <- Hs1.
         destruct (le_dec (i + j2 + 1) (n1 - 1)); flia Hr2s1.
     **rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
@@ -219,7 +238,7 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
      +++rewrite Nat.add_0_r.
         (* 23 *)
         ...
-     +++rewrite nA_9_8_all_18 with (j := j2); [ | easy | easy | easy ].
+     +++rewrite (nA_9_8_all_18 j2); [ | easy | easy | easy ].
         rewrite <- Hs1.
         destruct (le_dec (i + j2 + 1) (n1 - 1)); flia Hr2s1.
     **rewrite nA_all_18; [ rewrite <- Hs1; flia Hr2s1 | easy ].
@@ -241,10 +260,10 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
      +++rewrite Nat.add_0_r.
         (* 33 *)
         ...
-     +++rewrite nA_9_8_all_18 with (j := j2); [ | easy | easy | easy ].
+     +++rewrite (nA_9_8_all_18 j2); [ | easy | easy | easy ].
         rewrite <- Hs1.
         destruct (le_dec (i + j2 + 1) (n1 - 1)); flia Hr2s1.
-    **rewrite nA_9_8_all_18 with (j := j1); [ | easy | easy | easy ].
+    **rewrite (nA_9_8_all_18 j1); [ | easy | easy | easy ].
       rewrite <- Hs1.
       destruct (le_dec (i + j1 + 1) (n1 - 1)); flia Hr2s1.
   --intros k; rewrite Hzyx.

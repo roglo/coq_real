@@ -1522,7 +1522,7 @@ rewrite summation_eq_compat with (h := λ j, 2 * (rad - 1) * rad ^ (n - 1 - j)).
  now rewrite Hj.
 Qed.
 
-Theorem nA_9_8_all_18 {r : radix} : ∀ u i n j,
+Theorem nA_9_8_all_18 {r : radix} : ∀ j u i n,
   (∀ k, k < j → u (i + k + 1) = rad - 1)
   → u (i + j + 1) = rad - 2
   → (∀ k, u (i + j + k + 2) = 2 * (rad - 1))
