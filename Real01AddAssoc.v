@@ -25,10 +25,21 @@ split.
  unfold fd2n in Hxy |-*; lia.
 Qed.
 
-Theorem eq_add_series_eq {r : radix} : ∀ x y n a,
+Theorem eq_add_series_eq_l {r : radix} : ∀ x y n a,
   (∀ k, freal_add_series x y (n + k + 1) = a)
   → (∀ k, fd2n x (n + k + 1) = a)
   → ∀ k, fd2n y (n + k + 1) = 0.
+Proof.
+intros * Hxy Hx *.
+specialize (Hxy k).
+specialize (Hx k).
+unfold freal_add_series, sequence_add in Hxy; lia.
+Qed.
+
+Theorem eq_add_series_eq_r {r : radix} : ∀ x y n a,
+  (∀ k, freal_add_series x y (n + k + 1) = a)
+  → (∀ k, fd2n y (n + k + 1) = a)
+  → ∀ k, fd2n x (n + k + 1) = 0.
 Proof.
 intros * Hxy Hx *.
 specialize (Hxy k).
@@ -45,7 +56,7 @@ Proof.
 intros * H2 H3 H4.
 specialize (eq_add_series_18_eq_9 _ _ _ H4) as Hxy.
 destruct Hxy as (Hy, Hx).
-specialize (eq_add_series_eq _ _ _ _ H3 Hy) as Hz.
+specialize (eq_add_series_eq_l _ _ _ _ H3 Hy) as Hz.
 unfold freal_unorm_add in H2.
 unfold freal_add_to_seq in H2.
 unfold freal_add_series at 1 in H2.
@@ -179,6 +190,23 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
    destruct (lt_dec (nA i n2 (freal_add_series y x)) (rad ^ s2)) as [H4| H4].
   --exfalso.
     rewrite Nat.mod_small in Hj2; [ | easy ].
+...
+    apply Nat.nle_gt in Hj2; apply Hj2; clear Hj2.
+    rewrite Hs2, Hn2.
+    apply nA_ge_999000.
+    intros k.
+    specialize (eq_add_series_eq_r _ _ _ _ H1) as Hx.
+    assert (H : ∀ k, fd2n (freal_unorm_add y z) (i + k + 1) = rad - 1). {
+      intros j.
+      unfold freal_unorm_add, fd2n; simpl.
+      unfold freal_add_to_seq.
+...
+not_propagate_carries_all_9:
+  ∀ (r : radix) (u : nat → nat) (n : nat), (∀ k : nat, u (n + k + 1) ≤ 2 * (rad - 1))
+                                           → ¬ (∀ k : nat, d2n (propagate_carries u) (n + k) = rad - 1)
+...
+    specialize (Hx H3)
+
 ...
 
 Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
