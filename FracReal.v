@@ -6087,6 +6087,35 @@ destruct (lt_dec (nA (n + 1) n1 u) (rad ^ s1)) as [H1| H1].
      rewrite Hbef in Huj; flia Hr Huj.
 Qed.
 
+Theorem eq_add_series_18_eq_9 {r : radix} : ∀ x y n,
+  (∀ k, freal_add_series x y (n + k + 1) = 2 * (rad - 1))
+  → (∀ k, fd2n x (n + k + 1) = rad - 1) ∧ (∀ k, fd2n y (n + k + 1) = rad - 1).
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hxy.
+split.
+-intros.
+ specialize (Hxy k).
+ unfold freal_add_series, sequence_add in Hxy.
+ specialize (digit_lt_radix (freal x (n + k + 1))) as H1.
+ specialize (digit_lt_radix (freal y (n + k + 1))) as H2.
+ unfold fd2n in Hxy |-*; lia.
+-intros.
+ specialize (Hxy k).
+ unfold freal_add_series, sequence_add in Hxy.
+ specialize (digit_lt_radix (freal x (n + k + 1))) as H1.
+ specialize (digit_lt_radix (freal y (n + k + 1))) as H2.
+ unfold fd2n in Hxy |-*; lia.
+Qed.
+
+Theorem eq_add_series_eq {r : radix} : ∀ x y n a,
+  (∀ k, freal_add_series x y (n + k + 1) = a)
+  → (∀ k, fd2n x (n + k + 1) = a)
+  → ∀ k, fd2n y (n + k + 1) = 0.
+Proof.
+...
+
 Theorem glop {r : radix} : ∀ x y z i,
   (∀ k, freal_add_series x (freal_unorm_add y z) (i + k + 1) = rad - 1)
   → (∀ k, freal_add_series z (freal_unorm_add y x) (i + k + 1) = rad - 1)
@@ -6135,10 +6164,18 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
   --rewrite nA_all_9; [ | intros; apply H3 ].
     destruct H4 as [H4| [H4| H4]].
    ++rewrite nA_all_9; [ easy | intros; apply H4 ].
-   ++rewrite nA_all_18; [ | intros; apply H4 ].
-     rewrite <- Hs1.
-     rewrite Nat.div_small; [ | flia Hr2s1 ].
-     (* should imply x=y=0.999..., z=0.000... and contradict H2 *)
+   ++(* implies x=y=0.999..., z=0.000... and contradicts H2 *)
+     exfalso.
+     apply eq_add_series_18_eq_9 in H4.
+     destruct H4 as (H4, H5).
+...
+     specialize (eq_add_series_eq _ _ _ _ H3 H4) as H6.
+...
+
+     assert (Hx : ∀ k, fd2n x k = rad - 1). {
+       intros k.
+       specialize (H4 k).
+       unfold freal_add_series
 ...
   *intros; apply freal_add_series_le_twice_pred.
 ...
