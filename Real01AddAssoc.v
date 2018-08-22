@@ -1,7 +1,7 @@
 (* Reals between 0 and 1; associativity of addition *)
 
 Require Import Utf8 Arith NPeano Psatz.
-Require Import Misc FracReal.
+Require Import Misc Summation FracReal.
 
 Theorem eq_add_series_18_eq_9 {r : radix} : ∀ x y n,
   (∀ k, freal_add_series x y (n + k + 1) = 2 * (rad - 1))
@@ -243,7 +243,35 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
     apply le_trans with (m := nA i n2 (fd2n x)).
    ++rewrite nA_all_9; [ | intros j Hj; apply Hx ].
      rewrite <- Hs2.
-
+     rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+     rewrite <- Nat.pow_add_r.
+     replace (S j2 + (s2 - S j2)) with s2; cycle 1.
+    **rewrite Hs2, Hn2.
+      destruct rad; [ easy | simpl; flia ].
+    **apply Nat.sub_le_mono_l.
+      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+   ++unfold nA.
+     apply (@summation_le_compat _ nat_ord_ring).
+     intros j Hj; simpl; unfold Nat.le.
+     apply Nat.mul_le_mono_r.
+     unfold freal_add_series, sequence_add.
+     flia.
+  --rewrite Nat_div_less_small; [ easy | ].
+    apply Nat.nlt_ge in H4.
+    split; [ easy | ].
+    eapply le_lt_trans.
+   ++apply nA_upper_bound_for_add.
+     intros k; apply freal_add_series_le_twice_pred.
+   ++rewrite <- Hs2.
+     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+     apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
+     replace 2 with (2 * 1) at 1 by flia.
+     apply Nat.mul_le_mono_l.
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *...
+  *...
+ +intros; apply freal_add_series_le_twice_pred.
+-destruct H3 as (j2 & Hjj2 & Hj2); simpl.
 ...
 
 Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
