@@ -344,15 +344,6 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
       remember (rad * (i + k + 1 + j3 + 3)) as n3 eqn:Hn3.
       remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
       move s3 before n3.
-      assert (Hr2s3 : 2 ≤ rad ^ s3). {
-        destruct s3.
-        -rewrite Hn3 in Hs3.
-         destruct rad; [ easy | simpl in Hs3; flia Hs3 ].
-        -simpl.
-         replace 2 with (2 * 1) by flia.
-         apply Nat.mul_le_mono; [ easy | ].
-         now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-      }
       apply Nat.nle_gt in Hj3; apply Hj3; clear Hj3.
       rewrite nA_all_18; cycle 1.
       +intros j.
