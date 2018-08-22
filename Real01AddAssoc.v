@@ -333,7 +333,6 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
          destruct (LPO_fst (A_ge_1 (freal_add_series y x) (i + 1))) as
              [H9| H9].
         ++simpl in H8.
-clear H6.
           apply A_ge_1_add_all_true_if in H9; cycle 1.
          **intros j; apply freal_add_series_le_twice_pred.
          **destruct H9 as [H9| [H9| H9]].
@@ -348,8 +347,29 @@ clear H6.
             rewrite H5, H10, Nat.add_0_r, Nat.sub_add in H8; [ | easy ].
             rewrite Nat_mod_add_same_l in H8; [ | easy ].
             now rewrite Nat.mod_1_l in H8.
-         ---...
-
+         ---destruct H9 as (j1 & H1bef & H1whi & H1aft).
+            destruct k.
+          +++rewrite Nat.add_0_r, H5, Nat.add_0_r in H6.
+             rewrite Nat.sub_add in H6; [ | easy ].
+             rewrite Nat_mod_add_same_l in H6; [ | easy ].
+             now rewrite Nat.mod_1_l in H6.
+          +++destruct (lt_dec k j1) as [H9| H9].
+           ***specialize (H1bef _ H9).
+              rewrite Nat.add_comm, Nat.add_assoc in H6.
+              rewrite Nat.add_assoc in H6.
+              replace (1 + (rad - 1)) with rad in H6 by flia Hr.
+              rewrite <- Nat.add_assoc in H6.
+              rewrite Nat_mod_add_same_l in H6; [ | easy ].
+(* je sais pas. Ça a pas l'air évident. *)
+...
+            rewrite (nA_9_8_all_18 j1) in H8; [ | easy | easy | easy ].
+            rewrite <- Hs4 in H8.
+            unfold freal_add_series, sequence_add in H8.
+            specialize (Hy 0) as H; rewrite Nat.add_0_r in H.
+            rewrite H5, H, Nat.add_0_r in H8; clear H.
+            rewrite Nat.sub_add in H8; [ | easy ].
+            rewrite Nat_mod_add_same_l in H8; [ | easy ].
+            destruct (le_dec (i + 1 + j1 + 1) (n4 - 1)) as [H9| H9].
   *...
  +intros; apply freal_add_series_le_twice_pred.
 -destruct H3 as (j2 & Hjj2 & Hj2); simpl.
