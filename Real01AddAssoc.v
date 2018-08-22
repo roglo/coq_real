@@ -269,6 +269,13 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
      apply Nat.mul_le_mono_l.
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
   *exfalso.
+   specialize (eq_add_series_18_eq_9 _ _ _ H3) as Hyz.
+   destruct Hyz as (Hy, Hz).
+   specialize (eq_add_series_eq_l _ _ _ _ H2 Hz) as H4.
+   unfold freal_unorm_add in H4.
+   unfold freal_add_to_seq in H4.
+   unfold fd2n in H4; simpl in H4.
+...
    Check add_assoc_case_11_1 z y x i.
    specialize (eq_add_series_18_eq_9 _ _ _ H3) as Hyz.
    destruct Hyz as (Hy, Hz).
