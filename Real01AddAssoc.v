@@ -554,6 +554,16 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
      unfold freal_add_series in H5.
      now rewrite Hyz, Nat.add_0_r in H5.
    }
+   rewrite (nA_9_8_all_18 j1); [ | easy | easy | easy ].
+   rewrite <- Hs1.
+   rewrite Nat.div_small; cycle 1.
+  --destruct (le_dec (i + j1 + 1) (n1 - 1)); flia Hr2s1.
+  --rewrite Nat.add_0_r, Nat.mod_1_l; [ | easy ].
+    destruct (lt_dec (nA i n2 (freal_add_series y x)) (rad ^ s2)) as [H3| H3].
+   ++exfalso.
+     rewrite Nat.mod_small in Hj2; [ | easy ].
+     apply Nat.nle_gt in Hj2; apply Hj2; clear Hj2.
+
 ...
  +intros; apply freal_add_series_le_twice_pred.
 -destruct H3 as (j2 & Hjj2 & Hj2); simpl.
