@@ -374,8 +374,6 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
     rewrite <- Hs1.
     destruct (le_dec (i + j1 + 1) (n1 - 1)); flia Hr2s1.
   --rewrite Nat.add_0_r, Nat.mod_1_l; [ | easy ].
-    assert (Hx : ∀ k, fd2n x (i + k + 1) = rad - 1). {
-Inspect 1.
 ...
  +intros; apply freal_add_series_le_twice_pred.
 -destruct H3 as (j2 & Hjj2 & Hj2); simpl.
