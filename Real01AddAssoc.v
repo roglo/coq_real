@@ -376,7 +376,15 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
   --rewrite Nat.add_0_r, Nat.mod_1_l; [ | easy ].
 (**)
     remember (freal_add_series y x) as yx eqn:Hyx.
-    destruct (lt_dec (nA i n2 yx) (rad ^ s2)) as [H3| H3].
+    destruct (lt_dec (nA i n2 yx) (rad ^ s2)) as [H3| H3]; cycle 1.
+   ++rewrite Nat.nlt_ge in H3.
+     rewrite Nat_div_less_small; [ now rewrite Nat.mod_1_l | ].
+     split; [ easy | ].
+     rewrite Hs2.
+     eapply le_lt_trans.
+    **apply nA_upper_bound_for_add.
+      intros k; rewrite Hyx; apply freal_add_series_le_twice_pred.
+    **rewrite <- Hs2; flia Hr2s2.
    ++exfalso.
      rewrite Nat.mod_small in Hj2; [ | easy ].
 ...
