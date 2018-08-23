@@ -374,6 +374,11 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
     rewrite <- Hs1.
     destruct (le_dec (i + j1 + 1) (n1 - 1)); flia Hr2s1.
   --rewrite Nat.add_0_r, Nat.mod_1_l; [ | easy ].
+(**)
+    remember (freal_add_series y x) as yx eqn:Hyx.
+    destruct (lt_dec (nA i n2 yx) (rad ^ s2)) as [H3| H3].
+   ++exfalso.
+     rewrite Nat.mod_small in Hj2; [ | easy ].
 ...
     assert (Hyz : ∀ k, fd2n (freal_unorm_add y z) (i + k + 1) = 0). {
       intros k.
