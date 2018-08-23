@@ -426,33 +426,23 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
          rewrite Nat.div_small; [ now apply Nat.mod_0_l | ].
          destruct (le_dec (i + k + 1 + (j1 - S k) + 1) (n3 - 1)); flia Hr2s3.
        +apply Nat.nlt_ge in Hkj1.
-        destruct (eq_nat_dec k j1) as [Hkj1e| Hkj1e].
-        *subst k; clear Hkj1.
-         rewrite H1whi.
-         replace (rad - 2 + 1) with (rad - 1) by flia Hr.
-         rewrite nA_all_18; cycle 1.
-        --intros j.
-          replace (i + j1 + 1 + j + 1) with (i + j1 + j + 2) by flia.
-          apply H1aft.
-        --rewrite <- Hs3.
-          rewrite Nat_div_less_small; [ | flia Hr2s3 ].
-          rewrite Nat.sub_add; [ | easy ].
+        rewrite nA_all_18; cycle 1.
+        *intros j.
+         replace (i + k + 1 + j + 1) with (i + j1 + (k + j - j1) + 2) by
+             flia Hkj1.
+         apply H1aft.
+        *rewrite <- Hs3.
+         rewrite Nat_div_less_small; [ | flia Hr2s3 ].
+         destruct (eq_nat_dec k j1) as [Hkj1e| Hkj1e].
+        --subst k; clear Hkj1.
+          rewrite H1whi.
+          replace (rad - 2 + 1 + 1) with rad by flia Hr.
           now apply Nat.mod_same.
-        *replace (i + k + 1) with (i + j1 + (k - S j1) + 2) at 1 by
+        --replace (i + k + 1) with (i + j1 + (k - S j1) + 2) by
               flia Hkj1 Hkj1e.
-         rewrite H1aft.
-         replace (2 * (rad - 1) + 1) with (rad + (rad - 1)) by flia Hr.
-         rewrite <- Nat.add_assoc.
-         rewrite Nat_mod_add_same_l; [ | easy ].
-         rewrite nA_all_18; cycle 1.
-        --intros j.
-          replace (i + k + 1 + j + 1) with (i + j1 + (k + j - j1) + 2) by
-              flia Hkj1 Hkj1e.
-          apply H1aft.
-        --rewrite <- Hs3.
-          rewrite Nat_div_less_small; [ | flia Hr2s3 ].
-          rewrite Nat.sub_add; [ | easy ].
-          now apply Nat.mod_same.
+          rewrite H1aft.
+          replace (2 * (rad - 1) + 1 + 1) with (2 * rad) by flia Hr.
+          now rewrite Nat.mod_mul.
       -destruct H4 as (j3 & Hjj3 & Hj3); simpl.
        (* after i+j1+1, y=9, z=9 and x=9 *)
        exfalso; apply A_ge_1_false_iff in Hj3.
