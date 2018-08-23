@@ -374,6 +374,7 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
     rewrite <- Hs1.
     destruct (le_dec (i + j1 + 1) (n1 - 1)); flia Hr2s1.
   --rewrite Nat.add_0_r, Nat.mod_1_l; [ | easy ].
+...
     assert (Hyz : ∀ k, fd2n (freal_unorm_add y z) (i + k + 1) = 0). {
       intros k.
       unfold freal_unorm_add, fd2n; simpl.
@@ -438,9 +439,7 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
           rewrite Nat.sub_add; [ | easy ].
           now apply Nat.mod_same.
       -destruct H4 as (j3 & Hjj3 & Hj3); simpl.
-exfalso.
-Inspect 2.
-...
+       (* after i+j1+1, y=9, z=9 and x=9 *)
        remember (rad * (i + k + 1 + j3 + 3)) as n3 eqn:Hn3.
        remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
        move s3 before n3.
@@ -455,6 +454,7 @@ Inspect 2.
        }
        destruct (lt_dec k j1) as [Hkj1| Hkj1].
        +rewrite H1bef; [ | easy ].
+...
         rewrite (nA_9_8_all_18 (j1 - S k)); cycle 1.
         *intros j Hj.
          replace (i + k + 1 + j) with (i + (k + j + 1)) by flia.
@@ -464,6 +464,7 @@ Inspect 2.
          replace (i + k + 1 + (j1 - S k)) with (i + j1) by flia Hkj1.
          apply H1aft.
         *rewrite <- Hs3.
+...
          rewrite Nat.div_small.
          rewrite Nat.div_small; [ now apply Nat.mod_0_l | ].
          destruct (le_dec (i + k + 1 + (j1 - S k) + 1) (n3 - 1)); flia Hr2s3.
