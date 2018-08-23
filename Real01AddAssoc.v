@@ -499,37 +499,21 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
             now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
           **now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
         *apply Nat.nlt_ge in Hkj1.
-         destruct (eq_nat_dec k j1) as [Hkj1e| Hkj1e].
-        --subst k; clear Hkj1.
-          rewrite nA_all_18; cycle 1.
-         ++intros j.
-           replace (i + j1 + 1 + j + 1) with (i + j1 + j + 2) by flia.
-           apply H1aft.
-         ++rewrite <- Hs3.
-           replace (2 * (rad ^ s3 - 1)) with (rad ^ s3 + (rad ^ s3 - 2)) by
-               flia Hr2s3.
-           rewrite Nat_mod_add_same_l; [ | flia Hr2s3 ].
-           rewrite Nat.mod_small; [ | flia Hr2s3 ].
-           apply Nat.sub_le_mono_l.
-           destruct (s3 - S j3); [ easy | simpl ].
-           replace 2 with (2 * 1) by flia.
-           apply Nat.mul_le_mono; [ easy | ].
-           now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-        --rewrite nA_all_18; cycle 1.
-         ++intros j.
-           replace (i + k + 1 + j + 1) with (i + j1 + (k + j - j1) + 2) by
-               flia Hkj1 Hkj1e.
-           apply H1aft.
-         ++rewrite <- Hs3.
-           replace (2 * (rad ^ s3 - 1)) with (rad ^ s3 + (rad ^ s3 - 2)) by
-               flia Hr2s3.
-           rewrite Nat_mod_add_same_l; [ | flia Hr2s3 ].
-           rewrite Nat.mod_small; [ | flia Hr2s3 ].
-           apply Nat.sub_le_mono_l.
-           destruct (s3 - S j3); [ easy | simpl ].
-           replace 2 with (2 * 1) by flia.
-           apply Nat.mul_le_mono; [ easy | ].
-           now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+         rewrite nA_all_18; cycle 1.
+        --intros j.
+          replace (i + k + 1 + j + 1) with (i + j1 + (k + j - j1) + 2) by
+              flia Hkj1.
+          apply H1aft.
+        --rewrite <- Hs3.
+          replace (2 * (rad ^ s3 - 1)) with (rad ^ s3 + (rad ^ s3 - 2)) by
+              flia Hr2s3.
+          rewrite Nat_mod_add_same_l; [ | flia Hr2s3 ].
+          rewrite Nat.mod_small; [ | flia Hr2s3 ].
+          apply Nat.sub_le_mono_l.
+          destruct (s3 - S j3); [ easy | simpl ].
+          replace 2 with (2 * 1) by flia.
+          apply Nat.mul_le_mono; [ easy | ].
+          now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
     }
 ...
  +intros; apply freal_add_series_le_twice_pred.
