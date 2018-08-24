@@ -1403,7 +1403,7 @@ simpl; f_equal.
  flia Hin.
 Qed.
 
-Theorem nA_split {r : radix} : ∀ u i n e,
+Theorem nA_split {r : radix} : ∀ e u i n,
   i + 1 ≤ e - 1 ≤ n - 1
   → nA i n u = nA i e u * rad ^ (n - e) + nA (e - 1) n u.
 Proof.

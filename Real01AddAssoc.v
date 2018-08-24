@@ -654,6 +654,15 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
   remember (n2 - i - 1) as s2 eqn:Hs2.
   move n2 before s1.
   move s2 before n2.
+  assert (Hr2s1 : 2 ≤ rad ^ s1). {
+    destruct s1.
+    -rewrite Hn1 in Hs1.
+     destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
+    -simpl.
+     replace 2 with (2 * 1) by flia.
+     apply Nat.mul_le_mono; [ easy | ].
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  }
   assert (Hr2s2 : 2 ≤ rad ^ s2). {
     destruct s2.
     -rewrite Hn2 in Hs2.
