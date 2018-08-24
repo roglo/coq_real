@@ -563,8 +563,28 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
    ++exfalso.
      rewrite Nat.mod_small in Hj2; [ | easy ].
      apply Nat.nle_gt in Hj2; apply Hj2; clear Hj2.
-
-...
+     apply (le_trans _ (nA i n2 (fd2n x))).
+    **rewrite nA_all_9; [ | easy ].
+      rewrite <- Hs2.
+      rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+      rewrite <- Nat.pow_add_r.
+      replace (S j2 + (s2 - S j2)) with s2; cycle 1.
+    ---rewrite Hs2, Hn2.
+       destruct rad; [ easy | simpl; flia ].
+    ---apply Nat.sub_le_mono_l.
+       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+    **unfold nA.
+      apply (@summation_le_compat _ nat_ord_ring).
+      intros j Hj; simpl; unfold Nat.le.
+      apply Nat.mul_le_mono_r.
+      unfold freal_add_series; flia.
+   ++apply Nat.nlt_ge in H3.
+     rewrite Nat_div_less_small; [ now rewrite Nat.mod_1_l | ].
+     split; [ easy | ].
+     eapply le_lt_trans.
+    **apply nA_upper_bound_for_add.
+      intros k; apply freal_add_series_le_twice_pred.
+    **rewrite <- Hs2; flia Hr2s2.
  +intros; apply freal_add_series_le_twice_pred.
 -destruct H3 as (j2 & Hjj2 & Hj2); simpl.
 ...
