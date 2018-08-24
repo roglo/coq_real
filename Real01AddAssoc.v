@@ -687,6 +687,10 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
       intros k; apply freal_add_series_le_twice_pred.
     **rewrite <- Hs2; flia Hr2s2.
    ++idtac.
+(*
+Notation "x '+s' y" := (freal_add_series x y) (at level 50).
+Show.
+*)
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
