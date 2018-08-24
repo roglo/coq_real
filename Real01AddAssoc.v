@@ -648,11 +648,21 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
   apply A_ge_1_false_iff in Hj2.
   remember (rad * (i + j1 + 3)) as n1 eqn:Hn1.
   remember (n1 - i - 1) as s1 eqn:Hs1.
+  move n1 before j2.
   move s1 before n1.
   remember (rad * (i + j2 + 3)) as n2 eqn:Hn2.
   remember (n2 - i - 1) as s2 eqn:Hs2.
   move n2 before s1.
   move s2 before n2.
+  assert (Hr2s2 : 2 ≤ rad ^ s2). {
+    destruct s2.
+    -rewrite Hn2 in Hs2.
+     destruct rad; [ easy | simpl in Hs2; flia Hs2 ].
+    -simpl.
+     replace 2 with (2 * 1) by flia.
+     apply Nat.mul_le_mono; [ easy | ].
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  }
   destruct (lt_dec (nA i n1 (freal_add_series y z)) (rad ^ s1)) as [H3| H3].
   *rewrite Nat.mod_small in Hj1; [ | easy ].
    rewrite Nat.div_small; [ | easy ].
@@ -661,6 +671,13 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
     now rewrite Nat.div_small.
   --exfalso.
     apply Nat.nlt_ge in H4.
+    rewrite Nat_mod_less_small in Hj2; cycle 1.
+   ++split; [ easy | ].
+     eapply le_lt_trans.
+    **apply nA_upper_bound_for_add.
+      intros k; apply freal_add_series_le_twice_pred.
+    **rewrite <- Hs2; flia Hr2s2.
+   ++idtac.
 ...
 
 Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
