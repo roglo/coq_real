@@ -413,12 +413,12 @@ assert (Hr2s1 : 2 ≤ rad ^ s1). {
 }
 destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
 -simpl.
- specialize (A_ge_1_freal_add_series_all_true _ _ _ H3) as Hyz.
  assert (Hx : (∀ k, fd2n x (i + k + 1) = rad - 1)). {
    intros k.
    specialize (H1 k) as H5.
    unfold freal_add_series in H5.
-   now rewrite Hyz, Nat.add_0_r in H5.
+   rewrite A_ge_1_freal_add_series_all_true in H5; [ | easy ].
+   now rewrite Nat.add_0_r in H5.
  }
  apply A_ge_1_add_all_true_if in H3; cycle 1. {
    intros; apply freal_add_series_le_twice_pred.
