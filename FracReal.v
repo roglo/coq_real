@@ -986,19 +986,23 @@ Definition freal_unorm_add {r : radix} x y := {| freal := freal_add_to_seq x y |
    les additionner ? j'ai démontré plus loin que 'propagate_carries'
    rendait toujours un nombre normalisé (il ne peut pas se terminer
    par une infinité de 9 (not_propagate_carries_all_9) *)
+(*
 Definition freal_add {r : radix} (a b : FracReal) :=
   freal_unorm_add (freal_normalize a) (freal_normalize b).
 
 Print freal_add.
 
 Arguments freal_add _ a%F b%F.
+*)
 
 (*
 Definition freal_mul {r : radix} (a b : FracReal) :=
   {| freal := freal_mul_to_seq a b |}.
 *)
 
+(*
 Notation "a + b" := (freal_add a b) : freal_scope.
+*)
 (*
 Notation "a * b" := (freal_mul a b) : freal_scope.
 *)
@@ -1176,12 +1180,13 @@ remember (freal_add_to_seq y x) as yx.
 unfold digit_sequence_normalize.
 destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
 -destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
- +unfold freal_add in Heqxy; simpl in Heqxy.
+ +(*unfold freal_add in Heqxy; simpl in Heqxy.
   unfold freal_add in Heqyx; simpl in Heqyx.
+*)
   destruct (lt_dec (S (d2n xy i)) rad) as [Hrxy| Hrxy].
   *subst xy; simpl in Hrxy; simpl.
    destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx].
-  --unfold freal_add in Heqyx; simpl in Heqyx.
+  --(*unfold freal_add in Heqyx; simpl in Heqyx.*)
     subst yx; simpl in Hryx; simpl.
     apply digit_eq_eq; unfold d2n.
     remember freal_add_to_seq as f; simpl; subst f.
@@ -1194,9 +1199,13 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
    subst xy yx; simpl in Hryx; unfold d2n in Hryx.
    now rewrite freal_add_to_seq_i_comm in Hryx.
  +destruct Hyx as (k & Hjk & Hk); clear Hjk.
+(*
   unfold freal_add in Heqyx; simpl in Heqyx.
+*)
   subst yx; simpl in Hk; simpl.
+(*
   unfold freal_add in Heqxy; simpl in Heqxy.
+*)
   subst xy; simpl in Hxy; simpl.
   apply is_9_strict_after_false_iff in Hk.
   unfold d2n in Hk.
@@ -1205,8 +1214,10 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
   apply is_9_strict_after_true_iff in Hxy.
   now unfold d2n in Hxy.
 -destruct Hxy as (k & Hjk & Hk).
+(*
  unfold freal_add in Heqxy; simpl in Heqxy.
  unfold freal_add in Heqyx; simpl in Heqyx.
+*)
  destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
  +exfalso; clear Hjk.
   subst xy yx; simpl in Hk, Hyx; unfold d2n in Hk; simpl.
@@ -1220,12 +1231,14 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
   apply freal_add_to_seq_i_comm.
 Qed.
 
+(*
 Theorem dig_norm_add_comm {r : radix} : ∀ x y i,
   freal (freal_normalize (x + y)) i = freal (freal_normalize (y + x)) i.
 Proof.
 intros.
 apply dig_norm_unorm_add_comm.
 Qed.
+*)
 
 (*
 Theorem dig_norm_mul_comm {r : radix} : ∀ x y i,
@@ -1322,11 +1335,13 @@ subst nxy nyx; unfold fd2n; f_equal.
 apply dig_norm_unorm_add_comm.
 Qed.
 
+(*
 Theorem freal_add_comm {r : radix} : ∀ x y : FracReal, (x + y = y + x)%F.
 Proof.
 intros.
 apply freal_norm_unorm_add_comm.
 Qed.
+*)
 
 (*
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
@@ -2404,6 +2419,7 @@ unfold freal_eq, freal_norm_eq.
 split; intros Hxy *; apply digit_eq_eq, Hxy.
 Qed.
 
+(*
 Add Parametric Morphism {r : radix} : freal_add
   with signature freal_eq ==> freal_eq ==> freal_eq
   as freal_add_morph.
@@ -2421,6 +2437,7 @@ intros i.
 unfold fd2n.
 now rewrite Hxy, Hxy'.
 Qed.
+*)
 
 Theorem Nat_mul_pow_sub_1_pow : ∀ a b c,
   (a ^ S b - 1) * a ^ c = (a ^ b - 1) * a ^ c + (a - 1) * a ^ (b + c).
