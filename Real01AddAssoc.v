@@ -84,7 +84,7 @@ replace (S k + (s - S k)) with s; cycle 1.
 Qed.
 
 Theorem all_x_yz_9_all_yx_9_all_yz_18 {r : radix } : ∀ x y z i,
-  (∀ k, freal_add_series x (freal_add y z) (i + k + 1) = rad - 1)
+  (∀ k, freal_add_series x (y + z) (i + k + 1) = rad - 1)
   → (∀ k, freal_add_series y x (i + k + 1) = rad - 1)
   → (∀ k, freal_add_series y z (i + k + 1) = 2 * (rad - 1))
   → False.
@@ -109,7 +109,7 @@ intros k; subst yz; apply freal_add_series_le_twice_pred.
 Qed.
 
 Theorem all_x_yz_9_all_yz_9_all_x_9 {r : radix} : ∀ x y z i,
-  (∀ k, freal_add_series x (freal_add y z) (i + k + 1) = rad - 1)
+  (∀ k, freal_add_series x (y + z) (i + k + 1) = rad - 1)
   → (∀ k, freal_add_series y z (i + k + 1) = rad - 1)
   → ∀ k : nat, fd2n x (i + k + 1) = rad - 1.
 Proof.
@@ -164,7 +164,7 @@ Qed.
 
 Theorem A_ge_1_freal_add_series_all_true {r : radix} : ∀ y z i,
   (∀ k, A_ge_1 (freal_add_series y z) i k = true)
-  → ∀ k, fd2n (freal_add y z) (i + k + 1) = 0.
+  → ∀ k, fd2n (y + z) (i + k + 1) = 0.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -510,8 +510,8 @@ Qed.
 Theorem add_assoc_case_11_11 {r : radix} : ∀ x y z i n1 s1,
   n1 = rad * (i + 3)
   → s1 = n1 - i - 1
-  → (∀ k, freal_add_series x (freal_add y z) (i + k + 1) = rad - 1)
-  → (∀ k, freal_add_series z (freal_add y x) (i + k + 1) = rad - 1)
+  → (∀ k, freal_add_series x (y + z) (i + k + 1) = rad - 1)
+  → (∀ k, freal_add_series z (y + x) (i + k + 1) = rad - 1)
   → (∀ k, A_ge_1 (freal_add_series y z) i k = true)
   → (∀ k, A_ge_1 (freal_add_series y x) i k = true)
   → (dig (freal x i) +
@@ -598,10 +598,10 @@ apply A_ge_1_add_all_true_if in H4; cycle 1.
 Qed.
 
 Theorem add_assoc_case_11 {r : radix} : ∀ x y z i,
-  (∀ k, freal_add_series x (freal_add y z) (i + k + 1) = rad - 1)
-  → (∀ k, freal_add_series z (freal_add y x) (i + k + 1) = rad - 1)
-  → (freal_add_series x (freal_add y z) i + 1) mod rad =
-     (freal_add_series z (freal_add y x) i + 1) mod rad.
+  (∀ k, freal_add_series x (y + z) (i + k + 1) = rad - 1)
+  → (∀ k, freal_add_series z (y + x) (i + k + 1) = rad - 1)
+  → (freal_add_series x (y + z) i + 1) mod rad =
+     (freal_add_series z (y + x) i + 1) mod rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -681,13 +681,11 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
-  freal_norm_eq
-    (freal_add x (freal_add y z))
-    (freal_add (freal_add x y) z).
+  freal_norm_eq (x + (y + z)) ((x + y) + z).
 Proof.
 intros.
 specialize radix_ge_2 as Hr.
-specialize (freal_add_comm (freal_add x y) z) as H.
+specialize (freal_add_comm (x + y) z) as H.
 rewrite H; clear H.
 specialize (freal_add_comm x y) as H.
 rewrite H; clear H.
@@ -696,8 +694,8 @@ intros i.
 unfold freal_add at 1 3.
 unfold fd2n; simpl.
 unfold freal_add_to_seq.
-remember (freal_add y z) as yz eqn:Hyz.
-remember (freal_add y x) as yx eqn:Hyx.
+remember (y + z)%F as yz eqn:Hyz.
+remember (y + x)%F as yx eqn:Hyx.
 move yx before yz.
 move Hyx before Hyz.
 remember (freal_add_series x yz) as x_yz eqn:Hxyz.

@@ -198,9 +198,12 @@ Definition has_same_digits {r : radix} x y i :=
   if Nat.eq_dec (fd2n x i) (fd2n y i) then true else false.
 
 Definition freal_norm_eq {r : radix} x y := ∀ i, fd2n x i = fd2n y i.
+Arguments freal_norm_eq _ x%F y%F.
 
 Definition freal_eq {r : radix} x y :=
   freal_norm_eq (freal_normalize x) (freal_normalize y).
+
+Arguments freal_eq _ x%F y%F.
 
 (*
 Definition freal_lt {r : radix} x y :=
@@ -981,6 +984,7 @@ Definition freal_mul_to_seq {r : radix} (a b : FracReal) :=
 *)
 
 Definition freal_add {r : radix} x y := {| freal := freal_add_to_seq x y |}.
+Arguments freal_add _ x%F y%F.
 
 (*
 Definition freal_mul {r : radix} (a b : FracReal) :=
@@ -1148,15 +1152,16 @@ Qed.
 *)
 
 Theorem dig_unorm_add_comm {r : radix} : ∀ x y i,
-  freal (freal_add x y) i = freal (freal_add y x) i.
+  freal (x + y) i = freal (y + x) i.
 Proof.
 intros; simpl.
 now rewrite freal_add_to_seq_i_comm.
 Qed.
 
+(* normally useless *)
 Theorem dig_norm_unorm_add_comm {r : radix} : ∀ x y i,
-  freal (freal_normalize (freal_add x y)) i =
-  freal (freal_normalize (freal_add y x)) i.
+  freal (freal_normalize (x + y)) i =
+  freal (freal_normalize (y + x)) i.
 Proof.
 intros.
 unfold freal_normalize; simpl.
@@ -1282,25 +1287,28 @@ now destruct (Nat.eq_dec (fd2n x i) (fd2n y i)).
 Qed.
 
 Theorem freal_add_comm {r : radix} : ∀ x y : FracReal,
-  freal_norm_eq (freal_add x y) (freal_add y x).
+  freal_norm_eq (x + y) (y + x).
 Proof.
 intros.
 unfold freal_norm_eq.
-remember (freal_add x y) as nxy eqn:Hnxy.
-remember (freal_add y x) as nyx eqn:Hnyx.
+remember (x + y)%F as nxy eqn:Hnxy.
+remember (y + x)%F as nyx eqn:Hnyx.
 intros i.
 subst nxy nyx; unfold fd2n; f_equal.
 apply dig_unorm_add_comm.
 Qed.
 
+Arguments freal_add_comm _ x%F y%F.
+
+(* perhaps useless *)
 Theorem freal_norm_unorm_add_comm {r : radix} : ∀ x y : FracReal,
-  freal_eq (freal_add x y) (freal_add y x).
+  freal_eq (x + y) (y + x).
 Proof.
 intros.
 unfold freal_eq.
 unfold freal_norm_eq.
-remember (freal_normalize (freal_add x y)) as nxy eqn:Hnxy.
-remember (freal_normalize (freal_add y x)) as nyx eqn:Hnyx.
+remember (freal_normalize (x + y)) as nxy eqn:Hnxy.
+remember (freal_normalize (y + x)) as nyx eqn:Hnyx.
 intros i.
 subst nxy nyx; unfold fd2n; f_equal.
 apply dig_norm_unorm_add_comm.
@@ -4775,7 +4783,7 @@ Qed.
 Theorem unorm_add_inf_pred_rad {r : radix} : ∀ x y n,
   (∀ i, fd2n x (n + i) = rad - 1)
   → (∀ i, ∃ j : nat, fd2n y (i + j) ≠ rad - 1)
-  → ∀ i : nat, n ≤ i → fd2n (freal_add x y) i = fd2n y i.
+  → ∀ i : nat, n ≤ i → fd2n (x + y) i = fd2n y i.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
