@@ -414,7 +414,9 @@ assert (Hr2s1 : 2 ≤ rad ^ s1). {
 destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
 -simpl.
  specialize (A_ge_1_freal_add_series_all_true _ _ _ H3) as Hyz.
- apply A_ge_1_add_all_true_if in H3.
+ apply A_ge_1_add_all_true_if in H3; cycle 1. {
+   intros; apply freal_add_series_le_twice_pred.
+ }
  destruct (LPO_fst (A_ge_1 (freal_add_series y x) i)) as [H4| H4].
  +simpl.
   apply A_ge_1_add_all_true_if in H4.
@@ -585,8 +587,10 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
     **apply nA_upper_bound_for_add.
       intros k; apply freal_add_series_le_twice_pred.
     **rewrite <- Hs2; flia Hr2s2.
- +intros; apply freal_add_series_le_twice_pred.
 -destruct H3 as (j2 & Hjj2 & Hj2); simpl.
+ destruct (LPO_fst (A_ge_1 (freal_add_series y x) i)) as [H4| H4].
+ +simpl.
+  specialize (A_ge_1_freal_add_series_all_true _ _ _ H4) as Hyx.
 ...
 
 Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
