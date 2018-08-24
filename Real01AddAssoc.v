@@ -426,6 +426,12 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
  destruct (LPO_fst (A_ge_1 (freal_add_series y x) i)) as [H4| H4].
  +simpl.
   specialize (A_ge_1_freal_add_series_all_true _ _ _ H4) as Hyx.
+  assert (Hz : (∀ k, fd2n z (i + k + 1) = rad - 1)). {
+    intros k.
+    specialize (H2 k) as H5.
+    unfold freal_add_series in H5.
+    now rewrite Hyx, Nat.add_0_r in H5.
+  }
   apply A_ge_1_add_all_true_if in H4.
   *rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
    rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
@@ -460,7 +466,7 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
      rewrite Nat_div_less_small; [ easy | flia Hr2s1 ].
    ++exfalso.
      destruct H4 as (j2 & H2bef & H2whi & H2aft).
-     specialize (eq_add_series_18_eq_9 _ _ _ H3) as (Hy, Hz).
+     specialize (eq_add_series_18_eq_9 _ _ _ H3) as (Hy, _).
      unfold freal_add_series in H2whi.
      rewrite Hy in H2whi; flia Hr H2whi.
   --destruct H3 as (j1 & H1bef & H1whi & H1aft).
