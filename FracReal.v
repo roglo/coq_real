@@ -980,29 +980,14 @@ Definition freal_mul_to_seq {r : radix} (a b : FracReal) :=
   propagate_carries (freal_mul_series a b).
 *)
 
-Definition freal_unorm_add {r : radix} x y := {| freal := freal_add_to_seq x y |}.
-
-(* est-ce que c'est vraiment nécessaire de normaliser a et b avant de
-   les additionner ? j'ai démontré plus loin que 'propagate_carries'
-   rendait toujours un nombre normalisé (il ne peut pas se terminer
-   par une infinité de 9 (not_propagate_carries_all_9) *)
-(*
-Definition freal_add {r : radix} (a b : FracReal) :=
-  freal_unorm_add (freal_normalize a) (freal_normalize b).
-
-Print freal_add.
-
-Arguments freal_add _ a%F b%F.
-*)
+Definition freal_add {r : radix} x y := {| freal := freal_add_to_seq x y |}.
 
 (*
 Definition freal_mul {r : radix} (a b : FracReal) :=
   {| freal := freal_mul_to_seq a b |}.
 *)
 
-(*
 Notation "a + b" := (freal_add a b) : freal_scope.
-*)
 (*
 Notation "a * b" := (freal_mul a b) : freal_scope.
 *)
@@ -1163,15 +1148,15 @@ Qed.
 *)
 
 Theorem dig_unorm_add_comm {r : radix} : ∀ x y i,
-  freal (freal_unorm_add x y) i = freal (freal_unorm_add y x) i.
+  freal (freal_add x y) i = freal (freal_add y x) i.
 Proof.
 intros; simpl.
 now rewrite freal_add_to_seq_i_comm.
 Qed.
 
 Theorem dig_norm_unorm_add_comm {r : radix} : ∀ x y i,
-  freal (freal_normalize (freal_unorm_add x y)) i =
-  freal (freal_normalize (freal_unorm_add y x)) i.
+  freal (freal_normalize (freal_add x y)) i =
+  freal (freal_normalize (freal_add y x)) i.
 Proof.
 intros.
 unfold freal_normalize; simpl.
@@ -1180,14 +1165,10 @@ remember (freal_add_to_seq y x) as yx.
 unfold digit_sequence_normalize.
 destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
 -destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
- +(*unfold freal_add in Heqxy; simpl in Heqxy.
-  unfold freal_add in Heqyx; simpl in Heqyx.
-*)
-  destruct (lt_dec (S (d2n xy i)) rad) as [Hrxy| Hrxy].
+ +destruct (lt_dec (S (d2n xy i)) rad) as [Hrxy| Hrxy].
   *subst xy; simpl in Hrxy; simpl.
    destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx].
-  --(*unfold freal_add in Heqyx; simpl in Heqyx.*)
-    subst yx; simpl in Hryx; simpl.
+  --subst yx; simpl in Hryx; simpl.
     apply digit_eq_eq; unfold d2n.
     remember freal_add_to_seq as f; simpl; subst f.
     now rewrite freal_add_to_seq_i_comm.
@@ -1199,13 +1180,7 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
    subst xy yx; simpl in Hryx; unfold d2n in Hryx.
    now rewrite freal_add_to_seq_i_comm in Hryx.
  +destruct Hyx as (k & Hjk & Hk); clear Hjk.
-(*
-  unfold freal_add in Heqyx; simpl in Heqyx.
-*)
   subst yx; simpl in Hk; simpl.
-(*
-  unfold freal_add in Heqxy; simpl in Heqxy.
-*)
   subst xy; simpl in Hxy; simpl.
   apply is_9_strict_after_false_iff in Hk.
   unfold d2n in Hk.
@@ -1214,10 +1189,6 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
   apply is_9_strict_after_true_iff in Hxy.
   now unfold d2n in Hxy.
 -destruct Hxy as (k & Hjk & Hk).
-(*
- unfold freal_add in Heqxy; simpl in Heqxy.
- unfold freal_add in Heqyx; simpl in Heqyx.
-*)
  destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
  +exfalso; clear Hjk.
   subst xy yx; simpl in Hk, Hyx; unfold d2n in Hk; simpl.
@@ -1310,26 +1281,26 @@ unfold has_same_digits.
 now destruct (Nat.eq_dec (fd2n x i) (fd2n y i)).
 Qed.
 
-Theorem freal_unorm_add_comm {r : radix} : ∀ x y : FracReal,
-  freal_norm_eq (freal_unorm_add x y) (freal_unorm_add y x).
+Theorem freal_add_comm {r : radix} : ∀ x y : FracReal,
+  freal_norm_eq (freal_add x y) (freal_add y x).
 Proof.
 intros.
 unfold freal_norm_eq.
-remember (freal_unorm_add x y) as nxy eqn:Hnxy.
-remember (freal_unorm_add y x) as nyx eqn:Hnyx.
+remember (freal_add x y) as nxy eqn:Hnxy.
+remember (freal_add y x) as nyx eqn:Hnyx.
 intros i.
 subst nxy nyx; unfold fd2n; f_equal.
 apply dig_unorm_add_comm.
 Qed.
 
 Theorem freal_norm_unorm_add_comm {r : radix} : ∀ x y : FracReal,
-  freal_eq (freal_unorm_add x y) (freal_unorm_add y x).
+  freal_eq (freal_add x y) (freal_add y x).
 Proof.
 intros.
 unfold freal_eq.
 unfold freal_norm_eq.
-remember (freal_normalize (freal_unorm_add x y)) as nxy eqn:Hnxy.
-remember (freal_normalize (freal_unorm_add y x)) as nyx eqn:Hnyx.
+remember (freal_normalize (freal_add x y)) as nxy eqn:Hnxy.
+remember (freal_normalize (freal_add y x)) as nyx eqn:Hnyx.
 intros i.
 subst nxy nyx; unfold fd2n; f_equal.
 apply dig_norm_unorm_add_comm.
@@ -2418,26 +2389,6 @@ intros.
 unfold freal_eq, freal_norm_eq.
 split; intros Hxy *; apply digit_eq_eq, Hxy.
 Qed.
-
-(*
-Add Parametric Morphism {r : radix} : freal_add
-  with signature freal_eq ==> freal_eq ==> freal_eq
-  as freal_add_morph.
-Proof.
-intros x y Hxy x' y' Hxy'.
-rewrite freal_eq_normalized_eq in Hxy, Hxy'.
-rewrite freal_eq_normalized_eq.
-apply freal_normalized_eq_iff; left.
-intros i.
-unfold freal_add, freal_unorm_add.
-unfold freal_add_to_seq, freal_add_series; simpl.
-unfold freal_add, freal_add_to_seq, freal_add_series; simpl.
-apply propagate_carries_eq_compat; clear i.
-intros i.
-unfold fd2n.
-now rewrite Hxy, Hxy'.
-Qed.
-*)
 
 Theorem Nat_mul_pow_sub_1_pow : ∀ a b c,
   (a ^ S b - 1) * a ^ c = (a ^ b - 1) * a ^ c + (a - 1) * a ^ (b + c).
@@ -4629,15 +4580,15 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
  +now rewrite Hxy.
 Qed.
 
-Add Parametric Morphism {r : radix} : freal_unorm_add
+Add Parametric Morphism {r : radix} : freal_add
   with signature freal_norm_eq ==> freal_norm_eq ==> freal_norm_eq
-  as freal_unorm_add_morph.
+  as freal_add_morph.
 Proof.
 intros x y Hxy x' y' Hxy'.
 unfold freal_norm_eq in Hxy, Hxy'.
 unfold freal_norm_eq.
 intros i.
-unfold fd2n, freal_unorm_add.
+unfold fd2n, freal_add.
 unfold fd2n in Hxy, Hxy'.
 f_equal; simpl.
 unfold freal_add_to_seq.
@@ -4708,7 +4659,7 @@ Qed.
 Theorem add_norm_0_l {r : radix} : ∀ y n nx nxy,
   (∀ i : nat, fd2n nx (n + i) = 0)
   → (∀ i : nat, ∃ j : nat, fd2n y (i + j) ≠ rad - 1)
-  → nxy = freal_unorm_add nx y
+  → nxy = freal_add nx y
   → ∀ i, n ≤ i
   → fd2n (freal_normalize nxy) i = fd2n (freal_normalize y) i.
 Proof.
@@ -4719,7 +4670,7 @@ unfold fd2n; f_equal.
 apply (freal_eq_normalize_eq n); [ | easy ].
 intros j Hj.
 rewrite Hnxy.
-unfold freal_unorm_add; simpl.
+unfold freal_add; simpl.
 unfold freal_add_to_seq.
 unfold propagate_carries.
 destruct (LPO_fst (A_ge_1 (freal_add_series nx y) j)) as [H1| H1].
@@ -4824,12 +4775,12 @@ Qed.
 Theorem unorm_add_inf_pred_rad {r : radix} : ∀ x y n,
   (∀ i, fd2n x (n + i) = rad - 1)
   → (∀ i, ∃ j : nat, fd2n y (i + j) ≠ rad - 1)
-  → ∀ i : nat, n ≤ i → fd2n (freal_unorm_add x y) i = fd2n y i.
+  → ∀ i : nat, n ≤ i → fd2n (freal_add x y) i = fd2n y i.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Haft Hy i Hni.
-unfold freal_unorm_add, fd2n; simpl.
+unfold freal_add, fd2n; simpl.
 unfold freal_add_to_seq.
 set (u := freal_add_series x y).
 unfold propagate_carries.
@@ -6093,7 +6044,7 @@ Qed.
 
 (*
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
-  (freal_unorm_add (freal_normalize x) y = freal_unorm_add x y)%F.
+  (freal_add (freal_normalize x) y = freal_add x y)%F.
 Proof.
 intros.
 specialize radix_ge_2 as Hr.
@@ -6106,8 +6057,8 @@ specialize (freal_normalized_cases x) as [H1| H1].
   apply eq_freal_norm_eq_true_iff.
   intros i.
   remember (freal_normalize x) as nx eqn:Hnx.
-  remember (freal_unorm_add nx y) as nxy eqn:Hnxy.
-  remember (freal_unorm_add x y) as xy eqn:Hxy.
+  remember (freal_add nx y) as nxy eqn:Hnxy.
+  remember (freal_add x y) as xy eqn:Hxy.
   move xy before nxy.
   destruct (le_dec n i) as [Hni| Hni].
   *assert (H1 : fd2n (freal_normalize nxy) i = fd2n (freal_normalize y) i). {
@@ -6161,7 +6112,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
       specialize (H2 (S n + k - S i)) as H1.
       replace (i + (S n + k - S i) + 1) with (S n + k) in H1 by flia Hni.
       rewrite Hnxy in H1.
-      unfold freal_unorm_add in H1; remember S as f; simpl in H1; subst f.
+      unfold freal_add in H1; remember S as f; simpl in H1; subst f.
       unfold freal_add_to_seq, d2n in H1.
       rewrite propagate_carries_eq_compat_from with (g := fd2n y) in H1.
       -easy.
@@ -6191,7 +6142,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
        apply H2.
      }
      rewrite Hxy in H3.
-     unfold freal_unorm_add in H3; simpl in H3.
+     unfold freal_add in H3; simpl in H3.
      unfold freal_add_to_seq in H3.
      apply not_propagate_carries_all_9 in H3; [ easy | ].
      intros k.
@@ -6204,7 +6155,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
      destruct (eq_nat_dec i n) as [Hin| Hin].
     **clear Hni; subst i.
       rewrite Hnxy, Hxy.
-      unfold freal_unorm_add; simpl.
+      unfold freal_add; simpl.
       unfold freal_add_to_seq.
       set (u := freal_add_series x y).
       set (v := freal_add_series nx y).
