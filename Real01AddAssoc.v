@@ -384,6 +384,129 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
+Theorem add_assoc_case_11_1 {r : radix} :  ∀ j2 x y z i n1 s1 n2 s2,
+  n1 = rad * (i + 3)
+  → s1 = n1 - i - 1
+  → n2 = rad * (i + j2 + 3)
+  → s2 = n2 - i - 1
+  → (∀ k, fd2n x (i + k + 1) = rad - 1)
+  → (∀ k, A_ge_1 (freal_add_series y z) i k = true)
+  → A_ge_1 (freal_add_series y x) i j2 = false
+  → (dig (freal x i) +
+       (freal_add_series y z i + 1 +
+        nA i n1 (freal_add_series y z) / rad ^ s1) mod rad) mod rad =
+    (dig (freal z i) +
+       (freal_add_series y x i +
+        nA i n2 (freal_add_series y x) / rad ^ s2) mod rad) mod rad.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hn1 Hs1 Hn2 Hs2 Hx H3 Hj2.
+assert (Hr2s1 : 2 ≤ rad ^ s1). {
+  destruct s1.
+  -rewrite Hn1 in Hs1.
+   destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
+  -simpl.
+   replace 2 with (2 * 1) by flia.
+   apply Nat.mul_le_mono; [ easy | ].
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+}
+apply A_ge_1_false_iff in Hj2.
+rewrite <- Hn2, <- Hs2 in Hj2.
+assert (Hr2s2 : 2 ≤ rad ^ s2). {
+  destruct s2.
+  -rewrite Hn2 in Hs2.
+   destruct rad; [ easy | simpl in Hs2; flia Hs2 ].
+  -simpl.
+   replace 2 with (2 * 1) by flia.
+   apply Nat.mul_le_mono; [ easy | ].
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+}
+rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
+unfold freal_add_series at 1 3.
+do 5 rewrite Nat.add_assoc.
+do 2 rewrite fold_fd2n.
+replace (fd2n z i + fd2n y i + fd2n x i) with
+  (fd2n x i + fd2n y i + fd2n z i) by flia.
+rewrite <- Nat.add_assoc.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal.
+apply A_ge_1_add_all_true_if in H3; cycle 1.
+-intros; apply freal_add_series_le_twice_pred.
+-destruct H3 as [H3| [H3| H3]].
+ +rewrite nA_all_9; [ | intros; apply H3 ].
+  rewrite <- Hs1.
+  rewrite Nat.div_small; [ | flia Hr2s1 ].
+  rewrite Nat.add_0_r.
+  destruct (lt_dec (nA i n2 (freal_add_series y x)) (rad ^ s2)) as [H4| H4].
+  *exfalso.
+   rewrite Nat.mod_small in Hj2; [ | easy ].
+   apply Nat.nle_gt in Hj2; apply Hj2; clear Hj2.
+   apply le_trans with (m := nA i n2 (fd2n x)).
+  --rewrite nA_all_9; [ | intros j Hj; apply Hx ].
+    rewrite <- Hs2.
+    rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+    rewrite <- Nat.pow_add_r.
+    replace (S j2 + (s2 - S j2)) with s2; cycle 1.
+   ++rewrite Hs2, Hn2.
+     destruct rad; [ easy | simpl; flia ].
+   ++apply Nat.sub_le_mono_l.
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  --unfold nA.
+    apply (@summation_le_compat _ nat_ord_ring).
+    intros j Hj; simpl; unfold Nat.le.
+    apply Nat.mul_le_mono_r.
+    unfold freal_add_series.
+    flia.
+  *rewrite Nat_div_less_small; [ easy | ].
+   apply Nat.nlt_ge in H4.
+   split; [ easy | ].
+   eapply le_lt_trans.
+  --apply nA_upper_bound_for_add.
+    intros k; apply freal_add_series_le_twice_pred.
+  --rewrite <- Hs2; flia Hr2s2.
+ +exfalso.
+  specialize (eq_add_series_18_eq_9 _ _ _ H3) as (Hy, Hz).
+  apply Nat.nle_gt in Hj2; apply Hj2; clear Hj2.
+  rewrite nA_all_18; cycle 1.
+  *intros; unfold freal_add_series; rewrite Hx, Hy; flia.
+  *rewrite <- Hs2; now apply (le_90_198_mod_100 i n2).
+ +destruct H3 as (j1 & H1bef & H1whi & H1aft).
+  rewrite (nA_9_8_all_18 j1); [ | easy | easy | easy ].
+  rewrite <- Hs1.
+  rewrite Nat.div_small; cycle 1.
+  *destruct (le_dec (i + j1 + 1) (n1 - 1)); flia Hr2s1.
+  *rewrite Nat.add_0_r, Nat.mod_1_l; [ | easy ].
+   destruct (lt_dec (nA i n2 (freal_add_series y x)) (rad ^ s2)) as [H3| H3].
+  --exfalso.
+    rewrite Nat.mod_small in Hj2; [ | easy ].
+    apply Nat.nle_gt in Hj2; apply Hj2; clear Hj2.
+    apply (le_trans _ (nA i n2 (fd2n x))).
+   ++rewrite nA_all_9; [ | easy ].
+     rewrite <- Hs2.
+     rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+     rewrite <- Nat.pow_add_r.
+     replace (S j2 + (s2 - S j2)) with s2; cycle 1.
+    **rewrite Hs2, Hn2.
+      destruct rad; [ easy | simpl; flia ].
+    **apply Nat.sub_le_mono_l.
+      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+   ++unfold nA.
+     apply (@summation_le_compat _ nat_ord_ring).
+     intros j Hj; simpl; unfold Nat.le.
+     apply Nat.mul_le_mono_r.
+     unfold freal_add_series; flia.
+  --apply Nat.nlt_ge in H3.
+    rewrite Nat_div_less_small; [ now rewrite Nat.mod_1_l | ].
+    split; [ easy | ].
+    eapply le_lt_trans.
+   ++apply nA_upper_bound_for_add.
+     intros k; apply freal_add_series_le_twice_pred.
+   ++rewrite <- Hs2; flia Hr2s2.
+Qed.
+
 Theorem add_assoc_case_11 {r : radix} : ∀ x y z i,
   (∀ k, freal_add_series x (freal_unorm_add y z) (i + k + 1) = rad - 1)
   → (∀ k, freal_add_series z (freal_unorm_add y x) (i + k + 1) = rad - 1)
@@ -420,9 +543,6 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
    rewrite A_ge_1_freal_add_series_all_true in H5; [ | easy ].
    now rewrite Nat.add_0_r in H5.
  }
- apply A_ge_1_add_all_true_if in H3; cycle 1. {
-   intros; apply freal_add_series_le_twice_pred.
- }
  destruct (LPO_fst (A_ge_1 (freal_add_series y x) i)) as [H4| H4].
  +simpl.
   assert (Hz : (∀ k, fd2n z (i + k + 1) = rad - 1)). {
@@ -443,6 +563,9 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
    rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
    rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
    f_equal; f_equal.
+   apply A_ge_1_add_all_true_if in H3; cycle 1. {
+     intros; apply freal_add_series_le_twice_pred.
+   }
    destruct H3 as [H3| [H3| H3]].
   --rewrite nA_all_9; [ | intros; apply H3 ].
     destruct H4 as [H4| [H4| H4]].
@@ -491,105 +614,26 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
    ++destruct (le_dec (i + j1 + 1) (n1 - 1)); flia Hr2s1.
   *intros; apply freal_add_series_le_twice_pred.
  +destruct H4 as (j2 & Hjj2 & Hj2); simpl.
-  apply A_ge_1_false_iff in Hj2.
   remember (rad * (i + j2 + 3)) as n2 eqn:Hn2.
   remember (n2 - i - 1) as s2 eqn:Hs2.
   move s2 before n2.
-  assert (Hr2s2 : 2 ≤ rad ^ s2). {
-    destruct s2.
-    -rewrite Hn2 in Hs2.
-     destruct rad; [ easy | simpl in Hs2; flia Hs2 ].
-    -simpl.
-     replace 2 with (2 * 1) by flia.
-     apply Nat.mul_le_mono; [ easy | ].
-     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-  }
-  rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
-  rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
-  unfold freal_add_series at 1 3.
-  do 5 rewrite Nat.add_assoc.
-  do 2 rewrite fold_fd2n.
-  replace (fd2n z i + fd2n y i + fd2n x i) with
-    (fd2n x i + fd2n y i + fd2n z i) by flia.
-  rewrite <- Nat.add_assoc.
-  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-  f_equal; f_equal.
-  destruct H3 as [H3| [H3| H3]].
-  *rewrite nA_all_9; [ | intros; apply H3 ].
-   rewrite <- Hs1.
-   rewrite Nat.div_small; [ | flia Hr2s1 ].
-   rewrite Nat.add_0_r.
-   destruct (lt_dec (nA i n2 (freal_add_series y x)) (rad ^ s2)) as [H4| H4].
-  --exfalso.
-    rewrite Nat.mod_small in Hj2; [ | easy ].
-    apply Nat.nle_gt in Hj2; apply Hj2; clear Hj2.
-    apply le_trans with (m := nA i n2 (fd2n x)).
-   ++rewrite nA_all_9; [ | intros j Hj; apply Hx ].
-     rewrite <- Hs2.
-     rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-     rewrite <- Nat.pow_add_r.
-     replace (S j2 + (s2 - S j2)) with s2; cycle 1.
-    **rewrite Hs2, Hn2.
-      destruct rad; [ easy | simpl; flia ].
-    **apply Nat.sub_le_mono_l.
-      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-   ++unfold nA.
-     apply (@summation_le_compat _ nat_ord_ring).
-     intros j Hj; simpl; unfold Nat.le.
-     apply Nat.mul_le_mono_r.
-     unfold freal_add_series.
-     flia.
-  --rewrite Nat_div_less_small; [ easy | ].
-    apply Nat.nlt_ge in H4.
-    split; [ easy | ].
-    eapply le_lt_trans.
-   ++apply nA_upper_bound_for_add.
-     intros k; apply freal_add_series_le_twice_pred.
-   ++rewrite <- Hs2; flia Hr2s2.
-  *exfalso.
-   specialize (eq_add_series_18_eq_9 _ _ _ H3) as (Hy, Hz).
-   apply Nat.nle_gt in Hj2; apply Hj2; clear Hj2.
-   rewrite nA_all_18; cycle 1.
-  --intros; unfold freal_add_series; rewrite Hx, Hy; flia.
-  --rewrite <- Hs2; now apply (le_90_198_mod_100 i n2).
-  *destruct H3 as (j1 & H1bef & H1whi & H1aft).
-   rewrite (nA_9_8_all_18 j1); [ | easy | easy | easy ].
-   rewrite <- Hs1.
-   rewrite Nat.div_small; cycle 1.
-  --destruct (le_dec (i + j1 + 1) (n1 - 1)); flia Hr2s1.
-  --rewrite Nat.add_0_r, Nat.mod_1_l; [ | easy ].
-    destruct (lt_dec (nA i n2 (freal_add_series y x)) (rad ^ s2)) as [H3| H3].
-   ++exfalso.
-     rewrite Nat.mod_small in Hj2; [ | easy ].
-     apply Nat.nle_gt in Hj2; apply Hj2; clear Hj2.
-     apply (le_trans _ (nA i n2 (fd2n x))).
-    **rewrite nA_all_9; [ | easy ].
-      rewrite <- Hs2.
-      rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-      rewrite <- Nat.pow_add_r.
-      replace (S j2 + (s2 - S j2)) with s2; cycle 1.
-    ---rewrite Hs2, Hn2.
-       destruct rad; [ easy | simpl; flia ].
-    ---apply Nat.sub_le_mono_l.
-       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-    **unfold nA.
-      apply (@summation_le_compat _ nat_ord_ring).
-      intros j Hj; simpl; unfold Nat.le.
-      apply Nat.mul_le_mono_r.
-      unfold freal_add_series; flia.
-   ++apply Nat.nlt_ge in H3.
-     rewrite Nat_div_less_small; [ now rewrite Nat.mod_1_l | ].
-     split; [ easy | ].
-     eapply le_lt_trans.
-    **apply nA_upper_bound_for_add.
-      intros k; apply freal_add_series_le_twice_pred.
-    **rewrite <- Hs2; flia Hr2s2.
--destruct H3 as (j2 & Hjj2 & Hj2); simpl.
+  now apply (add_assoc_case_11_1 j2).
+-destruct H3 as (j1 & Hjj1 & Hj1); simpl.
  destruct (LPO_fst (A_ge_1 (freal_add_series y x) i)) as [H4| H4].
  +simpl.
-  specialize (A_ge_1_freal_add_series_all_true _ _ _ H4) as Hyx.
-Inspect 1.
+  remember (rad * (i + j1 + 3)) as n2 eqn:Hn2.
+  remember (n2 - i - 1) as s2 eqn:Hs2.
+  move s2 before n2.
+  assert (Hz : (∀ k, fd2n z (i + k + 1) = rad - 1)). {
+    intros k.
+    specialize (H2 k) as H5.
+    unfold freal_add_series in H5.
+    rewrite A_ge_1_freal_add_series_all_true in H5; [ | easy ].
+    now rewrite Nat.add_0_r in H5.
+  }
+  symmetry.
+  now apply (add_assoc_case_11_1 j1).
+ +destruct H4 as (j2 & Hjj2 & Hj2); simpl.
 ...
 
 Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
