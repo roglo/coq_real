@@ -633,6 +633,34 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
   rewrite A_ge_1_freal_add_series_all_true in H5; [ | easy ].
   now rewrite Nat.add_0_r in H5.
  +destruct H4 as (j2 & Hjj2 & Hj2); simpl.
+  rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
+  unfold freal_add_series at 1 3.
+  do 4 rewrite Nat.add_assoc.
+  do 2 rewrite fold_fd2n.
+  replace (fd2n z i + fd2n y i + fd2n x i) with
+      (fd2n x i + fd2n y i + fd2n z i) by flia.
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  f_equal; f_equal.
+  move j2 before j1.
+  apply A_ge_1_false_iff in Hj1.
+  apply A_ge_1_false_iff in Hj2.
+  remember (rad * (i + j1 + 3)) as n1 eqn:Hn1.
+  remember (n1 - i - 1) as s1 eqn:Hs1.
+  move s1 before n1.
+  remember (rad * (i + j2 + 3)) as n2 eqn:Hn2.
+  remember (n2 - i - 1) as s2 eqn:Hs2.
+  move n2 before s1.
+  move s2 before n2.
+  destruct (lt_dec (nA i n1 (freal_add_series y z)) (rad ^ s1)) as [H3| H3].
+  *rewrite Nat.mod_small in Hj1; [ | easy ].
+   rewrite Nat.div_small; [ | easy ].
+   destruct (lt_dec (nA i n2 (freal_add_series y x)) (rad ^ s2)) as [H4| H4].
+  --rewrite Nat.mod_small in Hj2; [ | easy ].
+    now rewrite Nat.div_small.
+  --exfalso.
+    apply Nat.nlt_ge in H4.
 ...
 
 Theorem freal_unorm_add_assoc {r : radix} : ∀ x y z,
