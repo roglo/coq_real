@@ -384,7 +384,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
-Theorem add_assoc_case_11_1 {r : radix} :  ∀ j2 x y z i n1 s1 n2 s2,
+Theorem add_assoc_case_11_12 {r : radix} :  ∀ j2 x y z i n1 s1 n2 s2,
   n1 = rad * (i + 3)
   → s1 = n1 - i - 1
   → n2 = rad * (i + j2 + 3)
@@ -536,22 +536,8 @@ assert (Hr2s1 : 2 ≤ rad ^ s1). {
 }
 destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
 -simpl.
- assert (Hx : (∀ k, fd2n x (i + k + 1) = rad - 1)). {
-   intros k.
-   specialize (H1 k) as H5.
-   unfold freal_add_series in H5.
-   rewrite A_ge_1_freal_add_series_all_true in H5; [ | easy ].
-   now rewrite Nat.add_0_r in H5.
- }
  destruct (LPO_fst (A_ge_1 (freal_add_series y x) i)) as [H4| H4].
  +simpl.
-  assert (Hz : (∀ k, fd2n z (i + k + 1) = rad - 1)). {
-    intros k.
-    specialize (H2 k) as H5.
-    unfold freal_add_series in H5.
-    rewrite A_ge_1_freal_add_series_all_true in H5; [ | easy ].
-    now rewrite Nat.add_0_r in H5.
-  }
   apply A_ge_1_add_all_true_if in H4.
   *rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
    rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
@@ -614,25 +600,21 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
    ++destruct (le_dec (i + j1 + 1) (n1 - 1)); flia Hr2s1.
   *intros; apply freal_add_series_le_twice_pred.
  +destruct H4 as (j2 & Hjj2 & Hj2); simpl.
-  remember (rad * (i + j2 + 3)) as n2 eqn:Hn2.
-  remember (n2 - i - 1) as s2 eqn:Hs2.
-  move s2 before n2.
-  now apply (add_assoc_case_11_1 j2).
+  apply (add_assoc_case_11_12 j2); try easy.
+  intros k.
+  specialize (H1 k) as H5.
+  unfold freal_add_series in H5.
+  rewrite A_ge_1_freal_add_series_all_true in H5; [ | easy ].
+  now rewrite Nat.add_0_r in H5.
 -destruct H3 as (j1 & Hjj1 & Hj1); simpl.
  destruct (LPO_fst (A_ge_1 (freal_add_series y x) i)) as [H4| H4].
- +simpl.
-  remember (rad * (i + j1 + 3)) as n2 eqn:Hn2.
-  remember (n2 - i - 1) as s2 eqn:Hs2.
-  move s2 before n2.
-  assert (Hz : (∀ k, fd2n z (i + k + 1) = rad - 1)). {
-    intros k.
-    specialize (H2 k) as H5.
-    unfold freal_add_series in H5.
-    rewrite A_ge_1_freal_add_series_all_true in H5; [ | easy ].
-    now rewrite Nat.add_0_r in H5.
-  }
-  symmetry.
-  now apply (add_assoc_case_11_1 j1).
+ +simpl; symmetry.
+  apply (add_assoc_case_11_12 j1); try easy.
+  intros k.
+  specialize (H2 k) as H5.
+  unfold freal_add_series in H5.
+  rewrite A_ge_1_freal_add_series_all_true in H5; [ | easy ].
+  now rewrite Nat.add_0_r in H5.
  +destruct H4 as (j2 & Hjj2 & Hj2); simpl.
 ...
 
