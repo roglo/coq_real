@@ -703,7 +703,8 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
      move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
      move Hjj2 before Hjj1.
      clear H3.
-(* nA _ _ (freal_add_series x y) = nA _ _ x + nA _ _ y *)
+     rewrite nA_freal_add_series in Hj1, Hj2, H4.
+     unfold freal_add_series in H1, H2.
 (*
 Notation "x +ˢ y" := (freal_add_series x y) (at level 50).
 Show.
