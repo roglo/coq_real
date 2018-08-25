@@ -4,6 +4,17 @@ Require Import Utf8 Arith NPeano Psatz.
 Require Import Misc Summation FracReal.
 Set Nested Proofs Allowed.
 
+Theorem nA_freal_add_series {r : radix} : ∀ x y i n,
+   nA i n (freal_add_series x y) = nA i n (fd2n x) + nA i n (fd2n y).
+Proof.
+intros.
+rewrite nA_eq_compat with (v := λ j, fd2n x j + fd2n y j); [ | easy ].
+unfold nA.
+erewrite summation_eq_compat; cycle 1.
+-intros j Hj; apply Nat.mul_add_distr_r.
+-apply summation_add_distr.
+Qed.
+
 Theorem eq_add_series_18_eq_9 {r : radix} : ∀ x y n,
   (∀ k, freal_add_series x y (n + k + 1) = 2 * (rad - 1))
   → (∀ k, fd2n x (n + k + 1) = rad - 1) ∧ (∀ k, fd2n y (n + k + 1) = rad - 1).
@@ -692,6 +703,7 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
      move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
      move Hjj2 before Hjj1.
      clear H3.
+(* nA _ _ (freal_add_series x y) = nA _ _ x + nA _ _ y *)
 (*
 Notation "x +ˢ y" := (freal_add_series x y) (at level 50).
 Show.
