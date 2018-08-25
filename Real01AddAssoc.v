@@ -687,6 +687,11 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
       intros k; apply freal_add_series_le_twice_pred.
     **rewrite <- Hs2; flia Hr2s2.
    ++idtac.
+     move Hn1 before s2; move Hs1 before Hn1.
+     move Hn2 before Hs1; move Hs2 before Hn2.
+     move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
+     move Hjj2 before Hjj1.
+     clear H3.
 (*
 Notation "x '+s' y" := (freal_add_series x y) (at level 50).
 Show.
