@@ -693,7 +693,7 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
      move Hjj2 before Hjj1.
      clear H3.
 (*
-Notation "x '+s' y" := (freal_add_series x y) (at level 50).
+Notation "x +ˢ y" := (freal_add_series x y) (at level 50).
 Show.
 *)
 ...
