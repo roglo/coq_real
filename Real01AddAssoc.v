@@ -697,8 +697,27 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
     **apply nA_upper_bound_for_add.
       intros k; apply freal_add_series_le_twice_pred.
     **rewrite <- Hs2; flia Hr2s2.
-   ++idtac.
-     move Hn1 before s2; move Hs1 before Hn1.
+   ++remember (max n1 n2) as n3 eqn:Hn3.
+     remember (n3 - i - 1) as s3 eqn:Hs3.
+     move s3 before n3.
+     assert
+       (Hj1' : nA i n3 (freal_add_series y z) <
+          (rad ^ S j1 - 1) * rad ^ (s1 - S j1) * rad ^ (n3 - n1) +
+          rad ^ (s3 - s1)). {
+       destruct (le_dec n1 n2) as [Hnn| Hnn].
+       -rewrite Nat.max_r in Hn3; [ | easy ].
+        subst n3; rewrite <- Hs2 in Hs3; subst s3.
+        rewrite (nA_split n1); cycle 1.
+        +split; [ | flia Hnn ].
+         rewrite Hn1; destruct rad; [ easy | simpl; flia ].
+        +apply Nat.add_lt_mono.
+         *apply Nat.mul_lt_mono_pos_r; [ | easy ].
+          now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+         *idtac.
+Search (nA _ _ _ ≤ _).
+(* c'est pas gagné, ça, il faut reprendre au début .. < 99900100000 *)
+...
+   ++move Hn1 before s2; move Hs1 before Hn1.
      move Hn2 before Hs1; move Hs2 before Hn2.
      move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
      move Hjj2 before Hjj1.
