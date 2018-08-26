@@ -697,7 +697,16 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
     **apply nA_upper_bound_for_add.
       intros k; apply freal_add_series_le_twice_pred.
     **rewrite <- Hs2; flia Hr2s2.
-   ++remember (max n1 n2) as n3 eqn:Hn3.
+   ++move Hn1 before s2; move Hs1 before Hn1.
+     move Hn2 before Hs1; move Hs2 before Hn2.
+     move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
+     move Hjj2 before Hjj1.
+(*
+     clear H3.
+     rewrite nA_freal_add_series in Hj1, Hj2, H4.
+     unfold freal_add_series in H1, H2.
+*)
+     remember (max n1 n2) as n3 eqn:Hn3.
      remember (n3 - i - 1) as s3 eqn:Hs3.
      move s3 before n3.
      assert
@@ -713,34 +722,26 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
         +apply Nat.add_lt_mono.
          *apply Nat.mul_lt_mono_pos_r; [ | easy ].
           now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-         *idtac.
-rewrite Hs2, Hs1.
-enough (n1 > i).
-replace (n2 - i - 1 - (n1 - i - 1)) with (n2 - (n1 - 1) - 1) by flia H.
-eapply le_lt_trans.
-apply nA_upper_bound_for_add.
-intros; apply freal_add_series_le_twice_pred.
-rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
-replace 2 with (2 * 1) at 1 by flia.
-apply Nat.mul_le_mono_l.
-now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-rewrite Hn1.
-destruct rad; [ easy | simpl; flia ].
--rewrite Nat.max_l in Hn3; [ | flia Hnn ].
- subst n3; rewrite <- Hs1 in Hs3; subst s3.
- do 2 rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
-eapply lt_trans; [ apply Hj1 | flia ].
+         *rewrite Hs2, Hs1.
+          enough (n1 > i).
+         --replace (n2 - i - 1 - (n1 - i - 1)) with (n2 - (n1 - 1) - 1)
+             by flia H.
+           eapply le_lt_trans.
+          ++apply nA_upper_bound_for_add.
+            intros; apply freal_add_series_le_twice_pred.
+          ++rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+            apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
+            replace 2 with (2 * 1) at 1 by flia.
+            apply Nat.mul_le_mono_l.
+            now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+         --rewrite Hn1.
+           destruct rad; [ easy | simpl; flia ].
+       -rewrite Nat.max_l in Hn3; [ | flia Hnn ].
+        subst n3; rewrite <- Hs1 in Hs3; subst s3.
+        do 2 rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+        eapply lt_trans; [ apply Hj1 | flia ].
      }
-
 ...
-   ++move Hn1 before s2; move Hs1 before Hn1.
-     move Hn2 before Hs1; move Hs2 before Hn2.
-     move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
-     move Hjj2 before Hjj1.
-     clear H3.
-     rewrite nA_freal_add_series in Hj1, Hj2, H4.
-     unfold freal_add_series in H1, H2.
 (*
 Notation "x +ˢ y" := (freal_add_series x y) (at level 50).
 Show.
