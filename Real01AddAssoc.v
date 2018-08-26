@@ -710,6 +710,23 @@ Notation "x +ˢ y" := (freal_add_series x y) (at level 50).
 Show.
 *)
 ...
+0                                     1
+---------------------------------------
+<---><-------------------------------->  d'après H1
+ x+y                 z
+<-------><---------------------------->  d'après H2
+    x                y+z
+
+x+y est inférieur à x d'après Hj2 et H4
+contradiction car z doit être inférieur à y+z d'après Hj1
+...
+1-z = x+y ≤ x
+1-x = y+z ≥ z
+...
+x+y+z ≤ x+z
+x+y+z ≥ x+z
+...
+Pas clair... tout dépend de ce qu'on entend par "≤".
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   freal_norm_eq (x + (y + z)) ((x + y) + z).
