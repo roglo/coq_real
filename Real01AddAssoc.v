@@ -15,6 +15,20 @@ erewrite summation_eq_compat; cycle 1.
 -apply summation_add_distr.
 Qed.
 
+Theorem nA_freal_add_series_lt {r : radix} : ∀ i n x y,
+  nA i n (freal_add_series x y) < 2 * rad ^ (n - i - 1).
+Proof.
+intros.
+eapply le_lt_trans.
+-apply nA_upper_bound_for_add.
+ intros k; apply freal_add_series_le_twice_pred.
+-rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+ apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
+ replace 2 with (2 * 1) at 1 by flia.
+ apply Nat.mul_le_mono_l.
+ now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+Qed.
+
 Theorem eq_add_series_18_eq_9 {r : radix} : ∀ x y n,
   (∀ k, freal_add_series x y (n + k + 1) = 2 * (rad - 1))
   → (∀ k, fd2n x (n + k + 1) = rad - 1) ∧ (∀ k, fd2n y (n + k + 1) = rad - 1).
@@ -473,11 +487,7 @@ apply A_ge_1_add_all_true_if in H3; cycle 1.
     flia.
   *rewrite Nat_div_less_small; [ easy | ].
    apply Nat.nlt_ge in H4.
-   split; [ easy | ].
-   eapply le_lt_trans.
-  --apply nA_upper_bound_for_add.
-    intros k; apply freal_add_series_le_twice_pred.
-  --rewrite <- Hs2; flia Hr2s2.
+   split; [ easy | rewrite Hs2; apply nA_freal_add_series_lt ].
  +exfalso.
   specialize (eq_add_series_18_eq_9 _ _ _ H3) as (Hy, Hz).
   apply Nat.nle_gt in Hj2; apply Hj2; clear Hj2.
@@ -511,11 +521,7 @@ apply A_ge_1_add_all_true_if in H3; cycle 1.
      unfold freal_add_series; flia.
   --apply Nat.nlt_ge in H3.
     rewrite Nat_div_less_small; [ now rewrite Nat.mod_1_l | ].
-    split; [ easy | ].
-    eapply le_lt_trans.
-   ++apply nA_upper_bound_for_add.
-     intros k; apply freal_add_series_le_twice_pred.
-   ++rewrite <- Hs2; flia Hr2s2.
+    split; [ easy | rewrite Hs2; apply nA_freal_add_series_lt ].
 Qed.
 
 Theorem add_assoc_case_11_11 {r : radix} : ∀ x y z i n1 s1,
@@ -692,11 +698,7 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
   --exfalso.
     apply Nat.nlt_ge in H4.
     rewrite Nat_mod_less_small in Hj2; cycle 1.
-   ++split; [ easy | ].
-     eapply le_lt_trans.
-    **apply nA_upper_bound_for_add.
-      intros k; apply freal_add_series_le_twice_pred.
-    **rewrite <- Hs2; flia Hr2s2.
+   ++split; [ easy | rewrite Hs2; apply nA_freal_add_series_lt ].
    ++move Hn1 before s2; move Hs1 before Hn1.
      move Hn2 before Hs1; move Hs2 before Hn2.
      move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
@@ -704,7 +706,19 @@ destruct (LPO_fst (A_ge_1 (freal_add_series y z) i)) as [H3| H3].
      clear H3 Hjj1 Hjj2.
      rewrite nA_freal_add_series in Hj1, Hj2, H4.
      unfold freal_add_series in H1, H2.
+     ...
+  *apply Nat.nlt_ge in H3.
+   rewrite Nat_div_less_small; cycle 1.
+  --split; [ easy | rewrite Hs1; apply nA_freal_add_series_lt ].
+  --destruct (lt_dec (nA i n2 (freal_add_series y x)) (rad ^ s2)) as [H4| H4].
+   ++exfalso.
+     ... (* same as above, I guess, by symmetry between x and z *)
+   ++apply Nat.nlt_ge in H4.
+     rewrite Nat_div_less_small; [ easy | ].
+     split; [ easy | rewrite Hs2; apply nA_freal_add_series_lt ].
 ...
+
+(*
 0                                     1
 ---------------------------------------
 <-------><---------------------------->  d'après H1
@@ -722,6 +736,7 @@ x+y+z ≤ x+z
 x+y+z ≥ x+z
 ...
 Pas clair... tout dépend de ce qu'on entend par "≤".
+*)
 ...
      remember (max n1 n2) as n3 eqn:Hn3.
      remember (n3 - i - 1) as s3 eqn:Hs3.
@@ -743,6 +758,7 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
           enough (n1 > i).
          --replace (n2 - i - 1 - (n1 - i - 1)) with (n2 - (n1 - 1) - 1)
              by flia H.
+...
            eapply le_lt_trans.
           ++apply nA_upper_bound_for_add.
             intros; apply freal_add_series_le_twice_pred.
@@ -782,6 +798,7 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
           enough (n1 > i).
          --replace (n2 - i - 1 - (n1 - i - 1)) with (n2 - (n1 - 1) - 1)
              by flia H.
+...
            eapply le_lt_trans.
           ++apply nA_upper_bound_for_add.
             intros; apply freal_add_series_le_twice_pred.
@@ -802,6 +819,7 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
 (*
 Notation "x +ˢ y" := (freal_add_series x y) (at level 50).
 Show.
+*)
 *)
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
