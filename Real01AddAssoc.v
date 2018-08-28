@@ -697,21 +697,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
 (**)
      unfold "+"%F, fd2n at 2 in H1; simpl in H1.
      unfold prop_carr in H1.
-assert (
-  H1' : ∀ k : nat, fd2n x (i + k + 1) +
- ((y ⊕ z) (i + k + 1) + 1 +
-                    match LPO_fst (A_ge_1 (y ⊕ z) (i + k + 1)) with
-                    | inl _ =>
-                                nA (i + k + 1) (rad * (i + k + 1 + 3)) (y ⊕ z) /
-                                rad ^ (rad * (i + k + 1 + 3) - (i + k + 1) - 1)
-                    | inr (exist _ l _) =>
-                                nA (i + k + 1) (rad * (i + k + 1 + l + 3)) (y ⊕ z) /
-                                rad ^ (rad * (i + k + 1 + l + 3) - (i + k + 1) - 1)
-                    end) mod rad = rad - 1).
 ...
-A_ge_1_add_r_true_if:
-  ∀ (r : radix) (u : nat → nat) (i j k : nat), A_ge_1 u i (j + k) = true → A_ge_1 u (i + j) k = true
-     ...
   *apply Nat.nlt_ge in H3.
    rewrite Nat_div_less_small; cycle 1.
   --split; [ easy | rewrite Hs1; apply nA_freal_add_series_lt ].
