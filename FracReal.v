@@ -930,6 +930,8 @@ Qed.
 Definition freal_add_series {r : radix} a b i := fd2n a i + fd2n b i.
 Arguments freal_add_series _ a%F b%F.
 
+Notation "x ⊕ y" := (freal_add_series x y) (at level 50).
+
 (*
 Definition sequence_mul (rg := nat_ord_ring) (a b : nat → nat) i :=
   Σ (j = 0, i), a j * b (i - j).
@@ -952,6 +954,8 @@ Definition A_ge_1 {r : radix} u i k :=
   else
     true.
 
+(* Propagation of Carries *)
+
 (* for addition, all A_ge_1 implies u i followed by either
    - 9/9/9/9...
    - 18/18/18/...
@@ -959,7 +963,7 @@ Definition A_ge_1 {r : radix} u i k :=
    for multiplication, to be determined...
  *)
 
-Definition propagate_carries {r : radix} u i :=
+Definition prop_carr {r : radix} u i :=
   match LPO_fst (A_ge_1 u i) with
   | inl _ =>
       let n := rad * (i + 3) in
@@ -973,18 +977,15 @@ Definition propagate_carries {r : radix} u i :=
       mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0)
   end.
 
-Definition freal_add_to_seq {r : radix} (a b : FracReal) :=
-  propagate_carries (freal_add_series a b).
-
-Arguments freal_add_to_seq _ a%F b%F.
-
 (*
 Definition freal_mul_to_seq {r : radix} (a b : FracReal) :=
-  propagate_carries (freal_mul_series a b).
+  prop_carr (freal_mul_series a b).
 *)
 
-Definition freal_add {r : radix} x y := {| freal := freal_add_to_seq x y |}.
+Definition freal_add {r : radix} x y := {| freal := prop_carr (x ⊕ y) |}.
 Arguments freal_add _ x%F y%F.
+
+Print freal_add.
 
 (*
 Definition freal_mul {r : radix} (a b : FracReal) :=
@@ -1018,8 +1019,7 @@ induction i; intros.
 Qed.
 *)
 
-Theorem freal_add_series_comm {r : radix} : ∀ x y i,
-  freal_add_series x y i = freal_add_series y x i.
+Theorem freal_add_series_comm {r : radix} : ∀ x y i, (x ⊕ y) i = (y ⊕ x) i.
 Proof.
 intros.
 unfold freal_add_series.
@@ -1038,7 +1038,7 @@ Qed.
 *)
 
 Theorem nA_freal_add_series_comm {r : radix} : ∀ x y i n,
-  nA i n (freal_add_series x y) = nA i n (freal_add_series y x).
+  nA i n (x ⊕ y) = nA i n (y ⊕ x).
 Proof.
 intros.
 unfold nA; simpl.
@@ -1058,8 +1058,7 @@ Qed.
 *)
 
 Theorem A_ge_1_freal_add_series_comm {r : radix} : ∀ x y i k,
-  A_ge_1 (freal_add_series x y) i k =
-  A_ge_1 (freal_add_series y x) i k.
+  A_ge_1 (x ⊕ y) i k = A_ge_1 (y ⊕ x) i k.
 Proof.
 intros.
 unfold A_ge_1.
@@ -1077,13 +1076,13 @@ now rewrite nA_freal_mul_series_comm.
 Qed.
 *)
 
-Theorem freal_add_to_seq_i_comm {r : radix} : ∀ x y i,
-  freal_add_to_seq x y i = freal_add_to_seq y x i.
+Theorem prop_carr_add_comm {r : radix} : ∀ x y i,
+  prop_carr (x ⊕ y) i = prop_carr (y ⊕ x) i.
 Proof.
 intros.
-unfold freal_add_to_seq, propagate_carries.
-remember (freal_add_series x y) as xy.
-remember (freal_add_series y x) as yx.
+unfold prop_carr.
+remember (x ⊕ y) as xy.
+remember (y ⊕ x) as yx.
 apply digit_eq_eq; simpl.
 destruct (LPO_fst (A_ge_1 xy i)) as [Hxy| Hxy].
 -rewrite Heqxy; simpl.
@@ -1121,7 +1120,7 @@ Theorem freal_mul_to_seq_i_comm {r : radix} : ∀ x y i,
   freal_mul_to_seq x y i = freal_mul_to_seq y x i.
 Proof.
 intros.
-unfold freal_mul_to_seq, propagate_carries.
+unfold freal_mul_to_seq, prop_carr.
 remember (freal_mul_series x y) as xy.
 remember (freal_mul_series y x) as yx.
 apply digit_eq_eq.
@@ -1155,7 +1154,7 @@ Theorem dig_unorm_add_comm {r : radix} : ∀ x y i,
   freal (x + y) i = freal (y + x) i.
 Proof.
 intros; simpl.
-now rewrite freal_add_to_seq_i_comm.
+apply prop_carr_add_comm.
 Qed.
 
 (* normally useless *)
@@ -1165,8 +1164,8 @@ Theorem dig_norm_unorm_add_comm {r : radix} : ∀ x y i,
 Proof.
 intros.
 unfold freal_normalize; simpl.
-remember (freal_add_to_seq x y) as xy.
-remember (freal_add_to_seq y x) as yx.
+remember (prop_carr (x ⊕ y)) as xy.
+remember (prop_carr (y ⊕ x)) as yx.
 unfold digit_sequence_normalize.
 destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
 -destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
@@ -1175,21 +1174,20 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
    destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx].
   --subst yx; simpl in Hryx; simpl.
     apply digit_eq_eq; unfold d2n.
-    remember freal_add_to_seq as f; simpl; subst f.
-    now rewrite freal_add_to_seq_i_comm.
+    now simpl; rewrite prop_carr_add_comm.
   --subst yx; simpl in Hryx.
     unfold d2n in Hryx.
-    now rewrite freal_add_to_seq_i_comm in Hryx.
+    now rewrite prop_carr_add_comm in Hryx.
   *destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx]; [ | easy ].
    exfalso.
    subst xy yx; simpl in Hryx; unfold d2n in Hryx.
-   now rewrite freal_add_to_seq_i_comm in Hryx.
+   now rewrite prop_carr_add_comm in Hryx.
  +destruct Hyx as (k & Hjk & Hk); clear Hjk.
   subst yx; simpl in Hk; simpl.
   subst xy; simpl in Hxy; simpl.
   apply is_9_strict_after_false_iff in Hk.
   unfold d2n in Hk.
-  rewrite freal_add_to_seq_i_comm in Hk.
+  rewrite prop_carr_add_comm in Hk.
   specialize (Hxy k).
   apply is_9_strict_after_true_iff in Hxy.
   now unfold d2n in Hxy.
@@ -1199,12 +1197,12 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
   subst xy yx; simpl in Hk, Hyx; unfold d2n in Hk; simpl.
   apply is_9_strict_after_false_iff in Hk.
   unfold d2n in Hk.
-  rewrite freal_add_to_seq_i_comm in Hk.
+  rewrite prop_carr_add_comm in Hk.
   specialize (Hyx k).
   apply is_9_strict_after_true_iff in Hyx.
   now unfold d2n in Hyx.
  +subst xy yx; simpl.
-  apply freal_add_to_seq_i_comm.
+  apply prop_carr_add_comm.
 Qed.
 
 (*
@@ -1349,7 +1347,7 @@ apply Nat.add_0_l.
 Qed.
 
 Theorem nA_freal_add_series {r : radix} : ∀ x y i n,
-  nA i n (freal_add_series x y) = nA i n (fd2n x) + nA i n (fd2n y).
+  nA i n (x ⊕ y) = nA i n (fd2n x) + nA i n (fd2n y).
 Proof.
 intros.
 unfold nA; simpl.
@@ -1827,12 +1825,12 @@ rewrite Nat.mod_small in HnA.
   destruct rad; [ flia Hr | simpl in Hn; flia Hn ].
 Qed.
 
-Theorem propagate_carries_normalize {r : radix} : ∀ x i,
-  propagate_carries (fd2n x) i = freal (freal_normalize x) i.
+Theorem prop_carr_normalize {r : radix} : ∀ x i,
+  prop_carr (fd2n x) i = freal (freal_normalize x) i.
 Proof.
 intros.
 specialize radix_ge_2 as Hr.
-unfold propagate_carries, freal_normalize, digit_sequence_normalize; simpl.
+unfold prop_carr, freal_normalize, digit_sequence_normalize; simpl.
 apply digit_eq_eq.
 destruct (LPO_fst (A_ge_1 (fd2n x) i)) as [H1| H1]; simpl.
 -assert (H : ∀ k : nat, fd2n x (S i + k) < rad). {
@@ -1951,7 +1949,7 @@ Proof.
 intros.
 unfold freal_add_to_seq.
 set (u := freal_add_series (freal_normalize 0) (freal_normalize x)).
-unfold propagate_carries.
+unfold prop_carr.
 destruct (LPO_fst (A_ge_1 u i)) as [Hku| (m & Hjm & Hm)].
 -exfalso.
  assert (H1 : ∀ k, u k < rad). {
@@ -2201,12 +2199,12 @@ unfold A_ge_1.
 now erewrite nA_eq_compat.
 Qed.
 
-Theorem propagate_carries_eq_compat {r : radix} : ∀ f g,
+Theorem prop_carr_eq_compat {r : radix} : ∀ f g,
   (∀ i, f i = g i) → ∀ i,
-  propagate_carries f i = propagate_carries g i.
+  prop_carr f i = prop_carr g i.
 Proof.
 intros * Hfg *.
-unfold propagate_carries.
+unfold prop_carr.
 rewrite Hfg.
 destruct (LPO_fst (A_ge_1 f i)) as [Hf| Hf].
 -destruct (LPO_fst (A_ge_1 g i)) as [Hg| Hg].
@@ -2238,14 +2236,14 @@ destruct (LPO_fst (A_ge_1 f i)) as [Hf| Hf].
    now rewrite Hl in Hjk.
 Qed.
 
-Theorem propagate_carries_shift {r : radix} : ∀ u n i,
+Theorem prop_carr_shift {r : radix} : ∀ u n i,
   (∀ k, u (n + k) < rad)
-  → propagate_carries u (n + i) = propagate_carries (λ j, u (n + j)) i.
+  → prop_carr u (n + i) = prop_carr (λ j, u (n + j)) i.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu.
-unfold propagate_carries.
+unfold prop_carr.
 apply digit_eq_eq.
 destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
 -destruct (LPO_fst (A_ge_1 (λ j, u (n + j)) i)) as [H2| H2]; simpl.
@@ -2372,20 +2370,20 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
   --destruct rad; [ easy | simpl; flia ].
 Qed.
 
-Theorem propagate_carries_eq_compat_from {r : radix} : ∀ f g n,
+Theorem prop_carr_eq_compat_from {r : radix} : ∀ f g n,
   (∀ i, f (n + i) < rad)
   → (∀ i, f (n + i) = g (n + i))
-  → ∀ i, propagate_carries f (n + i) = propagate_carries g (n + i).
+  → ∀ i, prop_carr f (n + i) = prop_carr g (n + i).
 Proof.
 intros * Hf Hfg i.
 set (fi i := f (n + i)).
 set (gi i := g (n + i)).
 assert (H : ∀ i, fi i = gi i) by (intros; apply Hfg).
-specialize (propagate_carries_eq_compat _ _ H) as H1.
+specialize (prop_carr_eq_compat _ _ H) as H1.
 specialize (H1 i).
 unfold fi, gi in H1.
-rewrite <- propagate_carries_shift in H1; [ | easy ].
-rewrite <- propagate_carries_shift in H1; [ easy | ].
+rewrite <- prop_carr_shift in H1; [ | easy ].
+rewrite <- prop_carr_shift in H1; [ easy | ].
 intros j; rewrite <- Hfg; apply Hf.
 Qed.
 
@@ -2425,7 +2423,7 @@ rewrite Nat.add_sub_assoc.
 Qed.
 
 Theorem freal_add_series_le_twice_pred {r : radix} : ∀ x y i,
-  freal_add_series x y i ≤ 2 * (rad - 1).
+  (x ⊕ y) i ≤ 2 * (rad - 1).
 Proof.
 intros *.
 unfold freal_add_series.
@@ -3352,14 +3350,14 @@ Qed.
 (*
 Theorem num_to_dig_9_ge_7 {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
-  → (∀ k, d2n (propagate_carries u) (i + k) = rad - 1)
+  → (∀ k, d2n (prop_carr u) (i + k) = rad - 1)
   → u i ≥ rad - 3.
 Proof.
 intros * Hur Hu.
 specialize radix_ge_2 as Hr.
 specialize (Hu 0) as H1.
 rewrite Nat.add_0_r in H1.
-unfold d2n, propagate_carries in H1.
+unfold d2n, prop_carr in H1.
 destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
 -simpl in H1.
  destruct (lt_dec (u (i + 1)) rad) as [H3| H3].
@@ -4599,8 +4597,7 @@ intros i.
 unfold fd2n, freal_add.
 unfold fd2n in Hxy, Hxy'.
 f_equal; simpl.
-unfold freal_add_to_seq.
-apply propagate_carries_eq_compat.
+apply prop_carr_eq_compat.
 intros j.
 unfold freal_add_series, fd2n.
 now rewrite Hxy, Hxy'.
@@ -4679,8 +4676,7 @@ apply (freal_eq_normalize_eq n); [ | easy ].
 intros j Hj.
 rewrite Hnxy.
 unfold freal_add; simpl.
-unfold freal_add_to_seq.
-unfold propagate_carries.
+unfold prop_carr.
 destruct (LPO_fst (A_ge_1 (freal_add_series nx y) j)) as [H1| H1].
 -exfalso.
  set (u := freal_add_series nx y).
@@ -4789,9 +4785,8 @@ intros *.
 specialize radix_ge_2 as Hr.
 intros Haft Hy i Hni.
 unfold freal_add, fd2n; simpl.
-unfold freal_add_to_seq.
-set (u := freal_add_series x y).
-unfold propagate_carries.
+set (u := x ⊕ y).
+unfold prop_carr.
 specialize (Haft (i - n)) as H4.
 replace (n + (i - n)) with i in H4 by flia Hni.
 destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
@@ -4996,12 +4991,12 @@ destruct j.
   f_equal; f_equal; flia Hs1 Hi Hjs.
 Qed.
 
-Theorem not_propagate_carries_all_9_all_ge_1 {r : radix} : ∀ u n,
+Theorem not_prop_carr_all_9_all_ge_1 {r : radix} : ∀ u n,
   (∀ k : nat, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k : nat, A_ge_1 u n k = true)
   → (u n + 1 + nA n (rad * (n + 3)) u / rad ^ (rad * (n + 3) - n - 1))
        mod rad = rad - 1
-  → ¬ (∀ k, d2n (propagate_carries u) (n + k) = rad - 1).
+  → ¬ (∀ k, d2n (prop_carr u) (n + k) = rad - 1).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -5011,7 +5006,7 @@ destruct H3 as [H3| [H3| H3]].
 -rewrite Nat.div_small in H1.
  +rewrite Nat.add_0_r in H1.
   specialize (Hn 1) as H4.
-  unfold propagate_carries, d2n in H4.
+  unfold prop_carr, d2n in H4.
   destruct (LPO_fst (A_ge_1 u (n + 1))) as [H5| H5].
   *simpl in H4.
    rewrite Nat.div_small in H4.
@@ -5047,7 +5042,7 @@ destruct H3 as [H3| [H3| H3]].
    flia Hr H3.
   *destruct rad; [ easy | simpl; flia ].
 -specialize (Hn 1) as H4.
- unfold propagate_carries, d2n in H4.
+ unfold prop_carr, d2n in H4.
  destruct (LPO_fst (A_ge_1 u (n + 1))) as [H5| H5]; simpl in H4.
  +specialize (H3 0) as H; rewrite Nat.add_0_r in H.
   rewrite H in H4; clear H.
@@ -5151,7 +5146,7 @@ destruct H3 as [H3| [H3| H3]].
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 -destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
  specialize (Hn (j + 1)) as H3.
- unfold d2n, propagate_carries in H3.
+ unfold d2n, prop_carr in H3.
  destruct (LPO_fst (A_ge_1 u (n + (j + 1)))) as [H4| H4].
  +simpl in H3.
   remember (rad * (n + (j + 1) + 3)) as n2 eqn:Hn2.
@@ -5190,9 +5185,9 @@ destruct H3 as [H3| [H3| H3]].
   now rewrite H2 in Hk.
 Qed.
 
-Theorem eq_all_propagate_carries_9_cond {r : radix} : ∀ u n,
+Theorem eq_all_prop_carr_9_cond {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
-  → (∀ k, d2n (propagate_carries u) (n + k) = rad - 1)
+  → (∀ k, d2n (prop_carr u) (n + k) = rad - 1)
   → ∀ i, ∃ j,
   let n1 := rad * (n + i + j + 3) in
   let s1 := n1 - (n + i) - 1 in
@@ -5201,15 +5196,15 @@ Theorem eq_all_propagate_carries_9_cond {r : radix} : ∀ u n,
 Proof.
 intros * Hur Hn *.
 specialize (Hn i) as Huni.
-unfold propagate_carries, d2n in Huni.
+unfold prop_carr, d2n in Huni.
 destruct (LPO_fst (A_ge_1 u (n + i))) as [H2| H2]; simpl in Huni.
--assert (Hn' : ∀ k, d2n (propagate_carries u) ((n + i) + k) = rad - 1). {
+-assert (Hn' : ∀ k, d2n (prop_carr u) ((n + i) + k) = rad - 1). {
    intros k.
    replace ((n + i) + k) with (n + (i + k)) by flia.
    apply Hn.
  }
  exfalso; revert Hn'.
- apply not_propagate_carries_all_9_all_ge_1; [ | easy | easy ].
+ apply not_prop_carr_all_9_all_ge_1; [ | easy | easy ].
  intros k.
  replace (n + i + k + 1) with (n + (i + k) + 1) by flia.
  apply Hur.
@@ -5219,7 +5214,7 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H2| H2]; simpl in Huni.
  exists j; easy.
 Qed.
 
-Theorem eq_all_propagate_carries_9_cond1 {r : radix} : ∀ u i n s j,
+Theorem eq_all_prop_carr_9_cond1 {r : radix} : ∀ u i n s j,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → s = n - i - 1
   → j < s
@@ -5419,9 +5414,9 @@ induction m; intros.
      apply Nat.pow_le_mono_r; [ easy | apply Nat.le_succ_diag_r ].
 Qed.
 
-Theorem eq_all_propagate_carries_9_cond2 {r : radix} : ∀ u n,
+Theorem eq_all_prop_carr_9_cond2 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
-  → (∀ k, d2n (propagate_carries u) (n + k) = rad - 1)
+  → (∀ k, d2n (prop_carr u) (n + k) = rad - 1)
   → ∀ k (i := n + k + 1),
      u i = rad - 1 ∧ u (i + 1) ≠ 2 * (rad - 1) ∨
      u i = rad - 2 ∧
@@ -5432,7 +5427,7 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn k.
-specialize (eq_all_propagate_carries_9_cond u n Hur Hn) as HAF.
+specialize (eq_all_prop_carr_9_cond u n Hur Hn) as HAF.
 specialize (HAF (k + 1)) as Hun1.
 destruct Hun1 as (j & Hj & Hun); simpl in Hun.
 rewrite Nat.add_assoc in Hj, Hun.
@@ -5441,7 +5436,7 @@ remember (n1 - (n + k + 1) - 1) as s1 eqn:Hs1.
 move s1 before n1.
 replace (n + k + 2) with (n + k + 1 + 1) by flia.
 remember (n + k + 1) as i eqn:Hi.
-specialize (eq_all_propagate_carries_9_cond1 u i n1 s1 j) as H1.
+specialize (eq_all_prop_carr_9_cond1 u i n1 s1 j) as H1.
 assert (H : ∀ j, u (i + j) ≤ 2 * (rad - 1)). {
   intros l; subst i.
   replace (n + k + 1 + l) with (n + (k + l) + 1) by flia.
@@ -5470,9 +5465,9 @@ destruct (lt_dec (u i) (rad - 1)) as [H3| H3].
 -right; split; [ easy | now exists j2 ].
 Qed.
 
-Theorem eq_all_propagate_carries_9_cond3 {r : radix} : ∀ u n,
+Theorem eq_all_prop_carr_9_cond3 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
-  → (∀ k, d2n (propagate_carries u) (n + k) = rad - 1)
+  → (∀ k, d2n (prop_carr u) (n + k) = rad - 1)
   → ∀ k (i := n + k + 1),
      u i = rad - 1 ∧
        (u (i + 1) = rad - 2 ∨ u (i + 1) = rad - 1) ∨
@@ -5488,12 +5483,12 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn k.
-specialize (eq_all_propagate_carries_9_cond2 u n Hur Hn k) as H.
+specialize (eq_all_prop_carr_9_cond2 u n Hur Hn k) as H.
 remember (n + k + 1) as i eqn:Hi.
 replace (n + k + 2) with (i + 1) by flia Hi.
 destruct H as [H| [H| H]]; destruct H as (H1, H2).
 -left; split; [ easy | ].
- specialize (eq_all_propagate_carries_9_cond2 u n Hur Hn (k + 1)) as H.
+ specialize (eq_all_prop_carr_9_cond2 u n Hur Hn (k + 1)) as H.
  replace (n + (k + 1)) with i in H by flia Hi.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
  +now right.
@@ -5503,7 +5498,7 @@ destruct H as [H| [H| H]]; destruct H as (H1, H2).
  destruct H2 as (j2 & Hlj2 & Hj2).
  exists j2.
  split; [ easy | ].
- specialize (eq_all_propagate_carries_9_cond2 u n Hur Hn (i + j2 - n)) as H.
+ specialize (eq_all_prop_carr_9_cond2 u n Hur Hn (i + j2 - n)) as H.
  replace (n + (i + j2 - n)) with (i + j2) in H by flia Hi.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
  +rewrite H3 in Hj2; flia Hr Hj2.
@@ -5512,7 +5507,7 @@ destruct H as [H| [H| H]]; destruct H as (H1, H2).
 -right; right; split; [ easy | ].
  destruct H2 as (j2 & Hlj2 & Hj2).
  exists j2.
- specialize (eq_all_propagate_carries_9_cond2 u n Hur Hn (i + j2 - n)) as H.
+ specialize (eq_all_prop_carr_9_cond2 u n Hur Hn (i + j2 - n)) as H.
  replace (n + (i + j2 - n)) with (i + j2) in H by flia Hi.
  destruct H as [H| [H| H]]; destruct H as (H3, H4).
  +rewrite H3 in Hj2; flia Hr Hj2.
@@ -5520,9 +5515,9 @@ destruct H as [H| [H| H]]; destruct H as (H1, H2).
  +easy.
 Qed.
 
-Theorem eq_all_propagate_carries_9_cond4 {r : radix} : ∀ u n,
+Theorem eq_all_prop_carr_9_cond4 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
-  → (∀ k, d2n (propagate_carries u) (n + k) = rad - 1)
+  → (∀ k, d2n (prop_carr u) (n + k) = rad - 1)
   → ∀ k (i := n + k + 1),
      u i = rad - 1 ∧ (u (i + 1) = rad - 2 ∨ u (i + 1) = rad - 1) ∨
      u i = rad - 2 ∧ u (i + 1) = 2 * (rad - 1) ∨
@@ -5531,7 +5526,7 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn k.
-specialize (eq_all_propagate_carries_9_cond3 u n Hur Hn k) as H.
+specialize (eq_all_prop_carr_9_cond3 u n Hur Hn k) as H.
 remember (n + k + 1) as i eqn:Hi.
 destruct H as [H| [H| H]]; [ now left | | ].
 -right; left.
@@ -5539,7 +5534,7 @@ destruct H as [H| [H| H]]; [ now left | | ].
  split; [ easy | ].
  destruct j; [ now rewrite Nat.add_0_r in Hj | ].
  specialize (Hlj j (Nat.lt_succ_diag_r j)) as H1.
- specialize (eq_all_propagate_carries_9_cond3 u n Hur Hn (k + j + 1)) as H.
+ specialize (eq_all_prop_carr_9_cond3 u n Hur Hn (k + j + 1)) as H.
  rewrite Hi in Hj.
  replace (n + (k + j + 1) + 1) with (n + k + 1 + S j) in H by flia.
  replace (n + k + 1 + S j) with (i + j + 1) in H, Hj by flia Hi.
@@ -5554,7 +5549,7 @@ destruct H as [H| [H| H]]; [ now left | | ].
  split; [ easy | ].
  destruct j; [ now rewrite Nat.add_0_r in Hj | ].
  specialize (Hlj j (Nat.lt_succ_diag_r j)) as H1.
- specialize (eq_all_propagate_carries_9_cond3 u n Hur Hn (k + j + 1)) as H.
+ specialize (eq_all_prop_carr_9_cond3 u n Hur Hn (k + j + 1)) as H.
  rewrite Hi in Hj.
  replace (n + (k + j + 1) + 1) with (n + k + 1 + S j) in H by flia.
  replace (n + k + 1 + S j) with (i + j + 1) in H, Hj by flia Hi.
@@ -5594,9 +5589,9 @@ unfold is_num_9_strict_after.
 now destruct (Nat.eq_dec (u (i + j + 1)) (rad - 1)).
 Qed.
 
-Theorem eq_all_propagate_carries_9 {r : radix} : ∀ u n,
+Theorem eq_all_prop_carr_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
-  → (∀ k, d2n (propagate_carries u) (n + k) = rad - 1)
+  → (∀ k, d2n (prop_carr u) (n + k) = rad - 1)
   → (∀ k, u (n + k + 1) = rad - 1) ∨
      (∀ k, u (n + k + 1) = 2 * (rad - 1)) ∨
      (∃ j,
@@ -5607,7 +5602,7 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn.
-specialize (eq_all_propagate_carries_9_cond4 u n Hur Hn) as HAF.
+specialize (eq_all_prop_carr_9_cond4 u n Hur Hn) as HAF.
 destruct (LPO_fst (is_num_9_strict_after u n)) as [H1| H1].
 -specialize (is_num_9_strict_after_all_9 u n H1) as H2.
  now left.
@@ -5930,15 +5925,15 @@ rewrite Nat_mod_less_small.
  flia H2 H.
 Qed.
 
-Theorem not_propagate_carries_all_9 {r : radix} : ∀ u n,
+Theorem not_prop_carr_all_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
-  → ¬ (∀ k, d2n (propagate_carries u) (n + k) = rad - 1).
+  → ¬ (∀ k, d2n (prop_carr u) (n + k) = rad - 1).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn.
-specialize (eq_all_propagate_carries_9 u n Hur Hn) as Hall.
-specialize (eq_all_propagate_carries_9_cond u n Hur Hn) as HAF.
+specialize (eq_all_prop_carr_9 u n Hur Hn) as Hall.
+specialize (eq_all_prop_carr_9_cond u n Hur Hn) as HAF.
 specialize (HAF 1) as Hun1.
 destruct Hun1 as (j1 & Hj1 & Hun1); simpl in Hun1.
 remember (rad * (n + 1 + j1 + 3)) as n1 eqn:Hn1.
@@ -6115,14 +6110,14 @@ specialize (freal_normalized_cases x) as [H1| H1].
    destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
   --specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
     exfalso.
-    assert (H1 : ∀ k, dig (propagate_carries (fd2n y) (S n + k)) = rad - 1). {
+    assert (H1 : ∀ k, dig (prop_carr (fd2n y) (S n + k)) = rad - 1). {
       intros k.
       specialize (H2 (S n + k - S i)) as H1.
       replace (i + (S n + k - S i) + 1) with (S n + k) in H1 by flia Hni.
       rewrite Hnxy in H1.
       unfold freal_add in H1; remember S as f; simpl in H1; subst f.
       unfold freal_add_to_seq, d2n in H1.
-      rewrite propagate_carries_eq_compat_from with (g := fd2n y) in H1.
+      rewrite prop_carr_eq_compat_from with (g := fd2n y) in H1.
       -easy.
       -intros j.
        unfold freal_add_series.
@@ -6134,7 +6129,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
     assert (H3 : ∀ k, fd2n (freal_normalize y) (S n + k) = rad - 1). {
       intros k.
       unfold fd2n.
-      rewrite <- propagate_carries_normalize.
+      rewrite <- prop_carr_normalize.
       apply H1.
     }
     specialize (normalized_not_999 y) as H4.
@@ -6152,7 +6147,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
      rewrite Hxy in H3.
      unfold freal_add in H3; simpl in H3.
      unfold freal_add_to_seq in H3.
-     apply not_propagate_carries_all_9 in H3; [ easy | ].
+     apply not_prop_carr_all_9 in H3; [ easy | ].
      intros k.
      unfold freal_add_series, fd2n.
      specialize (digit_lt_radix (freal x (i + 1 + k + 1))) as H4.
@@ -6165,9 +6160,9 @@ specialize (freal_normalized_cases x) as [H1| H1].
       rewrite Hnxy, Hxy.
       unfold freal_add; simpl.
       unfold freal_add_to_seq.
-      set (u := freal_add_series x y).
+      set (u := x ⊕ y).
       set (v := freal_add_series nx y).
-      unfold propagate_carries.
+      unfold prop_carr.
       destruct (LPO_fst (A_ge_1 v n)) as [H1| H1].
     ---exfalso.
        specialize (A_ge_1_add_all_true_if v) as H2.
@@ -6363,7 +6358,7 @@ remember (freal_normalize y) as ny eqn:Hny.
 remember (freal_normalize z) as nz eqn:Hnz.
 move ny before nx; move nz before ny.
 unfold freal_add_to_seq at 1 3.
-unfold propagate_carries.
+unfold prop_carr.
 remember
   (freal_add_series nx
      (freal_normalize {| freal := freal_add_to_seq ny nz |})) as ayz eqn:Hayz.
@@ -6413,7 +6408,7 @@ destruct (lt_dec (S (d2n nyx j)) rad) as [H8| H8].
 simpl.
 rewrite Hnyz at 1.
 unfold freal_add_to_seq.
-unfold propagate_carries.
+unfold prop_carr.
 unfold d2n; simpl.
 
 ...
@@ -6505,7 +6500,7 @@ move Hn1 before Hs; move Hs1 before Hn1.
       remember (freal_add_series ny nz) as yz eqn:Hyz.
       remember (freal_add_series ny nx) as yx eqn:Hyx.
       move yx before yz.
-      unfold propagate_carries.
+      unfold prop_carr.
       unfold freal_add_series in Hyz, Hyx.
       remember (yz j) as a eqn:Ha; rewrite Hyz in Ha.
       unfold sequence_add in Ha; subst a.
@@ -6580,7 +6575,7 @@ move Hn1 before Hs; move Hs1 before Hn1.
 unfold freal_add_to_seq in H6.
 unfold freal_add_series in H6.
 rewrite <- Hyx in H6.
-unfold d2n, propagate_carries in H6.
+unfold d2n, prop_carr in H6.
 Print A_ge_1.
 ...
 unfold nA in Hkk.
@@ -6594,7 +6589,7 @@ replace (j + (i - j - 1) + 1) with i in H by flia Hjk.
 unfold freal_add_to_seq in H.
 unfold freal_add_series in H.
 rewrite <- Hyx in H.
-unfold propagate_carries, d2n in H.
+unfold prop_carr, d2n in H.
 destruct (LPO_fst (A_ge_1 i yx)) as [H9| H9].
 simpl in H.
 remember (rad * (i + 2)) as ni eqn:Hni.
