@@ -694,21 +694,6 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
      clear H3 Hjj1 Hjj2.
      rewrite nA_freal_add_series in Hj1, Hj2, H4.
      unfold freal_add_series in H1, H2.
-(**)
-     unfold "+"%F, fd2n at 2 in H1; simpl in H1.
-     unfold prop_carr in H1.
-...
-  *apply Nat.nlt_ge in H3.
-   rewrite Nat_div_less_small; cycle 1.
-  --split; [ easy | rewrite Hs1; apply nA_freal_add_series_lt ].
-  --destruct (lt_dec (nA i n2 (y ⊕ x)) (rad ^ s2)) as [H4| H4].
-   ++exfalso.
-     ... (* same as above, I guess, by symmetry between x and z *)
-   ++apply Nat.nlt_ge in H4.
-     rewrite Nat_div_less_small; [ easy | ].
-     split; [ easy | rewrite Hs2; apply nA_freal_add_series_lt ].
-...
-
 (*
 0                                     1
 ---------------------------------------
@@ -728,44 +713,62 @@ x+y+z ≥ x+z
 ...
 Pas clair... tout dépend de ce qu'on entend par "≤".
 *)
-(*
-...
      remember (max n1 n2) as n3 eqn:Hn3.
      remember (n3 - i - 1) as s3 eqn:Hs3.
      move s3 before n3.
      assert
-       (Hj1' : nA i n3 (y ⊕ z) <
-          (rad ^ S j1 - 1) * rad ^ (s1 - S j1) * rad ^ (n3 - n1) +
+       (Hj1' : nA i n3 (y ⊕ z) < (rad ^ S j1 - 1) * rad ^ (s3 - S j1) +
           2 * rad ^ (s3 - s1)). {
-       destruct (le_dec n1 n2) as [Hnn| Hnn].
-       -rewrite Nat.max_r in Hn3; [ | easy ].
-        subst n3; rewrite <- Hs2 in Hs3; subst s3.
-        rewrite (nA_split n1); cycle 1.
-        +split; [ | flia Hnn ].
-         rewrite Hn1; destruct rad; [ easy | simpl; flia ].
-        +apply Nat.add_lt_mono.
-         *apply Nat.mul_lt_mono_pos_r; [ | easy ].
-          now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-         *rewrite Hs2, Hs1.
-          enough (n1 > i).
-         --replace (n2 - i - 1 - (n1 - i - 1)) with (n2 - (n1 - 1) - 1)
-             by flia H.
-...
-           eapply le_lt_trans.
-          ++apply nA_upper_bound_for_add.
-            intros; apply freal_add_series_le_twice_pred.
-          ++rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-            apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
-            replace 2 with (2 * 1) at 1 by flia.
-            apply Nat.mul_le_mono_l.
+       replace (s3 - S j1) with (s1 - S j1 + (s3 - s1)); cycle 1.
+       -destruct (le_dec n1 n2) as [Hnn| Hnn].
+        +rewrite Nat.max_r in Hn3; [ | easy ].
+         subst n3; rewrite <- Hs2 in Hs3; subst s3.
+         assert (Hss : s1 ≤ s2) by (rewrite Hs1, Hs2; flia Hnn).
+         assert (Hsj : j1 < s1). {
+           rewrite Hs1, Hn1; destruct rad; [ easy | simpl; flia ].
+         }
+         flia Hsj Hss.
+        +apply Nat.nle_gt, Nat.lt_le_incl in Hnn.
+         rewrite Nat.max_l in Hn3; [ | easy ].
+         subst n3; rewrite <- Hs1 in Hs3; subst s3.
+         now rewrite Nat.sub_diag, Nat.add_0_r.
+       -rewrite Nat.pow_add_r, Nat.mul_assoc.
+        destruct (le_dec n1 n2) as [Hnn| Hnn].
+        +rewrite Nat.max_r in Hn3; [ | easy ].
+         subst n3; rewrite <- Hs2 in Hs3; subst s3.
+         rewrite (nA_split n1); cycle 1.
+         *split; [ | flia Hnn ].
+          rewrite Hn1; destruct rad; [ easy | simpl; flia ].
+         *apply Nat.add_lt_mono.
+         --rewrite nA_freal_add_series.
+           replace (n2 - n1) with (s2 - s1); cycle 1.
+          ++rewrite Hs1, Hs2, Hn1, Hn2.
+            destruct rad; [ easy | simpl; flia ].
+          ++apply Nat.mul_lt_mono_pos_r; [ | easy ].
             now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-         --rewrite Hn1.
-           destruct rad; [ easy | simpl; flia ].
-       -rewrite Nat.max_l in Hn3; [ | flia Hnn ].
-        subst n3; rewrite <- Hs1 in Hs3; subst s3.
-        do 2 rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
-        eapply lt_trans; [ apply Hj1 | flia ].
+         --rewrite Hs2, Hs1.
+           enough (n1 > i).
+          ++replace (n2 - i - 1 - (n1 - i - 1)) with (n2 - (n1 - 1) - 1)
+             by flia H.
+            eapply le_lt_trans.
+           **apply nA_upper_bound_for_add.
+             intros; apply freal_add_series_le_twice_pred.
+           **rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+             apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
+             replace 2 with (2 * 1) at 1 by flia.
+             apply Nat.mul_le_mono_l.
+             now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+          ++rewrite Hn1.
+            destruct rad; [ easy | simpl; flia ].
+        +rewrite Nat.max_l in Hn3; [ | flia Hnn ].
+         subst n3; rewrite <- Hs1 in Hs3; subst s3.
+         rewrite Nat.sub_diag, Nat.pow_0_r.
+         do 2 rewrite Nat.mul_1_r.
+         rewrite nA_freal_add_series.
+         eapply lt_trans; [ apply Hj1 | flia ].
      }
+     rewrite nA_freal_add_series in Hj1'.
+...
      assert
        (Hj2' : nA i n3 (y ⊕ x) - rad ^ s2 * rad ^ (n3 - n2) <
            (rad ^ S j2 - 1) * rad ^ (s2 - S j2) * rad ^ (n3 - n2)
@@ -806,6 +809,20 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
         do 2 rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
         eapply lt_trans; [ apply Hj1 | flia ].
      }
+...
+(**)
+     unfold "+"%F, fd2n at 2 in H1; simpl in H1.
+     unfold prop_carr in H1.
+...
+  *apply Nat.nlt_ge in H3.
+   rewrite Nat_div_less_small; cycle 1.
+  --split; [ easy | rewrite Hs1; apply nA_freal_add_series_lt ].
+  --destruct (lt_dec (nA i n2 (y ⊕ x)) (rad ^ s2)) as [H4| H4].
+   ++exfalso.
+     ... (* same as above, I guess, by symmetry between x and z *)
+   ++apply Nat.nlt_ge in H4.
+     rewrite Nat_div_less_small; [ easy | ].
+     split; [ easy | rewrite Hs2; apply nA_freal_add_series_lt ].
 ...
 *)
 
