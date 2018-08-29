@@ -694,25 +694,6 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
      clear Hjj1 Hjj2.
      rewrite nA_freal_add_series in Hj1, Hj2, H4.
      unfold freal_add_series in H1, H2.
-(*
-0                                     1
----------------------------------------
-<-------><---------------------------->  d'après H1
-    x                y+z
-<---><-------------------------------->  d'après H2
- x+y                 z
-
-x+y est inférieur à x d'après Hj2 et H4
-contradiction car z doit être inférieur à y+z d'après Hj1
-...
-1-z = x+y ≤ x
-1-x = y+z ≥ z
-...
-x+y+z ≤ x+z
-x+y+z ≥ x+z
-...
-Pas clair... tout dépend de ce qu'on entend par "≤".
-*)
      remember (max n1 n2) as n3 eqn:Hn3.
      remember (n3 - i - 1) as s3 eqn:Hs3.
      move s3 before n3.
@@ -872,6 +853,25 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
         +rewrite Hn3, Hn1; destruct rad; [ easy | simpl; flia ].
      }
      rewrite nA_freal_add_series in H2'.
+(*
+0                                     1
+---------------------------------------
+<-------><---------------------------->  d'après H1
+    x                y+z
+<---><-------------------------------->  d'après H2
+ x+y                 z
+
+x+y est inférieur à x d'après Hj2 et H4
+contradiction car z doit être inférieur à y+z d'après Hj1
+...
+1-z = x+y ≤ x
+1-x = y+z ≥ z
+...
+x+y+z ≤ x+z
+x+y+z ≥ x+z
+...
+Pas clair... tout dépend de ce qu'on entend par "≤".
+*)
 ...
      eapply Nat.add_le_mono_r in H4'.
      rewrite <- Nat.add_assoc, H1' in H4'.
