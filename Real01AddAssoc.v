@@ -691,7 +691,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
      move Hn2 before Hs1; move Hs2 before Hn2.
      move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
      move Hjj2 before Hjj1.
-     clear H3 Hjj1 Hjj2.
+     clear Hjj1 Hjj2.
      rewrite nA_freal_add_series in Hj1, Hj2, H4.
      unfold freal_add_series in H1, H2.
 (*
