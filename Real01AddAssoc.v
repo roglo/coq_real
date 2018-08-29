@@ -768,6 +768,39 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
          eapply lt_trans; [ apply Hj1 | flia ].
      }
      rewrite nA_freal_add_series in Hj1'.
+     assert (H3' : nA i n3 (y ⊕ z) < rad ^ s3 + 2 * rad ^ (s2 - s1)). {
+       destruct (le_dec n1 n2) as [Hnn| Hnn].
+       -rewrite Nat.max_r in Hn3; [ | easy ].
+        subst n3; rewrite <- Hs2 in Hs3; subst s3.
+        rewrite (nA_split n1); cycle 1.
+        +split; [ | flia Hnn ].
+         rewrite Hn1; destruct rad; [ easy | simpl; flia ].
+        +assert (Hss : s1 ≤ s2) by (rewrite Hs1, Hs2; flia Hnn).
+         apply Nat.add_lt_mono.
+         *replace s2 with (s2 - s1 + s1) by flia Hss.
+          rewrite Nat.pow_add_r.
+          replace (n2 - n1) with (s2 - s1); cycle 1.
+         --rewrite Hs1, Hs2, Hn1, Hn2.
+           destruct rad; [ easy | simpl; flia ].
+         --rewrite Nat.mul_comm.
+           apply Nat.mul_lt_mono_pos_l; [ | easy ].
+           now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+         *eapply le_lt_trans.
+         --apply nA_upper_bound_for_add.
+           intros k; apply freal_add_series_le_twice_pred.
+         --apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_2 | ].
+           replace (n2 - (n1 - 1) - 1) with (s2 - s1); cycle 1.
+          ++rewrite Hs1, Hs2.
+            enough (n1 > i) by flia H.
+            rewrite Hn1.
+            destruct rad; [ easy | simpl; flia ].
+          ++apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
+            now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+       -rewrite Nat.max_l in Hn3; [ | flia Hnn ].
+        subst n3; rewrite <- Hs1 in Hs3; subst s3.
+        now apply lt_plus_trans.
+     }
+     rewrite nA_freal_add_series in H3'.
      assert (H4' : rad ^ s3 ≤ nA i n3 (y ⊕ x)). {
        destruct (le_dec n1 n2) as [Hnn| Hnn].
        -rewrite Nat.max_r in Hn3; [ | easy ].
