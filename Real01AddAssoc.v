@@ -872,7 +872,6 @@ x+y+z ≥ x+z
 ...
 Pas clair... tout dépend de ce qu'on entend par "≤".
 *)
-...
      eapply Nat.add_le_mono_r in H4'.
      rewrite <- Nat.add_assoc, H1' in H4'.
      apply Nat.nlt_ge in H4'; apply H4'; clear H4'.
@@ -886,7 +885,43 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
     ---rewrite <- Nat.add_sub_assoc; [ | flia Hy ].
        apply Nat.add_lt_mono_l.
-       ...
+       eapply lt_le_trans.
+     +++apply Nat.sub_lt; [ flia Hy | apply Nat.lt_0_1 ].
+     +++unfold nA.
+        apply (@summation_le_compat _ nat_ord_ring).
+        intros j Hj; simpl; unfold Nat.le.
+        apply Nat.mul_le_mono_r.
+...
+        unfold "+"%F, fd2n at 2; simpl.
+        unfold prop_carr.
+        destruct (LPO_fst (A_ge_1 (y ⊕ z) j)) as [H5| H5].
+      ***exfalso.
+         apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
+         rewrite <- nA_freal_add_series.
+         rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+         rewrite <- Nat.pow_add_r.
+         replace (S j1 + (s1 - S j1)) with s3.
+      ----apply A_ge_1_add_all_true_if in H5.
+...
+          destruct H5 as [H5| [H5| H5]].
+       ++++rewrite (nA_eq_compat _ _ _ (λ _, rad - 1)); cycle 1.
+        ****intros j' Hj'.
+            specialize (H5 (j' - j - 1)).
+            replace (j + (j' - j - 1) + 1) with j' by flia Hj Hj'.
+
+...
+A_ge_1_add_all_true_if:
+  ∀ (r : radix) (u : nat → nat) (i : nat),
+    (∀ k : nat, u (i + k + 1) ≤ 2 * (rad - 1))
+    → (∀ k : nat, A_ge_1 u i k = true)
+      → (∀ k : nat, u (i + k + 1) = rad - 1)
+        ∨ (∀ k : nat, u (i + k + 1) = 2 * (rad - 1))
+          ∨ (∃ j : nat,
+               (∀ k : nat, k < j → u (i + k + 1) = rad - 1)
+               ∧ u (i + j + 1) = rad - 2
+                 ∧ (∀ k : nat, u (i + j + k + 2) = 2 * (rad - 1)))
+
+...
   *apply Nat.nlt_ge in H3.
    rewrite Nat_div_less_small; cycle 1.
   --split; [ easy | rewrite Hs1; apply nA_freal_add_series_lt ].
