@@ -872,6 +872,7 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
         +rewrite Hn3, Hn1; destruct rad; [ easy | simpl; flia ].
      }
      rewrite nA_freal_add_series in H2'.
+...
      eapply Nat.add_le_mono_r in H4'.
      rewrite <- Nat.add_assoc, H1' in H4'.
      apply Nat.nlt_ge in H4'; apply H4'; clear H4'.
