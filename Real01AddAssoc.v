@@ -768,6 +768,58 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
          eapply lt_trans; [ apply Hj1 | flia ].
      }
      rewrite nA_freal_add_series in Hj1'.
+     assert (H1' : nA i n3 (x ⊕ (y + z)) = rad ^ s3 - 1). {
+       unfold nA.
+       erewrite summation_eq_compat; cycle 1.
+       -intros j Hj.
+        specialize (H1 (j - (i + 1))).
+        replace (i + (j - (i + 1)) + 1) with j in H1 by flia Hj.
+        unfold "⊕"; now rewrite H1.
+       -simpl; rewrite <- summation_mul_distr_l; simpl.
+        rewrite summation_rtl.
+        rewrite summation_shift.
+        +erewrite summation_eq_compat; cycle 1.
+         *intros j Hj.
+          replace (n3 - 1 - (n3 - 1 + (i + 1) - (i + 1 + j))) with j.
+         --easy.
+         --flia Hj.
+         *rewrite <- power_summation_sub_1; [ | easy ].
+          f_equal; f_equal.
+          rewrite <- Nat.sub_succ_l.
+         --rewrite <- Nat.sub_succ_l.
+          ++rewrite Nat.sub_succ, Nat.sub_0_r; flia Hs3.
+          ++rewrite Hn3, Hn1; destruct rad; [ easy | simpl; flia ].
+         --rewrite Hn3, Hn1; destruct rad; [ easy | simpl; flia ].
+        +rewrite Hn3, Hn1; destruct rad; [ easy | simpl; flia ].
+     }
+     rewrite nA_freal_add_series in H1'.
+     assert (H2' : nA i n3 (z ⊕ (y + x)) = rad ^ s3 - 1). {
+       unfold nA.
+       erewrite summation_eq_compat; cycle 1.
+       -intros j Hj.
+        specialize (H2 (j - (i + 1))).
+        replace (i + (j - (i + 1)) + 1) with j in H2 by flia Hj.
+        unfold "⊕"; now rewrite H2.
+       -simpl; rewrite <- summation_mul_distr_l; simpl.
+        rewrite summation_rtl.
+        rewrite summation_shift.
+        +erewrite summation_eq_compat; cycle 1.
+         *intros j Hj.
+          replace (n3 - 1 - (n3 - 1 + (i + 1) - (i + 1 + j))) with j.
+         --easy.
+         --flia Hj.
+         *rewrite <- power_summation_sub_1; [ | easy ].
+          f_equal; f_equal.
+          rewrite <- Nat.sub_succ_l.
+         --rewrite <- Nat.sub_succ_l.
+          ++rewrite Nat.sub_succ, Nat.sub_0_r; flia Hs3.
+          ++rewrite Hn3, Hn1; destruct rad; [ easy | simpl; flia ].
+         --rewrite Hn3, Hn1; destruct rad; [ easy | simpl; flia ].
+        +rewrite Hn3, Hn1; destruct rad; [ easy | simpl; flia ].
+     }
+     rewrite nA_freal_add_series in H2'.
+     eapply Nat.add_lt_mono_r in Hj1'.
+    **rewrite <- Nat.add_assoc, H2' in Hj1'.
 ...
      assert
        (Hj2' : nA i n3 (y ⊕ x) - rad ^ s2 * rad ^ (n3 - n2) <
