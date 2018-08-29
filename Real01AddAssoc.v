@@ -839,7 +839,6 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
         +rewrite Hn3, Hn1; destruct rad; [ easy | simpl; flia ].
      }
      rewrite nA_freal_add_series in H2'.
-...
      eapply Nat.add_le_mono_r in H4'.
      rewrite <- Nat.add_assoc, H1' in H4'.
      apply Nat.nlt_ge in H4'; apply H4'; clear H4'.
@@ -853,6 +852,8 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
     ---rewrite <- Nat.add_sub_assoc; [ | flia Hy ].
        apply Nat.add_lt_mono_l.
+       (* counterexample: y=z=0.55555... ?
+          no: would be contradicted by Hj1' *)
        ...
   *apply Nat.nlt_ge in H3.
    rewrite Nat_div_less_small; cycle 1.
