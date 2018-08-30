@@ -692,6 +692,8 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
      move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
      move Hjj2 before Hjj1.
      clear Hjj1 Hjj2.
+     apply Nat.lt_sub_lt_add_r in Hj2.
+...
      rewrite nA_freal_add_series in Hj1, Hj2, H4.
      unfold freal_add_series in H1, H2.
      remember (max n1 n2) as n3 eqn:Hn3.
@@ -749,7 +751,6 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
          eapply lt_trans; [ apply Hj1 | flia ].
      }
      rewrite nA_freal_add_series in Hj1'.
-     apply Nat.lt_sub_lt_add_r in Hj2.
      assert
        (Hj2' : nA i n3 (y ⊕ x) <
           (rad ^ S j2 - 1) * rad ^ (s3 - S j2) + rad ^ s3 +
