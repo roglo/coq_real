@@ -753,7 +753,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
      assert
        (Hj2' : nA i n3 (y ⊕ x) <
           (rad ^ S j2 - 1) * rad ^ (s3 - S j2) + rad ^ s3 +
-           rad ^ (s3 - s2)). {
+           2 * rad ^ (s3 - s2)). {
 (*
        (Hj2' : nA i n3 (y ⊕ x) <
           (rad ^ S j2 - 1) * rad ^ (s3 - S j2) + 2 * rad ^ (s3 - s2)). {
@@ -778,7 +778,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
          rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
          rewrite nA_freal_add_series.
          eapply lt_trans; [ apply Hj2 | ].
-         apply Nat.lt_add_pos_r, Nat.lt_0_1.
+         apply Nat.lt_add_pos_r, Nat.lt_0_2.
         +apply Nat.nle_gt, Nat.lt_le_incl in Hnn.
          rewrite Nat.max_l in Hn3; [ | easy ].
          subst n3; rewrite <- Hs1 in Hs3; subst s3.
@@ -790,34 +790,14 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
           replace s1 with (s2 + (s1 - s2)) at 2 by flia Hss.
          --rewrite Nat.pow_add_r, <- Nat.mul_add_distr_r.
            replace (s1 - s2) with (n1 - n2); cycle 1.
-          ++rewrite Hs1, Hs2.
-...
-           apply Nat.mul_lt_mono.
-
-
-         --replace (rad ^ (s1 - s2)) with (1 * rad ^ (s1 - s2)) at 2 by flia.
-           rewrite <- Nat.mul_add_distr_r.
-
-
-
-rewrite <- Nat.add_sub_assoc.
-...
-rewrite <- Nat.mul_add_distr_r.
-          apply Nat.mul_
-
-          apply Nat.mul_lt_mono_pos_r with (p := rad ^ (s1 - s2)) in Hj2.
-         --eapply le_lt_trans; [ | apply Hj2 ].
-...
-         *apply Nat.add_lt_mono.
-         --rewrite nA_freal_add_series.
-           replace (n2 - n1) with (s2 - s1); cycle 1.
           ++rewrite Hs1, Hs2, Hn1, Hn2.
             destruct rad; [ easy | simpl; flia ].
-          ++apply Nat.mul_lt_mono_pos_r; [ | easy ].
+          ++rewrite nA_freal_add_series.
+            apply Nat.mul_lt_mono_pos_r; [ | easy ].
             now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
          --rewrite Hs2, Hs1.
-           enough (n1 > i).
-          ++replace (n2 - i - 1 - (n1 - i - 1)) with (n2 - (n1 - 1) - 1)
+           enough (n2 > i).
+          ++replace (n1 - i - 1 - (n2 - i - 1)) with (n1 - (n2 - 1) - 1)
              by flia H.
             eapply le_lt_trans.
            **apply nA_upper_bound_for_add.
@@ -827,16 +807,10 @@ rewrite <- Nat.mul_add_distr_r.
              replace 2 with (2 * 1) at 1 by flia.
              apply Nat.mul_le_mono_l.
              now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-          ++rewrite Hn1.
+          ++rewrite Hn2.
             destruct rad; [ easy | simpl; flia ].
-        +rewrite Nat.max_l in Hn3; [ | flia Hnn ].
-         subst n3; rewrite <- Hs1 in Hs3; subst s3.
-         rewrite Nat.sub_diag, Nat.pow_0_r.
-         do 2 rewrite Nat.mul_1_r.
-         rewrite nA_freal_add_series.
-         eapply lt_trans; [ apply Hj1 | flia ].
      }
-     rewrite nA_freal_add_series in Hj1'.
+     rewrite nA_freal_add_series in Hj2'.
      assert (H3' : nA i n3 (y ⊕ z) < rad ^ s3 + 2 * rad ^ (s2 - s1)). {
        destruct (le_dec n1 n2) as [Hnn| Hnn].
        -rewrite Nat.max_r in Hn3; [ | easy ].
