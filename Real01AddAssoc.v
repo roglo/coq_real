@@ -749,8 +749,9 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
          eapply lt_trans; [ apply Hj1 | flia ].
      }
      rewrite nA_freal_add_series in Hj1'.
+     apply Nat.lt_sub_lt_add_r in Hj2.
      assert
-       (Hj2' : nA i n3 (y ⊕ x) - rad ^ s3 <
+       (Hj2' : nA i n3 (y ⊕ x) <
           (rad ^ S j2 - 1) * rad ^ (s3 - S j2) + 2 * rad ^ (s3 - s2)). {
        replace (s3 - S j2) with (s2 - S j2 + (s3 - s2)); cycle 1.
        -destruct (le_dec n1 n2) as [Hnn| Hnn].
@@ -772,14 +773,21 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
          rewrite Nat.sub_diag, Nat.pow_0_r.
          do 2 rewrite Nat.mul_1_r.
          rewrite nA_freal_add_series.
-         eapply lt_trans; [ apply Hj2 | flia ].
+         eapply lt_trans; [ apply Hj2 | ].
+...
         +apply Nat.nle_gt, Nat.lt_le_incl in Hnn.
          rewrite Nat.max_l in Hn3; [ | easy ].
          subst n3; rewrite <- Hs1 in Hs3; subst s3.
          rewrite (nA_split n2); cycle 1.
          *split; [ | flia Hnn ].
           rewrite Hn2; destruct rad; [ easy | simpl; flia ].
-         *rewrite <- Nat.mul_add_distr_r.
+         *rewrite <- Nat.add_sub_assoc.
+...
+rewrite <- Nat.mul_add_distr_r.
+          apply Nat.mul_
+
+          apply Nat.mul_lt_mono_pos_r with (p := rad ^ (s1 - s2)) in Hj2.
+         --eapply le_lt_trans; [ | apply Hj2 ].
 ...
          *apply Nat.add_lt_mono.
          --rewrite nA_freal_add_series.
