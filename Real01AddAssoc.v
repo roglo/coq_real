@@ -606,14 +606,11 @@ Qed.
 Theorem add_assoc_case_11 {r : radix} : ∀ x y z i,
   (∀ k, (x ⊕ (y + z)) (i + k + 1) = rad - 1)
   → (∀ k, (z ⊕ (y + x)) (i + k + 1) = rad - 1)
-  → ((x ⊕ (y + z)) i + 1) mod rad = ((z ⊕ (y + x)) i + 1) mod rad.
+  → ((x ⊕ (y + z)) i) mod rad = ((z ⊕ (y + x)) i) mod rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros H1 H2.
-rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
-rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
-f_equal; f_equal.
 unfold freal_add_series.
 unfold freal_add, fd2n; simpl.
 unfold prop_carr.
@@ -933,7 +930,6 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
 *)
      assert (Hxyx : nA i n3 (fd2n (y + x)) < nA i n3 (fd2n x)). {
        move Hj2' at bottom; move H4' at bottom.
-Abort. (* à faire
 ...
      eapply Nat.add_le_mono_r in H4'.
      rewrite <- Nat.add_assoc, H1' in H4'.
@@ -1011,15 +1007,8 @@ unfold freal_norm_eq.
 intros i.
 unfold freal_add at 1 3.
 unfold fd2n; simpl.
-remember (y + z)%F as yz eqn:Hyz.
-remember (y + x)%F as yx eqn:Hyx.
-move yx before yz.
-move Hyx before Hyz.
-remember (x ⊕ yz) as x_yz eqn:Hxyz.
-remember (z ⊕ yx) as z_yx eqn:Hzyx.
-move z_yx before x_yz.
 unfold prop_carr.
-destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
+destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
 -simpl.
  remember (rad * (i + 3)) as n1 eqn:Hn1.
  remember (n1 - i - 1) as s1 eqn:Hs1.
@@ -1034,21 +1023,25 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
  }
  apply A_ge_1_add_all_true_if in H1.
- +destruct (LPO_fst (A_ge_1 z_yx i)) as [H2| H2].
+ +destruct (LPO_fst (A_ge_1 (z ⊕ (y + x)) i)) as [H2| H2].
   *simpl.
    destruct H1 as [H1| [H1| H1]].
-  --rewrite Nat.div_small.
-   ++rewrite Nat.add_0_r.
-     apply A_ge_1_add_all_true_if in H2.
-     destruct H2 as [H2| [H2| H2]].
-    **rewrite Nat.div_small.
-    ---rewrite Nat.add_0_r.
-... (*
-        subst; now apply add_assoc_case_11.
-*)
-    ---rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
+  --rewrite nA_all_9; [ | intros; apply H1 ].
+    rewrite <- Hs1.
+    rewrite Nat.div_small; [ | flia Hr2s1 ].
+    rewrite Nat.add_0_r.
+    rewrite Nat.add_shuffle0.
+    rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+    rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+    f_equal; f_equal.
+    apply A_ge_1_add_all_true_if in H2.
+   ++destruct H2 as [H2| [H2| H2]].
+    **rewrite nA_all_9; [ | easy ].
+      rewrite <- Hs1, Nat.div_small; [ | flia Hr2s1 ].
+      rewrite Nat.add_0_r.
+...
+      now apply add_assoc_case_11.
     **exfalso.
-      subst z_yx yx.
       specialize (eq_add_series_18_eq_9 _ _ _ H2) as (_, H3).
       unfold "+"%F, fd2n in H3; simpl in H3.
       specialize (not_prop_carr_all_9 (y ⊕ x)) as H; unfold d2n in H.
@@ -1057,7 +1050,6 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
     ---rewrite Nat.add_shuffle0; apply H3.
     **exfalso.
       destruct H2 as (j2 & _ & _ & H2aft).
-      subst z_yx yx.
       remember (i + j2 + 1) as n eqn:Hn.
       assert (H2 : ∀ k, (z ⊕ (y + x)) (n + k + 1) = 2 * (rad - 1)). {
         intros k; subst n.
@@ -1070,11 +1062,8 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
       apply H with (n := n + 1); intros k.
     ---apply freal_add_series_le_twice_pred.
     ---rewrite Nat.add_shuffle0; apply H3.
-    **intros k; rewrite Hzyx.
-      apply freal_add_series_le_twice_pred.
-   ++rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
+   ++intros k; apply freal_add_series_le_twice_pred.
   --exfalso.
-    subst x_yz yz.
     specialize (eq_add_series_18_eq_9 _ _ _ H1) as (_, H3).
     unfold "+"%F, fd2n in H3; simpl in H3.
     specialize (not_prop_carr_all_9 (y ⊕ z)) as H; unfold d2n in H.
@@ -1083,7 +1072,6 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
    ++rewrite Nat.add_shuffle0; apply H3.
   --exfalso.
     destruct H1 as (j1 & _ & _ & H1aft).
-    subst x_yz yz.
     remember (i + j1 + 1) as n eqn:Hn.
     assert (H3 : ∀ k, (x ⊕ (y + z)) (n + k + 1) = 2 * (rad - 1)). {
       intros k; subst n.
@@ -1101,10 +1089,9 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
   --...
   --...
   --...
- +intros k; rewrite Hxyz.
-  apply freal_add_series_le_twice_pred.
+ +intros k; apply freal_add_series_le_twice_pred.
 -destruct H1 as (j1 & Hjj1 & Hj1); simpl.
- destruct (LPO_fst (A_ge_1 z_yx i)) as [H2| H2].
+ destruct (LPO_fst (A_ge_1 (z ⊕ (y + x)) i)) as [H2| H2].
  +simpl.
   ...
  +destruct H2 as (j2 & Hjj2 & Hj2); simpl.
