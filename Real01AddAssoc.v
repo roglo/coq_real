@@ -1043,13 +1043,11 @@ destruct (LPO_fst (A_ge_1 x_yz i)) as [H1| H1].
       destruct H2 as [H2| [H2| H2]].
     ---rewrite Nat.div_small.
      +++rewrite Nat.add_0_r.
-        (* 11 *)
 admit. (*
         subst; now apply add_assoc_case_11.
 *)
      +++rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
-    ---(* 12 *)
-       exfalso.
+    ---exfalso.
        subst z_yx yx.
        specialize (eq_add_series_18_eq_9 _ _ _ H2) as (_, H3).
        unfold "+"%F, fd2n in H3; simpl in H3.
@@ -1057,8 +1055,7 @@ admit. (*
        apply H with (n := i + 1); intros k.
      +++apply freal_add_series_le_twice_pred.
      +++rewrite Nat.add_shuffle0; apply H3.
-    ---(* 13 *)
-       exfalso.
+    ---exfalso.
        destruct H2 as (j2 & _ & _ & H2aft).
        subst z_yx yx.
        remember (i + j2 + 1) as n eqn:Hn.
@@ -1074,8 +1071,7 @@ admit. (*
      +++apply freal_add_series_le_twice_pred.
      +++rewrite Nat.add_shuffle0; apply H3.
     **rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
-   ++(* 2 *)
-     exfalso.
+   ++exfalso.
      subst x_yz yz.
      specialize (eq_add_series_18_eq_9 _ _ _ H1) as (_, H3).
      unfold "+"%F, fd2n in H3; simpl in H3.
@@ -1085,31 +1081,19 @@ admit. (*
     **rewrite Nat.add_shuffle0; apply H3.
    ++exfalso.
      destruct H1 as (j1 & _ & _ & H1aft).
-...
-   ++destruct H1 as (j1 & H1bef & H1whi & H1aft).
-     rewrite Nat.div_small.
-    **rewrite Nat.add_0_r.
-      destruct H2 as [H2| [H2| H2]].
-    ---rewrite Nat.div_small.
-     +++rewrite Nat.add_0_r.
-        (* 31, symmetric of 13 *)
-        ...
-     +++rewrite nA_all_9; [ rewrite <- Hs1; flia Hr2s1 | easy ].
-    ---rewrite Nat_div_less_small.
-     +++(* 32, symmetric of 23 *)
-        ...
-     +++rewrite nA_all_18; [ rewrite <- Hs1; flia Hr2s1 | easy ].
-    ---destruct H2 as (j2 & H2bef & H2whi & H2aft).
-       rewrite Nat.div_small.
-     +++rewrite Nat.add_0_r.
-        (* 33 *)
-        ...
-     +++rewrite (nA_9_8_all_18 j2); [ | easy | easy | easy ].
-        rewrite <- Hs1.
-        destruct (le_dec (i + j2 + 1) (n1 - 1)); flia Hr2s1.
-    **rewrite (nA_9_8_all_18 j1); [ | easy | easy | easy ].
-      rewrite <- Hs1.
-      destruct (le_dec (i + j1 + 1) (n1 - 1)); flia Hr2s1.
+     subst x_yz yz.
+     remember (i + j1 + 1) as n eqn:Hn.
+     assert (H3 : ∀ k, (x ⊕ (y + z)) (n + k + 1) = 2 * (rad - 1)). {
+       intros k; subst n.
+       replace (i + j1 + 1 + k + 1) with (i + j1 + k + 2) by flia.
+       apply H1aft.
+     }
+     specialize (eq_add_series_18_eq_9 _ _ _ H3) as (_, H4).
+     unfold "+"%F, fd2n in H4; simpl in H4.
+     specialize (not_prop_carr_all_9 (y ⊕ z)) as H; unfold d2n in H.
+     apply H with (n := n + 1); intros k.
+    **apply freal_add_series_le_twice_pred.
+    **rewrite Nat.add_shuffle0; apply H4.
   --intros k; rewrite Hzyx.
     apply freal_add_series_le_twice_pred.
   *destruct H2 as (j2 & Hjj2 & Hj2); simpl.
