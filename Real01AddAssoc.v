@@ -1043,7 +1043,8 @@ apply A_ge_1_add_all_true_if in H4; cycle 1.
   *rewrite nA_all_9; [ | intros; apply H3 ].
    destruct H4 as [H4| [H4| H4]].
   --exfalso.
-Check (all_x_yz_9_all_yx_9_all_yz_18 z y x i).
+    specialize (all_x_yz_9_all_yz_9_all_x_9 x y z i H1 H3) as H5.
+Check all_x_yz_9_all_yx_9_all_yz_18.
 ...
    (* stolen from add_assoc_case_11_11, not sure useful but perhaps... *)
   --exfalso; now apply (all_x_yz_9_all_yx_9_all_yz_18 z y x i).
