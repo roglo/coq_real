@@ -1096,6 +1096,9 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
      rewrite Nat_mod_less_small in Hj2; [ | easy ].
      rewrite Nat_div_less_small; [ clear H | easy ].
      apply Nat.lt_sub_lt_add_l in Hj2.
+     rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+     rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+     f_equal; f_equal.
      ...
   --now apply not_all_18_x_yz in H1.
   --destruct H1 as (j1 & _ & _ & H1aft).
@@ -1110,7 +1113,10 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
 -destruct H1 as (j1 & Hjj1 & Hj1); simpl.
  destruct (LPO_fst (A_ge_1 (z ⊕ (y + x)) i)) as [H2| H2].
  +simpl.
-  ...
+  apply A_ge_1_add_all_true_if in H2; cycle 1.
+  *intros k; apply freal_add_series_le_twice_pred.
+  *idtac.
+...
  +destruct H2 as (j2 & Hjj2 & Hj2); simpl.
   ...
 Qed.
