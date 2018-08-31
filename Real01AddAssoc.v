@@ -603,6 +603,18 @@ apply A_ge_1_add_all_true_if in H3; cycle 1.
     split; [ easy | rewrite Hs2; apply nA_freal_add_series_lt ].
 Qed.
 
+Theorem not_all_18_x_yz {r : radix} : ∀ x y z i,
+  ¬ ∀ k, (x ⊕ (y + z)) (i + k + 1) = 2 * (rad - 1).
+Proof.
+intros * H1.
+specialize (eq_add_series_18_eq_9 _ _ _ H1) as (_, H2).
+unfold "+"%F, fd2n in H2; simpl in H2.
+specialize (not_prop_carr_all_9 (y ⊕ z)) as H; unfold d2n in H.
+apply H with (n := i + 1); intros k.
+-apply freal_add_series_le_twice_pred.
+-rewrite Nat.add_shuffle0; apply H2.
+Qed.
+
 Theorem add_assoc_case_11 {r : radix} : ∀ x y z i,
   (∀ k, (x ⊕ (y + z)) (i + k + 1) = rad - 1)
   → (∀ k, (z ⊕ (y + x)) (i + k + 1) = rad - 1)
@@ -930,6 +942,7 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
 *)
      assert (Hxyx : nA i n3 (fd2n (y + x)) < nA i n3 (fd2n x)). {
        move Hj2' at bottom; move H4' at bottom.
+Abort. (* à compléter
 ...
      eapply Nat.add_le_mono_r in H4'.
      rewrite <- Nat.add_assoc, H1' in H4'.
@@ -1039,56 +1052,48 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
     **rewrite nA_all_9; [ | easy ].
       rewrite <- Hs1, Nat.div_small; [ | flia Hr2s1 ].
       rewrite Nat.add_0_r.
-...
+... (*
       now apply add_assoc_case_11.
-    **exfalso.
-      specialize (eq_add_series_18_eq_9 _ _ _ H2) as (_, H3).
-      unfold "+"%F, fd2n in H3; simpl in H3.
-      specialize (not_prop_carr_all_9 (y ⊕ x)) as H; unfold d2n in H.
-      apply H with (n := i + 1); intros k.
-    ---apply freal_add_series_le_twice_pred.
-    ---rewrite Nat.add_shuffle0; apply H3.
-    **exfalso.
-      destruct H2 as (j2 & _ & _ & H2aft).
+*)
+    **now apply not_all_18_x_yz in H2.
+    **destruct H2 as (j2 & _ & _ & H2aft).
       remember (i + j2 + 1) as n eqn:Hn.
       assert (H2 : ∀ k, (z ⊕ (y + x)) (n + k + 1) = 2 * (rad - 1)). {
         intros k; subst n.
         replace (i + j2 + 1 + k + 1) with (i + j2 + k + 2) by flia.
         apply H2aft.
       }
-      specialize (eq_add_series_18_eq_9 _ _ _ H2) as (_, H3).
-      unfold "+"%F, fd2n in H3; simpl in H3.
-      specialize (not_prop_carr_all_9 (y ⊕ x)) as H; unfold d2n in H.
-      apply H with (n := n + 1); intros k.
-    ---apply freal_add_series_le_twice_pred.
-    ---rewrite Nat.add_shuffle0; apply H3.
+      now apply not_all_18_x_yz in H2.
    ++intros k; apply freal_add_series_le_twice_pred.
-  --exfalso.
-    specialize (eq_add_series_18_eq_9 _ _ _ H1) as (_, H3).
-    unfold "+"%F, fd2n in H3; simpl in H3.
-    specialize (not_prop_carr_all_9 (y ⊕ z)) as H; unfold d2n in H.
-    apply H with (n := i + 1); intros k.
-   ++apply freal_add_series_le_twice_pred.
-   ++rewrite Nat.add_shuffle0; apply H3.
-  --exfalso.
-    destruct H1 as (j1 & _ & _ & H1aft).
+  --now apply not_all_18_x_yz in H1.
+  --destruct H1 as (j1 & _ & _ & H1aft).
     remember (i + j1 + 1) as n eqn:Hn.
     assert (H3 : ∀ k, (x ⊕ (y + z)) (n + k + 1) = 2 * (rad - 1)). {
       intros k; subst n.
       replace (i + j1 + 1 + k + 1) with (i + j1 + k + 2) by flia.
       apply H1aft.
     }
-    specialize (eq_add_series_18_eq_9 _ _ _ H3) as (_, H4).
-    unfold "+"%F, fd2n in H4; simpl in H4.
-    specialize (not_prop_carr_all_9 (y ⊕ z)) as H; unfold d2n in H.
-    apply H with (n := n + 1); intros k.
-   ++apply freal_add_series_le_twice_pred.
-   ++rewrite Nat.add_shuffle0; apply H4.
+    now apply not_all_18_x_yz in H3.
   *destruct H2 as (j2 & Hjj2 & Hj2); simpl.
    destruct H1 as [H1| [H1| H1]].
-  --...
-  --...
-  --...
+  --rewrite nA_all_9; [ | easy ].
+    rewrite <- Hs1, Nat.div_small; [ | flia Hr2s1 ].
+    rewrite Nat.add_0_r.
+    clear n1 s1 Hn1 Hs1 Hr2s1.
+    apply A_ge_1_false_iff in Hj2.
+    remember (rad * (i + j2 + 3)) as n1 eqn:Hn1.
+    remember (n1 - i - 1) as s1 eqn:Hs1.
+    move s1 before n1.
+    ...
+  --now apply not_all_18_x_yz in H1.
+  --destruct H1 as (j1 & _ & _ & H1aft).
+    remember (i + j1 + 1) as n eqn:Hn.
+    assert (H3 : ∀ k, (x ⊕ (y + z)) (n + k + 1) = 2 * (rad - 1)). {
+      intros k; subst n.
+      replace (i + j1 + 1 + k + 1) with (i + j1 + k + 2) by flia.
+      apply H1aft.
+    }
+    now apply not_all_18_x_yz in H3.
  +intros k; apply freal_add_series_le_twice_pred.
 -destruct H1 as (j1 & Hjj1 & Hj1); simpl.
  destruct (LPO_fst (A_ge_1 (z ⊕ (y + x)) i)) as [H2| H2].
