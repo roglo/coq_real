@@ -1052,9 +1052,8 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
     **rewrite nA_all_9; [ | easy ].
       rewrite <- Hs1, Nat.div_small; [ | flia Hr2s1 ].
       rewrite Nat.add_0_r.
-... (*
+...
       now apply add_assoc_case_11.
-*)
     **now apply not_all_18_x_yz in H2.
     **destruct H2 as (j2 & _ & _ & H2aft).
       remember (i + j2 + 1) as n eqn:Hn.
