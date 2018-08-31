@@ -1084,7 +1084,19 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
     remember (rad * (i + j2 + 3)) as n1 eqn:Hn1.
     remember (n1 - i - 1) as s1 eqn:Hs1.
     move s1 before n1.
-    ...
+    destruct (lt_dec (nA i n1 (z ⊕ (y + x))) (rad ^ s1)) as [H2| H2].
+   ++rewrite Nat.mod_small in Hj2; [ | easy ].
+     rewrite Nat.div_small; [ | easy ].
+     rewrite Nat.add_0_r.
+     ...
+   ++apply Nat.nlt_ge in H2.
+     assert (H : rad ^ s1 ≤ nA i n1 (z ⊕ (y + x)) < 2 * rad ^ s1). {
+       split; [ easy | rewrite Hs1; apply nA_freal_add_series_lt ].
+     }
+     rewrite Nat_mod_less_small in Hj2; [ | easy ].
+     rewrite Nat_div_less_small; [ clear H | easy ].
+     apply Nat.lt_sub_lt_add_l in Hj2.
+     ...
   --now apply not_all_18_x_yz in H1.
   --destruct H1 as (j1 & _ & _ & H1aft).
     remember (i + j1 + 1) as n eqn:Hn.
