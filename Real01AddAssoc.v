@@ -448,13 +448,13 @@ apply A_ge_1_add_all_true_if in H4; cycle 1.
   --rewrite nA_all_9; [ easy | intros; apply H4 ].
   --exfalso; now apply (all_x_yz_9_all_yx_9_all_yz_18 z y x i).
   --destruct H4 as (j & Hjbef & Hjwhi & Hjaft).
-   rewrite <- Hs1.
-   rewrite Nat.div_small; [ | flia Hr2s1 ].
-   rewrite (nA_9_8_all_18 j); [ | easy | easy | easy ].
-   rewrite <- Hs1.
-   destruct (le_dec (i + j + 1) (n1 - 1)) as [H4| H4].
-  ++rewrite Nat.div_small; [ easy | flia Hr2s1 ].
-  ++rewrite Nat.div_small; [ easy | flia Hr2s1 ].
+    rewrite <- Hs1.
+    rewrite Nat.div_small; [ | flia Hr2s1 ].
+    rewrite (nA_9_8_all_18 j); [ | easy | easy | easy ].
+    rewrite <- Hs1.
+    destruct (le_dec (i + j + 1) (n1 - 1)) as [H4| H4].
+   ++rewrite Nat.div_small; [ easy | flia Hr2s1 ].
+   ++rewrite Nat.div_small; [ easy | flia Hr2s1 ].
   *rewrite nA_all_18; [ | apply H3 ].
    rewrite <- Hs1.
    rewrite Nat_div_less_small; [ | flia Hr2s1 ].
@@ -1043,8 +1043,13 @@ apply A_ge_1_add_all_true_if in H4; cycle 1.
   *rewrite nA_all_9; [ | intros; apply H3 ].
    destruct H4 as [H4| [H4| H4]].
   --exfalso.
-    specialize (all_x_yz_9_all_yz_9_all_x_9 x y z i H1 H3) as H5.
-Check all_x_yz_9_all_yx_9_all_yz_18.
+    specialize (eq_add_series_18_eq_9 _ _ _ H2) as (Hz & Hyx).
+    unfold "+"%F, fd2n in Hyx; simpl in Hyx.
+    specialize (not_prop_carr_all_9 (y ⊕ x)) as H; unfold d2n in H.
+    apply H with (n := i + 1); intros k.
+   ++apply freal_add_series_le_twice_pred.
+   ++rewrite Nat.add_shuffle0; apply Hyx.
+  --rewrite <- Hs1.
 ...
    (* stolen from add_assoc_case_11_11, not sure useful but perhaps... *)
   --exfalso; now apply (all_x_yz_9_all_yx_9_all_yz_18 z y x i).
