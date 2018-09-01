@@ -946,6 +946,8 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
     ---rewrite <- Nat.add_sub_assoc; [ | flia Hy ].
        apply Nat.add_lt_mono_l.
+(**)
+...
        eapply lt_le_trans.
      +++apply Nat.sub_lt; [ flia Hy | apply Nat.lt_0_1 ].
      +++unfold nA.
