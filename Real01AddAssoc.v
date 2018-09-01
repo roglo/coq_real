@@ -615,6 +615,19 @@ apply H with (n := i + 1); intros k.
 -rewrite Nat.add_shuffle0; apply H2.
 Qed.
 
+Theorem nA_le_prop_carr {r : radix} : ∀ u i n,
+  nA i n u ≤ nA i n (d2n (prop_carr u)).
+Proof.
+intros.
+...
+
+Theorem nA_series_add_le_add {r : radix} : ∀ x y i n,
+  nA i n (x ⊕ y) ≤ nA i n (fd2n (x + y)).
+Proof.
+intros.
+change (nA i n (x ⊕ y) ≤ nA i n (d2n (prop_carr (x ⊕ y)))).
+...
+
 Theorem add_assoc_case_11 {r : radix} : ∀ x y z i,
   (∀ k, (x ⊕ (y + z)) (i + k + 1) = rad - 1)
   → (∀ k, (z ⊕ (y + x)) (i + k + 1) = rad - 1)
@@ -951,13 +964,10 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
        rewrite Nat.sub_add; [ | easy ].
        rewrite Nat.add_1_r.
        apply Nat.lt_succ_r.
-(*
- Search, try to prove (if true) that
-   nA i n (fd2n (x + y)) = nA i n (d2n (x ⊕ y))
-or nA i n (fd2n (x + y)) = nA i n (d2n (x ⊕ y)) + 1 (mod r ^ (n - i - 1))
-*)
+...
+       eapply le_trans; [ | apply nA_series_add_le_add ].
+...
        change (nA i n3 (fd2n y) ≤ nA i n3 (d2n (prop_carr (y ⊕ z)))).
-
 
 ...
        unfold nA.
