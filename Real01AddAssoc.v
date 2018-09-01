@@ -951,7 +951,14 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
        rewrite Nat.sub_add; [ | easy ].
        rewrite Nat.add_1_r.
        apply Nat.lt_succ_r.
+(*
+ Search, try to prove (if true) that
+   nA i n (fd2n (x + y)) = nA i n (d2n (x ⊕ y))
+or nA i n (fd2n (x + y)) = nA i n (d2n (x ⊕ y)) + 1 (mod r ^ (n - i - 1))
+*)
        change (nA i n3 (fd2n y) ≤ nA i n3 (d2n (prop_carr (y ⊕ z)))).
+
+
 ...
        unfold nA.
        apply (@summation_le_compat _ nat_ord_ring).
