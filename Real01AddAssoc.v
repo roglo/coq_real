@@ -947,26 +947,33 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
     ---rewrite <- Nat.add_sub_assoc; [ | flia Hy ].
        apply Nat.add_lt_mono_l.
 (**)
+       apply (Nat.le_lt_add_lt 1 1); [ easy | ].
+       rewrite Nat.sub_add; [ | easy ].
+       rewrite Nat.add_1_r.
+       apply Nat.lt_succ_r.
 ...
-       eapply lt_le_trans.
-     +++apply Nat.sub_lt; [ flia Hy | apply Nat.lt_0_1 ].
-     +++unfold nA.
-        apply (@summation_le_compat _ nat_ord_ring).
-        intros j Hj; simpl; unfold Nat.le.
-        apply Nat.mul_le_mono_r.
-        unfold "+"%F, fd2n at 2; simpl.
-        unfold prop_carr.
-        destruct (LPO_fst (A_ge_1 (y ⊕ z) j)) as [H5| H5].
-      ***simpl.
-         apply A_ge_1_add_all_true_if in H5.
-         destruct H5 as [H5| [H5| H5]].
-      ----idtac.
+       unfold nA.
+       apply (@summation_le_compat _ nat_ord_ring).
+       intros j Hj; simpl; unfold Nat.le.
+       apply Nat.mul_le_mono_r.
+       unfold "+"%F, fd2n at 2; simpl.
+       unfold prop_carr.
+       destruct (LPO_fst (A_ge_1 (y ⊕ z) j)) as [H5| H5].
+     +++simpl.
+        apply A_ge_1_add_all_true_if in H5.
+        destruct H5 as [H5| [H5| H5]].
+      ***idtac.
 (**)
-          rewrite nA_all_9; [ | intros; apply H5 ].
-          rewrite Nat.div_small; cycle 1.
-       ++++apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
-           now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-       ++++rewrite Nat.add_0_r.
+         rewrite nA_all_9; [ | intros; apply H5 ].
+         rewrite Nat.div_small; cycle 1.
+      ----apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
+          now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+      ----rewrite Nat.add_0_r.
+          destruct (lt_dec ((y ⊕ z) j + 1) rad) as [H6| H6].
+       ++++rewrite Nat.mod_small; [ unfold "⊕"; flia | easy ].
+       ++++apply Nat.nlt_ge in H6.
+
+
 ...
          exfalso.
          apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
