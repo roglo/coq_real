@@ -951,6 +951,7 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
        rewrite Nat.sub_add; [ | easy ].
        rewrite Nat.add_1_r.
        apply Nat.lt_succ_r.
+       change (nA i n3 (fd2n y) ≤ nA i n3 (d2n (prop_carr (y ⊕ z)))).
 ...
        unfold nA.
        apply (@summation_le_compat _ nat_ord_ring).
