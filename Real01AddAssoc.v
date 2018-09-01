@@ -144,7 +144,7 @@ specialize (H1 k) as H5.
 unfold freal_add_series in H5.
 unfold freal_add in H5.
 unfold fd2n at 2 in H5; simpl in H5.
-unfold prop_carr in H5.
+unfold nat_prop_carr in H5.
 remember (y ⊕ z) as yz eqn:Hyz.
 rewrite H3 in H5.
 rewrite Nat.sub_add in H5; [ | easy ].
@@ -197,7 +197,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
 -intros; apply freal_add_series_le_twice_pred.
 -destruct H1 as [H1| [H1| H1]].
  +unfold freal_add, fd2n; simpl.
-  unfold prop_carr.
+  unfold nat_prop_carr.
   destruct (LPO_fst (A_ge_1 (y ⊕ z) (i + k + 1))) as
       [H4| H4].
   *simpl.
@@ -252,7 +252,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
    ++apply Nat.sub_le_mono_l.
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
  +unfold freal_add, fd2n; simpl.
-  unfold prop_carr.
+  unfold nat_prop_carr.
   destruct (LPO_fst (A_ge_1 (y ⊕ z) (i + k + 1))) as
       [H4| H4].
   *simpl.
@@ -291,7 +291,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
     apply H1.
   --rewrite <- Hs3; now apply (le_90_198_mod_100 (i + k + 1) n3).
  +unfold freal_add, fd2n; simpl.
-  unfold prop_carr.
+  unfold nat_prop_carr.
   destruct H1 as (j1 & H1bef & H1whi & H1aft).
   destruct (LPO_fst (A_ge_1 (y ⊕ z) (i + k + 1))) as
       [H4| H4].
@@ -625,7 +625,7 @@ specialize radix_ge_2 as Hr.
 intros H1 H2.
 unfold freal_add_series.
 unfold freal_add, fd2n; simpl.
-unfold prop_carr.
+unfold nat_prop_carr.
 destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
 -simpl.
  destruct (LPO_fst (A_ge_1 (y ⊕ x) i)) as [H4| H4].
@@ -1028,7 +1028,7 @@ unfold freal_norm_eq.
 intros i.
 unfold freal_add at 1 3.
 unfold fd2n; simpl.
-unfold prop_carr.
+unfold nat_prop_carr.
 destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
 -simpl.
  remember (rad * (i + 3)) as n1 eqn:Hn1.
@@ -1060,8 +1060,9 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
     **rewrite nA_all_9; [ | easy ].
       rewrite <- Hs1, Nat.div_small; [ | flia Hr2s1 ].
       rewrite Nat.add_0_r.
-...
+... (*
       now apply add_assoc_case_11.
+*)
     **now apply not_all_18_x_yz in H2.
     **destruct H2 as (j2 & _ & _ & H2aft).
       remember (i + j2 + 1) as n eqn:Hn.
@@ -1123,7 +1124,7 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
   apply A_ge_1_add_all_true_if in H2; cycle 1.
   *intros k; apply freal_add_series_le_twice_pred.
   *idtac.
-...
+   ...
  +destruct H2 as (j2 & Hjj2 & Hj2); simpl.
   ...
 Qed.
