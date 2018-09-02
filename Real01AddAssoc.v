@@ -615,7 +615,6 @@ apply H with (n := i + 1); intros k.
 -rewrite Nat.add_shuffle0; apply H2.
 Qed.
 
-
 (* faux: car prop_carr fabrique les chiffres, donc modulo rad
 Theorem nA_series_add_le_add {r : radix} : ∀ x y i n,
   nA i n (x ⊕ y) ≤ nA i n (fd2n (x + y)).
@@ -623,8 +622,6 @@ Proof.
 intros.
 change (nA i n (x ⊕ y) ≤ nA i n (d2n (prop_carr (x ⊕ y)))).
 *)
-
-...
 
 Theorem add_assoc_case_11 {r : radix} : ∀ x y z i,
   (∀ k, (x ⊕ (y + z)) (i + k + 1) = rad - 1)
@@ -957,66 +954,21 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
     ---rewrite <- Nat.add_sub_assoc; [ | flia Hy ].
        apply Nat.add_lt_mono_l.
-(**)
        apply (Nat.le_lt_add_lt 1 1); [ easy | ].
        rewrite Nat.sub_add; [ | easy ].
        rewrite Nat.add_1_r.
        apply Nat.lt_succ_r.
+       apply (Nat.add_le_mono_l _ _ (nA i n3 (fd2n x))).
+       rewrite H1'.
+rewrite nA_freal_add_series, Nat.add_comm in H4.
+(* ça veut dire que ce que je cherche à démontrer est faux ? *)
 ...
-       eapply le_trans; [ | apply nA_series_add_le_add ].
+       rewrite Nat.add_comm in Hj2'.
 ...
-       change (nA i n3 (fd2n y) ≤ nA i n3 (d2n (prop_carr (y ⊕ z)))).
-
-...
-       unfold nA.
-       apply (@summation_le_compat _ nat_ord_ring).
-       intros j Hj; simpl; unfold Nat.le.
-       apply Nat.mul_le_mono_r.
-       unfold "+"%F, fd2n at 2; simpl.
-       unfold prop_carr.
-       destruct (LPO_fst (A_ge_1 (y ⊕ z) j)) as [H5| H5].
-     +++simpl.
-        apply A_ge_1_add_all_true_if in H5.
-        destruct H5 as [H5| [H5| H5]].
-      ***idtac.
-(**)
-         rewrite nA_all_9; [ | intros; apply H5 ].
-         rewrite Nat.div_small; cycle 1.
-      ----apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
-          now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-      ----rewrite Nat.add_0_r.
-          destruct (lt_dec ((y ⊕ z) j + 1) rad) as [H6| H6].
-       ++++rewrite Nat.mod_small; [ unfold "⊕"; flia | easy ].
-       ++++apply Nat.nlt_ge in H6.
-
-
-...
-         exfalso.
-         apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
-         rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-         rewrite <- Nat.pow_add_r.
-         replace (S j1 + (s1 - S j1)) with s3.
-      ----apply A_ge_1_add_all_true_if in H5.
-          destruct H5 as [H5| [H5| H5]].
-       ++++idtac.
-...
-           rewrite (nA_eq_compat _ _ _ (λ _, rad - 1)); cycle 1.
-        ****intros j' Hj'.
-            specialize (H5 (j' - j - 1)).
-            replace (j + (j' - j - 1) + 1) with j' by flia Hj Hj'.
-
-...
-A_ge_1_add_all_true_if:
-  ∀ (r : radix) (u : nat → nat) (i : nat),
-    (∀ k : nat, u (i + k + 1) ≤ 2 * (rad - 1))
-    → (∀ k : nat, A_ge_1 u i k = true)
-      → (∀ k : nat, u (i + k + 1) = rad - 1)
-        ∨ (∀ k : nat, u (i + k + 1) = 2 * (rad - 1))
-          ∨ (∃ j : nat,
-               (∀ k : nat, k < j → u (i + k + 1) = rad - 1)
-               ∧ u (i + j + 1) = rad - 2
-                 ∧ (∀ k : nat, u (i + j + k + 2) = 2 * (rad - 1)))
-
+       eapply Nat.le_trans.
+     +++apply Nat.lt_le_incl in Hj2'.
+        apply Hj2'.
+     +++idtac.
 ...
   *apply Nat.nlt_ge in H3.
    rewrite Nat_div_less_small; cycle 1.
