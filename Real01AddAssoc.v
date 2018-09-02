@@ -934,12 +934,9 @@ x+y+z ≥ x+z
 ...
 Pas clair... tout dépend de ce qu'on entend par "≤".
 *)
-(*
-...
      assert (Hxyx : nA i n3 (fd2n (y + x)) < nA i n3 (fd2n x)). {
        move Hj2' at bottom; move H4' at bottom.
 ...
-*)
      rewrite nA_freal_add_series in Hj1', Hj2', H3', H4', H1', H2'.
      eapply Nat.add_le_mono_r in H4'.
      rewrite <- Nat.add_assoc, H1' in H4'.
