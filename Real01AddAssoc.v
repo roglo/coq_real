@@ -708,7 +708,9 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
      move Hn2 before Hs1; move Hs2 before Hn2.
      move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
      move Hjj2 before Hjj1.
+(*
      clear Hjj1 Hjj2.
+*)
      apply Nat.lt_sub_lt_add_r in Hj2.
      remember (max n1 n2) as n3 eqn:Hn3.
      remember (n3 - i - 1) as s3 eqn:Hs3.
@@ -934,6 +936,24 @@ x+y+z ≥ x+z
 ...
 Pas clair... tout dépend de ce qu'on entend par "≤".
 *)
+(* counterexample:
+     x=0.999...
+     y=0.5
+     z=0.4999... ?
+ H1: x ⊕ (y + z) = 0.999 ⊕ (0.5 + 0.4999) = 0.999 ⊕ P(0.999) = 0.999 ⊕ 0 = 0.999 ok
+ H2: (x ⊕ y) + z = 0.4999 ⊕ (0.5 + 0.9999) = 0.4999 ⊕ P(0.4999) = 0.4999 ⊕ 0.5 = 0.999 ok
+ Hj1: nA i n1 (y ⊕ z) = nA i n1 (0.5 ⊕ 0.4999) = nA i n1 0.9999: ah no
+    2nd try:
+     x=0.333..33999...    (j1+1 3s)
+     y=0.333..325         (j1 3s)
+     z=0.333..334999...   (j1+1 3s)
+ H1: x ⊕ (y + z) = 0.333..33999 ⊕ (0.333..325000 + 0.333..334999)
+                 = 0.333..33999 ⊕ P(0.666..659999)
+                 = 0.333..33999 ⊕ 0.666..660000
+                 = 0.999.. ok
+ Hjj1 ?
+*)
+...
      assert (Hxyx : nA i n3 (fd2n (y + x)) < nA i n3 (fd2n x)). {
        move Hj2' at bottom; move H4' at bottom.
 ...
