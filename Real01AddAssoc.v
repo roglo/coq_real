@@ -615,14 +615,6 @@ apply H with (n := i + 1); intros k.
 -rewrite Nat.add_shuffle0; apply H2.
 Qed.
 
-(* faux: car prop_carr fabrique les chiffres, donc modulo rad
-Theorem nA_series_add_le_add {r : radix} : ∀ x y i n,
-  nA i n (x ⊕ y) ≤ nA i n (fd2n (x + y)).
-Proof.
-intros.
-change (nA i n (x ⊕ y) ≤ nA i n (d2n (prop_carr (x ⊕ y)))).
-*)
-
 Theorem add_assoc_case_11 {r : radix} : ∀ x y z i,
   (∀ k, (x ⊕ (y + z)) (i + k + 1) = rad - 1)
   → (∀ k, (z ⊕ (y + x)) (i + k + 1) = rad - 1)
