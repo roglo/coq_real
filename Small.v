@@ -130,6 +130,14 @@ assert (Hni : n ≥ i + 1).
   destruct r; [ easy | simpl; lia ].
 Qed.
 
+Theorem small2 : ∀ r, r ≥ 2 →
+  ∀ i k n, n ≥ r * (i + k + 2)
+  → n * (r - 1) + r < r ^ (n - (i + k + 1)).
+Proof.
+intros r Hr * Hnr.
+now apply small.
+Qed.
+
 (* This theorem could have been written as:
 Theorem small_sum : ∀ r, r ≥ 2 →
   ∀ u, (∀ i, u i ≤ (i + 1) * (r - 1) ^ 2) →
