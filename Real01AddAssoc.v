@@ -74,7 +74,7 @@ unfold freal_add_series in Hxy; lia.
 Qed.
 
 Theorem le_90_198_mod_100 {r : radix} : ∀ j n s k,
-  n = rad * (j + k + 2)
+  n = rad * (j + k + 3)
   → s = n - j - 1
   → (rad ^ S k - 1) * rad ^ (s - S k) ≤ (2 * (rad ^ s - 1)) mod rad ^ s.
 Proof.
@@ -101,8 +101,7 @@ replace (S k + (s - S k)) with s; cycle 1.
 -apply Nat.sub_le_mono_l.
  destruct (zerop (s - S k)) as [H4| H4].
  +rewrite Hs, Hn in H4.
-  destruct rad as [| rr]; [ easy | simpl in H4 ].
-  destruct rr; [ flia Hr | simpl in H4; flia H4 ].
+  destruct rad; [ easy | simpl in H4; flia H4 ].
  +destruct (s - S k); [ easy | simpl ].
   replace 2 with (2 * 1) by flia.
   apply Nat.mul_le_mono; [ easy | ].
@@ -163,7 +162,7 @@ destruct (LPO_fst (A_ge_1 yz (i + k + 1))) as [H6| H6].
    now rewrite Nat.add_0_r in H5.
 -destruct H6 as (j3 & Hjj3 & Hj3); simpl in H5.
  apply A_ge_1_false_iff in Hj3.
- remember (rad * (i + k + 1 + j3 + 2)) as n3 eqn:Hn3.
+ remember (rad * (i + k + 1 + j3 + 3)) as n3 eqn:Hn3.
  remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
  move s3 before n3.
  rewrite nA_all_9 in Hj3; cycle 1.
@@ -204,7 +203,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
   *simpl.
    rewrite H1, Nat.sub_add; [ | easy ].
    rewrite Nat_mod_add_same_l; [ | easy ].
-   remember (rad * (i + k + 1 + 2)) as n2 eqn:Hn2.
+   remember (rad * (i + k + 1 + 3)) as n2 eqn:Hn2.
    remember (n2 - (i + k + 1) - 1) as s2 eqn:Hs2.
    move s2 before n2.
    assert (Hr2s2 : 2 ≤ rad ^ s2). {
@@ -226,7 +225,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
   *exfalso.
    destruct H4 as (j3 & Hjj3 & Hj3).
    apply A_ge_1_false_iff in Hj3.
-   remember (rad * (i + k + 1 + j3 + 2)) as n3 eqn:Hn3.
+   remember (rad * (i + k + 1 + j3 + 3)) as n3 eqn:Hn3.
    remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
    move s3 before n3.
    assert (Hr2s3 : 2 ≤ rad ^ s3). {
@@ -265,7 +264,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
   --intros j.
     replace (i + k + 1 + j) with (i + (k + j + 1)) by flia.
     apply H1.
-  --remember (rad * (i + k + 1 + 2)) as n3 eqn:Hn3.
+  --remember (rad * (i + k + 1 + 3)) as n3 eqn:Hn3.
     remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
     move s3 before n3.
     assert (Hr2s3 : 2 ≤ rad ^ s3). {
@@ -282,7 +281,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
   *exfalso.
    destruct H4 as (j3 & Hjj3 & Hj3).
    apply A_ge_1_false_iff in Hj3.
-   remember (rad * (i + k + 1 + j3 + 2)) as n3 eqn:Hn3.
+   remember (rad * (i + k + 1 + j3 + 3)) as n3 eqn:Hn3.
    remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
    move s3 before n3.
    apply Nat.nle_gt in Hj3; apply Hj3; clear Hj3.
@@ -297,7 +296,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
   destruct (LPO_fst (A_ge_1 (y ⊕ z) (i + k + 1))) as
       [H4| H4].
   *simpl.
-   remember (rad * (i + k + 1 + 2)) as n3 eqn:Hn3.
+   remember (rad * (i + k + 1 + 3)) as n3 eqn:Hn3.
    remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
    move s3 before n3.
    assert (Hr2s3 : 2 ≤ rad ^ s3). {
@@ -346,7 +345,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
    (* after i+j1+1, y=9, z=9 and x=9 *)
    exfalso; apply A_ge_1_false_iff in Hj3.
    apply Nat.nle_gt in Hj3; apply Hj3; clear Hj3.
-   remember (rad * (i + k + 1 + j3 + 2)) as n3 eqn:Hn3.
+   remember (rad * (i + k + 1 + j3 + 3)) as n3 eqn:Hn3.
    remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
    move s3 before n3.
    assert (Hr2s3 : 2 ≤ rad ^ s3). {
@@ -360,8 +359,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
    }
    assert (Hsj3 : s3 - S j3 ≠ 0). {
      rewrite Hs3, Hn3.
-     destruct rad as [| rr]; [ easy | simpl ].
-     destruct rr; [ flia Hr | simpl; flia ].
+     destruct rad; [ easy | simpl; flia ].
    }
    rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
    rewrite <- Nat.pow_add_r.
@@ -407,7 +405,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
 Qed.
 
 Theorem add_assoc_case_11_11 {r : radix} : ∀ x y z i n1 s1,
-  n1 = rad * (i + 2)
+  n1 = rad * (i + 3)
   → s1 = n1 - i - 1
   → (∀ k, (x ⊕ (y + z)) (i + k + 1) = rad - 1)
   → (∀ k, (z ⊕ (y + x)) (i + k + 1) = rad - 1)
@@ -493,9 +491,9 @@ apply A_ge_1_add_all_true_if in H4; cycle 1.
 Qed.
 
 Theorem add_assoc_case_11_12 {r : radix} :  ∀ j2 x y z i n1 s1 n2 s2,
-  n1 = rad * (i + 2)
+  n1 = rad * (i + 3)
   → s1 = n1 - i - 1
-  → n2 = rad * (i + j2 + 2)
+  → n2 = rad * (i + j2 + 3)
   → s2 = n2 - i - 1
   → (∀ k, fd2n x (i + k + 1) = rad - 1)
   → (∀ k, A_ge_1 (y ⊕ z) i k = true)
@@ -662,11 +660,11 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
   move j2 before j1.
   apply A_ge_1_false_iff in Hj1.
   apply A_ge_1_false_iff in Hj2.
-  remember (rad * (i + j1 + 2)) as n1 eqn:Hn1.
+  remember (rad * (i + j1 + 3)) as n1 eqn:Hn1.
   remember (n1 - i - 1) as s1 eqn:Hs1.
   move n1 before j2.
   move s1 before n1.
-  remember (rad * (i + j2 + 2)) as n2 eqn:Hn2.
+  remember (rad * (i + j2 + 3)) as n2 eqn:Hn2.
   remember (n2 - i - 1) as s2 eqn:Hs2.
   move n2 before s1.
   move s2 before n2.
@@ -1009,7 +1007,7 @@ unfold fd2n; simpl.
 unfold nat_prop_carr.
 destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
 -simpl.
- remember (rad * (i + 2)) as n1 eqn:Hn1.
+ remember (rad * (i + 3)) as n1 eqn:Hn1.
  remember (n1 - i - 1) as s1 eqn:Hs1.
  move s1 before n1.
  assert (Hr2s1 : 2 ≤ rad ^ s1). {
@@ -1065,7 +1063,7 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
     rewrite Nat.add_0_r.
     clear n1 s1 Hn1 Hs1 Hr2s1.
     apply A_ge_1_false_iff in Hj2.
-    remember (rad * (i + j2 + 2)) as n1 eqn:Hn1.
+    remember (rad * (i + j2 + 3)) as n1 eqn:Hn1.
     remember (n1 - i - 1) as s1 eqn:Hs1.
     move s1 before n1.
     destruct (lt_dec (nA i n1 (z ⊕ (y + x))) (rad ^ s1)) as [H2| H2].
