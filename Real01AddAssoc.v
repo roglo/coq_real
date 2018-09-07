@@ -147,18 +147,16 @@ unfold fd2n at 2 in H5; simpl in H5.
 unfold nat_prop_carr in H5.
 remember (y ⊕ z) as yz eqn:Hyz.
 rewrite H3 in H5.
-...
-rewrite Nat.sub_add in H5; [ | easy ].
 destruct (LPO_fst (A_ge_1 yz (i + k + 1))) as [H6| H6].
--simpl in H5.
- rewrite nA_all_9 in H5; cycle 1.
+-rewrite nA_all_9 in H5; cycle 1.
  +intros j Hj.
   replace (i + k + 1 + j) with (i + (k + 1 + j)) by flia.
   apply H3.
  +rewrite Nat.div_small in H5; cycle 1.
   *apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-  *rewrite Nat.add_0_r in H5.
+  *rewrite Nat.add_0_l in H5.
+   rewrite Nat.sub_add in H5; [ | easy ].
    rewrite Nat.mod_same in H5; [ | easy ].
    now rewrite Nat.add_0_r in H5.
 -destruct H6 as (j3 & Hjj3 & Hj3); simpl in H5.
@@ -202,7 +200,9 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
   destruct (LPO_fst (A_ge_1 (y ⊕ z) (i + k + 1))) as
       [H4| H4].
   *simpl.
-   rewrite H1, Nat.sub_add; [ | easy ].
+   rewrite H1.
+   rewrite Nat.add_assoc, Nat.add_shuffle0.
+   rewrite Nat.sub_add; [ | easy ].
    rewrite Nat_mod_add_same_l; [ | easy ].
    remember (rad * (i + k + 1 + 3)) as n2 eqn:Hn2.
    remember (n2 - (i + k + 1) - 1) as s2 eqn:Hs2.
@@ -257,7 +257,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
   destruct (LPO_fst (A_ge_1 (y ⊕ z) (i + k + 1))) as
       [H4| H4].
   *simpl.
-   rewrite H1.
+   rewrite H1, Nat.add_assoc, Nat.add_shuffle0.
    replace (2 * (rad - 1) + 1) with (rad + (rad - 1)) by flia Hr.
    rewrite <- Nat.add_assoc.
    rewrite Nat_mod_add_same_l; [ | easy ].
@@ -311,6 +311,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
    }
    destruct (lt_dec k j1) as [Hkj1| Hkj1].
   --rewrite H1bef; [ | easy ].
+    rewrite Nat.add_assoc, Nat.add_shuffle0.
     rewrite Nat.sub_add; [ | easy ].
     rewrite Nat_mod_add_same_l; [ | easy ].
     rewrite (nA_9_8_all_18 (j1 - S k)); cycle 1.
@@ -335,12 +336,12 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
      destruct (eq_nat_dec k j1) as [Hkj1e| Hkj1e].
     **subst k; clear Hkj1.
       rewrite H1whi.
-      replace (rad - 2 + 1 + 1) with rad by flia Hr.
+      replace (rad - 2 + (1 + 1)) with rad by flia Hr.
       now apply Nat.mod_same.
     **replace (i + k + 1) with (i + j1 + (k - S j1) + 2) by
           flia Hkj1 Hkj1e.
       rewrite H1aft.
-      replace (2 * (rad - 1) + 1 + 1) with (2 * rad) by flia Hr.
+      replace (2 * (rad - 1) + (1 + 1)) with (2 * rad) by flia Hr.
       now rewrite Nat.mod_mul.
   *destruct H4 as (j3 & Hjj3 & Hj3); simpl.
    (* after i+j1+1, y=9, z=9 and x=9 *)
@@ -413,9 +414,9 @@ Theorem add_assoc_case_11_11 {r : radix} : ∀ x y z i n1 s1,
   → (∀ k, A_ge_1 (y ⊕ z) i k = true)
   → (∀ k, A_ge_1 (y ⊕ x) i k = true)
   → (dig (freal x i) +
-       ((y ⊕ z) i + 1 + nA i n1 (y ⊕ z) / rad ^ s1) mod rad) mod rad =
+       ((y ⊕ z) i + (nA i n1 (y ⊕ z) / rad ^ s1 + 1)) mod rad) mod rad =
     (dig (freal z i) +
-       ((y ⊕ x) i + 1 + nA i n1 (y ⊕ x) / rad ^ s1) mod rad) mod rad.
+       ((y ⊕ x) i + (nA i n1 (y ⊕ x) / rad ^ s1 + 1)) mod rad) mod rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -500,7 +501,7 @@ Theorem add_assoc_case_11_12 {r : radix} :  ∀ j2 x y z i n1 s1 n2 s2,
   → (∀ k, A_ge_1 (y ⊕ z) i k = true)
   → A_ge_1 (y ⊕ x) i j2 = false
   → (dig (freal x i) +
-       ((y ⊕ z) i + 1 + nA i n1 (y ⊕ z) / rad ^ s1) mod rad) mod rad =
+       ((y ⊕ z) i + (nA i n1 (y ⊕ z) / rad ^ s1 + 1)) mod rad) mod rad =
     (dig (freal z i) +
        ((y ⊕ x) i + nA i n2 (y ⊕ x) / rad ^ s2) mod rad) mod rad.
 Proof.
@@ -544,7 +545,7 @@ apply A_ge_1_add_all_true_if in H3; cycle 1.
  +rewrite nA_all_9; [ | intros; apply H3 ].
   rewrite <- Hs1.
   rewrite Nat.div_small; [ | flia Hr2s1 ].
-  rewrite Nat.add_0_r.
+  rewrite Nat.add_0_l.
   destruct (lt_dec (nA i n2 (y ⊕ x)) (rad ^ s2)) as [H4| H4].
   *exfalso.
    rewrite Nat.mod_small in Hj2; [ | easy ].
@@ -579,7 +580,7 @@ apply A_ge_1_add_all_true_if in H3; cycle 1.
   rewrite <- Hs1.
   rewrite Nat.div_small; cycle 1.
   *destruct (le_dec (i + j1 + 1) (n1 - 1)); flia Hr2s1.
-  *rewrite Nat.add_0_r, Nat.mod_1_l; [ | easy ].
+  *rewrite Nat.add_0_l, Nat.mod_1_l; [ | easy ].
    destruct (lt_dec (nA i n2 (y ⊕ x)) (rad ^ s2)) as [H3| H3].
   --exfalso.
     rewrite Nat.mod_small in Hj2; [ | easy ].
@@ -702,7 +703,6 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
      move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
      move Hjj2 before Hjj1.
      apply Nat.lt_sub_lt_add_r in Hj2.
-...
      remember (max n1 n2) as n3 eqn:Hn3.
      remember (n3 - i - 1) as s3 eqn:Hs3.
      move s3 before n3.
