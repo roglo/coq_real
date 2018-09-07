@@ -147,6 +147,7 @@ unfold fd2n at 2 in H5; simpl in H5.
 unfold nat_prop_carr in H5.
 remember (y ⊕ z) as yz eqn:Hyz.
 rewrite H3 in H5.
+...
 rewrite Nat.sub_add in H5; [ | easy ].
 destruct (LPO_fst (A_ge_1 yz (i + k + 1))) as [H6| H6].
 -simpl in H5.

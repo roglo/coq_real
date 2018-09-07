@@ -968,15 +968,15 @@ Definition nat_prop_carr {r : radix} u i :=
   | inl _ =>
       let n := rad * (i + 3) in
       let s := n - i - 1 in
-      u i + 1 + nA i n u / rad ^ s
+      nA i n u / rad ^ s + 1
   | inr (exist _ k _) =>
       let n := rad * (i + k + 3) in
       let s := n - i - 1 in
-      u i + nA i n u / rad ^ s
+      nA i n u / rad ^ s
   end.
 
 Definition prop_carr {r : radix} u i :=
-  let d := nat_prop_carr u i in
+  let d := u i + nat_prop_carr u i in
   mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0).
 
 (*
@@ -1084,10 +1084,11 @@ Proof.
 intros.
 apply digit_eq_eq; simpl.
 unfold nat_prop_carr.
+rewrite freal_add_series_comm.
 destruct (LPO_fst (A_ge_1 (x ⊕ y) i)) as [Hxy| Hxy].
 -setoid_rewrite freal_add_series_comm.
  destruct (LPO_fst (A_ge_1 (y ⊕ x) i)) as [Hyx| Hyx].
- +f_equal; f_equal; f_equal.
+ +f_equal; f_equal; f_equal; f_equal.
   apply summation_eq_compat.
   intros k Hk; f_equal.
   apply freal_add_series_comm.
@@ -1836,8 +1837,7 @@ destruct (LPO_fst (A_ge_1 (fd2n x) i)) as [H1| H1]; simpl.
  destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1]; simpl.
  +specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
   rewrite Nat.div_small.
-  *rewrite Nat.add_0_r.
-   destruct (lt_dec (S (d2n (freal x) i)) rad) as [H1| H1]; simpl.
+  *destruct (lt_dec (S (d2n (freal x) i)) rad) as [H1| H1]; simpl.
   --unfold d2n in H1; unfold fd2n, d2n.
     rewrite Nat.mod_small; flia H1.
   --assert (H : d2n (freal x) i < rad) by apply digit_lt_radix.
@@ -4786,6 +4786,7 @@ destruct (LPO_fst (A_ge_1 (x ⊕ y) i)) as [H2| H2].
 -simpl.
  unfold "⊕" at 1.
  rewrite H4; clear H4.
+ rewrite Nat.add_assoc, Nat.add_shuffle0.
  replace (rad - 1 + fd2n y i + 1) with (rad + fd2n y i) by flia Hr.
  rewrite <- Nat.add_assoc.
  rewrite Nat_mod_add_same_l; [ | easy ].
@@ -4984,7 +4985,7 @@ Qed.
 Theorem not_prop_carr_all_9_all_ge_1 {r : radix} : ∀ u n,
   (∀ k : nat, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k : nat, A_ge_1 u n k = true)
-  → (u n + 1 + nA n (rad * (n + 3)) u / rad ^ (rad * (n + 3) - n - 1))
+  → (u n + nA n (rad * (n + 3)) u / rad ^ (rad * (n + 3) - n - 1) + 1)
        mod rad = rad - 1
   → ¬ (∀ k, d2n (prop_carr u) (n + k) = rad - 1).
 Proof.
@@ -5000,7 +5001,7 @@ destruct H3 as [H3| [H3| H3]].
   unfold nat_prop_carr in H4.
   destruct (LPO_fst (A_ge_1 u (n + 1))) as [H5| H5].
   *rewrite Nat.div_small in H4.
-   --rewrite Nat.add_0_r in H4.
+   --rewrite Nat.add_0_l in H4.
      specialize (H3 0); rewrite Nat.add_0_r in H3.
      rewrite H3, Nat.sub_add in H4; [ | easy ].
      rewrite Nat.mod_same in H4; [ | easy ].
@@ -5039,7 +5040,7 @@ destruct H3 as [H3| [H3| H3]].
   rewrite H in H4; clear H.
   rewrite eq_nA_div_1 in H4.
   *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
-   replace (2 * rad - 2 + 1 + 1) with (2 * rad) in H4 by flia Hr.
+   replace (2 * rad - 2 + (1 + 1)) with (2 * rad) in H4 by flia Hr.
    rewrite Nat.mod_mul in H4; [ | easy ].
    flia Hr H4.
   *intros k.
@@ -5144,7 +5145,8 @@ destruct H3 as [H3| [H3| H3]].
   remember (rad * (n + (j + 1) + 3)) as n2 eqn:Hn2.
   remember (n2 - (n + (j + 1)) - 1) as s2 eqn:Hs2.
   move s2 before n2.
-  rewrite Nat.add_assoc, Hjwhi in H3.
+  do 2 rewrite Nat.add_assoc in H3.
+  rewrite Hjwhi in H3.
   specialize (nA_all_18 u (n + j + 1) n2) as H5.
   rewrite Nat.add_assoc in Hs2.
   rewrite <- Hs2 in H5.
@@ -5197,6 +5199,7 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H2| H2]; simpl in Huni.
    apply Hn.
  }
  exfalso; revert Hn'.
+ rewrite Nat.add_assoc in Huni.
  apply not_prop_carr_all_9_all_ge_1; [ | easy | easy ].
  intros k.
  replace (n + i + k + 1) with (n + (i + k) + 1) by flia.
