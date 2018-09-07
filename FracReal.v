@@ -969,8 +969,8 @@ Definition nat_prop_carr {r : radix} u i :=
       let n := rad * (i + 3) in
       let s := rad ^ (n - i - 1) in
       u i + 1 + nA i n u / s
-  | inr (exist _ l _) =>
-      let n := rad * (i + l + 3) in
+  | inr (exist _ k _) =>
+      let n := rad * (i + k + 3) in
       let s := n - i - 1 in
       u i + nA i n u / rad ^ s
   end.
