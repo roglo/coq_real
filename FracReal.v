@@ -967,8 +967,8 @@ Definition nat_prop_carr {r : radix} u i :=
   match LPO_fst (A_ge_1 u i) with
   | inl _ =>
       let n := rad * (i + 3) in
-      let s := rad ^ (n - i - 1) in
-      u i + 1 + nA i n u / s
+      let s := n - i - 1 in
+      u i + 1 + nA i n u / rad ^ s
   | inr (exist _ k _) =>
       let n := rad * (i + k + 3) in
       let s := n - i - 1 in
