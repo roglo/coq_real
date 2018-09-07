@@ -954,8 +954,6 @@ Definition A_ge_1 {r : radix} u i k :=
   else
     true.
 
-(* Propagation of Carries *)
-
 (* for addition, all A_ge_1 implies u i followed by either
    - 9/9/9/9...
    - 18/18/18/...
@@ -963,16 +961,16 @@ Definition A_ge_1 {r : radix} u i k :=
    for multiplication, to be determined...
  *)
 
+(* Propagation of Carries *)
+
 Definition nat_prop_carr {r : radix} u i :=
   match LPO_fst (A_ge_1 u i) with
   | inl _ =>
       let n := rad * (i + 3) in
-      let s := n - i - 1 in
-      nA i n u / rad ^ s + 1
+      nA i n u / rad ^ (n - i - 1) + 1
   | inr (exist _ k _) =>
       let n := rad * (i + k + 3) in
-      let s := n - i - 1 in
-      nA i n u / rad ^ s
+      nA i n u / rad ^ (n - i - 1)
   end.
 
 Definition prop_carr {r : radix} u i :=
