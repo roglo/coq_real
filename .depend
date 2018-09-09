@@ -14,8 +14,10 @@ Nat_ggcd.vio: Nat_ggcd.v
 Nat_ggcd.vo Nat_ggcd.glob Nat_ggcd.v.beautified: Nat_ggcd.v
 PQ.vio: PQ.v Misc.vio Nat_ggcd.vio
 PQ.vo PQ.glob PQ.v.beautified: PQ.v Misc.vo Nat_ggcd.vo
-Real01AddAssoc.vio: Real01AddAssoc.v Misc.vio Summation.vio FracReal.vio
-Real01AddAssoc.vo Real01AddAssoc.glob Real01AddAssoc.v.beautified: Real01AddAssoc.v Misc.vo Summation.vo FracReal.vo
+Real01AddAssoc.vio: Real01AddAssoc.v Misc.vio Summation.vio FracReal.vio Real01Norm.vio
+Real01AddAssoc.vo Real01AddAssoc.glob Real01AddAssoc.v.beautified: Real01AddAssoc.v Misc.vo Summation.vo FracReal.vo Real01Norm.vo
+Real01Norm.vio: Real01Norm.v FracReal.vio
+Real01Norm.vo Real01Norm.glob Real01Norm.v.beautified: Real01Norm.v FracReal.vo
 Small.vio: Small.v Misc.vio Summation.vio
 Small.vo Small.glob Small.v.beautified: Small.v Misc.vo Summation.vo
 Summation.vio: Summation.v Misc.vio

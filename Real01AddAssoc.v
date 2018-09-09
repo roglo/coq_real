@@ -1,7 +1,7 @@
 (* Reals between 0 and 1; associativity of addition *)
 
 Require Import Utf8 Arith NPeano Psatz.
-Require Import Misc Summation FracReal.
+Require Import Misc Summation FracReal Real01Norm.
 Set Nested Proofs Allowed.
 
 Theorem nA_freal_add_series {r : radix} : ∀ x y i n,
