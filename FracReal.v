@@ -5277,57 +5277,6 @@ induction m; intros.
      apply Nat.pow_le_mono_r; [ easy | apply Nat.le_succ_diag_r ].
 Qed.
 
-Theorem eq_all_prop_carr_9_cond2 {r : radix} : ∀ u n,
-  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
-  → (∀ k, d2n (prop_carr u) (n + k) = rad - 1)
-  → ∀ k (i := n + k + 1),
-     u i = rad - 1 ∧ u (i + 1) ≠ 2 * (rad - 1) ∨
-     u i = rad - 2 ∧
-       (∃ j, (∀ l, l < j → u (i + l + 1) = rad - 1) ∧ u (i + j + 1) ≥ rad) ∨
-     u i = 2 * (rad - 1) ∧
-       (∃ j, (∀ l, l < j → u (i + l + 1) = rad - 1) ∧ u (i + j + 1) ≥ rad).
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hur Hn k.
-specialize (eq_all_prop_carr_9_cond u n Hur Hn) as HAF.
-specialize (HAF (k + 1)) as Hun1.
-destruct Hun1 as (j & Hj & Hun); simpl in Hun.
-rewrite Nat.add_assoc in Hj, Hun.
-remember (rad * (n + k + 1 + j + 3)) as n1 eqn:Hn1.
-remember (n1 - (n + k + 1) - 1) as s1 eqn:Hs1.
-move s1 before n1.
-replace (n + k + 2) with (n + k + 1 + 1) by flia.
-remember (n + k + 1) as i eqn:Hi.
-specialize (eq_all_prop_carr_9_cond1 u i n1 s1 j) as H1.
-assert (H : ∀ j, u (i + j) ≤ 2 * (rad - 1)). {
-  intros l; subst i.
-  replace (n + k + 1 + l) with (n + (k + l) + 1) by flia.
-  apply Hur.
-}
-specialize (H1 H Hs1); clear H.
-assert (H : j < s1). {
-  rewrite Hs1, Hn1.
-  destruct rad; [ easy | simpl; flia ].
-}
-specialize (H1 H Hj Hun); clear H.
-destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2]; [ now left | right ].
-apply Nat.nlt_ge in H2.
-rewrite Hs1 in H2.
-specialize (A_ge_rad_pow u i n1) as H3.
-assert (H : ∀ k, u (S i + k + 1) ≤ 2 * (rad - 1)). {
-  intros l; rewrite Hi.
-  replace (S (n + k + 1) + l) with (n + (k + l + 2)) by flia.
-  apply Hur.
-}
-specialize (H3 H H2); clear H.
-rewrite <- Hs1 in H2.
-destruct H3 as (j2 & Hj2 & Hkj2 & Hjr2).
-destruct (lt_dec (u i) (rad - 1)) as [H3| H3].
--left; split; [ easy | now exists j2 ].
--right; split; [ easy | now exists j2 ].
-Qed.
-
 Definition is_num_9_strict_after {r : radix} u i j :=
   if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false.
 
