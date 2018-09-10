@@ -612,7 +612,7 @@ intros * H1.
 specialize (eq_add_series_18_eq_9 _ _ _ H1) as (_, H2).
 unfold "+"%F, fd2n in H2; simpl in H2.
 specialize (not_prop_carr_all_9 (y ⊕ z)) as H; unfold d2n in H.
-apply H with (n := i + 1); intros k.
+apply H with (i := i + 1); intros k.
 -apply freal_add_series_le_twice_pred.
 -rewrite Nat.add_shuffle0; apply H2.
 Qed.
