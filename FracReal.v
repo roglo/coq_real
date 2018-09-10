@@ -5328,56 +5328,6 @@ destruct (lt_dec (u i) (rad - 1)) as [H3| H3].
 -right; split; [ easy | now exists j2 ].
 Qed.
 
-Theorem eq_all_prop_carr_9_cond3 {r : radix} : ∀ u n,
-  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
-  → (∀ k, d2n (prop_carr u) (n + k) = rad - 1)
-  → ∀ k (i := n + k + 1),
-     u i = rad - 1 ∧
-       (u (i + 1) = rad - 2 ∨ u (i + 1) = rad - 1) ∨
-     u i = rad - 2 ∧
-       (∃ j,
-           (∀ l, l < j → u (i + l + 1) = rad - 1) ∧
-           u (i + j + 1) = 2 * (rad - 1)) ∨
-     u i = 2 * (rad - 1) ∧
-       (∃ j,
-           (∀ l, l < j → u (i + l + 1) = rad - 1) ∧
-           u (i + j + 1) = 2 * (rad - 1)).
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hur Hn k.
-specialize (eq_all_prop_carr_9_cond2 u n Hur Hn k) as H.
-remember (n + k + 1) as i eqn:Hi.
-replace (n + k + 2) with (i + 1) by flia Hi.
-destruct H as [H| [H| H]]; destruct H as (H1, H2).
--left; split; [ easy | ].
- specialize (eq_all_prop_carr_9_cond2 u n Hur Hn (k + 1)) as H.
- replace (n + (k + 1)) with i in H by flia Hi.
- destruct H as [H| [H| H]]; destruct H as (H3, H4).
- +now right.
- +now left.
- +easy.
--right; left; split; [ easy | ].
- destruct H2 as (j2 & Hlj2 & Hj2).
- exists j2.
- split; [ easy | ].
- specialize (eq_all_prop_carr_9_cond2 u n Hur Hn (i + j2 - n)) as H.
- replace (n + (i + j2 - n)) with (i + j2) in H by flia Hi.
- destruct H as [H| [H| H]]; destruct H as (H3, H4).
- +rewrite H3 in Hj2; flia Hr Hj2.
- +rewrite H3 in Hj2; flia Hr Hj2.
- +easy.
--right; right; split; [ easy | ].
- destruct H2 as (j2 & Hlj2 & Hj2).
- exists j2.
- specialize (eq_all_prop_carr_9_cond2 u n Hur Hn (i + j2 - n)) as H.
- replace (n + (i + j2 - n)) with (i + j2) in H by flia Hi.
- destruct H as [H| [H| H]]; destruct H as (H3, H4).
- +rewrite H3 in Hj2; flia Hr Hj2.
- +rewrite H3 in Hj2; flia Hr Hj2.
- +easy.
-Qed.
-
 Definition is_num_9_strict_after {r : radix} u i j :=
   if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false.
 
