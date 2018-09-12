@@ -14,6 +14,50 @@ Definition freal_999 {r : radix} := {| freal i := digit_9 |}.
 
 Definition freal_shift {r : radix} k x := {| freal i := freal x (k + i) |}.
 
+Require Import Morphisms.
+Instance gr_add_morph {r : radix} :
+  Proper (freal_norm_eq ==> freal_norm_eq ==> iff) freal_norm_le.
+Proof.
+assert
+  (H : ∀ x1 x2 y1 y2,
+   freal_norm_eq x1 y1
+   → freal_norm_eq x2 y2
+   → freal_norm_le x1 x2
+   → freal_norm_le y1 y2). {
+  intros * H1 H2 Hxx.
+  unfold freal_norm_le in Hxx |-*.
+  unfold freal_norm_eq in H1, H2.
+  destruct (LPO_fst (has_same_digits y1 y2)) as [Hs| Hs]; [ easy | ].
+  destruct Hs as (j & Hjj & Hj).
+  rewrite <- H1, <- H2.
+  destruct (lt_dec (fd2n x1 j) (fd2n x2 j)) as [Hx12| Hx12]; [ easy | ].
+  apply Nat.nlt_ge in Hx12.
+  apply has_same_digits_false_iff in Hj; apply Hj; clear Hj.
+  destruct (LPO_fst (has_same_digits x1 x2)) as [Hs| Hs].
+  +specialize (all_eq_seq_all_eq _ _ Hs) as H3.
+   rewrite <- H1, <- H2.
+   apply digit_eq_eq; apply H3.
+  +destruct Hs as (k & Hjk & Hk).
+   destruct (lt_dec (fd2n x1 k) (fd2n x2 k)) as [H3| H3]; [ | easy ].
+   destruct (eq_nat_dec j k) as [Hjke| Hjke].
+   *subst k.
+    now apply Nat.nle_gt in H3.
+   *destruct (lt_dec j k) as [Hjk1| Hjk1].
+   --specialize (Hjk _ Hjk1).
+     apply has_same_digits_true_iff in Hjk.
+     now rewrite <- H1, <- H2.
+   --assert (Hjk2 : k < j) by flia Hjke Hjk1.
+     specialize (Hjj _ Hjk2).
+     apply has_same_digits_true_iff in Hjj.
+     rewrite H1, H2, Hjj in H3.
+     now apply Nat.lt_irrefl in H3.
+}
+intros x1 y1 H1 x2 y2 H2.
+split; intros.
+-now apply (H x1 x2).
+-now apply (H y1 y2).
+Qed.
+
 Theorem nA_freal_add_series {r : radix} : ∀ x y i n,
    nA i n (x ⊕ y) = nA i n (fd2n x) + nA i n (fd2n y).
 Proof.
@@ -718,6 +762,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
      move ys before xs.
      assert (Hlex : (xs + ys ≤ xs)%F). {
        unfold "≤"%F.
+       rewrite freal_normalize_add.
 ...
        destruct (freal_eq_dec xs freal_999) as [Hx| Hx].
 ...

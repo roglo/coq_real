@@ -1077,3 +1077,18 @@ assert (H3 : ∀ k, d2n (prop_carr u) (i + 1 + k) = rad - 1). {
 }
 now apply not_prop_carr_all_9 in H3.
 Qed.
+
+Theorem freal_normalize_add {r : radix} : ∀ x y,
+  freal_norm_eq (freal_normalize (x + y)) (x + y).
+Proof.
+intros.
+unfold freal_norm_eq, fd2n.
+remember freal_add as f; simpl; subst f.
+intros i.
+unfold "+"%F.
+remember prop_carr as f; simpl; subst f.
+symmetry.
+apply digit_eq_eq.
+apply prop_carr_normalizes.
+apply freal_add_series_le_twice_pred.
+Qed.
