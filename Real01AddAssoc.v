@@ -4,6 +4,14 @@ Require Import Utf8 Arith NPeano Psatz.
 Require Import Misc Summation FracReal Real01Norm.
 Set Nested Proofs Allowed.
 
+Theorem pred_rad_lt_rad {r : radix} : rad - 1 < rad.
+Proof.
+specialize radix_ge_2 as H; lia.
+Qed.
+
+Definition digit_9 {r : radix} := mkdig _ (rad - 1) pred_rad_lt_rad.
+Definition freal_999 {r : radix} := {| freal i := digit_9 |}.
+
 Theorem nA_freal_add_series {r : radix} : ∀ x y i n,
    nA i n (x ⊕ y) = nA i n (fd2n x) + nA i n (fd2n y).
 Proof.
@@ -703,8 +711,11 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
      move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
      move Hjj2 before Hjj1.
      apply Nat.lt_sub_lt_add_r in Hj2.
+...
+     (* no: it is not x+y≤x but x+y(from i on)≤x(from i on) *)
      assert (Hlex : (x + y ≤ x)%F). {
        unfold "≤"%F.
+       destruct (freal_eq_dec x freal_999) as [Hx| Hx].
 ...
      remember (max n1 n2) as n3 eqn:Hn3.
      remember (n3 - i - 1) as s3 eqn:Hs3.
