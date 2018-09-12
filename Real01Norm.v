@@ -1105,6 +1105,10 @@ destruct (LPO_fst (A_ge_1 u (i + 1))) as [H2| H2].
  rewrite Nat.add_0_r, Nat.pow_1_r in H5.
  simpl in H5.
  rewrite <- Hn1, <- Hs1 in H5.
+ destruct (lt_dec (nA (i + 1) n1 u) (rad ^ s1)) as [H3| H3].
+ +rewrite Nat.div_small in H1; [ | easy ].
+  rewrite Nat.mod_small in H5; [ | easy ].
+  rewrite Nat.add_0_l in H1.
 ...
 
 Theorem glop {r : radix} : ∀ u,
