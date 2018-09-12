@@ -703,6 +703,8 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
      move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
      move Hjj2 before Hjj1.
      apply Nat.lt_sub_lt_add_r in Hj2.
+     assert (Hlex : (x + y ≤ x)%F). {
+       unfold "≤"%F.
 ...
      remember (max n1 n2) as n3 eqn:Hn3.
      remember (n3 - i - 1) as s3 eqn:Hs3.

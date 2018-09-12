@@ -200,15 +200,32 @@ Definition has_same_digits {r : radix} x y i :=
 Definition freal_norm_eq {r : radix} x y := ∀ i, fd2n x i = fd2n y i.
 Arguments freal_norm_eq _ x%F y%F.
 
+Definition freal_norm_lt {r : radix} x y :=
+  match LPO_fst (has_same_digits x y) with
+  | inl _ => False
+  | inr (exist _ i _) =>
+      if lt_dec (fd2n x i) (fd2n y i) then True else False
+  end.
+
+Definition freal_norm_le {r : radix} x y :=
+  match LPO_fst (has_same_digits x y) with
+  | inl _ => True
+  | inr (exist _ i _) =>
+      if lt_dec (fd2n x i) (fd2n y i) then True else False
+  end.
+
 Definition freal_eq {r : radix} x y :=
   freal_norm_eq (freal_normalize x) (freal_normalize y).
 
 Arguments freal_eq _ x%F y%F.
 
-(*
 Definition freal_lt {r : radix} x y :=
   freal_norm_lt (freal_normalize x) (freal_normalize y).
 
+Definition freal_le {r : radix} x y :=
+  freal_norm_le (freal_normalize x) (freal_normalize y).
+
+(*
 Definition freal_0 {r : radix} := {| freal i := digit_0 |}.
 
 Notation "0" := (freal_0) : freal_scope.
@@ -216,8 +233,9 @@ Notation "0" := (freal_0) : freal_scope.
 Notation "a = b" := (freal_eq a b) : freal_scope.
 (*
 Notation "a ≠ b" := (¬ freal_eq a b) : freal_scope.
-Notation "a < b" := (freal_lt a b) : freal_scope.
 *)
+Notation "a < b" := (freal_lt a b) : freal_scope.
+Notation "a ≤ b" := (freal_le a b) : freal_scope.
 
 Theorem is_9_after_false_iff {r : radix} : ∀ i j u,
   is_9_after u i j = false ↔ d2n u (i + j) ≠ rad - 1.
