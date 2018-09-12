@@ -763,6 +763,14 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
      assert (Hlex : (xs + ys ≤ xs)%F). {
        unfold "≤"%F.
        rewrite freal_normalize_add.
+       remember (freal_normalize xs) as xsn eqn:Hxsn.
+       unfold freal_norm_le.
+       destruct (LPO_fst (has_same_digits (xs + ys)%F xsn)) as [H5| H5];
+         [ easy | ].
+       destruct H5 as (j & Hjj & Hj).
+       destruct (lt_dec (fd2n (xs + ys) j) (fd2n xsn j)) as [H5| H5];
+         [ easy | ].
+       apply Nat.nlt_ge in H5.
 ...
        destruct (freal_eq_dec xs freal_999) as [Hx| Hx].
 ...
