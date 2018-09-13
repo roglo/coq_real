@@ -1092,3 +1092,36 @@ apply digit_eq_eq.
 apply prop_carr_normalizes.
 apply freal_add_series_le_twice_pred.
 Qed.
+
+Theorem pouet {r : radix} : ∀ u i,
+  ¬∀ k,
+   let (j, d) :=
+      match LPO_fst (A_ge_1 u (i + k)) with
+      | inl _ => (0, 1)
+      | inr (exist _ j _) => (j, 0)
+      end
+   in
+   let n := rad * (i + k + j + 3) in
+   let a := nA (i + k) n u / rad ^ (n - (i + k) - 1) in
+   (u (i + k) + a + d) mod rad = rad - 1.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hn.
+...
+
+Theorem glop {r : radix} : ∀ u i,
+  ¬ ∀ k, d2n (prop_carr u) (i + k) = rad - 1.
+Proof.
+intros * Hn.
+specialize (pouet u i) as H; apply H; clear H.
+intros k.
+specialize (Hn k).
+unfold d2n, prop_carr in Hn; simpl in Hn.
+unfold nat_prop_carr in Hn.
+destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
+-rewrite Nat.add_assoc in Hn.
+ now rewrite Nat.add_0_r.
+-destruct H1 as (j & Hjj & Hj); simpl.
+ now rewrite Nat.add_0_r.
+Qed.
