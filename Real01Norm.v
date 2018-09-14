@@ -1024,6 +1024,11 @@ rewrite nA_all_18 in Hj1; cycle 1.
     replace 2 with (2 * 1) by apply Nat.mul_1_r.
     apply Nat.mul_le_mono; [ easy | ].
     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
+   replace 2 with (2 * 1) at 1 by flia.
+   apply Nat.mul_le_mono_l.
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
 Theorem not_prop_carr_all_9_when_9_8_18 {r : radix} : ∀ u i j,
