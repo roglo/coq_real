@@ -956,7 +956,6 @@ destruct Hun1 as (j1 & Hj1 & _).
 remember (rad * (i + 1 + j1 + 3)) as n1 eqn:Hn1.
 remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
 move s1 before n1.
-(**)
 apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
 rewrite nA_all_9; cycle 1.
 -intros j Hj.
