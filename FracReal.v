@@ -237,38 +237,6 @@ Notation "a ≠ b" := (¬ freal_eq a b) : freal_scope.
 Notation "a < b" := (freal_lt a b) : freal_scope.
 Notation "a ≤ b" := (freal_le a b) : freal_scope.
 
-Theorem is_9_after_false_iff {r : radix} : ∀ i j u,
-  is_9_after u i j = false ↔ d2n u (i + j) ≠ rad - 1.
-Proof.
-intros.
-unfold is_9_after.
-now destruct (Nat.eq_dec (d2n u (i + j)) (rad - 1)).
-Qed.
-
-Theorem is_9_after_true_iff {r : radix} : ∀ i j u,
-  is_9_after u i j = true ↔ d2n u (i + j) = rad - 1.
-Proof.
-intros.
-unfold is_9_after.
-now destruct (Nat.eq_dec (d2n u (i + j)) (rad - 1)).
-Qed.
-
-Theorem is_0_after_false_iff {r : radix} : ∀ i j u,
-  is_0_after u i j = false ↔ d2n u (i + j) ≠ 0.
-Proof.
-intros.
-unfold is_0_after.
-now destruct (Nat.eq_dec (d2n u (i + j)) 0).
-Qed.
-
-Theorem is_0_after_true_iff {r : radix} : ∀ i j u,
-  is_0_after u i j = true ↔ d2n u (i + j) = 0.
-Proof.
-intros.
-unfold is_0_after.
-now destruct (Nat.eq_dec (d2n u (i + j)) 0).
-Qed.
-
 Theorem is_9_strict_after_all_9 {r : radix} : ∀ u i,
   (∀ j, is_9_strict_after u i j = true)
   → (∀ k, d2n u (i + k + 1) = rad - 1).
@@ -277,10 +245,6 @@ intros * Hm9 *.
 specialize (Hm9 k); unfold is_9_strict_after in Hm9.
 now destruct (Nat.eq_dec (d2n u (i + k + 1)) (rad - 1)).
 Qed.
-
-Theorem is_9_strict_after_add {r : radix} : ∀ u i j,
-  is_9_strict_after u 0 (i + j) = is_9_strict_after u i j.
-Proof. easy. Qed.
 
 Theorem is_9_strict_after_true_iff {r : radix} : ∀ i j u,
   is_9_strict_after u i j = true ↔ d2n u (i + j + 1) = rad - 1.
@@ -297,19 +261,6 @@ intros.
 unfold is_9_strict_after.
 now destruct (Nat.eq_dec (d2n u (i + j + 1)) (rad - 1)).
 Qed.
-
-Definition freal_norm_not_norm_eq {r : radix} x y :=
-  ∃ k,
-   (∀ i, i < k - 1 → freal x i = freal y i) ∧
-   (k = 0 ∨ fd2n x (k - 1) = S (fd2n y (k - 1))) ∧
-   (∀ i, fd2n x (k + i) = 0) ∧
-   (∀ i, fd2n y (k + i) = rad - 1).
-
-Definition has_not_9_after {r : radix} u i j :=
-  match LPO_fst (is_9_after u (i + j)) with
-  | inl _ => false
-  | inr _ => true
-  end.
 
 Theorem normalized_999 {r : radix} : ∀ x i,
   (∀ j, fd2n x (i + j) = rad - 1)
@@ -332,44 +283,6 @@ destruct (LPO_fst (is_9_strict_after (freal x) (i + j))) as [Hxi| Hxi].
  specialize (Hx (j + k + 1)).
  replace (i + (j + k + 1)) with (i + j + k + 1) in Hx by flia.
  easy.
-Qed.
-
-Theorem normalized_not_999 {r : radix} : ∀ x,
-  ¬ (∃ i, ∀ j, fd2n (freal_normalize x) (i + j) = rad - 1).
-Proof.
-intros x.
-specialize radix_ge_2 as Hr.
-intros (i & Hi).
-assert (H1 : ∀ k, fd2n x (i + k) = rad - 1). {
-  intros.
-  specialize (Hi k) as H1.
-  unfold fd2n, freal_normalize in H1; simpl in H1.
-  unfold normalize in H1.
-  destruct (LPO_fst (is_9_strict_after (freal x) (i + k))) as [H2| H2].
-  -specialize (is_9_strict_after_all_9 (freal x) (i + k) H2) as H3.
-   clear H2.
-   destruct (lt_dec (S (d2n (freal x) (i + k))) rad) as [H2| H2].
-   +simpl in H1.
-    clear H2.
-    assert (H2 : ∀ j, d2n (freal x) (i + k + 1 + j) = rad - 1). {
-      intros j; specialize (H3 j).
-      now replace (i + k + j + 1) with (i + k + 1 + j) in H3 by flia.
-    }
-    clear H3.
-    specialize (normalized_999 x (i + k + 1) H2 0) as H3.
-    rewrite Nat.add_0_r in H3.
-    specialize (Hi (k + 1)).
-    replace (i + (k + 1)) with (i + k + 1) in Hi by flia.
-    rewrite Hi in H3.
-    flia Hr H3.
-   +simpl in H1; flia Hr H1.
-  -easy.
-}
-specialize (normalized_999 x i H1) as H2.
-specialize (Hi 0).
-specialize (H2 0).
-rewrite Hi in H2.
-flia Hr H2.
 Qed.
 
 (* Addition, Multiplication *)
@@ -1279,23 +1192,6 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
     specialize (Hu (l - n)).
     now replace (n + (l - n)) with l in Hu by flia Hl.
   --destruct rad; [ easy | simpl; flia ].
-Qed.
-
-Theorem prop_carr_eq_compat_from {r : radix} : ∀ f g n,
-  (∀ i, f (n + i) < rad)
-  → (∀ i, f (n + i) = g (n + i))
-  → ∀ i, prop_carr f (n + i) = prop_carr g (n + i).
-Proof.
-intros * Hf Hfg i.
-set (fi i := f (n + i)).
-set (gi i := g (n + i)).
-assert (H : ∀ i, fi i = gi i) by (intros; apply Hfg).
-specialize (prop_carr_eq_compat _ _ H) as H1.
-specialize (H1 i).
-unfold fi, gi in H1.
-rewrite <- prop_carr_shift in H1; [ | easy ].
-rewrite <- prop_carr_shift in H1; [ easy | ].
-intros j; rewrite <- Hfg; apply Hf.
 Qed.
 
 Theorem freal_add_series_le_twice_pred {r : radix} : ∀ x y i,
