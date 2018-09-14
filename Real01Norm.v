@@ -989,12 +989,12 @@ destruct Hun1 as (j1 & Hj1 & _).
 remember (rad * (i + 1 + j1 + 3)) as n1 eqn:Hn1.
 remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
 move s1 before n1.
-rewrite nA_all_18 in Hj1; cycle 1.
+apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
+rewrite nA_all_18; cycle 1.
 -intros.
  replace (i + 1 + j) with (i + (1 + j)) by flia.
  apply Hall.
--rewrite <- Hs1 in Hj1.
- apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
+-rewrite <- Hs1.
  rewrite Nat_mod_less_small.
  +rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
   rewrite <- Nat.pow_add_r.
