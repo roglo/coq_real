@@ -1064,6 +1064,90 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
+Theorem not_prop_carr_all_9_when_9_8_18 {r : radix} : ∀ u i j,
+  (∀ k, k < j → u (i + k) = rad - 1)
+  → u (i + j) = rad - 2
+  → (∀ k, u (i + j + k + 1) = 2 * (rad - 1))
+  → ∀ k, d2n (prop_carr u) (i + k) = 0.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hbef Hwhi Haft *.
+unfold d2n, prop_carr; simpl.
+...
+rewrite Hall.
+unfold nat_prop_carr.
+destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
+-remember (rad * (i + k + 3)) as n1 eqn:Hn1.
+ remember (n1 - (i + k) - 1) as s1 eqn:Hs1.
+ move s1 before n1.
+ rewrite nA_all_18; cycle 1.
+ +intros; do 2 rewrite <- Nat.add_assoc; apply Hall.
+ +rewrite <- Hs1.
+  rewrite Nat_div_less_small.
+  *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   rewrite Nat.sub_add; [ now apply Nat.mod_mul | flia Hr ].
+  *split.
+ --rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   replace (2 * rad ^ s1) with (rad ^ s1 + rad ^ s1) by flia.
+   rewrite <- Nat.add_sub_assoc; [ flia | ].
+   destruct s1.
+  ++rewrite Hn1 in Hs1.
+    destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
+  ++simpl.
+    replace 2 with (2 * 1) by apply Nat.mul_1_r.
+    apply Nat.mul_le_mono; [ easy | ].
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+ --rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
+   replace 2 with (2 * 1) at 1 by flia.
+   apply Nat.mul_le_mono_l.
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+-destruct H1 as (j & Hjj & Hj).
+ apply A_ge_1_false_iff in Hj.
+ exfalso; apply Nat.nle_gt in Hj; apply Hj; clear Hj.
+ remember (rad * (i + k + j + 3)) as n1 eqn:Hn1.
+ remember (n1 - (i + k) - 1) as s1 eqn:Hs1.
+ move s1 before n1.
+ rewrite nA_all_18; cycle 1.
+ +intros; do 2 rewrite <- Nat.add_assoc; apply Hall.
+ +rewrite <- Hs1.
+  rewrite Nat_mod_less_small; cycle 1.
+  *split.
+  --rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+    replace (2 * rad ^ s1) with (rad ^ s1 + rad ^ s1) by flia.
+    rewrite <- Nat.add_sub_assoc; [ flia | ].
+    destruct s1.
+   ++rewrite Hn1 in Hs1.
+     destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
+   ++simpl.
+     replace 2 with (2 * 1) by apply Nat.mul_1_r.
+     apply Nat.mul_le_mono; [ easy | ].
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  --rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+    apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
+    replace 2 with (2 * 1) at 1 by flia.
+    apply Nat.mul_le_mono_l.
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+   rewrite <- Nat.pow_add_r.
+   replace (S j + (s1 - S j)) with s1; cycle 1.
+  --rewrite Hs1, Hn1.
+    destruct rad; [ easy | simpl; flia ].
+  --rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+    rewrite Nat_sub_sub_swap; simpl; rewrite Nat.add_0_r.
+    rewrite Nat.add_sub.
+    apply Nat.sub_le_mono_l.
+    destruct (zerop (s1 - S j)) as [Hsj| Hsj].
+   ++rewrite Hs1, Hn1 in Hsj.
+     destruct rad; [ easy | simpl in Hsj; flia Hsj ].
+   ++destruct (s1 - S j) as [| x]; [ flia Hsj | simpl ].
+     replace 2 with (2 * 1) by flia.
+     apply Nat.mul_le_mono; [ easy | ].
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+Qed.
+...
+
 Theorem not_prop_carr_all_9_when_999 {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) = rad - 1)
   → ¬∀ k, d2n (prop_carr u) (i + k) = rad - 1.
