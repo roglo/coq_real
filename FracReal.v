@@ -746,12 +746,6 @@ Definition ends_with_999 {r : radix} u i :=
   | inr _ => true
   end.
 
-Definition ends_with_000 {r : radix} u i :=
-  match LPO_fst (has_not_0_after u i) with
-  | inl _ => false
-  | inr _ => true
-  end.
-
 Theorem ends_with_999_true_iff {r : radix} : ∀ u i,
   ends_with_999 u i = true ↔
   ∃ j P, LPO_fst (has_not_9_after u i) = inr (exist _ j P).
@@ -2331,15 +2325,6 @@ rewrite <- prop_carr_shift in H1; [ easy | ].
 intros j; rewrite <- Hfg; apply Hf.
 Qed.
 
-Theorem freal_eq_normalized_eq {r : radix} : ∀ x y,
-  (x = y)%F ↔
-  (∀ i, freal (freal_normalize x) i = freal (freal_normalize y) i).
-Proof.
-intros.
-unfold freal_eq, freal_norm_eq.
-split; intros Hxy *; apply digit_eq_eq, Hxy.
-Qed.
-
 Theorem freal_add_series_le_twice_pred {r : radix} : ∀ x y i,
   (x ⊕ y) i ≤ 2 * (rad - 1).
 Proof.
@@ -3374,61 +3359,6 @@ Add Parametric Relation {r : radix} : (FracReal) freal_norm_eq
  symmetry proved by freal_norm_eq_sym
  transitivity proved by freal_norm_eq_trans
  as freal_norm_eq_rel.
-
-Theorem freal_normalized_cases {r : radix} : ∀ x,
-  freal_norm_eq (freal_normalize x) x ∨
-  freal_norm_not_norm_eq (freal_normalize x) x.
-Proof.
-intros x.
-remember (freal_normalize x) as nx eqn:Hnx.
-assert (H1 : ∀ i, freal nx i = freal (freal_normalize nx) i). {
-  intros i.
-  unfold freal_normalize; simpl.
-  unfold normalize.
-  destruct (LPO_fst (is_9_strict_after (freal nx) i)) as [H1| ]; [ | easy ].
-  specialize (is_9_strict_after_all_9 (freal nx) _ H1) as H2.
-  specialize (normalized_not_999 x) as H3.
-  rewrite <- Hnx in H3.
-  exfalso; apply H3; exists (i + 1).
-  intros j; specialize (H2 j).
-  now rewrite Nat.add_shuffle0 in H2.
-}
-remember (freal_normalize nx) as nnx.
-rewrite Hnx in H1; subst nnx.
-specialize (proj1 (freal_normalized_eq_iff x nx) H1) as H2.
-destruct H2 as [H2| [H2| H2]]; [ | | now right ].
--left.
- unfold freal_norm_eq.
- now intros i; apply digit_eq_eq; rewrite H2.
--unfold freal_norm_not_norm_eq in H2.
- destruct H2 as (k & Hbef & Hwhi & Hxaft & Hnxaft).
- specialize (normalized_not_999 x) as H2.
- exfalso; apply H2; exists (k + 1).
- intros j.
- specialize (Hnxaft (1 + j)).
- rewrite Nat.add_assoc in Hnxaft.
- now rewrite <- Hnx.
-Qed.
-
-Theorem eq_freal_norm_eq_true_iff {r : radix} : ∀ x y,
-  freal_norm_eq x y
-  ↔ ∀ i, fd2n x i = fd2n y i.
-Proof.
-intros.
-split; intros Hxy.
--intros i.
- unfold freal_norm_eq in Hxy.
- destruct (LPO_fst (has_same_digits x y)) as [H1| H1]; [ | easy ].
- specialize (H1 i).
- unfold has_same_digits in H1.
- now destruct (Nat.eq_dec (fd2n x i) (fd2n y i)).
--unfold freal_norm_eq.
- destruct (LPO_fst (has_same_digits x y)) as [H1| H1]; [ easy | ].
- destruct H1 as (i & Hji & Hi).
- unfold has_same_digits in Hi.
- destruct (Nat.eq_dec (fd2n x i) (fd2n y i)); [ easy | ].
- now specialize (Hxy i).
-Qed.
 
 Add Parametric Morphism {r : radix} : freal_normalize
   with signature freal_norm_eq ==> freal_norm_eq
