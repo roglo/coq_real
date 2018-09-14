@@ -771,6 +771,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
        destruct (lt_dec (fd2n (xs + ys) j) (fd2n xsn j)) as [H5| H5];
          [ easy | ].
        apply Nat.nlt_ge in H5.
+       apply has_same_digits_false_iff in Hj.
 ...
        destruct (freal_eq_dec xs freal_999) as [Hx| Hx].
 ...

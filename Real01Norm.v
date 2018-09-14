@@ -1108,7 +1108,7 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hn.
-...
+Abort. (*
 
 Theorem glop {r : radix} : ∀ u i,
   ¬ ∀ k, d2n (prop_carr u) (i + k) = rad - 1.
@@ -1125,3 +1125,4 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
 -destruct H1 as (j & Hjj & Hj); simpl.
  now rewrite Nat.sub_0_r, Nat.add_0_r.
 Qed.
+*)
