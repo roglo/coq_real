@@ -949,8 +949,7 @@ intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn.
 specialize (eq_all_prop_carr_9 u i Hur Hn) as Hall.
-specialize (eq_all_prop_carr_9_cond u i Hur Hn) as HAF.
-specialize (HAF 1) as Hun1.
+specialize (eq_all_prop_carr_9_cond u i Hur Hn 1) as Hun1.
 destruct Hun1 as (j1 & Hj1 & Hun1); simpl in Hun1.
 remember (rad * (i + 1 + j1 + 3)) as n1 eqn:Hn1.
 remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
