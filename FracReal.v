@@ -649,85 +649,6 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
    now replace (k + (i + j + 1 - k)) with (i + j + 1) in Hay by flia H4.
 Qed.
 
-Theorem freal_normalized_eq_iff {r : radix} : ∀ x y,
-  (∀ i, freal (freal_normalize x) i = freal (freal_normalize y) i)
-  ↔ (∀ i, freal x i = freal y i) ∨
-     freal_norm_not_norm_eq x y ∨ freal_norm_not_norm_eq y x.
-Proof.
-intros.
-split; intros Hxy.
--remember (freal_normalize x) as x' eqn:Hx'.
- remember (freal_normalize y) as y' eqn:Hy'.
- move y' before x'.
- generalize Hxy; intros Hx; symmetry in Hx.
- generalize Hxy; intros Hy; symmetry in Hy.
- rewrite Hx' in Hx.
- rewrite Hy' in Hy.
- assert (H : ∀ i, freal (freal_normalize x) i = freal x' i) by
-   now intros; rewrite Hxy, Hx.
- clear Hx; rename H into Hx; move Hx after Hy.
- clear y' Hy' Hxy.
- rename x' into z; rename Hx' into Hz.
- apply freal_normalized_iff in Hx.
- apply freal_normalized_iff in Hy.
- destruct Hx as [Hx| Hx].
- +destruct Hx as (Hx, Hxz).
-  destruct Hy as [Hy| Hy].
-  *destruct Hy as (Hy, Hyz).
-   now left; intros i; rewrite Hxz, Hyz.
-  *destruct Hy as (k & Hbk & Hk & Hakz & Haky).
-   right; left; exists k.
-   split; [ now intros; rewrite Hxz; apply Hbk | ].
-   split; [ now unfold fd2n; rewrite Hxz | ].
-   now split; [ intros; unfold fd2n; rewrite Hxz; apply Hakz | ].
- +destruct Hx as (kx & Hbkx & Hkx & Hakxz & Hakx).
-  destruct Hy as [Hy| Hy].
-  *destruct Hy as (Hy, Hyz).
-   right; right; exists kx.
-   split; [ now intros; rewrite Hyz; apply Hbkx | ].
-   split; [ now unfold fd2n; rewrite Hyz | ].
-   now split; [ intros; unfold fd2n; rewrite Hyz; apply Hakxz | ].
-  *destruct Hy as (ky & Hbky & Hky & Hakyz & Haky).
-   left; intros i.
-   destruct (lt_eq_lt_dec kx ky) as [[Hkk| Hkk]| Hkk].
-  --destruct ky; [ easy | ].
-    destruct Hky as [| Hky]; [ easy | ].
-    simpl in Hbky, Hky; rewrite Nat.sub_0_r in Hbky, Hky.
-    specialize (Hakxz (ky - kx)).
-    replace (kx + (ky - kx)) with ky in Hakxz by flia Hkk.
-    now rewrite Hakxz in Hky.
-  --subst ky.
-    destruct kx.
-   ++apply digit_eq_eq; unfold fd2n in Hakx, Haky.
-     simpl in Hakx, Haky.
-     now rewrite Hakx, Haky.
-   ++destruct Hkx as [| Hkx]; [ easy | ].
-     destruct Hky as [| Hky]; [ easy | ].
-     simpl in Hbkx, Hkx, Hky, Hbky.
-     rewrite Nat.sub_0_r in Hbkx, Hkx, Hky, Hbky.
-     destruct (lt_eq_lt_dec i kx) as [[Hikx| Hikx]| Hikx].
-    **now rewrite <- Hbkx; [ rewrite <- Hbky | ].
-    **apply digit_eq_eq; unfold fd2n in Hkx, Hky; subst i.
-      now apply Nat.succ_inj; rewrite <- Hkx, <- Hky.
-    **apply digit_eq_eq; unfold fd2n in Hakx, Haky.
-      specialize (Hakx (i - S kx)).
-      specialize (Haky (i - S kx)).
-      replace (S kx + (i - S kx)) with i in Hakx, Haky by flia Hikx.
-      now rewrite Haky.
-  --destruct kx; [ easy | ].
-    destruct Hkx as [| Hkx]; [ easy | ].
-    simpl in Hbkx, Hkx; rewrite Nat.sub_0_r in Hbkx, Hkx.
-    specialize (Hakyz (kx - ky)).
-    replace (ky + (kx - ky)) with kx in Hakyz by flia Hkk.
-    now rewrite Hakyz in Hkx.
--destruct Hxy as [Hxy| [Hxy| Hxy]].
- +intros i.
-  apply (freal_eq_normalize_eq 0); [ | flia ].
-  intros j Hj; apply Hxy.
- +now apply freal_norm_not_norm_eq_normalize_eq.
- +now intros; symmetry; apply freal_norm_not_norm_eq_normalize_eq.
-Qed.
-
 Definition has_not_9_after {r : radix} u i j :=
   match LPO_fst (is_9_after u (i + j)) with
   | inl _ => false
@@ -745,41 +666,6 @@ Definition ends_with_999 {r : radix} u i :=
   | inl _ => false
   | inr _ => true
   end.
-
-Theorem ends_with_999_true_iff {r : radix} : ∀ u i,
-  ends_with_999 u i = true ↔
-  ∃ j P, LPO_fst (has_not_9_after u i) = inr (exist _ j P).
-Proof.
-intros.
-split.
--intros H9.
- unfold ends_with_999 in H9.
- destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ easy | clear H9 ].
- destruct H1 as (j & Hjj).
- now exists j, Hjj.
--intros (j & ((P & Q) & _)).
- unfold ends_with_999.
- destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ | easy ].
- specialize (H1 j).
- now rewrite H1 in Q.
-Qed.
-
-Theorem ends_with_999_false_iff {r : radix} : ∀ u i,
-  ends_with_999 u i = false ↔
-  ∃ P, LPO_fst (has_not_9_after u i) = inl P.
-Proof.
-intros.
-split.
--intros H9.
- unfold ends_with_999 in H9.
- destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ clear H9 | easy ].
- now exists H1.
--intros (P & _).
- unfold ends_with_999.
- destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ easy | ].
- destruct H1 as (j & (_, Q)).
- now rewrite P in Q.
-Qed.
 
 Theorem has_not_9_after_true_iff {r : radix} : ∀ u i j,
   has_not_9_after u i j = true ↔
@@ -803,36 +689,6 @@ Proof.
 intros.
 unfold has_not_9_after.
 destruct (LPO_fst (is_9_after u (i + j))) as [H1| H1].
--split; [ intros _ | easy ].
- now exists H1.
--split; [ easy | ].
- intros (P & _).
- destruct H1 as (k & _ & Q).
- now rewrite P in Q.
-Qed.
-
-Theorem has_not_0_after_true_iff {r : radix} : ∀ u i j,
-  has_not_0_after u i j = true ↔
-  ∃ k P, LPO_fst (is_0_after u (i + j)) = inr (exist _ k P).
-Proof.
-intros.
-unfold has_not_0_after.
-destruct (LPO_fst (is_0_after u (i + j))) as [H1| H1].
--split; [ easy | ].
- intros (k & (P & Q) & _).
- now rewrite H1 in Q.
--split; [ intros _ | easy ].
- destruct H1 as (k & Hk).
- now exists k, Hk.
-Qed.
-
-Theorem has_not_0_after_false_iff {r : radix} : ∀ u i j,
-  has_not_0_after u i j = false ↔
-  ∃ P, LPO_fst (is_0_after u (i + j)) = inl P.
-Proof.
-intros.
-unfold has_not_0_after.
-destruct (LPO_fst (is_0_after u (i + j))) as [H1| H1].
 -split; [ intros _ | easy ].
  now exists H1.
 -split; [ easy | ].
@@ -1083,41 +939,6 @@ destruct (LPO_fst (A_ge_1 (x ⊕ y) i)) as [Hxy| Hxy].
    now rewrite Hl in Hkl.
 Qed.
 
-(*
-Theorem freal_mul_to_seq_i_comm {r : radix} : ∀ x y i,
-  freal_mul_to_seq x y i = freal_mul_to_seq y x i.
-Proof.
-intros.
-unfold freal_mul_to_seq, prop_carr.
-remember (freal_mul_series x y) as xy.
-remember (freal_mul_series y x) as yx.
-apply digit_eq_eq.
-destruct (LPO_fst (A_ge_1 xy i)) as [Hxy| Hxy].
--rewrite Heqxy; simpl.
- setoid_rewrite freal_mul_series_comm.
- rewrite <- Heqyx.
- destruct (LPO_fst (A_ge_1 yx i)) as [Hyx| Hyx]; [ easy | ].
- destruct Hyx as (k & Hjk & Hk).
- rewrite Heqyx, A_ge_1_freal_mul_series_comm, <- Heqxy in Hk.
- now rewrite Hxy in Hk.
--destruct Hxy as (k & Hjk & Hk).
- rewrite Heqxy, A_ge_1_freal_mul_series_comm, <- Heqyx in Hk.
- destruct (LPO_fst (A_ge_1 yx i)) as [Hyx| Hyx].
- +now rewrite Hyx in Hk.
- +destruct Hyx as (l & Hjl & Hl).
-  destruct (lt_eq_lt_dec k l) as [ [ Hkl | Hkl ] | Hkl ].
-  *apply Hjl in Hkl; subst xy.
-   now rewrite Hk in Hkl.
-  *rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
-   rewrite nA_freal_mul_series_comm, <- Heqyx.
-   now subst k.
-  *apply Hjk in Hkl.
-   rewrite Heqxy, A_ge_1_freal_mul_series_comm in Hkl.
-   rewrite <- Heqyx in Hkl.
-   now rewrite Hl in Hkl.
-Qed.
-*)
-
 Theorem dig_unorm_add_comm {r : radix} : ∀ x y i,
   freal (x + y) i = freal (y + x) i.
 Proof.
@@ -1203,20 +1024,6 @@ apply dig_unorm_add_comm.
 Qed.
 
 Arguments freal_add_comm _ x%F y%F.
-
-(* perhaps useless *)
-Theorem freal_norm_unorm_add_comm {r : radix} : ∀ x y : FracReal,
-  freal_eq (x + y) (y + x).
-Proof.
-intros.
-unfold freal_eq.
-unfold freal_norm_eq.
-remember (freal_normalize (x + y)) as nxy eqn:Hnxy.
-remember (freal_normalize (y + x)) as nyx eqn:Hnyx.
-intros i.
-subst nxy nyx; unfold fd2n; f_equal.
-apply dig_norm_unorm_add_comm.
-Qed.
 
 Theorem nA_split_first {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
@@ -1425,24 +1232,6 @@ destruct (le_dec (i + j + 1) (n - 1)) as [H1| H1].
  intros k Hk.
  apply Hbef; flia H1 Hk.
 Qed.
-
-(*
-Theorem freal_normalize_0 {r : radix} : ∀ i,
-  dig (freal (freal_normalize 0) i) = 0.
-Proof.
-intros.
-unfold fd2n; simpl.
-unfold normalize; simpl.
-destruct (LPO_fst (is_9_strict_after (λ _ : nat, digit_0) i)) as [H| H].
--specialize (H 0).
- specialize radix_ge_2 as Hr2.
- unfold is_9_strict_after in H.
- exfalso.
- destruct rad as [| rr]; [ easy | ].
- destruct rr; [ flia Hr2 | easy ].
--easy.
-Qed.
-*)
 
 Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
   let n := rad * (i + k + 3) in
@@ -3088,81 +2877,6 @@ apply prop_carr_eq_compat.
 intros j.
 unfold "⊕", fd2n.
 now rewrite Hxy, Hxy'.
-Qed.
-
-Theorem add_norm_0_l {r : radix} : ∀ y n nx nxy,
-  (∀ i : nat, fd2n nx (n + i) = 0)
-  → (∀ i : nat, ∃ j : nat, fd2n y (i + j) ≠ rad - 1)
-  → nxy = freal_add nx y
-  → ∀ i, n ≤ i
-  → fd2n (freal_normalize nxy) i = fd2n (freal_normalize y) i.
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hnaft Hy Hnxy i Hni.
-unfold fd2n; f_equal.
-apply (freal_eq_normalize_eq n); [ | easy ].
-intros j Hj.
-rewrite Hnxy.
-unfold freal_add; simpl.
-unfold prop_carr.
-apply digit_eq_eq; simpl.
-unfold nat_prop_carr.
-destruct (LPO_fst (A_ge_1 (nx ⊕ y) j)) as [H1| H1].
--exfalso.
- specialize (A_ge_1_add_all_true_if (nx ⊕ y) j) as H2.
- assert (H : ∀ k : nat, (nx ⊕ y) (j + k + 1) ≤ 2 * (rad - 1)). {
-   intros k; apply freal_add_series_le_twice_pred.
- }
- specialize (H2 H H1); clear H.
- destruct H2 as [H2| [H2| H2]].
- +specialize (Hy (j + 1)) as H3; destruct H3 as (k & Hk).
-  specialize (H2 k).
-  unfold "⊕" in H2.
-  specialize (Hnaft (j + k + 1 - n)) as H3.
-  rewrite Nat.add_comm, Nat.sub_add in H3; [ | flia Hj ].
-  rewrite Nat.add_shuffle0 in Hk.
-  now rewrite H3, Nat.add_0_l in H2.
- +specialize (Hy (j + 1)) as H3; destruct H3 as (k & Hk).
-  specialize (H2 k).
-  unfold "⊕" in H2.
-  specialize (Hnaft (j + k + 1 - n)) as H3.
-  rewrite Nat.add_comm, Nat.sub_add in H3; [ | flia Hj ].
-  rewrite Nat.add_shuffle0 in Hk.
-  rewrite H3, Nat.add_0_l in H2.
-  unfold fd2n in H2.
-  specialize (digit_lt_radix (freal y (j + k + 1))) as H.
-  flia Hr H H2.
- +destruct H2 as (m & Hmbef & Hmwhi & Hmaft).
-  specialize (Hmaft i) as H2.
-  unfold "⊕" in H2.
-  specialize (Hnaft (j + m + i + 2 - n)) as H3.
-  rewrite Nat.add_comm, Nat.sub_add in H3; [ | flia Hni ].
-  rewrite H3, Nat.add_0_l in H2.
-  unfold fd2n in H2.
-  specialize (digit_lt_radix (freal y (j + m + i + 2))) as H.
-  flia Hr H H2.
--destruct H1 as (k & Hjk & Hk).
- unfold "⊕" at 1.
- specialize (Hnaft (j - n)) as H1.
- replace (n + (j - n)) with j in H1 by flia Hj.
- rewrite H1, Nat.add_0_l; clear H1.
- remember (rad * (j + k + 3)) as n1 eqn:Hn1.
- remember (n1 - j - 1) as s1 eqn:Hs1.
- rewrite Nat.div_small.
- +rewrite Nat.add_0_r.
-  rewrite Nat.mod_small; [ easy | ].
-  apply digit_lt_radix.
- +subst s1.
-  apply nA_dig_seq_ub.
-  *intros m Hm.
-   unfold "⊕".
-   specialize (Hnaft (m - n)) as H1.
-   replace (n + (m - n)) with m in H1 by flia Hm Hj.
-   rewrite H1, Nat.add_0_l.
-   apply digit_lt_radix.
-  *rewrite Hn1.
-   destruct rad; [ easy | simpl; flia ].
 Qed.
 
 Theorem nA_ge_999000 {r : radix} : ∀ u i j,
