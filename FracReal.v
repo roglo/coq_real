@@ -2407,32 +2407,6 @@ unfold freal_eq, freal_norm_eq.
 split; intros Hxy *; apply digit_eq_eq, Hxy.
 Qed.
 
-Theorem Nat_mul_pow_sub_1_pow : ∀ a b c,
-  (a ^ S b - 1) * a ^ c = (a ^ b - 1) * a ^ c + (a - 1) * a ^ (b + c).
-Proof.
-intros.
-destruct a; [ now destruct b | ].
-do 3 rewrite Nat.mul_sub_distr_r.
-do 2 rewrite Nat.mul_1_l.
-symmetry.
-rewrite <- Nat.pow_add_r.
-rewrite Nat.add_sub_assoc.
--rewrite <- Nat.add_sub_swap.
- +rewrite Nat_sub_sub_swap.
-  rewrite Nat.add_sub_swap; [ | easy ].
-  rewrite Nat.sub_diag, Nat.add_0_l.
-  now rewrite Nat.pow_add_r, Nat.mul_assoc.
- +replace (S a ^ c) with (1 * S a ^ c) by apply Nat.mul_1_l.
-  rewrite Nat.pow_add_r.
-  apply Nat.mul_le_mono_r.
-  apply Nat.neq_0_lt_0.
-  now apply Nat.pow_nonzero.
--replace (S a ^ (b + c)) with (1 * S a ^ (b + c)) at 1 by apply Nat.mul_1_l.
- apply Nat.mul_le_mono_r.
- apply -> Nat.succ_le_mono.
- apply Nat.le_0_l.
-Qed.
-
 Theorem freal_add_series_le_twice_pred {r : radix} : ∀ x y i,
   (x ⊕ y) i ≤ 2 * (rad - 1).
 Proof.
