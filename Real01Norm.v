@@ -952,64 +952,30 @@ assert (Hur : ∀ k, u (i + k + 1) ≤ 2 * (rad - 1)). {
   intros k; specialize (Hall k); rewrite Hall; flia.
 }
 specialize (eq_all_prop_carr_9_cond u i Hur Hn 1) as Hun1.
-destruct Hun1 as (j1 & Hj1 & Hun1); simpl in Hun1.
+destruct Hun1 as (j1 & Hj1 & _).
 remember (rad * (i + 1 + j1 + 3)) as n1 eqn:Hn1.
 remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
 move s1 before n1.
-destruct (lt_dec (nA (i + 1) n1 u) (rad ^ s1)) as [H1| H1].
--rewrite Nat.div_small in Hun1; [ | easy ].
- rewrite Nat.mod_small in Hj1; [ | easy ].
- clear H1.
- rewrite Nat.add_0_r in Hun1.
- destruct (lt_dec (u (i + 1)) rad) as [H1| H1].
- +rewrite Nat.mod_small in Hun1; [ clear H1 | easy ].
-  apply Nat.nle_gt in Hj1.
-  apply Hj1; clear Hj1.
-  unfold nA.
-  rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n1 - 1 - j)).
-  *rewrite <- summation_mul_distr_l.
-   remember S as f; simpl; subst f.
-   rewrite summation_rtl, summation_shift.
-   --replace (n1 - 1 - (i + 1 + 1)) with (s1 - 1) by flia Hs1.
-     rewrite summation_eq_compat with (h := λ i, rad ^ i).
-     ++rewrite <- power_summation_sub_1; [ | easy ].
-       rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-       rewrite <- Nat.pow_add_r.
-       replace (S j1 + (s1 - S j1)) with s1.
-       **rewrite <- Nat.sub_succ_l.
-         ---rewrite Nat.sub_succ, Nat.sub_0_r.
-            apply Nat.sub_le_mono_l.
-            now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-         ---destruct s1; [ | flia ].
-            rewrite Hn1 in Hs1.
-            destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
-       **rewrite Hs1, Hn1.
-         destruct rad; [ easy | simpl; flia ].
-     ++intros j Hj; f_equal; flia Hs1 Hj.
-   --rewrite Hn1.
-     destruct rad; [ easy | simpl; flia ].
-  *intros j Hj; f_equal.
-   specialize (Hall (j - i - 1)).
-   now replace (i + (j - i - 1) + 1) with j in Hall by flia Hj.
- +apply Nat.nlt_ge in H1.
-  specialize (Hur 0); rewrite Nat.add_0_r in Hur.
-  rewrite Nat_mod_less_small in Hun1; [ flia Hr Hur Hun1 | ].
-  split; [ easy | flia Hr Hur ].
--apply Nat.nlt_ge in H1.
- specialize (A_ge_rad_pow u (i + 1) n1) as H2.
- rewrite <- Hs1 in H2.
- assert (H : ∀ k, u (S (i + 1) + k + 1) ≤ 2 * (rad - 1)). {
-   intros k.
-   replace (S (i + 1) + k) with (i + (k + 2)) by flia.
-   apply Hur.
- }
- specialize (H2 H H1); clear H.
- destruct H2 as (j & Hjs & Hkj & Huj).
- destruct j.
- +rewrite Nat.add_0_r in Huj; clear Hkj.
-  specialize (Hall 1); rewrite Hall in Huj; flia Hr Huj.
- +replace (i + 1 + S j + 1) with (i + (j + 2) + 1) in Huj by flia.
-  rewrite Hall in Huj; flia Hr Huj.
+assert (H : ∀ j, i + 1 + j + 1 < n1 → u (i + 1 + j + 1) = rad - 1). {
+  intros j Hj.
+  replace (i + 1 + j + 1) with (i + (1 + j) + 1) by flia.
+  apply Hall.
+}
+rewrite nA_all_9 in Hj1; [ clear H | easy ].
+rewrite <- Hs1 in Hj1.
+assert (H : rad ^ s1 - 1 < rad ^ s1). {
+  apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+}
+rewrite Nat.mod_small in Hj1; [ clear H | easy ].
+apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
+rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+rewrite <- Nat.pow_add_r.
+replace (S j1 + (s1 - S j1)) with s1.
+-apply Nat.sub_le_mono_l.
+ now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+-rewrite Hs1, Hn1.
+ destruct rad; [ easy | simpl; flia ].
 Qed.
 
 Theorem not_prop_carr_all_9_when_18_18_18 {r : radix} : ∀ u i,
