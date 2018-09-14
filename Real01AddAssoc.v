@@ -116,17 +116,6 @@ specialize (Hx k).
 unfold freal_add_series in Hxy; lia.
 Qed.
 
-Theorem eq_add_series_eq_r {r : radix} : ∀ x y n a,
-  (∀ k, (x ⊕ y) (n + k + 1) = a)
-  → (∀ k, fd2n y (n + k + 1) = a)
-  → ∀ k, fd2n x (n + k + 1) = 0.
-Proof.
-intros * Hxy Hx *.
-specialize (Hxy k).
-specialize (Hx k).
-unfold freal_add_series in Hxy; lia.
-Qed.
-
 Theorem le_90_198_mod_100 {r : radix} : ∀ j n s k,
   n = rad * (j + k + 3)
   → s = n - j - 1
@@ -184,58 +173,6 @@ assert (H5 : ∀ k, d2n (prop_carr yz) (i + 1 + k) = rad - 1). {
 }
 apply not_prop_carr_all_9 in H5; [ easy | ].
 intros k; subst yz; apply freal_add_series_le_twice_pred.
-Qed.
-
-Theorem all_x_yz_9_all_yz_9_all_x_9 {r : radix} : ∀ x y z i,
-  (∀ k, (x ⊕ (y + z)) (i + k + 1) = rad - 1)
-  → (∀ k, (y ⊕ z) (i + k + 1) = rad - 1)
-  → ∀ k, fd2n x (i + k + 1) = rad - 1.
-Proof.
-intros * H1 H3.
-specialize radix_ge_2 as Hr.
-intros.
-specialize (H1 k) as H5.
-unfold freal_add_series in H5.
-unfold freal_add in H5.
-unfold fd2n at 2 in H5; simpl in H5.
-unfold nat_prop_carr in H5.
-remember (y ⊕ z) as yz eqn:Hyz.
-rewrite H3 in H5.
-destruct (LPO_fst (A_ge_1 yz (i + k + 1))) as [H6| H6].
--rewrite nA_all_9 in H5; cycle 1.
- +intros j Hj.
-  replace (i + k + 1 + j) with (i + (k + 1 + j)) by flia.
-  apply H3.
- +rewrite Nat.div_small in H5; cycle 1.
-  *apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
-   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-  *rewrite Nat.add_0_l in H5.
-   rewrite Nat.sub_add in H5; [ | easy ].
-   rewrite Nat.mod_same in H5; [ | easy ].
-   now rewrite Nat.add_0_r in H5.
--destruct H6 as (j3 & Hjj3 & Hj3); simpl in H5.
- apply A_ge_1_false_iff in Hj3.
- remember (rad * (i + k + 1 + j3 + 3)) as n3 eqn:Hn3.
- remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
- move s3 before n3.
- rewrite nA_all_9 in Hj3; cycle 1.
- +intros.
-  replace (i + k + 1 + j) with (i + (k + 1 + j)) by flia.
-  apply H3.
- +rewrite Nat.mod_small in Hj3; cycle 1.
-  *rewrite <- Hs3.
-   apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
-   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-  *exfalso.
-   apply Nat.nle_gt in Hj3; apply Hj3; clear Hj3.
-   rewrite <- Hs3.
-   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-   rewrite <- Nat.pow_add_r.
-   replace (S j3 + (s3 - S j3)) with s3; cycle 1.
-  --rewrite Hs3, Hn3.
-    destruct rad; [ easy | simpl; flia ].
-  --apply Nat.sub_le_mono_l.
-    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
 Theorem A_ge_1_freal_add_series_all_true {r : radix} : ∀ y z i,
