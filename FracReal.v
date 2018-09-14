@@ -1633,38 +1633,6 @@ destruct (lt_dec (nA i n u mod rad ^ s) ((rad ^ S k - 1) * t)) as [H1| H1].
 -now split; [ apply Nat.nlt_ge in H1 | ].
 Qed.
 
-(*
-Theorem Nat_pow_succ_pow : ∀ a b, a ^ S b = (a ^ b - 1) * a + a.
-Proof.
-intros; simpl.
-destruct a; [ now rewrite Nat.mul_0_r; simpl | ].
-rewrite Nat.mul_sub_distr_r.
-rewrite Nat.mul_1_l.
-rewrite Nat.sub_add; [ flia | ].
-induction b; [ simpl; flia | ].
-simpl.
-eapply le_trans; [ apply IHb | ].
-apply Nat.mul_le_mono_r; flia.
-Qed.
-
-Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
-  (∀ k, A_ge_1 u i k = true) ↔
-  ∀ k,
-  let n := rad * (i + k + 3) in
-  let s := rad ^ (n - i - 1) in
-  nA i n u mod s ≥ (rad ^ S k - 1) * rad ^ (n - i - k - 2).
-Proof.
-intros.
-split.
--intros Hk *.
- specialize (Hk k).
- now apply A_ge_1_true_iff in Hk.
--intros Hk *.
- specialize (Hk k).
- now apply A_ge_1_true_iff.
-Qed.
-*)
-
 Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j k n,
   (∀ k, u (S i + k) < rad)
   → (rad ^ S j - 1) * rad ^ (n - i - 1 - S j) ≤ nA i n u
@@ -2416,14 +2384,6 @@ replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
 apply Nat.add_le_mono.
 apply digit_le_pred_radix.
 apply digit_le_pred_radix.
-Qed.
-
-Theorem Nat_pow_sub_1_mul_pow : ∀ n a b,
-  (n ^ a - 1) * n ^ b = n ^ (a + b) - n ^ b.
-Proof.
-intros.
-rewrite Nat.mul_sub_distr_r.
-now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
 Theorem nA_upper_bound_for_add {r : radix} (rg := nat_ord_ring) : ∀ u i n,
