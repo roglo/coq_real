@@ -941,6 +941,49 @@ destruct (LPO_fst (is_num_9_strict_after u n)) as [H1| H1].
   --rewrite H1 in H2; flia Hr H2.
 Qed.
 
+Theorem prop_carr_all_0_when_999 {r : radix} : ∀ u i,
+  (∀ k, u (i + k) = rad - 1)
+  → ∀ k, d2n (prop_carr u) (i + k) = 0.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hall k.
+unfold d2n, prop_carr; simpl.
+rewrite Hall.
+unfold nat_prop_carr.
+destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
+-remember (rad * (i + k + 3)) as n1 eqn:Hn1.
+ remember (n1 - (i + k) - 1) as s1 eqn:Hs1.
+ move s1 before n1.
+ rewrite nA_all_9; cycle 1.
+ +intros; do 2 rewrite <- Nat.add_assoc; apply Hall.
+ +rewrite <- Hs1.
+  rewrite Nat.div_small.
+  *rewrite Nat.add_0_l, Nat.sub_add; [ | flia Hr ].
+   now apply Nat.mod_same.
+  *apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+-destruct H1 as (j & Hjj & Hj).
+ apply A_ge_1_false_iff in Hj.
+ exfalso; apply Nat.nle_gt in Hj; apply Hj; clear Hj.
+ remember (rad * (i + k + j + 3)) as n1 eqn:Hn1.
+ remember (n1 - (i + k) - 1) as s1 eqn:Hs1.
+ move s1 before n1.
+ rewrite nA_all_9; cycle 1.
+ +intros; do 2 rewrite <- Nat.add_assoc; apply Hall.
+ +rewrite <- Hs1.
+  rewrite Nat.mod_small; cycle 1.
+  *apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+   rewrite <- Nat.pow_add_r.
+   replace (S j + (s1 - S j)) with s1.
+  --apply Nat.sub_le_mono_l.
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  --rewrite Hs1, Hn1.
+    destruct rad; [ easy | simpl; flia ].
+Qed.
+
 Theorem not_prop_carr_all_9_when_999 {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) = rad - 1)
   → ¬∀ k, d2n (prop_carr u) (i + k) = rad - 1.
@@ -948,31 +991,23 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hall Hn.
-assert (Hur : ∀ k, u (i + k + 1) ≤ 2 * (rad - 1)). {
-  intros k; specialize (Hall k); rewrite Hall; flia.
+assert (H : ∀ k, u (i + 1 + k) = rad - 1). {
+  intros k; rewrite Nat.add_shuffle0; apply Hall.
 }
-specialize (eq_all_prop_carr_9_cond u i Hur Hn 1) as Hun1.
-destruct Hun1 as (j1 & Hj1 & _).
-remember (rad * (i + 1 + j1 + 3)) as n1 eqn:Hn1.
-remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
-move s1 before n1.
-apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
-rewrite nA_all_9; cycle 1.
--intros j Hj.
- replace (i + 1 + j + 1) with (i + (1 + j) + 1) by flia.
- apply Hall.
--rewrite <- Hs1.
- rewrite Nat.mod_small; cycle 1.
- +apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
-  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
- +rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-  rewrite <- Nat.pow_add_r.
-  replace (S j1 + (s1 - S j1)) with s1.
-  *apply Nat.sub_le_mono_l.
-   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-  *rewrite Hs1, Hn1.
-   destruct rad; [ easy | simpl; flia ].
+specialize (prop_carr_all_0_when_999 u (i + 1) H) as H1.
+clear H.
+specialize (Hn 1); specialize (H1 0); rewrite Nat.add_0_r in H1.
+rewrite Hn in H1; flia Hr H1.
 Qed.
+
+Theorem prop_carr_all_0_when_18_18_18 {r : radix} : ∀ u i,
+  (∀ k, u (i + k + 1) = 2 * (rad - 1))
+  → ∀ k, d2n (prop_carr u) (i + k) = 0.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hall Hn.
+...
 
 Theorem not_prop_carr_all_9_when_18_18_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) = 2 * (rad - 1))
