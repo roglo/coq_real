@@ -1055,12 +1055,13 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
-Theorem not_prop_carr_all_9_when_9_8_18 {r : radix} : ∀ u i j,
+Theorem prop_carr_all_0_when_9_8_18 {r : radix} : ∀ u i j,
   (∀ k, k < j → u (i + k) = rad - 1)
   → u (i + j) = rad - 2
   → (∀ k, u (i + j + k + 1) = 2 * (rad - 1))
   → ∀ k, d2n (prop_carr u) (i + k) = 0.
 Proof.
+(* à simplifier peut-être *)
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hbef Hwhi Haft *.
@@ -1210,7 +1211,6 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
        apply Nat.mul_le_mono; [ easy | ].
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
-...
 
 Theorem not_prop_carr_all_9_when_999 {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) = rad - 1)
@@ -1247,77 +1247,26 @@ Qed.
 Theorem not_prop_carr_all_9_when_9_8_18 {r : radix} : ∀ u i j,
   (∀ k, k < j → u (i + k + 1) = rad - 1)
   → u (i + j + 1) = rad - 2
-  → (∀ k : nat, u (i + j + k + 2) = 2 * (rad - 1))
+  → (∀ k, u (i + j + k + 2) = 2 * (rad - 1))
   → ¬ (∀ k, d2n (prop_carr u) (i + k) = rad - 1).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hbef Hwhi Haft Hn.
-assert (Hur : ∀ k, u (i + k + 1) ≤ 2 * (rad - 1)). {
-  intros k.
-  destruct (lt_dec k j) as [Hkl| Hkg].
-  -rewrite Hbef; [ flia | easy ].
-  -destruct (eq_nat_dec k j) as [Hk| Hk]; [ rewrite Hk, Hwhi; flia | ].
-   specialize (Haft (k - j - 1)).
-   replace (i + j + (k - j - 1) + 2) with (i + k + 1) in Haft by flia Hkg Hk.
-   now rewrite Haft.
+specialize (prop_carr_all_0_when_9_8_18 u (i + 1) j) as H1.
+assert (H : ∀ k, k < j → u (i + 1 + k) = rad - 1). {
+  now intros k Hk; rewrite Nat.add_shuffle0; apply Hbef.
 }
-specialize (eq_all_prop_carr_9_cond u i Hur Hn 1) as Hun1.
-destruct Hun1 as (j1 & Hj1 & Hun1); simpl in Hun1.
-remember (rad * (i + 1 + j1 + 3)) as n1 eqn:Hn1.
-remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
-move s1 before n1.
-destruct (lt_dec (nA (i + 1) n1 u) (rad ^ s1)) as [H1| H1].
--rewrite Nat.div_small in Hun1; [ | easy ].
- rewrite Nat.mod_small in Hj1; [ | easy ].
- clear H1.
- rewrite Nat.add_0_r in Hun1.
- destruct (lt_dec (u (i + 1)) rad) as [H1| H1].
- +rewrite Nat.mod_small in Hun1; [ clear H1 | easy ].
-  destruct j; [ rewrite Nat.add_0_r in Hwhi; flia Hr Hwhi Hun1 | ].
-  apply Nat.nle_gt in Hj1.
-  apply Hj1; clear Hj1.
-  now apply (u_9_8_18_nA_ge_999000 _ _ j).
- +apply Nat.nlt_ge in H1.
-  specialize (Hur 0); rewrite Nat.add_0_r in Hur.
-  rewrite Nat_mod_less_small in Hun1; [ flia Hr Hur Hun1 | ].
-  split; [ easy | flia Hr Hur ].
--apply Nat.nlt_ge in H1.
- specialize (A_ge_rad_pow u (i + 1) n1) as H2.
- rewrite <- Hs1 in H2.
- assert (H : ∀ k, u (S (i + 1) + k + 1) ≤ 2 * (rad - 1)). {
-   intros k.
-   replace (S (i + 1) + k) with (i + (k + 2)) by flia.
-   apply Hur.
- }
- specialize (H2 H H1); clear H.
- destruct H2 as (j2 & Hjs & Hkj & Huj).
- destruct j2.
- +rewrite Nat.add_0_r in Huj; clear Hkj.
-  destruct j.
-  *rewrite Nat.add_0_r in Hwhi, Haft; clear Hbef.
-   apply Nat.nle_gt in Hj1; apply Hj1; clear Hj1.
-   now apply (u_18_nA_mod_ge_999000 u n1 s1 j1 i).
-  *destruct j; [ rewrite Hwhi in Huj; flia Hr Huj | ].
-   rewrite Hbef in Huj; [ flia Hr Huj | flia ].
- +destruct (lt_dec j (S (S j2))) as [H2| H2].
-  *destruct j.
-  --specialize (Haft j2).
-    replace (i + 0 + j2 + 2) with (i + 1 + j2 + 1) in Haft by flia.
-    specialize (Hkj j2 (Nat.lt_succ_diag_r j2)).
-    rewrite Haft in Hkj; flia Hr Hkj.
-  --apply Nat.succ_lt_mono in H2.
-    specialize (Hkj j H2).
-    replace (i + 1 + j) with (i + S j) in Hkj by flia.
-    rewrite Hwhi in Hkj; flia Hr Hkj.
-  *destruct (eq_nat_dec j (S (S j2))) as [H3| H3].
-  --rewrite H3 in Hwhi.
-    replace (i + S (S j2)) with (i + 1 + S j2) in Hwhi by flia.
-    rewrite Hwhi in Huj; flia Hr Huj.
-  --assert (H4 : S (S j2) < j) by flia H2 H3.
-    specialize (Hbef _ H4).
-    replace (i + S (S j2)) with (i + 1 + S j2) in Hbef by flia.
-    rewrite Hbef in Huj; flia Hr Huj.
+rewrite Nat.add_shuffle0 in H1.
+specialize (H1 H Hwhi); clear H.
+assert (H : ∀ k, u (i + j + 1 + k + 1) = 2 * (rad - 1)). {
+  intros k.
+  replace (i + j + 1 + k + 1) with (i + j + k + 2) by flia.
+  apply Haft.
+}
+specialize (H1 H); clear H.
+specialize (Hn 1); specialize (H1 0); rewrite Nat.add_0_r in H1.
+rewrite Hn in H1; flia Hr H1.
 Qed.
 
 Theorem not_prop_carr_all_9 {r : radix} : ∀ u i,
