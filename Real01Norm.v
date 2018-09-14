@@ -984,6 +984,15 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
     destruct rad; [ easy | simpl; flia ].
 Qed.
 
+Theorem prop_carr_all_0_when_18_18_18 {r : radix} : ∀ u i,
+  (∀ k, u (i + k + 1) = 2 * (rad - 1))
+  → ∀ k, d2n (prop_carr u) (i + k) = 0.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hall Hn.
+...
+
 Theorem not_prop_carr_all_9_when_999 {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) = rad - 1)
   → ¬∀ k, d2n (prop_carr u) (i + k) = rad - 1.
@@ -999,15 +1008,6 @@ clear H.
 specialize (Hn 1); specialize (H1 0); rewrite Nat.add_0_r in H1.
 rewrite Hn in H1; flia Hr H1.
 Qed.
-
-Theorem prop_carr_all_0_when_18_18_18 {r : radix} : ∀ u i,
-  (∀ k, u (i + k + 1) = 2 * (rad - 1))
-  → ∀ k, d2n (prop_carr u) (i + k) = 0.
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hall Hn.
-...
 
 Theorem not_prop_carr_all_9_when_18_18_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) = 2 * (rad - 1))
