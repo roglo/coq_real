@@ -795,38 +795,6 @@ rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
  f_equal; f_equal; flia.
 Qed.
 
-Theorem all_lt_rad_A_ge_1_true_if {r : radix} : ∀ i u,
-  (∀ k, u (S i + k) < rad)
-  → (∀ k, A_ge_1 u i k = true)
-  → ∀ j, u (S i + j) = rad - 1.
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hu Hk *.
-specialize (Hk j).
-apply A_ge_1_true_iff in Hk.
-remember (rad * (i + j + 3)) as n eqn:Hn.
-remember (n - i - 1) as s eqn:Hs.
-remember (S j) as sj eqn:Hsj.
-move s before n.
-assert (Hsz : rad ^ s ≠ 0) by now subst s; apply Nat.pow_nonzero.
-rename Hk into HnA.
-rewrite Nat.mod_small in HnA.
-+apply when_99000_le_uuu00 with (i0 := i) (j0 := j) (n0 := n).
- *easy.
- *now rewrite <- Hs, <- Hsj.
- *rewrite Hn.
-  destruct rad; [ easy | simpl; flia ].
- *flia.
-+rewrite Hs.
- apply nA_dig_seq_ub.
- *intros k Hk.
-  specialize (Hu (k - S i)).
-  now replace (S i + (k - S i)) with k in Hu by flia Hk.
- *rewrite Hn.
-  destruct rad; [ flia Hr | simpl in Hn; flia Hn ].
-Qed.
-
 Require Import Setoid.
 
 Theorem freal_eq_refl {r : radix} : reflexive _ freal_eq.
