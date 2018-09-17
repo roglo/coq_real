@@ -4,7 +4,7 @@ open Big_int;
 
 type real01 = { freal : int → int }.
 
-value lpo_max = 10;
+value lpo_max = 20;
 
 value big_int_0 = big_int_of_int 0;
 value big_int_1 = big_int_of_int 1;
@@ -69,3 +69,21 @@ value freal817 =
 (freal_add 10 freal345 freal817).freal 1;
 (freal_add 10 freal345 freal817).freal 2;
 (freal_add 10 freal345 freal817).freal 3;
+
+value freal1_3 = {freal i = 3};
+value freal1_6 = {freal i = 6};
+(freal_add 10 freal1_3 freal1_6).freal 0;
+(freal_add 10 freal1_3 freal1_6).freal 1;
+
+value frealx = {freal i = if i < 10 then 6 else 0};
+(freal_add 10 freal1_3 frealx).freal 0;
+(freal_add 10 freal1_3 frealx).freal 1;
+(freal_add 10 freal1_3 frealx).freal 2;
+(freal_add 10 freal1_3 frealx).freal 3;
+(freal_add 10 freal1_3 frealx).freal 4;
+(freal_add 10 freal1_3 frealx).freal 5;
+(freal_add 10 freal1_3 frealx).freal 6;
+(freal_add 10 freal1_3 frealx).freal 7;
+(freal_add 10 freal1_3 frealx).freal 8;
+(freal_add 10 freal1_3 frealx).freal 9;
+(freal_add 10 freal1_3 frealx).freal 10;
