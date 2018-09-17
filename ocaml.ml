@@ -1,5 +1,9 @@
 (* implementation of reals between 0 and 1 *)
 
+(*
+#load "nums.cma";
+*)
+
 open Big_int;
 
 type real01 = { freal : int → int }.
