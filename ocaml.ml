@@ -6,9 +6,18 @@ ocaml -I +site-lib/camlp5 camlp5r.cma nums.cma
 
 open Big_int;
 
-type real01 = { freal : int → int }.
+type real01 = { freal : int → int; freal_comp : Hashtbl.t int int }.
 
 value lpo_max = 20;
+
+value make_real f = {freal = f; freal_comp = Hashtbl.create 1}.
+value real_val x i =
+  try Hashtbl.find x.freal_comp i with
+  [ Not_found → do {
+      let v = x.freal i in
+      Hashtbl.add x.freal_comp i v;
+      v
+    } ].
 
 value rec pow a n =
    if n = 0 then unit_big_int
@@ -66,76 +75,83 @@ value prop_carr r u i =
   let d = add_int_big_int (u i) (nat_prop_carr r u i) in
   int_of_big_int (mod_big_int d (big_int_of_int r)).
 
-value freal_series_add x y i = x.freal i + y.freal i.
+value freal_series_add x y i = real_val x i + real_val y i.
 value freal_series_mul x y i =
   match i with
   | 0 → 0
-  | _ → summation 0 (i - 1) (fun j → x.freal j * y.freal (i - 1 - j))
+  | _ → summation 0 (i - 1) (fun j → real_val x j * real_val y (i - 1 - j))
   end.
 
-value freal_add r x y = { freal = prop_carr r (freal_series_add x y) }.
-value freal_mul r x y = { freal = prop_carr r (freal_series_mul x y) }.
+value freal_add r x y =
+  make_real (prop_carr r (freal_series_add x y));
+value freal_mul r x y =
+  make_real (prop_carr r (freal_series_mul x y));
 
 value freal345 =
-  {freal i = match i with | 0 → 3 | 1 → 4 | 2 → 5 | _ → 0 end} .
+  make_real (fun i → match i with | 0 → 3 | 1 → 4 | 2 → 5 | _ → 0 end);
 value freal817 =
-  {freal i = match i with | 0 → 8 | 1 → 1 | 2 → 7 | _ → 0 end} .
+  make_real (fun i → match i with | 0 → 8 | 1 → 1 | 2 → 7 | _ → 0 end).
 
-(freal_add 10 freal345 freal817).freal 0;
-(freal_add 10 freal345 freal817).freal 1;
-(freal_add 10 freal345 freal817).freal 2;
-(freal_add 10 freal345 freal817).freal 3;
+real_val (freal_add 10 freal345 freal817) 0;
+real_val (freal_add 10 freal345 freal817) 1;
+real_val (freal_add 10 freal345 freal817) 2;
+real_val (freal_add 10 freal345 freal817) 3;
 
-value freal1_3 = {freal i = 3};
-value freal1_6 = {freal i = 6};
-(freal_add 10 freal1_3 freal1_6).freal 0;
-(freal_add 10 freal1_3 freal1_6).freal 1;
+value freal1_3 = make_real (fun i → 3);
+value freal1_6 = make_real (fun i → 6);
+real_val (freal_add 10 freal1_3 freal1_6) 0;
+real_val (freal_add 10 freal1_3 freal1_6) 1;
 
-value frealx = {freal i = if i < 10 then 6 else 0};
-(freal_add 10 freal1_3 frealx).freal 0;
-(freal_add 10 freal1_3 frealx).freal 1;
-(freal_add 10 freal1_3 frealx).freal 2;
-(freal_add 10 freal1_3 frealx).freal 3;
-(freal_add 10 freal1_3 frealx).freal 4;
-(freal_add 10 freal1_3 frealx).freal 5;
-(freal_add 10 freal1_3 frealx).freal 6;
-(freal_add 10 freal1_3 frealx).freal 7;
-(freal_add 10 freal1_3 frealx).freal 8;
-(freal_add 10 freal1_3 frealx).freal 9;
-(freal_add 10 freal1_3 frealx).freal 10;
+value frealx = make_real (fun i → if i < 10 then 6 else 0).
+real_val (freal_add 10 freal1_3 frealx) 0;
+real_val (freal_add 10 freal1_3 frealx) 1;
+real_val (freal_add 10 freal1_3 frealx) 2;
+real_val (freal_add 10 freal1_3 frealx) 3;
+real_val (freal_add 10 freal1_3 frealx) 4;
+real_val (freal_add 10 freal1_3 frealx) 5;
+real_val (freal_add 10 freal1_3 frealx) 6;
+real_val (freal_add 10 freal1_3 frealx) 7;
+real_val (freal_add 10 freal1_3 frealx) 8;
+real_val (freal_add 10 freal1_3 frealx) 9;
+real_val (freal_add 10 freal1_3 frealx) 10;
 
-value freal1_2 = {freal i = if i = 0 then 5 else 0}.
-(freal_mul 10 freal1_2 freal1_2).freal 0;
-(freal_mul 10 freal1_2 freal1_2).freal 1;
-(freal_mul 10 freal1_2 freal1_2).freal 2;
-freal_series_mul freal1_2 {freal = freal_series_mul freal1_2 freal1_2} 2;
-(* very slow
-(freal_mul 10 freal1_2 (freal_mul 10 freal1_2 freal1_2)).freal 0;
-(freal_mul 10 freal1_2 (freal_mul 10 freal1_2 freal1_2)).freal 1;
-(freal_mul 10 freal1_2 (freal_mul 10 freal1_2 freal1_2)).freal 2;
-*)
+value freal1_2 = make_real (fun i → if i = 0 then 5 else 0).
+real_val (freal_mul 10 freal1_2 freal1_2) 0;
+real_val (freal_mul 10 freal1_2 freal1_2) 1;
+real_val (freal_mul 10 freal1_2 freal1_2) 2;
+freal_series_mul freal1_2 (make_real (freal_series_mul freal1_2 freal1_2)) 2;
+(* very slow *)
+value x = freal_mul 10 freal1_2 freal1_2.
+value y = freal_mul 10 freal1_2 x;
+real_val y 0;
+real_val y 1;
+real_val y 2;
+real_val y 3;
+real_val y 4;
+(* *)
 
 value freal1_7 =
-  {freal i =
+  make_real
+    (fun i →
      match i mod 6 with
      | 0 → 1 | 1 → 4 | 2 → 2
      | 3 → 8 | 4 → 5 | _ → 7
-     end}.
-value freal07 = {freal i = if i = 0 then 7 else 0}.
-(freal_mul 10 freal1_7 freal07).freal 0;
-(freal_mul 10 freal1_7 freal07).freal 1;
-(freal_mul 10 freal1_7 freal07).freal 2;
-value freal02 = {freal i = if i = 0 then 2 else 0}.
-(freal_mul 10 freal1_7 freal02).freal 0;
-(freal_mul 10 freal1_7 freal02).freal 1;
-(freal_mul 10 freal1_7 freal02).freal 2;
-(freal_mul 10 freal1_7 freal02).freal 3;
-(freal_mul 10 freal1_7 freal02).freal 4;
-(freal_mul 10 freal1_7 freal02).freal 5;
-(freal_mul 10 freal1_7 freal02).freal 6;
-(freal_mul 10 freal1_7 freal02).freal 7;
-(freal_mul 10 freal1_7 freal02).freal 8;
-(freal_mul 10 freal1_7 freal02).freal 9;
-(freal_mul 10 freal1_7 freal02).freal 10;
-(freal_mul 10 freal1_7 freal02).freal 11;
-(freal_mul 10 freal1_7 freal02).freal 12;
+     end).
+value freal07 = make_real (fun i → if i = 0 then 7 else 0).
+real_val (freal_mul 10 freal1_7 freal07) 0;
+real_val (freal_mul 10 freal1_7 freal07) 1;
+real_val (freal_mul 10 freal1_7 freal07) 2;
+value freal02 = make_real (fun i → if i = 0 then 2 else 0).
+real_val (freal_mul 10 freal1_7 freal02) 0;
+real_val (freal_mul 10 freal1_7 freal02) 1;
+real_val (freal_mul 10 freal1_7 freal02) 2;
+real_val (freal_mul 10 freal1_7 freal02) 3;
+real_val (freal_mul 10 freal1_7 freal02) 4;
+real_val (freal_mul 10 freal1_7 freal02) 5;
+real_val (freal_mul 10 freal1_7 freal02) 6;
+real_val (freal_mul 10 freal1_7 freal02) 7;
+real_val (freal_mul 10 freal1_7 freal02) 8;
+real_val (freal_mul 10 freal1_7 freal02) 9;
+real_val (freal_mul 10 freal1_7 freal02) 10;
+real_val (freal_mul 10 freal1_7 freal02) 11;
+real_val (freal_mul 10 freal1_7 freal02) 12;
