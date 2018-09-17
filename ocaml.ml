@@ -1,34 +1,39 @@
 (* implementation of reals between 0 and 1 *)
-(* should use big numbers! *)
+
+open Big_int;
 
 type real01 = { freal : int → int }.
 
 value lpo_max = 10;
 
+value big_int_0 = big_int_of_int 0;
+value big_int_1 = big_int_of_int 1;
+
 value rec pow a n =
-  if n = 0 then 1 else a * pow a (n - 1).
+   if n = 0 then big_int_1
+   else mult_int_big_int a (pow a (n - 1)).
 
 value rec summation_aux b len g =
   match len with
-  | 0 → 0
-  | _ → g b + summation_aux (b + 1) (len - 1) g
+  | 0 → big_int_0
+  | _ → add_big_int (g b) (summation_aux (b + 1) (len - 1) g)
   end.
 
 value summation b e g =
   summation_aux b (e + 1 - b) g.
 
 value nA r i n u =
-  summation (i + 1) (n - 1) (fun j → u j * pow r (n - 1 - j)).
+  summation (i + 1) (n - 1)
+    (fun j → mult_int_big_int (u j) (pow r (n - 1 - j))).
 
 value a_ge_1 r u i k =
   let n = r * (i + k + 3) in
-let _ = Printf.eprintf "n = %d\n%!" n in
   let s = n - i - 1 in
-let _ = Printf.eprintf "nA .. = %d\n%!" (nA r i n u mod pow r s) in
-let _ = Printf.eprintf "pow ... = %d\n%!"
-  ((pow r (k + 1) - 1) * pow r (s - k - 1)) in
-  if nA r i n u mod pow r s <
-     (pow r (k + 1) - 1) * pow r (s - k - 1) then False
+  if lt_big_int
+     (mod_big_int (nA r i n u) (pow r s))
+     (mult_big_int
+        (pred_big_int (pow r (k + 1)))
+        (pow r (s - k - 1))) then False
   else True.
 
 value lpo_fst u =
@@ -40,18 +45,16 @@ value lpo_fst u =
 value nat_prop_carr r u i =
   match lpo_fst (a_ge_1 r u i) with
   | None →
-let _ = Printf.eprintf "None\n%!" in
       let n = r * (i + 3) in
-      nA r i n u / pow r (n - i - 1) + 1
+      succ_big_int (div_big_int (nA r i n u) (pow r (n - i - 1)))
   | Some k →
-let _ = Printf.eprintf "Some %d\n%!" k in
       let n = r * (i + k + 3) in
-      nA r i n u / pow r (n - i - 1)
+      div_big_int (nA r i n u) (pow r (n - i - 1))
   end.
 
 value prop_carr r u i =
-  let d = u i + nat_prop_carr r u i in
-  d mod r.
+  let d = add_int_big_int (u i) (nat_prop_carr r u i) in
+  int_of_big_int (mod_big_int d (big_int_of_int r)).
 
 value freal_series_add x y i = x.freal i + y.freal i.
 
@@ -65,3 +68,4 @@ value freal817 =
 (freal_add 10 freal345 freal817).freal 0;
 (freal_add 10 freal345 freal817).freal 1;
 (freal_add 10 freal345 freal817).freal 2;
+(freal_add 10 freal345 freal817).freal 3;
