@@ -6,16 +6,13 @@ type real01 = { freal : int → int }.
 
 value lpo_max = 20;
 
-value big_int_0 = big_int_of_int 0;
-value big_int_1 = big_int_of_int 1;
-
 value rec pow a n =
-   if n = 0 then big_int_1
+   if n = 0 then unit_big_int
    else mult_int_big_int a (pow a (n - 1)).
 
 value rec summation_aux b len g =
   match len with
-  | 0 → big_int_0
+  | 0 → zero_big_int
   | _ → add_big_int (g b) (summation_aux (b + 1) (len - 1) g)
   end.
 
