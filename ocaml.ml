@@ -32,9 +32,7 @@ value rec list_seq start len =
   if len ≤ 0 then []
   else [start :: list_seq (start + 1) (len - 1)].
 
-value rec pow a n =
-   if n ≤ 0 then unit_big_int
-   else mult_int_big_int a (pow a (n - 1)).
+value pow = power_int_positive_int;
 
 value rec summation_aux b len g =
   if len ≤ 0 then 0
