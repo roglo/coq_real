@@ -136,3 +136,7 @@ value real0n n = make_real01 (fun i → if i = 0 then n else 0).
 real01_val_n 12 real1_7;
 real01_val_n 12 (real0n 2);
 real01_val_n 12 (real01_mul 10 real1_7 (real0n 2));
+
+real01_val_n 15 (make_real01 (fun i → match i with [ 0 → 2 | 1 → 3 | 2 → 9 | _ → 0 ]));
+real01_val_n 15 (make_real01 (fun i → match i with [ 0 → 4 | 1 → 6 | 2 → 4 | 3 → 9 | _ → 0 ]));
+real01_val_n 15 (real01_mul 10 (make_real01 (fun i → match i with [ 0 → 2 | 1 → 3 | 2 → 9 | _ → 0 ])) (make_real01 (fun i → match i with [ 0 → 4 | 1 → 6 | 2 → 4 | 3 → 9 | _ → 0 ])));
