@@ -48,14 +48,14 @@ value nA r i n u =
     (fun j → mult_int_big_int (u j) (pow r (n - 1 - j))).
 
 (* suitable for multiplications *)
-value glop r i k = r * (i + k + 3);
+value min_n r i k = r * (i + k + 3);
 (* suitable for additions *)
 (**)
-value glop r i k = i + k + 4;
+value min_n r i k = i + k + 4;
 (**)
 
 value a_ge_1 r u i k =
-  let n = glop r i k in
+  let n = min_n r i k in
   let s = n - i - 1 in
   if lt_big_int
      (mod_big_int (nA r i n u) (pow r s))
@@ -73,10 +73,10 @@ value lpo_fst u =
 value nat_prop_carr r u i =
   match lpo_fst (a_ge_1 r u i) with
   | None →
-      let n = glop r i 0 in
+      let n = min_n r i 0 in
       succ_big_int (div_big_int (nA r i n u) (pow r (n - i - 1)))
   | Some k →
-      let n = glop r i k in
+      let n = min_n r i k in
       div_big_int (nA r i n u) (pow r (n - i - 1))
   end.
 
