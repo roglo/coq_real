@@ -143,3 +143,8 @@ real01_val_n 15 (make_real01 (digits_of_string "4649"));
 real01_val_n 15
   (real01_mul 10 (make_real01 (digits_of_string "239"))
      (make_real01 (digits_of_string "4649"))).
+
+value glop n s t =
+  real01_val_n n
+  (real01_mul 10 (make_real01 (digits_of_string s))
+     (make_real01 (digits_of_string t)));
