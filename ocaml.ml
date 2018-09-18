@@ -102,6 +102,11 @@ value real01_val_n n x =
 value digits_of_string s i =
   if i < String.length s then Char.code s.[i] - Char.code '0' else 0;
 
+value q2r r n d =
+  make_real01 (loop n) where rec loop n i =
+    if i ≤ 0 then r * n / d
+    else loop (r * n mod d) (i - 1).
+
 value real345 = make_real01 (digits_of_string "345");
 value real817 = make_real01 (digits_of_string "817");
 real01_val_n 5 real345;
@@ -148,3 +153,5 @@ value glop n s t =
   real01_val_n n
   (real01_mul 10 (make_real01 (digits_of_string s))
      (make_real01 (digits_of_string t)));
+
+real01_val_n 20 (q2r 10 1 7);
