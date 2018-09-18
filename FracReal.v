@@ -279,30 +279,25 @@ Definition freal_mul_series {r : radix} a b i :=
 Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
 
+Definition min_n {r : radix} i k := rad * (i + k + 3).
+
 Definition A_ge_1 {r : radix} u i k :=
-  let n := rad * (i + k + 3) in
+  let n := min_n i k in
   let s := n - i - 1 in
   if lt_dec (nA i n u mod rad ^ s) ((rad ^ S k - 1) * rad ^ (s - S k)) then
     false
   else
     true.
 
-(* for addition, all A_ge_1 implies u i followed by either
-   - 9/9/9/9...
-   - 18/18/18/...
-   - 9/9/9...9/8/18/18/18...
-   for multiplication, to be determined...
- *)
-
 (* Propagation of Carries *)
 
 Definition nat_prop_carr {r : radix} u i :=
   match LPO_fst (A_ge_1 u i) with
   | inl _ =>
-      let n := rad * (i + 3) in
+      let n := min_n i 0 in
       nA i n u / rad ^ (n - i - 1) + 1
   | inr (exist _ k _) =>
-      let n := rad * (i + k + 3) in
+      let n := min_n i k in
       nA i n u / rad ^ (n - i - 1)
   end.
 
@@ -630,7 +625,7 @@ destruct (le_dec (i + j + 1) (n - 1)) as [H1| H1].
 Qed.
 
 Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
-  let n := rad * (i + k + 3) in
+  let n := min_n i k in
   let s := n - i - 1 in
   A_ge_1 u i k = false ↔
   nA i n u mod rad ^ s < (rad ^ S k - 1) * rad ^ (s - S k).
@@ -643,7 +638,7 @@ now destruct (lt_dec (nA i n u mod rad ^ s) ((rad ^ S k - 1) * t)).
 Qed.
 
 Theorem A_ge_1_true_iff {r : radix} : ∀ i u k,
-  let n := rad * (i + k + 3) in
+  let n := min_n i k in
   let s := n - i - 1 in
   A_ge_1 u i k = true ↔
   nA i n u mod rad ^ s ≥ (rad ^ S k - 1) * rad ^ (s - S k).
@@ -1208,6 +1203,7 @@ apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
 intros H1; apply Nat.nle_gt in H1.
 apply Bool.not_true_iff_false.
 apply A_ge_1_false_iff.
+unfold min_n.
 rewrite Nat.add_0_r, Nat.pow_1_r.
 remember (rad * (i + 3)) as n eqn:Hn.
 remember (n - i - 1) as s eqn:Hs.
@@ -1243,6 +1239,7 @@ apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
 intros H4; apply Nat.nle_gt in H4.
 apply Bool.not_true_iff_false.
 apply A_ge_1_false_iff.
+unfold min_n.
 replace (i + (j + 1) + 3) with (i + j + 4) by flia.
 replace (S (j + 1)) with (j + 2) by flia.
 remember (rad * (i + j + 4)) as n eqn:Hn.
@@ -1273,6 +1270,7 @@ Theorem A_ge_1_add_first_ge_rad {r : radix} : ∀ u i,
 Proof.
 intros * Hur Hu Hui.
 apply A_ge_1_true_iff in Hu.
+unfold min_n in Hu.
 rewrite Nat.add_0_r, Nat.pow_1_r in Hu.
 remember (rad * (i + 3)) as n eqn:Hn.
 remember (n - i - 1) as s eqn:Hs.
@@ -1325,6 +1323,7 @@ assert (H3 : ∀ k, v (i + k + 2) ≤ 2 * (rad - 1)). {
 }
 assert (H4 : A_ge_1 v i 0 = true). {
   apply A_ge_1_true_iff.
+  unfold min_n.
   rewrite Nat.add_0_r, Nat.pow_1_r.
   now rewrite <- Hn, <- Hs.
 }
@@ -1377,6 +1376,7 @@ assert (H2 : u (i + k + 2) < 2 * (rad - 1)). {
 clear H.
 apply Bool.not_true_iff_false.
 apply A_ge_1_false_iff.
+unfold min_n.
 remember (rad * (i + (k + 1) + 3)) as n eqn:Hn.
 replace (n - i - (k + 1) - 2) with (n - i - 1 - (k + 2)) by flia.
 remember (n - i - 1) as s eqn:Hs.
@@ -1468,12 +1468,13 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     intros H5; apply Nat.nlt_ge in H5; clear H4.
     apply Bool.not_true_iff_false.
     apply A_ge_1_false_iff.
-    remember (rad * (i + j + 3)) as n eqn:Hn.
+    remember (min_n i j) as n eqn:Hn.
     replace (n - i - j - 2) with (n - i - 1 - S j) by flia.
     remember (n - i - 1) as s eqn:Hs.
     move n before j; move s before n.
     assert (H6 : i + j + 3 ≤ n - 1). {
       rewrite Hn.
+      unfold min_n.
       destruct rad as [| rr]; [ easy | ].
       destruct rr; [ flia Hr | simpl; flia ].
     }
@@ -1525,6 +1526,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     rewrite nA_split with (e := i + j + 2); [ | flia H6 ].
     remember (i + j + 2) as t eqn:Ht.
     move t before s.
+    unfold min_n in Hn.
     replace (i + j + 3) with (i + j + 2 + 1) in Hn, H6 by flia.
     rewrite <- Ht in Hn, H6.
     replace (i + j + 1) with (t - 1) in H2, H5 by flia Ht.
@@ -1651,6 +1653,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     specialize (Hu (j + k + 1)) as H5.
     apply A_ge_1_true_iff in H5.
     apply A_ge_1_true_iff.
+    unfold min_n in H5 |-*.
     replace (i + (j + k + 1) + 3) with (i + j + k + 4) in H5 by flia.
     replace (i + j + (k + 1) + 3) with (i + j + k + 4) by flia.
     remember (rad * (i + j + k + 4)) as n eqn:Hn.
@@ -1777,6 +1780,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
    specialize (Hu (k + 1)) as H3.
    apply A_ge_1_true_iff in H3.
    apply A_ge_1_true_iff.
+   unfold min_n in H3 |-*.
    replace (i + (k + 1) + 3) with (i + k + 4) in H3 |-* by flia.
    remember (rad * (i + k + 4)) as n eqn:Hn.
    replace (n - i - (k + 1) - 2) with (n - i - 1 - (k + 2)) in H3 |-* by flia.
@@ -1847,6 +1851,7 @@ specialize radix_ge_2 as Hr.
 intros Hu.
 apply A_ge_1_true_iff in Hu.
 apply A_ge_1_true_iff.
+unfold min_n in Hu |-*.
 replace (i + (j + k) + 3) with (i + j + k + 3) in Hu by flia.
 remember (rad * (i + j + k + 3)) as n eqn:Hn.
 remember (n - (i + j) - 1) as s eqn:Hs.

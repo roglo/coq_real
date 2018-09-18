@@ -195,6 +195,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
    rewrite Nat.add_assoc, Nat.add_shuffle0.
    rewrite Nat.sub_add; [ | easy ].
    rewrite Nat_mod_add_same_l; [ | easy ].
+   unfold min_n; rewrite Nat.add_0_r.
    remember (rad * (i + k + 1 + 3)) as n2 eqn:Hn2.
    remember (n2 - (i + k + 1) - 1) as s2 eqn:Hs2.
    move s2 before n2.
@@ -217,6 +218,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
   *exfalso.
    destruct H4 as (j3 & Hjj3 & Hj3).
    apply A_ge_1_false_iff in Hj3.
+   unfold min_n in Hj3.
    remember (rad * (i + k + 1 + j3 + 3)) as n3 eqn:Hn3.
    remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
    move s3 before n3.
@@ -256,7 +258,8 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
   --intros j.
     replace (i + k + 1 + j) with (i + (k + j + 1)) by flia.
     apply H1.
-  --remember (rad * (i + k + 1 + 3)) as n3 eqn:Hn3.
+  --unfold min_n; rewrite Nat.add_0_r.
+    remember (rad * (i + k + 1 + 3)) as n3 eqn:Hn3.
     remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
     move s3 before n3.
     assert (Hr2s3 : 2 ≤ rad ^ s3). {
@@ -273,6 +276,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
   *exfalso.
    destruct H4 as (j3 & Hjj3 & Hj3).
    apply A_ge_1_false_iff in Hj3.
+   unfold min_n in Hj3.
    remember (rad * (i + k + 1 + j3 + 3)) as n3 eqn:Hn3.
    remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
    move s3 before n3.
@@ -288,6 +292,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
   destruct (LPO_fst (A_ge_1 (y ⊕ z) (i + k + 1))) as
       [H4| H4].
   *simpl.
+   unfold min_n; rewrite Nat.add_0_r.
    remember (rad * (i + k + 1 + 3)) as n3 eqn:Hn3.
    remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
    move s3 before n3.
@@ -338,6 +343,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
    (* after i+j1+1, y=9, z=9 and x=9 *)
    exfalso; apply A_ge_1_false_iff in Hj3.
    apply Nat.nle_gt in Hj3; apply Hj3; clear Hj3.
+   unfold min_n.
    remember (rad * (i + k + 1 + j3 + 3)) as n3 eqn:Hn3.
    remember (n3 - (i + k + 1) - 1) as s3 eqn:Hs3.
    move s3 before n3.
@@ -398,7 +404,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
 Qed.
 
 Theorem add_assoc_case_11_11 {r : radix} : ∀ x y z i n1 s1,
-  n1 = rad * (i + 3)
+  n1 = min_n i 0
   → s1 = n1 - i - 1
   → (∀ k, (x ⊕ (y + z)) (i + k + 1) = rad - 1)
   → (∀ k, (z ⊕ (y + x)) (i + k + 1) = rad - 1)
@@ -414,7 +420,7 @@ specialize radix_ge_2 as Hr.
 intros Hn1 Hs1 H1 H2 H3 H4.
 assert (Hr2s1 : 2 ≤ rad ^ s1). {
   destruct s1.
-  -rewrite Hn1 in Hs1.
+  -rewrite Hn1 in Hs1; unfold min_n in Hs1.
    destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
   -simpl.
    replace 2 with (2 * 1) by flia.
@@ -484,9 +490,9 @@ apply A_ge_1_add_all_true_if in H4; cycle 1.
 Qed.
 
 Theorem add_assoc_case_11_12 {r : radix} :  ∀ j2 x y z i n1 s1 n2 s2,
-  n1 = rad * (i + 3)
+  n1 = min_n i 0
   → s1 = n1 - i - 1
-  → n2 = rad * (i + j2 + 3)
+  → n2 = min_n i j2
   → s2 = n2 - i - 1
   → (∀ k, fd2n x (i + k + 1) = rad - 1)
   → (∀ k, A_ge_1 (y ⊕ z) i k = true)
@@ -502,6 +508,7 @@ intros Hn1 Hs1 Hn2 Hs2 Hx H3 Hj2.
 assert (Hr2s1 : 2 ≤ rad ^ s1). {
   destruct s1.
   -rewrite Hn1 in Hs1.
+   unfold min_n in Hs1.
    destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
   -simpl.
    replace 2 with (2 * 1) by flia.
@@ -513,6 +520,7 @@ rewrite <- Hn2, <- Hs2 in Hj2.
 assert (Hr2s2 : 2 ≤ rad ^ s2). {
   destruct s2.
   -rewrite Hn2 in Hs2.
+   unfold min_n in Hs2.
    destruct rad; [ easy | simpl in Hs2; flia Hs2 ].
   -simpl.
    replace 2 with (2 * 1) by flia.
@@ -547,7 +555,7 @@ apply A_ge_1_add_all_true_if in H3; cycle 1.
     rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
     rewrite <- Nat.pow_add_r.
     replace (S j2 + (s2 - S j2)) with s2; cycle 1.
-   ++rewrite Hs2, Hn2.
+   ++rewrite Hs2, Hn2; unfold min_n.
      destruct rad; [ easy | simpl; flia ].
    ++apply Nat.sub_le_mono_l.
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
@@ -582,7 +590,7 @@ apply A_ge_1_add_all_true_if in H3; cycle 1.
      rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
      rewrite <- Nat.pow_add_r.
      replace (S j2 + (s2 - S j2)) with s2; cycle 1.
-    **rewrite Hs2, Hn2.
+    **rewrite Hs2, Hn2; unfold min_n.
       destruct rad; [ easy | simpl; flia ].
     **apply Nat.sub_le_mono_l.
       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
@@ -653,6 +661,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
   move j2 before j1.
   apply A_ge_1_false_iff in Hj1.
   apply A_ge_1_false_iff in Hj2.
+  unfold min_n in Hj1, Hj2 |-*.
   remember (rad * (i + j1 + 3)) as n1 eqn:Hn1.
   remember (n1 - i - 1) as s1 eqn:Hs1.
   move n1 before j2.

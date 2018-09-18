@@ -139,7 +139,7 @@ destruct H3 as [H3| [H3| H3]].
        specialize (H3 (j - n - 1)).
        replace (n + (j - n - 1) + 1) with j in H3 by flia Hj.
        flia Hr H3.
-     ++destruct rad; [ easy | simpl; flia ].
+     ++unfold min_n; destruct rad; [ easy | simpl; flia ].
   *destruct H5 as (j & Hjj & Hj); clear H4.
    apply A_ge_1_false_iff in Hj.
    apply Nat.nle_gt in Hj; apply Hj; clear Hj.
@@ -153,7 +153,7 @@ destruct H3 as [H3| [H3| H3]].
        specialize (H3 (k - n - 1)).
        replace (n + (k - n - 1) + 1) with k in H3 by flia Hk.
        flia Hr H3.
-     ++destruct rad; [ easy | simpl; flia ].
+     ++unfold min_n; destruct rad; [ easy | simpl; flia ].
  +apply nA_dig_seq_ub.
   *intros k Hk.
    specialize (H3 (k - n - 1)).
@@ -174,7 +174,8 @@ destruct H3 as [H3| [H3| H3]].
   *intros k.
    replace (n + 1 + k + 1) with (n + (1 + k) + 1) by flia.
    apply Hur.
-  *remember (rad * (n + 1 + 3)) as n1 eqn:Hn1.
+  *unfold min_n; rewrite Nat.add_0_r.
+   remember (rad * (n + 1 + 3)) as n1 eqn:Hn1.
    remember (n1 - (n + 1) - 1) as s1 eqn:Hs1.
    move s1 before n1; symmetry in Hs1.
    unfold nA.
@@ -205,6 +206,7 @@ destruct H3 as [H3| [H3| H3]].
      now rewrite H3.
  +destruct H5 as (j & Hjj & Hj); simpl in H4.
   apply A_ge_1_false_iff in Hj.
+  unfold min_n in Hj, H4.
   remember (rad * (n + 1 + j + 3)) as n1 eqn:Hn1.
   remember (n1 - (n + 1) - 1) as s1 eqn:Hs1.
   destruct s1.
@@ -269,7 +271,7 @@ destruct H3 as [H3| [H3| H3]].
  unfold d2n, prop_carr in H3; simpl in H3.
  unfold nat_prop_carr in H3.
  destruct (LPO_fst (A_ge_1 u (n + (j + 1)))) as [H4| H4].
- +simpl in H3.
+ +unfold min_n in H3; rewrite Nat.add_0_r in H3; simpl in H3.
   remember (rad * (n + (j + 1) + 3)) as n2 eqn:Hn2.
   remember (n2 - (n + (j + 1)) - 1) as s2 eqn:Hs2.
   move s2 before n2.
@@ -327,6 +329,7 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H2| H2]; simpl in Huni.
    apply Hn.
  }
  exfalso; revert Hn'.
+ unfold min_n in Huni; rewrite Nat.add_0_r in Huni.
  rewrite Nat.add_assoc in Huni.
  apply not_prop_carr_all_9_all_ge_1; [ | easy | easy ].
  intros k.
@@ -717,7 +720,8 @@ unfold d2n, prop_carr; simpl.
 rewrite Hall.
 unfold nat_prop_carr.
 destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
--remember (rad * (i + k + 3)) as n1 eqn:Hn1.
+-unfold min_n; rewrite Nat.add_0_r.
+ remember (rad * (i + k + 3)) as n1 eqn:Hn1.
  remember (n1 - (i + k) - 1) as s1 eqn:Hs1.
  move s1 before n1.
  rewrite nA_all_9; cycle 1.
@@ -731,6 +735,7 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
 -destruct H1 as (j & Hjj & Hj).
  apply A_ge_1_false_iff in Hj.
  exfalso; apply Nat.nle_gt in Hj; apply Hj; clear Hj.
+ unfold min_n.
  remember (rad * (i + k + j + 3)) as n1 eqn:Hn1.
  remember (n1 - (i + k) - 1) as s1 eqn:Hs1.
  move s1 before n1.
@@ -760,7 +765,8 @@ unfold d2n, prop_carr; simpl.
 rewrite Hall.
 unfold nat_prop_carr.
 destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
--remember (rad * (i + k + 3)) as n1 eqn:Hn1.
+-unfold min_n; rewrite Nat.add_0_r.
+ remember (rad * (i + k + 3)) as n1 eqn:Hn1.
  remember (n1 - (i + k) - 1) as s1 eqn:Hs1.
  move s1 before n1.
  rewrite nA_all_18; cycle 1.
@@ -774,6 +780,7 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
 -destruct H1 as (j & Hjj & Hj).
  apply A_ge_1_false_iff in Hj.
  exfalso; apply Nat.nle_gt in Hj; apply Hj; clear Hj.
+ unfold min_n.
  remember (rad * (i + k + j + 3)) as n1 eqn:Hn1.
  remember (n1 - (i + k) - 1) as s1 eqn:Hs1.
  move s1 before n1.
@@ -814,7 +821,8 @@ intros Hbef Hwhi Haft *.
 unfold d2n, prop_carr; simpl.
 unfold nat_prop_carr.
 destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
--remember (rad * (i + k + 3)) as n1 eqn:Hn1.
+-unfold min_n; rewrite Nat.add_0_r.
+ remember (rad * (i + k + 3)) as n1 eqn:Hn1.
  remember (n1 - (i + k) - 1) as s1 eqn:Hs1.
  move s1 before n1.
  destruct (lt_dec k j) as [H2| H2].
@@ -867,6 +875,7 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
 -destruct H1 as (j1 & Hjj & Hj).
  apply A_ge_1_false_iff in Hj.
  exfalso; apply Nat.nle_gt in Hj; apply Hj; clear Hj.
+ unfold min_n.
  remember (rad * (i + k + j1 + 3)) as n1 eqn:Hn1.
  remember (n1 - (i + k) - 1) as s1 eqn:Hs1.
  move s1 before n1.
