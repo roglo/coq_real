@@ -9,11 +9,13 @@ open Big_int;
 type real01 = { freal : int → int; freal_comp : Hashtbl.t int int }.
 
 value lpo_max = 20;
+value max_i = ref 0;
 
 value make_real f = {freal = f; freal_comp = Hashtbl.create 1}.
 value real_val x i =
   try Hashtbl.find x.freal_comp i with
   [ Not_found → do {
+let _ = max_i.val := max i max_i.val in
       let v = x.freal i in
       Hashtbl.add x.freal_comp i v;
       v
@@ -45,8 +47,15 @@ value nA r i n u =
   big_int_summation (i + 1) (n - 1)
     (fun j → mult_int_big_int (u j) (pow r (n - 1 - j))).
 
+(* suitable for multiplications *)
+value glop r i k = r * (i + k + 3);
+(* suitable for additions *)
+(**)
+value glop r i k = i + k + 4;
+(**)
+
 value a_ge_1 r u i k =
-  let n = r * (i + k + 3) in
+  let n = glop r i k in
   let s = n - i - 1 in
   if lt_big_int
      (mod_big_int (nA r i n u) (pow r s))
@@ -64,10 +73,10 @@ value lpo_fst u =
 value nat_prop_carr r u i =
   match lpo_fst (a_ge_1 r u i) with
   | None →
-      let n = r * (i + 3) in
+      let n = glop r i 0 in
       succ_big_int (div_big_int (nA r i n u) (pow r (n - i - 1)))
   | Some k →
-      let n = r * (i + k + 3) in
+      let n = glop r i k in
       div_big_int (nA r i n u) (pow r (n - i - 1))
   end.
 
@@ -119,8 +128,7 @@ value freal1_2 = make_real (fun i → if i = 0 then 5 else 0).
 real_val (freal_mul 10 freal1_2 freal1_2) 0;
 real_val (freal_mul 10 freal1_2 freal1_2) 1;
 real_val (freal_mul 10 freal1_2 freal1_2) 2;
-freal_series_mul freal1_2 (make_real (freal_series_mul freal1_2 freal1_2)) 2;
-(* very slow *)
+(* slow *)
 value x = freal_mul 10 freal1_2 freal1_2.
 value y = freal_mul 10 freal1_2 x;
 real_val y 0;
