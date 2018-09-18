@@ -1,4 +1,5 @@
 (* implementation of reals between 0 and 1 *)
+(* translated from coq version and adapted *)
 
 (*
 ocaml -I +site-lib/camlp5 camlp5r.cma nums.cma
@@ -8,20 +9,20 @@ open Big_int;
 
 value lpo_max = 20;
 
-type real01 = { freal : int → int; freal_comp : Hashtbl.t int int }.
+type real01 = { rseq : int → int; rseq_comp : Hashtbl.t int int }.
 
 value max_i = ref 0;
 
-value make_real f = {freal = f; freal_comp = Hashtbl.create 1}.
-value real_val x i =
+value make_real01 f = {rseq = f; rseq_comp = Hashtbl.create 1}.
+value real01_val x i =
 (*
-  x.freal i.
+  x.rseq i.
 *)
-  try Hashtbl.find x.freal_comp i with
+  try Hashtbl.find x.rseq_comp i with
   | Not_found → do {
       max_i.val := max i max_i.val;
-      let v = x.freal i in
-      Hashtbl.add x.freal_comp i v;
+      let v = x.rseq i in
+      Hashtbl.add x.rseq_comp i v;
       v
     }
   end.
@@ -53,14 +54,7 @@ value nA r i n u =
   big_int_summation (i + 1) (n - 1)
     (fun j → mult_int_big_int (u j) (pow r (n - 1 - j))).
 
-(* suitable for multiplications *)
-value min_n r i k = r * (i + k + 3);
-(* suitable for additions *)
-(**)
-value min_n r i k = i + k + 4;
-(**)
-
-value a_ge_1 r u i k =
+value a_ge_1 r min_n u i k =
   let n = min_n r i k in
   let s = n - i - 1 in
   if lt_big_int
@@ -76,8 +70,8 @@ value lpo_fst u =
     else if u k then loop (n - 1) (k + 1)
     else Some k.
 
-value nat_prop_carr r u i =
-  match lpo_fst (a_ge_1 r u i) with
+value nat_prop_carr r min_n u i =
+  match lpo_fst (a_ge_1 r min_n u i) with
   | None →
       let n = min_n r i 0 in
       succ_big_int (div_big_int (nA r i n u) (pow r (n - i - 1)))
@@ -86,59 +80,61 @@ value nat_prop_carr r u i =
       div_big_int (nA r i n u) (pow r (n - i - 1))
   end.
 
-value prop_carr r u i =
-  let d = add_int_big_int (u i) (nat_prop_carr r u i) in
+value prop_carr r min_n u i =
+  let d = add_int_big_int (u i) (nat_prop_carr r min_n u i) in
   int_of_big_int (mod_big_int d (big_int_of_int r)).
 
-value freal_series_add x y i = real_val x i + real_val y i.
-value freal_series_mul x y i =
-  match i with
-  | 0 → 0
-  | _ → summation 0 (i - 1) (fun j → real_val x j * real_val y (i - 1 - j))
-  end.
+value real01_series_add x y i = real01_val x i + real01_val y i.
+value real01_series_mul x y i =
+  if i = 0 then 0
+  else
+    summation 0 (i - 1) (fun j → real01_val x j * real01_val y (i - 1 - j)).
 
-value freal_add r x y =
-  make_real (prop_carr r (freal_series_add x y));
-value freal_mul r x y =
-  make_real (prop_carr r (freal_series_mul x y));
+value min_n_add r i k = i + k + 4;
+value min_n_mul r i k = r * (i + k + 3);
 
-value real_val_n n x =
-  List.map (real_val x) (list_seq 0 n).
+value real01_add r x y =
+  make_real01 (prop_carr r min_n_add (real01_series_add x y));
+value real01_mul r x y =
+  make_real01 (prop_carr r min_n_mul (real01_series_mul x y));
 
-value freal345 =
-  make_real (fun i → match i with | 0 → 3 | 1 → 4 | 2 → 5 | _ → 0 end);
-value freal817 =
-  make_real (fun i → match i with | 0 → 8 | 1 → 1 | 2 → 7 | _ → 0 end).
-real_val_n 5 freal345;
-real_val_n 5 freal817;
-real_val_n 5 (freal_add 10 freal345 freal817);
+value real01_val_n n x =
+  List.map (real01_val x) (list_seq 0 n).
 
-value freal1_3 = make_real (fun i → 3);
-value freal1_6 = make_real (fun i → 6);
-real_val_n 10 freal1_3;
-real_val_n 10 freal1_6;
-real_val_n 10 (freal_add 10 freal1_3 freal1_6);
+value real345 =
+  make_real01 (fun i → match i with | 0 → 3 | 1 → 4 | 2 → 5 | _ → 0 end);
+value real817 =
+  make_real01 (fun i → match i with | 0 → 8 | 1 → 1 | 2 → 7 | _ → 0 end).
+real01_val_n 5 real345;
+real01_val_n 5 real817;
+real01_val_n 5 (real01_add 10 real345 real817);
 
-value frealx = make_real (fun i → if i < 10 then 6 else 0).
-real_val_n 13 freal1_3;
-real_val_n 13 frealx;
-real_val_n 13 (freal_add 10 freal1_3 frealx);
+value real1_3 = make_real01 (fun i → 3);
+value real1_6 = make_real01 (fun i → 6);
+real01_val_n 10 real1_3;
+real01_val_n 10 real1_6;
+real01_val_n 10 (real01_add 10 real1_3 real1_6);
 
-value freal1_2 = make_real (fun i → if i = 0 then 5 else 0).
-real_val_n 3 (freal_mul 10 freal1_2 freal1_2).
+value realx = make_real01 (fun i → if i < 10 then 6 else 0).
+real01_val_n 13 real1_3;
+real01_val_n 13 realx;
+real01_val_n 13 (real01_add 10 real1_3 realx);
 
-value freal1_7 =
-  make_real
+value real1_2 = make_real01 (fun i → if i = 0 then 5 else 0).
+real01_val_n 3 (real01_mul 10 real1_2 real1_2).
+
+value real1_7 =
+  make_real01
     (fun i →
      match i mod 6 with
      | 0 → 1 | 1 → 4 | 2 → 2
      | 3 → 8 | 4 → 5 | _ → 7
      end).
-value freal07 = make_real (fun i → if i = 0 then 7 else 0).
-real_val_n 8 freal1_7;
-real_val_n 8 freal07;
-real_val_n 8 (freal_mul 10 freal1_7 freal07);
-value freal0n n = make_real (fun i → if i = 0 then n else 0).
-real_val_n 12 freal1_7;
-real_val_n 12 (freal0n 2);
-real_val_n 12 (freal_mul 10 freal1_7 (freal0n 2));
+value real07 = make_real01 (fun i → if i = 0 then 7 else 0).
+real01_val_n 8 real1_7;
+real01_val_n 8 real07;
+real01_val_n 8 (real01_mul 10 real1_7 real07);
+value real0n n = make_real01 (fun i → if i = 0 then n else 0).
+real01_val_n 12 real1_7;
+real01_val_n 12 (real0n 2);
+real01_val_n 12 (real01_mul 10 real1_7 (real0n 2));
