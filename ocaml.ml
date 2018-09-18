@@ -99,10 +99,11 @@ value real01_mul r x y =
 value real01_val_n n x =
   List.map (real01_val x) (list_seq 0 n).
 
-value real345 =
-  make_real01 (fun i → match i with | 0 → 3 | 1 → 4 | 2 → 5 | _ → 0 end);
-value real817 =
-  make_real01 (fun i → match i with | 0 → 8 | 1 → 1 | 2 → 7 | _ → 0 end).
+value digits_of_string s i =
+  if i < String.length s then Char.code s.[i] - Char.code '0' else 0;
+
+value real345 = make_real01 (digits_of_string "345");
+value real817 = make_real01 (digits_of_string "817");
 real01_val_n 5 real345;
 real01_val_n 5 real817;
 real01_val_n 5 (real01_add 10 real345 real817);
@@ -137,6 +138,8 @@ real01_val_n 12 real1_7;
 real01_val_n 12 (real0n 2);
 real01_val_n 12 (real01_mul 10 real1_7 (real0n 2));
 
-real01_val_n 15 (make_real01 (fun i → match i with [ 0 → 2 | 1 → 3 | 2 → 9 | _ → 0 ]));
-real01_val_n 15 (make_real01 (fun i → match i with [ 0 → 4 | 1 → 6 | 2 → 4 | 3 → 9 | _ → 0 ]));
-real01_val_n 15 (real01_mul 10 (make_real01 (fun i → match i with [ 0 → 2 | 1 → 3 | 2 → 9 | _ → 0 ])) (make_real01 (fun i → match i with [ 0 → 4 | 1 → 6 | 2 → 4 | 3 → 9 | _ → 0 ])));
+real01_val_n 15 (make_real01 (digits_of_string "239"));
+real01_val_n 15 (make_real01 (digits_of_string "4649"));
+real01_val_n 15
+  (real01_mul 10 (make_real01 (digits_of_string "239"))
+     (make_real01 (digits_of_string "4649"))).
