@@ -704,6 +704,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
      move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
      move Hjj2 before Hjj1.
      apply Nat.lt_sub_lt_add_r in Hj2.
+...
      remember (freal_shift (i + 1) x) as xs eqn:Hxs.
      remember (freal_shift (i + 1) y) as ys eqn:Hys.
      move ys before xs.
