@@ -13,6 +13,7 @@ Definition digit_9 {r : radix} := mkdig _ (rad - 1) pred_rad_lt_rad.
 Definition freal_999 {r : radix} := {| freal i := digit_9 |}.
 
 Definition freal_shift {r : radix} k x := {| freal i := freal x (k + i) |}.
+Arguments freal_shift _ _ x%F.
 
 Require Import Morphisms.
 Instance gr_add_morph {r : radix} :
@@ -710,14 +711,59 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
        unfold "≤"%F.
        rewrite freal_normalize_add.
        remember (freal_normalize xs) as xsn eqn:Hxsn.
+       move xsn before ys.
        unfold freal_norm_le.
        destruct (LPO_fst (has_same_digits (xs + ys)%F xsn)) as [H5| H5];
          [ easy | ].
        destruct H5 as (j & Hjj & Hj).
+       apply has_same_digits_false_iff in Hj.
        destruct (lt_dec (fd2n (xs + ys) j) (fd2n xsn j)) as [H5| H5];
          [ easy | ].
-       apply Nat.nlt_ge in H5.
-       apply has_same_digits_false_iff in Hj.
+       assert (H6 : fd2n xsn j < fd2n (xs + ys) j) by flia Hj H5.
+       clear Hj H5.
+       apply Nat.nle_gt in H6; apply H6; clear H6.
+(**)
+       subst xsn.
+       unfold freal_normalize, fd2n at 2; simpl.
+       unfold normalize.
+       destruct (LPO_fst (is_9_strict_after (freal xs) j)) as [H5| H5].
+       -specialize (is_9_strict_after_all_9 _ _ H5) as H6; clear H5.
+        assert (H5 : ∀ k, fd2n x (i + j + k + 2) = rad - 1). {
+          intros k.
+          specialize (H6 k).
+          rewrite Hxs in H6.
+          unfold d2n in H6; simpl in H6.
+          unfold fd2n.
+          now replace (i + 1 + (j + k + 1)) with (i + j + k + 2) in H6 by flia.
+        }
+        destruct (lt_dec (S (d2n (freal xs) j)) rad) as [H7| H7].
+        +simpl.
+         unfold d2n, fd2n.
+Theorem glop {r : radix} : ∀ x y i, freal_norm_eq (freal_shift i (x + y)) (freal_shift i x + freal_shift i y)%F.
+Proof.
+intros * j.
+unfold freal_shift, fd2n.
+unfold "+"%F, "⊕", fd2n; simpl.
+f_equal; f_equal.
+unfold nat_prop_carr.
+...
+simpl.
+remember prop_carr as f; simpl; subst f.
+unfold "⊕" at 2.
+unfold prop_carr at 2.
+unfold fd2n.
+remember prop_carr as f; simpl; subst f.
+remember freal_add as f; simpl; subst f.
+
+...
+rewrite Hxs, Hys.
+rewrite <- glop.
+unfold freal_shift; simpl.
+...
+       rewrite Hxsn, Hxs, Hys.
+       unfold freal_shift, fd2n; simpl.
+       unfold "⊕", fd2n; simpl.
+       unfold normalize.
 ...
        destruct (freal_eq_dec xs freal_999) as [Hx| Hx].
 ...
