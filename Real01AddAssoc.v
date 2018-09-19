@@ -746,17 +746,10 @@ unfold freal_shift, fd2n.
 unfold "+"%F, "⊕", fd2n; simpl.
 f_equal; f_equal.
 unfold nat_prop_carr.
-...
-simpl.
-remember prop_carr as f; simpl; subst f.
-unfold "⊕" at 2.
-unfold prop_carr at 2.
-unfold fd2n.
-remember prop_carr as f; simpl; subst f.
-remember freal_add as f; simpl; subst f.
-
-...
+Admitted.
 rewrite Hxs, Hys.
+Search freal_norm_eq.
+...
 rewrite <- glop.
 unfold freal_shift; simpl.
 ...
