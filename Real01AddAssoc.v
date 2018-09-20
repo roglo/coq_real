@@ -835,15 +835,14 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
           rewrite Nat.add_assoc in H1.
           left; flia Hr H1.
          *apply Nat.nlt_ge in H6.
-...
-          rewrite Nat_mod_less_small in H1.
-         --rewrite Nat.add_sub_assoc in H1; [ | easy ].
+          destruct (lt_dec (fd2n y (i + 1) + fd2n z (i + 1) + 2) (2 * rad))
+            as [H7| H7].
+         --rewrite Nat_mod_less_small in H1; [ | easy ].
+           rewrite Nat.add_sub_assoc in H1; [ | easy ].
            right; right; right; left; flia Hr H1.
-         --split; [ easy | ].
-           specialize (digit_lt_radix (freal y (i + 1))) as Hy.
-           specialize (digit_lt_radix (freal z (i + 1))) as Hz.
-...
-           unfold fd2n; flia Hy Hz.
+         --apply Nat.nlt_ge in H7.
+(* case 3r-3 to be added! *)
+     }
 ...
      remember (freal_shift (i + 1) x) as xs eqn:Hxs.
      remember (freal_shift (i + 1) y) as ys eqn:Hys.
