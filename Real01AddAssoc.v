@@ -804,6 +804,14 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
          now right; left.
         +apply Nat.nlt_ge in H6.
          rewrite Nat_mod_less_small in H1.
+         unfold nat_prop_carr in Hc.
+         destruct (LPO_fst (A_ge_1 (λ i : nat, dig (freal y i) + dig (freal z i)) (i + 1))) as [H7| H7].
+         *flia Hc.
+         *destruct H7 as (j & Hjj & Hj).
+          apply A_ge_1_false_iff in Hj.
+          symmetry in Hc.
+          apply Nat.div_small_iff in Hc; [ | now apply Nat.pow_nonzero ].
+          rewrite Nat.mod_small in Hj; [ | easy ].
 (* est-ce que je ne suis pas en train de faire n'importe quoi, là ? *)
 ...
      remember (freal_shift (i + 1) x) as xs eqn:Hxs.
