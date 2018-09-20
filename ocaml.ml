@@ -102,6 +102,9 @@ value real01_val_n n x =
 value digits_of_string s i =
   if i < String.length s then Char.code s.[i] - Char.code '0' else 0;
 
+value string_of_digits l =
+  String.concat "" (List.map string_of_int l);
+
 value q2r r n d =
   make_real01 (loop n) where rec loop n i =
     if i ≤ 0 then r * n / d
@@ -149,9 +152,10 @@ real01_val_n 15
   (real01_mul 10 (make_real01 (digits_of_string "239"))
      (make_real01 (digits_of_string "4649"))).
 
-value glop n s t =
-  real01_val_n n
-  (real01_mul 10 (make_real01 (digits_of_string s))
-     (make_real01 (digits_of_string t)));
-
 real01_val_n 20 (q2r 10 1 7);
+
+value mul_str s t =
+  string_of_digits
+    (real01_val_n (String.length s + String.length t)
+       (real01_mul 10 (make_real01 (digits_of_string s))
+       (make_real01 (digits_of_string t))));
