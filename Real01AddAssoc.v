@@ -835,6 +835,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
           rewrite Nat.add_assoc in H1.
           left; flia Hr H1.
          *apply Nat.nlt_ge in H6.
+...
           rewrite Nat_mod_less_small in H1.
          --rewrite Nat.add_sub_assoc in H1; [ | easy ].
            right; right; right; left; flia Hr H1.
