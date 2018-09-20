@@ -842,8 +842,8 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
            right; right; right; left; flia Hr H1.
          --apply Nat.nlt_ge in H7.
 (* case 3r-3 to be added! *)
-     }
 ...
+     }
      remember (freal_shift (i + 1) x) as xs eqn:Hxs.
      remember (freal_shift (i + 1) y) as ys eqn:Hys.
      move ys before xs.
