@@ -617,6 +617,56 @@ apply H with (i := i + 1); intros k.
 -rewrite Nat.add_shuffle0; apply H2.
 Qed.
 
+Theorem nat_prop_carr_le_2 {r : radix} : ∀ u i,
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
+  → nat_prop_carr u i ≤ 2.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur.
+unfold nat_prop_carr.
+destruct (LPO_fst (A_ge_1 u i)) as [H1| H1].
+-specialize (A_ge_1_add_all_true_if u i Hur H1) as H.
+ destruct H as [H| [H| H]].
+ +rewrite Nat.div_small; [ flia | ].
+  rewrite nA_all_9; [ | easy ].
+  apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+ +rewrite nA_all_18; [ | easy ].
+  rewrite Nat_div_less_small; [ easy | ].
+  remember (min_n i 0 - i - 1) as s eqn:Hs.
+  split.
+  *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   replace (2 * rad ^ s) with (rad ^ s + rad ^ s) by flia.
+   rewrite <- Nat.add_sub_assoc; [ flia | ].
+   destruct s.
+  --unfold min_n in Hs.
+    destruct rad; [ easy | simpl in Hs; flia Hs ].
+  --simpl; replace 2 with (2 * 1) by flia.
+    apply Nat.mul_le_mono; [ easy | ].
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
+   replace 2 with (2 * 1) at 1 by flia.
+   apply Nat.mul_le_mono_l.
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+ +destruct H as (j & Hbef & Hwhi & Haft).
+  rewrite (nA_9_8_all_18 j); [ | easy | easy | easy ].
+  rewrite Nat.div_small; [ flia | ].
+  apply Nat.sub_lt.
+  *destruct (le_dec (i + j + 1) (min_n i 0 - 1)) as [H| H].
+  --remember (min_n i 0 - i - 1) as s eqn:Hs.
+    destruct s.
+   ++unfold min_n in Hs.
+     destruct rad; [ easy | simpl in Hs; flia Hs ].
+   ++simpl; replace 2 with (2 * 1) by flia.
+     apply Nat.mul_le_mono; [ easy | ].
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  --now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *destruct (le_dec (i + j + 1) (min_n i 0 - 1)); flia.
+-destruct H1 as (j & Hjj & Hj).
+...
+
 Theorem add_assoc_case_11 {r : radix} : ∀ x y z i,
   (∀ k, (x ⊕ (y + z)) (i + k + 1) = rad - 1)
   → (∀ k, (z ⊕ (y + x)) (i + k + 1) = rad - 1)
@@ -709,6 +759,20 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
         z ≠ 0, otherwise would contradict H2
         x cannot end with and infinity of 0s, or would contradict H1
         z cannot end with and infinity of 0s, or would contradict H2 *)
+     assert
+       (H5 : fd2n x (i + 1) + fd2n y (i + 1) + fd2n z (i + 1) = rad - 2
+           ∨ fd2n x (i + 1) + fd2n y (i + 1) + fd2n z (i + 1) = rad - 1
+           ∨ fd2n x (i + 1) + fd2n y (i + 1) + fd2n z (i + 1) = 2 * ( rad - 1)). {
+       specialize (H1 0); rewrite Nat.add_0_r in H1.
+       unfold "+"%F, fd2n in H1; simpl in H1.
+       unfold "⊕", fd2n in H1; simpl in H1.
+       do 3 rewrite fold_fd2n in H1.
+Check nat_prop_carr_le_2.
+...
+       assert
+         (H :
+          nat_prop_carr (λ i, dig (freal y i) + dig (freal z i)) (i + 1)
+          ≤ 1). {
 ...
      remember (freal_shift (i + 1) x) as xs eqn:Hxs.
      remember (freal_shift (i + 1) y) as ys eqn:Hys.
