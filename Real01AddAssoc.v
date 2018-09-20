@@ -772,6 +772,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
         z ≠ 0, otherwise would contradict H2
         x cannot end with and infinity of 0s, or would contradict H1
         z cannot end with and infinity of 0s, or would contradict H2 *)
+...
      assert
        (H5 : fd2n x (i + 1) + fd2n y (i + 1) + fd2n z (i + 1) = rad - 2
            ∨ fd2n x (i + 1) + fd2n y (i + 1) + fd2n z (i + 1) = rad - 1
