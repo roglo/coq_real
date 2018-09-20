@@ -671,8 +671,14 @@ destruct (LPO_fst (A_ge_1 u i)) as [H1| H1].
  +rewrite Nat_div_less_small; [ now apply Nat.le_succ_r; left | ].
   apply Nat.nlt_ge in H1.
   split; [ easy | ].
-Search (nA _ _ _ < _).
-...
+  specialize (nA_upper_bound_for_add u i n Hur) as H.
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H.
+  eapply Nat.le_lt_trans; [ apply H | ].
+  apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
+  replace 2 with (2 * 1) at 1 by flia.
+  apply Nat.mul_le_mono_l.
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+Qed.
 
 Theorem add_assoc_case_11 {r : radix} : ∀ x y z i,
   (∀ k, (x ⊕ (y + z)) (i + k + 1) = rad - 1)
@@ -775,6 +781,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
        unfold "⊕", fd2n in H1; simpl in H1.
        do 3 rewrite fold_fd2n in H1.
 Check nat_prop_carr_le_2.
+(* case 2 would not work *)
 ...
        assert
          (H :
