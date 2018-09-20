@@ -665,6 +665,13 @@ destruct (LPO_fst (A_ge_1 u i)) as [H1| H1].
   --now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
   *destruct (le_dec (i + j + 1) (min_n i 0 - 1)); flia.
 -destruct H1 as (j & Hjj & Hj).
+ remember (min_n i j) as n eqn:Hs.
+ destruct (lt_dec (nA i n u) (rad ^ (n - i - 1))) as [H1| H1].
+ +rewrite Nat.div_small; [ apply Nat.le_0_2 | easy ].
+ +rewrite Nat_div_less_small; [ now apply Nat.le_succ_r; left | ].
+  apply Nat.nlt_ge in H1.
+  split; [ easy | ].
+Search (nA _ _ _ < _).
 ...
 
 Theorem add_assoc_case_11 {r : radix} : ∀ x y z i,
