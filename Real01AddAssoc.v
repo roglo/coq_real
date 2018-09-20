@@ -780,8 +780,8 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
        unfold "+"%F, fd2n in H1; simpl in H1.
        unfold "⊕", fd2n in H1; simpl in H1.
        do 3 rewrite fold_fd2n in H1.
-Check nat_prop_carr_le_2.
-(* case for 2 would not work *)
+specialize (nat_prop_carr_le_2 (λ i : nat, dig (freal y i) + dig (freal z i)) (i + 1)) as H.
+(* case for "≤ 2" would not work *)
 ...
        assert
          (H :
