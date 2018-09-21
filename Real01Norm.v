@@ -562,29 +562,29 @@ destruct H as [H| [H| H]]; destruct H as (H1, H2).
  +easy.
 Qed.
 
-Theorem eq_all_prop_carr_9_cond4 {r : radix} : ∀ u n,
-  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
-  → (∀ k, d2n (prop_carr u) (n + k) = rad - 1)
-  → ∀ k (i := n + k + 1),
-     u i = rad - 1 ∧ (u (i + 1) = rad - 2 ∨ u (i + 1) = rad - 1) ∨
-     u i = rad - 2 ∧ u (i + 1) = 2 * (rad - 1) ∨
-     u i = 2 * (rad - 1) ∧ u (i + 1) = 2 * (rad - 1).
+Theorem eq_all_prop_carr_9_cond4 {r : radix} : ∀ u i,
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
+  → (∀ k, d2n (prop_carr u) (i + k) = rad - 1)
+  → ∀ j (k := i + j + 1),
+     u k = rad - 1 ∧ (u (k + 1) = rad - 2 ∨ u (k + 1) = rad - 1) ∨
+     u k = rad - 2 ∧ u (k + 1) = 2 * (rad - 1) ∨
+     u k = 2 * (rad - 1) ∧ u (k + 1) = 2 * (rad - 1).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur Hn k.
-specialize (eq_all_prop_carr_9_cond3 u n Hur Hn k) as H.
-remember (n + k + 1) as i eqn:Hi.
+intros Hur Hi *.
+specialize (eq_all_prop_carr_9_cond3 u i Hur Hi j) as H.
+remember (i + j + 1) as m eqn:Hn.
 destruct H as [H| [H| H]]; [ now left | | ].
 -right; left.
- destruct H as (Hui & j & Hlj & Hj).
+ destruct H as (Hui & n & Hlj & Hj).
  split; [ easy | ].
- destruct j; [ now rewrite Nat.add_0_r in Hj | ].
- specialize (Hlj j (Nat.lt_succ_diag_r j)) as H1.
- specialize (eq_all_prop_carr_9_cond3 u n Hur Hn (k + j + 1)) as H.
- rewrite Hi in Hj.
- replace (n + (k + j + 1) + 1) with (n + k + 1 + S j) in H by flia.
- replace (n + k + 1 + S j) with (i + j + 1) in H, Hj by flia Hi.
+ destruct n; [ now rewrite Nat.add_0_r in Hj | ].
+ specialize (Hlj n (Nat.lt_succ_diag_r n)) as H1.
+ specialize (eq_all_prop_carr_9_cond3 u i Hur Hi (j + n + 1)) as H.
+ rewrite Hn in Hj.
+ replace (i + (j + n + 1) + 1) with (i + j + 1 + S n) in H by flia.
+ replace (i + j + 1 + S n) with (m + n + 1) in H, Hj by flia Hn.
  destruct H as [H| [H| H]]; destruct H as (H2, H3).
  +exfalso.
   rewrite Hj in H3.
@@ -592,14 +592,14 @@ destruct H as [H| [H| H]]; [ now left | | ].
  +rewrite H1 in H2; flia Hr H2.
  +rewrite H1 in H2; flia Hr H2.
 -right; right.
- destruct H as (Hui & j & Hlj & Hj).
+ destruct H as (Hui & n & Hlj & Hj).
  split; [ easy | ].
- destruct j; [ now rewrite Nat.add_0_r in Hj | ].
- specialize (Hlj j (Nat.lt_succ_diag_r j)) as H1.
- specialize (eq_all_prop_carr_9_cond3 u n Hur Hn (k + j + 1)) as H.
- rewrite Hi in Hj.
- replace (n + (k + j + 1) + 1) with (n + k + 1 + S j) in H by flia.
- replace (n + k + 1 + S j) with (i + j + 1) in H, Hj by flia Hi.
+ destruct n; [ now rewrite Nat.add_0_r in Hj | ].
+ specialize (Hlj n (Nat.lt_succ_diag_r n)) as H1.
+ specialize (eq_all_prop_carr_9_cond3 u i Hur Hi (j + n + 1)) as H.
+ rewrite Hn in Hj.
+ replace (i + (j + n + 1) + 1) with (i + j + 1 + S n) in H by flia.
+ replace (i + j + 1 + S n) with (m + n + 1) in H, Hj by flia Hn.
  destruct H as [H| [H| H]]; destruct H as (H2, H3).
  +exfalso.
   rewrite Hj in H3.
@@ -607,6 +607,8 @@ destruct H as [H| [H| H]]; [ now left | | ].
  +rewrite H1 in H2; flia Hr H2.
  +rewrite H1 in H2; flia Hr H2.
 Qed.
+
+...
 
 Theorem eq_all_prop_carr_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
