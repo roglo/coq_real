@@ -574,41 +574,40 @@ intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hi *.
 specialize (eq_all_prop_carr_9_cond3 u i Hur Hi j) as H.
-remember (i + j + 1) as m eqn:Hn.
+remember (i + j + 1) as n eqn:Hn.
+subst k; rename n into k; rename Hn into Hk.
 destruct H as [H| [H| H]]; [ now left | | ].
 -right; left.
- destruct H as (Hui & n & Hlj & Hj).
+ destruct H as (Huk & n & Hln & Hn).
  split; [ easy | ].
- destruct n; [ now rewrite Nat.add_0_r in Hj | ].
- specialize (Hlj n (Nat.lt_succ_diag_r n)) as H1.
+ destruct n; [ now rewrite Nat.add_0_r in Hn | ].
+ specialize (Hln n (Nat.lt_succ_diag_r n)) as H1.
  specialize (eq_all_prop_carr_9_cond3 u i Hur Hi (j + n + 1)) as H.
- rewrite Hn in Hj.
+ rewrite Hk in Hn.
  replace (i + (j + n + 1) + 1) with (i + j + 1 + S n) in H by flia.
- replace (i + j + 1 + S n) with (m + n + 1) in H, Hj by flia Hn.
+ replace (i + j + 1 + S n) with (k + n + 1) in H, Hn by flia Hk.
  destruct H as [H| [H| H]]; destruct H as (H2, H3).
  +exfalso.
-  rewrite Hj in H3.
+  rewrite Hn in H3.
   destruct H3 as [H3| H3]; flia Hr H3.
  +rewrite H1 in H2; flia Hr H2.
  +rewrite H1 in H2; flia Hr H2.
 -right; right.
- destruct H as (Hui & n & Hlj & Hj).
+ destruct H as (Huk & n & Hln & Hn).
  split; [ easy | ].
- destruct n; [ now rewrite Nat.add_0_r in Hj | ].
- specialize (Hlj n (Nat.lt_succ_diag_r n)) as H1.
+ destruct n; [ now rewrite Nat.add_0_r in Hn | ].
+ specialize (Hln n (Nat.lt_succ_diag_r n)) as H1.
  specialize (eq_all_prop_carr_9_cond3 u i Hur Hi (j + n + 1)) as H.
- rewrite Hn in Hj.
+ rewrite Hk in Hn.
  replace (i + (j + n + 1) + 1) with (i + j + 1 + S n) in H by flia.
- replace (i + j + 1 + S n) with (m + n + 1) in H, Hj by flia Hn.
+ replace (i + j + 1 + S n) with (k + n + 1) in H, Hn by flia Hk.
  destruct H as [H| [H| H]]; destruct H as (H2, H3).
  +exfalso.
-  rewrite Hj in H3.
+  rewrite Hn in H3.
   destruct H3 as [H3| H3]; flia Hr H3.
  +rewrite H1 in H2; flia Hr H2.
  +rewrite H1 in H2; flia Hr H2.
 Qed.
-
-...
 
 Theorem eq_all_prop_carr_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
