@@ -309,31 +309,31 @@ destruct H3 as [H3| [H3| H3]].
   now rewrite H2 in Hk.
 Qed.
 
-Theorem eq_all_prop_carr_9_cond {r : radix} : ∀ u n,
-  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
-  → (∀ k, d2n (prop_carr u) (n + k) = rad - 1)
-  → ∀ i, ∃ j,
-  let n1 := rad * (n + i + j + 3) in
-  let s1 := n1 - (n + i) - 1 in
-  nA (n + i) n1 u mod rad ^ s1 < (rad ^ S j - 1) * rad ^ (s1 - S j) ∧
-  (u (n + i) + nA (n + i) n1 u / rad ^ s1) mod rad = rad - 1.
+Theorem eq_all_prop_carr_9_cond {r : radix} : ∀ u i,
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
+  → (∀ k, d2n (prop_carr u) (i + k) = rad - 1)
+  → ∀ k, ∃ j,
+  let n1 := rad * (i + k + j + 3) in
+  let s1 := n1 - (i + k) - 1 in
+  nA (i + k) n1 u mod rad ^ s1 < (rad ^ S j - 1) * rad ^ (s1 - S j) ∧
+  (u (i + k) + nA (i + k) n1 u / rad ^ s1) mod rad = rad - 1.
 Proof.
 intros * Hur Hn *.
-specialize (Hn i) as Huni.
+specialize (Hn k) as Huni.
 unfold prop_carr, d2n in Huni; simpl in Huni.
 unfold nat_prop_carr in Huni.
-destruct (LPO_fst (A_ge_1 u (n + i))) as [H2| H2]; simpl in Huni.
--assert (Hn' : ∀ k, d2n (prop_carr u) ((n + i) + k) = rad - 1). {
-   intros k.
-   replace ((n + i) + k) with (n + (i + k)) by flia.
+destruct (LPO_fst (A_ge_1 u (i + k))) as [H2| H2]; simpl in Huni.
+-assert (Hn' : ∀ l, d2n (prop_carr u) ((i + k) + l) = rad - 1). {
+   intros l.
+   replace ((i + k) + l) with (i + (k + l)) by flia.
    apply Hn.
  }
  exfalso; revert Hn'.
  unfold min_n in Huni; rewrite Nat.add_0_r in Huni.
  rewrite Nat.add_assoc in Huni.
  apply not_prop_carr_all_9_all_ge_1; [ | easy | easy ].
- intros k.
- replace (n + i + k + 1) with (n + (i + k) + 1) by flia.
+ intros l.
+ replace (i + k + l + 1) with (i + (k + l) + 1) by flia.
  apply Hur.
 -destruct H2 as (j & Hjj & Hj).
  simpl in Huni.
