@@ -313,10 +313,10 @@ Theorem eq_all_prop_carr_9_cond {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (prop_carr u) (i + k) = rad - 1)
   → ∀ k, ∃ j,
-  let n1 := rad * (i + k + j + 3) in
-  let s1 := n1 - (i + k) - 1 in
-  nA (i + k) n1 u mod rad ^ s1 < (rad ^ S j - 1) * rad ^ (s1 - S j) ∧
-  (u (i + k) + nA (i + k) n1 u / rad ^ s1) mod rad = rad - 1.
+  let n := rad * (i + k + j + 3) in
+  let s := n - (i + k) - 1 in
+  nA (i + k) n u mod rad ^ s < (rad ^ S j - 1) * rad ^ (s - S j) ∧
+  (u (i + k) + nA (i + k) n u / rad ^ s) mod rad = rad - 1.
 Proof.
 intros * Hur Hn *.
 specialize (Hn k) as Huni.
