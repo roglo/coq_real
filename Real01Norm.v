@@ -512,24 +512,25 @@ destruct (lt_dec (u i) (rad - 1)) as [H3| H3].
 -right; split; [ easy | now exists j2 ].
 Qed.
 
-Theorem eq_all_prop_carr_9_cond3 {r : radix} : ∀ u n,
-  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
-  → (∀ k, d2n (prop_carr u) (n + k) = rad - 1)
-  → ∀ k (i := n + k + 1),
-     u i = rad - 1 ∧
-       (u (i + 1) = rad - 2 ∨ u (i + 1) = rad - 1) ∨
-     u i = rad - 2 ∧
-       (∃ j,
-           (∀ l, l < j → u (i + l + 1) = rad - 1) ∧
-           u (i + j + 1) = 2 * (rad - 1)) ∨
-     u i = 2 * (rad - 1) ∧
-       (∃ j,
-           (∀ l, l < j → u (i + l + 1) = rad - 1) ∧
-           u (i + j + 1) = 2 * (rad - 1)).
+Theorem eq_all_prop_carr_9_cond3 {r : radix} : ∀ u i,
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
+  → (∀ k, d2n (prop_carr u) (i + k) = rad - 1)
+  → ∀ j (k := i + j + 1),
+     u k = rad - 1 ∧
+       (u (k + 1) = rad - 2 ∨ u (k + 1) = rad - 1) ∨
+     u k = rad - 2 ∧
+       (∃ n,
+           (∀ l, l < n → u (k + l + 1) = rad - 1) ∧
+           u (k + n + 1) = 2 * (rad - 1)) ∨
+     u k = 2 * (rad - 1) ∧
+       (∃ n,
+           (∀ l, l < n → u (k + l + 1) = rad - 1) ∧
+           u (k + n + 1) = 2 * (rad - 1)).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn k.
+rename i into n.
 specialize (eq_all_prop_carr_9_cond2 u n Hur Hn k) as H.
 remember (n + k + 1) as i eqn:Hi.
 replace (n + k + 2) with (i + 1) by flia Hi.
