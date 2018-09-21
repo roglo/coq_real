@@ -772,7 +772,78 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
         z ≠ 0, otherwise would contradict H2
         x cannot end with and infinity of 0s, or would contradict H1
         z cannot end with and infinity of 0s, or would contradict H2 *)
+     assert
+       (H5 : fd2n x (i + 1) + fd2n y (i + 1) + fd2n z (i + 1) = rad - 3
+           ∨ fd2n x (i + 1) + fd2n y (i + 1) + fd2n z (i + 1) = rad - 2
+           ∨ fd2n x (i + 1) + fd2n y (i + 1) + fd2n z (i + 1) = rad - 1
+           ∨ fd2n x (i + 1) + fd2n y (i + 1) + fd2n z (i + 1) =
+               2 * rad - 3
+           ∨ fd2n x (i + 1) + fd2n y (i + 1) + fd2n z (i + 1) =
+               2 * rad - 2
+           ∨ fd2n x (i + 1) + fd2n y (i + 1) + fd2n z (i + 1) =
+               2 * rad - 1). {
+       specialize (H1 0); rewrite Nat.add_0_r in H1.
+       unfold "+"%F, fd2n in H1; simpl in H1.
+       unfold "⊕", fd2n in H1; simpl in H1.
+       do 3 rewrite fold_fd2n in H1.
+       specialize nat_prop_carr_le_2 as H5.
+       specialize (H5 (λ i, dig (freal y i) + dig (freal z i)) (i + 1)).
+       assert
+         (H :
+          ∀ k, (λ i, dig (freal y i) + dig (freal z i)) (i + 1 + k + 1) ≤
+                 2 * (rad - 1)). {
+         intros k.
+         specialize (digit_lt_radix (freal y (i + 1 + k + 1))) as H6.
+         specialize (digit_lt_radix (freal z (i + 1 + k + 1))) as H7.
+         flia H6 H7.
+       }
+       specialize (H5 H); clear H.
+       remember
+         (nat_prop_carr (λ i, dig (freal y i) + dig (freal z i)) (i + 1))
+         as c eqn:Hc.
+       destruct c.
+       -rewrite Nat.add_0_r in H1.
+        destruct (lt_dec (fd2n y (i + 1) + fd2n z (i + 1)) rad) as [H6| H6].
+        +rewrite Nat.mod_small in H1; [ | easy ].
+         rewrite Nat.add_assoc in H1.
+         now right; right; left.
+        +apply Nat.nlt_ge in H6.
+         rewrite Nat_mod_less_small in H1.
+         *rewrite Nat.add_sub_assoc in H1; [ | easy ].
+          right; right; right; right; right.
+          flia Hr H1.
+         *split; [ easy | ].
+          specialize (digit_lt_radix (freal y (i + 1))) as Hy.
+          specialize (digit_lt_radix (freal z (i + 1))) as Hz.
+          unfold fd2n; flia Hy Hz.
+       -destruct c.
+        +destruct (lt_dec (fd2n y (i + 1) + fd2n z (i + 1) + 1) rad) as [H6| H6].
+         *rewrite Nat.mod_small in H1; [ | easy ].
+          rewrite Nat.add_assoc in H1.
+          right; left; flia Hr H1.
+         *apply Nat.nlt_ge in H6.
+          rewrite Nat_mod_less_small in H1.
+         --rewrite Nat.add_sub_assoc in H1; [ | easy ].
+           right; right; right; right; left; flia Hr H1.
+         --split; [ easy | ].
+           specialize (digit_lt_radix (freal y (i + 1))) as Hy.
+           specialize (digit_lt_radix (freal z (i + 1))) as Hz.
+           unfold fd2n; flia Hy Hz.
+        +destruct c; [ clear H5 | flia H5 ].
+         destruct (lt_dec (fd2n y (i + 1) + fd2n z (i + 1) + 2) rad) as [H6| H6].
+         *rewrite Nat.mod_small in H1; [ | easy ].
+          rewrite Nat.add_assoc in H1.
+          left; flia Hr H1.
+         *apply Nat.nlt_ge in H6.
+          destruct (lt_dec (fd2n y (i + 1) + fd2n z (i + 1) + 2) (2 * rad))
+            as [H7| H7].
+         --rewrite Nat_mod_less_small in H1; [ | easy ].
+           rewrite Nat.add_sub_assoc in H1; [ | easy ].
+           right; right; right; left; flia Hr H1.
+         --apply Nat.nlt_ge in H7.
+(* case 3r-3 to be added! *)
 ...
+     }
      remember (freal_shift (i + 1) x) as xs eqn:Hxs.
      remember (freal_shift (i + 1) y) as ys eqn:Hys.
      move ys before xs.
