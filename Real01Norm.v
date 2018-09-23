@@ -319,15 +319,15 @@ Theorem eq_all_prop_carr_9_cond {r : radix} : ∀ u i,
   nA (i + k) n u mod rad ^ s < (rad ^ S m - 1) * rad ^ (s - S m) ∧
   (u (i + k) + nA (i + k) n u / rad ^ s) mod rad = rad - 1.
 Proof.
-intros * Hur Hn *.
-specialize (Hn k) as Huni.
+intros * Hur Hi *.
+specialize (Hi k) as Huni.
 unfold prop_carr, d2n in Huni; simpl in Huni.
 unfold nat_prop_carr in Huni.
 destruct (LPO_fst (A_ge_1 u (i + k))) as [H2| H2]; simpl in Huni.
 -assert (Hn' : ∀ l, d2n (prop_carr u) ((i + k) + l) = rad - 1). {
    intros j.
    replace ((i + k) + j) with (i + (k + j)) by flia.
-   apply Hn.
+   apply Hi.
  }
  exfalso; revert Hn'.
  unfold min_n in Huni; rewrite Nat.add_0_r in Huni.
