@@ -609,6 +609,16 @@ destruct H as [H| [H| H]]; [ now left | | ].
  +rewrite H1 in H2; flia Hr H2.
 Qed.
 
+(* chais pas si c'est vrai, ça, mais si ça l'est on peut passer
+   directement à A_ge_1_add_all_true_if à eq_all_prop_carr_9 et
+   ça économise tout un tas de lemmes !... *)
+Theorem glop {r : radix} : ∀ u i,
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
+  → (∀ k, d2n (prop_carr u) (i + k) = rad - 1)
+  → ∀ k, A_ge_1 u i k = true.
+Proof.
+...
+
 Theorem eq_all_prop_carr_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (prop_carr u) (n + k) = rad - 1)
