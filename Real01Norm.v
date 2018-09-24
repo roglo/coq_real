@@ -626,14 +626,12 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2]; [ apply H2 | ].
 destruct H2 as (j & Hjj & Hj).
 destruct (lt_dec k j) as [H2| H2]; [ now apply Hjj | ].
 apply Nat.nlt_ge in H2.
-...
+(*
 apply A_ge_1_false_iff in Hj.
 remember (min_n i j) as n eqn:Hn.
 remember (n - i - 1) as s eqn:Hs.
 move s before n.
-specialize (Hi j) as H3.
-unfold d2n, prop_carr in H3; simpl in H3.
-unfold nat_prop_carr in H3.
+*)
 ...
 
 Theorem eq_all_prop_carr_9 {r : radix} : ∀ u n,
