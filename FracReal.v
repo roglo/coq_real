@@ -1421,15 +1421,14 @@ Qed.
 
 Theorem A_ge_1_add_9_eq {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
-  → (∀ k, A_ge_1 u i k = true)
   → ∀ j, j ≠ 0
+  → A_ge_1 u i j = true
   → (∀ k, k < j → u (i + k + 1) = rad - 1)
   → u (i + j + 1) < rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur Hu * Hj H3.
-specialize (Hu j) as H5.
+intros Hur * Hj H5 H3.
 revert H5.
 apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
 intros H5; apply Nat.nlt_ge in H5.
