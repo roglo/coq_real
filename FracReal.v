@@ -1446,7 +1446,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  }
  specialize (A_ge_1_add_8_eq u i Hur2 H1 j (Hu (j + 1))) as H2.
  easy.
--set (g j := if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false).
+-set (g j := if Nat.eq_dec (u (i + j + 1)) (rad - 1) then true else false).
  destruct (LPO_fst g) as [H2| H2]; subst g; simpl in H2.
  +left; intros k; specialize (H2 k).
   now destruct (Nat.eq_dec (u (i + k + 1)) (rad - 1)).
