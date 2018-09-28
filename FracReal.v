@@ -1451,8 +1451,7 @@ assert (H7 : rad ^ s ≤ nA i n u). {
   rewrite nA_split with (e := t + 1); [ | flia H6 Ht ].
   replace (t + 1 - 1) with t by flia.
   apply le_plus_trans.
-  replace (rad ^ s) with
-    (((rad ^ j - 1) * rad + rad) * rad ^ (n - (t + 1))).
+  replace (rad ^ s) with (((rad ^ j - 1) * rad + rad) * rad ^ (n - (t + 1))).
   -apply Nat.mul_le_mono_r.
    rewrite nA_split_last; [ | flia Ht ].
    rewrite Nat.mul_comm, Nat.add_sub.
