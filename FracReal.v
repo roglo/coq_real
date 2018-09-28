@@ -1397,33 +1397,53 @@ rewrite Nat.add_comm, Nat.add_sub.
 apply Nat.le_sub_l.
 Qed.
 
-Theorem add_pow_rad_mod : ∀ r a b c a₁ b₁,
-  r ≠ 0
-  → a < r ^ a₁
-  → b < r ^ b₁
-  → (a * r ^ b₁ + b) mod r ^ (a₁ + b₁) ≥ a * r ^ b₁ + c
-  → b ≥ c.
+Theorem nA_lower_bound_when_999_gt_9 {r : radix} : ∀ u i k n,
+  i + k + 3 ≤ n - 1
+  → (∀ j, j < k → u (i + j + 1) = rad - 1)
+  → rad ≤ u (i + k + 1)
+  → rad ^ (n - i - 1) ≤ nA i n u.
 Proof.
-intros * Hr Ha Hb H1.
-replace (a₁ + b₁) with (b₁ + a₁) in H1 by apply Nat.add_comm.
-rewrite Nat.pow_add_r in H1.
-rewrite Nat.mod_mul_r in H1; try now apply Nat.pow_nonzero.
-replace (a * r ^ b₁ + b) with (b + a * r ^ b₁) in H1 by apply Nat.add_comm.
-rewrite Nat.mod_add in H1; [ | now apply Nat.pow_nonzero ].
-rewrite Nat.mod_small in H1; [ | easy ].
-rewrite Nat.div_add in H1; [ | now apply Nat.pow_nonzero ].
-rewrite Nat.div_small in H1; [ | easy ].
-rewrite Nat.add_0_l in H1.
-rewrite Nat.mod_small in H1; [ | easy ].
-rewrite Nat.add_comm, Nat.mul_comm in H1.
-now apply Nat.add_le_mono_l in H1.
+intros * H6 H3 H5.
+remember (n - i - 1) as s eqn:Hs.
+(* 1/0/0/0 = 9/9/10, therefore 1/0/0/0/0/0/0 ≤ 9/9/10/x/x/x *)
+remember (i + k + 1) as t eqn:Ht.
+rewrite nA_split with (e := t + 1); [ | flia H6 Ht ].
+replace (t + 1 - 1) with t by flia.
+apply le_plus_trans.
+replace (rad ^ s) with (((rad ^ k - 1) * rad + rad) * rad ^ (n - (t + 1))).
+-apply Nat.mul_le_mono_r.
+ rewrite nA_split_last; [ | flia Ht ].
+ rewrite Nat.mul_comm, Nat.add_sub.
+ apply Nat.add_le_mono; [ | easy ].
+ apply Nat.mul_le_mono_l.
+ destruct k; [ simpl; flia | ].
+ unfold nA.
+ rewrite summation_rtl.
+ rewrite summation_shift; [ | flia Ht H6 ].
+ replace (t - 1 - (i + 1)) with k by flia Ht.
+ rewrite power_summation_sub_1; [ | easy ].
+ rewrite summation_mul_distr_l.
+ apply (@summation_le_compat nat_ord_ring_def).
+ intros j Hj; simpl; unfold Nat.le.
+ replace (t - 1 + (i + 1) - (i + 1 + j)) with (i + (k - j) + 1) by flia Ht Hj.
+ replace (t - 1 - (i + (k - j) + 1)) with j by flia Ht Hj.
+ apply Nat.mul_le_mono_r.
+ rewrite H3; [ easy | flia ].
+-rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+ rewrite Nat.sub_add.
+ +replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+  do 2 rewrite <- Nat.pow_add_r; f_equal.
+  flia Ht Hs H6.
+ +replace rad with (1 * rad) at 1 by flia.
+  apply Nat.mul_le_mono_r.
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
 Theorem A_ge_1_add_9_eq {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → ∀ k, k ≠ 0
   → A_ge_1 u i k = true
-  → (∀ l, l < k → u (i + l + 1) = rad - 1)
+  → (∀ j, j < k → u (i + j + 1) = rad - 1)
   → u (i + k + 1) < rad.
 Proof.
 intros *.
@@ -1443,43 +1463,9 @@ assert (H6 : i + k + 3 ≤ n - 1). {
   destruct rad as [| rr]; [ easy | ].
   destruct rr; [ flia Hr | simpl; flia ].
 }
-assert (H7 : rad ^ s ≤ nA i n u). {
-  (* 1/0/0/0 = 9/9/10, therefore 1/0/0/0/0/0/0 ≤ 9/9/10/x/x/x *)
-  remember (i + k + 1) as t eqn:Ht.
-  rewrite nA_split with (e := t + 1); [ | flia H6 Ht ].
-  replace (t + 1 - 1) with t by flia.
-  apply le_plus_trans.
-  replace (rad ^ s) with (((rad ^ k - 1) * rad + rad) * rad ^ (n - (t + 1))).
-  -apply Nat.mul_le_mono_r.
-   rewrite nA_split_last; [ | flia Ht ].
-   rewrite Nat.mul_comm, Nat.add_sub.
-   apply Nat.add_le_mono; [ | easy ].
-   apply Nat.mul_le_mono_l.
-   destruct k; [ simpl; flia | ].
-   unfold nA.
-   rewrite summation_rtl.
-   rewrite summation_shift; [ | flia Ht H6 ].
-   replace (t - 1 - (i + 1)) with k by flia Ht.
-   rewrite power_summation_sub_1; [ | easy ].
-   rewrite summation_mul_distr_l.
-   apply (@summation_le_compat nat_ord_ring_def).
-   intros j Hj; simpl; unfold Nat.le.
-   replace (t - 1 + (i + 1) - (i + 1 + j)) with (i + (k - j) + 1)
-     by flia Ht Hj.
-   replace (t - 1 - (i + (k - j) + 1)) with j by flia Ht Hj.
-   apply Nat.mul_le_mono_r.
-   rewrite H3; [ easy | flia ].
-  -rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-   rewrite Nat.sub_add.
-   +replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
-    do 2 rewrite <- Nat.pow_add_r; f_equal.
-    flia Ht Hs H6.
-   +replace rad with (1 * rad) at 1 by flia.
-    apply Nat.mul_le_mono_r.
-    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-}
+specialize (nA_lower_bound_when_999_gt_9 u i k n H6 H3 H5) as H7.
 specialize (nA_upper_bound_for_add u i n Hur) as H8.
-rewrite <- Hs in H8.
+rewrite <- Hs in H7, H8.
 replace (nA i n u) with (nA i n u - rad ^ s + 1 * rad ^ s) by flia H7.
 rewrite Nat.mod_add; [ | now apply Nat.pow_nonzero ].
 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H8.
@@ -1601,6 +1587,28 @@ apply Nat.le_lt_trans with
  +replace (rad ^ (n - t)) with (1 * rad ^ (n - t)) at 1 by flia.
   apply Nat.mul_le_mono_r.
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+Qed.
+
+Theorem add_pow_rad_mod : ∀ r a b c a₁ b₁,
+  r ≠ 0
+  → a < r ^ a₁
+  → b < r ^ b₁
+  → (a * r ^ b₁ + b) mod r ^ (a₁ + b₁) ≥ a * r ^ b₁ + c
+  → b ≥ c.
+Proof.
+intros * Hr Ha Hb H1.
+replace (a₁ + b₁) with (b₁ + a₁) in H1 by apply Nat.add_comm.
+rewrite Nat.pow_add_r in H1.
+rewrite Nat.mod_mul_r in H1; try now apply Nat.pow_nonzero.
+replace (a * r ^ b₁ + b) with (b + a * r ^ b₁) in H1 by apply Nat.add_comm.
+rewrite Nat.mod_add in H1; [ | now apply Nat.pow_nonzero ].
+rewrite Nat.mod_small in H1; [ | easy ].
+rewrite Nat.div_add in H1; [ | now apply Nat.pow_nonzero ].
+rewrite Nat.div_small in H1; [ | easy ].
+rewrite Nat.add_0_l in H1.
+rewrite Nat.mod_small in H1; [ | easy ].
+rewrite Nat.add_comm, Nat.mul_comm in H1.
+now apply Nat.add_le_mono_l in H1.
 Qed.
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
