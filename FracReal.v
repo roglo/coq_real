@@ -1436,7 +1436,6 @@ intros H5; apply Nat.nlt_ge in H5.
 apply Bool.not_true_iff_false.
 apply A_ge_1_false_iff.
 remember (min_n i j) as n eqn:Hn.
-replace (n - i - j - 2) with (n - i - 1 - S j) by flia.
 remember (n - i - 1) as s eqn:Hs.
 move n before j; move s before n.
 assert (H6 : i + j + 3 ≤ n - 1). {
