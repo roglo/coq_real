@@ -1475,7 +1475,6 @@ rewrite Nat_mod_less_small; cycle 1. {
   apply Nat.mul_le_mono_l.
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 }
-rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H8.
 apply Nat.add_lt_mono_r with (p := rad ^ s).
 rewrite Nat.sub_add; [ | easy ].
 rewrite nA_split with (e := i + k + 2); [ | flia H6 ].
