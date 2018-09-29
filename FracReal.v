@@ -1466,11 +1466,16 @@ assert (H6 : i + k + 3 ≤ n - 1). {
 specialize (nA_lower_bound_when_999_gt_9 u i k n H6 H3 H5) as H7.
 specialize (nA_upper_bound_for_add u i n Hur) as H8.
 rewrite <- Hs in H7, H8.
-replace (nA i n u) with (nA i n u - rad ^ s + 1 * rad ^ s) by flia H7.
-rewrite Nat.mod_add; [ | now apply Nat.pow_nonzero ].
+rewrite Nat_mod_less_small; cycle 1. {
+  split; [ easy | ].
+  eapply Nat.le_lt_trans; [ apply H8 | ].
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+  apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
+  replace 2 with (2 * 1) at 1 by flia.
+  apply Nat.mul_le_mono_l.
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+}
 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H8.
-specialize (Nat.pow_nonzero rad s radix_ne_0) as H9.
-rewrite Nat.mod_small; [ | flia H8 H9 ].
 apply Nat.add_lt_mono_r with (p := rad ^ s).
 rewrite Nat.sub_add; [ | easy ].
 rewrite nA_split with (e := i + k + 2); [ | flia H6 ].
