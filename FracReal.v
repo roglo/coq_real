@@ -1411,7 +1411,6 @@ enough (H : rad ^ s ≤ nA i (i + k + 2) u * rad ^ (n - (i + k + 2))). {
 }
 rewrite nA_split_last; [ | flia Hs ].
 replace (i + k + 2 - 1) with (i + k + 1) by flia.
-(**)
 assert (HnA : nA i (i + k + 1) u ≥ rad ^ k - 1). {
   destruct k; [ apply Nat.le_0_l | ].
  unfold nA.
@@ -1428,39 +1427,26 @@ assert (HnA : nA i (i + k + 1) u ≥ rad ^ k - 1). {
  apply Nat.mul_le_mono_r.
  rewrite H3; [ easy | flia ].
 }
-...
-replace (i + k + 2) with (i + k + 1 + 1) by flia.
-(* 1/0/0/0 = 9/9/10, therefore 1/0/0/0/0/0/0 ≤ 9/9/10/x/x/x *)
-remember (i + k + 1) as t eqn:Ht.
-replace (rad ^ s) with (((rad ^ k - 1) * rad + rad) * rad ^ (n - (t + 1))).
--apply Nat.mul_le_mono_r.
- rewrite Nat.mul_comm.
- apply Nat.add_le_mono; [ | easy ].
- apply Nat.mul_le_mono_l.
- destruct k; [ simpl; flia | ].
- unfold nA.
- rewrite summation_rtl.
- rewrite summation_shift; [ | flia Ht H6 ].
- replace (t - 1 - (i + 1)) with k by flia Ht.
- rewrite power_summation_sub_1; [ | easy ].
- rewrite summation_mul_distr_l.
- apply (@summation_le_compat nat_ord_ring_def).
- intros j Hj; simpl; unfold Nat.le.
- replace (t - 1 + (i + 1) - (i + 1 + j)) with (i + (k - j) + 1) by flia Ht Hj.
- replace (t - 1 - (i + (k - j) + 1)) with j by flia Ht Hj.
- apply Nat.mul_le_mono_r.
- rewrite H3; [ easy | flia ].
--rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
- rewrite Nat.sub_add.
- +replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
-  do 2 rewrite <- Nat.pow_add_r; f_equal.
-  flia Ht Hs H6.
- +replace rad with (1 * rad) at 1 by flia.
+apply Nat.le_trans with
+    (m := (rad * (rad ^ k - 1) + rad) * rad ^ (n - (i + k + 2))); cycle 1. {
   apply Nat.mul_le_mono_r.
-  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  apply Nat.add_le_mono; [ | easy ].
+  now apply Nat.mul_le_mono_l.
+}
+rewrite Nat.mul_add_distr_r.
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+rewrite Nat.mul_sub_distr_r.
+replace rad with (rad ^ 1) at 2 5 7 by apply Nat.pow_1_r.
+do 3 rewrite <- Nat.pow_add_r.
+replace (n - (i + k + 2)) with (s - (k + 1)) by flia Hs.
+replace (1 + (s - (k + 1))) with (s - k) by flia H6 Hs.
+replace (1 + k + (s - (k + 1))) with s by flia H6 Hs.
+rewrite Nat.sub_add; [ easy | ].
+apply Nat.pow_le_mono; [ easy | easy | ].
+apply Nat.le_sub_l.
 Qed.
 
-...
+(* ... *)
 
 Theorem A_ge_1_add_9_eq {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
@@ -1512,7 +1498,7 @@ assert (H4 : nA i t u ≤ rad ^ S k + (rad - 2)). {
 clear - Hur Ht H3 Hs.
 subst s t.
 move k before i; move n before k.
-...
+(* ... *)
 specialize radix_ge_2 as Hr.
 remember (i + k + 2) as t eqn:Ht.
   destruct (Nat.eq_dec (i + 1) (t - 1)) as [H4| H4].
@@ -1622,7 +1608,7 @@ apply Nat.le_lt_trans with
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
-...
+(* ... *)
 
 Theorem add_pow_rad_mod : ∀ r a b c a₁ b₁,
   r ≠ 0
