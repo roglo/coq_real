@@ -1483,9 +1483,15 @@ move t before s.
 unfold min_n in Hn.
 replace (i + k + 3) with (i + k + 2 + 1) in Hn, H6 by flia.
 rewrite <- Ht in Hn, H6.
-replace (i + k + 1) with (t - 1) in (*H2,*) H5 by flia Ht.
+replace (i + k + 1) with (t - 1) in H5 by flia Ht.
 replace (s - S k) with (n - t) by flia Hs Ht.
 assert (H4 : nA i t u ≤ rad ^ S k + (rad - 2)). {
+clear - Hur Ht H3 Hs.
+subst s t.
+move k before i; move n before k.
+...
+specialize radix_ge_2 as Hr.
+remember (i + k + 2) as t eqn:Ht.
   destruct (Nat.eq_dec (i + 1) (t - 1)) as [H4| H4].
   -unfold nA.
    rewrite H4, summation_only_one.
@@ -1504,18 +1510,18 @@ assert (H4 : nA i t u ≤ rad ^ S k + (rad - 2)). {
    rewrite Nat.add_1_r.
    apply -> Nat.succ_le_mono.
    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-  -rewrite nA_split_last; [ | flia H6 Ht ].
+  -rewrite nA_split_last; [ | flia Ht ].
    specialize (nA_dig_seq_ub u (t - 1) i) as H10.
    assert (H : ∀ j, i < j < t - 1 → u j < rad). {
      intros j Hj.
      specialize (H3 (j - i - 1)).
-     assert (H : j - i - 1 < k) by flia H6 Ht Hj.
+     assert (H : j - i - 1 < k) by flia Ht Hj.
      specialize (H3 H); clear H.
      replace (i + (j - i - 1) + 1) with j in H3 by flia Hj.
      flia Hr H3.
    }
    specialize (H10 H); clear H.
-   assert (H : i + 1 ≤ t - 1 - 1) by flia Hs H6 Ht H4.
+   assert (H : i + 1 ≤ t - 1 - 1) by flia Ht H4.
    specialize (H10 H); clear H.
    replace (t - 1 - i - 1) with k in H10 by flia Ht.
    replace (rad ^ S k + (rad - 2)) with (rad ^ S k - rad + 2 * (rad - 1)).
@@ -1592,6 +1598,8 @@ apply Nat.le_lt_trans with
   apply Nat.mul_le_mono_r.
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
+
+...
 
 Theorem add_pow_rad_mod : ∀ r a b c a₁ b₁,
   r ≠ 0
