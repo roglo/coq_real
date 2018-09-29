@@ -1405,15 +1405,43 @@ Theorem nA_lower_bound_when_999_gt_9 {r : radix} : ∀ u i k n,
 Proof.
 intros * H6 H3 H5.
 remember (n - i - 1) as s eqn:Hs.
+enough (H : rad ^ s ≤ nA i (i + k + 2) u * rad ^ (n - (i + k + 2))). {
+  rewrite nA_split with (e := i + k + 2); [ | flia H6 ].
+  now apply le_plus_trans.
+}
+rewrite nA_split_last; [ | flia Hs ].
+replace (i + k + 2 - 1) with (i + k + 1) by flia.
+(**)
+assert (nA i (i + k + 1) u ≥ rad ^ k - 1). {
+  destruct k; [ apply Nat.le_0_l | ].
+...
+(*
+assert (nA i (i + k + 1) u = (rad ^ k - 1) * rad ^ (s - k)). {
+  destruct k.
+  -simpl; rewrite Nat.add_0_r.
+   unfold nA; rewrite summation_empty; [ easy | ].
+   rewrite Nat.add_sub, Nat.add_1_r.
+   now apply Nat.lt_succ_r.
+  -rewrite power_summation_sub_1; [ | easy ].
+   rewrite summation_mul_distr_l.
+   unfold nA.
+   rewrite Nat.add_sub.
+   rewrite summation_shift; [ simpl | flia ].
+   replace (i + S k - (i + 1)) with k by flia.
+   rewrite summation_mul_distr_r.
+   apply (@summation_eq_compat nat_ord_ring_def).
+   intros j Hj; simpl.
+   rewrite <- Nat.mul_assoc, Nat.add_shuffle0.
+   f_equal; [ apply H3; flia Hj | ].
+   rewrite <- Nat.pow_add_r; f_equal.
+...
+*)
+replace (i + k + 2) with (i + k + 1 + 1) by flia.
 (* 1/0/0/0 = 9/9/10, therefore 1/0/0/0/0/0/0 ≤ 9/9/10/x/x/x *)
 remember (i + k + 1) as t eqn:Ht.
-rewrite nA_split with (e := t + 1); [ | flia H6 Ht ].
-replace (t + 1 - 1) with t by flia.
-apply le_plus_trans.
 replace (rad ^ s) with (((rad ^ k - 1) * rad + rad) * rad ^ (n - (t + 1))).
 -apply Nat.mul_le_mono_r.
- rewrite nA_split_last; [ | flia Ht ].
- rewrite Nat.mul_comm, Nat.add_sub.
+ rewrite Nat.mul_comm.
  apply Nat.add_le_mono; [ | easy ].
  apply Nat.mul_le_mono_l.
  destruct k; [ simpl; flia | ].
@@ -1438,6 +1466,8 @@ replace (rad ^ s) with (((rad ^ k - 1) * rad + rad) * rad ^ (n - (t + 1))).
   apply Nat.mul_le_mono_r.
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
+
+...
 
 Theorem A_ge_1_add_9_eq {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
