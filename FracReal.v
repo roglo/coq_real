@@ -1412,30 +1412,23 @@ enough (H : rad ^ s ≤ nA i (i + k + 2) u * rad ^ (n - (i + k + 2))). {
 rewrite nA_split_last; [ | flia Hs ].
 replace (i + k + 2 - 1) with (i + k + 1) by flia.
 (**)
-assert (nA i (i + k + 1) u ≥ rad ^ k - 1). {
+assert (HnA : nA i (i + k + 1) u ≥ rad ^ k - 1). {
   destruct k; [ apply Nat.le_0_l | ].
+ unfold nA.
+ rewrite summation_rtl.
+ rewrite summation_shift; [ | flia H6 ].
+ rewrite Nat.add_sub.
+ replace (i + S k - (i + 1)) with k by flia.
+ rewrite power_summation_sub_1; [ | easy ].
+ rewrite summation_mul_distr_l.
+ apply (@summation_le_compat nat_ord_ring_def).
+ intros j Hj; simpl; unfold Nat.le.
+ replace (i + S k + (i + 1) - (i + 1 + j)) with (i + (k - j) + 1) by flia Hj.
+ replace (i + S k - (i + (k - j) + 1)) with j by flia Hj.
+ apply Nat.mul_le_mono_r.
+ rewrite H3; [ easy | flia ].
+}
 ...
-(*
-assert (nA i (i + k + 1) u = (rad ^ k - 1) * rad ^ (s - k)). {
-  destruct k.
-  -simpl; rewrite Nat.add_0_r.
-   unfold nA; rewrite summation_empty; [ easy | ].
-   rewrite Nat.add_sub, Nat.add_1_r.
-   now apply Nat.lt_succ_r.
-  -rewrite power_summation_sub_1; [ | easy ].
-   rewrite summation_mul_distr_l.
-   unfold nA.
-   rewrite Nat.add_sub.
-   rewrite summation_shift; [ simpl | flia ].
-   replace (i + S k - (i + 1)) with k by flia.
-   rewrite summation_mul_distr_r.
-   apply (@summation_eq_compat nat_ord_ring_def).
-   intros j Hj; simpl.
-   rewrite <- Nat.mul_assoc, Nat.add_shuffle0.
-   f_equal; [ apply H3; flia Hj | ].
-   rewrite <- Nat.pow_add_r; f_equal.
-...
-*)
 replace (i + k + 2) with (i + k + 1 + 1) by flia.
 (* 1/0/0/0 = 9/9/10, therefore 1/0/0/0/0/0/0 ≤ 9/9/10/x/x/x *)
 remember (i + k + 1) as t eqn:Ht.
