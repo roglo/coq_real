@@ -1522,13 +1522,11 @@ replace (i + k + 3) with (i + k + 2 + 1) in Hn, H6 by flia.
 rewrite <- Ht in Hn, H6.
 replace (i + k + 1) with (t - 1) in H5 by flia Ht.
 replace (s - S k) with (n - t) by flia Hs Ht.
-assert (H4 : nA i t u ≤ rad ^ S k + (rad - 2)). {
-  now subst; apply nA_le_aft_999.
-}
 apply Nat.le_lt_trans with
   (m := (rad ^ S k + (rad - 2)) * rad ^ (n - t) + nA (t - 1) n u).
 -apply Nat.add_le_mono_r.
- now apply Nat.mul_le_mono.
+ apply Nat.mul_le_mono; [ | easy ].
+ now subst; apply nA_le_aft_999.
 -rewrite Nat.mul_sub_distr_r.
  rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
  rewrite <- Nat.add_sub_swap.
