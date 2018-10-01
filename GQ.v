@@ -98,33 +98,26 @@ Proof. intros; apply PQle_refl. Qed.
 Theorem GQle_antisymm : ∀ x y, (x ≤ y)%GQ → (y ≤ x)%GQ → x = y.
 Proof.
 intros * Hxy Hyx.
+apply Nat.le_antisymm in Hxy; [ | easy ].
+unfold nd in Hxy.
 destruct x as ((xn, xd), Hxp).
 destruct y as ((yn, yd), Hyp).
 move yd before xd; move yn before xd.
-simpl in Hxp, Hyp.
-specialize (PQle_antisymm_eq _ _ Hxy Hyx) as H.
-simpl in H.
-unfold "≤"%GQ in Hxy, Hyx.
-simpl in Hxy, Hyx.
-unfold "*"%PQ in H.
-unfold PQmul_num1, PQmul_den1 in H; simpl in H.
-injection H; clear H; intros H1 H2; clear H1.
+simpl in Hxp, Hyp, Hxy.
 apply GQeq_eq; simpl.
-unfold "≤"%PQ, nd in Hxy, Hyx.
-simpl in Hxy, Hyx.
-...
-intros * Hxy Hyx.
-specialize (PQle_antisymm_eq _ _ Hxy Hyx) as H.
-unfold "≤"%GQ in Hxy, Hyx.
-unfold "*"%PQ in H.
-unfold PQmul_num1, PQmul_den1 in H; simpl in H.
-injection H; clear H; intros H1 H2.
-apply GQeq_eq.
-remember (PQ_of_GQ x) as px eqn:Hpx.
-remember (PQ_of_GQ y) as py eqn:Hpy.
-move py before px.
-Print PQ_of_GQ.
-...
+clear Hyx.
+assert (H : yd + 1 ≠ 0) by flia.
+apply (proj2 (Nat.mul_cancel_r _ _ _ H)) in Hxp.
+rewrite <- Nat.gcd_mul_mono_r, <- Hxy, Nat.mul_comm, Nat.mul_1_l in Hxp.
+rewrite Nat.gcd_mul_mono_l, Hyp, Nat.mul_1_r in Hxp.
+apply Nat.add_cancel_r in Hxp; subst xd.
+apply Nat.mul_cancel_r in Hxy; [ | flia ].
+apply Nat.add_cancel_r in Hxy.
+now subst yn.
+Qed.
+
+Theorem GQle_trans : ∀ x y z, (x ≤ y)%GQ → (y ≤ z)%GQ → (x ≤ z)%GQ.
+Proof. intros *; apply PQle_trans. Qed.
 
 Theorem GQ_of_PQred : ∀ x, GQ_of_PQ (PQred x) = GQ_of_PQ x.
 Proof.
@@ -366,6 +359,17 @@ rewrite GQ_of_PQ_subtractive; [ | easy ].
 do 2 rewrite GQ_o_PQ.
 rewrite PQ_of_GQ_subtractive; [ | easy ].
 now apply PQsub_lt.
+Qed.
+
+Theorem GQadd_le_mono : ∀ x y z t,
+   (x ≤ y)%GQ → (z ≤ t)%GQ → (x + z ≤ y + t)%GQ.
+Proof.
+intros * Hxy Hzt.
+unfold "+"%GQ, "≤"%GQ.
+do 2 rewrite GQ_of_PQ_additive.
+do 4 rewrite GQ_o_PQ.
+do 2 rewrite PQ_of_GQ_additive.
+now apply PQadd_le_mono.
 Qed.
 
 Theorem GQadd_le_mono_r : ∀ x y z, (x ≤ y)%GQ ↔ (x + z ≤ y + z)%GQ.
@@ -740,15 +744,8 @@ Proof.
 intros * Hxy Hyx.
 unfold "≤"%NQ in Hxy, Hyx.
 destruct x as [| px| px], y as [| py| py]; try easy; simpl.
--f_equal.
-...
-apply GQle_antisymm.
-
-
-apply Nat.le_antisymm.
-...
-
-apply (Nat.le_antisymm _ _ Hxy Hyx).
+-f_equal; now apply GQle_antisymm.
+-f_equal; now apply GQle_antisymm.
 Qed.
 
 Definition NQadd_pos_l px y :=
@@ -1149,6 +1146,29 @@ destruct x as [| px| px]; [ easy | | ]; simpl.
 -now rewrite GQcompare_diag.
 Qed.
 
+Theorem NQle_trans: ∀ x y z, (x ≤ y)%NQ → (y ≤ z)%NQ → (x ≤ z)%NQ.
+Proof.
+intros * Hxy Hyz.
+unfold "≤"%NQ in *.
+destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
+-eapply GQle_trans; [ apply Hxy | apply Hyz ].
+-eapply GQle_trans; [ apply Hyz | apply Hxy ].
+Qed.
+
+Theorem NQadd_le_mono : ∀ x y z t,
+  (x ≤ y)%NQ → (z ≤ t)%NQ → (x + z ≤ y + t)%NQ.
+Proof.
+intros * Hxy Hzt.
+unfold "+"%NQ, "≤"%NQ.
+destruct x as [| px| px].
+-destruct z as [| pz| pz]; [ now destruct y, t | | ].
+ +destruct y as [| py| py]; [ now destruct t | | ].
+  *destruct t as [| pt| pt]; [ easy | simpl | easy ].
+   simpl in Hzt.
+   eapply GQle_trans; [ apply Hzt | ].
+Search (_ ≤ _ + _)%PQ.
+...
+
 Theorem NQmul_comm : ∀ x y, (x * y = y * x)%NQ.
 Proof.
 intros.
@@ -1273,8 +1293,12 @@ Definition NQ_ord_ring_def :=
 
 Canonical Structure NQ_ord_ring_def.
 
-Check NQmul_sub_distr_l.
-Check rng_mul_sub_distr_l.
+Check rng_add_le_compat.
+Search (_ ≤ _ → _)%NQ.
+(*
+rng_add_le_compat
+     : ∀ n m p q : rng_t, (n ≤ m)%Rg → (p ≤ q)%Rg → (n + p ≤ m + q)%Rg
+*)
 
 Definition NQ_ord_ring :=
   {| rng_add_0_l := NQadd_0_l;
@@ -1287,4 +1311,4 @@ Definition NQ_ord_ring :=
      rng_mul_sub_distr_l := NQmul_sub_distr_l;
      rng_le_refl := NQle_refl;
      rng_le_antisymm := NQle_antisymm;
-     rng_add_le_compat := Nat.add_le_mono |}.
+     rng_add_le_compat := NQadd_le_mono |}.
