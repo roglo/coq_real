@@ -727,6 +727,27 @@ rewrite PQadd_comm.
 apply PQlt_add_r.
 Qed.
 
+Theorem PQle_add_r : ∀ x y, (x ≤ x + y)%PQ.
+Proof.
+intros.
+unfold "≤"%PQ, "+"%PQ; simpl.
+unfold PQadd_num1, PQadd_den1, nd; simpl.
+do 6 rewrite Nat.add_1_r.
+do 2 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+do 2 (rewrite Nat.sub_succ, Nat.sub_0_r).
+rewrite Nat.mul_add_distr_r.
+rewrite Nat.mul_assoc, Nat.mul_shuffle0.
+rewrite <- Nat.add_0_r at 1.
+apply Nat.add_le_mono; [ easy | simpl; flia ].
+Qed.
+
+Theorem PQle_add_l : ∀ x y, (x ≤ y + x)%PQ.
+Proof.
+intros.
+rewrite PQadd_comm.
+apply PQle_add_r.
+Qed.
+
 Theorem PQsub_lt : ∀ x y, (y < x)%PQ → (x - y < x)%PQ.
 Proof.
 intros * Hyx.

@@ -400,14 +400,21 @@ rewrite GQ_of_PQ_subtractive.
  now do 2 rewrite PQ_o_GQ.
 Qed.
 
-Theorem GQlt_add_r : ∀ x y, (x < x + y)%GQ.
+Theorem GQlt_add_l : ∀ x y, (y < x + y)%GQ.
 Proof.
 intros x y.
 unfold "<"%GQ, "+"%GQ.
 remember (PQ_of_GQ x) as x'.
 remember (PQ_of_GQ y) as y'.
 rewrite PQ_o_GQ.
-apply PQlt_add_r.
+apply PQlt_add_l.
+Qed.
+
+Theorem GQlt_add_r : ∀ x y, (x < x + y)%GQ.
+Proof.
+intros x y.
+rewrite GQadd_comm.
+apply GQlt_add_l.
 Qed.
 
 Theorem GQsub_add_distr : ∀ x y z,
@@ -511,6 +518,24 @@ intros * Hyzx.
 rewrite <- GQsub_add_distr; [ | easy ].
 rewrite <- GQsub_add_distr; [ | now rewrite GQadd_comm ].
 now rewrite GQadd_comm.
+Qed.
+
+Theorem GQle_add_l : ∀ x y, (x ≤ y + x)%GQ.
+Proof.
+intros.
+unfold "≤"%GQ.
+unfold "+"%GQ.
+rewrite GQ_of_PQ_additive.
+do 2 rewrite GQ_o_PQ.
+rewrite PQ_of_GQ_additive.
+apply PQle_add_l.
+Qed.
+
+Theorem GQle_add_r : ∀ x y, (x ≤ x + y)%GQ.
+Proof.
+intros.
+rewrite GQadd_comm.
+apply GQle_add_l.
 Qed.
 
 Theorem PQ_of_GQ_eq : ∀ x y,
@@ -1155,19 +1180,62 @@ destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
 -eapply GQle_trans; [ apply Hyz | apply Hxy ].
 Qed.
 
+Theorem NQle_add_l : ∀ x y, (0 ≤ y)%NQ → (x ≤ y + x)%NQ.
+Proof.
+intros * Hy.
+destruct y as [| py| py]; [ apply NQle_refl | | easy ].
+simpl; unfold NQadd_pos_l.
+destruct x as [| px| px]; [ easy | apply GQle_add_l | simpl ].
+remember (GQcompare py px) as b eqn:Hb; symmetry in Hb.
+destruct b; GQcompare_iff; [ easy | | easy ].
+apply GQlt_le_incl.
+unfold "<"%GQ.
+rewrite PQ_of_GQ_subtractive; [ | easy ].
+now apply PQsub_lt.
+Qed.
+
 Theorem NQadd_le_mono : ∀ x y z t,
   (x ≤ y)%NQ → (z ≤ t)%NQ → (x + z ≤ y + t)%NQ.
 Proof.
 intros * Hxy Hzt.
 unfold "+"%NQ, "≤"%NQ.
 destruct x as [| px| px].
--destruct z as [| pz| pz]; [ now destruct y, t | | ].
- +destruct y as [| py| py]; [ now destruct t | | ].
-  *destruct t as [| pt| pt]; [ easy | simpl | easy ].
-   simpl in Hzt.
-   eapply GQle_trans; [ apply Hzt | ].
-Search (_ ≤ _ + _)%PQ.
+-destruct y as [| py| py]; [ now destruct t | | easy ].
+ destruct z as [| pz| pz]; [ now destruct t | | ].
+ +destruct t as [| pt| pt]; [ easy | simpl | easy ].
+  simpl in Hzt.
+  eapply GQle_trans; [ apply Hzt | ].
+  apply GQlt_le_incl, GQlt_add_l.
+ +destruct t as [| pt| pt]; [ easy | easy | ].
+  simpl in Hzt; simpl.
+  remember (GQcompare py pt) as b eqn:Hb; symmetry in Hb.
+  destruct b; GQcompare_iff; [ easy | | easy ].
+  eapply GQle_trans; [ | apply Hzt ].
+  apply GQlt_le_incl.
+  now apply GQsub_lt.
+-destruct y as [| py| py]; [ now destruct t | | easy ].
+ destruct z as [| pz| pz]; simpl.
+ +destruct t as [| pt| pt]; [ easy | simpl | easy ].
+  eapply GQle_trans; [ apply Hxy | apply GQle_add_r ].
+ +destruct t as [| pt| pt]; [ easy | simpl | easy ].
+  now apply GQadd_le_mono.
+ +remember (GQcompare px pz) as b eqn:Hb; symmetry in Hb.
+  destruct b; GQcompare_iff.
+  *destruct t as [| pt| pt]; [ easy | easy | simpl ].
+   remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
+   destruct b1; GQcompare_iff; [ easy | | easy ].
+   subst px; simpl in Hxy, Hzt.
+   apply GQnle_gt in Hb1; apply Hb1.
+   eapply GQle_trans; [ apply Hzt | apply Hxy ].
+  *destruct t as [| pt| pt]; [ easy | easy | simpl ].
+   remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
+   destruct b1; GQcompare_iff; [ easy | | easy ].
+   simpl in Hxy, Hzt.
+   apply GQle_trans with (y := (pz - py)%GQ).
+  --idtac.
+Check Nat.sub_le_mono_r.
 ...
+Check GQsub_le_mono_r.
 
 Theorem NQmul_comm : ∀ x y, (x * y = y * x)%NQ.
 Proof.
