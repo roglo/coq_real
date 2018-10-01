@@ -98,16 +98,32 @@ Proof. intros; apply PQle_refl. Qed.
 Theorem GQle_antisymm : ∀ x y, (x ≤ y)%GQ → (y ≤ x)%GQ → x = y.
 Proof.
 intros * Hxy Hyx.
+destruct x as ((xn, xd), Hxp).
+destruct y as ((yn, yd), Hyp).
+move yd before xd; move yn before xd.
+simpl in Hxp, Hyp.
 specialize (PQle_antisymm_eq _ _ Hxy Hyx) as H.
-...
-
+simpl in H.
 unfold "≤"%GQ in Hxy, Hyx.
-specialize (PQle_antisymm_eq _ _ Hxy Hyx) as H.
+simpl in Hxy, Hyx.
+unfold "*"%PQ in H.
+unfold PQmul_num1, PQmul_den1 in H; simpl in H.
+injection H; clear H; intros H1 H2; clear H1.
+apply GQeq_eq; simpl.
+unfold "≤"%PQ, nd in Hxy, Hyx.
+simpl in Hxy, Hyx.
 ...
+intros * Hxy Hyx.
+specialize (PQle_antisymm_eq _ _ Hxy Hyx) as H.
+unfold "≤"%GQ in Hxy, Hyx.
 unfold "*"%PQ in H.
 unfold PQmul_num1, PQmul_den1 in H; simpl in H.
 injection H; clear H; intros H1 H2.
-Print GQ.
+apply GQeq_eq.
+remember (PQ_of_GQ x) as px eqn:Hpx.
+remember (PQ_of_GQ y) as py eqn:Hpy.
+move py before px.
+Print PQ_of_GQ.
 ...
 
 Theorem GQ_of_PQred : ∀ x, GQ_of_PQ (PQred x) = GQ_of_PQ x.
