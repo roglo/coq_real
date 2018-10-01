@@ -613,7 +613,7 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -now rewrite PQadd_add_swap.
 Qed.
 
-Theorem NQadd_assoc : ∀ x y z, (x + y) + z == x + (y + z).
+Theorem NQadd_assoc : ∀ x y z, x + (y + z) == (x + y) + z.
 Proof.
 intros.
 rewrite NQadd_comm.
@@ -861,7 +861,7 @@ now destruct x, y; simpl; try now rewrite PQmul_comm.
 Qed.
 
 (* Leibnitz equality applies *)
-Theorem NQmul_assoc : ∀ x y z, (x * y) * z = x * (y * z).
+Theorem NQmul_assoc : ∀ x y z, x * (y * z) = (x * y) * z.
 Proof.
 intros.
 unfold "*"%NQ.

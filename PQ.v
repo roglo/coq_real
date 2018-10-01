@@ -440,10 +440,9 @@ f_equal; f_equal.
 apply Nat.mul_shuffle0.
 Qed.
 
-Theorem PQadd_assoc : ∀ x y z, ((x + y) + z)%PQ = (x + (y + z))%PQ.
+Theorem PQadd_assoc : ∀ x y z, (x + (y + z))%PQ = ((x + y) + z)%PQ.
 Proof.
 intros.
-symmetry.
 rewrite PQadd_comm.
 remember (x + y)%PQ as t eqn:Ht.
 rewrite PQadd_comm in Ht; subst t.
@@ -891,7 +890,7 @@ unfold "*"%PQ; f_equal.
 -now unfold PQmul_den1; simpl; rewrite Nat.mul_comm.
 Qed.
 
-Theorem PQmul_assoc : ∀ x y z, ((x * y) * z = x * (y * z))%PQ.
+Theorem PQmul_assoc : ∀ x y z, (x * (y * z) = (x * y) * z)%PQ.
 intros.
 unfold "*"%PQ; simpl.
 unfold PQmul_num1, PQmul_den1; simpl; PQtac1; repeat PQtac2; f_equal.

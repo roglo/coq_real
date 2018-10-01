@@ -250,7 +250,7 @@ tac_to_PQ.
 now rewrite PQadd_add_swap.
 Qed.
 
-Theorem GQadd_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%GQ.
+Theorem GQadd_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%GQ.
 Proof.
 intros.
 tac_to_PQ.
@@ -264,7 +264,7 @@ tac_to_PQ.
 now rewrite PQmul_comm.
 Qed.
 
-Theorem GQmul_assoc : ∀ x y z, ((x * y) * z = x * (y * z))%GQ.
+Theorem GQmul_assoc : ∀ x y z, (x * (y * z) = (x * y) * z)%GQ.
 Proof.
 intros.
 tac_to_PQ.
@@ -591,6 +591,12 @@ split; intros H.
  now apply PQcompare_eq_iff.
 Qed.
 
+Theorem GQcompare_diag : ∀ x, GQcompare x x = Eq.
+Proof.
+intros.
+now apply GQcompare_eq_iff.
+Qed.
+
 Theorem GQcompare_lt_iff : ∀ x y, GQcompare x y = Lt ↔ (x < y)%GQ.
 Proof. intros; apply Nat.compare_lt_iff. Qed.
 
@@ -720,6 +726,8 @@ Definition NQopp x :=
   | NQneg px => NQpos px
   end.
 
+Definition NQsub x y := NQadd x (NQopp y).
+
 Definition NQabs x :=
   match x with
   | NQneg px => NQpos px
@@ -751,6 +759,8 @@ Definition NQmul x y :=
   | NQpos px => NQmul_pos_l px y
   | NQneg px => NQmul_neg_l px y
   end.
+
+Notation "x * y" := (NQmul x y) : NQ_scope.
 
 Theorem GQadd_no_neutral : ∀ x y, (y + x)%GQ ≠ x.
 Proof.
@@ -823,6 +833,9 @@ destruct x as [| px| px], y as [| py| py]; try easy; simpl.
 -now rewrite GQcompare_swap; destruct (GQcompare py px).
 -f_equal; apply GQadd_comm.
 Qed.
+
+Theorem NQadd_0_l : ∀ x, (0 + x = x)%NQ.
+Proof. easy. Qed.
 
 Theorem NQadd_swap_lemma1 : ∀ px py pz,
   match GQcompare (px + py) pz with
@@ -1054,12 +1067,73 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -now rewrite GQadd_add_swap.
 Qed.
 
-Theorem NQadd_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%NQ.
+Theorem NQadd_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%NQ.
 Proof.
 intros.
+symmetry.
 rewrite NQadd_comm.
 remember (x + y)%NQ as t eqn:Ht.
 rewrite NQadd_comm in Ht; rewrite Ht.
 setoid_rewrite NQadd_comm.
 apply NQadd_add_swap.
 Qed.
+
+Theorem NQsub_diag : ∀ x, (x - x = 0)%NQ.
+Proof.
+intros.
+destruct x as [| px| px]; [ easy | | ]; simpl.
+-now rewrite GQcompare_diag.
+-now rewrite GQcompare_diag.
+Qed.
+
+Theorem NQmul_comm : ∀ x y, (x * y = y * x)%NQ.
+Proof.
+intros.
+unfold "*".
+destruct x as [| px| px], y as [| py| py]; try easy; simpl;
+f_equal; apply GQmul_comm.
+Qed.
+
+Theorem NQmul_mul_swap : ∀ x y z, (x * y * z = x * z * y)%NQ.
+Proof.
+intros.
+unfold "*"%NQ.
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl;
+f_equal; apply GQmul_mul_swap.
+Qed.
+
+Theorem NQmul_assoc : ∀ x y z, (x * (y * z) = (x * y) * z)%NQ.
+Proof.
+intros.
+symmetry.
+rewrite NQmul_comm.
+remember (x * y)%NQ as t eqn:Ht.
+rewrite NQmul_comm in Ht; rewrite Ht.
+setoid_rewrite NQmul_comm.
+apply NQmul_mul_swap.
+Qed.
+
+Require Import Summation.
+
+Definition NQ_ord_ring_def :=
+  {| rng_t := NQ;
+     rng_zero := 0%NQ;
+     rng_add := NQadd;
+     rng_sub := NQsub;
+     rng_mul := NQmul;
+     rng_le := NQle |}.
+
+Canonical Structure NQ_ord_ring_def.
+
+Definition NQ_ord_ring :=
+  {| rng_add_0_l := NQadd_0_l;
+     rng_add_comm := NQadd_comm;
+     rng_add_assoc := NQadd_assoc;
+     rng_sub_diag := NQsub_diag;
+     rng_mul_comm := NQmul_comm;
+     rng_mul_assoc := NQmul_assoc;
+     rng_mul_add_distr_l := ... NQmul_add_distr_l;
+     rng_mul_sub_distr_l := λ a b c, Nat.mul_sub_distr_l b c a;
+     rng_le_refl := Nat.le_refl;
+     rng_le_antisymm := Nat.le_antisymm;
+     rng_add_le_compat := Nat.add_le_mono |}.
