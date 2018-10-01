@@ -95,6 +95,21 @@ Qed.
 Theorem GQle_refl : ∀ x, (x ≤ x)%GQ.
 Proof. intros; apply PQle_refl. Qed.
 
+Theorem GQle_antisymm : ∀ x y, (x ≤ y)%GQ → (y ≤ x)%GQ → x = y.
+Proof.
+intros * Hxy Hyx.
+specialize (PQle_antisymm_eq _ _ Hxy Hyx) as H.
+...
+
+unfold "≤"%GQ in Hxy, Hyx.
+specialize (PQle_antisymm_eq _ _ Hxy Hyx) as H.
+...
+unfold "*"%PQ in H.
+unfold PQmul_num1, PQmul_den1 in H; simpl in H.
+injection H; clear H; intros H1 H2.
+Print GQ.
+...
+
 Theorem GQ_of_PQred : ∀ x, GQ_of_PQ (PQred x) = GQ_of_PQ x.
 Proof.
 intros.
@@ -635,6 +650,16 @@ destruct b1, b2; try easy; repeat GQcompare_iff.
 -now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
 Qed.
 
+Theorem GQcompare_mul_cancel_l : ∀ x y z,
+  GQcompare (x * y) (x * z) = GQcompare y z.
+Proof.
+intros.
+unfold GQcompare.
+unfold "*"%GQ.
+do 2 rewrite PQ_o_GQ.
+apply PQcompare_mul_cancel_l.
+Qed.
+
 (* *)
 
 Delimit Scope NQ_scope with NQ.
@@ -687,6 +712,28 @@ Notation "x < y" := (NQlt x y) : NQ_scope.
 Notation "x ≤ y" := (NQle x y) : NQ_scope.
 Notation "x > y" := (NQgt x y) : NQ_scope.
 Notation "x ≥ y" := (NQge x y) : NQ_scope.
+
+Theorem NQle_refl : ∀ x, (x ≤ x)%NQ.
+Proof.
+intros.
+destruct x as [| px| px]; [ easy | apply PQle_refl | apply PQle_refl ].
+Qed.
+
+Theorem NQle_antisymm : ∀ x y, (x ≤ y)%NQ → (y ≤ x)%NQ → x = y.
+Proof.
+intros * Hxy Hyx.
+unfold "≤"%NQ in Hxy, Hyx.
+destruct x as [| px| px], y as [| py| py]; try easy; simpl.
+-f_equal.
+...
+apply GQle_antisymm.
+
+
+apply Nat.le_antisymm.
+...
+
+apply (Nat.le_antisymm _ _ Hxy Hyx).
+Qed.
 
 Definition NQadd_pos_l px y :=
   match y with
@@ -1113,6 +1160,91 @@ setoid_rewrite NQmul_comm.
 apply NQmul_mul_swap.
 Qed.
 
+Theorem GQmul_sub_distr_l : ∀ x y z, (z < y)%GQ → (x * (y - z) = x * y - x * z)%GQ.
+Proof.
+intros.
+unfold "<"%GQ in H.
+tac_to_PQ.
+rename u into pz; rename Hu into Hpz.
+rename u0 into py; rename Hu0 into Hpy.
+rename u1 into px; rename Hu1 into Hpx.
+rewrite (PQmul_sub_distr_l px _ _ H).
+rewrite GQ_of_PQ_subtractive; [ | now apply PQmul_lt_cancel_l ].
+do 2 rewrite GQ_of_PQ_multiplicative.
+rewrite GQ_of_PQ_subtractive; [ now do 2 rewrite GQ_o_PQ | ].
+unfold "*"%GQ.
+do 5 rewrite PQ_o_GQ.
+now apply PQmul_lt_cancel_l.
+Qed.
+
+Theorem NQmul_add_distr_l : ∀ x y z, (x * (y + z) = x * y + x * z)%NQ.
+Proof.
+intros.
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
+-f_equal; apply GQmul_add_distr_l.
+-rewrite GQcompare_mul_cancel_l.
+ unfold NQmul_pos_l.
+ remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ easy | | ].
+ +now f_equal; apply GQmul_sub_distr_l.
+ +now f_equal; apply GQmul_sub_distr_l.
+-rewrite GQcompare_mul_cancel_l.
+ unfold NQmul_pos_l.
+ remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ easy | | ].
+ +now f_equal; apply GQmul_sub_distr_l.
+ +now f_equal; apply GQmul_sub_distr_l.
+-f_equal; apply GQmul_add_distr_l.
+-f_equal; apply GQmul_add_distr_l.
+-rewrite GQcompare_mul_cancel_l.
+ unfold NQmul_neg_l.
+ remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ easy | | ].
+ +now f_equal; apply GQmul_sub_distr_l.
+ +now f_equal; apply GQmul_sub_distr_l.
+-rewrite GQcompare_mul_cancel_l.
+ unfold NQmul_neg_l.
+ remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ easy | | ].
+ +now f_equal; apply GQmul_sub_distr_l.
+ +now f_equal; apply GQmul_sub_distr_l.
+-f_equal; apply GQmul_add_distr_l.
+Qed.
+
+Theorem NQmul_sub_distr_l : ∀ x y z, (x * (y - z) = x * y - x * z)%NQ.
+Proof.
+intros.
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
+-rewrite GQcompare_mul_cancel_l.
+ unfold NQmul_pos_l.
+ remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ easy | | ].
+ +now f_equal; apply GQmul_sub_distr_l.
+ +now f_equal; apply GQmul_sub_distr_l.
+-f_equal; apply GQmul_add_distr_l.
+-f_equal; apply GQmul_add_distr_l.
+-rewrite GQcompare_mul_cancel_l.
+ unfold NQmul_pos_l.
+ remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ easy | | ].
+ +now f_equal; apply GQmul_sub_distr_l.
+ +now f_equal; apply GQmul_sub_distr_l.
+-rewrite GQcompare_mul_cancel_l.
+ unfold NQmul_neg_l.
+ remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ easy | | ].
+ +now f_equal; apply GQmul_sub_distr_l.
+ +now f_equal; apply GQmul_sub_distr_l.
+-f_equal; apply GQmul_add_distr_l.
+-f_equal; apply GQmul_add_distr_l.
+-rewrite GQcompare_mul_cancel_l.
+ unfold NQmul_neg_l.
+ remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ easy | | ].
+ +now f_equal; apply GQmul_sub_distr_l.
+ +now f_equal; apply GQmul_sub_distr_l.
+Qed.
+
 Require Import Summation.
 
 Definition NQ_ord_ring_def :=
@@ -1125,6 +1257,9 @@ Definition NQ_ord_ring_def :=
 
 Canonical Structure NQ_ord_ring_def.
 
+Check NQmul_sub_distr_l.
+Check rng_mul_sub_distr_l.
+
 Definition NQ_ord_ring :=
   {| rng_add_0_l := NQadd_0_l;
      rng_add_comm := NQadd_comm;
@@ -1132,8 +1267,8 @@ Definition NQ_ord_ring :=
      rng_sub_diag := NQsub_diag;
      rng_mul_comm := NQmul_comm;
      rng_mul_assoc := NQmul_assoc;
-     rng_mul_add_distr_l := ... NQmul_add_distr_l;
-     rng_mul_sub_distr_l := λ a b c, Nat.mul_sub_distr_l b c a;
-     rng_le_refl := Nat.le_refl;
-     rng_le_antisymm := Nat.le_antisymm;
+     rng_mul_add_distr_l := NQmul_add_distr_l;
+     rng_mul_sub_distr_l := NQmul_sub_distr_l;
+     rng_le_refl := NQle_refl;
+     rng_le_antisymm := NQle_antisymm;
      rng_add_le_compat := Nat.add_le_mono |}.

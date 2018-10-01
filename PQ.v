@@ -1016,6 +1016,39 @@ remember (PQcompare x x) as c eqn:Hc; symmetry in Hc.
 now destruct c; [ easy | | ]; PQcompare_iff; apply PQlt_irrefl in Hc.
 Qed.
 
+Theorem PQmul_lt_cancel_l : ∀ x y z, (x * y < x * z)%PQ ↔ (y < z)%PQ.
+Proof.
+intros.
+unfold "<"%PQ, nd.
+unfold "*"%PQ; simpl.
+unfold PQmul_num1, PQmul_den1.
+rewrite Nat.sub_add; [ | destruct (PQnum1 x); simpl; flia ].
+rewrite Nat.sub_add; [ | destruct (PQden1 x); simpl; flia ].
+rewrite Nat.sub_add; [ | destruct (PQnum1 x); simpl; flia ].
+rewrite Nat.sub_add; [ | destruct (PQden1 x); simpl; flia ].
+setoid_rewrite Nat.mul_shuffle1.
+split; intros H.
+-apply Nat.mul_lt_mono_pos_l in H; [ easy | ].
+ do 2 rewrite Nat.add_1_r; simpl; apply Nat.lt_0_succ.
+-apply Nat.mul_lt_mono_pos_l; [ | easy ].
+ do 2 rewrite Nat.add_1_r; simpl; apply Nat.lt_0_succ.
+Qed.
+
+Theorem PQcompare_mul_cancel_l : ∀ x y z,
+  PQcompare (x * y) (x * z) = PQcompare y z.
+Proof.
+intros.
+remember (PQcompare (x * y) (x * z)) as b1 eqn:Hb1.
+symmetry in Hb1; symmetry.
+destruct b1; PQcompare_iff.
+-apply PQcompare_eq_iff.
+ now apply PQmul_cancel_l in Hb1.
+-apply PQcompare_lt_iff.
+ now apply PQmul_lt_cancel_l in Hb1.
+-apply PQcompare_gt_iff.
+ now apply PQmul_lt_cancel_l in Hb1.
+Qed.
+
 Require Import Nat_ggcd.
 
 Definition PQred x :=

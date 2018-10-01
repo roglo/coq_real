@@ -4,7 +4,7 @@
 
 Set Nested Proofs Allowed.
 Require Import Utf8 Arith Psatz NPeano.
-Require Import Misc Summation.
+Require Import Misc Summation GQ.
 Import Init.Nat.
 
 (* "fast" lia, to improve compilation speed *)
@@ -275,6 +275,11 @@ Definition freal_mul_series {r : radix} a b i :=
   | S i' => sequence_mul (fd2n a) (fd2n b) i'
   end.
 *)
+
+Definition A {r : radix} (rg := NQ_ord_ring) i n u :=
+  Σ (j = i + 1, n - 1), NQ_of_pair (u j) (rad ^ (j - i)).
+
+...
 
 Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
