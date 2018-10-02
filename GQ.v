@@ -1280,7 +1280,13 @@ destruct x as [| px| px].
    destruct b1; GQcompare_iff; [ easy | | easy ].
    simpl in Hxy, Hzt.
    now apply GQsub_le_mono.
-  *idtac.
+  *destruct t as [| pt| pt]; simpl.
+  --apply (GQle_trans _ (py - pz)).
+   ++apply GQsub_le_mono_r; [ easy | | easy ].
+     eapply GQlt_le_trans; [ apply Hb | apply Hxy ].
+   ++apply GQlt_le_incl, GQsub_lt.
+     eapply GQlt_le_trans; [ apply Hb | apply Hxy ].
+  --idtac.
 ...
 
 Theorem NQmul_comm : ∀ x y, (x * y = y * x)%NQ.
