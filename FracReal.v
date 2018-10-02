@@ -277,8 +277,6 @@ Definition freal_mul_series {r : radix} a b i :=
 *)
 
 (**)
-Notation "a // b" := (NQ_of_pair a b) (at level 32).
-
 Definition A {r : radix} (rg := NQ_ord_ring) i n u :=
   (Σ (j = i + 1, n - 1), u j // rad ^ (j - i) : NQ).
 (**)
@@ -523,27 +521,23 @@ Arguments freal_add_comm _ x%F y%F.
 
 (**)
 Theorem NQmul_of_pair_nat : ∀ x y z t,
-  y ≠ 0 → t ≠ 0 → ((x // y) * (z // t) = (x * z) // (y * t))%NQ.
+  x ≠ 0 → y ≠ 0 → z ≠ 0 → t ≠ 0 →
+  ((x // y) * (z // t) = (x * z) // (y * t))%NQ.
 Proof.
-intros * Hy Ht.
-simpl.
+intros * Hx Hy Hz Ht; simpl.
 unfold "*"%GQ, "//"; simpl.
 f_equal.
 apply GQeq_eq; simpl.
 rewrite <- PQ.PQred_mul.
 unfold PQ.PQ_of_pair.
 unfold PQ.PQmul, PQ.PQmul_num1, PQ.PQmul_den1; simpl.
+destruct x; [ easy | simpl; rewrite Nat.sub_0_r ].
 destruct y; [ easy | simpl; rewrite Nat.sub_0_r ].
+destruct z; [ easy | simpl; do 2 rewrite Nat.sub_0_r ].
 destruct t; [ easy | simpl; do 2 rewrite Nat.sub_0_r ].
-destruct x; simpl.
--rewrite Nat.add_0_r, Nat.add_sub.
- destruct z; simpl.
- +do 2 rewrite Nat.add_1_r.
-  now simpl; rewrite Nat.sub_0_r.
- +rewrite Nat.sub_0_r.
-  do 2 rewrite Nat.add_1_r; simpl.
-  rewrite Nat.sub_0_r.
-...
+do 4 rewrite Nat.add_1_r; simpl.
+now do 2 rewrite Nat.sub_0_r.
+Qed.
 
 Theorem A_split_first {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
@@ -559,7 +553,7 @@ f_equal.
 rewrite summation_mul_distr_r.
 apply summation_eq_compat.
 intros j Hj.
-rewrite NQmul_of_nat.
+rewrite NQmul_of_pair_nat.
 ...
 rewrite NQmul_div.
 ...

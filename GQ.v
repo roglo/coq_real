@@ -777,7 +777,13 @@ Definition NQ_of_nat n :=
   | S _ => NQpos (GQ_of_nat n)
   end.
 
-Definition NQ_of_pair n d := NQpos (GQ_of_pair n d).
+Definition NQ_of_pair n d :=
+  match n with
+  | 0 => NQ0
+  | _ => NQpos (GQ_of_pair n d)
+  end.
+
+Notation "a // b" := (NQ_of_pair a b) (at level 32).
 
 Definition NQcompare x y :=
   match x with
