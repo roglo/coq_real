@@ -806,6 +806,29 @@ Notation "x ≤ y" := (NQle x y) : NQ_scope.
 Notation "x > y" := (NQgt x y) : NQ_scope.
 Notation "x ≥ y" := (NQge x y) : NQ_scope.
 
+Theorem NQlt_le_dec : ∀ x y : NQ, {(x < y)%NQ} + {(y ≤ x)%NQ}.
+Proof.
+intros.
+destruct x as [| px| px].
+-destruct y as [| py| py]; [ now right | now left | now right ].
+-destruct y as [| py| py]; [ now right | simpl | now right ].
+ apply PQlt_le_dec.
+-destruct y as [| py| py]; [ now left | now left | ].
+ apply PQlt_le_dec.
+Qed.
+Arguments NQlt_le_dec x%NQ y%NQ.
+
+Theorem NQle_lt_dec : ∀ x y : NQ, {(x ≤ y)%NQ} + {(y < x)%NQ}.
+Proof.
+destruct x as [| px| px].
+-destruct y as [| py| py]; [ now left | now left | now right ].
+-destruct y as [| py| py]; [ now right | simpl | now right ].
+ apply PQle_lt_dec.
+-destruct y as [| py| py]; [ now left | now left | ].
+ apply PQle_lt_dec.
+Qed.
+Arguments NQle_lt_dec x%NQ y%NQ.
+
 Theorem NQle_refl : ∀ x, (x ≤ x)%NQ.
 Proof.
 intros.

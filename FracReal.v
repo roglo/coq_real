@@ -276,16 +276,46 @@ Definition freal_mul_series {r : radix} a b i :=
   end.
 *)
 
+Notation "a // b" := (NQ_of_pair a b) (at level 32).
+
 Definition A {r : radix} (rg := NQ_ord_ring) i n u :=
-  Σ (j = i + 1, n - 1), NQ_of_pair (u j) (rad ^ (j - i)).
+  (Σ (j = i + 1, n - 1), u j // rad ^ (j - i) : NQ).
 
-...
-
+(*
 Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
+*)
 
 Definition min_n {r : radix} i k := rad * (i + k + 3).
 
+Definition PQfrac pq :=
+  PQ.PQ_of_pair ((PQ.PQnum1 pq + 1) mod (PQ.PQden1 pq + 1)) (PQ.PQden1 pq + 1).
+Definition PQintg pq :=
+  (PQ.PQnum1 pq + 1) / (PQ.PQden1 pq + 1).
+
+Definition GQfrac gq := GQ_of_PQ (PQfrac (PQ_of_GQ gq)).
+Definition GQintg gq := PQintg (PQ_of_GQ gq).
+
+Definition NQfrac q :=
+  match q with
+  | NQ0 => 0 // 1
+  | NQpos gq => NQpos (GQfrac gq)
+  | NQneg gq => NQneg (GQfrac gq)
+  end.
+
+Definition NQintg q :=
+  match q with
+  | NQ0 => 0
+  | NQpos gq => GQintg gq
+  | NQneg gq => GQintg gq
+  end.
+
+Definition fA_ge_1_ε {r : radix} u i k :=
+  let n := min_n i k in
+  let s := n - i - 1 in
+  if NQlt_le_dec (NQfrac (A i n u)) (1 - 1 // rad ^ S k)%NQ then false else true.
+
+(*
 Definition A_ge_1 {r : radix} u i k :=
   let n := min_n i k in
   let s := n - i - 1 in
@@ -293,9 +323,21 @@ Definition A_ge_1 {r : radix} u i k :=
     false
   else
     true.
+*)
 
 (* Propagation of Carries *)
 
+Definition nat_prop_carr {r : radix} u i :=
+  match LPO_fst (fA_ge_1_ε u i) with
+  | inl _ =>
+      let n := min_n i 0 in
+      NQintg (A i n u) + 1
+  | inr (exist _ k _) =>
+      let n := min_n i k in
+      NQintg (A i n u)
+  end.
+
+(*
 Definition nat_prop_carr {r : radix} u i :=
   match LPO_fst (A_ge_1 u i) with
   | inl _ =>
@@ -305,6 +347,7 @@ Definition nat_prop_carr {r : radix} u i :=
       let n := min_n i k in
       nA i n u / rad ^ (n - i - 1)
   end.
+*)
 
 Definition prop_carr {r : radix} u i :=
   let d := u i + nat_prop_carr u i in
@@ -334,6 +377,8 @@ intros.
 unfold "⊕".
 apply Nat.add_comm.
 Qed.
+
+...
 
 Theorem nA_freal_add_series_comm {r : radix} : ∀ x y i n,
   nA i n (x ⊕ y) = nA i n (y ⊕ x).
