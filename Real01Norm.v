@@ -612,6 +612,7 @@ Qed.
 (* chais pas si c'est vrai, ça, mais si ça l'est on peut passer
    directement à A_ge_1_add_all_true_if à eq_all_prop_carr_9 et
    ça économise tout un tas de lemmes !... *)
+(*
 Theorem glop {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (prop_carr u) (i + k) = rad - 1)
@@ -631,6 +632,7 @@ remember (min_n i j) as n eqn:Hn.
 remember (n - i - 1) as s eqn:Hs.
 move s before n.
 ...
+*)
 
 Theorem eq_all_prop_carr_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))

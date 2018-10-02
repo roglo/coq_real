@@ -25,13 +25,17 @@ Notation "1" := (GQmake 1 (Nat.gcd_1_r (0 + 1))) : GQ_scope.
 Definition GQadd x y := GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
 Definition GQsub x y := GQ_of_PQ (PQ_of_GQ x - PQ_of_GQ y).
 Definition GQmul x y := GQ_of_PQ (PQ_of_GQ x * PQ_of_GQ y).
+Definition GQinv x := GQ_of_PQ (/ PQ_of_GQ x).
 Arguments GQadd x%GQ y%GQ.
 Arguments GQsub x%GQ y%GQ.
 Arguments GQmul x%GQ y%GQ.
+Arguments GQinv x%GQ.
 
 Notation "x + y" := (GQadd x y) : GQ_scope.
 Notation "x - y" := (GQsub x y) : GQ_scope.
 Notation "x * y" := (GQmul x y) : GQ_scope.
+Notation "x / y" := (GQmul x (GQinv y)) : GQ_scope.
+Notation "/ x" := (GQinv x) : GQ_scope.
 
 Definition GQlt x y := PQlt (PQ_of_GQ x) (PQ_of_GQ y).
 Definition GQle x y := PQle (PQ_of_GQ x) (PQ_of_GQ y).
@@ -916,7 +920,16 @@ Definition NQmul x y :=
   | NQneg px => NQmul_neg_l px y
   end.
 
+Definition NQinv x :=
+  match x with
+  | NQ0 => NQ0
+  | NQpos px => NQpos (/ px)
+  | NQneg px => NQneg (/ px)
+  end.
+
 Notation "x * y" := (NQmul x y) : NQ_scope.
+Notation "x / y" := (NQmul x (NQinv y)) : NQ_scope.
+Notation "/ x" := (NQinv x) : NQ_scope.
 
 Theorem GQadd_no_neutral : ∀ x y, (y + x)%GQ ≠ x.
 Proof.

@@ -680,6 +680,47 @@ destruct (LPO_fst (A_ge_1 u i)) as [H1| H1].
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
+Definition add_series (u v : nat → nat) i := u i + v i.
+
+Theorem Hugo_Herbelin {r : radix} : ∀ u v,
+  ({| freal := prop_carr (add_series u (d2n (prop_carr v))) |} =
+   {| freal := prop_carr (add_series u v) |})%F.
+Proof.
+Admitted.
+
+Theorem truc {r : radix} : ∀ x u,
+  ({| freal := prop_carr (x ⊕ {| freal := prop_carr u |}) |} =
+   {| freal := prop_carr (add_series (fd2n x) (d2n (prop_carr u))) |})%F.
+Proof. easy. Qed.
+
+Theorem pouet {r : radix} : ∀ x y z i,
+  add_series (λ j, dig (freal x j)) (y ⊕ z) i =
+  add_series (λ j, dig (freal z j)) (y ⊕ x) i.
+Proof.
+intros.
+unfold add_series, "⊕", fd2n.
+rewrite Nat.add_assoc, Nat.add_comm.
+do 2 rewrite Nat.add_assoc.
+now rewrite Nat.add_shuffle0.
+Qed.
+
+Theorem glop {r : radix} : ∀ x y z, (x + (y + z) = z + (y + x))%F.
+Proof.
+intros.
+unfold "+"%F.
+do 2 rewrite truc.
+do 2 rewrite Hugo_Herbelin.
+intros i.
+unfold freal_normalize, fd2n; simpl.
+apply digit_eq_eq.
+rewrite <- prop_carr_normalizes.
+-rewrite <- prop_carr_normalizes.
+ +apply prop_carr_eq_compat, pouet.
+  +intros j.
+   unfold add_series, "⊕".
+(* ah oui mais non *)
+...
+
 Theorem add_assoc_case_11 {r : radix} : ∀ x y z i,
   (∀ k, (x ⊕ (y + z)) (i + k + 1) = rad - 1)
   → (∀ k, (z ⊕ (y + x)) (i + k + 1) = rad - 1)

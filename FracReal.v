@@ -4,7 +4,7 @@
 
 Set Nested Proofs Allowed.
 Require Import Utf8 Arith Psatz NPeano.
-Require Import Misc Summation GQ.
+Require Import Misc Summation (*GQ*).
 Import Init.Nat.
 
 (* "fast" lia, to improve compilation speed *)
@@ -276,18 +276,19 @@ Definition freal_mul_series {r : radix} a b i :=
   end.
 *)
 
+(*
 Notation "a // b" := (NQ_of_pair a b) (at level 32).
 
 Definition A {r : radix} (rg := NQ_ord_ring) i n u :=
   (Σ (j = i + 1, n - 1), u j // rad ^ (j - i) : NQ).
+*)
 
-(*
 Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
-*)
 
 Definition min_n {r : radix} i k := rad * (i + k + 3).
 
+(*
 Definition PQfrac pq :=
   PQ.PQ_of_pair ((PQ.PQnum1 pq + 1) mod (PQ.PQden1 pq + 1)) (PQ.PQden1 pq + 1).
 Definition PQintg pq :=
@@ -314,8 +315,8 @@ Definition fA_ge_1_ε {r : radix} u i k :=
   let n := min_n i k in
   let s := n - i - 1 in
   if NQlt_le_dec (NQfrac (A i n u)) (1 - 1 // rad ^ S k)%NQ then false else true.
+*)
 
-(*
 Definition A_ge_1 {r : radix} u i k :=
   let n := min_n i k in
   let s := n - i - 1 in
@@ -323,10 +324,10 @@ Definition A_ge_1 {r : radix} u i k :=
     false
   else
     true.
-*)
 
 (* Propagation of Carries *)
 
+(*
 Definition nat_prop_carr {r : radix} u i :=
   match LPO_fst (fA_ge_1_ε u i) with
   | inl _ =>
@@ -336,8 +337,8 @@ Definition nat_prop_carr {r : radix} u i :=
       let n := min_n i k in
       NQintg (A i n u)
   end.
+*)
 
-(*
 Definition nat_prop_carr {r : radix} u i :=
   match LPO_fst (A_ge_1 u i) with
   | inl _ =>
@@ -347,7 +348,6 @@ Definition nat_prop_carr {r : radix} u i :=
       let n := min_n i k in
       nA i n u / rad ^ (n - i - 1)
   end.
-*)
 
 Definition prop_carr {r : radix} u i :=
   let d := u i + nat_prop_carr u i in
@@ -378,6 +378,7 @@ unfold "⊕".
 apply Nat.add_comm.
 Qed.
 
+(*
 Theorem A_freal_add_series_comm {r : radix} : ∀ x y i n,
   A i n (x ⊕ y) = A i n (y ⊕ x).
 Proof.
@@ -386,8 +387,8 @@ unfold A; simpl.
 apply summation_eq_compat; intros j Hj.
 now rewrite freal_add_series_comm.
 Qed.
+*)
 
-(*
 Theorem nA_freal_add_series_comm {r : radix} : ∀ x y i n,
   nA i n (x ⊕ y) = nA i n (y ⊕ x).
 Proof.
@@ -396,8 +397,8 @@ unfold nA; simpl.
 apply summation_eq_compat; intros j Hj.
 now rewrite freal_add_series_comm.
 Qed.
-*)
 
+(*
 Theorem A_ge_1_freal_add_series_comm {r : radix} : ∀ x y i k,
   fA_ge_1_ε (x ⊕ y) i k = fA_ge_1_ε (y ⊕ x) i k.
 Proof.
@@ -405,8 +406,8 @@ intros.
 unfold fA_ge_1_ε.
 now rewrite A_freal_add_series_comm.
 Qed.
+*)
 
-(*
 Theorem A_ge_1_freal_add_series_comm {r : radix} : ∀ x y i k,
   A_ge_1 (x ⊕ y) i k = A_ge_1 (y ⊕ x) i k.
 Proof.
@@ -414,8 +415,8 @@ intros.
 unfold A_ge_1.
 now rewrite nA_freal_add_series_comm.
 Qed.
-*)
 
+(*
 Theorem prop_carr_add_comm {r : radix} : ∀ x y i,
   prop_carr (x ⊕ y) i = prop_carr (y ⊕ x) i.
 Proof.
@@ -447,8 +448,8 @@ destruct (LPO_fst (fA_ge_1_ε (x ⊕ y) i)) as [Hxy| Hxy].
    rewrite A_ge_1_freal_add_series_comm in Hkl.
    now rewrite Hl in Hkl.
 Qed.
+*)
 
-(*
 Theorem prop_carr_add_comm {r : radix} : ∀ x y i,
   prop_carr (x ⊕ y) i = prop_carr (y ⊕ x) i.
 Proof.
@@ -480,7 +481,6 @@ destruct (LPO_fst (A_ge_1 (x ⊕ y) i)) as [Hxy| Hxy].
    rewrite A_ge_1_freal_add_series_comm in Hkl.
    now rewrite Hl in Hkl.
 Qed.
-*)
 
 Theorem dig_unorm_add_comm {r : radix} : ∀ x y i,
   freal (x + y) i = freal (y + x) i.
@@ -519,7 +519,28 @@ Qed.
 
 Arguments freal_add_comm _ x%F y%F.
 
+(*
+Theorem A_split_first {r : radix} : ∀ i n u,
+  i + 1 ≤ n - 1
+  → A i n u = (u (S i) // rad + A (S i) n u * 1 // rad)%NQ.
+Proof.
+intros * Hin.
+unfold A.
+rewrite summation_split_first; [ | easy ].
+simpl; rewrite Nat.add_1_r.
+rewrite Nat.sub_succ_l; [ | easy ].
+rewrite Nat.sub_diag, Nat.pow_1_r.
+f_equal.
+rewrite summation_mul_distr_r.
+apply summation_eq_compat.
+intros j Hj.
+Require Import QArith.
 ...
+rewrite NQmul_div.
+...
+simpl; f_equal; f_equal; f_equal; flia.
+Qed.
+*)
 
 Theorem nA_split_first {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
