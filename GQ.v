@@ -1286,7 +1286,13 @@ destruct x as [| px| px].
      eapply GQlt_le_trans; [ apply Hb | apply Hxy ].
    ++apply GQlt_le_incl, GQsub_lt.
      eapply GQlt_le_trans; [ apply Hb | apply Hxy ].
-  --idtac.
+  --apply (GQle_trans _ px).
+   ++now apply GQlt_le_incl, GQsub_lt.
+   ++apply (GQle_trans _ py); [ easy | apply GQle_add_r ].
+  --remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
+    destruct b1; GQcompare_iff.
+   ++subst py.
+
 ...
 
 Theorem NQmul_comm : ∀ x y, (x * y = y * x)%NQ.
