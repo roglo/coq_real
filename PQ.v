@@ -636,7 +636,7 @@ rewrite PQsub_add_eq; [ | easy ].
 now do 2 rewrite PQmul_one_r.
 Qed.
 
-Theorem PQsub_lt_mono_r : ∀ x y z,
+Theorem PQsub_le_mono_r : ∀ x y z,
   (z < x)%PQ → (z < y)%PQ → (x ≤ y ↔ x - z ≤ y - z)%PQ.
 Proof.
 intros * Hzx Hzy.
@@ -670,6 +670,56 @@ split.
  apply (PQadd_le_mono_r _ _ z) in Hxyz.
  rewrite PQsub_add in Hxyz; [ | easy ].
  now rewrite PQsub_add in Hxyz.
+Qed.
+
+Theorem PQsub_le_mono_l : ∀ x y z,
+  (x < z)%PQ → (y < z)%PQ → (y ≤ x)%PQ ↔ (z - x ≤ z - y)%PQ.
+Proof.
+intros * Hzx Hzy.
+split.
+-intros Hxy.
+ revert Hzx Hxy Hzy.
+ unfold "≤"%PQ, "<"%PQ, "-"%PQ, PQsub_num1, PQadd_den1, nd; simpl.
+ do 10 rewrite Nat.add_1_r.
+ intros.
+ rewrite <- Nat.sub_succ_l; [ | flia Hzx ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ rewrite <- Nat.sub_succ_l; [ | flia Hzy ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ remember (S (PQnum1 x)) as xn eqn:Hxn.
+ remember (S (PQden1 x)) as xd eqn:Hxd.
+ remember (S (PQnum1 y)) as yn eqn:Hyn.
+ remember (S (PQden1 y)) as yd eqn:Hyd.
+ remember (S (PQnum1 z)) as zn eqn:Hzn.
+ remember (S (PQden1 z)) as zd eqn:Hzd.
+ do 2 rewrite Nat.mul_sub_distr_r.
+ replace (zn * yd * (zd * xd)) with (zn * xd * (zd * yd)) by flia.
+ replace (xn * zd * (zd * yd)) with (xn * yd * (zd * zd)) by flia.
+ replace (yn * zd * (zd * xd)) with (yn * xd * (zd * zd)) by flia.
+ apply Nat.sub_le_mono_l.
+ now apply Nat.mul_le_mono_r.
+-intros Hxyz.
+ apply (PQadd_le_mono_r _ _ (x + y)%PQ) in Hxyz.
+ do 2 rewrite PQadd_assoc in Hxyz.
+ rewrite PQsub_add in Hxyz; [ | easy ].
+ rewrite PQadd_add_swap in Hxyz.
+ rewrite PQsub_add in Hxyz; [ | easy ].
+ now apply PQadd_le_mono_l in Hxyz.
+Qed.
+
+Theorem PQsub_le_mono : ∀ x y z t,
+  (y < x)%PQ → (t < z)%PQ → (x ≤ z)%PQ → (t ≤ y)%PQ → (x - y ≤ z - t)%PQ.
+Proof.
+intros * Hyx Htz Hxz Hty.
+eapply (PQle_trans _ (z - y)).
+-apply PQsub_le_mono_r; [ easy | | easy ].
+ eapply PQlt_le_trans; [ apply Hyx | apply Hxz ].
+-apply PQsub_le_mono_l; [ | easy | easy ].
+ eapply PQlt_le_trans; [ apply Hyx | apply Hxz ].
 Qed.
 
 Theorem PQadd_no_neutral : ∀ x y, (y + x ≠≠ x)%PQ.

@@ -392,22 +392,43 @@ apply (GQle_trans _ (y + z)).
 Qed.
 
 Theorem GQsub_le_mono_r : ∀ x y z,
-  (z < x)%GQ → (x ≤ y)%GQ ↔ (x - z ≤ y - z)%GQ.
+  (z < x)%GQ → (z < y)%GQ → (x ≤ y)%GQ ↔ (x - z ≤ y - z)%GQ.
 Proof.
 intros *.
 unfold "-"%GQ, "≤"%GQ, "<"%GQ.
-intros Hzx.
+intros Hzx Hzy.
 rewrite GQ_of_PQ_subtractive; [ | easy ].
-split; intros Hxy.
--assert (Hzy : (PQ_of_GQ z < PQ_of_GQ y)%PQ). {
-   eapply GQlt_le_trans; [ apply Hzx | apply Hxy ].
- }
- rewrite GQ_of_PQ_subtractive; [ | easy ].
- do 3 rewrite GQ_o_PQ.
- rewrite PQ_of_GQ_subtractive; [ | easy ].
- rewrite PQ_of_GQ_subtractive; [ | easy ].
- apply PQsub_lt_mono_r.
-...
+rewrite GQ_of_PQ_subtractive; [ | easy ].
+do 3 rewrite GQ_o_PQ.
+rewrite PQ_of_GQ_subtractive; [ | easy ].
+rewrite PQ_of_GQ_subtractive; [ | easy ].
+now apply PQsub_le_mono_r.
+Qed.
+
+Theorem GQsub_le_mono_l : ∀ x y z,
+  (x < z)%GQ → (y < z)%GQ → (y ≤ x)%GQ ↔ (z - x ≤ z - y)%GQ.
+Proof.
+intros *.
+unfold "-"%GQ, "≤"%GQ, "<"%GQ.
+intros Hzx Hzy.
+rewrite GQ_of_PQ_subtractive; [ | easy ].
+rewrite GQ_of_PQ_subtractive; [ | easy ].
+do 3 rewrite GQ_o_PQ.
+rewrite PQ_of_GQ_subtractive; [ | easy ].
+rewrite PQ_of_GQ_subtractive; [ | easy ].
+now apply PQsub_le_mono_l.
+Qed.
+
+Theorem GQsub_le_mono : ∀ x y z t,
+  (y < x)%GQ → (t < z)%GQ → (x ≤ z)%GQ → (t ≤ y)%GQ → (x - y ≤ z - t)%GQ.
+Proof.
+intros * Hyx Htz Hxz Hty.
+apply (GQle_trans _ (z - y)).
+-apply GQsub_le_mono_r; [ easy | | easy ].
+ eapply GQlt_le_trans; [ apply Hyx | apply Hxz ].
+-apply GQsub_le_mono_l; [ | easy | easy ].
+ eapply GQlt_le_trans; [ apply Hyx | apply Hxz ].
+Qed.
 
 Theorem GQadd_sub : ∀ x y, (x + y - y)%GQ = x.
 Proof.
@@ -1258,13 +1279,9 @@ destruct x as [| px| px].
    remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
    destruct b1; GQcompare_iff; [ easy | | easy ].
    simpl in Hxy, Hzt.
-Check Nat.sub_le_mono_r.
+   now apply GQsub_le_mono.
+  *idtac.
 ...
-   apply GQle_trans with (y := (pz - py)%GQ).
-  --idtac.
-Check Nat.sub_le_mono_r.
-...
-Check GQsub_le_mono_r.
 
 Theorem NQmul_comm : ∀ x y, (x * y = y * x)%NQ.
 Proof.
