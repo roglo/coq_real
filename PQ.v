@@ -612,6 +612,66 @@ apply (PQle_trans _ (y + z)%PQ).
 -now apply PQadd_le_mono_l.
 Qed.
 
+Theorem PQsub_add_eq : ∀ x y,
+  (y < x)%PQ → (x - y + y = x * PQone y * PQone y)%PQ.
+Proof.
+intros x y Hxy.
+unfold "<"%PQ, nd in Hxy.
+unfold "+"%PQ, "-"%PQ, "==", nd; simpl.
+unfold PQsub_num1, PQadd_num1, PQadd_den1, nd; simpl.
+unfold "*"%PQ, PQone, PQmul_num1, PQmul_den1; simpl.
+do 4 rewrite Nat.add_1_r in Hxy.
+f_equal.
+PQtac1; repeat PQtac2; [ | flia Hxy ].
+PQtac3; rewrite Nat.sub_add; [ easy | ].
+setoid_rewrite Nat.mul_shuffle0.
+rewrite Nat.mul_shuffle0.
+now apply Nat.mul_le_mono_r, Nat.lt_le_incl.
+Qed.
+
+Theorem PQsub_add : ∀ x y, (y < x)%PQ → (x - y + y == x)%PQ.
+Proof.
+intros x y Hxy.
+rewrite PQsub_add_eq; [ | easy ].
+now do 2 rewrite PQmul_one_r.
+Qed.
+
+Theorem PQsub_lt_mono_r : ∀ x y z,
+  (z < x)%PQ → (z < y)%PQ → (x ≤ y ↔ x - z ≤ y - z)%PQ.
+Proof.
+intros * Hzx Hzy.
+split.
+-intros Hxy.
+ revert Hzx Hxy Hzy.
+ unfold "≤"%PQ, "<"%PQ, "-"%PQ, PQsub_num1, PQadd_den1, nd; simpl.
+ do 10 rewrite Nat.add_1_r.
+ intros.
+ rewrite <- Nat.sub_succ_l; [ | flia Hzx ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ rewrite <- Nat.sub_succ_l; [ | flia Hzy ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ remember (S (PQnum1 x)) as xn eqn:Hxn.
+ remember (S (PQden1 x)) as xd eqn:Hxd.
+ remember (S (PQnum1 y)) as yn eqn:Hyn.
+ remember (S (PQden1 y)) as yd eqn:Hyd.
+ remember (S (PQnum1 z)) as zn eqn:Hzn.
+ remember (S (PQden1 z)) as zd eqn:Hzd.
+ do 2 rewrite Nat.mul_sub_distr_r.
+ replace (zn * yd * (xd * zd)) with (zn * xd * (yd * zd)) by flia.
+ replace (xn * zd * (yd * zd)) with (xn * yd * (zd * zd)) by flia.
+ replace (yn * zd * (xd * zd)) with (yn * xd * (zd * zd)) by flia.
+ apply Nat.sub_le_mono_r.
+ now apply Nat.mul_le_mono_r.
+-intros Hxyz.
+ apply (PQadd_le_mono_r _ _ z) in Hxyz.
+ rewrite PQsub_add in Hxyz; [ | easy ].
+ now rewrite PQsub_add in Hxyz.
+Qed.
+
 Theorem PQadd_no_neutral : ∀ x y, (y + x ≠≠ x)%PQ.
 Proof.
 intros x y Hxy.
@@ -660,30 +720,6 @@ Theorem PQadd_sub : ∀ x y, (x + y - y == x)%PQ.
 Proof.
 intros x y.
 rewrite PQadd_sub_eq.
-now do 2 rewrite PQmul_one_r.
-Qed.
-
-Theorem PQsub_add_eq : ∀ x y,
-  (y < x)%PQ → (x - y + y = x * PQone y * PQone y)%PQ.
-Proof.
-intros x y Hxy.
-unfold "<"%PQ, nd in Hxy.
-unfold "+"%PQ, "-"%PQ, "==", nd; simpl.
-unfold PQsub_num1, PQadd_num1, PQadd_den1, nd; simpl.
-unfold "*"%PQ, PQone, PQmul_num1, PQmul_den1; simpl.
-do 4 rewrite Nat.add_1_r in Hxy.
-f_equal.
-PQtac1; repeat PQtac2; [ | flia Hxy ].
-PQtac3; rewrite Nat.sub_add; [ easy | ].
-setoid_rewrite Nat.mul_shuffle0.
-rewrite Nat.mul_shuffle0.
-now apply Nat.mul_le_mono_r, Nat.lt_le_incl.
-Qed.
-
-Theorem PQsub_add : ∀ x y, (y < x)%PQ → (x - y + y == x)%PQ.
-Proof.
-intros x y Hxy.
-rewrite PQsub_add_eq; [ | easy ].
 now do 2 rewrite PQmul_one_r.
 Qed.
 

@@ -118,6 +118,7 @@ Qed.
 
 Theorem GQle_trans : ∀ x y z, (x ≤ y)%GQ → (y ≤ z)%GQ → (x ≤ z)%GQ.
 Proof. intros *; apply PQle_trans. Qed.
+Arguments GQle_trans x%GQ y%GQ z%GQ.
 
 Theorem GQ_of_PQred : ∀ x, GQ_of_PQ (PQred x) = GQ_of_PQ x.
 Proof.
@@ -351,6 +352,9 @@ Proof. intros x y; apply PQlt_le_incl. Qed.
 Theorem GQlt_trans : ∀ x y z, (x < y)%GQ → (y < z)%GQ → (x < z)%GQ.
 Proof. intros x y z; apply PQlt_trans. Qed.
 
+Theorem GQlt_le_trans : ∀ x y z, (x < y)%GQ → (y ≤ z)%GQ → (x < z)%GQ.
+Proof. intros x y z; apply PQlt_le_trans. Qed.
+
 Theorem GQsub_lt : ∀ x y, (y < x)%GQ → (x - y < x)%GQ.
 Proof.
 intros x y z.
@@ -359,17 +363,6 @@ rewrite GQ_of_PQ_subtractive; [ | easy ].
 do 2 rewrite GQ_o_PQ.
 rewrite PQ_of_GQ_subtractive; [ | easy ].
 now apply PQsub_lt.
-Qed.
-
-Theorem GQadd_le_mono : ∀ x y z t,
-   (x ≤ y)%GQ → (z ≤ t)%GQ → (x + z ≤ y + t)%GQ.
-Proof.
-intros * Hxy Hzt.
-unfold "+"%GQ, "≤"%GQ.
-do 2 rewrite GQ_of_PQ_additive.
-do 4 rewrite GQ_o_PQ.
-do 2 rewrite PQ_of_GQ_additive.
-now apply PQadd_le_mono.
 Qed.
 
 Theorem GQadd_le_mono_r : ∀ x y z, (x ≤ y)%GQ ↔ (x + z ≤ y + z)%GQ.
@@ -381,6 +374,40 @@ do 3 rewrite GQ_o_PQ.
 do 2 rewrite PQ_of_GQ_additive.
 apply PQadd_le_mono_r.
 Qed.
+
+Theorem GQadd_le_mono_l : ∀ x y z, (x ≤ y)%GQ ↔ (z + x ≤ z + y)%GQ.
+Proof.
+intros *.
+setoid_rewrite GQadd_comm.
+apply GQadd_le_mono_r.
+Qed.
+
+Theorem GQadd_le_mono : ∀ x y z t,
+   (x ≤ y)%GQ → (z ≤ t)%GQ → (x + z ≤ y + t)%GQ.
+Proof.
+intros * Hxy Hzt.
+apply (GQle_trans _ (y + z)).
+-now apply GQadd_le_mono_r.
+-now apply GQadd_le_mono_l.
+Qed.
+
+Theorem GQsub_le_mono_r : ∀ x y z,
+  (z < x)%GQ → (x ≤ y)%GQ ↔ (x - z ≤ y - z)%GQ.
+Proof.
+intros *.
+unfold "-"%GQ, "≤"%GQ, "<"%GQ.
+intros Hzx.
+rewrite GQ_of_PQ_subtractive; [ | easy ].
+split; intros Hxy.
+-assert (Hzy : (PQ_of_GQ z < PQ_of_GQ y)%PQ). {
+   eapply GQlt_le_trans; [ apply Hzx | apply Hxy ].
+ }
+ rewrite GQ_of_PQ_subtractive; [ | easy ].
+ do 3 rewrite GQ_o_PQ.
+ rewrite PQ_of_GQ_subtractive; [ | easy ].
+ rewrite PQ_of_GQ_subtractive; [ | easy ].
+ apply PQsub_lt_mono_r.
+...
 
 Theorem GQadd_sub : ∀ x y, (x + y - y)%GQ = x.
 Proof.
@@ -1231,6 +1258,7 @@ destruct x as [| px| px].
    remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
    destruct b1; GQcompare_iff; [ easy | | easy ].
    simpl in Hxy, Hzt.
+Check Nat.sub_le_mono_r.
 ...
    apply GQle_trans with (y := (pz - py)%GQ).
   --idtac.
