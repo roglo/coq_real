@@ -927,7 +927,8 @@ unfold freal_shift, fd2n.
 unfold "+"%F, "⊕", fd2n; simpl.
 f_equal; f_equal.
 unfold nat_prop_carr.
-Admitted.
+...
+ADMITTED.
 rewrite Hxs, Hys.
 Search freal_norm_eq.
 ...
