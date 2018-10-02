@@ -606,29 +606,10 @@ Qed.
 Theorem PQadd_le_mono : ∀ x y z t,
   (x ≤ y)%PQ → (z ≤ t)%PQ → (x + z ≤ y + t)%PQ.
 Proof.
-unfold "≤"%PQ, "+"%PQ, PQadd_num1, PQadd_den1, nd; simpl.
-intros *.
-do 12 rewrite Nat.add_1_r.
-intros Hxy Hzt.
-do 4 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
-do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
-do 2 rewrite Nat.mul_add_distr_r.
-remember (S (PQnum1 x)) as xn eqn:Hxn.
-remember (S (PQden1 x)) as xd eqn:Hxd.
-remember (S (PQnum1 y)) as yn eqn:Hyn.
-remember (S (PQden1 y)) as yd eqn:Hyd.
-remember (S (PQnum1 z)) as zn eqn:Hzn.
-remember (S (PQden1 z)) as zd eqn:Hzd.
-remember (S (PQnum1 t)) as tn eqn:Htn.
-remember (S (PQden1 t)) as td eqn:Htd.
-move Hxy before Hzt.
-apply Nat.add_le_mono.
--replace (xn * zd * (yd * td)) with (xn * yd * (td * zd)) by flia.
- replace (yn * td * (xd * zd)) with (yn * xd * (td * zd)) by flia.
- now apply Nat.mul_le_mono_r.
--replace (zn * xd * (yd * td)) with (zn * td * (xd * yd)) by flia.
- replace (tn * yd * (xd * zd)) with (tn * zd * (xd * yd)) by flia.
- now apply Nat.mul_le_mono_r.
+intros * Hxy Hzt.
+apply (PQle_trans _ (y + z)%PQ).
+-now apply PQadd_le_mono_r.
+-now apply PQadd_le_mono_l.
 Qed.
 
 Theorem PQadd_no_neutral : ∀ x y, (y + x ≠≠ x)%PQ.
