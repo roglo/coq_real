@@ -1292,8 +1292,65 @@ destruct x as [| px| px].
   --remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
     destruct b1; GQcompare_iff.
    ++subst py.
-
-...
+     apply GQnle_gt in Hb; apply Hb.
+     eapply GQle_trans; [ apply Hxy | apply Hzt ].
+   ++apply GQnle_gt in Hb; apply Hb.
+     eapply GQle_trans; [ apply Hxy | ].
+     eapply GQle_trans; [ apply GQlt_le_incl, Hb1 | easy ].
+   ++now apply GQsub_le_mono.
+-destruct z as [| pz| pz]; simpl.
+ +destruct y as [| py| py]; [ now destruct t | now destruct t | ].
+  destruct t as [| pt| pt]; [ easy | simpl | easy ].
+  remember (GQcompare py pt) as b eqn:Hb; symmetry in Hb.
+  destruct b; GQcompare_iff; [ easy | easy | ].
+  apply (GQle_trans _ py); [ | easy ].
+  now apply GQlt_le_incl, GQsub_lt.
+ +destruct t as [| pt| pt]; [ easy | simpl | easy ].
+  remember (GQcompare px pz) as b eqn:Hb; symmetry in Hb.
+  destruct b; GQcompare_iff.
+  *destruct y as [| py| py]; [ easy | easy | ].
+   remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
+   destruct b1; GQcompare_iff; [ easy | easy | subst px ].
+   apply GQnle_gt in Hb1; apply Hb1.
+   now apply (GQle_trans _ pz).
+  *destruct y as [| py| py].
+  --apply (GQle_trans _ pz); [ | easy ].
+    now apply GQlt_le_incl, GQsub_lt.
+  --apply (GQle_trans _ pz).
+   ++now apply GQlt_le_incl, GQsub_lt.
+   ++apply (GQle_trans _ pt); [ easy | apply GQle_add_l ].
+  --remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
+    destruct b1; GQcompare_iff.
+   ++subst py.
+     apply GQnle_gt in Hb; apply Hb.
+     eapply GQle_trans; [ apply Hzt | apply Hxy ].
+   ++now apply GQsub_le_mono.
+   ++apply GQnle_gt in Hb; apply Hb.
+     eapply GQle_trans; [ apply Hzt | ].
+     eapply GQle_trans; [ apply GQlt_le_incl, Hb1 | easy ].
+  *destruct y as [| py| py]; [ easy | easy | ].
+   remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
+   destruct b1; GQcompare_iff; [ easy | easy | ].
+   now apply GQsub_le_mono.
+ +destruct y as [| py| py].
+  *destruct t as [| pt| pt]; [ easy | easy | ].
+   apply (GQle_trans _ pz); [ easy | ].
+   apply GQle_add_l.
+  *destruct t as [| pt| pt]; [ easy | easy | simpl ].
+   remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
+   destruct b1; GQcompare_iff; [ easy | | easy ].
+   apply (GQle_trans _ pt).
+  --now apply GQlt_le_incl, GQsub_lt.
+  --apply (GQle_trans _ pz); [ easy | apply GQle_add_l ].
+  *destruct t as [| pt| pt]; simpl.
+  --apply (GQle_trans _ px); [ easy | apply GQle_add_r ].
+  --remember (GQcompare py pt) as b eqn:Hb; symmetry in Hb.
+    destruct b; GQcompare_iff; [ easy | easy | ].
+    apply (GQle_trans _ px); [ | apply GQle_add_r ].
+    apply (GQle_trans _ py); [ | easy ].
+    now apply GQlt_le_incl, GQsub_lt.
+  --now apply GQadd_le_mono.
+Qed.
 
 Theorem NQmul_comm : ∀ x y, (x * y = y * x)%NQ.
 Proof.
@@ -1418,13 +1475,6 @@ Definition NQ_ord_ring_def :=
      rng_le := NQle |}.
 
 Canonical Structure NQ_ord_ring_def.
-
-Check rng_add_le_compat.
-Search (_ ≤ _ → _)%NQ.
-(*
-rng_add_le_compat
-     : ∀ n m p q : rng_t, (n ≤ m)%Rg → (p ≤ q)%Rg → (n + p ≤ m + q)%Rg
-*)
 
 Definition NQ_ord_ring :=
   {| rng_add_0_l := NQadd_0_l;
