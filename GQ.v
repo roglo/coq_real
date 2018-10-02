@@ -1231,6 +1231,7 @@ destruct x as [| px| px].
    remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
    destruct b1; GQcompare_iff; [ easy | | easy ].
    simpl in Hxy, Hzt.
+...
    apply GQle_trans with (y := (pz - py)%GQ).
   --idtac.
 Check Nat.sub_le_mono_r.
