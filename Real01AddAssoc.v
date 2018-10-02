@@ -682,11 +682,30 @@ Qed.
 
 Definition add_series (u v : nat → nat) i := u i + v i.
 
-Theorem Hugo_Herbelin {r : radix} : ∀ u v,
-  ({| freal := prop_carr (add_series u (d2n (prop_carr v))) |} =
-   {| freal := prop_carr (add_series u v) |})%F.
+Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
+  prop_carr (add_series u (d2n (prop_carr v))) i =
+  prop_carr (add_series u v) i.
 Proof.
-Admitted.
+intros.
+unfold prop_carr, d2n.
+apply digit_eq_eq; simpl.
+unfold add_series.
+rewrite <- Nat.add_assoc, Nat.add_comm.
+rewrite <- Nat.add_assoc.
+rewrite Nat.add_mod_idemp_l; [ | easy ].
+rewrite Nat.add_assoc, Nat.add_comm.
+do 2 rewrite <- Nat.add_assoc.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal.
+rename i into j.
+unfold nat_prop_carr at 1.
+destruct (LPO_fst (A_ge_1 v j)) as [H1| H1].
+-idtac.
+...
 
 Theorem truc {r : radix} : ∀ x u,
   ({| freal := prop_carr (x ⊕ {| freal := prop_carr u |}) |} =
@@ -704,21 +723,28 @@ do 2 rewrite Nat.add_assoc.
 now rewrite Nat.add_shuffle0.
 Qed.
 
-Theorem glop {r : radix} : ∀ x y z, (x + (y + z) = z + (y + x))%F.
+Theorem freal_add_assoc {r : radix} : ∀ x y z, (x + (y + z) = z + (y + x))%F.
 Proof.
 intros.
 unfold "+"%F.
 do 2 rewrite truc.
-do 2 rewrite Hugo_Herbelin.
 intros i.
 unfold freal_normalize, fd2n; simpl.
 apply digit_eq_eq.
-rewrite <- prop_carr_normalizes.
--rewrite <- prop_carr_normalizes.
- +apply prop_carr_eq_compat, pouet.
-  +intros j.
-   unfold add_series, "⊕".
-(* ah oui mais non *)
+rewrite <- prop_carr_normalizes; cycle 1. {
+  intros j.
+  apply (freal_add_series_le_twice_pred x {| freal := prop_carr (y ⊕ z) |} j).
+}
+rewrite <- prop_carr_normalizes; cycle 1. {
+  intros j.
+  apply (freal_add_series_le_twice_pred z {| freal := prop_carr (y ⊕ x) |} j).
+}
+do 2 rewrite Hugo_Herbelin.
+apply prop_carr_eq_compat.
+intros j.
+apply pouet.
+Qed.
+
 ...
 
 Theorem add_assoc_case_11 {r : radix} : ∀ x y z i,
