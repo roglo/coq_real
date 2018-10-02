@@ -378,8 +378,16 @@ unfold "⊕".
 apply Nat.add_comm.
 Qed.
 
-...
+Theorem A_freal_add_series_comm {r : radix} : ∀ x y i n,
+  A i n (x ⊕ y) = A i n (y ⊕ x).
+Proof.
+intros.
+unfold A; simpl.
+apply summation_eq_compat; intros j Hj.
+now rewrite freal_add_series_comm.
+Qed.
 
+(*
 Theorem nA_freal_add_series_comm {r : radix} : ∀ x y i n,
   nA i n (x ⊕ y) = nA i n (y ⊕ x).
 Proof.
@@ -388,7 +396,17 @@ unfold nA; simpl.
 apply summation_eq_compat; intros j Hj.
 now rewrite freal_add_series_comm.
 Qed.
+*)
 
+Theorem A_ge_1_freal_add_series_comm {r : radix} : ∀ x y i k,
+  fA_ge_1_ε (x ⊕ y) i k = fA_ge_1_ε (y ⊕ x) i k.
+Proof.
+intros.
+unfold fA_ge_1_ε.
+now rewrite A_freal_add_series_comm.
+Qed.
+
+(*
 Theorem A_ge_1_freal_add_series_comm {r : radix} : ∀ x y i k,
   A_ge_1 (x ⊕ y) i k = A_ge_1 (y ⊕ x) i k.
 Proof.
@@ -396,7 +414,41 @@ intros.
 unfold A_ge_1.
 now rewrite nA_freal_add_series_comm.
 Qed.
+*)
 
+Theorem prop_carr_add_comm {r : radix} : ∀ x y i,
+  prop_carr (x ⊕ y) i = prop_carr (y ⊕ x) i.
+Proof.
+intros.
+apply digit_eq_eq; simpl.
+unfold nat_prop_carr.
+rewrite freal_add_series_comm.
+destruct (LPO_fst (fA_ge_1_ε (x ⊕ y) i)) as [Hxy| Hxy].
+-setoid_rewrite freal_add_series_comm.
+ destruct (LPO_fst (fA_ge_1_ε (y ⊕ x) i)) as [Hyx| Hyx].
+ +f_equal; f_equal; f_equal; f_equal.
+  apply summation_eq_compat.
+  intros k Hk; f_equal.
+  apply freal_add_series_comm.
+ +destruct Hyx as (k & Hjk & Hk).
+  rewrite A_ge_1_freal_add_series_comm in Hk.
+  now rewrite Hxy in Hk.
+-destruct Hxy as (k & Hjk & Hk).
+ rewrite A_ge_1_freal_add_series_comm in Hk.
+ destruct (LPO_fst (fA_ge_1_ε (y ⊕ x) i)) as [Hyx| Hyx].
+ +now rewrite Hyx in Hk.
+ +destruct Hyx as (l & Hjl & Hl).
+  destruct (lt_eq_lt_dec k l) as [ [ Hkl | Hkl ] | Hkl ].
+  *apply Hjl in Hkl.
+   now rewrite Hk in Hkl.
+  *rewrite freal_add_series_comm, A_freal_add_series_comm.
+   now subst k.
+  *apply Hjk in Hkl.
+   rewrite A_ge_1_freal_add_series_comm in Hkl.
+   now rewrite Hl in Hkl.
+Qed.
+
+(*
 Theorem prop_carr_add_comm {r : radix} : ∀ x y i,
   prop_carr (x ⊕ y) i = prop_carr (y ⊕ x) i.
 Proof.
@@ -428,6 +480,7 @@ destruct (LPO_fst (A_ge_1 (x ⊕ y) i)) as [Hxy| Hxy].
    rewrite A_ge_1_freal_add_series_comm in Hkl.
    now rewrite Hl in Hkl.
 Qed.
+*)
 
 Theorem dig_unorm_add_comm {r : radix} : ∀ x y i,
   freal (x + y) i = freal (y + x) i.
@@ -465,6 +518,8 @@ apply dig_unorm_add_comm.
 Qed.
 
 Arguments freal_add_comm _ x%F y%F.
+
+...
 
 Theorem nA_split_first {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
