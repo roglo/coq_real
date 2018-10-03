@@ -615,41 +615,30 @@ Qed.
 
 (**)
 Theorem A_dig_seq_ub {r : radix} : ∀ u n i,
-  (∀ j, i < j < n → u j < rad) →
-  i + 1 ≤ n - 1
+  (∀ j, i < j < n → u j < rad)
+  → i + 1 ≤ n - 1
   → (A i n u < 1)%NQ.
 Proof.
 intros * Hu Hin.
-unfold NQlt.
-remember (A i n u) as a eqn:Ha; symmetry in Ha.
-destruct a as [| pa| ]; [ easy | | easy ].
-(*
-unfold A in Ha.
-rewrite summation_rtl in Ha.
-rewrite summation_shift in Ha; [ | easy ].
-replace (n - 1 + (i + 1)) with (n + i) in Ha by flia Hin.
-replace (n - 1 - (i + 1)) with (n - i - 2) in Ha by flia.
-*)
-unfold GQlt, PQ.PQlt, PQ.nd; simpl.
-rewrite Nat.mul_1_r, Nat.add_0_r.
-apply Nat.add_lt_mono_r.
-destruct pa as (pa, Hpa); simpl.
-destruct pa as (xp, yp).
-simpl in Hpa; simpl.
-...
+specialize radix_ge_2 as Hr.
+apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
+-apply summation_le_compat; intros j Hj; simpl.
+ remember (u j // rad ^ (j - i)) as x eqn:Hx; symmetry in Hx.
+ destruct x as [| px| px].
+ +now destruct (rad - 1).
+ +remember ((rad - 1) // rad ^ (j - i)) as y eqn:Hy; symmetry in Hy.
+  move y before px.
+  destruct y as [| py| py].
+  *unfold "//" in Hy.
+   destruct rad as [| rr]; [ easy | ].
+   destruct rr; [ flia Hr | easy ].
+  *simpl.
+   destruct px as (px, Hpx).
+   destruct py as (py, Hpy).
+   unfold "≤"%GQ; simpl.
+   unfold PQ.PQle, PQ.nd; simpl.
 
-rewrite power_summation; [ | easy ].
-replace (n - 1 - (i + 1)) with k by flia Hk.
-unfold lt; simpl.
-apply -> Nat.succ_le_mono.
-rewrite summation_mul_distr_l.
-apply (@summation_le_compat _ nat_ord_ring).
-intros j Hj.
-replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by flia.
-replace (n - 1 - (n - 1 - j)) with j by flia Hk Hj.
-apply Nat.mul_le_mono_nonneg_r; [ flia | ].
-apply Nat.le_add_le_sub_l.
-apply Hu; flia Hk Hj.
+...
 Qed.
 (*
 Theorem nA_dig_seq_ub {r : radix} : ∀ u n i,

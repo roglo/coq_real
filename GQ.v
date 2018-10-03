@@ -120,10 +120,6 @@ apply Nat.add_cancel_r in Hxy.
 now subst yn.
 Qed.
 
-Theorem GQle_trans : ∀ x y z, (x ≤ y)%GQ → (y ≤ z)%GQ → (x ≤ z)%GQ.
-Proof. intros *; apply PQle_trans. Qed.
-Arguments GQle_trans x%GQ y%GQ z%GQ.
-
 Theorem GQ_of_PQred : ∀ x, GQ_of_PQ (PQred x) = GQ_of_PQ x.
 Proof.
 intros.
@@ -356,8 +352,17 @@ Proof. intros x y; apply PQlt_le_incl. Qed.
 Theorem GQlt_trans : ∀ x y z, (x < y)%GQ → (y < z)%GQ → (x < z)%GQ.
 Proof. intros x y z; apply PQlt_trans. Qed.
 
+Theorem GQle_trans : ∀ x y z, (x ≤ y)%GQ → (y ≤ z)%GQ → (x ≤ z)%GQ.
+Proof. intros x y z; apply PQle_trans. Qed.
+
 Theorem GQlt_le_trans : ∀ x y z, (x < y)%GQ → (y ≤ z)%GQ → (x < z)%GQ.
 Proof. intros x y z; apply PQlt_le_trans. Qed.
+
+Theorem GQle_lt_trans : ∀ x y z, (x ≤ y)%GQ → (y < z)%GQ → (x < z)%GQ.
+Proof. intros x y z; apply PQle_lt_trans. Qed.
+
+Arguments GQle_trans x%GQ y%GQ z%GQ.
+Arguments GQle_lt_trans x%GQ y%GQ z%GQ.
 
 Theorem GQsub_lt : ∀ x y, (y < x)%GQ → (x - y < x)%GQ.
 Proof.
@@ -1271,6 +1276,15 @@ unfold "≤"%NQ in *.
 destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
 -eapply GQle_trans; [ apply Hxy | apply Hyz ].
 -eapply GQle_trans; [ apply Hyz | apply Hxy ].
+Qed.
+
+Theorem NQle_lt_trans: ∀ x y z, (x ≤ y)%NQ → (y < z)%NQ → (x < z)%NQ.
+Proof.
+intros * Hxy Hyz.
+unfold "≤"%NQ, "<"%NQ in *.
+destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
+-eapply GQle_lt_trans; [ apply Hxy | apply Hyz ].
+-eapply GQlt_le_trans; [ apply Hyz | apply Hxy ].
 Qed.
 
 Theorem NQle_add_l : ∀ x y, (0 ≤ y)%NQ → (x ≤ y + x)%NQ.
