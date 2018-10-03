@@ -530,8 +530,21 @@ simpl; f_equal; f_equal; f_equal; flia.
 Qed.
 *)
 
-...
-
+(**)
+Theorem nA_split_last {r : radix} : ∀ i n u,
+  i + 1 ≤ n - 1
+  → A i n u = (A i (n - 1) u + u (pred n) // rad ^ (n - i - 1))%NQ.
+Proof.
+intros * Hin.
+unfold A.
+replace (n - 1) with (S (n - 1 - 1)) at 1 by flia Hin.
+rewrite summation_split_last; [ | flia Hin ].
+simpl; f_equal.
+replace (S (n - 1 - 1)) with (pred n) by flia Hin.
+f_equal; f_equal.
+destruct i; flia.
+Qed.
+(*
 Theorem nA_split_last {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
   → nA i n u = rad * nA i (n - 1) u + u (n - 1).
@@ -553,6 +566,9 @@ simpl; f_equal.
  rewrite Nat.pow_0_r, Nat.mul_1_r; f_equal.
  flia Hin.
 Qed.
+*)
+
+...
 
 Theorem nA_split {r : radix} : ∀ e u i n,
   i + 1 ≤ e - 1 ≤ n - 1
