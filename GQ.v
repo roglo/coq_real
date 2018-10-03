@@ -757,6 +757,9 @@ do 2 rewrite PQ_o_GQ.
 apply PQcompare_mul_cancel_l.
 Qed.
 
+Definition GQfrac gq := GQ_of_PQ (PQfrac (PQ_of_GQ gq)).
+Definition GQintg gq := PQintg (PQ_of_GQ gq).
+
 (* *)
 
 Delimit Scope NQ_scope with NQ.
@@ -1394,6 +1397,25 @@ destruct x as [| px| px].
   --now apply GQadd_le_mono.
 Qed.
 
+Theorem NQmul_of_pair_nat : ∀ x y z t,
+  y ≠ 0 → t ≠ 0 → ((x // y) * (z // t) = (x * z) // (y * t))%NQ.
+Proof.
+intros * Hy Ht; simpl.
+unfold "*"%GQ, "//"; simpl.
+destruct x; [ easy | ].
+destruct z; [ now rewrite Nat.mul_0_r | simpl ].
+f_equal.
+apply GQeq_eq; simpl.
+rewrite <- PQ.PQred_mul.
+unfold PQ.PQ_of_pair.
+unfold PQ.PQmul, PQ.PQmul_num1, PQ.PQmul_den1; simpl.
+do 3 rewrite Nat.sub_0_r.
+destruct y; [ easy | simpl; rewrite Nat.sub_0_r ].
+destruct t; [ easy | simpl; do 2 rewrite Nat.sub_0_r ].
+do 4 rewrite Nat.add_1_r; simpl.
+now do 2 rewrite Nat.sub_0_r.
+Qed.
+
 Theorem NQmul_comm : ∀ x y, (x * y = y * x)%NQ.
 Proof.
 intros.
@@ -1505,6 +1527,20 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
  +now f_equal; apply GQmul_sub_distr_l.
  +now f_equal; apply GQmul_sub_distr_l.
 Qed.
+
+Definition NQfrac q :=
+  match q with
+  | NQ0 => 0 // 1
+  | NQpos gq => NQpos (GQfrac gq)
+  | NQneg gq => NQneg (GQfrac gq)
+  end.
+
+Definition NQintg q :=
+  match q with
+  | NQ0 => 0
+  | NQpos gq => GQintg gq
+  | NQneg gq => GQintg gq
+  end.
 
 Require Import Summation.
 

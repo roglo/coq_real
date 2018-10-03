@@ -289,28 +289,6 @@ Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
 Definition min_n {r : radix} i k := rad * (i + k + 3).
 
 (**)
-Definition PQfrac pq :=
-  PQ.PQ_of_pair ((PQ.PQnum1 pq + 1) mod (PQ.PQden1 pq + 1)) (PQ.PQden1 pq + 1).
-Definition PQintg pq :=
-  (PQ.PQnum1 pq + 1) / (PQ.PQden1 pq + 1).
-
-Definition GQfrac gq := GQ_of_PQ (PQfrac (PQ_of_GQ gq)).
-Definition GQintg gq := PQintg (PQ_of_GQ gq).
-
-Definition NQfrac q :=
-  match q with
-  | NQ0 => 0 // 1
-  | NQpos gq => NQpos (GQfrac gq)
-  | NQneg gq => NQneg (GQfrac gq)
-  end.
-
-Definition NQintg q :=
-  match q with
-  | NQ0 => 0
-  | NQpos gq => GQintg gq
-  | NQneg gq => GQintg gq
-  end.
-
 Definition fA_ge_1_ε {r : radix} u i k :=
   let n := min_n i k in
   let s := n - i - 1 in
@@ -520,25 +498,6 @@ Qed.
 Arguments freal_add_comm _ x%F y%F.
 
 (**)
-Theorem NQmul_of_pair_nat : ∀ x y z t,
-  x ≠ 0 → y ≠ 0 → z ≠ 0 → t ≠ 0 →
-  ((x // y) * (z // t) = (x * z) // (y * t))%NQ.
-Proof.
-intros * Hx Hy Hz Ht; simpl.
-unfold "*"%GQ, "//"; simpl.
-f_equal.
-apply GQeq_eq; simpl.
-rewrite <- PQ.PQred_mul.
-unfold PQ.PQ_of_pair.
-unfold PQ.PQmul, PQ.PQmul_num1, PQ.PQmul_den1; simpl.
-destruct x; [ easy | simpl; rewrite Nat.sub_0_r ].
-destruct y; [ easy | simpl; rewrite Nat.sub_0_r ].
-destruct z; [ easy | simpl; do 2 rewrite Nat.sub_0_r ].
-destruct t; [ easy | simpl; do 2 rewrite Nat.sub_0_r ].
-do 4 rewrite Nat.add_1_r; simpl.
-now do 2 rewrite Nat.sub_0_r.
-Qed.
-
 Theorem A_split_first {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
   → A i n u = (u (S i) // rad + A (S i) n u * 1 // rad)%NQ.
@@ -546,18 +505,18 @@ Proof.
 intros * Hin.
 unfold A.
 rewrite summation_split_first; [ | easy ].
-simpl; rewrite Nat.add_1_r.
+remember (1 // rad) as rr; simpl; subst rr.
+rewrite Nat.add_1_r.
 rewrite Nat.sub_succ_l; [ | easy ].
 rewrite Nat.sub_diag, Nat.pow_1_r.
 f_equal.
 rewrite summation_mul_distr_r.
 apply summation_eq_compat.
 intros j Hj.
-rewrite NQmul_of_pair_nat.
-...
-rewrite NQmul_div.
-...
-simpl; f_equal; f_equal; f_equal; flia.
+rewrite NQmul_of_pair_nat; [ | now apply Nat.pow_nonzero | easy ].
+rewrite Nat.mul_1_r.
+rewrite Nat.mul_comm, <- Nat.pow_succ_r'.
+rewrite <- Nat.sub_succ_l; [ easy | flia Hj ].
 Qed.
 (*
 Theorem nA_split_first {r : radix} : ∀ i n u,
@@ -570,6 +529,8 @@ rewrite summation_split_first; [ | easy ].
 simpl; f_equal; f_equal; f_equal; flia.
 Qed.
 *)
+
+...
 
 Theorem nA_split_last {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1

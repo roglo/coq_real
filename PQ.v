@@ -1571,3 +1571,8 @@ rewrite Nat.sub_add.
  +apply ggcd_succ_r in Hg1; flia Hg1.
 -apply ggcd_succ_l in Hg1; flia Hg1.
 Qed.
+
+Definition PQfrac pq :=
+  PQ_of_pair ((PQnum1 pq + 1) mod (PQden1 pq + 1)) (PQden1 pq + 1).
+Definition PQintg pq :=
+  (PQnum1 pq + 1) / (PQden1 pq + 1).
