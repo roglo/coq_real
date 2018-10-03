@@ -772,33 +772,34 @@ Proof.
 intros * Hx Hy Hz Ht.
 unfold GQ_of_pair, GQ_of_PQ.
 unfold PQ_of_pair, PQred; simpl.
+split; intros H.
+-injection H; clear H.
+ rewrite Nat.sub_add; [ | flia Hx ].
+ rewrite Nat.sub_add; [ | flia Hy ].
+ rewrite Nat.sub_add; [ | flia Hz ].
+ rewrite Nat.sub_add; [ | flia Ht ].
+ remember (Nat_ggcd.ggcd x y) as g1 eqn:Hg1; symmetry in Hg1.
+ remember (Nat_ggcd.ggcd z t) as g2 eqn:Hg2; symmetry in Hg2.
+ move g2 before g1.
+ destruct g1 as (g1, (aa1, bb1)).
+ specialize (Nat_ggcd.ggcd_correct_divisors x y) as H5.
+ destruct g2 as (g2, (aa2, bb2)).
+ rewrite Hg1 in H5; destruct H5 as (H5, H6).
+ specialize (Nat_ggcd.ggcd_correct_divisors z t) as H7.
+ rewrite Hg2 in H7; destruct H7 as (H7, H8).
+ rewrite H5, H6, H7, H8.
+ intros H; injection H; clear H; intros Hb Ha.
+ destruct aa1; [ now rewrite Nat.mul_0_r in H5 | ].
+ destruct aa2; [ now rewrite Nat.mul_0_r in H7 | ].
+ destruct bb1; [ now rewrite Nat.mul_0_r in H6 | ].
+ destruct bb2; [ now rewrite Nat.mul_0_r in H8 | ].
+ simpl in Ha, Hb.
+ do 2 rewrite Nat.sub_0_r in Ha, Hb.
+ rewrite Ha, Hb; flia.
+-idtac.
+Print GQ.
+Search GQmake.
 ...
-rewrite Nat.sub_add; [ | flia Hx ].
-rewrite Nat.sub_add; [ | flia Hy ].
-rewrite Nat.sub_add; [ | flia Hz ].
-rewrite Nat.sub_add; [ | flia Ht ].
-remember (Nat_ggcd.ggcd x y) as g1 eqn:Hg1; symmetry in Hg1.
-remember (Nat_ggcd.ggcd z t) as g2 eqn:Hg2; symmetry in Hg2.
-move g2 before g1.
-destruct g1 as (g1, (aa1, bb1)).
-specialize (Nat_ggcd.ggcd_correct_divisors x y) as H5.
-destruct g2 as (g2, (aa2, bb2)).
-rewrite Hg1 in H5; destruct H5 as (H5, H6).
-specialize (Nat_ggcd.ggcd_correct_divisors z t) as H7.
-rewrite Hg2 in H7; destruct H7 as (H7, H8).
-rewrite H5, H6, H7, H8.
-unfold "≤"%PQ, nd; simpl.
-replace (g1 * aa1 * (g2 * bb2)) with ((g1 * g2) * (aa1 * bb2)) by flia.
-replace (g1 * bb1 * (g2 * aa2)) with ((g1 * g2) * (aa2 * bb1)) by flia.
-destruct aa1; [ now rewrite Nat.mul_0_r in H5 | ].
-destruct aa2; [ now rewrite Nat.mul_0_r in H7 | ].
-destruct bb1; [ now rewrite Nat.mul_0_r in H6 | ].
-destruct bb2; [ now rewrite Nat.mul_0_r in H8 | ].
-do 4 (rewrite Nat.sub_add; [ | flia ]).
-apply Nat.mul_le_mono_pos_l.
-destruct g1; [ easy | ].
-destruct g2; [ easy | ].
-simpl; flia.
 Qed.
 
 Theorem GQle_pair : ∀ x y z t,
