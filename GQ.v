@@ -1459,9 +1459,9 @@ destruct x; [ easy | ].
 destruct z; [ now rewrite Nat.mul_0_r | simpl ].
 f_equal.
 apply GQeq_eq; simpl.
-rewrite <- PQ.PQred_mul.
-unfold PQ.PQ_of_pair.
-unfold PQ.PQmul, PQ.PQmul_num1, PQ.PQmul_den1; simpl.
+rewrite <- PQred_mul.
+unfold PQ_of_pair.
+unfold PQmul, PQmul_num1, PQmul_den1; simpl.
 do 3 rewrite Nat.sub_0_r.
 destruct y; [ easy | simpl; rewrite Nat.sub_0_r ].
 destruct t; [ easy | simpl; do 2 rewrite Nat.sub_0_r ].

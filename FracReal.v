@@ -614,12 +614,6 @@ apply Nat.mul_le_mono_nonneg; [ flia | easy | flia | easy ].
 Qed.
 
 (**)
-Require Import PQ.
-
-(*
-Theorem PQle_GQle : ∀ x y, (x ≤ y)%PQ ↔ (GQ_of_PQ x ≤ GQ_of_PQ y)%GQ.
-*)
-
 Theorem A_dig_seq_ub {r : radix} : ∀ u n i,
   (∀ j, i < j < n → u j < rad)
   → i + 1 ≤ n - 1
