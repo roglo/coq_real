@@ -136,6 +136,28 @@ Arguments fd2n _ x%F i%nat.
 Theorem fold_fd2n {r : radix} : ∀ x i, dig (freal x i) = fd2n x i.
 Proof. easy. Qed.
 
+Theorem NQ_power_summation (rg := NQ_ord_ring) : ∀ a n,
+  a > 1
+  → (Σ (i = 0, n), 1 // a ^ i = (a ^ S n - 1) // (a ^ n * (a - 1)))%NQ.
+Proof.
+intros * Ha.
+induction n.
+-rewrite summation_only_one.
+ rewrite Nat.pow_0_r, Nat.pow_1_r, Nat.mul_1_l.
+Search "//".
+....
+ destruct a; [ easy | simpl ].
+ destruct a; [ flia Ha | ].
+ rewrite Nat.sub_0_r.
+ clear Ha.
+ induction a; [ easy | ].
+
+
+ unfold "//".
+ destruct a; [ flia Ha | ].
+
+...
+
 Theorem power_summation (rg := nat_ord_ring) : ∀ a n,
   0 < a
   → a ^ S n = 1 + (a - 1) * Σ (i = 0, n), a ^ i.
@@ -641,7 +663,7 @@ apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
    now replace (i + 1 + j - i) with (S j) by flia.
  }
  rewrite <- summation_mul_distr_l.
-Check NQpair.
+ remember 1%NQ as one; remember NQ_of_pair as f; simpl; subst f one.
 ...
 Qed.
 (*
