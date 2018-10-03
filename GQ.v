@@ -1397,7 +1397,7 @@ destruct x as [| px| px].
   --now apply GQadd_le_mono.
 Qed.
 
-Theorem NQmul_of_pair_nat : ∀ x y z t,
+Theorem NQmul_pair_nat : ∀ x y z t,
   y ≠ 0 → t ≠ 0 → ((x // y) * (z // t) = (x * z) // (y * t))%NQ.
 Proof.
 intros * Hy Ht; simpl.

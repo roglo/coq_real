@@ -513,7 +513,7 @@ f_equal.
 rewrite summation_mul_distr_r.
 apply summation_eq_compat.
 intros j Hj.
-rewrite NQmul_of_pair_nat; [ | now apply Nat.pow_nonzero | easy ].
+rewrite NQmul_pair_nat; [ | now apply Nat.pow_nonzero | easy ].
 rewrite Nat.mul_1_r.
 rewrite Nat.mul_comm, <- Nat.pow_succ_r'.
 rewrite <- Nat.sub_succ_l; [ easy | flia Hj ].
@@ -568,8 +568,25 @@ simpl; f_equal.
 Qed.
 *)
 
-...
-
+(**)
+Theorem nA_split {r : radix} : ∀ e u i n,
+  i + 1 ≤ e - 1 ≤ n - 1
+  → A i n u = (A i e u + A (e - 1) n u * 1 // rad ^ (e - i - 1))%NQ.
+Proof.
+intros * Hin.
+unfold A.
+rewrite summation_split with (e0 := e - 1); [ | easy ].
+remember (1 // rad ^ (e - i - 1)) as rr; simpl; subst rr; f_equal.
+rewrite summation_mul_distr_r.
+replace (e - 1 + 1) with (S (e - 1)) by flia.
+apply summation_eq_compat.
+intros j Hj.
+rewrite NQmul_pair_nat; try now apply Nat.pow_nonzero.
+rewrite Nat.mul_1_r; f_equal.
+rewrite <- Nat.pow_add_r; f_equal.
+flia Hj Hin.
+Qed.
+(*
 Theorem nA_split {r : radix} : ∀ e u i n,
   i + 1 ≤ e - 1 ≤ n - 1
   → nA i n u = nA i e u * rad ^ (n - e) + nA (e - 1) n u.
@@ -586,6 +603,7 @@ simpl; f_equal.
  now replace (e - 1 - j + (n - e)) with (n - 1 - j) by flia Hin Hj.
 +now rewrite Nat.add_1_r.
 Qed.
+*)
 
 Theorem Nat_pow_ge_1 : ∀ a b, 0 < a → 1 ≤ a ^ b.
 Proof.
@@ -594,6 +612,8 @@ induction b; [ easy | simpl ].
 replace 1 with (1 * 1) by flia.
 apply Nat.mul_le_mono_nonneg; [ flia | easy | flia | easy ].
 Qed.
+
+...
 
 Theorem nA_dig_seq_ub {r : radix} : ∀ u n i,
   (∀ j, i < j < n → u j < rad) →
