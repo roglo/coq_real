@@ -616,92 +616,9 @@ Qed.
 (**)
 Require Import PQ.
 
+(*
 Theorem PQle_GQle : ∀ x y, (x ≤ y)%PQ ↔ (GQ_of_PQ x ≤ GQ_of_PQ y)%GQ.
-Admitted.
-Theorem GQle_PQle : ∀ x y, (x ≤ y)%GQ ↔ (PQ_of_GQ x ≤ PQ_of_GQ y)%PQ.
-Admitted.
-
-Theorem GQle_pair : ∀ x y z t,
-  y ≠ 0 → t ≠ 0 → (GQ_of_pair x y ≤ GQ_of_pair z t)%GQ ↔ x * t ≤ y * z.
-Proof.
-intros * Hy Ht.
-destruct y; [ flia Hy | ].
-destruct t; [ flia Ht | ].
-split; intros H.
--apply -> GQle_PQle in H; simpl in H.
- unfold PQ_of_pair, PQred in H; simpl in H.
- do 2 rewrite Nat.sub_0_r in H.
- do 4 rewrite Nat.add_1_r in H.
- remember (Nat_ggcd.ggcd (S (x - 1)) (S y)) as g1 eqn:Hg1; symmetry in Hg1.
- destruct g1 as (g1, (aa1, bb1)).
- specialize (Nat_ggcd.ggcd_succ_r _ _ _ _ _ Hg1) as H1.
- specialize (Nat_ggcd.ggcd_succ_l _ _ _ _ _ Hg1) as H2.
- remember (Nat_ggcd.ggcd (S (z - 1)) (S t)) as g2 eqn:Hg2; symmetry in Hg2.
- move g2 before bb1.
- destruct g2 as (g2, (aa2, bb2)).
- specialize (Nat_ggcd.ggcd_succ_r _ _ _ _ _ Hg2) as H3.
- specialize (Nat_ggcd.ggcd_succ_l _ _ _ _ _ Hg2) as H4.
- unfold "≤"%PQ, nd in H; simpl in H.
- rewrite Nat.sub_add in H; [ | flia H2 ].
- rewrite Nat.sub_add in H; [ | flia H3 ].
- rewrite Nat.sub_add in H; [ | flia H4 ].
- rewrite Nat.sub_add in H; [ | flia H1 ].
-...
-
-Search (Nat_ggcd.ggcd (S _)).
- rewrite Nat_ggcd.ggcd_succ_r in H.
-
- destruct x; [ simpl; flia | ].
- rewrite Nat.sub_succ, Nat.sub_0_r in H.
- destruct z.
- +exfalso; simpl in H.
-  rewrite Nat_ggcd.ggcd_1_l, Nat.add_sub, Nat.sub_diag in H.
-  unfold "≤"%PQ, nd in H.
-  simpl in H.
-  do 2 rewrite Nat.add_1_r in H; simpl in H.
-  rewrite Nat.add_0_r in H.
-  remember (Nat_ggcd.ggcd (S x) (y + 1)) as g eqn:Hg; symmetry in Hg.
-  destruct g as (g, (aa, bb)); simpl in H.
-  replace (t + 1) with (1 * (t + 1)) in H at 1 by flia.
-  rewrite <- Nat.mul_add_distr_r, Nat.add_comm in H.
-
-  destruct aa; [ now apply Nat_ggcd.ggcd_succ_l in Hg | ].
-  destruct bb.
-  apply Nat_ggcd.ggcd_succ_l in Hg.
-
-; [ now apply Nat_ggcd.ggcd_succ_r in Hg | ].
-
-  *specialize (Nat_ggcd.ggcd_succ_l_neq_0 x (y + 1)) as H1.
-   now rewrite Hg in H1.
-  *rewrite Nat.sub_succ, Nat.sub_0_r in H.
-   destruct bb.
-  --specialize (Nat_ggcd.ggcd_succ_r_neq_0 x (y + 1)) as H1.
-...
-
-Theorem NQle_pair : ∀ x y z t, t ≠ 0 → (x // y ≤ z // t)%NQ ↔ x * t ≤ y * z.
-Proof.
-intros * Ht.
-unfold "≤"%NQ.
-remember (x // y) as a eqn:Ha; symmetry in Ha.
-remember (z // t) as b eqn:Hb; symmetry in Hb.
-move b before a.
-destruct a as [| a| a].
--destruct x; [ | easy ].
- split; [ simpl; flia | intros H ].
- destruct b; [ easy | easy | now destruct z ].
--destruct b as [| b| b].
- +split; [ easy | intros H ].
-  destruct z; [ | easy ].
-  rewrite Nat.mul_0_r in H.
-  apply Nat.le_0_r in H.
-  apply Nat.eq_mul_0 in H.
-  destruct H; [ now subst x | easy ].
- +destruct x; [ easy | simpl in Ha ].
-  injection Ha; clear Ha; intros Ha.
-  destruct z; [ easy | simpl in Hb ].
-  injection Hb; clear Hb; intros Hb.
-  subst a b.
-...
+*)
 
 Theorem A_dig_seq_ub {r : radix} : ∀ u n i,
   (∀ j, i < j < n → u j < rad)
@@ -712,23 +629,14 @@ intros * Hu Hin.
 specialize radix_ge_2 as Hr.
 apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
 -apply summation_le_compat; intros j Hj; simpl.
-Require Import QArith.
-...
- remember (u j // rad ^ (j - i)) as x eqn:Hx; symmetry in Hx.
- destruct x as [| px| px].
- +now destruct (rad - 1).
- +remember ((rad - 1) // rad ^ (j - i)) as y eqn:Hy; symmetry in Hy.
-  move y before px.
-  destruct y as [| py| py].
-  *unfold "//" in Hy.
-   destruct rad as [| rr]; [ easy | ].
-   destruct rr; [ flia Hr | easy ].
-  *simpl.
-   destruct px as (px, Hpx).
-   destruct py as (py, Hpy).
-   unfold "≤"%GQ; simpl.
-   unfold PQ.PQle, PQ.nd; simpl.
-
+ apply NQle_pair; [ now apply Nat.pow_nonzero | now apply Nat.pow_nonzero | ].
+ rewrite Nat.mul_comm.
+ apply Nat.mul_le_mono_l.
+ specialize (Hu j).
+ assert (H : i < j < n) by flia Hj.
+ specialize (Hu H); clear H.
+ flia Hu.
+-idtac.
 ...
 Qed.
 (*
