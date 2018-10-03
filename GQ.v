@@ -772,8 +772,6 @@ Proof.
 intros * Hx Hy Hz Ht.
 unfold GQ_of_pair, GQ_of_PQ.
 unfold PQ_of_pair, PQred; simpl.
-Check GQeq_eq.
-...
 rewrite GQeq_eq; simpl.
 rewrite Nat.sub_add; [ | flia Hx ].
 rewrite Nat.sub_add; [ | flia Hy ].
