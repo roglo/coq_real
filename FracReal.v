@@ -630,7 +630,18 @@ apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
  assert (H : i < j < n) by flia Hj.
  specialize (Hu H); clear H.
  flia Hu.
--idtac.
+-unfold A.
+ rewrite summation_shift; [ | easy ].
+ replace (n - 1 - (i + 1)) with (n - i - 2) by flia.
+ rewrite summation_eq_compat with
+   (h := λ j, ((rad - 1) // rad * 1 // (rad ^ j))%NQ); cycle 1. {
+   intros j Hj.
+   rewrite NQmul_pair_nat; [ | easy | now apply Nat.pow_nonzero ].
+   rewrite Nat.mul_1_r.
+   now replace (i + 1 + j - i) with (S j) by flia.
+ }
+ rewrite <- summation_mul_distr_l.
+Check NQpair.
 ...
 Qed.
 (*
