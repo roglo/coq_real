@@ -614,6 +614,41 @@ apply Nat.mul_le_mono_nonneg; [ flia | easy | flia | easy ].
 Qed.
 
 (**)
+Require Import PQ.
+
+Theorem GQle_pair : ∀ x y z t,
+  (GQ_of_pair x y ≤ GQ_of_pair z t)%GQ ↔ x * t ≤ y * z.
+Proof.
+intros.
+unfold GQ_of_pair.
+unfold "≤"%GQ; simpl.
+...
+
+Theorem NQle_pair : ∀ x y z t, t ≠ 0 → (x // y ≤ z // t)%NQ ↔ x * t ≤ y * z.
+Proof.
+intros * Ht.
+unfold "≤"%NQ.
+remember (x // y) as a eqn:Ha; symmetry in Ha.
+remember (z // t) as b eqn:Hb; symmetry in Hb.
+move b before a.
+destruct a as [| a| a].
+-destruct x; [ | easy ].
+ split; [ simpl; flia | intros H ].
+ destruct b; [ easy | easy | now destruct z ].
+-destruct b as [| b| b].
+ +split; [ easy | intros H ].
+  destruct z; [ | easy ].
+  rewrite Nat.mul_0_r in H.
+  apply Nat.le_0_r in H.
+  apply Nat.eq_mul_0 in H.
+  destruct H; [ now subst x | easy ].
+ +destruct x; [ easy | simpl in Ha ].
+  injection Ha; clear Ha; intros Ha.
+  destruct z; [ easy | simpl in Hb ].
+  injection Hb; clear Hb; intros Hb.
+  subst a b.
+...
+
 Theorem A_dig_seq_ub {r : radix} : ∀ u n i,
   (∀ j, i < j < n → u j < rad)
   → i + 1 ≤ n - 1
@@ -623,6 +658,8 @@ intros * Hu Hin.
 specialize radix_ge_2 as Hr.
 apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
 -apply summation_le_compat; intros j Hj; simpl.
+Require Import QArith.
+...
  remember (u j // rad ^ (j - i)) as x eqn:Hx; symmetry in Hx.
  destruct x as [| px| px].
  +now destruct (rad - 1).
