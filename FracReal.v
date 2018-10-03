@@ -616,12 +616,66 @@ Qed.
 (**)
 Require Import PQ.
 
+Theorem PQle_GQle : ∀ x y, (x ≤ y)%PQ ↔ (GQ_of_PQ x ≤ GQ_of_PQ y)%GQ.
+Admitted.
+Theorem GQle_PQle : ∀ x y, (x ≤ y)%GQ ↔ (PQ_of_GQ x ≤ PQ_of_GQ y)%PQ.
+Admitted.
+
 Theorem GQle_pair : ∀ x y z t,
-  (GQ_of_pair x y ≤ GQ_of_pair z t)%GQ ↔ x * t ≤ y * z.
+  y ≠ 0 → t ≠ 0 → (GQ_of_pair x y ≤ GQ_of_pair z t)%GQ ↔ x * t ≤ y * z.
 Proof.
-intros.
-unfold GQ_of_pair.
-unfold "≤"%GQ; simpl.
+intros * Hy Ht.
+destruct y; [ flia Hy | ].
+destruct t; [ flia Ht | ].
+split; intros H.
+-apply -> GQle_PQle in H; simpl in H.
+ unfold PQ_of_pair, PQred in H; simpl in H.
+ do 2 rewrite Nat.sub_0_r in H.
+ do 4 rewrite Nat.add_1_r in H.
+ remember (Nat_ggcd.ggcd (S (x - 1)) (S y)) as g1 eqn:Hg1; symmetry in Hg1.
+ destruct g1 as (g1, (aa1, bb1)).
+ specialize (Nat_ggcd.ggcd_succ_r _ _ _ _ _ Hg1) as H1.
+ specialize (Nat_ggcd.ggcd_succ_l _ _ _ _ _ Hg1) as H2.
+ remember (Nat_ggcd.ggcd (S (z - 1)) (S t)) as g2 eqn:Hg2; symmetry in Hg2.
+ move g2 before bb1.
+ destruct g2 as (g2, (aa2, bb2)).
+ specialize (Nat_ggcd.ggcd_succ_r _ _ _ _ _ Hg2) as H3.
+ specialize (Nat_ggcd.ggcd_succ_l _ _ _ _ _ Hg2) as H4.
+ unfold "≤"%PQ, nd in H; simpl in H.
+ rewrite Nat.sub_add in H; [ | flia H2 ].
+ rewrite Nat.sub_add in H; [ | flia H3 ].
+ rewrite Nat.sub_add in H; [ | flia H4 ].
+ rewrite Nat.sub_add in H; [ | flia H1 ].
+...
+
+Search (Nat_ggcd.ggcd (S _)).
+ rewrite Nat_ggcd.ggcd_succ_r in H.
+
+ destruct x; [ simpl; flia | ].
+ rewrite Nat.sub_succ, Nat.sub_0_r in H.
+ destruct z.
+ +exfalso; simpl in H.
+  rewrite Nat_ggcd.ggcd_1_l, Nat.add_sub, Nat.sub_diag in H.
+  unfold "≤"%PQ, nd in H.
+  simpl in H.
+  do 2 rewrite Nat.add_1_r in H; simpl in H.
+  rewrite Nat.add_0_r in H.
+  remember (Nat_ggcd.ggcd (S x) (y + 1)) as g eqn:Hg; symmetry in Hg.
+  destruct g as (g, (aa, bb)); simpl in H.
+  replace (t + 1) with (1 * (t + 1)) in H at 1 by flia.
+  rewrite <- Nat.mul_add_distr_r, Nat.add_comm in H.
+
+  destruct aa; [ now apply Nat_ggcd.ggcd_succ_l in Hg | ].
+  destruct bb.
+  apply Nat_ggcd.ggcd_succ_l in Hg.
+
+; [ now apply Nat_ggcd.ggcd_succ_r in Hg | ].
+
+  *specialize (Nat_ggcd.ggcd_succ_l_neq_0 x (y + 1)) as H1.
+   now rewrite Hg in H1.
+  *rewrite Nat.sub_succ, Nat.sub_0_r in H.
+   destruct bb.
+  --specialize (Nat_ggcd.ggcd_succ_r_neq_0 x (y + 1)) as H1.
 ...
 
 Theorem NQle_pair : ∀ x y z t, t ≠ 0 → (x // y ≤ z // t)%NQ ↔ x * t ≤ y * z.
