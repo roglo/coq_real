@@ -246,6 +246,21 @@ induction n.
    destruct H as [H| H]; [ | flia Ha H ].
    apply Nat.pow_nonzero in H; [ easy | flia Ha ].
  }
+ rewrite Nat.mul_1_r.
+ apply NQeq_pair. {
+   intros H.
+   apply Nat.eq_mul_0 in H.
+   destruct H as [H| H].
+   -apply Nat.eq_mul_0 in H.
+    destruct H as [H| H]; [ | flia Ha H ].
+    apply Nat.pow_nonzero in H; [ easy | flia Ha ].
+   -apply Nat.pow_nonzero in H; [ easy | flia Ha ].
+ } {
+   intros H.
+   apply Nat.eq_mul_0 in H.
+   destruct H as [H| H]; [ | flia Ha H ].
+   apply Nat.pow_nonzero in H; [ easy | flia Ha ].
+ }
 ...
 
 Theorem power_summation (rg := nat_ord_ring) : ∀ a n,
