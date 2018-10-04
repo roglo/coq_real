@@ -869,6 +869,28 @@ destruct g2; [ easy | ].
 simpl; flia.
 Qed.
 
+Theorem GQpair_diag : ∀ a, a ≠ 0 → GQ_of_pair a a = 1%GQ.
+Proof.
+intros * Ha.
+apply GQeq_eq; simpl.
+unfold PQred; simpl.
+rewrite Nat.sub_add; [ | flia Ha ].
+now rewrite ggcd_diag.
+Qed.
+
+Theorem GQmul_1_l : ∀ a, (1 * a)%GQ = a.
+Proof.
+intros.
+apply GQeq_eq; simpl.
+unfold PQred.
+rewrite PQmul_1_l.
+destruct a as (a, Ha); simpl.
+rewrite (ggcd_split _ _ 1); [ | easy ].
+do 2 rewrite Nat.div_1_r, Nat.add_1_r.
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+now destruct a.
+Qed.
+
 Definition GQfrac gq := GQ_of_PQ (PQfrac (PQ_of_GQ gq)).
 Definition GQintg gq := PQintg (PQ_of_GQ gq).
 
@@ -1709,6 +1731,74 @@ destruct a as [| a| a]; [ | | now destruct x ].
    now apply GQeq_eq.
   *apply GQeq_pair in H; try easy.
    now rewrite H.
+Qed.
+
+Theorem NQpair_diag : ∀ a, a ≠ 0 → a // a = 1%NQ.
+Proof.
+intros.
+unfold "//".
+destruct a; [ easy | now rewrite GQpair_diag ].
+Qed.
+
+Theorem NQmul_1_l : ∀ a, (1 * a)%NQ = a.
+Proof.
+intros.
+unfold "*"%NQ; simpl.
+unfold NQmul_pos_l.
+destruct a; [ easy | | ]; now rewrite GQmul_1_l.
+Qed.
+
+Theorem NQmul_1_r : ∀ a, (a * 1)%NQ = a.
+Proof.
+intros.
+rewrite NQmul_comm.
+apply NQmul_1_l.
+Qed.
+
+Theorem NQadd_pair : ∀ a b c d,
+  b ≠ 0 → d ≠ 0 → (a // b + c // d = (a * d + b * c) // (b * d))%NQ.
+Proof.
+intros * Hb Hd.
+unfold "+"%NQ.
+remember (a // b) as ab eqn:Hab; symmetry in Hab.
+destruct ab as [| pab| pab]; [ | | now destruct a ].
+-unfold "//" in Hab.
+ destruct a; [ simpl | easy ].
+ rewrite <- NQmul_pair_nat; [ | easy | easy ].
+ rewrite NQpair_diag; [ | easy ].
+ now rewrite NQmul_1_l.
+-remember (c // d) as cd eqn:Hcd; symmetry in Hcd.
+ move cd before pab.
+ destruct cd as [| pcd| pcd]; [ | | now destruct c ].
+ +unfold "//" in Hcd.
+  destruct c; [ | easy ].
+  rewrite Nat.mul_0_r, Nat.add_0_r; simpl.
+  rewrite <- NQmul_pair_nat; [ | easy | easy ].
+  rewrite NQpair_diag; [ | easy ].
+  now rewrite NQmul_1_r.
+ +unfold NQadd_pos_l.
+  unfold "//".
+  remember (a * d + b * c) as e eqn:He; symmetry in He.
+  destruct e.
+  *apply Nat.eq_add_0 in He.
+   destruct He as (H1, H2).
+   apply Nat.eq_mul_0 in H1.
+   destruct H1; [ now subst a | easy ].
+  *f_equal.
+   destruct a; [ easy | ].
+   destruct c; [ easy | ].
+   simpl in Hab, Hcd.
+   injection Hab; clear Hab; intros Hab.
+   injection Hcd; clear Hcd; intros Hcd.
+   subst pab pcd.
+   apply GQeq_eq; simpl.
+   rewrite <- PQred_add.
+   unfold PQ_of_pair.
+   simpl; do 3 rewrite Nat.sub_0_r.
+   unfold "+"%PQ, PQadd_num1, PQadd_den1, nd; simpl.
+   rewrite Nat.sub_add; [ | flia Hd ].
+   rewrite Nat.sub_add; [ | flia Hb ].
+   f_equal; f_equal; flia He.
 Qed.
 
 Definition NQfrac q :=

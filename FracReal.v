@@ -138,96 +138,6 @@ Proof. easy. Qed.
 
 Require Import PQ Nat_ggcd.
 
-Theorem GQpair_diag : ∀ a, a ≠ 0 → GQ_of_pair a a = 1%GQ.
-Proof.
-intros * Ha.
-apply GQeq_eq; simpl.
-unfold PQred; simpl.
-rewrite Nat.sub_add; [ | flia Ha ].
-now rewrite ggcd_diag.
-Qed.
-
-Theorem GQmul_1_l : ∀ a, (1 * a)%GQ = a.
-Proof.
-intros.
-apply GQeq_eq; simpl.
-unfold PQred.
-rewrite PQmul_1_l.
-destruct a as (a, Ha); simpl.
-rewrite (ggcd_split _ _ 1); [ | easy ].
-do 2 rewrite Nat.div_1_r, Nat.add_1_r.
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
-now destruct a.
-Qed.
-
-Theorem NQpair_diag : ∀ a, a ≠ 0 → a // a = 1%NQ.
-Proof.
-intros.
-unfold "//".
-destruct a; [ easy | now rewrite GQpair_diag ].
-Qed.
-
-Theorem NQmul_1_l : ∀ a, (1 * a)%NQ = a.
-Proof.
-intros.
-unfold "*"%NQ; simpl.
-unfold NQmul_pos_l.
-destruct a; [ easy | | ]; now rewrite GQmul_1_l.
-Qed.
-
-Theorem NQmul_1_r : ∀ a, (a * 1)%NQ = a.
-Proof.
-intros.
-rewrite NQmul_comm.
-apply NQmul_1_l.
-Qed.
-
-Theorem NQadd_pair : ∀ a b c d,
-  b ≠ 0 → d ≠ 0 → (a // b + c // d = (a * d + b * c) // (b * d))%NQ.
-Proof.
-intros * Hb Hd.
-unfold "+"%NQ.
-remember (a // b) as ab eqn:Hab; symmetry in Hab.
-destruct ab as [| pab| pab]; [ | | now destruct a ].
--unfold "//" in Hab.
- destruct a; [ simpl | easy ].
- rewrite <- NQmul_pair_nat; [ | easy | easy ].
- rewrite NQpair_diag; [ | easy ].
- now rewrite NQmul_1_l.
--remember (c // d) as cd eqn:Hcd; symmetry in Hcd.
- move cd before pab.
- destruct cd as [| pcd| pcd]; [ | | now destruct c ].
- +unfold "//" in Hcd.
-  destruct c; [ | easy ].
-  rewrite Nat.mul_0_r, Nat.add_0_r; simpl.
-  rewrite <- NQmul_pair_nat; [ | easy | easy ].
-  rewrite NQpair_diag; [ | easy ].
-  now rewrite NQmul_1_r.
- +unfold NQadd_pos_l.
-  unfold "//".
-  remember (a * d + b * c) as e eqn:He; symmetry in He.
-  destruct e.
-  *apply Nat.eq_add_0 in He.
-   destruct He as (H1, H2).
-   apply Nat.eq_mul_0 in H1.
-   destruct H1; [ now subst a | easy ].
-  *f_equal.
-   destruct a; [ easy | ].
-   destruct c; [ easy | ].
-   simpl in Hab, Hcd.
-   injection Hab; clear Hab; intros Hab.
-   injection Hcd; clear Hcd; intros Hcd.
-   subst pab pcd.
-   apply GQeq_eq; simpl.
-   rewrite <- PQred_add.
-   unfold PQ_of_pair.
-   simpl; do 3 rewrite Nat.sub_0_r.
-   unfold "+"%PQ, PQadd_num1, PQadd_den1, nd; simpl.
-   rewrite Nat.sub_add; [ | flia Hd ].
-   rewrite Nat.sub_add; [ | flia Hb ].
-   f_equal; f_equal; flia He.
-Qed.
-
 Theorem NQpower_summation (rg := NQ_ord_ring) : ∀ a n,
   a > 1
   → (Σ (i = 0, n), 1 // a ^ i = (a ^ S n - 1) // (a ^ n * (a - 1)))%NQ.
@@ -261,7 +171,21 @@ induction n.
    destruct H as [H| H]; [ | flia Ha H ].
    apply Nat.pow_nonzero in H; [ easy | flia Ha ].
  }
-...
+ rewrite Nat.mul_comm; symmetry.
+ rewrite Nat.mul_shuffle0, Nat.mul_comm.
+ do 2 rewrite <- Nat.mul_assoc; f_equal.
+ rewrite Nat.mul_comm, <- Nat.mul_assoc; f_equal.
+ rewrite Nat.mul_comm; symmetry.
+ rewrite Nat.pow_succ_r' at 2.
+ rewrite Nat.mul_assoc, Nat.mul_comm.
+ rewrite <- Nat.mul_add_distr_l; f_equal.
+ rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+ rewrite Nat.add_sub_assoc; [ | flia Ha ].
+ rewrite Nat.sub_add; [ now rewrite Nat.mul_comm | ].
+ replace a with (1 * a) at 1 by flia.
+ apply Nat.mul_le_mono_pos_r; [ flia Ha | ].
+ apply Nat.neq_0_lt_0, Nat.pow_nonzero; flia Ha.
+Qed.
 
 Theorem power_summation (rg := nat_ord_ring) : ∀ a n,
   0 < a
@@ -769,6 +693,11 @@ apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
  }
  rewrite <- summation_mul_distr_l.
  remember 1%NQ as one; remember NQ_of_pair as f; simpl; subst f one.
+ rewrite NQpower_summation; [ | easy ].
+...
+ r-1  r^(n-i-1) - 1
+ ---  --------------
+  r   r^(n-i-2) (r-1)
 ...
 Qed.
 (*
