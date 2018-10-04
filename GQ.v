@@ -770,34 +770,90 @@ Theorem GQeq_pair : ∀ x y z t,
   → GQ_of_pair x y = GQ_of_pair z t ↔ x * t = y * z.
 Proof.
 intros * Hx Hy Hz Ht.
-unfold GQ_of_pair, GQ_of_PQ.
-unfold PQ_of_pair, PQred; simpl.
-rewrite GQeq_eq; simpl.
-rewrite Nat.sub_add; [ | flia Hx ].
-rewrite Nat.sub_add; [ | flia Hy ].
-rewrite Nat.sub_add; [ | flia Hz ].
-rewrite Nat.sub_add; [ | flia Ht ].
-remember (Nat_ggcd.ggcd x y) as g1 eqn:Hg1; symmetry in Hg1.
-remember (Nat_ggcd.ggcd z t) as g2 eqn:Hg2; symmetry in Hg2.
-move g2 before g1.
-destruct g1 as (g1, (aa1, bb1)).
-specialize (Nat_ggcd.ggcd_correct_divisors x y) as H5.
-destruct g2 as (g2, (aa2, bb2)).
-rewrite Hg1 in H5; destruct H5 as (H5, H6).
-specialize (Nat_ggcd.ggcd_correct_divisors z t) as H7.
-rewrite Hg2 in H7; destruct H7 as (H7, H8).
-rewrite H5, H6, H7, H8.
-replace (g1 * aa1 * (g2 * bb2)) with ((g1 * g2) * (aa1 * bb2)) by flia.
-replace (g1 * bb1 * (g2 * aa2)) with ((g1 * g2) * (aa2 * bb1)) by flia.
-destruct aa1; [ now rewrite Nat.mul_0_r in H5 | ].
-destruct aa2; [ now rewrite Nat.mul_0_r in H7 | ].
-destruct bb1; [ now rewrite Nat.mul_0_r in H6 | ].
-destruct bb2; [ now rewrite Nat.mul_0_r in H8 | ].
-do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
-split; intros H.
--injection H; clear H; intros Hb Ha.
+split.
+-unfold GQ_of_pair, GQ_of_PQ.
+ unfold PQ_of_pair, PQred; simpl.
+ rewrite GQeq_eq; simpl.
+ rewrite Nat.sub_add; [ | flia Hx ].
+ rewrite Nat.sub_add; [ | flia Hy ].
+ rewrite Nat.sub_add; [ | flia Hz ].
+ rewrite Nat.sub_add; [ | flia Ht ].
+ remember (ggcd x y) as g1 eqn:Hg1; symmetry in Hg1.
+ remember (ggcd z t) as g2 eqn:Hg2; symmetry in Hg2.
+ move g2 before g1.
+ destruct g1 as (g1, (aa1, bb1)).
+ specialize (ggcd_correct_divisors x y) as H5.
+ destruct g2 as (g2, (aa2, bb2)).
+ rewrite Hg1 in H5; destruct H5 as (H5, H6).
+ specialize (ggcd_correct_divisors z t) as H7.
+ rewrite Hg2 in H7; destruct H7 as (H7, H8).
+ rewrite H5, H6, H7, H8.
+ replace (g1 * aa1 * (g2 * bb2)) with ((g1 * g2) * (aa1 * bb2)) by flia.
+ replace (g1 * bb1 * (g2 * aa2)) with ((g1 * g2) * (aa2 * bb1)) by flia.
+ destruct aa1; [ now rewrite Nat.mul_0_r in H5 | ].
+ destruct aa2; [ now rewrite Nat.mul_0_r in H7 | ].
+ destruct bb1; [ now rewrite Nat.mul_0_r in H6 | ].
+ destruct bb2; [ now rewrite Nat.mul_0_r in H8 | ].
+ intros H.
+ injection H; clear H; intros Hb Ha.
+ do 2 rewrite Nat.sub_0_r in Hb, Ha.
  now subst aa1 bb1.
--apply Nat.mul_cancel_l in H; [ | now destruct g1, g2 ].
+-intros H.
+ unfold GQ_of_pair, GQ_of_PQ.
+ unfold PQred; simpl.
+ unfold PQ_of_pair.
+ assert (H1 :
+   Nat.gcd (PQnum1 (PQred {| PQnum1 := x - 1; PQden1 := y - 1 |}) + 1)
+           (PQden1 (PQred {| PQnum1 := x - 1; PQden1 := y - 1 |}) + 1) = 1). {
+   unfold PQred; simpl.
+   rewrite Nat.sub_add; [ | flia Hx ].
+   rewrite Nat.sub_add; [ | flia Hy ].
+   remember (ggcd x y) as g1 eqn:Hg1; symmetry in Hg1.
+   destruct g1 as (g1, (aa1, bb1)); simpl.
+   specialize (ggcd_correct_divisors x y) as H5.
+   rewrite Hg1 in H5; destruct H5 as (H5, H6).
+   rewrite Nat.sub_add; cycle 1. {
+     destruct aa1; [ now rewrite Nat.mul_comm in H5 | flia ].
+   }
+   rewrite Nat.sub_add; cycle 1. {
+     destruct bb1; [ now rewrite Nat.mul_comm in H6 | flia ].
+   }
+   rewrite H5, H6 in Hg1.
+   assert (Hg1z : g1 ≠ 0) by now intros J; rewrite J in H5.
+   rewrite ggcd_mul_mono_l in Hg1; [ | easy ].
+   injection Hg1; clear Hg1; intros H1 H2.
+   replace g1 with (g1 * 1) in H2 at 2 by flia.
+   now apply Nat.mul_cancel_l in H2.
+ }
+ apply GQeq_eq; simpl.
+ unfold PQred in H1; simpl in H1.
+ rewrite Nat.sub_add in H1; [ | flia Hx ].
+ rewrite Nat.sub_add in H1; [ | flia Hy ].
+ rewrite Nat.sub_add; [ | flia Hx ].
+ rewrite Nat.sub_add; [ | flia Hy ].
+ rewrite Nat.sub_add; [ | flia Hz ].
+ rewrite Nat.sub_add; [ | flia Ht ].
+ remember (ggcd x y) as g1 eqn:Hg1; symmetry in Hg1.
+ remember (ggcd z t) as g2 eqn:Hg2; symmetry in Hg2.
+ move g2 before g1.
+ destruct g1 as (g1, (aa1, bb1)).
+ simpl in H1.
+ specialize (ggcd_correct_divisors x y) as H5.
+ destruct g2 as (g2, (aa2, bb2)).
+ rewrite Hg1 in H5; destruct H5 as (H5, H6).
+ specialize (ggcd_correct_divisors z t) as H7.
+ rewrite Hg2 in H7; destruct H7 as (H7, H8).
+ rewrite H5, H6, H7, H8 in H.
+ replace (g1 * aa1 * (g2 * bb2)) with ((g1 * g2) * (aa1 * bb2)) in H by flia.
+ replace (g1 * bb1 * (g2 * aa2)) with ((g1 * g2) * (aa2 * bb1)) in H by flia.
+ destruct aa1; [ now rewrite Nat.mul_0_r in H5 | ].
+ destruct aa2; [ now rewrite Nat.mul_0_r in H7 | ].
+ destruct bb1; [ now rewrite Nat.mul_0_r in H6 | ].
+ destruct bb2; [ now rewrite Nat.mul_0_r in H8 | ].
+ do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
+ do 2 rewrite Nat.sub_succ, Nat.sub_0_r in H1.
+ f_equal.
+ +idtac.
 ...
 Qed.
 
@@ -813,14 +869,14 @@ rewrite Nat.sub_add; [ | flia Hx ].
 rewrite Nat.sub_add; [ | flia Hy ].
 rewrite Nat.sub_add; [ | flia Hz ].
 rewrite Nat.sub_add; [ | flia Ht ].
-remember (Nat_ggcd.ggcd x y) as g1 eqn:Hg1; symmetry in Hg1.
-remember (Nat_ggcd.ggcd z t) as g2 eqn:Hg2; symmetry in Hg2.
+remember (ggcd x y) as g1 eqn:Hg1; symmetry in Hg1.
+remember (ggcd z t) as g2 eqn:Hg2; symmetry in Hg2.
 move g2 before g1.
 destruct g1 as (g1, (aa1, bb1)).
-specialize (Nat_ggcd.ggcd_correct_divisors x y) as H5.
+specialize (ggcd_correct_divisors x y) as H5.
 destruct g2 as (g2, (aa2, bb2)).
 rewrite Hg1 in H5; destruct H5 as (H5, H6).
-specialize (Nat_ggcd.ggcd_correct_divisors z t) as H7.
+specialize (ggcd_correct_divisors z t) as H7.
 rewrite Hg2 in H7; destruct H7 as (H7, H8).
 rewrite H5, H6, H7, H8.
 unfold "≤"%PQ, nd; simpl.
