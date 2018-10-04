@@ -204,6 +204,16 @@ destruct ab as [| pab| pab].
   rewrite NQpair_diag; [ | easy ].
   now rewrite NQmul_1_r.
  +unfold NQadd_pos_l.
+  unfold "//".
+  remember (a * d + b * c) as e eqn:He; symmetry in He.
+  destruct e.
+  *apply Nat.eq_add_0 in He.
+   destruct He as (H1, H2).
+   apply Nat.eq_mul_0 in H1.
+   destruct H1; [ now subst a | easy ].
+  *f_equal.
+   unfold "+"%GQ.
+   apply GQeq_eq; simpl.
 ...
 
 Theorem NQpower_summation (rg := NQ_ord_ring) : ∀ a n,
