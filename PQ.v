@@ -978,6 +978,15 @@ unfold "*"%PQ; f_equal.
 -now unfold PQmul_den1; simpl; rewrite Nat.mul_comm.
 Qed.
 
+Theorem PQmul_1_l : ∀ a, (1 * a)%PQ = a.
+Proof.
+intros.
+unfold "*"%PQ.
+unfold PQmul_num1, PQmul_den1; simpl.
+do 2 rewrite Nat.add_0_r, Nat.add_sub.
+now destruct a.
+Qed.
+
 Theorem PQmul_assoc : ∀ x y z, (x * (y * z) = (x * y) * z)%PQ.
 intros.
 unfold "*"%PQ; simpl.

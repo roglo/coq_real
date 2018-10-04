@@ -136,21 +136,77 @@ Arguments fd2n _ x%F i%nat.
 Theorem fold_fd2n {r : radix} : ∀ x i, dig (freal x i) = fd2n x i.
 Proof. easy. Qed.
 
+Require Import PQ Nat_ggcd.
+
+Theorem GQpair_diag : ∀ a, a ≠ 0 → GQ_of_pair a a = 1%GQ.
+Proof.
+intros * Ha.
+apply GQeq_eq; simpl.
+unfold PQred; simpl.
+rewrite Nat.sub_add; [ | flia Ha ].
+now rewrite ggcd_diag.
+Qed.
+
+Theorem GQmul_1_l : ∀ a, (1 * a)%GQ = a.
+Proof.
+intros.
+apply GQeq_eq; simpl.
+unfold PQred.
+rewrite PQmul_1_l.
+destruct a as (a, Ha); simpl.
+rewrite (ggcd_split _ _ 1); [ | easy ].
+do 2 rewrite Nat.div_1_r, Nat.add_1_r.
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+now destruct a.
+Qed.
+
+Theorem NQpair_diag : ∀ a, a ≠ 0 → a // a = 1%NQ.
+Proof.
+intros.
+unfold "//".
+destruct a; [ easy | now rewrite GQpair_diag ].
+Qed.
+
+Theorem NQmul_1_l : ∀ a, (1 * a)%NQ = a.
+Proof.
+intros.
+unfold "*"%NQ; simpl.
+unfold NQmul_pos_l.
+destruct a; [ easy | | ]; now rewrite GQmul_1_l.
+Qed.
+
+Theorem NQmul_1_r : ∀ a, (a * 1)%NQ = a.
+Proof.
+intros.
+rewrite NQmul_comm.
+apply NQmul_1_l.
+Qed.
+
 Theorem NQadd_pair : ∀ a b c d,
   b ≠ 0 → d ≠ 0 → (a // b + c // d = (a * d + b * c) // (b * d))%NQ.
 Proof.
 intros * Hb Hd.
-unfold "//".
-destruct a.
--destruct c; [ now rewrite Nat.mul_0_r | simpl ].
- destruct b; [ easy | ].
- destruct d; [ easy | ].
- remember (GQ_of_pair (S b * S c) (S b * S d)) as x; simpl; subst x.
- f_equal; apply GQeq_pair; try easy; flia.
--idtac.
+unfold "+"%NQ.
+remember (a // b) as ab eqn:Hab; symmetry in Hab.
+destruct ab as [| pab| pab].
+-unfold "//" in Hab.
+ destruct a; [ simpl | easy ].
+ rewrite <- NQmul_pair_nat; [ | easy | easy ].
+ rewrite NQpair_diag; [ | easy ].
+ now rewrite NQmul_1_l.
+-remember (c // d) as cd eqn:Hcd; symmetry in Hcd.
+ move cd before pab.
+ destruct cd as [| pcd| pcd].
+ +unfold "//" in Hcd.
+  destruct c; [ | easy ].
+  rewrite Nat.mul_0_r, Nat.add_0_r; simpl.
+  rewrite <- NQmul_pair_nat; [ | easy | easy ].
+  rewrite NQpair_diag; [ | easy ].
+  now rewrite NQmul_1_r.
+ +unfold NQadd_pos_l.
 ...
 
-Theorem NQ_power_summation (rg := NQ_ord_ring) : ∀ a n,
+Theorem NQpower_summation (rg := NQ_ord_ring) : ∀ a n,
   a > 1
   → (Σ (i = 0, n), 1 // a ^ i = (a ^ S n - 1) // (a ^ n * (a - 1)))%NQ.
 Proof.

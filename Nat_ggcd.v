@@ -312,3 +312,12 @@ erewrite ggcd_split; [ | easy ].
 rewrite Nat.gcd_1_r.
 now do 2 rewrite Nat.div_1_r.
 Qed.
+
+Theorem ggcd_diag : ∀ a, a ≠ 0 → ggcd a a = (a, (1, 1)).
+Proof.
+intros.
+unfold ggcd.
+rewrite Nat.add_1_r; simpl.
+destruct a; [ easy | ].
+now rewrite Nat.compare_refl.
+Qed.
