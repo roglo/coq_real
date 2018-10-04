@@ -144,17 +144,10 @@ intros * Ha.
 induction n.
 -rewrite summation_only_one.
  rewrite Nat.pow_0_r, Nat.pow_1_r, Nat.mul_1_l.
-Search "//".
-....
- destruct a; [ easy | simpl ].
- destruct a; [ flia Ha | ].
- rewrite Nat.sub_0_r.
- clear Ha.
- induction a; [ easy | ].
-
-
- unfold "//".
- destruct a; [ flia Ha | ].
+ apply NQeq_pair; [ easy | flia Ha | easy ].
+-rewrite summation_split_last; [ | flia ].
+ rewrite IHn.
+ remember NQ_of_pair as f; remember S as g; simpl; subst f g.
 
 ...
 
