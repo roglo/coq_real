@@ -709,9 +709,10 @@ apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
    unfold "//"%NQ, "//"%GQ; simpl.
    now f_equal; apply GQeq_eq.
  }
- apply NQlt_pair.
-
-...
+ apply NQlt_pair; [ now apply Nat.pow_nonzero | easy | ].
+ do 2 rewrite Nat.mul_1_r.
+ apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
+ now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 (*
 Theorem nA_dig_seq_ub {r : radix} : ∀ u n i,
@@ -739,6 +740,8 @@ apply Nat.le_add_le_sub_l.
 apply Hu; flia Hk Hj.
 Qed.
 *)
+
+...
 
 Theorem nA_all_9 {r : radix} : ∀ u i n,
   (∀ j, i + j + 1 < n → u (i + j + 1) = rad - 1)
