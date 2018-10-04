@@ -329,7 +329,7 @@ Definition freal_mul_series {r : radix} a b i :=
 
 (**)
 Definition A {r : radix} (rg := NQ_ord_ring) i n u :=
-  (Σ (j = i + 1, n - 1), u j // rad ^ (j - i) : NQ).
+  (Σ (j = i + 1, n - 1), (u j // rad ^ (j - i))%NQ : NQ).
 (**)
 
 (*
@@ -556,7 +556,7 @@ Proof.
 intros * Hin.
 unfold A.
 rewrite summation_split_first; [ | easy ].
-remember (1 // rad) as rr; simpl; subst rr.
+remember (1 // rad)%NQ as rr; simpl; subst rr.
 rewrite Nat.add_1_r.
 rewrite Nat.sub_succ_l; [ | easy ].
 rewrite Nat.sub_diag, Nat.pow_1_r.
@@ -564,7 +564,7 @@ f_equal.
 rewrite summation_mul_distr_r.
 apply summation_eq_compat.
 intros j Hj.
-rewrite NQmul_pair_nat; [ | now apply Nat.pow_nonzero | easy ].
+rewrite NQmul_pair; [ | now apply Nat.pow_nonzero | easy ].
 rewrite Nat.mul_1_r.
 rewrite Nat.mul_comm, <- Nat.pow_succ_r'.
 rewrite <- Nat.sub_succ_l; [ easy | flia Hj ].
@@ -627,12 +627,12 @@ Proof.
 intros * Hin.
 unfold A.
 rewrite summation_split with (e0 := e - 1); [ | easy ].
-remember (1 // rad ^ (e - i - 1)) as rr; simpl; subst rr; f_equal.
+remember (1 // rad ^ (e - i - 1))%NQ as rr; simpl; subst rr; f_equal.
 rewrite summation_mul_distr_r.
 replace (e - 1 + 1) with (S (e - 1)) by flia.
 apply summation_eq_compat.
 intros j Hj.
-rewrite NQmul_pair_nat; try now apply Nat.pow_nonzero.
+rewrite NQmul_pair; try now apply Nat.pow_nonzero.
 rewrite Nat.mul_1_r; f_equal.
 rewrite <- Nat.pow_add_r; f_equal.
 flia Hj Hin.
@@ -687,17 +687,30 @@ apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
  rewrite summation_eq_compat with
    (h := λ j, ((rad - 1) // rad * 1 // (rad ^ j))%NQ); cycle 1. {
    intros j Hj.
-   rewrite NQmul_pair_nat; [ | easy | now apply Nat.pow_nonzero ].
+   rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
    rewrite Nat.mul_1_r.
    now replace (i + 1 + j - i) with (S j) by flia.
  }
  rewrite <- summation_mul_distr_l.
  remember 1%NQ as one; remember NQ_of_pair as f; simpl; subst f one.
  rewrite NQpower_summation; [ | easy ].
-...
- r-1  r^(n-i-1) - 1
- ---  --------------
-  r   r^(n-i-2) (r-1)
+ rewrite NQmul_pair; [ | easy | ]; cycle 1. {
+   intros H; apply Nat.eq_mul_0 in H.
+   destruct H as [H| H]; [ now apply Nat.pow_nonzero in H | flia H Hr ].
+ }
+ rewrite Nat.mul_comm, Nat.mul_assoc.
+ rewrite <- NQmul_pair; [ | | flia Hr ]; cycle 1. {
+   intros H; apply Nat.eq_mul_0 in H.
+   destruct H as [H| H]; [ flia H Hr | now apply Nat.pow_nonzero in H ].
+ }
+ rewrite NQpair_diag; [ rewrite NQmul_1_r | flia Hr ].
+ rewrite <- Nat.pow_succ_r'.
+ replace 1%NQ with (1 // 1)%NQ; cycle 1. {
+   unfold "//"%NQ, "//"%GQ; simpl.
+   now f_equal; apply GQeq_eq.
+ }
+ apply NQlt_pair.
+
 ...
 Qed.
 (*

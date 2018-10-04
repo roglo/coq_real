@@ -21,6 +21,7 @@ Definition GQ_of_nat n := GQmake (PQ_of_nat n) (Nat.gcd_1_r (n - 1 + 1)).
 Definition GQ_of_pair n d := GQ_of_PQ (PQ_of_pair n d).
 
 Notation "1" := (GQmake 1 (Nat.gcd_1_r (0 + 1))) : GQ_scope.
+Notation "a // b" := (GQ_of_pair a b) (at level 32) : GQ_scope.
 
 Definition GQadd x y := GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
 Definition GQsub x y := GQ_of_PQ (PQ_of_GQ x - PQ_of_GQ y).
@@ -833,6 +834,43 @@ split; intros H.
  now rewrite H, H3.
 Qed.
 
+Theorem GQlt_pair : ∀ x y z t,
+  x ≠ 0 → y ≠ 0 → z ≠ 0 → t ≠ 0
+  → (GQ_of_pair x y < GQ_of_pair z t)%GQ ↔ x * t < y * z.
+Proof.
+intros * Hx Hy Hz Ht.
+unfold GQ_of_pair, GQ_of_PQ.
+unfold PQ_of_pair, PQred.
+unfold "<"%GQ; simpl.
+rewrite Nat.sub_add; [ | flia Hx ].
+rewrite Nat.sub_add; [ | flia Hy ].
+rewrite Nat.sub_add; [ | flia Hz ].
+rewrite Nat.sub_add; [ | flia Ht ].
+remember (ggcd x y) as g1 eqn:Hg1; symmetry in Hg1.
+remember (ggcd z t) as g2 eqn:Hg2; symmetry in Hg2.
+move g2 before g1.
+destruct g1 as (g1, (aa1, bb1)).
+specialize (ggcd_correct_divisors x y) as H5.
+destruct g2 as (g2, (aa2, bb2)).
+rewrite Hg1 in H5; destruct H5 as (H5, H6).
+specialize (ggcd_correct_divisors z t) as H7.
+rewrite Hg2 in H7; destruct H7 as (H7, H8).
+rewrite H5, H6, H7, H8.
+unfold "<"%PQ, nd; simpl.
+replace (g1 * aa1 * (g2 * bb2)) with ((g1 * g2) * (aa1 * bb2)) by flia.
+replace (g1 * bb1 * (g2 * aa2)) with ((g1 * g2) * (aa2 * bb1)) by flia.
+destruct aa1; [ now rewrite Nat.mul_0_r in H5 | ].
+destruct aa2; [ now rewrite Nat.mul_0_r in H7 | ].
+destruct bb1; [ now rewrite Nat.mul_0_r in H6 | ].
+destruct bb2; [ now rewrite Nat.mul_0_r in H8 | ].
+do 4 (rewrite Nat.sub_add; [ | flia ]).
+apply Nat.mul_lt_mono_pos_l.
+destruct g1; [ easy | ].
+destruct g2; [ easy | ].
+simpl; flia.
+Qed.
+
+(* perhaps do an Ltac for this theorem and the previous one *)
 Theorem GQle_pair : ∀ x y z t,
   x ≠ 0 → y ≠ 0 → z ≠ 0 → t ≠ 0
   → (GQ_of_pair x y ≤ GQ_of_pair z t)%GQ ↔ x * t ≤ y * z.
@@ -920,7 +958,7 @@ Definition NQ_of_pair n d :=
   | _ => NQpos (GQ_of_pair n d)
   end.
 
-Notation "a // b" := (NQ_of_pair a b) (at level 32).
+Notation "a // b" := (NQ_of_pair a b) (at level 32) : NQ_scope.
 
 Definition NQcompare x y :=
   match x with
@@ -1540,11 +1578,11 @@ destruct x as [| px| px].
   --now apply GQadd_le_mono.
 Qed.
 
-Theorem NQmul_pair_nat : ∀ x y z t,
+Theorem NQmul_pair : ∀ x y z t,
   y ≠ 0 → t ≠ 0 → ((x // y) * (z // t) = (x * z) // (y * t))%NQ.
 Proof.
 intros * Hy Ht; simpl.
-unfold "*"%GQ, "//"; simpl.
+unfold "*"%GQ, "//"%NQ; simpl.
 destruct x; [ easy | ].
 destruct z; [ now rewrite Nat.mul_0_r | simpl ].
 f_equal.
@@ -1676,8 +1714,8 @@ Theorem NQle_pair : ∀ x y z t,
 Proof.
 intros * Hy Ht.
 unfold "≤"%NQ.
-remember (x // y) as a eqn:Ha; symmetry in Ha.
-remember (z // t) as b eqn:Hb; symmetry in Hb.
+remember (x // y)%NQ as a eqn:Ha; symmetry in Ha.
+remember (z // t)%NQ as b eqn:Hb; symmetry in Hb.
 move b before a.
 destruct a as [| a| a]; [ | | now destruct x ].
 -destruct x; [ | easy ].
@@ -1698,12 +1736,25 @@ destruct a as [| a| a]; [ | | now destruct x ].
   now apply GQle_pair.
 Qed.
 
+Theorem NQlt_pair : ∀ a b c d,
+  b ≠ 0 → d ≠ 0 → (a // b < c // d)%NQ ↔ a * d < b * c.
+Proof.
+intros * Hb Hd.
+unfold "<"%GQ, "//"%NQ; simpl.
+destruct a.
+-destruct c; [ now rewrite Nat.mul_0_r | simpl ].
+ split; [ intros _ | easy ].
+ destruct b; [ easy | simpl; flia ].
+-destruct c; [ now rewrite Nat.mul_0_r | simpl ].
+ now apply GQlt_pair.
+Qed.
+
 Theorem NQeq_pair : ∀ x y z t : nat,
-   y ≠ 0 → t ≠ 0 → x // y = z // t ↔ x * t = y * z.
+   y ≠ 0 → t ≠ 0 → (x // y = z // t)%NQ ↔ x * t = y * z.
 Proof.
 intros * Hy Ht.
-remember (x // y) as a eqn:Ha; symmetry in Ha.
-remember (z // t) as b eqn:Hb; symmetry in Hb.
+remember (x // y)%NQ as a eqn:Ha; symmetry in Ha.
+remember (z // t)%NQ as b eqn:Hb; symmetry in Hb.
 move b before a.
 destruct a as [| a| a]; [ | | now destruct x ].
 -destruct x; [ simpl | easy ].
@@ -1733,10 +1784,10 @@ destruct a as [| a| a]; [ | | now destruct x ].
    now rewrite H.
 Qed.
 
-Theorem NQpair_diag : ∀ a, a ≠ 0 → a // a = 1%NQ.
+Theorem NQpair_diag : ∀ a, a ≠ 0 → (a // a = 1)%NQ.
 Proof.
 intros.
-unfold "//".
+unfold "//"%NQ.
 destruct a; [ easy | now rewrite GQpair_diag ].
 Qed.
 
@@ -1760,24 +1811,24 @@ Theorem NQadd_pair : ∀ a b c d,
 Proof.
 intros * Hb Hd.
 unfold "+"%NQ.
-remember (a // b) as ab eqn:Hab; symmetry in Hab.
+remember (a // b)%NQ as ab eqn:Hab; symmetry in Hab.
 destruct ab as [| pab| pab]; [ | | now destruct a ].
--unfold "//" in Hab.
+-unfold "//"%NQ in Hab.
  destruct a; [ simpl | easy ].
- rewrite <- NQmul_pair_nat; [ | easy | easy ].
+ rewrite <- NQmul_pair; [ | easy | easy ].
  rewrite NQpair_diag; [ | easy ].
  now rewrite NQmul_1_l.
--remember (c // d) as cd eqn:Hcd; symmetry in Hcd.
+-remember (c // d)%NQ as cd eqn:Hcd; symmetry in Hcd.
  move cd before pab.
  destruct cd as [| pcd| pcd]; [ | | now destruct c ].
- +unfold "//" in Hcd.
+ +unfold "//"%NQ in Hcd.
   destruct c; [ | easy ].
   rewrite Nat.mul_0_r, Nat.add_0_r; simpl.
-  rewrite <- NQmul_pair_nat; [ | easy | easy ].
+  rewrite <- NQmul_pair; [ | easy | easy ].
   rewrite NQpair_diag; [ | easy ].
   now rewrite NQmul_1_r.
  +unfold NQadd_pos_l.
-  unfold "//".
+  unfold "//"%NQ.
   remember (a * d + b * c) as e eqn:He; symmetry in He.
   destruct e.
   *apply Nat.eq_add_0 in He.
@@ -1803,7 +1854,7 @@ Qed.
 
 Definition NQfrac q :=
   match q with
-  | NQ0 => 0 // 1
+  | NQ0 => (0 // 1)%NQ
   | NQpos gq => NQpos (GQfrac gq)
   | NQneg gq => NQneg (GQfrac gq)
   end.
