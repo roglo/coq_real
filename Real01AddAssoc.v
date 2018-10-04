@@ -15,6 +15,7 @@ Definition freal_999 {r : radix} := {| freal i := digit_9 |}.
 Definition freal_shift {r : radix} k x := {| freal i := freal x (k + i) |}.
 Arguments freal_shift _ _ x%F.
 
+(*
 Require Import Morphisms.
 Instance gr_add_morph {r : radix} :
   Proper (freal_norm_eq ==> freal_norm_eq ==> iff) freal_norm_le.
@@ -679,6 +680,7 @@ destruct (LPO_fst (A_ge_1 u i)) as [H1| H1].
   apply Nat.mul_le_mono_l.
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
+*)
 
 Definition add_series (u v : nat → nat) i := u i + v i.
 
@@ -703,7 +705,7 @@ rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
 rename i into j.
 unfold nat_prop_carr at 1.
-destruct (LPO_fst (A_ge_1 v j)) as [H1| H1].
+destruct (LPO_fst (fA_ge_1_ε v j)) as [H1| H1].
 -idtac.
 ...
 

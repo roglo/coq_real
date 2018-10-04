@@ -30,6 +30,7 @@ unfold is_num_9_strict_after.
 now destruct (Nat.eq_dec (u (i + j + 1)) (rad - 1)).
 Qed.
 
+(*
 Theorem A_ge_rad_pow {r : radix} : ∀ u i n,
   (∀ k, u (S i + k + 1) ≤ 2 * (rad - 1))
   → rad ^ (n - i - 1) ≤ nA i n u
@@ -1127,4 +1128,5 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
 -destruct H1 as (j & Hjj & Hj); simpl.
  now rewrite Nat.sub_0_r, Nat.add_0_r.
 Qed.
+*)
 *)

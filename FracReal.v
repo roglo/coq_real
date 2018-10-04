@@ -741,8 +741,7 @@ apply Hu; flia Hk Hj.
 Qed.
 *)
 
-...
-
+(*
 Theorem nA_all_9 {r : radix} : ∀ u i n,
   (∀ j, i + j + 1 < n → u (i + j + 1) = rad - 1)
   → nA i n u = rad ^ (n - i - 1) - 1.
@@ -2288,3 +2287,4 @@ specialize (Hur (j - k)).
 replace (i + (j - k) + 1) with (j + i + 1 - k) in Hur by flia Hk.
 easy.
 Qed.
+*)
