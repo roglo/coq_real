@@ -188,7 +188,7 @@ Proof.
 intros * Hb Hd.
 unfold "+"%NQ.
 remember (a // b) as ab eqn:Hab; symmetry in Hab.
-destruct ab as [| pab| pab].
+destruct ab as [| pab| pab]; [ | | now destruct a ].
 -unfold "//" in Hab.
  destruct a; [ simpl | easy ].
  rewrite <- NQmul_pair_nat; [ | easy | easy ].
@@ -196,7 +196,7 @@ destruct ab as [| pab| pab].
  now rewrite NQmul_1_l.
 -remember (c // d) as cd eqn:Hcd; symmetry in Hcd.
  move cd before pab.
- destruct cd as [| pcd| pcd].
+ destruct cd as [| pcd| pcd]; [ | | now destruct c ].
  +unfold "//" in Hcd.
   destruct c; [ | easy ].
   rewrite Nat.mul_0_r, Nat.add_0_r; simpl.
@@ -212,9 +212,21 @@ destruct ab as [| pab| pab].
    apply Nat.eq_mul_0 in H1.
    destruct H1; [ now subst a | easy ].
   *f_equal.
-   unfold "+"%GQ.
+   destruct a; [ easy | ].
+   destruct c; [ easy | ].
+   simpl in Hab, Hcd.
+   injection Hab; clear Hab; intros Hab.
+   injection Hcd; clear Hcd; intros Hcd.
+   subst pab pcd.
    apply GQeq_eq; simpl.
-...
+   rewrite <- PQred_add.
+   unfold PQ_of_pair.
+   simpl; do 3 rewrite Nat.sub_0_r.
+   unfold "+"%PQ, PQadd_num1, PQadd_den1, nd; simpl.
+   rewrite Nat.sub_add; [ | flia Hd ].
+   rewrite Nat.sub_add; [ | flia Hb ].
+   f_equal; f_equal; flia He.
+Qed.
 
 Theorem NQpower_summation (rg := NQ_ord_ring) : ∀ a n,
   a > 1
@@ -228,7 +240,12 @@ induction n.
 -rewrite summation_split_last; [ | flia ].
  rewrite IHn.
  remember NQ_of_pair as f; remember S as g; simpl; subst f g.
-
+ rewrite NQadd_pair; [ | | apply Nat.pow_nonzero; flia Ha ]; cycle 1. {
+   intros H.
+   apply Nat.eq_mul_0 in H.
+   destruct H as [H| H]; [ | flia Ha H ].
+   apply Nat.pow_nonzero in H; [ easy | flia Ha ].
+ }
 ...
 
 Theorem power_summation (rg := nat_ord_ring) : ∀ a n,
