@@ -136,6 +136,20 @@ Arguments fd2n _ x%F i%nat.
 Theorem fold_fd2n {r : radix} : ∀ x i, dig (freal x i) = fd2n x i.
 Proof. easy. Qed.
 
+Theorem NQadd_pair : ∀ a b c d,
+  b ≠ 0 → d ≠ 0 → (a // b + c // d = (a * d + b * c) // (b * d))%NQ.
+Proof.
+intros * Hb Hd.
+unfold "//".
+destruct a.
+-destruct c; [ now rewrite Nat.mul_0_r | simpl ].
+ destruct b; [ easy | ].
+ destruct d; [ easy | ].
+ remember (GQ_of_pair (S b * S c) (S b * S d)) as x; simpl; subst x.
+ f_equal; apply GQeq_pair; try easy; flia.
+-idtac.
+...
+
 Theorem NQ_power_summation (rg := NQ_ord_ring) : ∀ a n,
   a > 1
   → (Σ (i = 0, n), 1 // a ^ i = (a ^ S n - 1) // (a ^ n * (a - 1)))%NQ.
