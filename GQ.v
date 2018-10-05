@@ -747,6 +747,23 @@ rewrite Nat.sub_add; [ | flia Hb ].
 now replace (c * b) with (b * c) by apply Nat.mul_comm.
 Qed.
 
+Theorem GQsub_pair : ∀ a b c d,
+  a ≠ 0 → b ≠ 0 → c ≠ 0 → d ≠ 0 → b * c < a * d
+  → (a // b - c // d = (a * d - b * c) // (b * d))%GQ.
+Proof.
+intros * Ha Hb Hc Hd Hlt.
+apply GQeq_eq; simpl.
+rewrite <- PQred_sub; cycle 1. {
+  unfold "<"%PQ, nd; simpl.
+  do 4 (rewrite Nat.sub_add; [ | flia Ha Hb Hc Hd ]).
+  now rewrite Nat.mul_comm.
+}
+unfold PQ_of_pair.
+unfold "-"%PQ, PQsub_num1, PQadd_den1, nd; simpl.
+do 4 (rewrite Nat.sub_add; [ | flia Ha Hb Hc Hd ]).
+now replace (c * b) with (b * c) by apply Nat.mul_comm.
+Qed.
+
 Definition GQcompare x y := PQcompare (PQ_of_GQ x) (PQ_of_GQ y).
 Arguments GQcompare x%GQ y%GQ.
 

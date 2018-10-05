@@ -907,25 +907,19 @@ destruct a.
   destruct b1; GQcompare_iff.
   *apply GQeq_pair in Hb1; [ | easy | easy | easy | easy ].
    now rewrite Hb1, Nat.compare_refl.
-  *apply GQlt_pair in Hb1.
-Check GQlt_pair.
-...
-(*
-  remember (S a * S d ?= S b * S c) as b2 eqn:Hb2.
-  symmetry in Hb1, Hb2.
-  move b2 before b1.
-*)
-
-  *destruct b2; [ easy | | ].
-  --apply Nat.compare_lt_iff in Hb2.
-Search (_ // _ = _ // _)%GQ.
-...
-
-Theorem NQsub_pair : ∀ a b c d,
-  b ≠ 0 → d ≠ 0 → (a // b - c // d = (a * d - b * c) // (b * d))%NQ.
-Proof.
-intros * Hb Hd.
-...
+  *apply -> GQlt_pair in Hb1; [ | easy | easy | easy | easy ].
+   apply Nat.compare_lt_iff in Hb1; rewrite Hb1.
+   apply Nat.compare_lt_iff in Hb1.
+   setoid_rewrite Nat.mul_comm in Hb1.
+   rewrite GQsub_pair; try easy.
+   f_equal; f_equal; [ | apply Nat.mul_comm ].
+   f_equal; apply Nat.mul_comm.
+  *apply -> GQlt_pair in Hb1; [ | easy | easy | easy | easy ].
+   setoid_rewrite Nat.mul_comm in Hb1.
+   apply Nat.compare_gt_iff in Hb1; rewrite Hb1.
+   apply Nat.compare_gt_iff in Hb1.
+   now rewrite GQsub_pair.
+Qed.
 
 Definition NQfrac q :=
   match q with
