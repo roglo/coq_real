@@ -5,7 +5,7 @@
 Set Nested Proofs Allowed.
 Require Import Utf8 Arith Psatz NPeano.
 Require Import Misc Summation NQ.
-Import Init.Nat.
+Import Init.Nat PeanoNat.
 
 (* "fast" lia, to improve compilation speed *)
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
@@ -760,9 +760,11 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
   rewrite Nat.pow_0_r, NQpair_diag; [ | easy ].
   rewrite NQsub_diag.
   rewrite summation_empty; [ | flia Hin ].
+  now rewrite NQmul_0_r.
+}
+replace 1%NQ with (1 // 1)%NQ by now rewrite NQpair_diag.
 ...
-  rewrite NQmul_0_r.
-  rewrite Nat.mul_0_r; simpl; flia.
+rewrite NQsub_pair.
 ...
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
 -rewrite <- summation_mul_distr_l.

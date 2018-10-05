@@ -823,6 +823,12 @@ rewrite NQmul_comm.
 apply NQmul_1_l.
 Qed.
 
+Theorem NQmul_0_l : ∀ a, (0 * a)%NQ = 0%NQ.
+Proof. easy. Qed.
+
+Theorem NQmul_0_r : ∀ a, (a * 0)%NQ = 0%NQ.
+Proof. intros; now rewrite NQmul_comm. Qed.
+
 Theorem NQadd_pair : ∀ a b c d,
   b ≠ 0 → d ≠ 0 → (a // b + c // d = (a * d + b * c) // (b * d))%NQ.
 Proof.
@@ -862,6 +868,12 @@ destruct ab as [| pab| pab]; [ | | now destruct a ].
    rewrite <- He.
    now apply GQadd_pair.
 Qed.
+
+Theorem NQsub_pair : ∀ a b c d,
+  b ≠ 0 → d ≠ 0 → (a // b - c // d = (a * d - b * c) // (b * d))%NQ.
+Proof.
+intros * Hb Hd.
+...
 
 Definition NQfrac q :=
   match q with
