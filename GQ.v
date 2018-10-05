@@ -1015,5 +1015,12 @@ do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
 now destruct a.
 Qed.
 
+Theorem GQmul_1_r : ∀ a, (a * 1)%GQ = a.
+Proof.
+intros.
+rewrite GQmul_comm.
+apply GQmul_1_l.
+Qed.
+
 Definition GQfrac gq := GQ_of_PQ (PQfrac (PQ_of_GQ gq)).
 Definition GQintg gq := PQintg (PQ_of_GQ gq).

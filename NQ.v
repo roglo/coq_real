@@ -870,6 +870,58 @@ destruct ab as [| pab| pab]; [ | | now destruct a ].
 Qed.
 
 Theorem NQsub_pair : ∀ a b c d,
+  b ≠ 0 → d ≠ 0 →
+  (a // b - c // d)%NQ =
+  match Nat.compare (a * d) (b * c) with
+  | Eq => 0%NQ
+  | Lt => NQneg ((b * c - a * d) // (b * d))
+  | Gt => NQpos ((a * d - b * c) // (b * d))
+  end.
+Proof.
+intros * Hb Hd.
+destruct b; [ flia Hb | ].
+destruct d; [ flia Hd | ].
+unfold "-"%NQ, "+"%NQ.
+destruct a.
+-destruct c; [ now rewrite Nat.mul_0_r | ].
+ remember (S b) as x; simpl; subst x.
+ rewrite Nat.sub_0_r.
+ remember (S b * S c) as bc eqn:Hbc; symmetry in Hbc.
+ destruct bc; [ easy | rewrite <- Hbc ].
+ rewrite <- GQmul_pair; [ | easy | easy | easy | easy ].
+ rewrite GQpair_diag; [ | easy ].
+ now rewrite GQmul_1_l.
+-remember (S a // S b)%NQ as ab eqn:Hab; symmetry in Hab.
+ destruct ab as [| pab| pab]; [ easy | | easy ].
+ injection Hab; clear Hab; intros Hab; subst pab.
+ unfold NQadd_pos_l.
+ destruct c.
+ +rewrite Nat.mul_0_r, Nat.sub_0_r.
+  remember (NQpos ((S a * S d) // (S b * S d))) as x; simpl; subst x.
+  rewrite <- GQmul_pair; [ | easy | easy | easy | easy ].
+  rewrite GQpair_diag; [ | easy ].
+  now rewrite GQmul_1_r.
+ +remember (S a) as sa; remember (S b) as sb; simpl; subst sa sb.
+  remember (GQcompare (S a // S b) (S c // S d)) as b1 eqn:Hb1.
+  symmetry in Hb1.
+  destruct b1; GQcompare_iff.
+  *apply GQeq_pair in Hb1; [ | easy | easy | easy | easy ].
+   now rewrite Hb1, Nat.compare_refl.
+  *apply GQlt_pair in Hb1.
+Check GQlt_pair.
+...
+(*
+  remember (S a * S d ?= S b * S c) as b2 eqn:Hb2.
+  symmetry in Hb1, Hb2.
+  move b2 before b1.
+*)
+
+  *destruct b2; [ easy | | ].
+  --apply Nat.compare_lt_iff in Hb2.
+Search (_ // _ = _ // _)%GQ.
+...
+
+Theorem NQsub_pair : ∀ a b c d,
   b ≠ 0 → d ≠ 0 → (a // b - c // d = (a * d - b * c) // (b * d))%NQ.
 Proof.
 intros * Hb Hd.
