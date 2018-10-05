@@ -705,10 +705,7 @@ apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
  }
  rewrite NQpair_diag; [ rewrite NQmul_1_r | flia Hr ].
  rewrite <- Nat.pow_succ_r'.
- replace 1%NQ with (1 // 1)%NQ; cycle 1. {
-   unfold "//"%NQ, "//"%GQ; simpl.
-   now f_equal; apply GQeq_eq.
- }
+ replace 1%NQ with (1 // 1)%NQ by now rewrite NQpair_diag.
  apply NQlt_pair; [ now apply Nat.pow_nonzero | easy | ].
  do 2 rewrite Nat.mul_1_r.
  apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
