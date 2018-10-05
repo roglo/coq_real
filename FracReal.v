@@ -4,7 +4,7 @@
 
 Set Nested Proofs Allowed.
 Require Import Utf8 Arith Psatz NPeano.
-Require Import Misc Summation GQ.
+Require Import Misc Summation NQ.
 Import Init.Nat.
 
 (* "fast" lia, to improve compilation speed *)
