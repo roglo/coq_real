@@ -731,6 +731,22 @@ rewrite (PQsub_morph _ y' _ x') in Hxy.
 -apply PQ_o_GQ.
 Qed.
 
+Theorem GQadd_pair : ∀ a b c d,
+  a ≠ 0 → b ≠ 0 → c ≠ 0 → d ≠ 0
+  → (a // b + c // d = (a * d + b * c) // (b * d))%GQ.
+Proof.
+intros * Ha Hb Hc Hd.
+apply GQeq_eq; simpl.
+rewrite <- PQred_add.
+unfold PQ_of_pair.
+unfold "+"%PQ, PQadd_num1, PQadd_den1, nd; simpl.
+rewrite Nat.sub_add; [ | flia Ha ].
+rewrite Nat.sub_add; [ | flia Hd ].
+rewrite Nat.sub_add; [ | flia Hc ].
+rewrite Nat.sub_add; [ | flia Hb ].
+now replace (c * b) with (b * c) by apply Nat.mul_comm.
+Qed.
+
 Definition GQcompare x y := PQcompare (PQ_of_GQ x) (PQ_of_GQ y).
 Arguments GQcompare x%GQ y%GQ.
 

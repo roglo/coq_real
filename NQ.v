@@ -859,16 +859,8 @@ destruct ab as [| pab| pab]; [ | | now destruct a ].
    injection Hab; clear Hab; intros Hab.
    injection Hcd; clear Hcd; intros Hcd.
    subst pab pcd.
-   apply GQeq_eq; simpl.
-...
-Check GQadd_pair.
-   rewrite <- PQred_add.
-   unfold PQ_of_pair.
-   simpl; do 3 rewrite Nat.sub_0_r.
-   unfold "+"%PQ, PQadd_num1, PQadd_den1, nd; simpl.
-   rewrite Nat.sub_add; [ | flia Hd ].
-   rewrite Nat.sub_add; [ | flia Hb ].
-   f_equal; f_equal; flia He.
+   rewrite <- He.
+   now apply GQadd_pair.
 Qed.
 
 Definition NQfrac q :=
