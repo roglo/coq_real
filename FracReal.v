@@ -743,6 +743,7 @@ Theorem A_all_9 {r : radix} : ∀ u i n,
   → A i n u = (1 - 1 // rad ^ (n - i - 1))%NQ.
 Proof.
 intros * Hj.
+specialize radix_ge_2 as Hr.
 unfold A.
 destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin]; cycle 1. {
   replace (n - i - 1) with 0 by flia Hin.
@@ -763,13 +764,15 @@ rewrite summation_eq_compat with
 }
 rewrite <- summation_mul_distr_l.
 remember NQ_of_pair as f; remember 1%NQ as x; simpl; subst f x.
-rewrite NQpower_summation; [ | apply radix_ge_2 ].
+rewrite NQpower_summation; [ | flia Hr ].
 replace (n - 1 - (i + 1)) with (n - i - 1 - 1) by flia Hin.
 remember (n - i - 1) as s eqn:Hs.
 replace (S (s - 1)) with s by flia Hs Hin.
 replace 1%NQ with (1 // 1)%NQ by now rewrite NQpair_diag.
 rewrite NQsub_pair; [ | easy | now apply Nat.pow_nonzero ].
 do 2 rewrite Nat.mul_1_l.
+Require Import GQ.
+Show.
 remember (rad ^ s ?= 1) as b1 eqn:Hb1; symmetry in Hb1.
 destruct b1.
 -apply Nat.compare_eq_iff in Hb1.
@@ -777,28 +780,37 @@ destruct b1.
 -apply Nat.compare_lt_iff, Nat.lt_1_r in Hb1.
  now apply Nat.pow_nonzero in Hb1.
 -apply Nat.compare_gt_iff in Hb1.
+ remember (rad - 1) as y eqn:Hy.
+ destruct y; [ flia Hy Hr | simpl ].
+ unfold NQmul_pos_l; rewrite Hy.
+ rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+ replace rad with (rad ^ 1) at 3 by apply Nat.pow_1_r.
+ rewrite <- Nat.pow_add_r.
+ rewrite Nat.sub_add; [ | flia Hs Hin ].
+ unfold "//"%NQ at 1.
+ remember (rad ^ s - 1) as x eqn:Hx; symmetry in Hx.
+ destruct x; [ flia Hb1 Hx | ].
+ f_equal; apply GQeq_eq; simpl.
+ rewrite <- PQred_mul.
+ unfold "*"%PQ, PQmul_num1, PQmul_den1; simpl.
+ rewrite Nat.sub_0_r.
+ rewrite Nat.sub_add; [ | flia Hr ].
+ rewrite Nat.sub_add; [ | flia Hr ].
+ rewrite Nat.add_1_r, <- Hx.
+ rewrite Nat.sub_add; cycle 1. {
+   replace s with (s - 1 + 1) at 1 by flia Hs Hin.
+   replace (rad ^ (s - 1)) with (rad ^ (s - 1) * 1) by flia.
+   rewrite Nat.pow_add_r, <- Nat.mul_sub_distr_l, Nat.pow_1_r.
+   apply Nat.neq_0_lt_0; intros H.
+   apply Nat.eq_mul_0 in H.
+   destruct H as [H| H]; [ | flia Hr H ].
+   now apply Nat.pow_nonzero in H.
+ }
+...
+ remember (rad ^ s - 1) as z.
+ rewrite Nat.mul_sub_distr_l; subst z.
 
 ...
-rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
--rewrite <- summation_mul_distr_l.
- destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin].
- +rewrite summation_shift; [ | easy ].
-  rewrite summation_rtl.
-  rewrite summation_eq_compat with (h := λ j, rad ^ j).
-  *apply Nat.succ_inj_wd.
-   rewrite <- Nat.add_1_l.
-   rewrite <- power_summation; [ symmetry | easy ].
-   rewrite <- Nat.sub_succ_l; [ | now apply Nat_pow_ge_1 ].
-   rewrite Nat.sub_succ, Nat.sub_0_r.
-   f_equal; flia Hin.
-  *intros k Hk; f_equal; flia Hk.
- +replace (n - i - 1) with 0 by flia Hin.
-  rewrite summation_empty; [ | flia Hin ].
-  rewrite Nat.mul_0_r; simpl; flia.
--intros j Hij.
- replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
- rewrite Hj; [ easy | flia Hij ].
-Qed.
 
 (*
 Theorem nA_all_9 {r : radix} : ∀ u i n,
