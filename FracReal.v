@@ -741,6 +741,34 @@ apply Hu; flia Hk Hj.
 Qed.
 *)
 
+Theorem A_all_9 {r : radix} : ∀ u i n,
+  (∀ j, i + j + 1 < n → u (i + j + 1) = rad - 1)
+  → A i n u = (1 - 1 // rad ^ (n - i - 1))%NQ.
+Proof.
+intros * Hj.
+unfold A.
+...
+rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
+-rewrite <- summation_mul_distr_l.
+ destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin].
+ +rewrite summation_shift; [ | easy ].
+  rewrite summation_rtl.
+  rewrite summation_eq_compat with (h := λ j, rad ^ j).
+  *apply Nat.succ_inj_wd.
+   rewrite <- Nat.add_1_l.
+   rewrite <- power_summation; [ symmetry | easy ].
+   rewrite <- Nat.sub_succ_l; [ | now apply Nat_pow_ge_1 ].
+   rewrite Nat.sub_succ, Nat.sub_0_r.
+   f_equal; flia Hin.
+  *intros k Hk; f_equal; flia Hk.
+ +replace (n - i - 1) with 0 by flia Hin.
+  rewrite summation_empty; [ | flia Hin ].
+  rewrite Nat.mul_0_r; simpl; flia.
+-intros j Hij.
+ replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
+ rewrite Hj; [ easy | flia Hij ].
+Qed.
+
 (*
 Theorem nA_all_9 {r : radix} : ∀ u i n,
   (∀ j, i + j + 1 < n → u (i + j + 1) = rad - 1)
@@ -768,6 +796,7 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
  replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
  rewrite Hj; [ easy | flia Hij ].
 Qed.
+*)
 
 Theorem nA_all_18 {r : radix} : ∀ u i n,
   (∀ j, u (i + j + 1) = 2 * (rad - 1))
@@ -2287,4 +2316,3 @@ specialize (Hur (j - k)).
 replace (i + (j - k) + 1) with (j + i + 1 - k) in Hur by flia Hk.
 easy.
 Qed.
-*)
