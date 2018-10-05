@@ -744,28 +744,40 @@ Theorem A_all_9 {r : radix} : ∀ u i n,
 Proof.
 intros * Hj.
 unfold A.
-rewrite summation_eq_compat with
-    (h := λ j, ((rad - 1) // 1 * 1 // rad ^ (j - i))%NQ); cycle 1. {
-  intros j Hij.
-  rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
-  rewrite Nat.mul_1_r, Nat.mul_1_l; f_equal.
-  specialize (Hj (j - i - 1)).
-  replace (i + (j - i - 1) + 1) with j in Hj by flia Hij.
-  assert (H : j < n) by flia Hij.
-  now specialize (Hj H).
-}
-rewrite <- summation_mul_distr_l.
-destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin]; cycle 1. {
   replace (n - i - 1) with 0 by flia Hin.
   rewrite Nat.pow_0_r, NQpair_diag; [ | easy ].
   rewrite NQsub_diag.
-  rewrite summation_empty; [ | flia Hin ].
-  now rewrite NQmul_0_r.
+  now rewrite summation_empty; [ | flia Hin ].
 }
-apply Nat.nlt_ge in Hin.
+rewrite summation_shift; [ | easy ].
+rewrite summation_eq_compat with
+    (h := λ j, ((rad - 1) // rad * 1 // rad ^ j)%NQ); cycle 1. {
+  intros j Hij.
+  rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+  rewrite Nat.mul_1_r, Nat.add_shuffle0, Nat.mul_comm.
+  replace rad with (rad ^ 1) at 4 by apply Nat.pow_1_r.
+  rewrite <- Nat.pow_add_r.
+  replace (i + j + 1 - i) with (j + 1) by flia; f_equal.
+  rewrite Hj; [ easy | flia Hin Hij ].
+}
+rewrite <- summation_mul_distr_l.
+remember NQ_of_pair as f; remember 1%NQ as x; simpl; subst f x.
+rewrite NQpower_summation; [ | apply radix_ge_2 ].
+replace (n - 1 - (i + 1)) with (n - i - 1 - 1) by flia Hin.
+remember (n - i - 1) as s eqn:Hs.
+replace (S (s - 1)) with s by flia Hs Hin.
 replace 1%NQ with (1 // 1)%NQ by now rewrite NQpair_diag.
 rewrite NQsub_pair; [ | easy | now apply Nat.pow_nonzero ].
 do 2 rewrite Nat.mul_1_l.
+remember (rad ^ s ?= 1) as b1 eqn:Hb1; symmetry in Hb1.
+destruct b1.
+-apply Nat.compare_eq_iff in Hb1.
+ now rewrite Hb1, Nat.sub_diag, NQmul_0_r.
+-apply Nat.compare_lt_iff, Nat.lt_1_r in Hb1.
+ now apply Nat.pow_nonzero in Hb1.
+-apply Nat.compare_gt_iff in Hb1.
+
 ...
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
 -rewrite <- summation_mul_distr_l.
