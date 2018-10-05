@@ -747,14 +747,25 @@ Theorem A_all_9 {r : radix} : ∀ u i n,
 Proof.
 intros * Hj.
 unfold A.
-rewrite summation_eq_compat with (h := λ j, ((rad - 1) // rad ^ (j - i))%NQ);
-  cycle 1. {
-  intros j Hij; f_equal.
+rewrite summation_eq_compat with
+    (h := λ j, ((rad - 1) // 1 * 1 // rad ^ (j - i))%NQ); cycle 1. {
+  intros j Hij.
+  rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+  rewrite Nat.mul_1_r, Nat.mul_1_l; f_equal.
   specialize (Hj (j - i - 1)).
   replace (i + (j - i - 1) + 1) with j in Hj by flia Hij.
   assert (H : j < n) by flia Hij.
   now specialize (Hj H).
 }
+rewrite <- summation_mul_distr_l.
+destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+  replace (n - i - 1) with 0 by flia Hin.
+  rewrite Nat.pow_0_r, NQpair_diag; [ | easy ].
+  rewrite NQsub_diag.
+  rewrite summation_empty; [ | flia Hin ].
+...
+  rewrite NQmul_0_r.
+  rewrite Nat.mul_0_r; simpl; flia.
 ...
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
 -rewrite <- summation_mul_distr_l.
