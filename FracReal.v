@@ -762,9 +762,10 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
   rewrite summation_empty; [ | flia Hin ].
   now rewrite NQmul_0_r.
 }
+apply Nat.nlt_ge in Hin.
 replace 1%NQ with (1 // 1)%NQ by now rewrite NQpair_diag.
-...
-rewrite NQsub_pair.
+rewrite NQsub_pair; [ | easy | now apply Nat.pow_nonzero ].
+do 2 rewrite Nat.mul_1_l.
 ...
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
 -rewrite <- summation_mul_distr_l.
