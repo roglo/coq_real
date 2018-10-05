@@ -771,8 +771,6 @@ replace (S (s - 1)) with s by flia Hs Hin.
 replace 1%NQ with (1 // 1)%NQ by now rewrite NQpair_diag.
 rewrite NQsub_pair; [ | easy | now apply Nat.pow_nonzero ].
 do 2 rewrite Nat.mul_1_l.
-Require Import GQ.
-Show.
 remember (rad ^ s ?= 1) as b1 eqn:Hb1; symmetry in Hb1.
 destruct b1.
 -apply Nat.compare_eq_iff in Hb1.
@@ -790,6 +788,12 @@ destruct b1.
  unfold "//"%NQ at 1.
  remember (rad ^ s - 1) as x eqn:Hx; symmetry in Hx.
  destruct x; [ flia Hb1 Hx | ].
+(**)
+rewrite <- Hx.
+Require Import GQ.
+Show.
+f_equal.
+...
  f_equal; apply GQeq_eq; simpl.
  rewrite <- PQred_mul.
  unfold "*"%PQ, PQmul_num1, PQmul_den1; simpl.
