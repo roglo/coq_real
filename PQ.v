@@ -16,6 +16,7 @@ Arguments PQnum1 x%PQ : rename.
 Arguments PQden1 x%PQ : rename.
 
 Notation "1" := (PQmake 0 0) : PQ_scope.
+Notation "2" := (PQmake 1 0) : PQ_scope.
 
 Definition nd x y := (PQnum1 x + 1) * (PQden1 y + 1).
 Definition PQone x := PQmake (PQden1 x) (PQden1 x).
