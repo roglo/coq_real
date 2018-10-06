@@ -18,6 +18,7 @@ Arguments NQneg p%GQ.
 
 Notation "0" := (NQ0) : NQ_scope.
 Notation "1" := (NQpos 1) : NQ_scope.
+Notation "2" := (NQpos 2) : NQ_scope.
 
 Definition NQ_of_nat n :=
   match n with
@@ -869,56 +870,80 @@ destruct ab as [| pab| pab]; [ | | now destruct a ].
    now apply GQadd_pair.
 Qed.
 
-Theorem NQsub_pair : ∀ a b c d,
-  b ≠ 0 → d ≠ 0 →
-  (a // b - c // d)%NQ =
-  match Nat.compare (a * d) (b * c) with
-  | Eq => 0%NQ
-  | Lt => NQneg ((b * c - a * d) // (b * d))
-  | Gt => NQpos ((a * d - b * c) // (b * d))
-  end.
+Theorem NQsub_pair_pos : ∀ a b c d,
+  b ≠ 0 → d ≠ 0 → b * c < a * d
+  → (a // b - c // d)%NQ = ((a * d - b * c) // (b * d))%NQ.
 Proof.
-intros * Hb Hd.
+intros * Hb Hd Hlt.
 destruct b; [ flia Hb | ].
 destruct d; [ flia Hd | ].
-unfold "-"%NQ, "+"%NQ.
+unfold "-"%NQ.
+destruct a; [ flia Hlt | ].
+remember (S a // S b)%NQ as ab eqn:Hab; symmetry in Hab.
+destruct ab as [| pab| pab]; [ easy | | easy ].
+injection Hab; clear Hab; intros Hab; subst pab.
+-remember (S a // S b)%NQ as ab eqn:Hab; symmetry in Hab.
+ destruct ab as [| pab| pab]; [ easy | | easy ].
+ injection Hab; clear Hab; intros Hab; subst pab.
+ destruct c.
+ +rewrite Nat.mul_0_r, Nat.sub_0_r.
+  rewrite <- NQmul_pair; [ | easy | easy ].
+  rewrite NQpair_diag; [ | easy ].
+  now rewrite NQmul_1_r.
+ +remember (S a) as sa; remember (S b) as sb; simpl; subst sa sb.
+  unfold "//"%NQ.
+  remember (S a * S d - S b * S c) as x eqn:Hx; symmetry in Hx.
+  destruct x; [ flia Hlt Hx | ].
+  remember (GQcompare (S a // S b) (S c // S d)) as b1 eqn:Hb1.
+  symmetry in Hb1.
+  destruct b1; GQcompare_iff.
+  *apply GQeq_pair in Hb1; [ flia Hlt Hb1 | easy | easy | easy | easy ].
+  *apply -> GQlt_pair in Hb1; [ | easy | easy | easy | easy ].
+   setoid_rewrite Nat.mul_comm in Hb1.
+   flia Hlt Hb1.
+  *f_equal.
+   setoid_rewrite Nat.mul_comm in Hlt.
+   rewrite GQsub_pair; try easy; [ now rewrite Hx | ].
+   now setoid_rewrite Nat.mul_comm.
+Qed.
+
+Theorem NQsub_pair_neg : ∀ a b c d,
+  b ≠ 0 → d ≠ 0 → a * d < b * c
+  → (a // b - c // d)%NQ = (- (b * c - a * d) // (b * d))%NQ.
+Proof.
+intros * Hb Hd Hlt.
+destruct b; [ flia Hb | ].
+destruct d; [ flia Hd | ].
+unfold "-"%NQ.
 destruct a.
 -destruct c; [ now rewrite Nat.mul_0_r | ].
  remember (S b) as x; simpl; subst x.
  rewrite Nat.sub_0_r.
  remember (S b * S c) as bc eqn:Hbc; symmetry in Hbc.
  destruct bc; [ easy | rewrite <- Hbc ].
- rewrite <- GQmul_pair; [ | easy | easy | easy | easy ].
- rewrite GQpair_diag; [ | easy ].
- now rewrite GQmul_1_l.
+ rewrite <- NQmul_pair; [ | easy | easy ].
+ rewrite NQpair_diag; [ | easy ].
+ now rewrite NQmul_1_l.
 -remember (S a // S b)%NQ as ab eqn:Hab; symmetry in Hab.
  destruct ab as [| pab| pab]; [ easy | | easy ].
  injection Hab; clear Hab; intros Hab; subst pab.
- unfold NQadd_pos_l.
- destruct c.
- +rewrite Nat.mul_0_r, Nat.sub_0_r.
-  remember (NQpos ((S a * S d) // (S b * S d))) as x; simpl; subst x.
-  rewrite <- GQmul_pair; [ | easy | easy | easy | easy ].
-  rewrite GQpair_diag; [ | easy ].
-  now rewrite GQmul_1_r.
- +remember (S a) as sa; remember (S b) as sb; simpl; subst sa sb.
-  remember (GQcompare (S a // S b) (S c // S d)) as b1 eqn:Hb1.
-  symmetry in Hb1.
-  destruct b1; GQcompare_iff.
-  *apply GQeq_pair in Hb1; [ | easy | easy | easy | easy ].
-   now rewrite Hb1, Nat.compare_refl.
-  *apply -> GQlt_pair in Hb1; [ | easy | easy | easy | easy ].
-   apply Nat.compare_lt_iff in Hb1; rewrite Hb1.
-   apply Nat.compare_lt_iff in Hb1.
-   setoid_rewrite Nat.mul_comm in Hb1.
-   rewrite GQsub_pair; try easy.
-   f_equal; f_equal; [ | apply Nat.mul_comm ].
-   f_equal; apply Nat.mul_comm.
-  *apply -> GQlt_pair in Hb1; [ | easy | easy | easy | easy ].
-   setoid_rewrite Nat.mul_comm in Hb1.
-   apply Nat.compare_gt_iff in Hb1; rewrite Hb1.
-   apply Nat.compare_gt_iff in Hb1.
-   now rewrite GQsub_pair.
+ destruct c; [ now rewrite Nat.mul_0_r in Hlt | ].
+ remember (S a) as sa; remember (S b) as sb; simpl; subst sa sb.
+ unfold "//"%NQ.
+ remember (S b * S c - S a * S d) as x eqn:Hx; symmetry in Hx.
+ destruct x; [ flia Hlt Hx | ].
+ remember (GQcompare (S a // S b) (S c // S d)) as b1 eqn:Hb1.
+ symmetry in Hb1.
+ destruct b1; GQcompare_iff.
+ *apply GQeq_pair in Hb1; [ flia Hlt Hb1 | easy | easy | easy | easy ].
+ *f_equal.
+  setoid_rewrite Nat.mul_comm in Hlt.
+  rewrite GQsub_pair; try easy.
+  rewrite <- Hx.
+  f_equal; [ f_equal; apply Nat.mul_comm | apply Nat.mul_comm ].
+ *apply -> GQlt_pair in Hb1; [ | easy | easy | easy | easy ].
+  setoid_rewrite Nat.mul_comm in Hb1.
+  flia Hlt Hb1.
 Qed.
 
 Definition NQfrac q :=

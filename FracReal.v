@@ -768,60 +768,32 @@ rewrite NQpower_summation; [ | flia Hr ].
 replace (n - 1 - (i + 1)) with (n - i - 1 - 1) by flia Hin.
 remember (n - i - 1) as s eqn:Hs.
 replace (S (s - 1)) with s by flia Hs Hin.
-clear.
-destruct (zerop s) as [Hs| Hs]; [ now subst s; rewrite NQmul_0_r | ].
-(* ça m'ennuie, la suite, parce que ça dépend de GQ et j'aurais
-   voulu que dans ce module, on ne voie que NQ, pas GQ *)
-...
-specialize radix_ge_2 as Hr.
 replace 1%NQ with (1 // 1)%NQ by now rewrite NQpair_diag.
-rewrite NQsub_pair; [ | easy | now apply Nat.pow_nonzero ].
+rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
+  apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | ].
+  apply lt_le_trans with (m := 2); [ apply Nat.lt_1_2 | ].
+  destruct s; [ flia Hs Hin | ].
+  simpl; replace 2 with (2 * 1) by easy.
+  apply Nat.mul_le_mono; [ easy | ].
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+}
 do 2 rewrite Nat.mul_1_l.
-remember (rad ^ s ?= 1) as b1 eqn:Hb1; symmetry in Hb1.
-destruct b1.
--apply Nat.compare_eq_iff in Hb1.
- now rewrite Hb1, Nat.sub_diag, NQmul_0_r.
--apply Nat.compare_lt_iff, Nat.lt_1_r in Hb1.
- now apply Nat.pow_nonzero in Hb1.
--apply Nat.compare_gt_iff in Hb1.
- remember (rad - 1) as y eqn:Hy.
- destruct y; [ flia Hy Hr | simpl ].
- unfold NQmul_pos_l; rewrite Hy.
- rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
- replace rad with (rad ^ 1) at 3 by apply Nat.pow_1_r.
- rewrite <- Nat.pow_add_r.
- rewrite Nat.sub_add; [ | flia Hs ].
- unfold "//"%NQ at 1.
- remember (rad ^ s - 1) as x eqn:Hx; symmetry in Hx.
- destruct x; [ flia Hb1 Hx | ].
-(**)
-rewrite <- Hx.
-Require Import GQ.
-Show.
-f_equal.
-...
- f_equal; apply GQeq_eq; simpl.
- rewrite <- PQred_mul.
- unfold "*"%PQ, PQmul_num1, PQmul_den1; simpl.
- rewrite Nat.sub_0_r.
- rewrite Nat.sub_add; [ | flia Hr ].
- rewrite Nat.sub_add; [ | flia Hr ].
- rewrite Nat.add_1_r, <- Hx.
- rewrite Nat.sub_add; cycle 1. {
-   replace s with (s - 1 + 1) at 1 by flia Hs Hin.
-   replace (rad ^ (s - 1)) with (rad ^ (s - 1) * 1) by flia.
-   rewrite Nat.pow_add_r, <- Nat.mul_sub_distr_l, Nat.pow_1_r.
-   apply Nat.neq_0_lt_0; intros H.
-   apply Nat.eq_mul_0 in H.
-   destruct H as [H| H]; [ | flia Hr H ].
-   now apply Nat.pow_nonzero in H.
- }
-...
- remember (rad ^ s - 1) as z.
- rewrite Nat.mul_sub_distr_l; subst z.
-
-...
-
+rewrite NQmul_pair; [ | easy | ]; cycle 1. {
+  intros H; apply Nat.eq_mul_0 in H.
+  destruct H as [H| H]; [ now apply Nat.pow_nonzero in H | flia Hr H ].
+}
+rewrite Nat.mul_assoc, Nat.mul_comm.
+rewrite <- NQmul_pair; [ | | flia Hr ]; cycle 1. {
+  replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+  rewrite <- Nat.pow_add_r.
+  now apply Nat.pow_nonzero.
+}
+rewrite NQpair_diag; [ | flia Hr ].
+rewrite NQmul_1_r.
+replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+rewrite <- Nat.pow_add_r.
+now replace (1 + (s - 1)) with s by flia Hs Hin.
+Qed.
 (*
 Theorem nA_all_9 {r : radix} : ∀ u i n,
   (∀ j, i + j + 1 < n → u (i + j + 1) = rad - 1)
@@ -851,6 +823,32 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
 Qed.
 *)
 
+(**)
+Theorem A_all_18 {r : radix} : ∀ u i n,
+  (∀ j, u (i + j + 1) = 2 * (rad - 1))
+  → A i n u = (2 - 2 // rad ^ (n - i - 1))%NQ.
+Proof.
+intros * Hj.
+...
+unfold nA.
+rewrite summation_eq_compat with (h := λ j, 2 * (rad - 1) * rad ^ (n - 1 - j)).
+-rewrite <- summation_mul_distr_l.
+ destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin].
+ +rewrite summation_shift; [ | easy ].
+  rewrite summation_rtl.
+  rewrite summation_eq_compat with (h := λ j, rad ^ j).
+  *rewrite <- Nat.mul_assoc.
+   rewrite <- power_summation_sub_1; [ | easy ].
+   f_equal; f_equal; f_equal; flia Hin.
+  *intros k Hk; f_equal; flia Hk.
+ +replace (n - i - 1) with 0 by flia Hin.
+  rewrite summation_empty; [ | flia Hin ].
+  rewrite Nat.mul_0_r; simpl; flia.
+-intros j Hij.
+ replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
+ now rewrite Hj.
+Qed.
+(*
 Theorem nA_all_18 {r : radix} : ∀ u i n,
   (∀ j, u (i + j + 1) = 2 * (rad - 1))
   → nA i n u = 2 * (rad ^ (n - i - 1) - 1).
@@ -874,6 +872,7 @@ rewrite summation_eq_compat with (h := λ j, 2 * (rad - 1) * rad ^ (n - 1 - j)).
  replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
  now rewrite Hj.
 Qed.
+*)
 
 Theorem nA_9_8_all_18 {r : radix} : ∀ j u i n,
   (∀ k, k < j → u (i + k + 1) = rad - 1)
