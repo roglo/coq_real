@@ -768,6 +768,12 @@ rewrite NQpower_summation; [ | flia Hr ].
 replace (n - 1 - (i + 1)) with (n - i - 1 - 1) by flia Hin.
 remember (n - i - 1) as s eqn:Hs.
 replace (S (s - 1)) with s by flia Hs Hin.
+clear.
+destruct (zerop s) as [Hs| Hs]; [ now subst s; rewrite NQmul_0_r | ].
+(* ça m'ennuie, la suite, parce que ça dépend de GQ et j'aurais
+   voulu que dans ce module, on ne voie que NQ, pas GQ *)
+...
+specialize radix_ge_2 as Hr.
 replace 1%NQ with (1 // 1)%NQ by now rewrite NQpair_diag.
 rewrite NQsub_pair; [ | easy | now apply Nat.pow_nonzero ].
 do 2 rewrite Nat.mul_1_l.
@@ -784,7 +790,7 @@ destruct b1.
  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
  replace rad with (rad ^ 1) at 3 by apply Nat.pow_1_r.
  rewrite <- Nat.pow_add_r.
- rewrite Nat.sub_add; [ | flia Hs Hin ].
+ rewrite Nat.sub_add; [ | flia Hs ].
  unfold "//"%NQ at 1.
  remember (rad ^ s - 1) as x eqn:Hx; symmetry in Hx.
  destruct x; [ flia Hb1 Hx | ].
