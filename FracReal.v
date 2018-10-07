@@ -988,14 +988,18 @@ destruct (zerop j) as [Hj| Hj].
     remember (n - i - 1) as m eqn:Hm; symmetry in Hm.
     destruct m; [ flia Hm Hin | ].
     destruct m; [ flia H1 | rewrite Nat.pow_succ_r' ].
-...
-    destruct rad as [| rr]; [ easy | ].
-    destruct rr; [ flia Hr | ].
-...
-    replace 2 with (1 * 2) at 1 by flia.
-    apply Nat.mul_lt_mono; [ easy | ].
-...
-    apply lt_le_trans with (m := 3).
+    apply (lt_le_trans _ 4); [ flia | ].
+    replace 4 with (2 * 2) by easy.
+    apply Nat.mul_le_mono; [ easy | simpl ].
+    replace 2 with (2 * 1) by easy.
+    apply Nat.mul_le_mono; [ easy | ].
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  }
+  do 2 rewrite Nat.mul_1_l.
+  rewrite Nat.mul_comm.
+  replace rad with (rad ^ 1) at 1 5 by apply Nat.pow_1_r.
+  rewrite <- Nat.pow_add_r.
+  replace (1 + (n - i)) with (n - i + 1) by apply Nat.add_comm.
 ...
 
  rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
