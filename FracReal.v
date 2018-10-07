@@ -863,40 +863,25 @@ rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 }
 do 2 rewrite Nat.mul_1_l.
-...
+rewrite NQmul_pair; [ | easy | easy ].
+rewrite Nat.mul_1_l.
 rewrite NQmul_pair; [ | easy | ]; cycle 1. {
   intros H; apply Nat.eq_mul_0 in H.
-  destruct H as [H| H]; [ now apply Nat.pow_nonzero in H | flia Hr H ].
+  destruct H as [H| H]; [ | flia Hr H ].
+  now apply Nat.pow_nonzero in H.
 }
-rewrite Nat.mul_assoc, Nat.mul_comm.
+rewrite Nat.mul_shuffle0, Nat.mul_assoc.
 rewrite <- NQmul_pair; [ | | flia Hr ]; cycle 1. {
-  replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
-  rewrite <- Nat.pow_add_r.
-  now apply Nat.pow_nonzero.
+  intros H; apply Nat.eq_mul_0 in H.
+  destruct H as [H| H]; [ flia Hr H | ].
+  now apply Nat.pow_nonzero in H.
 }
 rewrite NQpair_diag; [ | flia Hr ].
 rewrite NQmul_1_r.
 replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
 rewrite <- Nat.pow_add_r.
-now replace (1 + (s - 1)) with s by flia Hs Hin.
-Qed.
-...
-rewrite summation_eq_compat with (h := λ j, 2 * (rad - 1) * rad ^ (n - 1 - j)).
--rewrite <- summation_mul_distr_l.
- destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin].
- +rewrite summation_shift; [ | easy ].
-  rewrite summation_rtl.
-  rewrite summation_eq_compat with (h := λ j, rad ^ j).
-  *rewrite <- Nat.mul_assoc.
-   rewrite <- power_summation_sub_1; [ | easy ].
-   f_equal; f_equal; f_equal; flia Hin.
-  *intros k Hk; f_equal; flia Hk.
- +replace (n - i - 1) with 0 by flia Hin.
-  rewrite summation_empty; [ | flia Hin ].
-  rewrite Nat.mul_0_r; simpl; flia.
--intros j Hij.
- replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
- now rewrite Hj.
+replace (1 + (s - 1)) with s by flia Hs Hin.
+now rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
 Qed.
 (*
 Theorem nA_all_18 {r : radix} : ∀ u i n,
@@ -923,6 +908,8 @@ rewrite summation_eq_compat with (h := λ j, 2 * (rad - 1) * rad ^ (n - 1 - j)).
  now rewrite Hj.
 Qed.
 *)
+
+...
 
 Theorem nA_9_8_all_18 {r : radix} : ∀ j u i n,
   (∀ k, k < j → u (i + k + 1) = rad - 1)
