@@ -922,6 +922,67 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hbef Hwhi Haft.
+destruct (le_dec (i + j + 1) (n - 1)) as [Hin| Hin]; cycle 1. {
+  apply A_all_9.
+  intros k Hk.
+  apply Hbef; flia Hin Hk.
+}
+unfold A.
+rewrite summation_shift; [ | flia Hin ].
+...
+rewrite summation_eq_compat with
+    (h := λ j, (2 * (rad - 1) // rad * 1 // rad ^ j)%NQ); cycle 1. {
+  intros j Hij.
+  rewrite <- NQmul_assoc.
+  rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+  rewrite Nat.mul_1_r, Nat.add_shuffle0, Nat.mul_comm.
+  replace rad with (rad ^ 1) at 4 by apply Nat.pow_1_r.
+  rewrite <- Nat.pow_add_r.
+  replace (i + j + 1 - i) with (j + 1) by flia; f_equal.
+  rewrite Hj.
+  rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+  now rewrite Nat.mul_1_l.
+}
+rewrite <- summation_mul_distr_l.
+remember NQ_of_pair as f; simpl; subst f.
+rewrite NQpower_summation; [ | flia Hr ].
+replace (n - 1 - (i + 1)) with (n - i - 1 - 1) by flia Hin.
+remember (n - i - 1) as s eqn:Hs.
+replace (S (s - 1)) with s by flia Hs Hin.
+rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
+  rewrite Nat.mul_comm.
+  apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_2 | ].
+  apply lt_le_trans with (m := 2); [ apply Nat.lt_1_2 | ].
+  destruct s; [ flia Hs Hin | ].
+  simpl; replace 2 with (2 * 1) by easy.
+  apply Nat.mul_le_mono; [ easy | ].
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+}
+do 2 rewrite Nat.mul_1_l.
+rewrite NQmul_pair; [ | easy | easy ].
+rewrite Nat.mul_1_l.
+rewrite NQmul_pair; [ | easy | ]; cycle 1. {
+  intros H; apply Nat.eq_mul_0 in H.
+  destruct H as [H| H]; [ | flia Hr H ].
+  now apply Nat.pow_nonzero in H.
+}
+rewrite Nat.mul_shuffle0, Nat.mul_assoc.
+rewrite <- NQmul_pair; [ | | flia Hr ]; cycle 1. {
+  intros H; apply Nat.eq_mul_0 in H.
+  destruct H as [H| H]; [ flia Hr H | ].
+  now apply Nat.pow_nonzero in H.
+}
+rewrite NQpair_diag; [ | flia Hr ].
+rewrite NQmul_1_r.
+replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+rewrite <- Nat.pow_add_r.
+replace (1 + (s - 1)) with s by flia Hs Hin.
+now rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+...
+
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hbef Hwhi Haft.
 destruct (le_dec (i + j + 1) (n - 1)) as [H1| H1].
 ...
 -rewrite nA_split with (e := i + j + 2); [ | flia H1 ].
