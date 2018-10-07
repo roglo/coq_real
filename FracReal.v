@@ -833,26 +833,12 @@ specialize radix_ge_2 as Hr.
 unfold A.
 destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin]; cycle 1. {
   replace (n - i - 1) with 0 by flia Hin.
-  rewrite Nat.pow_0_r.
-  replace (2 // 1)%NQ with 2%NQ; cycle 1. {
-    simpl; f_equal.
-...
-(* pas le droit d'appeler un théorème de GQ *)
-    now apply GQ.GQeq_eq.
-  }
-  rewrite NQsub_diag.
+  rewrite Nat.pow_0_r, NQsub_diag.
   now rewrite summation_empty; [ | flia Hin ].
 }
-...
 rewrite summation_shift; [ | easy ].
 rewrite summation_eq_compat with
-    (h := λ j, ((rad - 1) // rad * 1 // rad ^ j)%NQ); cycle 1. {
-intros * Hj.
-unfold A.
-rewrite summation_shift.
-...
-rewrite summation_eq_compat with
-    (h := λ j, ((rad - 1) // rad * 1 // rad ^ j)%NQ); cycle 1. {
+    (h := λ j, (2 * (rad - 1) // rad * 1 // rad ^ j)%NQ); cycle 1. {
   intros j Hij.
 ...
 rewrite summation_eq_compat with (h := λ j, 2 * (rad - 1) * rad ^ (n - 1 - j)).

@@ -22,7 +22,11 @@ Definition GQ_of_nat n := GQmake (PQ_of_nat n) (Nat.gcd_1_r (n - 1 + 1)).
 Definition GQ_of_pair n d := GQ_of_PQ (PQ_of_pair n d).
 
 Notation "1" := (GQmake 1 (Nat.gcd_1_r (0 + 1))) : GQ_scope.
+(*
 Notation "2" := (GQmake 2 (Nat.gcd_1_r (0 + 2))) : GQ_scope.
+*)
+Notation "2" := (GQ_of_pair 2 1) : GQ_scope.
+(**)
 Notation "a // b" := (GQ_of_pair a b) (at level 32) : GQ_scope.
 
 Definition GQadd x y := GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
