@@ -848,16 +848,14 @@ rewrite summation_eq_compat with
   now rewrite Nat.mul_1_l.
 }
 rewrite <- summation_mul_distr_l.
-...
-
-remember NQ_of_pair as f; remember 1%NQ as x; simpl; subst f x.
+remember NQ_of_pair as f; simpl; subst f.
 rewrite NQpower_summation; [ | flia Hr ].
 replace (n - 1 - (i + 1)) with (n - i - 1 - 1) by flia Hin.
 remember (n - i - 1) as s eqn:Hs.
 replace (S (s - 1)) with s by flia Hs Hin.
-replace 1%NQ with (1 // 1)%NQ by now rewrite NQpair_diag.
 rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
-  apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | ].
+  rewrite Nat.mul_comm.
+  apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_2 | ].
   apply lt_le_trans with (m := 2); [ apply Nat.lt_1_2 | ].
   destruct s; [ flia Hs Hin | ].
   simpl; replace 2 with (2 * 1) by easy.
@@ -865,6 +863,7 @@ rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 }
 do 2 rewrite Nat.mul_1_l.
+...
 rewrite NQmul_pair; [ | easy | ]; cycle 1. {
   intros H; apply Nat.eq_mul_0 in H.
   destruct H as [H| H]; [ now apply Nat.pow_nonzero in H | flia Hr H ].
