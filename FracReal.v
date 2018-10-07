@@ -621,14 +621,13 @@ Qed.
 
 (**)
 Theorem A_split {r : radix} : ∀ e u i n,
-  i + 1 ≤ e ≤ n
+  i + 3 ≤ e + 2 ≤ n
   → A i n u = (A i e u + A (e - 1) n u * 1 // rad ^ (e - i - 1))%NQ.
 Proof.
 intros * Hin.
 unfold A.
-rewrite summation_split with (e0 := e).
+rewrite summation_split with (e0 := e - 1); [ | flia Hin ].
 ...
-
 rewrite summation_split with (e0 := e - 1); [ | easy ].
 remember (1 // rad ^ (e - i - 1))%NQ as rr; simpl; subst rr; f_equal.
 rewrite summation_mul_distr_r.
