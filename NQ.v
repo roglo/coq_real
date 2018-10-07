@@ -232,6 +232,9 @@ Qed.
 Theorem NQadd_0_l : ∀ x, (0 + x = x)%NQ.
 Proof. easy. Qed.
 
+Theorem NQadd_0_r : ∀ x, (x + 0 = x)%NQ.
+Proof. intros; now rewrite NQadd_comm. Qed.
+
 Theorem NQadd_swap_lemma1 : ∀ px py pz,
   match GQcompare (px + py) pz with
   | Eq => 0%NQ
@@ -725,6 +728,13 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
  destruct b; GQcompare_iff; [ easy | | ].
  +now f_equal; apply GQmul_sub_distr_l.
  +now f_equal; apply GQmul_sub_distr_l.
+Qed.
+
+Theorem NQmul_sub_distr_r : ∀ x y z, ((x - y) * z = x * z - y * z)%NQ.
+Proof.
+intros.
+setoid_rewrite NQmul_comm.
+apply NQmul_sub_distr_l.
 Qed.
 
 Theorem NQle_pair : ∀ x y z t,
