@@ -16,10 +16,6 @@ Inductive NQ :=
 Arguments NQpos p%GQ.
 Arguments NQneg p%GQ.
 
-Notation "0" := (NQ0) : NQ_scope.
-Notation "1" := (NQpos 1) : NQ_scope.
-Notation "2" := (NQpos 2) : NQ_scope.
-
 Definition NQ_of_nat n :=
   match n with
   | 0 => NQ0
@@ -33,6 +29,10 @@ Definition NQ_of_pair n d :=
   end.
 
 Notation "a // b" := (NQ_of_pair a b) (at level 32) : NQ_scope.
+
+Notation "0" := (0 // 1)%NQ : NQ_scope.
+Notation "1" := (1 // 1)%NQ : NQ_scope.
+Notation "2" := (2 // 1)%NQ : NQ_scope.
 
 Definition NQcompare x y :=
   match x with
@@ -194,7 +194,7 @@ Theorem NQmatch_match_comp : ∀ A c p q (f0 : A) fp fn,
     | Gt => NQpos q
     end
   with
-  | 0%NQ => f0
+  | NQ0 => f0
   | NQpos px => fp px
   | NQneg px => fn px
   end =
@@ -806,13 +806,15 @@ Theorem NQpair_diag : ∀ a, a ≠ 0 → (a // a = 1)%NQ.
 Proof.
 intros.
 unfold "//"%NQ.
-destruct a; [ easy | now rewrite GQpair_diag ].
+destruct a; [ easy | ].
+rewrite GQpair_diag; [ now rewrite GQpair_diag | easy ].
 Qed.
 
 Theorem NQmul_1_l : ∀ a, (1 * a)%NQ = a.
 Proof.
 intros.
 unfold "*"%NQ; simpl.
+rewrite GQpair_diag; [ | easy ].
 unfold NQmul_pos_l.
 destruct a; [ easy | | ]; now rewrite GQmul_1_l.
 Qed.

@@ -705,7 +705,6 @@ apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
  }
  rewrite NQpair_diag; [ rewrite NQmul_1_r | flia Hr ].
  rewrite <- Nat.pow_succ_r'.
- replace 1%NQ with (1 // 1)%NQ by now rewrite NQpair_diag.
  apply NQlt_pair; [ now apply Nat.pow_nonzero | easy | ].
  do 2 rewrite Nat.mul_1_r.
  apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
@@ -747,8 +746,7 @@ specialize radix_ge_2 as Hr.
 unfold A.
 destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin]; cycle 1. {
   replace (n - i - 1) with 0 by flia Hin.
-  rewrite Nat.pow_0_r, NQpair_diag; [ | easy ].
-  rewrite NQsub_diag.
+  rewrite Nat.pow_0_r, NQsub_diag.
   now rewrite summation_empty; [ | flia Hin ].
 }
 rewrite summation_shift; [ | easy ].
@@ -768,7 +766,6 @@ rewrite NQpower_summation; [ | flia Hr ].
 replace (n - 1 - (i + 1)) with (n - i - 1 - 1) by flia Hin.
 remember (n - i - 1) as s eqn:Hs.
 replace (S (s - 1)) with s by flia Hs Hin.
-replace 1%NQ with (1 // 1)%NQ by now rewrite NQpair_diag.
 rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
   apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | ].
   apply lt_le_trans with (m := 2); [ apply Nat.lt_1_2 | ].
@@ -840,6 +837,50 @@ rewrite summation_shift; [ | easy ].
 rewrite summation_eq_compat with
     (h := λ j, (2 * (rad - 1) // rad * 1 // rad ^ j)%NQ); cycle 1. {
   intros j Hij.
+  rewrite <- NQmul_assoc.
+  rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+  rewrite Nat.mul_1_r, Nat.add_shuffle0, Nat.mul_comm.
+  replace rad with (rad ^ 1) at 4 by apply Nat.pow_1_r.
+  rewrite <- Nat.pow_add_r.
+  replace (i + j + 1 - i) with (j + 1) by flia; f_equal.
+  rewrite Hj.
+  rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+  now rewrite Nat.mul_1_l.
+}
+rewrite <- summation_mul_distr_l.
+...
+
+remember NQ_of_pair as f; remember 1%NQ as x; simpl; subst f x.
+rewrite NQpower_summation; [ | flia Hr ].
+replace (n - 1 - (i + 1)) with (n - i - 1 - 1) by flia Hin.
+remember (n - i - 1) as s eqn:Hs.
+replace (S (s - 1)) with s by flia Hs Hin.
+replace 1%NQ with (1 // 1)%NQ by now rewrite NQpair_diag.
+rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
+  apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | ].
+  apply lt_le_trans with (m := 2); [ apply Nat.lt_1_2 | ].
+  destruct s; [ flia Hs Hin | ].
+  simpl; replace 2 with (2 * 1) by easy.
+  apply Nat.mul_le_mono; [ easy | ].
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+}
+do 2 rewrite Nat.mul_1_l.
+rewrite NQmul_pair; [ | easy | ]; cycle 1. {
+  intros H; apply Nat.eq_mul_0 in H.
+  destruct H as [H| H]; [ now apply Nat.pow_nonzero in H | flia Hr H ].
+}
+rewrite Nat.mul_assoc, Nat.mul_comm.
+rewrite <- NQmul_pair; [ | | flia Hr ]; cycle 1. {
+  replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+  rewrite <- Nat.pow_add_r.
+  now apply Nat.pow_nonzero.
+}
+rewrite NQpair_diag; [ | flia Hr ].
+rewrite NQmul_1_r.
+replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+rewrite <- Nat.pow_add_r.
+now replace (1 + (s - 1)) with s by flia Hs Hin.
+Qed.
 ...
 rewrite summation_eq_compat with (h := λ j, 2 * (rad - 1) * rad ^ (n - 1 - j)).
 -rewrite <- summation_mul_distr_l.
