@@ -621,6 +621,26 @@ Qed.
 
 (**)
 Theorem A_split {r : radix} : ∀ e u i n,
+  i + 1 ≤ e ≤ n
+  → A i n u = (A i e u + A (e - 1) n u * 1 // rad ^ (e - i - 1))%NQ.
+Proof.
+intros * Hin.
+unfold A.
+rewrite summation_split with (e0 := e).
+...
+
+rewrite summation_split with (e0 := e - 1); [ | easy ].
+remember (1 // rad ^ (e - i - 1))%NQ as rr; simpl; subst rr; f_equal.
+rewrite summation_mul_distr_r.
+replace (e - 1 + 1) with (S (e - 1)) by flia.
+apply summation_eq_compat.
+intros j Hj.
+rewrite NQmul_pair; try now apply Nat.pow_nonzero.
+rewrite Nat.mul_1_r; f_equal.
+rewrite <- Nat.pow_add_r; f_equal.
+flia Hj Hin.
+Qed.
+Theorem A_split {r : radix} : ∀ e u i n,
   i + 1 ≤ e - 1 ≤ n - 1
   → A i n u = (A i e u + A (e - 1) n u * 1 // rad ^ (e - i - 1))%NQ.
 Proof.
@@ -929,6 +949,7 @@ destruct (le_dec (i + j + 1) (n - 1)) as [Hin| Hin]; cycle 1. {
 }
 rewrite A_split with (e := i + j + 2); [ | flia Hin ].
 replace (i + j + 2 - 1) with (i + j + 1) by flia.
+(*
 destruct (zerop j) as [Hj| Hj].
 -subst j; clear Hbef.
  rewrite Nat.add_0_r in Hin, Haft, Hwhi |-*.
@@ -1006,7 +1027,11 @@ destruct (zerop j) as [Hj| Hj].
   rewrite <- NQmul_pair. 2, 3: now apply Nat.pow_nonzero.
   rewrite NQpair_diag; [ | now apply Nat.pow_nonzero ].
   now rewrite NQmul_1_r.
--idtac.
+-rewrite A_split with (e := i + j + 1); cycle 1. {
+*)
+Check A_split.
+rewrite A_split with (e := i + j + 1); cycle 1. {
+
 ...
 (*
 Theorem nA_9_8_all_18 {r : radix} : ∀ j u i n,
