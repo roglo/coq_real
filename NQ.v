@@ -484,6 +484,13 @@ destruct x as [| px| px]; [ easy | | ]; simpl.
 -now rewrite GQcompare_diag.
 Qed.
 
+Theorem NQsub_add : ∀ a b, (a - b + b)%NQ = a.
+Proof.
+intros.
+rewrite NQadd_add_swap, <- NQadd_assoc.
+now rewrite NQsub_diag, NQadd_0_r.
+Qed.
+
 Theorem NQle_trans: ∀ x y z, (x ≤ y)%NQ → (y ≤ z)%NQ → (x ≤ z)%NQ.
 Proof.
 intros * Hxy Hyz.

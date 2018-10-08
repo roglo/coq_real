@@ -929,86 +929,6 @@ destruct (le_dec (i + j + 1) (n - 1)) as [Hin| Hin]; cycle 1. {
 }
 rewrite A_split with (e := i + j + 2); [ | flia Hin ].
 replace (i + j + 2 - 1) with (i + j + 1) by flia.
-(*
-destruct (zerop j) as [Hj| Hj].
--subst j; clear Hbef.
- rewrite Nat.add_0_r in Hin, Haft, Hwhi |-*.
- unfold A at 1.
- replace (i + 2 - 1) with (i + 1) by flia.
- replace (i + 2 - i - 1) with 1 by flia.
- rewrite Nat.pow_1_r.
- rewrite summation_only_one, Hwhi.
- rewrite A_all_18; cycle 1. {
-   intros j.
-   replace (i + 1 + j + 1) with (i + j + 2) by flia.
-   apply Haft.
- }
- replace (n - (i + 1) - 1) with (n - i - 2) by flia.
- replace (i + 1 - i) with 1 by flia.
- rewrite Nat.pow_1_r.
- rewrite NQmul_sub_distr_r.
- rewrite NQmul_pair; [ | easy | easy ].
- rewrite Nat.mul_1_r, Nat.mul_1_l.
- rewrite NQmul_pair; [ | now apply Nat.pow_nonzero | easy ].
- rewrite Nat.mul_1_r.
- replace rad with (rad ^ 1) at 5 by apply Nat.pow_1_r.
- rewrite <- Nat.pow_add_r.
- replace (n - i - 2 + 1) with (n - i - 1) by flia Hin.
- destruct (eq_nat_dec (n - i - 1) 1) as [H1| H1].
- +rewrite H1, Nat.pow_1_r.
-  rewrite NQsub_diag, NQadd_0_r.
-  destruct (eq_nat_dec rad 2) as [H2| H2]; [ now rewrite H2 | ].
-  rewrite NQsub_pair_pos; [ | easy | easy | ]; cycle 1. {
-    apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | flia Hr H2 ].
-  }
-  now do 2 rewrite Nat.mul_1_l.
- +rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
-    rewrite Nat.mul_comm.
-    apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_2 | ].
-    replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
-    apply Nat.pow_lt_mono_r; [ easy | flia Hin H1 ].
-  }
-  replace rad with (rad ^ 1) at 5 by apply Nat.pow_1_r.
-  rewrite <- Nat.pow_add_r.
-  rewrite NQadd_pair; [ | easy | now apply Nat.pow_nonzero ].
-  rewrite Nat.mul_sub_distr_l.
-  rewrite Nat.mul_assoc, Nat.mul_shuffle0.
-  replace rad with (rad ^ 1) at 3 by apply Nat.pow_1_r.
-  rewrite <- Nat.pow_add_r.
-  replace (1 + (n - i - 1)) with (n - i) by flia Hin.
-  rewrite Nat.add_sub_assoc; cycle 1. {
-    rewrite Nat.mul_assoc.
-    apply Nat.mul_le_mono_r.
-    replace (rad * rad) with (rad ^ 2) by now simpl; rewrite Nat.mul_1_r.
-    apply Nat.pow_le_mono_r; [ easy | flia Hin H1 ].
-  }
-  rewrite Nat.mul_comm, Nat.mul_sub_distr_l.
-  rewrite Nat.sub_add; [ | now apply Nat.mul_le_mono_l ].
-  rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
-    apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | ].
-    remember (n - i - 1) as m eqn:Hm; symmetry in Hm.
-    destruct m; [ flia Hm Hin | ].
-    destruct m; [ flia H1 | rewrite Nat.pow_succ_r' ].
-    apply (lt_le_trans _ 4); [ flia | ].
-    replace 4 with (2 * 2) by easy.
-    apply Nat.mul_le_mono; [ easy | simpl ].
-    replace 2 with (2 * 1) by easy.
-    apply Nat.mul_le_mono; [ easy | ].
-    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-  }
-  do 2 rewrite Nat.mul_1_l.
-  rewrite Nat.mul_comm.
-  replace rad with (rad ^ 1) at 1 5 by apply Nat.pow_1_r.
-  rewrite <- Nat.pow_add_r.
-  replace (1 + (n - i)) with (n - i - 1 + 2) by flia Hin.
-  rewrite Nat.pow_add_r.
-  replace (rad * (rad * 2)) with (2 * rad ^ 2) by (simpl; flia).
-  rewrite <- Nat.mul_sub_distr_r.
-  rewrite <- NQmul_pair. 2, 3: now apply Nat.pow_nonzero.
-  rewrite NQpair_diag; [ | now apply Nat.pow_nonzero ].
-  now rewrite NQmul_1_r.
--rewrite A_split with (e := i + j + 1); cycle 1. {
-*)
 rewrite A_split with (e := i + j + 1); [ | flia Hin ].
 rewrite A_all_9; [ | intros k Hk; apply Hbef; flia Hk ].
 unfold A at 1.
@@ -1051,19 +971,12 @@ destruct j.
  rewrite <- NQmul_pair; try now apply Nat.pow_nonzero.
  remember 1%NQ as one; rewrite NQpair_diag; [ | now apply Nat.pow_nonzero ].
  subst one; rewrite NQmul_1_l.
-...
- -rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
-   apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | ].
-   apply (Nat.lt_le_trans _ 2); [ apply Nat.lt_1_2 | ].
-   simpl; replace 2 with (2 * 1) by apply Nat.mul_1_r.
-   apply Nat.mul_le_mono; [ easy | ].
-   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
- }
- do 2 rewrite Nat.mul_1_l.
-...
- rewrite NQadd_pair; try now apply Nat.pow_nonzero.
-
-...
+ remember (S j) as x; rewrite Nat.pow_succ_r'; subst x.
+ replace rad with (rad * 1) at 2 by apply Nat.mul_1_r.
+ rewrite <- NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+ remember 1%NQ as one; rewrite NQpair_diag; [ subst one | easy ].
+ now rewrite NQmul_1_l, NQsub_add.
+Qed.
 (*
 Theorem nA_9_8_all_18 {r : radix} : ∀ j u i n,
   (∀ k, k < j → u (i + k + 1) = rad - 1)
@@ -1140,6 +1053,8 @@ destruct (le_dec (i + j + 1) (n - 1)) as [H1| H1].
  apply Hbef; flia H1 Hk.
 Qed.
 *)
+
+...
 
 Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
   let n := min_n i k in
