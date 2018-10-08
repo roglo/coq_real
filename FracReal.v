@@ -621,16 +621,11 @@ Qed.
 
 (**)
 Theorem A_split {r : radix} : ∀ e u i n,
-  i + 1 ≤ e - 1 ≤ n - 1
+  i + 1 ≤ e ≤ n
   → A i n u = (A i e u + A (e - 1) n u * 1 // rad ^ (e - i - 1))%NQ.
 Proof.
 intros * Hin.
 unfold A.
-...
-rewrite summation_split with (e0 := e - 1).
-2: split; [ flia Hin | ].
-
-...
 rewrite summation_split with (e0 := e - 1); [ | flia Hin ].
 remember (1 // rad ^ (e - i - 1))%NQ as rr; simpl; subst rr; f_equal.
 rewrite summation_mul_distr_r.
@@ -932,9 +927,6 @@ destruct (le_dec (i + j + 1) (n - 1)) as [Hin| Hin]; cycle 1. {
   intros k Hk.
   apply Hbef; flia Hin Hk.
 }
-rewrite A_split with (e := i + j + 2).
-2: split; [ flia Hin | ].
-...
 rewrite A_split with (e := i + j + 2); [ | flia Hin ].
 replace (i + j + 2 - 1) with (i + j + 1) by flia.
 (*
@@ -1017,9 +1009,22 @@ destruct (zerop j) as [Hj| Hj].
   now rewrite NQmul_1_r.
 -rewrite A_split with (e := i + j + 1); cycle 1. {
 *)
-Check A_split.
-rewrite A_split with (e := i + j + 1); cycle 1. {
-
+rewrite A_split with (e := i + j + 1); [ | flia Hin ].
+rewrite A_all_9; [ | intros k Hk; apply Hbef; flia Hk ].
+unfold A at 1.
+rewrite Nat.add_sub.
+replace (i + j + 2 - 1) with (i + j + 1) by flia.
+rewrite summation_only_one, Hwhi.
+rewrite A_all_18; cycle 1. {
+  intros k.
+  replace (i + j + 1 + k + 1) with (i + j + k + 2) by flia.
+  apply Haft.
+}
+replace (i + j + 1 - i - 1) with j by flia.
+replace (i + j + 1 - (i + j)) with 1 by flia.
+rewrite Nat.pow_1_r.
+replace (n - (i + j + 1) - 1) with (n - i - j - 2) by flia.
+replace (i + j + 2 - i - 1) with (j + 1) by flia.
 ...
 (*
 Theorem nA_9_8_all_18 {r : radix} : ∀ j u i n,
