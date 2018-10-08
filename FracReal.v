@@ -1116,7 +1116,7 @@ Qed.
 (**)
 Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j k n,
   (∀ k, u (S i + k) < rad)
-  → ((rad ^ S j - 1) // rad ^ S j ≤ A i n u)%NQ
+  → (1 - 1 // rad ^ S j ≤ A i n u)%NQ
   → S j ≤ n - i - 1
   → i + 1 ≤ k ≤ i + j + 1
   → u k = rad - 1.
@@ -1135,10 +1135,11 @@ assert (Hsz : rad ^ s ≠ 0) by now subst s; apply Nat.pow_nonzero.
 apply Nat.div_le_mono with (c := rad ^ s) in HnA; [ | easy ].
 rewrite Nat.div_mul in HnA; [ | easy ].
 *)
+...
 assert (H : A i n u = A i (i + j + 2) u). {
   rewrite A_split with (e := i + j + 2) at 1; [ | flia Hs Hj ].
-  remember (A i (i + j + 2)) as x eqn:Hx.
-  replace (i + j + 2 - 1) with (i + j + 1) by flia.
+  remember (A i (i + j + 2) u) as x eqn:Hx.
+  replace (i + j + 2 - 1) with (i + j + 1) by flia; subst x.
 ...
 
 assert (H : A i n u * rad ^ S j / rad ^ s = A i (i + j + 2) u). {
