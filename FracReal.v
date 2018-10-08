@@ -1025,6 +1025,44 @@ replace (i + j + 1 - (i + j)) with 1 by flia.
 rewrite Nat.pow_1_r.
 replace (n - (i + j + 1) - 1) with (n - i - j - 2) by flia.
 replace (i + j + 2 - i - 1) with (j + 1) by flia.
+rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+rewrite Nat.mul_1_r.
+rewrite NQmul_sub_distr_r.
+rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+rewrite Nat.mul_1_r, Nat.mul_1_l.
+rewrite <- Nat.pow_succ_r', Nat.add_1_r.
+rewrite NQmul_pair; try now apply Nat.pow_nonzero.
+rewrite Nat.mul_1_r.
+rewrite <- Nat.pow_add_r.
+replace (n - i - j - 2 + S j) with (n - i - 1) by flia Hin.
+rewrite NQadd_assoc; f_equal.
+destruct j.
+-rewrite Nat.pow_0_r, NQsub_diag, NQadd_0_l, Nat.pow_1_r.
+ rewrite NQadd_pair; [ | easy | easy ].
+ rewrite Nat.mul_sub_distr_r.
+ replace (2 * rad) with (rad * 2) by apply Nat.mul_comm.
+ rewrite Nat.sub_add; [ | now apply Nat.mul_le_mono_l ].
+ apply NQpair_diag.
+ intros H; apply Nat.eq_mul_0 in H; flia Hr H.
+-rewrite <- NQadd_assoc.
+ rewrite NQadd_pair; try now apply Nat.pow_nonzero.
+ rewrite Nat.mul_comm, Nat.mul_sub_distr_l.
+ rewrite Nat.sub_add; [ | now apply Nat.mul_le_mono_l ].
+ rewrite <- NQmul_pair; try now apply Nat.pow_nonzero.
+ remember 1%NQ as one; rewrite NQpair_diag; [ | now apply Nat.pow_nonzero ].
+ subst one; rewrite NQmul_1_l.
+...
+ -rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
+   apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | ].
+   apply (Nat.lt_le_trans _ 2); [ apply Nat.lt_1_2 | ].
+   simpl; replace 2 with (2 * 1) by apply Nat.mul_1_r.
+   apply Nat.mul_le_mono; [ easy | ].
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+ }
+ do 2 rewrite Nat.mul_1_l.
+...
+ rewrite NQadd_pair; try now apply Nat.pow_nonzero.
+
 ...
 (*
 Theorem nA_9_8_all_18 {r : radix} : ∀ j u i n,
