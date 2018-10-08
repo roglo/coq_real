@@ -1122,19 +1122,27 @@ Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j k n,
   → u k = rad - 1.
 Proof.
 intros * Hu HA Hj Hk.
-(*
-apply Nat.mul_le_mono_pos_r with (p := rad ^ S j) in HA.
-2: now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-rewrite <- Nat.mul_assoc in HA.
-rewrite <- Nat.pow_add_r in HnA.
-rewrite Nat.sub_add in HnA; [ | easy ].
-*)
 remember (n - i - 1) as s eqn:Hs.
-(*
-assert (Hsz : rad ^ s ≠ 0) by now subst s; apply Nat.pow_nonzero.
-apply Nat.div_le_mono with (c := rad ^ s) in HnA; [ | easy ].
-rewrite Nat.div_mul in HnA; [ | easy ].
-*)
+rewrite (A_split (i + j + 2)) in HA; [ | flia Hs Hj ].
+unfold A at 1 in HA.
+rewrite summation_shift in HA; [ | flia Hj ].
+replace (i + j + 2 - 1 - (i + 1)) with j in HA by flia Hj.
+rewrite summation_eq_compat with
+    (h := λ k, (u (i + 1 + k)%nat // rad ^ (S k))%NQ) in HA; cycle 1. {
+  intros p Hp.
+  replace (j - (j + 0 - p)) with p by flia Hp; f_equal.
+  f_equal; flia Hp.
+}
+Check power_summation_sub_1.
+Check NQpower_summation.
+...
+rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
+  in HnA.
+-rewrite power_summation_sub_1 in HnA; [ | easy ].
+
+replace (i + j + 2 - 1) with (i + j + 1) in HA by flia.
+replace (i + j + 2 - i - 1) with (S j) in HA by flia.
+apply (NQle_trans (A i (i + j + 2) u)) in HA.
 ...
 assert (H : A i n u = A i (i + j + 2) u). {
   rewrite A_split with (e := i + j + 2) at 1; [ | flia Hs Hj ].
@@ -1142,7 +1150,7 @@ assert (H : A i n u = A i (i + j + 2) u). {
   replace (i + j + 2 - 1) with (i + j + 1) by flia; subst x.
 ...
 
-assert (H : A i n u * rad ^ S j / rad ^ s = A i (i + j + 2) u). {
+assert (H : nA i n u * rad ^ S j / rad ^ s = nA i (i + j + 2) u). {
 (**)
   replace s with (s - S j + S j) by flia Hj.
   rewrite Nat.pow_add_r.
