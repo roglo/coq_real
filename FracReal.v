@@ -1054,8 +1054,20 @@ destruct (le_dec (i + j + 1) (n - 1)) as [H1| H1].
 Qed.
 *)
 
-...
-
+Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
+  let n := min_n i k in
+  let s := n - i - 1 in
+  fA_ge_1_ε u i k = false ↔ (NQfrac (A i n u) < 1 - 1 // rad ^ S k)%NQ.
+Proof.
+intros.
+unfold fA_ge_1_ε.
+fold n s.
+set (t := rad ^ (s - S k)).
+destruct (NQlt_le_dec (NQfrac (A i n u)) (1 - 1 // rad ^ S k)%NQ) as [H1| H1].
+-easy.
+-split; [ easy | intros H; now apply NQnle_gt in H ].
+Qed.
+(*
 Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
   let n := min_n i k in
   let s := n - i - 1 in
@@ -1068,7 +1080,23 @@ fold n s.
 set (t := rad ^ (s - S k)).
 now destruct (lt_dec (nA i n u mod rad ^ s) ((rad ^ S k - 1) * t)).
 Qed.
+*)
 
+(**)
+Theorem A_ge_1_true_iff {r : radix} : ∀ i u k,
+  let n := min_n i k in
+  let s := n - i - 1 in
+  fA_ge_1_ε u i k = true ↔ (NQfrac (A i n u) ≥ 1 - 1 // rad ^ S k)%NQ.
+Proof.
+intros.
+unfold fA_ge_1_ε.
+fold n s.
+set (t := rad ^ (s - S k)).
+destruct (NQlt_le_dec (NQfrac (A i n u)) (1 - 1 // rad ^ S k)%NQ) as [H1| H1].
+-split; [ easy | intros H; now apply NQnle_gt in H ].
+-easy.
+Qed.
+(*
 Theorem A_ge_1_true_iff {r : radix} : ∀ i u k,
   let n := min_n i k in
   let s := n - i - 1 in
@@ -1083,6 +1111,9 @@ destruct (lt_dec (nA i n u mod rad ^ s) ((rad ^ S k - 1) * t)) as [H1| H1].
 -now split; [ | apply Nat.nle_gt in H1 ].
 -now split; [ apply Nat.nlt_ge in H1 | ].
 Qed.
+*)
+
+...
 
 Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j k n,
   (∀ k, u (S i + k) < rad)

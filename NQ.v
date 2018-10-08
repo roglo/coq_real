@@ -235,6 +235,22 @@ Proof. easy. Qed.
 Theorem NQadd_0_r : ∀ x, (x + 0 = x)%NQ.
 Proof. intros; now rewrite NQadd_comm. Qed.
 
+Theorem NQnle_gt : ∀ x y, ¬ (x ≤ y)%NQ ↔ (y < x)%NQ.
+Proof.
+intros.
+destruct x as [| xp| xp], y as [| yp| yp]; try now simpl.
+-apply GQnle_gt.
+-apply GQnle_gt.
+Qed.
+
+Theorem NQnlt_ge : ∀ x y, ¬ (x < y)%NQ ↔ (y ≤ x)%NQ.
+Proof.
+intros.
+destruct x as [| xp| xp], y as [| yp| yp]; try now simpl.
+-apply GQnlt_ge.
+-apply GQnlt_ge.
+Qed.
+
 Theorem NQadd_swap_lemma1 : ∀ px py pz,
   match GQcompare (px + py) pz with
   | Eq => 0%NQ
