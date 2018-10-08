@@ -626,7 +626,10 @@ Theorem A_split {r : radix} : ∀ e u i n,
 Proof.
 intros * Hin.
 unfold A.
+...
 rewrite summation_split with (e0 := e - 1).
+2: split; [ flia Hin | ].
+
 ...
 rewrite summation_split with (e0 := e - 1); [ | flia Hin ].
 remember (1 // rad ^ (e - i - 1))%NQ as rr; simpl; subst rr; f_equal.
