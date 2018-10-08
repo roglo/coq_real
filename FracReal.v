@@ -1113,8 +1113,155 @@ destruct (lt_dec (nA i n u mod rad ^ s) ((rad ^ S k - 1) * t)) as [H1| H1].
 Qed.
 *)
 
+(**)
+Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j k n,
+  (∀ k, u (S i + k) < rad)
+  → ((rad ^ S j - 1) // rad ^ S j ≤ A i n u)%NQ
+  → S j ≤ n - i - 1
+  → i + 1 ≤ k ≤ i + j + 1
+  → u k = rad - 1.
+Proof.
+intros * Hu HA Hj Hk.
+(*
+apply Nat.mul_le_mono_pos_r with (p := rad ^ S j) in HA.
+2: now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+rewrite <- Nat.mul_assoc in HA.
+rewrite <- Nat.pow_add_r in HnA.
+rewrite Nat.sub_add in HnA; [ | easy ].
+*)
+remember (n - i - 1) as s eqn:Hs.
+(*
+assert (Hsz : rad ^ s ≠ 0) by now subst s; apply Nat.pow_nonzero.
+apply Nat.div_le_mono with (c := rad ^ s) in HnA; [ | easy ].
+rewrite Nat.div_mul in HnA; [ | easy ].
+*)
+assert (H : A i n u = A i (i + j + 2) u). {
+  rewrite A_split with (e := i + j + 2) at 1; [ | flia Hs Hj ].
+  remember (A i (i + j + 2)) as x eqn:Hx.
+  replace (i + j + 2 - 1) with (i + j + 1) by flia.
 ...
 
+assert (H : A i n u * rad ^ S j / rad ^ s = A i (i + j + 2) u). {
+(**)
+  replace s with (s - S j + S j) by flia Hj.
+  rewrite Nat.pow_add_r.
+  rewrite Nat.div_mul_cancel_r; try now apply Nat.pow_nonzero.
+  replace (s - S j) with (n - i - j - 2) by flia Hs.
+  unfold nA at 1.
+  rewrite summation_split with (e := i + j + 1); [ | flia Hs Hj ].
+  simpl; unfold nA.
+  replace (i + j + 2 - 1) with (i + j + 1) by flia.
+  rewrite summation_eq_compat with
+      (h := λ k, u k * rad ^ (i + j + 1 - k) * rad ^ (n - i - j - 2)).
+  -rewrite <- summation_mul_distr_r; simpl.
+   rewrite Nat.add_comm.
+   rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
+   rewrite Nat.div_small; [ easy | ].
+   remember (n - i - j - 2) as m eqn:Hm.
+   symmetry in Hm.
+   destruct m.
+   +rewrite summation_empty; [ | flia Hj Hm ].
+    now apply Nat_pow_ge_1.
+   +rewrite power_summation; [ | easy ].
+    rewrite summation_mul_distr_l; simpl.
+    rewrite summation_shift; [ | flia Hm ].
+    replace (n - 1 - S (i + j + 1)) with m by flia Hm.
+    apply -> Nat.succ_le_mono.
+    rewrite summation_rtl.
+    rewrite summation_eq_compat with
+       (h := λ k, u (S (i + j + 1 + m - k)) * rad ^ k).
+    *apply (@summation_le_compat nat_ord_ring_def).
+     intros p Hp; simpl; unfold Nat.le.
+     apply Nat.mul_le_mono_r.
+     specialize (Hu (j + 1 + m - p)); simpl in Hu.
+     rewrite Nat.add_sub_assoc in Hu; [ | flia Hp ].
+     do 2 rewrite Nat.add_assoc in Hu.
+     flia Hu.
+    *intros p Hp.
+     f_equal; f_equal; [ flia Hp | flia Hm Hp ].
+  -intros p Hp.
+   rewrite <- Nat.mul_assoc; f_equal.
+   rewrite <- Nat.pow_add_r; f_equal.
+   flia Hs Hj Hp.
+}
+rewrite H in HnA; clear H.
+unfold nA at 1 in HnA.
+rewrite summation_shift in HnA; [ | flia Hj ].
+replace (i + j + 2 - 1 - (i + 1)) with j in HnA by flia Hj.
+rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
+  in HnA.
+-rewrite power_summation_sub_1 in HnA; [ | easy ].
+ rewrite summation_mul_distr_l in HnA.
+ remember (S j) as sj; simpl in HnA; subst sj.
+ remember (Σ (i = 0, j), (rad - 1) * rad ^ i) as x.
+ rewrite summation_rtl in Heqx.
+ rewrite Nat.add_0_r in Heqx; subst x.
+ clear s Hs Hsz Hj.
+ set (rg := nat_ord_ring).
+ assert
+   (H :
+    Σ (k = 0, j), u (i + 1 + k) * rad ^ (j - k) =
+    Σ (k = 0, j), (rad - 1) * rad ^ (j - k)). {
+   apply Nat.le_antisymm; [ | easy ].
+   apply (@summation_le_compat nat_ord_ring_def); simpl; unfold Nat.le.
+   intros p Hp.
+   apply Nat.mul_le_mono_r.
+   rewrite Nat.add_1_r.
+   specialize (Hu p); flia Hu.
+ }
+ clear HnA; rename H into HnA.
+ setoid_rewrite summation_rtl in HnA.
+ rewrite summation_eq_compat with (h := λ k, u (i + j + 1 - k) * rad ^ k)
+   in HnA.
+ +symmetry in HnA.
+  rewrite summation_eq_compat with (h := λ k, (rad - 1) * rad ^ k) in HnA.
+  *clear n.
+   revert i Hu HnA k Hk.
+   induction j; intros.
+  --do 2 rewrite summation_only_one in HnA.
+    rewrite Nat.sub_0_r, Nat.add_0_r, Nat.pow_0_r in HnA.
+    do 2 rewrite Nat.mul_1_r in HnA.
+    now replace (i + 1) with k in HnA by flia Hk.
+  --setoid_rewrite summation_split_last in HnA; [ | flia | flia ].
+    remember (S j) as sj; simpl in HnA; subst sj.
+    replace (i + S j + 1 - S j) with (S i) in HnA by flia.
+    destruct (eq_nat_dec (u (S i)) (rad - 1)) as [H1| H1].
+   ++rewrite H1 in HnA.
+     apply Nat.add_cancel_r in HnA.
+     destruct (eq_nat_dec k (S i)) as [H2| H2]; [ now subst k | ].
+     apply IHj with (i := S i); [ | | flia Hk H2 ].
+    **intros l; rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply Hu.
+    **rewrite HnA.
+      apply summation_eq_compat.
+      intros p Hp; f_equal; f_equal; flia.
+   ++assert
+       (H2 : Σ (i = 0, j), (rad - 1) * rad ^ i <
+             Σ (i0 = 0, j), u (i + S j + 1 - i0) * rad ^ i0). {
+       specialize (Hu (S i)) as Hui.
+       assert (Hus : u (S i) < rad - 1). {
+         specialize (Hu 0); rewrite Nat.add_0_r in Hu.
+         flia Hu H1.
+       }
+       apply Nat.mul_lt_mono_pos_r with (p := rad ^ S j) in Hus.
+       -flia HnA Hus.
+       -now apply Nat_pow_ge_1.
+     }
+     apply Nat.nle_gt in H2.
+     exfalso; apply H2.
+     apply (@summation_le_compat nat_ord_ring_def); simpl; unfold Nat.le.
+     intros p Hp.
+     apply Nat.mul_le_mono_r.
+     specialize (Hu (j + 1 - p)).
+     replace (S i + (j + 1 - p)) with (i + S j + 1 - p) in Hu by flia Hp.
+     flia Hu.
+  *intros p Hp; f_equal; f_equal; flia Hp.
+ +intros p Hp.
+  replace (j - (j + 0 - p)) with p by flia Hp; f_equal.
+  f_equal; flia Hp.
+-intros p Hp.
+ f_equal; f_equal; flia.
+Qed.
+(*
 Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j k n,
   (∀ k, u (S i + k) < rad)
   → (rad ^ S j - 1) * rad ^ (n - i - 1 - S j) ≤ nA i n u
@@ -1252,6 +1399,7 @@ rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
 -intros p Hp.
  f_equal; f_equal; flia.
 Qed.
+*)
 
 Require Import Setoid.
 
