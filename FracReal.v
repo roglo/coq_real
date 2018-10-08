@@ -1127,6 +1127,8 @@ rewrite (A_split (i + j + 2)) in HA; [ | flia Hs Hj ].
 unfold A at 1 in HA.
 rewrite summation_shift in HA; [ | flia Hj ].
 replace (i + j + 2 - 1 - (i + 1)) with j in HA by flia Hj.
+replace (i + j + 2 - 1) with (i + j + 1) in HA by flia.
+replace (i + j + 2 - i - 1) with (S j) in HA by flia.
 rewrite summation_eq_compat with
     (h := λ k, (u (i + 1 + k)%nat // rad ^ (S k))%NQ) in HA; cycle 1. {
   intros p Hp.
