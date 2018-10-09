@@ -195,17 +195,32 @@ intros * Ha.
 destruct (eq_nat_dec a 1) as [Ha1| Ha1]. {
   now subst a; rewrite Nat.pow_1_l, NQsub_diag.
 }
-rewrite NQpower_summation; [ | flia Ha Ha1 ].
-...
-
-Theorem NQpower_summation_sub_1 (rg := nat_ord_ring) : ∀ a n,
-  0 < a
-  → a ^ S n - 1 = (a - 1) * Σ (i = 0, n), a ^ i.
-Proof.
-intros * Ha.
-rewrite power_summation; [ | easy ].
-rewrite Nat.add_comm.
-now rewrite Nat.add_sub.
+assert (Haa : a ≠ 0 ∧ a ≠ 1) by flia Ha Ha1; clear Ha Ha1.
+rewrite NQpower_summation; [ | flia Haa ].
+symmetry.
+rewrite NQsub_pair_pos; [ | easy | flia Haa | flia Haa ].
+do 2 rewrite Nat.mul_1_l.
+rewrite NQmul_pair; [ | flia Haa | ]; cycle 1. {
+  intros H; apply Nat.eq_mul_0 in H.
+  destruct H as [H| H]; [ | flia Haa H ].
+  apply Nat.pow_nonzero in H; [ easy | flia Haa ].
+}
+rewrite Nat.mul_comm, Nat.mul_assoc.
+rewrite <- NQmul_pair; [ | | flia Haa ]; cycle 1. {
+  intros H; apply Nat.eq_mul_0 in H.
+  destruct H as [H| H]; [ flia Haa H | ].
+  apply Nat.pow_nonzero in H; [ easy | flia Haa ].
+}
+rewrite NQpair_diag; [ | flia Haa ].
+rewrite NQmul_1_r, <- Nat.pow_succ_r'.
+rewrite NQsub_pair_pos; [ | flia | now apply Nat.pow_nonzero | ]; cycle 1. {
+  apply Nat.mul_lt_mono_pos_l; [ flia | ].
+  apply (lt_le_trans _ 2); [ flia | simpl ].
+  replace 2 with (2 * 1) by flia.
+  apply Nat.mul_le_mono; [ flia Haa | ].
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+}
+now do 2 rewrite Nat.mul_1_l.
 Qed.
 
 Theorem power_summation (rg := nat_ord_ring) : ∀ a n,
@@ -1143,6 +1158,7 @@ Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j k n,
   → u k = rad - 1.
 Proof.
 intros * Hu HA Hj Hk.
+specialize radix_ge_2 as Hr.
 remember (n - i - 1) as s eqn:Hs.
 rewrite (A_split (i + j + 2)) in HA; [ | flia Hs Hj ].
 unfold A at 1 in HA.
@@ -1156,8 +1172,7 @@ rewrite summation_eq_compat with
   replace (j - (j + 0 - p)) with p by flia Hp; f_equal.
   f_equal; flia Hp.
 }
-Check power_summation_sub_1.
-Check NQpower_summation.
+rewrite NQpower_summation_inv in HA; [ | flia Hr ].
 ...
 rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
   in HnA.
