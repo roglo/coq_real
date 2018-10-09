@@ -1474,6 +1474,23 @@ intros * Hur.
 destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
 -unfold A.
  rewrite summation_empty; [ | easy ].
+ remember (rad ^ (n - i - 1)) as s eqn:Hs.
+ apply (NQle_trans _ (1 - 1 // s)%NQ).
+ +destruct (NQle_lt_dec (1 // s) 1) as [H1| H1]; cycle 1. {
+    exfalso; apply NQnle_gt in H1; apply H1; clear H1.
+    rewrite Hs.
+    apply NQle_pair; [ now apply Nat.pow_nonzero | easy | ].
+    apply Nat.mul_le_mono_r.
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  }
+...
+  remember (1 - 1 // s)%NQ as x eqn:Hx; symmetry in Hx.
+  destruct x as [| px| px]; [ easy | easy | exfalso ].
+  remember (1 // s)%NQ as y eqn:Hy.
+  simpl in Hx.
+  unfold NQadd_pos_l in Hx.
+  simpl in Hx.
+
 ...
  rewrite summation_empty; [ simpl; flia | easy ].
 -remember (rad ^ (n - i - 1)) as s eqn:Hs.
