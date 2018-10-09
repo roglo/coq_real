@@ -187,6 +187,27 @@ induction n.
  apply Nat.neq_0_lt_0, Nat.pow_nonzero; flia Ha.
 Qed.
 
+Theorem NQpower_summation_inv (rg := NQ_ord_ring) : ∀ a n,
+  a > 0
+  → (1 - 1 // a ^ S n = (1 - 1 // a) * Σ (i = 0, n), 1 // a ^ i)%NQ.
+Proof.
+intros * Ha.
+destruct (eq_nat_dec a 1) as [Ha1| Ha1]. {
+  now subst a; rewrite Nat.pow_1_l, NQsub_diag.
+}
+rewrite NQpower_summation; [ | flia Ha Ha1 ].
+...
+
+Theorem NQpower_summation_sub_1 (rg := nat_ord_ring) : ∀ a n,
+  0 < a
+  → a ^ S n - 1 = (a - 1) * Σ (i = 0, n), a ^ i.
+Proof.
+intros * Ha.
+rewrite power_summation; [ | easy ].
+rewrite Nat.add_comm.
+now rewrite Nat.add_sub.
+Qed.
+
 Theorem power_summation (rg := nat_ord_ring) : ∀ a n,
   0 < a
   → a ^ S n = 1 + (a - 1) * Σ (i = 0, n), a ^ i.
