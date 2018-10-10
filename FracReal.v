@@ -1475,6 +1475,8 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
 -unfold A.
  rewrite summation_empty; [ | easy ].
  remember (rad ^ (n - i - 1)) as s eqn:Hs.
+ change (0 ≤ 2 * (1 - 1 // s))%NQ.
+...
  apply (NQle_trans _ (1 - 1 // s)%NQ).
  +apply (NQadd_le_r _ _ (1 // s)).
   rewrite NQsub_add, NQadd_0_l, Hs.
@@ -1483,6 +1485,8 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
  +rewrite NQmul_sub_distr_l.
   rewrite NQmul_1_r.
+  apply (NQadd_le_r _ _ (1 // s)).
+  rewrite NQsub_add.
 ...
  rewrite summation_empty; [ simpl; flia | easy ].
 -remember (rad ^ (n - i - 1)) as s eqn:Hs.
