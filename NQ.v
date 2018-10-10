@@ -507,6 +507,13 @@ rewrite NQadd_add_swap, <- NQadd_assoc.
 now rewrite NQsub_diag, NQadd_0_r.
 Qed.
 
+Theorem NQadd_sub : ∀ a b, (a + b - b)%NQ = a.
+Proof.
+intros.
+rewrite <- NQadd_assoc.
+now rewrite NQsub_diag, NQadd_0_r.
+Qed.
+
 Theorem NQle_trans: ∀ x y z, (x ≤ y)%NQ → (y ≤ z)%NQ → (x ≤ z)%NQ.
 Proof.
 intros * Hxy Hyz.
@@ -647,6 +654,17 @@ destruct x as [| px| px].
     now apply GQlt_le_incl, GQsub_lt.
   --now apply GQadd_le_mono.
 Qed.
+Arguments NQadd_le_mono x%NQ y%NQ z%NQ t%NQ.
+
+Theorem NQadd_le_r : ∀ x y z, (x + z ≤ y + z ↔ x ≤ y)%NQ.
+Proof.
+intros.
+split; intros H.
+-apply (NQadd_le_mono _ _ (- z) (- z)) in H; [ | apply NQle_refl ].
+ now do 2 rewrite NQadd_sub in H.
+-apply NQadd_le_mono; [ easy | apply NQle_refl ].
+Qed.
+Arguments NQadd_le_r x%NQ y%NQ z%NQ.
 
 Theorem NQmul_pair : ∀ x y z t,
   y ≠ 0 → t ≠ 0 → ((x // y) * (z // t) = (x * z) // (y * t))%NQ.
