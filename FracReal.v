@@ -1471,6 +1471,7 @@ Theorem A_upper_bound_for_add {r : radix} (rg := nat_ord_ring) : ∀ u i n,
   → (A i n u ≤ 2 * (1 - 1 // rad ^ (n - i - 1)))%NQ.
 Proof.
 intros * Hur.
+specialize radix_ge_2 as Hr.
 destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
 -unfold A.
  rewrite summation_empty; [ | easy ].
@@ -1487,49 +1488,17 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
  apply NQle_pair; [ easy | easy | ].
  apply Nat.mul_le_mono_nonneg_r; [ apply Nat.le_0_1 | flia ].
 -apply Nat.nlt_ge in Hin.
-...
-  unfold NQmul_pos_l in Hyt.
-
-apply PQeq_mul_0 in Hxz.
-  destruct Hxz as [Hxz| Hxz].
-...
-...
- apply NQmul_le_mono.
-...
- apply (NQle_trans _ (1 - 1 // s)%NQ).
- +apply (NQadd_le_r _ _ (1 // s)).
-  rewrite NQsub_add, NQadd_0_l, Hs.
-  apply NQle_pair; [ now apply Nat.pow_nonzero | easy | ].
-  apply Nat.mul_le_mono_r.
-  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
- +rewrite NQmul_sub_distr_l.
-  rewrite NQmul_1_r.
-  apply (NQadd_le_r _ _ (1 // s)).
-  rewrite NQsub_add.
-...
- rewrite summation_empty; [ simpl; flia | easy ].
--remember (rad ^ (n - i - 1)) as s eqn:Hs.
- rewrite Hs.
- remember (n - i - 1) as m eqn:Hm.
- symmetry in Hm.
- destruct m; [ flia Hin Hm | ].
- rewrite power_summation_sub_1; [ | easy ].
- rewrite Nat.mul_assoc.
- rewrite summation_mul_distr_l.
- unfold nA.
- remember 2 as two; simpl; subst two.
- rewrite summation_rtl.
- rewrite summation_shift; [ | flia Hin ].
- replace (n - 1 - (i + 1)) with m by flia Hm.
- apply (@summation_le_compat nat_ord_ring_def).
+ remember (n - i - 1) as s eqn:Hs.
+ destruct s; [ flia Hin Hs | ].
+ rewrite NQpower_summation_inv; [ | flia Hr ].
+ unfold A.
+ rewrite summation_shift; [ | easy ].
+ replace (n - 1 - (i + 1)) with s by flia Hs.
+ do 2 rewrite summation_mul_distr_l.
+ apply summation_le_compat.
  intros j Hj.
- remember 2 as two; simpl; subst two; unfold Nat.le.
- replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - j - 1) by flia.
- replace (n - 1 - (n - j - 1)) with j by flia Hm Hj.
- apply Nat.mul_le_mono_r.
- specialize (Hur (n - j - i - 2)).
- replace (i + (n - j - i - 2) + 1) with (n - j - 1) in Hur by flia Hm Hj.
- easy.
+ rewrite NQmul_assoc.
+...
 Qed.
 (*
 Theorem nA_upper_bound_for_add {r : radix} (rg := nat_ord_ring) : ∀ u i n,
