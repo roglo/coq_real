@@ -1047,9 +1047,14 @@ Qed.
 Theorem GQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%GQ.
 Proof.
 intros * Hxy.
-unfold "≤"%GQ.
-simpl.
+unfold "≤"%GQ; simpl.
+Check PQred_le_r.
+Check PQred_lt.
+...
+
+unfold "≤"%PQ, nd.
 Search PQred.
+
 
 ...
 

@@ -1154,6 +1154,35 @@ Definition PQred x :=
   PQmake (aa - 1) (bb - 1).
 Arguments PQred x%PQ.
 
+Instance PQred_morph : Proper (PQeq ==> PQeq) PQred.
+Proof.
+intros (xn, xd) (yn, yd) Hxy.
+unfold "=="%PQ, nd in Hxy |-*; simpl in *.
+unfold PQred; simpl.
+remember (ggcd (xn + 1) (xd + 1)) as g1 eqn:Hg1; symmetry in Hg1.
+remember (ggcd (yn + 1) (yd + 1)) as g2 eqn:Hg2; symmetry in Hg2.
+move g2 before g1.
+destruct g1 as (g1 & aa1 & bb1).
+destruct g2 as (g2 & aa2 & bb2); simpl.
+specialize (ggcd_correct_divisors (xn + 1) (xd + 1)) as H1.
+rewrite Hg1 in H1; destruct H1 as (Hxn, Hxd).
+specialize (ggcd_correct_divisors (yn + 1) (yd + 1)) as H1.
+rewrite Hg2 in H1; destruct H1 as (Hyn, Hyd).
+rewrite Nat.mul_comm, Nat.add_1_r in Hxn, Hxd, Hyn, Hyd.
+rewrite Nat.sub_add; [ | destruct aa1; flia Hxn ].
+rewrite Nat.sub_add; [ | destruct bb2; flia Hyd ].
+rewrite Nat.sub_add; [ | destruct aa2; flia Hyn ].
+rewrite Nat.sub_add; [ | destruct bb1; flia Hxd ].
+rewrite Nat.mul_comm in Hxn, Hxd, Hyn, Hyd.
+do 4 rewrite Nat.add_1_r in Hxy.
+apply (Nat.mul_cancel_l _ _ g1); [ now destruct g1 | ].
+rewrite Nat.mul_assoc, <- Hxn, Nat.mul_comm.
+apply (Nat.mul_cancel_l _ _ g2); [ now destruct g2 | ].
+rewrite Nat.mul_assoc, <- Hyd, Nat.mul_comm.
+rewrite Hxy, Hyn, Hxd.
+flia.
+Qed.
+
 (*
 Definition PQH x := PQmake (PQnum1 x + 1) (PQden1 x + 1).
 Definition PQF a b := PQmake (a - 1) (b - 1).
@@ -1339,6 +1368,58 @@ rewrite Nat.sub_add.
   easy.
  +destruct c1; [ flia Hc1 | flia ].
 -destruct c2; [ flia Hc2 | flia ].
+Qed.
+
+Theorem PQred_le_l : ∀ x y, (x ≤ y)%PQ → (PQred x ≤ y)%PQ.
+Proof.
+intros * Hyx.
+destruct (PQeq_dec x y) as [H1| H1].
+-rewrite H1.
+ destruct y as (yn, yd); simpl.
+ unfold "≤"%PQ, nd; simpl.
+ unfold PQred; simpl.
+ remember (ggcd (yn + 1) (yd + 1)) as g eqn:Hg; symmetry in Hg.
+ destruct g as (g, (aa, bb)); simpl.
+ specialize (ggcd_correct_divisors (yn + 1) (yd + 1)) as Hy.
+ rewrite Hg in Hy; destruct Hy as (Hyn, Hyd).
+ rewrite Nat.add_1_r, Nat.mul_comm in Hyn, Hyd.
+ rewrite Nat.sub_add; [ | destruct aa; flia Hyn ].
+ rewrite Nat.sub_add; [ | destruct bb; flia Hyd ].
+ rewrite Nat.mul_comm in Hyn, Hyd.
+ apply (Nat.mul_le_mono_pos_l _ _ g); [ destruct g; flia Hyn | ].
+ rewrite Nat.mul_assoc, <- Hyn.
+ rewrite Nat.mul_assoc, Nat.mul_shuffle0, <- Hyd.
+ flia.
+-apply PQlt_le_incl, PQred_lt_l.
+ apply PQnle_gt.
+ intros H2; apply H1.
+ now apply PQle_antisymm.
+Qed.
+
+Theorem PQred_le_r : ∀ x y, (x ≤ y)%PQ → (x ≤ PQred y)%PQ.
+Proof.
+intros * Hyx.
+destruct (PQeq_dec x y) as [H1| H1].
+-rewrite H1.
+ destruct y as (yn, yd); simpl.
+ unfold "≤"%PQ, nd; simpl.
+ unfold PQred; simpl.
+ remember (ggcd (yn + 1) (yd + 1)) as g eqn:Hg; symmetry in Hg.
+ destruct g as (g, (aa, bb)); simpl.
+ specialize (ggcd_correct_divisors (yn + 1) (yd + 1)) as Hy.
+ rewrite Hg in Hy; destruct Hy as (Hyn, Hyd).
+ rewrite Nat.add_1_r, Nat.mul_comm in Hyn, Hyd.
+ rewrite Nat.sub_add; [ | destruct bb; flia Hyd ].
+ rewrite Nat.sub_add; [ | destruct aa; flia Hyn ].
+ rewrite Nat.mul_comm in Hyn, Hyd.
+ apply (Nat.mul_le_mono_pos_l _ _ g); [ destruct g; flia Hyn | ].
+ rewrite Nat.mul_assoc, Nat.mul_shuffle0, <- Hyd.
+ rewrite Nat.mul_assoc, <- Hyn.
+ flia.
+-apply PQlt_le_incl, PQred_lt_r.
+ apply PQnle_gt.
+ intros H2; apply H1.
+ now apply PQle_antisymm.
 Qed.
 
 Theorem PQred_add_l : ∀ x y, PQred (x + y) = PQred (PQred x + y).
