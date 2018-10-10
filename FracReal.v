@@ -26,15 +26,15 @@ Theorem first_such_that_has_prop : ∀ u n i k,
 Proof.
 intros * Hn Hk.
 revert i k Hn Hk; induction n; intros.
- split; [ now subst k | simpl ].
- simpl in Hk; destruct Hk; intros j H1 H2.
+ split; [ now subst k | cbn ].
+ cbn in Hk; destruct Hk; intros j H1 H2.
  now apply lt_not_le in H2.
 
  rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hn.
- simpl in Hk.
+ cbn in Hk.
  remember (u i =? 0) as b eqn:Hb.
  symmetry in Hb.
- destruct b; simpl in Hk.
+ destruct b; cbn in Hk.
   apply Nat.eqb_eq in Hb.
   specialize (IHn (S i) k Hn Hk).
   destruct IHn as (H2, H3).
@@ -56,17 +56,17 @@ Proof.
 intros.
 set (v i := if u i then 0 else 1).
 specialize (LPO v) as [H| (i, Hi)]; [ left | right ].
--intros k; subst v; specialize (H k); simpl in H.
+-intros k; subst v; specialize (H k); cbn in H.
  now destruct (u k).
 -remember (first_such_that (λ i, negb (Nat.eqb (v i) 0)) i 0) as j eqn:Hj.
  exists j.
  assert (Hui : v (i + 0) ≠ 0) by now rewrite Nat.add_0_r.
  specialize (first_such_that_has_prop v i 0 j Hui Hj) as (Huj, H).
  subst v; split.
- +intros k Hkj; simpl in H.
+ +intros k Hkj; cbn in H.
   specialize (H k (Nat.le_0_l k) Hkj).
   now destruct (u k).
- +simpl in Huj.
+ +cbn in Huj.
   now destruct (u j).
 Qed.
 
@@ -76,17 +76,17 @@ Class radix := { rad : nat; radix_ge_2 : rad ≥ 2 }.
 
 Theorem radix_gt_0 {r : radix} : 0 < rad.
 Proof.
-destruct r as (rad, radi); simpl; flia radi.
+destruct r as (rad, radi); cbn; flia radi.
 Qed.
 
 Theorem radix_ge_1 {r : radix} : 1 ≤ rad.
 Proof.
-destruct r as (rad, radi); simpl; flia radi.
+destruct r as (rad, radi); cbn; flia radi.
 Qed.
 
 Theorem radix_ne_0 {r : radix} : rad ≠ 0.
 Proof.
-destruct r as (rad, radi); simpl; flia radi.
+destruct r as (rad, radi); cbn; flia radi.
 Qed.
 
 Hint Resolve radix_gt_0 radix_ge_1 radix_ne_0 radix_ge_2.
@@ -105,7 +105,7 @@ intros.
 split; intros H; [ | now subst ].
 destruct a as (adig, adigi).
 destruct b as (bdig, bdigi).
-simpl in H.
+cbn in H.
 subst bdig.
 f_equal.
 apply le_unique.
@@ -149,7 +149,7 @@ induction n.
  apply NQeq_pair; [ easy | flia Ha | easy ].
 -rewrite summation_split_last; [ | flia ].
  rewrite IHn.
- remember NQ_of_pair as f; remember S as g; simpl; subst f g.
+ remember NQ_of_pair as f; remember S as g; cbn; subst f g.
  rewrite NQadd_pair; [ | | apply Nat.pow_nonzero; flia Ha ]; cycle 1. {
    intros H.
    apply Nat.eq_mul_0 in H.
@@ -215,7 +215,7 @@ rewrite NQpair_diag; [ | flia Haa ].
 rewrite NQmul_1_r, <- Nat.pow_succ_r'.
 rewrite NQsub_pair_pos; [ | flia | now apply Nat.pow_nonzero | ]; cycle 1. {
   apply Nat.mul_lt_mono_pos_l; [ flia | ].
-  apply (lt_le_trans _ 2); [ flia | simpl ].
+  apply (lt_le_trans _ 2); [ flia | cbn ].
   replace 2 with (2 * 1) by flia.
   apply Nat.mul_le_mono; [ flia Haa | ].
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
@@ -238,7 +238,7 @@ induction n.
  rewrite Nat.add_assoc.
  rewrite <- IHn.
  rewrite Nat.mul_sub_distr_r.
- simpl; rewrite Nat.add_0_r.
+ cbn; rewrite Nat.add_0_r.
  rewrite Nat.add_sub_assoc.
   now rewrite Nat.add_comm, Nat.add_sub.
 
@@ -448,7 +448,7 @@ Theorem A_freal_add_series_comm {r : radix} : ∀ x y i n,
   A i n (x ⊕ y) = A i n (y ⊕ x).
 Proof.
 intros.
-unfold A; simpl.
+unfold A; cbn.
 apply summation_eq_compat; intros j Hj.
 now rewrite freal_add_series_comm.
 Qed.
@@ -457,7 +457,7 @@ Theorem nA_freal_add_series_comm {r : radix} : ∀ x y i n,
   nA i n (x ⊕ y) = nA i n (y ⊕ x).
 Proof.
 intros.
-unfold nA; simpl.
+unfold nA; cbn.
 apply summation_eq_compat; intros j Hj.
 now rewrite freal_add_series_comm.
 Qed.
@@ -486,7 +486,7 @@ Theorem prop_carr_add_comm {r : radix} : ∀ x y i,
   prop_carr (x ⊕ y) i = prop_carr (y ⊕ x) i.
 Proof.
 intros.
-apply digit_eq_eq; simpl.
+apply digit_eq_eq; cbn.
 unfold nat_prop_carr.
 rewrite freal_add_series_comm.
 destruct (LPO_fst (fA_ge_1_ε (x ⊕ y) i)) as [Hxy| Hxy].
@@ -518,7 +518,7 @@ Theorem prop_carr_add_comm {r : radix} : ∀ x y i,
   prop_carr (x ⊕ y) i = prop_carr (y ⊕ x) i.
 Proof.
 intros.
-apply digit_eq_eq; simpl.
+apply digit_eq_eq; cbn.
 unfold nat_prop_carr.
 rewrite freal_add_series_comm.
 destruct (LPO_fst (A_ge_1 (x ⊕ y) i)) as [Hxy| Hxy].
@@ -550,7 +550,7 @@ Qed.
 Theorem dig_unorm_add_comm {r : radix} : ∀ x y i,
   freal (x + y) i = freal (y + x) i.
 Proof.
-intros; simpl.
+intros; cbn.
 apply prop_carr_add_comm.
 Qed.
 
@@ -613,7 +613,7 @@ Proof.
 intros * Hin.
 unfold nA.
 rewrite summation_split_first; [ | easy ].
-simpl; f_equal; f_equal; f_equal; flia.
+cbn; f_equal; f_equal; f_equal; flia.
 Qed.
 *)
 
@@ -626,7 +626,7 @@ intros * Hin.
 unfold A.
 replace (n - 1) with (S (n - 1 - 1)) at 1 by flia Hin.
 rewrite summation_split_last; [ | flia Hin ].
-simpl; f_equal.
+cbn; f_equal.
 replace (S (n - 1 - 1)) with (pred n) by flia Hin.
 f_equal; f_equal.
 destruct i; flia.
@@ -640,8 +640,8 @@ intros * Hin.
 unfold nA.
 replace (n - 1) with (S (n - 1 - 1)) at 1 by lia.
 rewrite summation_split_last; [ | flia Hin ].
-simpl; f_equal.
--rewrite summation_mul_distr_l; simpl.
+cbn; f_equal.
+-rewrite summation_mul_distr_l; cbn.
  apply summation_eq_compat.
  intros j Hj.
  rewrite Nat.mul_assoc, Nat.mul_shuffle0, Nat.mul_comm.
@@ -681,10 +681,10 @@ Proof.
 intros * Hin.
 unfold nA.
 rewrite summation_split with (e0 := e - 1); [ | easy ].
-simpl; f_equal.
+cbn; f_equal.
 +rewrite summation_mul_distr_r.
  apply summation_eq_compat.
- intros j Hj; simpl.
+ intros j Hj; cbn.
  rewrite <- Nat.mul_assoc; f_equal.
  rewrite <- Nat.pow_add_r.
  now replace (e - 1 - j + (n - e)) with (n - 1 - j) by flia Hin Hj.
@@ -695,7 +695,7 @@ Qed.
 Theorem Nat_pow_ge_1 : ∀ a b, 0 < a → 1 ≤ a ^ b.
 Proof.
 intros * Ha.
-induction b; [ easy | simpl ].
+induction b; [ easy | cbn ].
 replace 1 with (1 * 1) by flia.
 apply Nat.mul_le_mono_nonneg; [ flia | easy | flia | easy ].
 Qed.
@@ -709,7 +709,7 @@ Proof.
 intros * Hu Hin.
 specialize radix_ge_2 as Hr.
 apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
--apply summation_le_compat; intros j Hj; simpl.
+-apply summation_le_compat; intros j Hj; cbn.
  apply NQle_pair; [ now apply Nat.pow_nonzero | now apply Nat.pow_nonzero | ].
  rewrite Nat.mul_comm.
  apply Nat.mul_le_mono_l.
@@ -760,7 +760,7 @@ remember (n - i - 1) as k eqn:Hk.
 destruct k; [ flia Hin Hk | ].
 rewrite power_summation; [ | easy ].
 replace (n - 1 - (i + 1)) with k by flia Hk.
-unfold lt; simpl.
+unfold lt; cbn.
 apply -> Nat.succ_le_mono.
 rewrite summation_mul_distr_l.
 apply (@summation_le_compat _ nat_ord_ring).
@@ -806,7 +806,7 @@ rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
   apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | ].
   apply lt_le_trans with (m := 2); [ apply Nat.lt_1_2 | ].
   destruct s; [ flia Hs Hin | ].
-  simpl; replace 2 with (2 * 1) by easy.
+  cbn; replace 2 with (2 * 1) by easy.
   apply Nat.mul_le_mono; [ easy | ].
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 }
@@ -849,7 +849,7 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
   *intros k Hk; f_equal; flia Hk.
  +replace (n - i - 1) with 0 by flia Hin.
   rewrite summation_empty; [ | flia Hin ].
-  rewrite Nat.mul_0_r; simpl; flia.
+  rewrite Nat.mul_0_r; cbn; flia.
 -intros j Hij.
  replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
  rewrite Hj; [ easy | flia Hij ].
@@ -894,7 +894,7 @@ rewrite NQsub_pair_pos; [ | easy | now apply Nat.pow_nonzero | ]; cycle 1. {
   apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_2 | ].
   apply lt_le_trans with (m := 2); [ apply Nat.lt_1_2 | ].
   destruct s; [ flia Hs Hin | ].
-  simpl; replace 2 with (2 * 1) by easy.
+  cbn; replace 2 with (2 * 1) by easy.
   apply Nat.mul_le_mono; [ easy | ].
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 }
@@ -938,7 +938,7 @@ rewrite summation_eq_compat with (h := λ j, 2 * (rad - 1) * rad ^ (n - 1 - j)).
   *intros k Hk; f_equal; flia Hk.
  +replace (n - i - 1) with 0 by flia Hin.
   rewrite summation_empty; [ | flia Hin ].
-  rewrite Nat.mul_0_r; simpl; flia.
+  rewrite Nat.mul_0_r; cbn; flia.
 -intros j Hij.
  replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
  now rewrite Hj.
@@ -1175,11 +1175,11 @@ assert (H : nA i n u * rad ^ S j / rad ^ s = nA i (i + j + 2) u). {
   replace (s - S j) with (n - i - j - 2) by flia Hs.
   unfold nA at 1.
   rewrite summation_split with (e := i + j + 1); [ | flia Hs Hj ].
-  simpl; unfold nA.
+  cbn; unfold nA.
   replace (i + j + 2 - 1) with (i + j + 1) by flia.
   rewrite summation_eq_compat with
       (h := λ k, u k * rad ^ (i + j + 1 - k) * rad ^ (n - i - j - 2)).
-  -rewrite <- summation_mul_distr_r; simpl.
+  -rewrite <- summation_mul_distr_r; cbn.
    rewrite Nat.add_comm.
    rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
    rewrite Nat.div_small; [ easy | ].
@@ -1189,7 +1189,7 @@ assert (H : nA i n u * rad ^ S j / rad ^ s = nA i (i + j + 2) u). {
    +rewrite summation_empty; [ | flia Hj Hm ].
     now apply Nat_pow_ge_1.
    +rewrite power_summation; [ | easy ].
-    rewrite summation_mul_distr_l; simpl.
+    rewrite summation_mul_distr_l; cbn.
     rewrite summation_shift; [ | flia Hm ].
     replace (n - 1 - S (i + j + 1)) with m by flia Hm.
     apply -> Nat.succ_le_mono.
@@ -1197,9 +1197,9 @@ assert (H : nA i n u * rad ^ S j / rad ^ s = nA i (i + j + 2) u). {
     rewrite summation_eq_compat with
        (h := λ k, u (S (i + j + 1 + m - k)) * rad ^ k).
     *apply (@summation_le_compat nat_ord_ring_def).
-     intros p Hp; simpl; unfold Nat.le.
+     intros p Hp; cbn; unfold Nat.le.
      apply Nat.mul_le_mono_r.
-     specialize (Hu (j + 1 + m - p)); simpl in Hu.
+     specialize (Hu (j + 1 + m - p)); cbn in Hu.
      rewrite Nat.add_sub_assoc in Hu; [ | flia Hp ].
      do 2 rewrite Nat.add_assoc in Hu.
      flia Hu.
@@ -1218,7 +1218,7 @@ rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
   in HnA.
 -rewrite power_summation_sub_1 in HnA; [ | easy ].
  rewrite summation_mul_distr_l in HnA.
- remember (S j) as sj; simpl in HnA; subst sj.
+ remember (S j) as sj; cbn in HnA; subst sj.
  remember (Σ (i = 0, j), (rad - 1) * rad ^ i) as x.
  rewrite summation_rtl in Heqx.
  rewrite Nat.add_0_r in Heqx; subst x.
@@ -1229,7 +1229,7 @@ rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
     Σ (k = 0, j), u (i + 1 + k) * rad ^ (j - k) =
     Σ (k = 0, j), (rad - 1) * rad ^ (j - k)). {
    apply Nat.le_antisymm; [ | easy ].
-   apply (@summation_le_compat nat_ord_ring_def); simpl; unfold Nat.le.
+   apply (@summation_le_compat nat_ord_ring_def); cbn; unfold Nat.le.
    intros p Hp.
    apply Nat.mul_le_mono_r.
    rewrite Nat.add_1_r.
@@ -1249,7 +1249,7 @@ rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
     do 2 rewrite Nat.mul_1_r in HnA.
     now replace (i + 1) with k in HnA by flia Hk.
   --setoid_rewrite summation_split_last in HnA; [ | flia | flia ].
-    remember (S j) as sj; simpl in HnA; subst sj.
+    remember (S j) as sj; cbn in HnA; subst sj.
     replace (i + S j + 1 - S j) with (S i) in HnA by flia.
     destruct (eq_nat_dec (u (S i)) (rad - 1)) as [H1| H1].
    ++rewrite H1 in HnA.
@@ -1274,7 +1274,7 @@ rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
      }
      apply Nat.nle_gt in H2.
      exfalso; apply H2.
-     apply (@summation_le_compat nat_ord_ring_def); simpl; unfold Nat.le.
+     apply (@summation_le_compat nat_ord_ring_def); cbn; unfold Nat.le.
      intros p Hp.
      apply Nat.mul_le_mono_r.
      specialize (Hu (j + 1 - p)).
@@ -1385,7 +1385,7 @@ Theorem prop_carr_eq_compat {r : radix} : ∀ f g,
 Proof.
 intros * Hfg *.
 unfold prop_carr.
-apply digit_eq_eq; simpl.
+apply digit_eq_eq; cbn.
 unfold nat_prop_carr.
 rewrite Hfg.
 destruct (LPO_fst (fA_ge_1_ε f i)) as [Hf| Hf].
@@ -1422,7 +1422,7 @@ Theorem prop_carr_eq_compat {r : radix} : ∀ f g,
 Proof.
 intros * Hfg *.
 unfold prop_carr.
-apply digit_eq_eq; simpl.
+apply digit_eq_eq; cbn.
 unfold nat_prop_carr.
 rewrite Hfg.
 destruct (LPO_fst (A_ge_1 f i)) as [Hf| Hf].
@@ -1497,8 +1497,21 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
  do 2 rewrite summation_mul_distr_l.
  apply summation_le_compat.
  intros j Hj.
- rewrite NQmul_assoc.
-...
+ replace (i + 1 + j - i) with (S j) by flia.
+ apply (NQle_trans _ ((2 * (rad - 1)) // (rad ^ S j))).
+ +apply NQle_pair; try now apply Nat.pow_nonzero.
+  rewrite Nat.mul_comm, Nat.add_shuffle0.
+  apply Nat.mul_le_mono_l, Hur.
+ +rewrite NQmul_assoc.
+  rewrite NQsub_pair_pos; [ | easy | easy | ]; cycle 1. {
+    apply Nat.mul_lt_mono_pos_l; [ flia | easy ].
+  }
+  do 2 rewrite Nat.mul_1_l.
+  rewrite NQmul_pair; [ | easy | easy ].
+  rewrite Nat.mul_1_l.
+  rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+  rewrite Nat.mul_1_r.
+  apply NQle_refl.
 Qed.
 (*
 Theorem nA_upper_bound_for_add {r : radix} (rg := nat_ord_ring) : ∀ u i n,
@@ -1533,6 +1546,8 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
  easy.
 Qed.
 *)
+
+...
 
 Theorem nA_upper_bound_for_add_3 {r : radix} : ∀ u i n,
   (∀ k, u (i + k + 2) ≤ 2 * (rad - 1))
