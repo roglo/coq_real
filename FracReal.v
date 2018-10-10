@@ -1476,6 +1476,26 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
  rewrite summation_empty; [ | easy ].
  remember (rad ^ (n - i - 1)) as s eqn:Hs.
  change (0 ≤ 2 * (1 - 1 // s))%NQ.
+ rewrite <- (NQmul_0_r 2%NQ).
+Search (_ + _ ≤ _ + _)%NQ.
+Search (_ * _ ≤ _ * _)%NQ.
+(**)
+...
+Require Import ZArith.
+Search (Z.le (Zmult _ _) (Zmult _ _)).
+Z.mul_le_mono_nonneg_l: ∀ n m p : Z, (0 <= p)%Z → (n <= m)%Z → (p * n <= p * m)%Z
+...
+Search (_ * _ ≤ _ * _)%Z.
+Check Z.mul_le_mono.
+
+...
+  unfold NQmul_pos_l in Hyt.
+
+apply PQeq_mul_0 in Hxz.
+  destruct Hxz as [Hxz| Hxz].
+...
+...
+ apply NQmul_le_mono.
 ...
  apply (NQle_trans _ (1 - 1 // s)%NQ).
  +apply (NQadd_le_r _ _ (1 // s)).

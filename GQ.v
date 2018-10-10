@@ -1044,5 +1044,14 @@ rewrite GQmul_comm.
 apply GQmul_1_l.
 Qed.
 
+Theorem GQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%GQ.
+Proof.
+intros * Hxy.
+unfold "≤"%GQ.
+simpl.
+Search PQred.
+
+...
+
 Definition GQfrac gq := GQ_of_PQ (PQfrac (PQ_of_GQ gq)).
 Definition GQintg gq := PQintg (PQ_of_GQ gq).

@@ -30,7 +30,7 @@ Definition NQ_of_pair n d :=
 
 Notation "a // b" := (NQ_of_pair a b) (at level 32) : NQ_scope.
 
-Notation "0" := (0 // 1)%NQ : NQ_scope.
+Notation "0" := NQ0 : NQ_scope.
 Notation "1" := (1 // 1)%NQ : NQ_scope.
 Notation "2" := (2 // 1)%NQ : NQ_scope.
 
@@ -778,6 +778,66 @@ intros.
 setoid_rewrite NQmul_comm.
 apply NQmul_sub_distr_l.
 Qed.
+
+Theorem NQeq_mul_0 : ∀ x y, (x * y = 0 → x = 0 ∨ y = 0)%NQ.
+Proof.
+intros * Hxy.
+destruct x as [| xp| xp]; [ now left | now right; destruct y | ].
+destruct y as [| yp| yp]; [ now right | easy | easy ].
+Qed.
+
+Theorem NQmul_le_mono_nonneg_l : ∀ x y z, (0 ≤ x → y ≤ z → x * y ≤ x * z)%NQ.
+Proof.
+intros * Hx Hyz.
+destruct x as [| xp| xp]; [ easy | | easy ].
+destruct y as [| yp| yp]; [ now destruct z | | ].
+-destruct z as [| zp| zp]; [ easy | | easy ].
+ clear Hx; simpl in *.
+Search (_ * _ ≤ _ * _)%GQ.
+...
+
+-simpl.
+unfold NQmul_pos_l.
+
+...
+
+intros * Hx Hyz.
+remember (x * y)%NQ as xy eqn:Hxy; symmetry in Hxy.
+remember (x * z)%NQ as xz eqn:Hxz; symmetry in Hxz.
+destruct xy as [| xyp| xyp].
+-destruct xz as [| xzp| xzp]; [ easy | easy | exfalso ].
+ destruct x as [| xp| xp]; [ easy | | easy ].
+ destruct z as [| zp| zp]; [ easy | easy | ].
+ apply NQeq_mul_0 in Hxy.
+ destruct Hxy as [Hxy| Hxy]; [ easy | now subst y ].
+-destruct xz as [| xzp| xzp]; [ exfalso | | ].
+ +apply NQeq_mul_0 in Hxz.
+  destruct Hxz as [Hxz| Hxz]; [ now subst x | subst z ].
+  destruct x as [| xp| xp]; [ easy | now destruct y | easy ].
+ +rewrite <- Hxy, <- Hxz.
+...
+
+destruct x as [| xp| xp]; [ easy | | easy ].
+  destruct y as [| yp| yp]; [ easy | | easy ].
+  destruct z as [| zp| zp]; [ easy | | easy ].
+
+...
+ +unfold "≤"%NQ; simpl.
+
+remember (y * t)%NQ as yt eqn:Hyt; symmetry in Hyt.
+destruct xz as [| xzp| xzp].
+-destruct yt as [| ytp| ytp]; [ easy | easy | exfalso ].
+ destruct y as [| yp| yp]; [ easy | | ].
+ +destruct t as [| tp| tp]; [ easy | easy | ].
+  simpl in Hyt.
+(*
+...
+  unfold "*"%GQ in Hyt.
+  simpl in Hyt.
+...
+*)
+*)
+
 
 Theorem NQle_pair : ∀ x y z t,
   y ≠ 0 → t ≠ 0 → (x // y ≤ z // t)%NQ ↔ x * t ≤ y * z.
