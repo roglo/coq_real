@@ -1048,15 +1048,9 @@ Theorem GQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%GQ.
 Proof.
 intros * Hxy.
 unfold "≤"%GQ; simpl.
-Check PQred_le_r.
-Check PQred_lt.
-...
-
-unfold "≤"%PQ, nd.
-Search PQred.
-
-
-...
+apply PQred_le_r, PQred_le_l.
+now apply PQmul_le_mono_l.
+Qed.
 
 Definition GQfrac gq := GQ_of_PQ (PQfrac (PQ_of_GQ gq)).
 Definition GQintg gq := PQintg (PQ_of_GQ gq).
