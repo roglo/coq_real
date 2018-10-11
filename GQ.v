@@ -1107,6 +1107,8 @@ split; intros Hxy.
  apply PQred_le_r, PQred_le_l.
  now apply PQmul_le_mono_l.
 -unfold "≤"%GQ in Hxy; cbn in Hxy.
+ unfold "≤"%GQ; cbn.
+Search (PQred _ ≤ _)%PQ.
 ...
 Qed.
 
