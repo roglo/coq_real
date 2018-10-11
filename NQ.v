@@ -550,39 +550,68 @@ Theorem NQadd_lt_mono_l : ∀ x y z, (y < z)%NQ ↔ (x + y < x + z)%NQ.
 Proof.
 intros *.
 split; intros Hxy.
--destruct x as [| xp| xp]; [ easy | | ].
- +destruct y as [| yp| yp].
-  *destruct z as [| zp| zp]; [ easy | apply GQlt_add_r | easy ].
-  *destruct z as [| zp| zp]; [ easy | now apply GQadd_lt_mono_l | easy ].
-  *cbn.
-   remember (GQcompare xp yp) as b1 eqn:Hb1; symmetry in Hb1.
-   destruct z as [| zp| zp]; cbn.
-  --destruct b1; GQcompare_iff; [ easy | easy | now apply GQsub_lt ].
-  --destruct b1; GQcompare_iff; [ easy | easy | cbn ].
-    apply (GQlt_trans _ xp); [ now apply GQsub_lt | apply GQlt_add_r ].
-  --destruct b1; GQcompare_iff.
-   ++subst xp.
-     remember (GQcompare yp zp) as b2 eqn:Hb2; symmetry in Hb2.
-     destruct b2; GQcompare_iff; [ | | easy ].
-    **now subst yp; apply GQlt_irrefl in Hxy.
-    **cbn in Hxy.
-      apply (GQlt_trans yp) in Hxy; [ | easy ].
-      now apply GQlt_irrefl in Hxy.
-   ++remember (GQcompare yp zp) as b2 eqn:Hb2; symmetry in Hb2.
-     destruct b2; GQcompare_iff.
-    **now subst yp; apply GQlt_irrefl in Hxy.
-    **apply (GQlt_trans _ _ zp) in Hb1; [ | easy ].
-      rewrite (proj2 (GQcompare_lt_iff _ _)); [ cbn | easy ].
-      now apply GQsub_lt_mono_r.
-    **cbn in Hxy; clear Hb2.
-      remember (GQcompare xp zp) as b3 eqn:Hb3; symmetry in Hb3.
-      destruct b3; GQcompare_iff; [ easy | cbn | easy ].
-      now apply GQsub_lt_mono_r.
-   ++cbn in Hxy.
-     specialize (GQlt_trans _ _ _ Hxy Hb1) as H.
-     rewrite (proj2 (GQcompare_gt_iff _ _)); [ cbn | easy ].
-     now apply GQsub_lt_mono_l.
- +idtac.
+-destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
+ +apply GQlt_add_r.
+ +now apply GQadd_lt_mono_l.
+ +cbn.
+  remember (GQcompare xp yp) as b1 eqn:Hb1; symmetry in Hb1.
+  destruct b1; GQcompare_iff; [ easy | easy | now apply GQsub_lt ].
+ +cbn.
+  remember (GQcompare xp yp) as b1 eqn:Hb1; symmetry in Hb1.
+  destruct b1; GQcompare_iff; [ easy | easy | cbn ].
+  apply (GQlt_trans _ xp); [ now apply GQsub_lt | apply GQlt_add_r ].
+ +cbn in Hxy; cbn.
+  remember (GQcompare xp yp) as b1 eqn:Hb1; symmetry in Hb1.
+  destruct b1; GQcompare_iff.
+  *subst xp.
+   remember (GQcompare yp zp) as b2 eqn:Hb2; symmetry in Hb2.
+   destruct b2; GQcompare_iff; [ | | easy ].
+  --now subst yp; apply GQlt_irrefl in Hxy.
+  --apply (GQlt_trans yp) in Hxy; [ | easy ].
+    now apply GQlt_irrefl in Hxy.
+  *remember (GQcompare xp zp) as b2 eqn:Hb2; symmetry in Hb2.
+   destruct b2; GQcompare_iff; [ easy | cbn | easy ].
+   now apply GQsub_lt_mono_r.
+  *remember (GQcompare xp zp) as b2 eqn:Hb2; symmetry in Hb2.
+   destruct b2; GQcompare_iff.
+  --subst xp.
+    apply (GQlt_trans yp) in Hxy; [ | easy ].
+    now apply GQlt_irrefl in Hxy.
+  --apply (GQlt_trans xp) in Hxy; [ | easy ].
+    apply (GQlt_trans yp) in Hxy; [ | easy ].
+    now apply GQlt_irrefl in Hxy.
+  --now apply GQsub_lt_mono_l.
+ +cbn.
+  remember (GQcompare xp zp) as b1 eqn:Hb1; symmetry in Hb1.
+  destruct b1; GQcompare_iff; [ easy | easy | now apply GQsub_lt ].
+ +cbn in Hxy; cbn.
+  remember (GQcompare xp yp) as b1 eqn:Hb1; symmetry in Hb1.
+  destruct b1; GQcompare_iff.
+  *subst xp.
+   remember (GQcompare yp zp) as b2 eqn:Hb2; symmetry in Hb2.
+   destruct b2; GQcompare_iff; [ | easy | ].
+  --now subst yp; apply GQlt_irrefl in Hxy.
+  --apply (GQlt_trans zp) in Hxy; [ | easy ].
+    now apply GQlt_irrefl in Hxy.
+  *remember (GQcompare xp zp) as b2 eqn:Hb2; symmetry in Hb2.
+   destruct b2; GQcompare_iff.
+  --subst xp.
+    apply (GQlt_trans zp) in Hxy; [ | easy ].
+    now apply GQlt_irrefl in Hxy.
+  --now apply GQsub_lt_mono_r.
+  --apply (GQlt_trans xp) in Hxy; [ | easy ].
+    apply (GQlt_trans zp) in Hxy; [ | easy ].
+    now apply GQlt_irrefl in Hxy.
+  *remember (GQcompare xp zp) as b2 eqn:Hb2; symmetry in Hb2.
+   destruct b2; GQcompare_iff; [ easy | easy | cbn ].
+   now apply GQsub_lt_mono_l.
+ +apply GQlt_add_r.
+ +cbn.
+  remember (GQcompare xp zp) as b1 eqn:Hb1; symmetry in Hb1.
+  destruct b1; GQcompare_iff; [ easy | easy | cbn ].
+  apply (GQlt_trans _ xp); [ now apply GQsub_lt | apply GQlt_add_r ].
+ +now apply GQadd_lt_mono_l.
+-idtac.
 ...
 
 Theorem NQadd_lt_mono_r : ∀ x y z, (x < y)%NQ ↔ (x + z < y + z)%NQ.
