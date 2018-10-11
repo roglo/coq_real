@@ -23,6 +23,8 @@ Definition PQone x := PQmake (PQden1 x) (PQden1 x).
 Definition PQ_of_nat n := PQmake (n - 1) 0.
 Definition PQ_of_pair n d := PQmake (n - 1) (d - 1).
 
+Notation "a // b" := (PQ_of_pair a b) (at level 32) : PQ_scope.
+
 (* equality *)
 
 Definition PQeq x y := nd x y = nd y x.
@@ -571,6 +573,13 @@ split; intros H.
 -apply Nat.add_lt_mono_r in H.
  apply Nat.mul_lt_mono_pos_r in H; [ easy | ].
  subst zd; simpl; flia.
+Qed.
+
+Theorem PQadd_lt_mono_l : ∀ x y z, (y < z)%PQ ↔ (x + y < x + z)%PQ.
+Proof.
+intros.
+setoid_rewrite PQadd_comm.
+apply PQadd_lt_mono_r.
 Qed.
 
 Theorem PQadd_le_mono_r : ∀ x y z, (x ≤ y ↔ x + z ≤ y + z)%PQ.

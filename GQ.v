@@ -317,6 +317,16 @@ tac_to_PQ.
 now rewrite PQmul_mul_swap.
 Qed.
 
+Theorem GQadd_lt_mono_l : ∀ x y z, (y < z)%GQ ↔ (x + y < x + z)%GQ.
+Proof.
+intros.
+unfold "+"%GQ, "<"%GQ.
+do 2 rewrite GQ_of_PQ_additive.
+do 2 rewrite PQ_of_GQ_additive.
+do 3 rewrite PQ_o_GQ.
+apply PQadd_lt_mono_l.
+Qed.
+
 Theorem GQadd_lt_mono_r : ∀ x y z, (x < y)%GQ ↔ (x + z < y + z)%GQ.
 Proof.
 intros.

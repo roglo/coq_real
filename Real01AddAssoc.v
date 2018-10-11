@@ -689,17 +689,15 @@ Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
   prop_carr (add_series u v) i.
 Proof.
 intros.
-unfold prop_carr, d2n.
 apply digit_eq_eq; simpl.
 unfold add_series.
-rewrite <- Nat.add_assoc, Nat.add_comm.
-rewrite <- Nat.add_assoc.
-rewrite Nat.add_mod_idemp_l; [ | easy ].
-rewrite Nat.add_assoc, Nat.add_comm.
 do 2 rewrite <- Nat.add_assoc.
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
+unfold prop_carr at 1, d2n; simpl.
+rewrite Nat.add_mod_idemp_l; [ | easy ].
+rewrite <- Nat.add_assoc.
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
@@ -707,6 +705,7 @@ rename i into j.
 unfold nat_prop_carr at 1.
 destruct (LPO_fst (fA_ge_1_ε v j)) as [H1| H1].
 -idtac.
+Search (∀ _, fA_ge_1_ε _ _ _ = true).
 ...
 
 Theorem truc {r : radix} : ∀ x u,

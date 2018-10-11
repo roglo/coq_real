@@ -545,9 +545,40 @@ apply GQlt_le_incl.
 now apply GQsub_lt.
 Qed.
 
+Theorem NQadd_lt_mono_l : ∀ x y z, (y < z)%NQ ↔ (x + y < x + z)%NQ.
+Proof.
+intros *.
+split; intros Hxy.
+-destruct x as [| xp| xp]; [ easy | | ].
+ +destruct y as [| yp| yp].
+  *destruct z as [| zp| zp]; [ easy | apply GQlt_add_r | easy ].
+  *destruct z as [| zp| zp]; [ easy | now apply GQadd_lt_mono_l | easy ].
+  *cbn.
+   remember (GQcompare xp yp) as b1 eqn:Hb1; symmetry in Hb1.
+   destruct z as [| zp| zp]; cbn.
+  --destruct b1; GQcompare_iff; [ easy | easy | now apply GQsub_lt ].
+  --destruct b1; GQcompare_iff; [ easy | easy | cbn ].
+    apply (GQlt_trans _ xp); [ now apply GQsub_lt | apply GQlt_add_r ].
+  --destruct b1; GQcompare_iff.
+   ++subst xp.
+     remember (GQcompare yp zp) as b2 eqn:Hb2; symmetry in Hb2.
+     destruct b2; GQcompare_iff; [ | | easy ].
+    **now subst yp; apply GQlt_irrefl in Hxy.
+    **cbn in Hxy.
+...
+
+Theorem NQadd_lt_mono_r : ∀ x y z, (x < y)%NQ ↔ (x + z < y + z)%NQ.
+Proof.
+intros *.
+...
+Require Import ZArith.
+Search (_ + _ < _ + _)%Z.
+...
+
 Theorem NQadd_le_mono : ∀ x y z t,
   (x ≤ y)%NQ → (z ≤ t)%NQ → (x + z ≤ y + t)%NQ.
 Proof.
+...
 intros * Hxy Hzt.
 unfold "+"%NQ, "≤"%NQ.
 destruct x as [| px| px].
