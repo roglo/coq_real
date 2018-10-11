@@ -611,7 +611,14 @@ split; intros Hxy.
   destruct b1; GQcompare_iff; [ easy | easy | cbn ].
   apply (GQlt_trans _ xp); [ now apply GQsub_lt | apply GQlt_add_r ].
  +now apply GQadd_lt_mono_l.
--idtac.
+-destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
+ +now apply GQlt_irrefl in Hxy.
+ +cbn in Hxy.
+  remember (GQcompare xp zp) as b1 eqn:Hb1; symmetry in Hb1.
+  destruct b1; GQcompare_iff; [ easy | easy | exfalso ].
+  apply GQnle_gt in Hxy; apply Hxy.
+  now apply GQsub_le.
+ +idtac.
 ...
 
 Theorem NQadd_lt_mono_r : ∀ x y z, (x < y)%NQ ↔ (x + z < y + z)%NQ.

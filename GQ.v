@@ -398,6 +398,12 @@ rewrite PQ_of_GQ_subtractive; [ | easy ].
 now apply PQsub_lt.
 Qed.
 
+Theorem GQsub_le : ∀ x y, (y < x)%GQ → (x - y ≤ x)%GQ.
+Proof.
+intros * Hyx.
+now apply GQlt_le_incl, GQsub_lt.
+Qed.
+
 Theorem GQadd_le_mono_r : ∀ x y z, (x ≤ y)%GQ ↔ (x + z ≤ y + z)%GQ.
 Proof.
 intros *.
