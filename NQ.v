@@ -1,12 +1,13 @@
 (* Positive rationals where num and den are always common primes *)
 (* allowing us to use Leibnitz' equality. *)
 
-Require Import Utf8 Arith (* Morphisms *) Psatz.
-Require Import GQ (*Nat_ggcd*).
+Require Import Utf8 Arith Psatz.
+Require Import GQ.
 Set Nested Proofs Allowed.
 
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 
+Declare Scope NQ_scope.
 Delimit Scope NQ_scope with NQ.
 
 Inductive NQ :=
