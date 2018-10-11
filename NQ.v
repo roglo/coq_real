@@ -889,6 +889,35 @@ destruct y as [| yp| yp]; [ now destruct z | | ].
  now apply GQmul_le_mono_l.
 Qed.
 
+Theorem NQmul_lt_mono_pos_l : ∀ x y z,
+  (0 < x)%NQ → (y < z)%NQ ↔ (x * y < x * z)%NQ.
+Proof.
+intros * Hx.
+split.
+-intros Hyz.
+ destruct x as [| xp| xp]; [ easy | | easy ].
+ destruct y as [| yp| yp]; [ now destruct z | | ].
+ +destruct z as [| zp| zp]; [ easy | | easy ].
+Require Import ZArith.
+Search (_ * _ < _ * _)%positive.
+...
+Pos.mul_lt_mono_r:
+  ∀ p q r : positive, (q < r)%positive ↔ (q * p < r * p)%positive
+Pos.mul_lt_mono_l:
+  ∀ p q r : positive, (q < r)%positive ↔ (p * q < p * r)%positive
+Pos.mul_lt_mono:
+  ∀ p q r s : positive,
+    (p < q)%positive → (r < s)%positive → (p * r < q * s)%positive
+
+Check Z.mul_lt_mono_pos_l.
+...
+  now apply GQmul_lt_mono_pos_l.
+ +destruct z as [| zp| zp]; [ easy | easy | ].
+  now apply GQmul_le_mono_l.
+...
+
+Z.mul_lt_mono_pos_r: ∀ p n m : Z, (0 < p)%Z → (n < m)%Z ↔ (n * p < m * p)%Z
+
 Theorem NQle_pair : ∀ x y z t,
   y ≠ 0 → t ≠ 0 → (x // y ≤ z // t)%NQ ↔ x * t ≤ y * z.
 Proof.

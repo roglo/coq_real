@@ -123,6 +123,7 @@ Hint Resolve digit_lt_radix digit_le_pred_radix.
 
 (* Frac Real *)
 
+Declare Scope freal_scope.
 Delimit Scope freal_scope with F.
 
 Record FracReal {r : radix} := { freal : nat → digit }.
@@ -1825,6 +1826,19 @@ destruct a as [| ap| ap].
 -unfold NQfrac.
  apply (NQadd_lt_mono_r _ _ (1 // rad)).
  rewrite NQsub_add, NQadd_0_l.
+ apply NQlt_pair; [ easy | easy | ].
+Require Import ZArith.
+Search (_ * _ < _ * _)%Z.
+...
+Z.mul_lt_mono_pos_l: ∀ p n m : Z, (0 < p)%Z → (n < m)%Z ↔ (p * n < p * m)%Z
+Z.mul_lt_mono_pos_r: ∀ p n m : Z, (0 < p)%Z → (n < m)%Z ↔ (n * p < m * p)%Z
+Check Z.mul_le_mono_nonneg_l.
+Check NQmul_lt_mono_pos_l.
+Search (_ * _ < _ * _)%NQ.
+...
+ apply NQmul_lt_mono_pos_r.
+Theorem NQmul_lt_mono_nonneg_l:
+  ∀ x y z, (0 < x)%NQ → (y ≤ z)%NQ → (x * y < x * z)%NQ
 ...
 remember (n - i - 1) as s eqn:Hs.
 move s before n.

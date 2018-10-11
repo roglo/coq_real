@@ -1099,13 +1099,33 @@ rewrite GQmul_comm.
 apply GQmul_1_l.
 Qed.
 
-Theorem GQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%GQ.
+Theorem GQmul_le_mono_l : ∀ x y z, (x ≤ y ↔ z * x ≤ z * y)%GQ.
 Proof.
-intros * Hxy.
-unfold "≤"%GQ; simpl.
-apply PQred_le_r, PQred_le_l.
-now apply PQmul_le_mono_l.
+intros *.
+split; intros Hxy.
+-unfold "≤"%GQ; cbn.
+ apply PQred_le_r, PQred_le_l.
+ now apply PQmul_le_mono_l.
+-unfold "≤"%GQ in Hxy; cbn in Hxy.
+...
 Qed.
+
+Require Import ZArith.
+Check Pos.mul_le_mono_l.
+
+Theorem GQmul_lt_mono_l : ∀ x y z, (x < y)%GQ ↔ (z * x < z * y)%GQ.
+Proof.
+intros.
+...
+
+Theorem Pos.mul_lt_mono_r:
+  ∀ p q r : positive, (q < r)%positive ↔ (q * p < r * p)%positive
+Pos.mul_lt_mono:
+  ∀ p q r s : positive,
+    (p < q)%positive → (r < s)%positive → (p * r < q * s)%positive
+
+Theorem GQmul_lt_mono_pos_l : ∀ p n m, (0 < p)%GQ → (n < m)%GQ ↔ (p * n < p * m)%GQ.
+...
 
 Definition GQfrac gq := GQ_of_PQ (PQfrac (PQ_of_GQ gq)).
 Definition GQintg gq := PQintg (PQ_of_GQ gq).
