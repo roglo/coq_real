@@ -600,6 +600,30 @@ rewrite <- GQsub_add_distr; [ | now rewrite GQadd_comm ].
 now rewrite GQadd_comm.
 Qed.
 
+Theorem GQsub_lt_mono_l : ∀ x y z, (x < y)%GQ → (y < z)%GQ → (z - y < z - x)%GQ.
+Proof.
+intros * Hxy Hyz.
+apply (GQadd_lt_mono_r _ _ y).
+rewrite GQsub_add; [ | easy ].
+rewrite GQadd_comm.
+rewrite GQadd_sub_assoc; [ | now apply (GQlt_trans _ y) ].
+apply (GQadd_lt_mono_l x).
+remember (x + z)%GQ as a.
+rewrite GQadd_comm; subst a.
+rewrite GQsub_add; [ now apply GQadd_lt_mono_r | ].
+apply (GQlt_trans _ y); [ easy | ].
+apply GQlt_add_r.
+Qed.
+
+Theorem GQsub_lt_mono_r : ∀ x y z, (x < y)%GQ → (z < x)%GQ → (x - z < y - z)%GQ.
+Proof.
+intros * Hxy Hyz.
+apply (GQadd_lt_mono_r _ _ z).
+rewrite GQsub_add; [ | easy ].
+rewrite GQsub_add; [ easy | ].
+now apply (GQlt_trans _ x).
+Qed.
+
 Theorem GQle_add_l : ∀ x y, (x ≤ y + x)%GQ.
 Proof.
 intros.

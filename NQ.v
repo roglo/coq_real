@@ -565,6 +565,23 @@ split; intros Hxy.
      destruct b2; GQcompare_iff; [ | | easy ].
     **now subst yp; apply GQlt_irrefl in Hxy.
     **cbn in Hxy.
+      apply (GQlt_trans yp) in Hxy; [ | easy ].
+      now apply GQlt_irrefl in Hxy.
+   ++remember (GQcompare yp zp) as b2 eqn:Hb2; symmetry in Hb2.
+     destruct b2; GQcompare_iff.
+    **now subst yp; apply GQlt_irrefl in Hxy.
+    **apply (GQlt_trans _ _ zp) in Hb1; [ | easy ].
+      rewrite (proj2 (GQcompare_lt_iff _ _)); [ cbn | easy ].
+      now apply GQsub_lt_mono_r.
+    **cbn in Hxy; clear Hb2.
+      remember (GQcompare xp zp) as b3 eqn:Hb3; symmetry in Hb3.
+      destruct b3; GQcompare_iff; [ easy | cbn | easy ].
+      now apply GQsub_lt_mono_r.
+   ++cbn in Hxy.
+     specialize (GQlt_trans _ _ _ Hxy Hb1) as H.
+     rewrite (proj2 (GQcompare_gt_iff _ _)); [ cbn | easy ].
+     now apply GQsub_lt_mono_l.
+ +idtac.
 ...
 
 Theorem NQadd_lt_mono_r : ∀ x y z, (x < y)%NQ ↔ (x + z < y + z)%NQ.
