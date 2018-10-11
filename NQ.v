@@ -252,6 +252,14 @@ destruct x as [| xp| xp], y as [| yp| yp]; try now simpl.
 -apply GQnlt_ge.
 Qed.
 
+Theorem NQlt_irrefl : ∀ x, ¬ (x < x)%NQ.
+Proof.
+intros * Hx.
+destruct x as [| xp| xp]; [ easy | | ].
+-now apply GQlt_irrefl in Hx.
+-now apply GQlt_irrefl in Hx.
+Qed.
+
 Theorem NQadd_swap_lemma1 : ∀ px py pz,
   match GQcompare (px + py) pz with
   | Eq => 0%NQ
@@ -618,7 +626,40 @@ split; intros Hxy.
   destruct b1; GQcompare_iff; [ easy | easy | exfalso ].
   apply GQnle_gt in Hxy; apply Hxy.
   now apply GQsub_le.
- +idtac.
+ +exfalso; apply GQnle_gt in Hxy; apply Hxy, GQle_add_r.
+ +cbn in Hxy; cbn.
+  now apply GQadd_lt_mono_l in Hxy.
+ +cbn in Hxy; cbn.
+  remember (GQcompare xp zp) as b1 eqn:Hb1; symmetry in Hb1.
+  destruct b1; GQcompare_iff; [ easy | easy | ].
+  apply (GQlt_trans xp) in Hxy; [ | apply GQlt_add_r ].
+  now apply GQnle_gt in Hxy; apply Hxy, GQsub_le.
+ +cbn in Hxy; cbn.
+  remember (GQcompare xp yp) as b1 eqn:Hb1; symmetry in Hb1.
+  destruct b1; GQcompare_iff.
+  *subst xp.
+   remember (GQcompare yp zp) as b2 eqn:Hb2; symmetry in Hb2.
+   destruct b2; GQcompare_iff; [ | easy | easy ].
+   now apply NQlt_irrefl in Hxy.
+  *remember (GQcompare xp zp) as b2 eqn:Hb2; symmetry in Hb2.
+   destruct b2; GQcompare_iff; [ now subst xp | | ].
+  --cbn in Hxy.
+    apply -> (GQadd_lt_mono_r (zp - xp)%GQ (yp - xp)%GQ xp) in Hxy.
+    rewrite GQsub_add in Hxy; [ | easy ].
+    rewrite GQsub_add in Hxy; [ | easy ].
+    easy.
+  --now apply (GQlt_trans _ xp).
+  *cbn in Hxy.
+   remember (GQcompare xp zp) as b2 eqn:Hb2; symmetry in Hb2.
+   destruct b2; GQcompare_iff; [ easy | easy | cbn ].
+   apply GQnle_gt; intros Hyz.
+   apply GQnle_gt in Hxy; apply Hxy; clear Hxy.
+   now apply GQsub_le_mono_l.
+ +now apply NQlt_irrefl in Hxy.
+ +cbn in Hxy; exfalso.
+  apply GQnle_gt in Hxy; apply Hxy.
+  apply GQle_add_r.
+ +cbn in Hxy; exfalso.
 ...
 
 Theorem NQadd_lt_mono_r : ∀ x y z, (x < y)%NQ ↔ (x + z < y + z)%NQ.
