@@ -1823,15 +1823,8 @@ remember (rad * (i + 3)) as n eqn:Hn.
 remember (A i n u) as a eqn:Ha; symmetry in Ha.
 destruct a as [| ap| ap].
 -unfold NQfrac.
-...
- apply NQadd_lt_mono_r.
-...
-Search NQfrac.
-Require Import GQ.
-Search GQfrac.
-Require Import PQ.
-Search PQfrac.
-unfold NQfrac, GQfrac, PQfrac.
+ apply (NQadd_lt_mono_r _ _ (1 // rad)).
+ rewrite NQsub_add, NQadd_0_l.
 ...
 remember (n - i - 1) as s eqn:Hs.
 move s before n.

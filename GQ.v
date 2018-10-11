@@ -373,6 +373,20 @@ Proof. intros; apply PQnlt_ge. Qed.
 Theorem GQlt_le_incl : ∀ x y, (x < y)%GQ → (x ≤ y)%GQ.
 Proof. intros x y; apply PQlt_le_incl. Qed.
 
+Theorem GQeq_dec : ∀ x y : GQ, {x = y} + {x ≠ y}.
+Proof.
+intros.
+destruct (GQle_lt_dec x y) as [H1| H1].
+-destruct (GQle_lt_dec y x) as [H2| H2].
+ +now left; apply GQle_antisymm.
+ +right; intros H; subst x.
+  now apply GQlt_irrefl in H2.
+-destruct (GQle_lt_dec y x) as [H2| H2].
+ +right; intros H; subst x.
+  now apply GQlt_irrefl in H1.
+ +now left; apply GQle_antisymm; apply GQlt_le_incl.
+Qed.
+
 Theorem GQlt_trans : ∀ x y z, (x < y)%GQ → (y < z)%GQ → (x < z)%GQ.
 Proof. intros x y z; apply PQlt_trans. Qed.
 

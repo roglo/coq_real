@@ -66,6 +66,20 @@ Notation "x ≤ y" := (NQle x y) : NQ_scope.
 Notation "x > y" := (NQgt x y) : NQ_scope.
 Notation "x ≥ y" := (NQge x y) : NQ_scope.
 
+Theorem NQeq_dec : ∀ x y : NQ, {x = y} + {x ≠ y}.
+Proof.
+intros.
+destruct x as [| px| px], y as [| py| py]; try now right.
+-now left.
+-destruct (GQeq_dec px py) as [H1| H1]; [ left | right ].
+ +now f_equal.
+ +now intros H; apply H1; injection H; intros.
+-destruct (GQeq_dec px py) as [H1| H1]; [ left | right ].
+ +now f_equal.
+ +now intros H; apply H1; injection H; intros.
+Qed.
+Arguments NQeq_dec x%NQ y%NQ.
+
 Theorem NQlt_le_dec : ∀ x y : NQ, {(x < y)%NQ} + {(y ≤ x)%NQ}.
 Proof.
 intros.
@@ -660,125 +674,77 @@ split; intros Hxy.
   apply GQnle_gt in Hxy; apply Hxy.
   apply GQle_add_r.
  +cbn in Hxy; exfalso.
-...
+  remember (GQcompare xp yp) as b1 eqn:Hb1; symmetry in Hb1.
+  destruct b1; GQcompare_iff; [ easy | easy | cbn in Hxy ].
+  apply GQnle_gt in Hxy; apply Hxy.
+  now apply GQsub_le.
+ +cbn in Hxy; cbn.
+  remember (GQcompare xp yp) as b1 eqn:Hb1; symmetry in Hb1.
+  destruct b1; GQcompare_iff.
+  *subst xp.
+   remember (GQcompare yp zp) as b2 eqn:Hb2; symmetry in Hb2.
+   destruct b2; GQcompare_iff; [ | easy | easy ].
+   now apply NQlt_irrefl in Hxy.
+  *remember (GQcompare xp zp) as b2 eqn:Hb2; symmetry in Hb2.
+   destruct b2; GQcompare_iff; [ now subst xp | | ].
+  --cbn in Hxy.
+    apply -> (GQadd_lt_mono_r (yp - xp)%GQ (zp - xp)%GQ xp) in Hxy.
+    rewrite GQsub_add in Hxy; [ | easy ].
+    rewrite GQsub_add in Hxy; [ | easy ].
+    easy.
+  --now apply (GQlt_trans _ xp).
+  *cbn in Hxy.
+   remember (GQcompare xp zp) as b2 eqn:Hb2; symmetry in Hb2.
+   destruct b2; GQcompare_iff; [ now subst xp | | ].
+  --now apply (GQlt_trans _ xp).
+  --apply GQnle_gt in Hxy; apply GQnle_gt; intros H; apply Hxy.
+    now apply GQsub_le_mono_l.
+ +cbn in Hxy; cbn.
+  remember (GQcompare xp yp) as b1 eqn:Hb1; symmetry in Hb1.
+  destruct b1; GQcompare_iff; [ easy | easy | cbn in Hxy ].
+  apply GQnle_gt in Hxy; apply Hxy.
+  apply (GQle_trans _ xp); [ now apply GQsub_le | apply GQle_add_r ].
+ +cbn in Hxy; cbn.
+  apply GQnle_gt in Hxy; apply GQnle_gt; intros H; apply Hxy.
+  now apply GQadd_le_mono_l.
+Qed.
+Arguments NQadd_lt_mono_l x%NQ y%NQ z%NQ.
 
 Theorem NQadd_lt_mono_r : ∀ x y z, (x < y)%NQ ↔ (x + z < y + z)%NQ.
 Proof.
 intros *.
-...
-Require Import ZArith.
-Search (_ + _ < _ + _)%Z.
-...
+setoid_rewrite NQadd_comm.
+apply NQadd_lt_mono_l.
+Qed.
+Arguments NQadd_lt_mono_r x%NQ y%NQ z%NQ.
+
+Theorem NQlt_le_incl : ∀ x y, (x < y)%NQ → (x ≤ y)%NQ.
+Proof.
+intros * Hxy.
+destruct x as [| xp| xp], y as [| yp| yp]; try easy.
+-now apply GQlt_le_incl.
+-now apply GQlt_le_incl.
+Qed.
 
 Theorem NQadd_le_mono : ∀ x y z t,
   (x ≤ y)%NQ → (z ≤ t)%NQ → (x + z ≤ y + t)%NQ.
 Proof.
-...
 intros * Hxy Hzt.
-unfold "+"%NQ, "≤"%NQ.
-destruct x as [| px| px].
--destruct y as [| py| py]; [ now destruct t | | easy ].
- destruct z as [| pz| pz]; [ now destruct t | | ].
- +destruct t as [| pt| pt]; [ easy | simpl | easy ].
-  simpl in Hzt.
-  eapply GQle_trans; [ apply Hzt | ].
-  apply GQlt_le_incl, GQlt_add_l.
- +destruct t as [| pt| pt]; [ easy | easy | ].
-  simpl in Hzt; simpl.
-  remember (GQcompare py pt) as b eqn:Hb; symmetry in Hb.
-  destruct b; GQcompare_iff; [ easy | | easy ].
-  eapply GQle_trans; [ | apply Hzt ].
-  apply GQlt_le_incl.
-  now apply GQsub_lt.
--destruct y as [| py| py]; [ now destruct t | | easy ].
- destruct z as [| pz| pz]; simpl.
- +destruct t as [| pt| pt]; [ easy | simpl | easy ].
-  eapply GQle_trans; [ apply Hxy | apply GQle_add_r ].
- +destruct t as [| pt| pt]; [ easy | simpl | easy ].
-  now apply GQadd_le_mono.
- +remember (GQcompare px pz) as b eqn:Hb; symmetry in Hb.
-  destruct b; GQcompare_iff.
-  *destruct t as [| pt| pt]; [ easy | easy | simpl ].
-   remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
-   destruct b1; GQcompare_iff; [ easy | | easy ].
-   subst px; simpl in Hxy, Hzt.
-   apply GQnle_gt in Hb1; apply Hb1.
-   eapply GQle_trans; [ apply Hzt | apply Hxy ].
-  *destruct t as [| pt| pt]; [ easy | easy | simpl ].
-   remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
-   destruct b1; GQcompare_iff; [ easy | | easy ].
-   simpl in Hxy, Hzt.
-   now apply GQsub_le_mono.
-  *destruct t as [| pt| pt]; simpl.
-  --apply (GQle_trans _ (py - pz)).
-   ++apply GQsub_le_mono_r; [ easy | | easy ].
-     eapply GQlt_le_trans; [ apply Hb | apply Hxy ].
-   ++apply GQlt_le_incl, GQsub_lt.
-     eapply GQlt_le_trans; [ apply Hb | apply Hxy ].
-  --apply (GQle_trans _ px).
-   ++now apply GQlt_le_incl, GQsub_lt.
-   ++apply (GQle_trans _ py); [ easy | apply GQle_add_r ].
-  --remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
-    destruct b1; GQcompare_iff.
-   ++subst py.
-     apply GQnle_gt in Hb; apply Hb.
-     eapply GQle_trans; [ apply Hxy | apply Hzt ].
-   ++apply GQnle_gt in Hb; apply Hb.
-     eapply GQle_trans; [ apply Hxy | ].
-     eapply GQle_trans; [ apply GQlt_le_incl, Hb1 | easy ].
-   ++now apply GQsub_le_mono.
--destruct z as [| pz| pz]; simpl.
- +destruct y as [| py| py]; [ now destruct t | now destruct t | ].
-  destruct t as [| pt| pt]; [ easy | simpl | easy ].
-  remember (GQcompare py pt) as b eqn:Hb; symmetry in Hb.
-  destruct b; GQcompare_iff; [ easy | easy | ].
-  apply (GQle_trans _ py); [ | easy ].
-  now apply GQlt_le_incl, GQsub_lt.
- +destruct t as [| pt| pt]; [ easy | simpl | easy ].
-  remember (GQcompare px pz) as b eqn:Hb; symmetry in Hb.
-  destruct b; GQcompare_iff.
-  *destruct y as [| py| py]; [ easy | easy | ].
-   remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
-   destruct b1; GQcompare_iff; [ easy | easy | subst px ].
-   apply GQnle_gt in Hb1; apply Hb1.
-   now apply (GQle_trans _ pz).
-  *destruct y as [| py| py].
-  --apply (GQle_trans _ pz); [ | easy ].
-    now apply GQlt_le_incl, GQsub_lt.
-  --apply (GQle_trans _ pz).
-   ++now apply GQlt_le_incl, GQsub_lt.
-   ++apply (GQle_trans _ pt); [ easy | apply GQle_add_l ].
-  --remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
-    destruct b1; GQcompare_iff.
-   ++subst py.
-     apply GQnle_gt in Hb; apply Hb.
-     eapply GQle_trans; [ apply Hzt | apply Hxy ].
-   ++now apply GQsub_le_mono.
-   ++apply GQnle_gt in Hb; apply Hb.
-     eapply GQle_trans; [ apply Hzt | ].
-     eapply GQle_trans; [ apply GQlt_le_incl, Hb1 | easy ].
-  *destruct y as [| py| py]; [ easy | easy | ].
-   remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
-   destruct b1; GQcompare_iff; [ easy | easy | ].
-   now apply GQsub_le_mono.
- +destruct y as [| py| py].
-  *destruct t as [| pt| pt]; [ easy | easy | ].
-   apply (GQle_trans _ pz); [ easy | ].
-   apply GQle_add_l.
-  *destruct t as [| pt| pt]; [ easy | easy | simpl ].
-   remember (GQcompare py pt) as b1 eqn:Hb1; symmetry in Hb1.
-   destruct b1; GQcompare_iff; [ easy | | easy ].
-   apply (GQle_trans _ pt).
-  --now apply GQlt_le_incl, GQsub_lt.
-  --apply (GQle_trans _ pz); [ easy | apply GQle_add_l ].
-  *destruct t as [| pt| pt]; simpl.
-  --apply (GQle_trans _ px); [ easy | apply GQle_add_r ].
-  --remember (GQcompare py pt) as b eqn:Hb; symmetry in Hb.
-    destruct b; GQcompare_iff; [ easy | easy | ].
-    apply (GQle_trans _ px); [ | apply GQle_add_r ].
-    apply (GQle_trans _ py); [ | easy ].
-    now apply GQlt_le_incl, GQsub_lt.
-  --now apply GQadd_le_mono.
+destruct (NQeq_dec x y) as [H1| H1].
+-subst x.
+ destruct (NQeq_dec z t) as [H2| H2].
+ +subst z; apply NQle_refl.
+ +apply NQlt_le_incl, NQadd_lt_mono_l, NQnle_gt.
+  now intros H; apply H2, NQle_antisymm.
+-destruct (NQeq_dec z t) as [H2| H2].
+ +subst z.
+  apply NQlt_le_incl, NQadd_lt_mono_r, NQnle_gt.
+  now intros H; apply H1, NQle_antisymm.
+ +apply (NQle_trans _ (x + t)).
+  *apply NQlt_le_incl, NQadd_lt_mono_l, NQnle_gt.
+   now intros H; apply H2, NQle_antisymm.
+  *apply NQlt_le_incl, NQadd_lt_mono_r, NQnle_gt.
+   now intros H; apply H1, NQle_antisymm.
 Qed.
 Arguments NQadd_le_mono x%NQ y%NQ z%NQ t%NQ.
 
