@@ -1324,135 +1324,40 @@ rewrite ggcd_mul_mono_l; [ | easy ].
 now destruct (ggcd (S xn * S yn) (S xd * S yd)).
 Qed.
 
-Theorem PQred_lt_l : ∀ x y, (x < y)%PQ ↔ (PQred x < y)%PQ.
+Theorem PQred_eq : ∀ x, (PQred x == x)%PQ.
 Proof.
-intros *.
-unfold PQred.
-remember (Nat.gcd (PQnum1 x + 1) (PQden1 x + 1)) as a eqn:Ha.
-erewrite ggcd_split; [ | apply Ha ].
-unfold "<"%PQ, nd; simpl.
-assert (Haz : a ≠ 0). {
-  intros H; rewrite Ha in H.
-  apply Nat.gcd_eq_0_l in H.
-  now rewrite Nat.add_1_r in H.
-}
-specialize (Nat.gcd_divide_l (PQnum1 x + 1) (PQden1 x + 1)) as (c1, Hc1).
-rewrite <- Ha in Hc1; rewrite Hc1.
-rewrite Nat.div_mul; [ | easy ].
-specialize (Nat.gcd_divide_r (PQnum1 x + 1) (PQden1 x + 1)) as (c2, Hc2).
-rewrite <- Ha in Hc2; rewrite Hc2.
-rewrite Nat.div_mul; [ | easy ].
+intros (xn, xd).
+unfold PQred; simpl.
+(**)
+remember (ggcd (xn + 1) (xd + 1)) as g eqn:Hg; symmetry in Hg.
+destruct g as (g, (aa, bb)).
+unfold "=="%PQ, nd; simpl.
+specialize (ggcd_correct_divisors (xn + 1) (xd + 1)) as H.
+rewrite Hg in H.
+destruct H as (Hxn, Hxd).
 rewrite Nat.sub_add; cycle 1. {
-  destruct c1; [ | flia ].
-  now rewrite Nat.add_1_r in Hc1.
+  destruct aa; [ | flia ].
+  now rewrite Nat.add_1_r, Nat.mul_0_r in Hxn.
 }
 rewrite Nat.sub_add; cycle 1. {
-  destruct c2; [ | flia ].
-  now rewrite Nat.add_1_r in Hc2.
+  destruct bb; [ | flia ].
+  now rewrite Nat.add_1_r, Nat.mul_0_r in Hxd.
 }
-rewrite Nat.mul_assoc, Nat.mul_shuffle0.
-split; intros Hyx.
--apply Nat.mul_lt_mono_pos_r in Hyx; [ easy | ].
- destruct a; [ | flia ].
- now rewrite Nat.add_1_r, Nat.mul_0_r in Hc1.
--apply Nat.mul_lt_mono_pos_r; [ | easy ].
- destruct a; [ | flia ].
- now rewrite Nat.add_1_r, Nat.mul_0_r in Hc1.
+rewrite Hxn, Hxd.
+now rewrite Nat.mul_comm, Nat.mul_shuffle0.
 Qed.
 
-Theorem PQred_lt_r : ∀ x y, (x < y)%PQ → (x < PQred y)%PQ.
-Proof.
-(* do the same thing as PQred_lt_l (equivalence instead of implication) *)
-intros * Hyx.
-unfold PQred.
-remember (Nat.gcd (PQnum1 y + 1) (PQden1 y + 1)) as a eqn:Ha.
-erewrite ggcd_split; [ | apply Ha ].
-unfold "<"%PQ, nd; simpl.
-assert (Haz : a ≠ 0). {
-  intros H; rewrite Ha in H.
-  apply Nat.gcd_eq_0_l in H.
-  now rewrite Nat.add_1_r in H.
-}
-specialize (Nat.gcd_divide_l (PQnum1 y + 1) (PQden1 y + 1)) as (c1, Hc1).
-rewrite <- Ha in Hc1; rewrite Hc1.
-rewrite Nat.div_mul; [ | easy ].
-specialize (Nat.gcd_divide_r (PQnum1 y + 1) (PQden1 y + 1)) as (c2, Hc2).
-rewrite <- Ha in Hc2; rewrite Hc2.
-rewrite Nat.div_mul; [ | easy ].
-rewrite Nat.sub_add.
--rewrite Nat.sub_add.
- +rewrite (Nat.mul_lt_mono_pos_r a); [ | flia Haz ].
-  rewrite <- Nat.mul_assoc, <- Hc2.
-  rewrite Nat.mul_shuffle0, <- Hc1.
-  easy.
- +destruct c1; [ flia Hc1 | flia ].
--destruct c2; [ flia Hc2 | flia ].
-Qed.
+Theorem PQred_lt_l : ∀ x y, (x < y)%PQ ↔ (PQred x < y)%PQ.
+Proof. intros; now rewrite PQred_eq. Qed.
+
+Theorem PQred_lt_r : ∀ x y, (x < y ↔ x < PQred y)%PQ.
+Proof. intros; now rewrite PQred_eq. Qed.
 
 Theorem PQred_le_l : ∀ x y, (x ≤ y)%PQ ↔ (PQred x ≤ y)%PQ.
-Proof.
-intros *.
-destruct (PQeq_dec x y) as [H1| H1].
--rewrite H1.
- destruct y as (yn, yd); simpl.
- unfold "≤"%PQ, nd; simpl.
- unfold PQred; simpl.
- remember (ggcd (yn + 1) (yd + 1)) as g eqn:Hg; symmetry in Hg.
- destruct g as (g, (aa, bb)); simpl.
- specialize (ggcd_correct_divisors (yn + 1) (yd + 1)) as Hy.
- rewrite Hg in Hy; destruct Hy as (Hyn, Hyd).
- rewrite Nat.add_1_r, Nat.mul_comm in Hyn, Hyd.
- rewrite Nat.sub_add; [ | destruct aa; flia Hyn ].
- rewrite Nat.sub_add; [ | destruct bb; flia Hyd ].
- rewrite Nat.mul_comm in Hyn, Hyd.
- split; intros Hyx; [ | easy ].
- apply (Nat.mul_le_mono_pos_l _ _ g); [ destruct g; flia Hyn | ].
- rewrite Nat.mul_assoc, <- Hyn.
- rewrite Nat.mul_assoc, Nat.mul_shuffle0, <- Hyd.
- flia.
--split; intros Hyx.
- +apply PQlt_le_incl.
-  apply -> PQred_lt_l.
-  apply PQnle_gt.
-  intros H2; apply H1.
-  now apply PQle_antisymm.
- +apply PQlt_le_incl.
-  apply PQred_lt_l.
-...
-
-idtac.
--intros Hyx.
- destruct (PQeq_dec x y) as [H1|H1].
- +rewrite H1; apply PQle_refl.
- +Check PQred_lt_l.
-...
-Qed.
+Proof. intros; now rewrite PQred_eq. Qed.
 
 Theorem PQred_le_r : ∀ x y, (x ≤ y)%PQ → (x ≤ PQred y)%PQ.
-Proof.
-intros * Hyx.
-destruct (PQeq_dec x y) as [H1| H1].
--rewrite H1.
- destruct y as (yn, yd); simpl.
- unfold "≤"%PQ, nd; simpl.
- unfold PQred; simpl.
- remember (ggcd (yn + 1) (yd + 1)) as g eqn:Hg; symmetry in Hg.
- destruct g as (g, (aa, bb)); simpl.
- specialize (ggcd_correct_divisors (yn + 1) (yd + 1)) as Hy.
- rewrite Hg in Hy; destruct Hy as (Hyn, Hyd).
- rewrite Nat.add_1_r, Nat.mul_comm in Hyn, Hyd.
- rewrite Nat.sub_add; [ | destruct bb; flia Hyd ].
- rewrite Nat.sub_add; [ | destruct aa; flia Hyn ].
- rewrite Nat.mul_comm in Hyn, Hyd.
- apply (Nat.mul_le_mono_pos_l _ _ g); [ destruct g; flia Hyn | ].
- rewrite Nat.mul_assoc, Nat.mul_shuffle0, <- Hyd.
- rewrite Nat.mul_assoc, <- Hyn.
- flia.
--apply PQlt_le_incl, PQred_lt_r.
- apply PQnle_gt.
- intros H2; apply H1.
- now apply PQle_antisymm.
-Qed.
+Proof. intros; now rewrite PQred_eq. Qed.
 
 Theorem PQred_add_l : ∀ x y, PQred (x + y) = PQred (PQred x + y).
 Proof.
@@ -1504,7 +1409,9 @@ Theorem PQred_sub_l : ∀ x y, (y < x)%PQ → PQred (x - y) = PQred (PQred x - y
 Proof.
 intros * Hyx.
 remember (Nat.gcd (PQnum1 x + 1) (PQden1 x + 1)) as a eqn:Ha.
-rewrite (PQred_sub_mul_one_l (PQred x) y (a - 1)); [ | now apply PQred_lt_r ].
+rewrite (PQred_sub_mul_one_l (PQred x) y (a - 1)); cycle 1. {
+  now apply -> PQred_lt_r.
+}
 destruct x as (xn, xd).
 simpl in Ha.
 unfold "*"%PQ; simpl.
@@ -1549,7 +1456,9 @@ Theorem PQred_sub_r : ∀ x y, (y < x)%PQ → PQred (x - y) = PQred (x - PQred y
 Proof.
 intros * Hyx.
 remember (Nat.gcd (PQnum1 y + 1) (PQden1 y + 1)) as a eqn:Ha.
-rewrite (PQred_sub_mul_one_r x (PQred y) (a - 1)); [ | now apply PQred_lt_l ].
+rewrite (PQred_sub_mul_one_r x (PQred y) (a - 1)); cycle 1. {
+  now apply -> PQred_lt_l.
+}
 destruct y as (yn, yd).
 simpl in Ha.
 unfold "*"%PQ; simpl.
@@ -1605,7 +1514,7 @@ Proof.
 intros.
 rewrite PQred_sub_l; [ | easy ].
 rewrite PQred_sub_r; [ easy | ].
-now apply PQred_lt_r.
+now apply -> PQred_lt_r.
 Qed.
 
 Theorem PQred_mul_l : ∀ x y, PQred (x * y) = PQred (PQred x * y).
