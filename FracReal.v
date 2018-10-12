@@ -1547,6 +1547,10 @@ Qed.
 *)
 
 (**)
+(*
+Theorem NQmul_pair_l : ∀ a b x, b ≠ 0 → (a // b * x)%NQ = ((a * NQnum x) // (b * NQden x))%NQ.
+*)
+
 Theorem A_upper_bound_for_add_3 {r : radix} : ∀ u i n,
   (∀ k, u (i + k + 2) ≤ 2 * (rad - 1))
   → u (i + 1) < rad - 2
@@ -1568,7 +1572,21 @@ apply (NQle_lt_trans _ ((rad - 3) // rad + 2 * (1 - 1 // rad ^ s))%NQ).
  +apply NQle_pair; [ easy | easy | ].
   rewrite Nat.mul_comm, <- Nat.add_1_r.
   apply Nat.mul_le_mono_pos_l; [ easy | flia H1 ].
- +idtac.
+ +destruct s; [ flia Hs His | ].
+  rewrite NQpower_summation_inv; [ | flia Hr ].
+  rewrite NQsub_pair_pos; [ | easy | easy | ]; cycle 1. {
+    apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | easy ].
+  }
+  do 2 rewrite Nat.mul_1_l.
+...
+  rewrite NQmul_pair_l; [ | easy ].
+  rewrite Nat.mul_1_l.
+...
+  rewrite NQmul_assoc, summation_mul_distr_l.
+  unfold A.
+  rewrite summation_shift; [ | flia His ].
+  replace (n - 1 - (S i + 1)) with s by flia Hs.
+  apply (@summation_le_compat NQ_ord_ring_def).
 
 ...
 remember (n - i - 2) as s eqn:Hs.

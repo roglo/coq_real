@@ -35,6 +35,19 @@ Notation "0" := NQ0 : NQ_scope.
 Notation "1" := (1 // 1)%NQ : NQ_scope.
 Notation "2" := (2 // 1)%NQ : NQ_scope.
 
+Definition NQnum x :=
+  match x with
+  | NQ0 => 0
+  | NQpos a => GQnum a
+  | NQneg a => GQnum a
+  end.
+Definition NQden x :=
+  match x with
+  | NQ0 => 1
+  | NQpos a => GQden a
+  | NQneg a => GQden a
+  end.
+
 Definition NQcompare x y :=
   match x with
   | NQ0 => match y with NQ0 => Eq | NQpos _ => Lt | NQneg _ => Gt end
@@ -1129,19 +1142,6 @@ destruct a.
   setoid_rewrite Nat.mul_comm in Hb1.
   flia Hlt Hb1.
 Qed.
-
-Definition NQnum x :=
-  match x with
-  | NQ0 => 0
-  | NQpos a => GQnum a
-  | NQneg a => GQnum a
-  end.
-Definition NQden x :=
-  match x with
-  | NQ0 => 1
-  | NQpos a => GQden a
-  | NQneg a => GQden a
-  end.
 
 Definition NQfrac x := ((NQnum x mod NQden x) // NQden x)%NQ.
 (*
