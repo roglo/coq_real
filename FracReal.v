@@ -1546,6 +1546,60 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
 Qed.
 *)
 
+(**)
+Theorem A_upper_bound_for_add_3 {r : radix} : ∀ u i n,
+  (∀ k, u (i + k + 2) ≤ 2 * (rad - 1))
+  → u (i + 1) < rad - 2
+  → i + 2 ≤ n - 1
+  → (A i n u < 1 - 1 // rad)%NQ.
+Proof.
+intros * Hur H1 His.
+rewrite A_split_first; [ | flia His ].
+...
+remember (n - i - 2) as s eqn:Hs.
+apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
+-apply Nat.add_le_mono.
+ +apply Nat.mul_le_mono_pos_r; [ | flia H1 ].
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+ +destruct s; [ flia Hs His | ].
+  rewrite power_summation_sub_1; [ | easy ].
+  rewrite Nat.mul_assoc, summation_mul_distr_l.
+  remember 2 as x; simpl; subst x.
+  unfold nA.
+  rewrite summation_rtl.
+  rewrite summation_shift; [ | flia His ].
+  replace (n - 1 - (S i + 1)) with s by flia Hs.
+  apply (@summation_le_compat nat_ord_ring_def).
+  intros j Hj.
+  remember 2 as x; simpl; subst x; unfold Nat.le.
+  replace (n - 1 + S (i + 1) - S (i + 1 + j)) with (n - j - 1) by flia.
+  replace (n - 1 - (n - j - 1)) with j by flia Hs Hj.
+  apply Nat.mul_le_mono_pos_r.
+  *now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *specialize (Hur (n - j - 3 - i)).
+   replace (i + (n - j - 3 - i) + 2) with (n - j - 1) in Hur by flia Hs Hj.
+   easy.
+-replace (rad - 3) with (rad - 1 - 2) by flia.
+ rewrite Nat.mul_sub_distr_r.
+ rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+ remember (2 * rad ^ s) as x eqn:Hx.
+ rewrite Nat.add_sub_assoc.
+ +rewrite Nat.sub_add.
+  *apply Nat.sub_lt; [ | flia ].
+   destruct s; [ flia Hs His | ].
+   replace 2 with (1 * 2) by flia.
+   apply Nat.mul_le_mono; [ flia H1 | ].
+   replace 2 with (2 ^ 1) by apply Nat.pow_1_r.
+   apply Nat.pow_le_mono; [ easy | apply radix_ge_2 | flia ].
+  *subst x.
+   destruct rad as [| rr]; [ easy | ].
+   destruct rr; [ easy | ].
+   destruct rr; [ easy | simpl; flia ].
+ +replace 2 with (2 * 1) by flia.
+  rewrite Hx.
+  apply Nat.mul_le_mono_l.
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+Qed.
 (*
 Theorem nA_upper_bound_for_add_3 {r : radix} : ∀ u i n,
   (∀ k, u (i + k + 2) ≤ 2 * (rad - 1))
@@ -1599,7 +1653,9 @@ apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
   apply Nat.mul_le_mono_l.
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
+*)
 
+(*
 Theorem nA_upper_bound_for_add_4 {r : radix} : ∀ u i j n,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → u (i + 1) = rad - 1
@@ -1827,16 +1883,8 @@ rewrite NQsub_pair_pos; [ | easy | easy | ]; cycle 1. {
 }
 do 2 rewrite Nat.mul_1_l.
 apply NQlt_pair; [ apply NQden_neq_0 | easy | ].
-
 ...
-(**)
-destruct a as [| ap| ap].
--unfold NQfrac.
- apply (NQadd_lt_mono_r _ _ (1 // rad)).
- rewrite NQsub_add, NQadd_0_l.
- apply NQlt_pair; [ easy | easy | ].
- apply Nat.mul_lt_mono_pos_r; [ apply Nat.lt_0_1 | easy ].
--idtac.
+specialize (A_upper_bound_for_add_3) as H2.
 ...
 remember (n - i - 1) as s eqn:Hs.
 move s before n.
