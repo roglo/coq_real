@@ -29,7 +29,7 @@ Definition NQ_of_pair n d :=
   | _ => NQpos (GQ_of_pair n d)
   end.
 
-Notation "a // b" := (NQ_of_pair a b) (at level 32) : NQ_scope.
+Notation "a // b" := (NQ_of_pair a b) : NQ_scope.
 
 Notation "0" := NQ0 : NQ_scope.
 Notation "1" := (1 // 1)%NQ : NQ_scope.
@@ -555,6 +555,7 @@ destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
 -eapply GQle_lt_trans; [ apply Hxy | apply Hyz ].
 -eapply GQlt_le_trans; [ apply Hyz | apply Hxy ].
 Qed.
+Arguments NQle_lt_trans x%NQ y%NQ z%NQ.
 
 Theorem NQle_add_l : ∀ x y, (0 ≤ y)%NQ → (x ≤ y + x)%NQ.
 Proof.

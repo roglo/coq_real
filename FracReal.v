@@ -1554,7 +1554,18 @@ Theorem A_upper_bound_for_add_3 {r : radix} : ∀ u i n,
   → (A i n u < 1 - 1 // rad)%NQ.
 Proof.
 intros * Hur H1 His.
+specialize radix_ge_2 as Hr.
+(*
+rewrite NQsub_pair_pos; [ | easy | easy | ]; cycle 1. {
+  apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | easy ].
+}
+do 2 rewrite Nat.mul_1_l.
+*)
 rewrite A_split_first; [ | flia His ].
+remember (n - i - 2) as s eqn:Hs.
+apply (NQle_lt_trans _ (1 - 3 // rad + 2 * (1 - 1 // rad ^ s))%NQ).
+-apply NQadd_le_mono.
+
 ...
 remember (n - i - 2) as s eqn:Hs.
 apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).

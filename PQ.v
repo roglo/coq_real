@@ -5,6 +5,7 @@ Require Import Misc.
 Set Nested Proofs Allowed.
 
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
+Reserved Notation "a // b" (at level 32).
 
 Declare Scope PQ_scope.
 Delimit Scope PQ_scope with PQ.
@@ -24,7 +25,7 @@ Definition PQone x := PQmake (PQden1 x) (PQden1 x).
 Definition PQ_of_nat n := PQmake (n - 1) 0.
 Definition PQ_of_pair n d := PQmake (n - 1) (d - 1).
 
-Notation "a // b" := (PQ_of_pair a b) (at level 32) : PQ_scope.
+Notation "a // b" := (PQ_of_pair a b) : PQ_scope.
 
 (* equality *)
 
