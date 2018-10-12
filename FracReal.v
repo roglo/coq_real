@@ -1547,10 +1547,6 @@ Qed.
 *)
 
 (**)
-(*
-Theorem NQmul_pair_l : ∀ a b x, b ≠ 0 → (a // b * x)%NQ = ((a * NQnum x) // (b * NQden x))%NQ.
-*)
-
 Theorem A_upper_bound_for_add_3 {r : radix} : ∀ u i n,
   (∀ k, u (i + k + 2) ≤ 2 * (rad - 1))
   → u (i + 1) < rad - 2
@@ -1559,12 +1555,6 @@ Theorem A_upper_bound_for_add_3 {r : radix} : ∀ u i n,
 Proof.
 intros * Hur H1 His.
 specialize radix_ge_2 as Hr.
-(*
-rewrite NQsub_pair_pos; [ | easy | easy | ]; cycle 1. {
-  apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | easy ].
-}
-do 2 rewrite Nat.mul_1_l.
-*)
 rewrite A_split_first; [ | flia His ].
 remember (n - i - 2) as s eqn:Hs.
 apply (NQle_lt_trans _ ((rad - 3) // rad + 2 * (1 - 1 // rad ^ s))%NQ).
@@ -1586,7 +1576,14 @@ apply (NQle_lt_trans _ ((rad - 3) // rad + 2 * (1 - 1 // rad ^ s))%NQ).
   rewrite summation_mul_distr_r.
   apply (@summation_le_compat NQ_ord_ring_def).
   intros j Hj.
-
+  remember 2 as x; remember 1 as y; cbn; subst x y.
+  rewrite Nat.mul_1_l.
+  replace (i + 1 + j - i) with (S j) by flia.
+  replace (S (i + 1 + j)) with (i + j + 2) by flia.
+  rewrite NQmul_pair; [ | now apply Nat.pow_nonzero | easy ].
+  rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+  do 2 rewrite Nat.mul_1_r.
+  rewrite <- Nat.pow_succ_r'.
 ...
 remember (n - i - 2) as s eqn:Hs.
 apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
