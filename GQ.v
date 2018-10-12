@@ -1134,5 +1134,8 @@ apply (GQlt_trans _ (x * t)).
 -now apply GQmul_lt_mono_r.
 Qed.
 
+Definition GQnum x := PQnum1 (PQ_of_GQ x) + 1.
+Definition GQden x := PQden1 (PQ_of_GQ x) + 1.
+
 Definition GQfrac gq := GQ_of_PQ (PQfrac (PQ_of_GQ gq)).
 Definition GQintg gq := PQintg (PQ_of_GQ gq).

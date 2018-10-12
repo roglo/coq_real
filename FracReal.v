@@ -1821,9 +1821,8 @@ unfold min_n.
 rewrite Nat.add_0_r, Nat.pow_1_r.
 remember (rad * (i + 3)) as n eqn:Hn.
 remember (A i n u) as a eqn:Ha; symmetry in Ha.
-Print NQfrac.
-Print GQ.GQfrac.
-Print PQ.PQfrac.
+unfold NQfrac.
+...
 (**)
 destruct a as [| ap| ap].
 -unfold NQfrac.

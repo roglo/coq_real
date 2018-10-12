@@ -1129,13 +1129,30 @@ destruct a.
   flia Hlt Hb1.
 Qed.
 
+Definition NQnum x :=
+  match x with
+  | NQ0 => 0
+  | NQpos a => GQnum a
+  | NQneg a => GQnum a
+  end.
+Definition NQden x :=
+  match x with
+  | NQ0 => 0
+  | NQpos a => GQden a
+  | NQneg a => GQden a
+  end.
+
+Definition NQfrac x := ((NQnum x mod NQden x) // NQden x)%NQ.
+(*
 Definition NQfrac q :=
   match q with
   | NQ0 => (0 // 1)%NQ
   | NQpos gq => NQpos (GQfrac gq)
   | NQneg gq => NQneg (GQfrac gq)
   end.
+*)
 
+(* à redéfinir *)
 Definition NQintg q :=
   match q with
   | NQ0 => 0
