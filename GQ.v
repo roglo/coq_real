@@ -1101,27 +1101,30 @@ Qed.
 
 Theorem GQmul_le_mono_l : ∀ x y z, (x ≤ y ↔ z * x ≤ z * y)%GQ.
 Proof.
-intros *.
-split; intros Hxy.
--unfold "≤"%GQ; cbn.
- apply PQred_le_r, PQred_le_l.
- now apply PQmul_le_mono_l.
--unfold "≤"%GQ in Hxy; cbn in Hxy.
- unfold "≤"%GQ; cbn.
-Search (PQred _ ≤ _)%PQ.
-...
+intros.
+unfold "≤"%GQ; cbn.
+do 2 rewrite PQred_eq.
+apply PQmul_le_mono_l.
 Qed.
-
-Require Import ZArith.
-Check Pos.mul_le_mono_l.
 
 Theorem GQmul_lt_mono_l : ∀ x y z, (x < y)%GQ ↔ (z * x < z * y)%GQ.
 Proof.
 intros.
+unfold "<"%GQ; cbn.
+do 2 rewrite PQred_eq.
+split; intros H.
+-now apply PQmul_lt_cancel_l.
+-now apply PQmul_lt_cancel_l in H.
+Qed.
+
+Theorem GQmul_lt_mono_r : ∀ x y z, (x < y)%GQ ↔ (x * z < y * z)%GQ.
+Proof.
+setoid_rewrite GQmul_comm.
+apply GQmul_lt_mono_l.
+Qed.
+
 ...
 
-Theorem Pos.mul_lt_mono_r:
-  ∀ p q r : positive, (q < r)%positive ↔ (q * p < r * p)%positive
 Pos.mul_lt_mono:
   ∀ p q r s : positive,
     (p < q)%positive → (r < s)%positive → (p * r < q * s)%positive

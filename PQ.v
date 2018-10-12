@@ -1014,7 +1014,7 @@ unfold PQmul_num1, PQmul_den1; simpl; PQtac1; repeat PQtac2; f_equal.
 -now rewrite Nat.mul_shuffle0.
 Qed.
 
-Theorem PQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%PQ.
+Theorem PQmul_le_mono_l : ∀ x y z, (x ≤ y ↔ z * x ≤ z * y)%PQ.
 Proof.
 intros *.
 unfold "≤"%PQ, nd; simpl.
@@ -1022,17 +1022,21 @@ unfold PQmul_num1, PQmul_den1.
 do 10 rewrite Nat.add_1_r.
 do 4 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
 do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
-intros Hxy.
 do 2 rewrite Nat.mul_assoc.
 setoid_rewrite Nat.mul_shuffle0.
-apply Nat.mul_le_mono_r.
-do 2 rewrite <- Nat.mul_assoc.
-now apply Nat.mul_le_mono_l.
+split; intros Hxy.
+-apply Nat.mul_le_mono_r.
+ do 2 rewrite <- Nat.mul_assoc.
+ now apply Nat.mul_le_mono_l.
+-apply Nat.mul_le_mono_pos_r in Hxy; [ | flia ].
+ do 2 rewrite <- Nat.mul_assoc in Hxy.
+ apply Nat.mul_le_mono_pos_l in Hxy; [ | flia ].
+ easy.
 Qed.
 
-Theorem PQmul_le_mono_r : ∀ x y z, (x ≤ y → x * z ≤ y * z)%PQ.
+Theorem PQmul_le_mono_r : ∀ x y z, (x ≤ y ↔ x * z ≤ y * z)%PQ.
 Proof.
-intros * Hxy.
+intros *.
 setoid_rewrite PQmul_comm.
 now apply PQmul_le_mono_l.
 Qed.
