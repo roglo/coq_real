@@ -137,8 +137,6 @@ Arguments fd2n _ x%F i%nat.
 Theorem fold_fd2n {r : radix} : ∀ x i, dig (freal x i) = fd2n x i.
 Proof. easy. Qed.
 
-Require Import PQ Nat_ggcd.
-
 Theorem NQpower_summation (rg := NQ_ord_ring) : ∀ a n,
   a > 1
   → (Σ (i = 0, n), 1 // a ^ i = (a ^ S n - 1) // (a ^ n * (a - 1)))%NQ.
@@ -1823,6 +1821,9 @@ unfold min_n.
 rewrite Nat.add_0_r, Nat.pow_1_r.
 remember (rad * (i + 3)) as n eqn:Hn.
 remember (A i n u) as a eqn:Ha; symmetry in Ha.
+Print NQfrac.
+Print GQ.GQfrac.
+Print PQ.PQfrac.
 (**)
 destruct a as [| ap| ap].
 -unfold NQfrac.
@@ -1830,7 +1831,7 @@ destruct a as [| ap| ap].
  rewrite NQsub_add, NQadd_0_l.
  apply NQlt_pair; [ easy | easy | ].
  apply Nat.mul_lt_mono_pos_r; [ apply Nat.lt_0_1 | easy ].
--unfold NQfrac.
+-idtac.
 ...
 remember (n - i - 1) as s eqn:Hs.
 move s before n.
