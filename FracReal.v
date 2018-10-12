@@ -1823,13 +1823,14 @@ unfold min_n.
 rewrite Nat.add_0_r, Nat.pow_1_r.
 remember (rad * (i + 3)) as n eqn:Hn.
 remember (A i n u) as a eqn:Ha; symmetry in Ha.
+(**)
 destruct a as [| ap| ap].
 -unfold NQfrac.
  apply (NQadd_lt_mono_r _ _ (1 // rad)).
  rewrite NQsub_add, NQadd_0_l.
  apply NQlt_pair; [ easy | easy | ].
  apply Nat.mul_lt_mono_pos_r; [ apply Nat.lt_0_1 | easy ].
--idtac.
+-unfold NQfrac.
 ...
 remember (n - i - 1) as s eqn:Hs.
 move s before n.
