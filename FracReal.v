@@ -1585,6 +1585,10 @@ apply (NQle_lt_trans _ ((rad - 3) // rad + 2 // rad * (1 - 1 // rad ^ s))%NQ).
   }
   do 2 rewrite Nat.mul_1_r.
   rewrite <- Nat.mul_assoc, <- Nat.pow_succ_r', Nat.mul_comm.
+  rewrite <- Nat.pow_succ_r'.
+  apply NQle_pair; try now apply Nat.pow_nonzero.
+  rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono_l, Hur.
 -idtac.
 ...
 remember (n - i - 2) as s eqn:Hs.
