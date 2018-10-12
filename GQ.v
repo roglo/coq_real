@@ -389,6 +389,7 @@ Qed.
 
 Theorem GQlt_trans : ∀ x y z, (x < y)%GQ → (y < z)%GQ → (x < z)%GQ.
 Proof. intros x y z; apply PQlt_trans. Qed.
+Arguments GQlt_trans x%GQ y%GQ z%GQ t%GQ.
 
 Theorem GQle_trans : ∀ x y z, (x ≤ y)%GQ → (y ≤ z)%GQ → (x ≤ z)%GQ.
 Proof. intros x y z; apply PQle_trans. Qed.
@@ -400,6 +401,7 @@ Theorem GQle_lt_trans : ∀ x y z, (x ≤ y)%GQ → (y < z)%GQ → (x < z)%GQ.
 Proof. intros x y z; apply PQle_lt_trans. Qed.
 
 Arguments GQle_trans x%GQ y%GQ z%GQ.
+Arguments GQlt_le_trans x%GQ y%GQ z%GQ.
 Arguments GQle_lt_trans x%GQ y%GQ z%GQ.
 
 Theorem GQsub_lt : ∀ x y, (y < x)%GQ → (x - y < x)%GQ.
@@ -1123,14 +1125,14 @@ setoid_rewrite GQmul_comm.
 apply GQmul_lt_mono_l.
 Qed.
 
-...
-
-Pos.mul_lt_mono:
-  ∀ p q r s : positive,
-    (p < q)%positive → (r < s)%positive → (p * r < q * s)%positive
-
-Theorem GQmul_lt_mono_pos_l : ∀ p n m, (0 < p)%GQ → (n < m)%GQ ↔ (p * n < p * m)%GQ.
-...
+Theorem GQmul_lt_mono : ∀ x y z t,
+  (x < y)%GQ → (z < t)%GQ → (x * z < y * t)%GQ.
+Proof.
+intros * Hxy Hzt.
+apply (GQlt_trans _ (x * t)).
+-now apply GQmul_lt_mono_l.
+-now apply GQmul_lt_mono_r.
+Qed.
 
 Definition GQfrac gq := GQ_of_PQ (PQfrac (PQ_of_GQ gq)).
 Definition GQintg gq := PQintg (PQ_of_GQ gq).
