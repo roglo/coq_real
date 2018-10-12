@@ -1578,15 +1578,14 @@ apply (NQle_lt_trans _ ((rad - 3) // rad + 2 * (1 - 1 // rad ^ s))%NQ).
     apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | easy ].
   }
   do 2 rewrite Nat.mul_1_l.
-...
-  rewrite NQmul_pair_l; [ | easy ].
-  rewrite Nat.mul_1_l.
-...
   rewrite NQmul_assoc, summation_mul_distr_l.
   unfold A.
   rewrite summation_shift; [ | flia His ].
   replace (n - 1 - (S i + 1)) with s by flia Hs.
+  rewrite NQmul_pair; [ | easy | easy ].
+  rewrite summation_mul_distr_r.
   apply (@summation_le_compat NQ_ord_ring_def).
+  intros j Hj.
 
 ...
 remember (n - i - 2) as s eqn:Hs.
