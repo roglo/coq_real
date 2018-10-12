@@ -1137,7 +1137,7 @@ Definition NQnum x :=
   end.
 Definition NQden x :=
   match x with
-  | NQ0 => 0
+  | NQ0 => 1
   | NQpos a => GQden a
   | NQneg a => GQden a
   end.
