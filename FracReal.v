@@ -1563,8 +1563,12 @@ do 2 rewrite Nat.mul_1_l.
 *)
 rewrite A_split_first; [ | flia His ].
 remember (n - i - 2) as s eqn:Hs.
-apply (NQle_lt_trans _ (1 - 3 // rad + 2 * (1 - 1 // rad ^ s))%NQ).
+apply (NQle_lt_trans _ ((rad - 3) // rad + 2 * (1 - 1 // rad ^ s))%NQ).
 -apply NQadd_le_mono.
+ +apply NQle_pair; [ easy | easy | ].
+  rewrite Nat.mul_comm, <- Nat.add_1_r.
+  apply Nat.mul_le_mono_pos_l; [ easy | flia H1 ].
+ +idtac.
 
 ...
 remember (n - i - 2) as s eqn:Hs.
