@@ -1557,7 +1557,7 @@ intros * Hur H1 His.
 specialize radix_ge_2 as Hr.
 rewrite A_split_first; [ | flia His ].
 remember (n - i - 2) as s eqn:Hs.
-apply (NQle_lt_trans _ ((rad - 3) // rad + 2 * (1 - 1 // rad ^ s))%NQ).
+apply (NQle_lt_trans _ ((rad - 3) // rad + 2 // rad * (1 - 1 // rad ^ s))%NQ).
 -apply NQadd_le_mono.
  +apply NQle_pair; [ easy | easy | ].
   rewrite Nat.mul_comm, <- Nat.add_1_r.
@@ -1577,13 +1577,15 @@ apply (NQle_lt_trans _ ((rad - 3) // rad + 2 * (1 - 1 // rad ^ s))%NQ).
   apply (@summation_le_compat NQ_ord_ring_def).
   intros j Hj.
   remember 2 as x; remember 1 as y; cbn; subst x y.
-  rewrite Nat.mul_1_l.
   replace (i + 1 + j - i) with (S j) by flia.
   replace (S (i + 1 + j)) with (i + j + 2) by flia.
   rewrite NQmul_pair; [ | now apply Nat.pow_nonzero | easy ].
-  rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+  rewrite NQmul_pair; [ | | now apply Nat.pow_nonzero ]; cycle 1. {
+    now destruct rad.
+  }
   do 2 rewrite Nat.mul_1_r.
-  rewrite <- Nat.pow_succ_r'.
+  rewrite <- Nat.mul_assoc, <- Nat.pow_succ_r', Nat.mul_comm.
+-idtac.
 ...
 remember (n - i - 2) as s eqn:Hs.
 apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
