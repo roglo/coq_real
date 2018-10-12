@@ -1826,15 +1826,7 @@ rewrite NQsub_pair_pos; [ | easy | easy | ]; cycle 1. {
   apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | easy ].
 }
 do 2 rewrite Nat.mul_1_l.
-apply NQlt_pair; [ | easy | ]. {
-Theorem NQden_neq_0 : ∀ x, NQden x ≠ 0.
-...
-  destruct a; [ easy | | ].
-  -unfold NQden, GQ.GQden.
-   now rewrite Nat.add_1_r.
-  -unfold NQden, GQ.GQden.
-   now rewrite Nat.add_1_r.
-}
+apply NQlt_pair; [ apply NQden_neq_0 | easy | ].
 
 ...
 (**)

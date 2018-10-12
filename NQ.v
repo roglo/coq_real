@@ -1160,6 +1160,16 @@ Definition NQintg q :=
   | NQneg gq => GQintg gq
   end.
 
+Theorem NQden_neq_0 : ∀ x, NQden x ≠ 0.
+Proof.
+intros x.
+destruct x; [ easy | | ].
+-unfold NQden, GQden.
+ now rewrite Nat.add_1_r.
+-unfold NQden, GQden.
+ now rewrite Nat.add_1_r.
+Qed.
+
 Require Import Summation.
 
 Definition NQ_ord_ring_def :=
