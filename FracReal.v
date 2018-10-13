@@ -1592,15 +1592,17 @@ apply (NQle_lt_trans _ ((rad - 3) // rad + 2 // rad * (1 - 1 // rad ^ s))%NQ).
 -destruct (le_dec rad 3) as [Hr3| Hr3].
  +replace (rad - 3) with 0 by flia Hr3.
   rewrite NQadd_0_l.
-  rewrite NQmul_sub_distr_l, NQmul_1_r.
-  rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
-  rewrite Nat.mul_1_r, <- Nat.pow_succ_r'.
-  apply (NQadd_lt_mono_r _ _ (2 // rad ^ S s)).
-  rewrite NQsub_add.
+(* false! *)
 ...
-Theorem NQpair_sub_l : ∀ a b c, ((a - b) // c = a // c - b // c)
-
-rewrite NQsub_pair_pos.
+  enough (H : (2 // rad + 1 // rad < 1 + 2 // rad ^ S s)%NQ). {
+    rewrite NQmul_sub_distr_l, NQmul_1_r.
+    rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+    rewrite Nat.mul_1_r, <- Nat.pow_succ_r'.
+    apply (NQadd_lt_mono_r _ _ (2 // rad ^ S s + 1 // rad)%NQ).
+    rewrite NQadd_assoc, NQsub_add.
+    now rewrite NQadd_assoc, NQadd_add_swap, NQsub_add.
+  }
+  rewrite NQadd_pair_same_den; [ | easy ].
 ...
 remember (n - i - 2) as s eqn:Hs.
 apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).

@@ -1077,6 +1077,17 @@ destruct ab as [| pab| pab]; [ | | now destruct a ].
    now apply GQadd_pair.
 Qed.
 
+Theorem NQadd_pair_same_den : ∀ a b c,
+  a ≠ 0 → (b // a + c // a)%NQ = ((b + c) // a)%NQ.
+Proof.
+intros * Ha.
+rewrite NQadd_pair; [ | easy | easy ].
+rewrite Nat.mul_comm, <- Nat.mul_add_distr_l.
+rewrite <- NQmul_pair; [ | easy | easy ].
+rewrite NQpair_diag; [ | easy ].
+now rewrite NQmul_1_l.
+Qed.
+
 Theorem NQsub_pair_pos : ∀ a b c d,
   b ≠ 0 → d ≠ 0 → b * c < a * d
   → (a // b - c // d)%NQ = ((a * d - b * c) // (b * d))%NQ.
