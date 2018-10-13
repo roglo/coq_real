@@ -550,6 +550,16 @@ rewrite <- NQadd_assoc.
 now rewrite NQsub_diag, NQadd_0_r.
 Qed.
 
+Theorem NQlt_trans: ∀ x y z, (x < y)%NQ → (y < z)%NQ → (x < z)%NQ.
+Proof.
+intros * Hxy Hyz.
+unfold "≤"%NQ in *.
+destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
+-eapply GQlt_trans; [ apply Hxy | apply Hyz ].
+-eapply GQlt_trans; [ apply Hyz | apply Hxy ].
+Qed.
+Arguments NQlt_trans x%NQ y%NQ z%NQ.
+
 Theorem NQle_trans: ∀ x y z, (x ≤ y)%NQ → (y ≤ z)%NQ → (x ≤ z)%NQ.
 Proof.
 intros * Hxy Hyz.
