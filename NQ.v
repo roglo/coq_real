@@ -1201,6 +1201,19 @@ destruct x; [ easy | | ].
  now rewrite Nat.add_1_r.
 Qed.
 
+Theorem NQnum_den : ∀ x, x = (NQnum x // NQden x)%NQ.
+Proof.
+intros x.
+destruct x as [| px| px]; [ easy | | ].
+-unfold NQnum, NQden, "//"%NQ.
+ remember (GQnum px) as a eqn:Ha; symmetry in Ha.
+ destruct a; [ now apply GQnum_neq_0 in Ha | ].
+ rewrite <- Ha; f_equal.
+...
+ apply GQnum_den.
+
+...
+
 Require Import Summation.
 
 Definition NQ_ord_ring_def :=

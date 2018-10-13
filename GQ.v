@@ -1139,3 +1139,22 @@ Definition GQden x := PQden1 (PQ_of_GQ x) + 1.
 
 Definition GQfrac gq := GQ_of_PQ (PQfrac (PQ_of_GQ gq)).
 Definition GQintg gq := PQintg (PQ_of_GQ gq).
+
+Theorem GQnum_neq_0 : ∀ x, GQnum x ≠ 0.
+Proof.
+intros x.
+unfold GQnum.
+now rewrite Nat.add_1_r.
+Qed.
+
+Theorem GQnum_den : ∀ x, x = (GQnum x // GQden x)%GQ.
+Proof.
+intros x.
+apply GQeq_eq.
+unfold GQnum, GQden.
+unfold "//"%GQ, "//"%PQ.
+unfold GQ_of_PQ; cbn.
+do 2 rewrite Nat.add_sub.
+unfold PQred.
+simpl.
+...
