@@ -782,6 +782,15 @@ split; intros H.
 Qed.
 Arguments NQadd_le_r x%NQ y%NQ z%NQ.
 
+Theorem NQsub_lt : ∀ x y, (0 < x)%NQ → (y - x < y)%NQ.
+Proof.
+intros * Hxy.
+apply (NQadd_lt_mono_r _ _ x).
+rewrite NQsub_add.
+replace y with (y + 0)%NQ at 1 by apply NQadd_0_r.
+now apply NQadd_lt_mono_l.
+Qed.
+
 Theorem NQmul_pair : ∀ x y z t,
   y ≠ 0 → t ≠ 0 → ((x // y) * (z // t) = (x * z) // (y * t))%NQ.
 Proof.

@@ -1552,11 +1552,17 @@ Theorem A_upper_bound_for_add_3 {r : radix} : ∀ u i n,
   → u (i + 1) < rad - 2
   → i + 2 ≤ n - 1
   → (A i n u < 1 - 1 // rad)%NQ.
+(*
+  → nA i n u < (rad - 1) * rad ^ (n - i - 2).
+*)
 Proof.
 intros * Hur H1 His.
 specialize radix_ge_2 as Hr.
 rewrite A_split_first; [ | flia His ].
 remember (n - i - 2) as s eqn:Hs.
+(*
+apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
+*)
 apply (NQle_lt_trans _ ((rad - 3) // rad + 2 // rad * (1 - 1 // rad ^ s))%NQ).
 -apply NQadd_le_mono.
  +apply NQle_pair; [ easy | easy | ].
@@ -1589,20 +1595,17 @@ apply (NQle_lt_trans _ ((rad - 3) // rad + 2 // rad * (1 - 1 // rad ^ s))%NQ).
   apply NQle_pair; try now apply Nat.pow_nonzero.
   rewrite Nat.mul_comm.
   apply Nat.mul_le_mono_l, Hur.
--destruct (le_dec rad 3) as [Hr3| Hr3].
- +replace (rad - 3) with 0 by flia Hr3.
-  rewrite NQadd_0_l.
-(* false! *)
-...
-  enough (H : (2 // rad + 1 // rad < 1 + 2 // rad ^ S s)%NQ). {
-    rewrite NQmul_sub_distr_l, NQmul_1_r.
-    rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
-    rewrite Nat.mul_1_r, <- Nat.pow_succ_r'.
-    apply (NQadd_lt_mono_r _ _ (2 // rad ^ S s + 1 // rad)%NQ).
-    rewrite NQadd_assoc, NQsub_add.
-    now rewrite NQadd_assoc, NQadd_add_swap, NQsub_add.
-  }
-  rewrite NQadd_pair_same_den; [ | easy ].
+-rewrite NQmul_sub_distr_l.
+ rewrite NQmul_1_r, NQadd_assoc.
+ rewrite NQadd_pair_same_den; [ | easy ].
+ replace (rad - 3 + 2) with (rad - 1) by flia H1.
+ rewrite NQsub_pair_pos; [ | easy | easy | ]; cycle 1. {
+   apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_1 | easy ].
+ }
+ do 2 rewrite Nat.mul_1_l.
+ rewrite NQmul_pair; [ | easy | now apply Nat.pow_nonzero ].
+ rewrite Nat.mul_1_r, <- Nat.pow_succ_r'.
+ apply NQsub_lt.
 ...
 remember (n - i - 2) as s eqn:Hs.
 apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
