@@ -1209,8 +1209,14 @@ destruct x as [| px| px]; [ easy | | ].
  remember (GQnum px) as a eqn:Ha; symmetry in Ha.
  destruct a; [ now apply GQnum_neq_0 in Ha | ].
  rewrite <- Ha; f_equal.
-...
  apply GQnum_den.
+-unfold NQnum, NQden, "//"%NQ.
+ remember (GQnum px) as a eqn:Ha; symmetry in Ha.
+ destruct a; [ now apply GQnum_neq_0 in Ha | ].
+...
+ rewrite <- Ha; f_equal.
+ apply GQnum_den.
+-idtac.
 
 ...
 

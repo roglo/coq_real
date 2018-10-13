@@ -1155,6 +1155,22 @@ unfold GQnum, GQden.
 unfold "//"%GQ, "//"%PQ.
 unfold GQ_of_PQ; cbn.
 do 2 rewrite Nat.add_sub.
+remember (PQ_of_GQ x) as px eqn:Hpx; symmetry in Hpx.
 unfold PQred.
-simpl.
-...
+destruct px as (nx, dx).
+remember ggcd as f; cbn; subst f.
+remember (ggcd (nx + 1) (dx + 1)) as g eqn:Hg.
+symmetry in Hg.
+destruct g as (g, (aa, bb)).
+specialize (ggcd_correct_divisors (nx + 1) (dx + 1)) as H.
+rewrite Hg in H.
+destruct H as (Hnx, Hdx).
+specialize (PQred_gcd (PQ_of_GQ x)) as H.
+rewrite PQred_of_GQ in H.
+rewrite Hpx in H; cbn in H.
+rewrite <- ggcd_gcd in H.
+rewrite Hg in H; cbn in H; subst g.
+rewrite Nat.mul_1_l in Hdx, Hnx.
+subst aa bb.
+now do 2 rewrite Nat.add_sub.
+Qed.
