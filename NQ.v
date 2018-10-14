@@ -1201,24 +1201,16 @@ destruct x; [ easy | | ].
  now rewrite Nat.add_1_r.
 Qed.
 
-Theorem NQnum_den : ∀ x, x = (NQnum x // NQden x)%NQ.
+Theorem NQnum_den : ∀ x, (0 ≤ x)%NQ → x = (NQnum x // NQden x)%NQ.
 Proof.
-intros x.
-destruct x as [| px| px]; [ easy | | ].
--unfold NQnum, NQden, "//"%NQ.
- remember (GQnum px) as a eqn:Ha; symmetry in Ha.
- destruct a; [ now apply GQnum_neq_0 in Ha | ].
- rewrite <- Ha; f_equal.
- apply GQnum_den.
--unfold NQnum, NQden, "//"%NQ.
- remember (GQnum px) as a eqn:Ha; symmetry in Ha.
- destruct a; [ now apply GQnum_neq_0 in Ha | ].
-...
- rewrite <- Ha; f_equal.
- apply GQnum_den.
--idtac.
-
-...
+intros x Hx.
+destruct x as [| px| px]; [ easy | | easy ].
+unfold NQnum, NQden, "//"%NQ.
+remember (GQnum px) as a eqn:Ha; symmetry in Ha.
+destruct a; [ now apply GQnum_neq_0 in Ha | ].
+rewrite <- Ha; f_equal.
+apply GQnum_den.
+Qed.
 
 Require Import Summation.
 

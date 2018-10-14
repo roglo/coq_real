@@ -1895,8 +1895,8 @@ assert (Hin : i + 2 ≤ n - 1). {
 }
 specialize (A_upper_bound_for_add_3 u i n Hur H1 Hin) as H2.
 rewrite Ha in H2.
-replace a with (NQnum a // NQden a)%NQ in H2.
-Check NQnum_den.
+replace a with (NQnum a // NQden a)%NQ in H2; cycle 1. {
+  symmetry; apply NQnum_den.
 ...
 
 -eapply NQle_lt_trans; [ | apply H2 ].
