@@ -2013,6 +2013,18 @@ assert (Hin : i + 2 ≤ n - 1). {
   destruct rad; [ easy | simpl; flia ].
 }
 set (v j := if eq_nat_dec j (i + 1) then u j - rad else u j).
+assert (H2 : NQfrac (A i n u) = NQfrac (A i n v)). {
+  rewrite A_split_first; [ symmetry | flia Hin ].
+  rewrite A_split_first; [ symmetry | flia Hin ].
+unfold NQfrac.
+Search NQnum.
+Check Nat.add_mod.
+(* Num (n//r+x*1//r) ? *)
+unfold NQnum at 1.
+...
+
+rewrite NQadd_pair.
+  rewrite Nat.add_mod; [ symmetry | now apply Nat.pow_nonzero ].
 ...
 assert (H2 : nA i n u mod rad ^ s = nA i n v mod rad ^ s). {
   rewrite nA_split_first; [ symmetry | flia Hin ].
