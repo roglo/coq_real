@@ -1870,6 +1870,20 @@ replace ((rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))) with
 Qed.
 *)
 
+Theorem A_ge_0 {r : radix} : ∀ i n u, (0 ≤ A i n u)%NQ.
+Proof.
+intros.
+unfold A.
+set (rg := NQ_ord_ring).
+replace 0%NQ with (Σ (j = i + 1, n - 1), 0)%NQ.
+-apply summation_le_compat.
+ intros j Hj.
+ replace 0%NQ with (0 // 1)%NQ by easy.
+ apply NQle_pair; [ easy | now apply Nat.pow_nonzero | ].
+ apply Nat.le_0_l.
+-now apply all_0_summation_0.
+Qed.
+
 (**)
 Theorem A_ge_1_add_first_ge {r : radix} : ∀ u i,
   (∀ k, u (i + k + 2) ≤ 2 * (rad - 1))
@@ -1897,32 +1911,14 @@ specialize (A_upper_bound_for_add_3 u i n Hur H1 Hin) as H2.
 rewrite Ha in H2.
 replace a with (NQnum a // NQden a)%NQ in H2; cycle 1. {
   symmetry; apply NQnum_den.
-...
-
--eapply NQle_lt_trans; [ | apply H2 ].
- apply NQle_pair; [ apply NQden_neq_0 | apply NQden_neq_0 | ].
- rewrite Nat.mul_comm.
- apply Nat.mul_le_mono_l.
- apply Nat.mod_le, NQden_neq_0.
--
-...
-remember (n - i - 1) as s eqn:Hs.
-move s before n.
-assert (Hin : i + 2 ≤ n - 1). {
-  rewrite Hn.
-  specialize radix_ne_0 as H.
-  destruct rad; [ easy | simpl; flia ].
+  rewrite <- Ha; apply A_ge_0.
 }
-specialize (nA_upper_bound_for_add_3 u i n Hur H1 Hin) as H2.
-replace (n - i - 2) with (s - 1) in H2 by flia Hs.
-rewrite Nat.mod_small; [ easy | ].
-eapply lt_le_trans; [ apply H2 | ].
-rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
-rewrite <- Nat.pow_add_r.
-replace (1 + (s - 1)) with s by flia Hs Hin.
-flia.
-...
+eapply NQle_lt_trans; [ | apply H2 ].
+apply NQle_pair; [ apply NQden_neq_0 | apply NQden_neq_0 | ].
+rewrite Nat.mul_comm.
+apply Nat.mul_le_mono_l.
+apply Nat.mod_le, NQden_neq_0.
+Qed.
 (*
 Theorem A_ge_1_add_first_ge {r : radix} : ∀ u i,
   (∀ k, u (i + k + 2) ≤ 2 * (rad - 1))
@@ -2083,7 +2079,6 @@ assert (Hur2 : ∀ k, u (i + k + 2) ≤ 2 * (rad - 1)). {
   specialize (Hur (k + 1)).
   now replace (i + (k + 1) + 1) with (i + k + 2) in Hur by flia.
 }
-...
 specialize (A_ge_1_add_first_ge u i Hur2 Hu) as H1.
 ...
 (*
