@@ -2019,7 +2019,9 @@ assert (H2 : NQfrac (A i n u) = NQfrac (A i n v)). {
 unfold NQfrac.
 Search NQnum.
 Check Nat.add_mod.
-(* Num (n//r+x*1//r) ? *)
+(* Num (n//r+x*1//r) = Num (n//r+Num(x)//Den(x)*1//r)
+   = Num (n//r+Num(x)//(Den(x)*r))
+   = Num ((n*Den(x)+Num(x))//r) *)
 unfold NQnum at 1.
 ...
 
