@@ -2023,7 +2023,8 @@ assert (H2 : NQfrac (A i n u) = NQfrac (A i n v)). {
     subst x y.
 ...
   }
-  move y before x; unfold NQfrac; f_equal; [ | easy ].
+  unfold NQfrac; f_equal; [ | easy ].
+
 ...
 assert (H2 : nA i n u mod rad ^ s = nA i n v mod rad ^ s). {
   rewrite nA_split_first; [ symmetry | flia Hin ].
