@@ -2016,17 +2016,14 @@ set (v j := if eq_nat_dec j (i + 1) then u j - rad else u j).
 assert (H2 : NQfrac (A i n u) = NQfrac (A i n v)). {
   rewrite A_split_first; [ symmetry | flia Hin ].
   rewrite A_split_first; [ symmetry | flia Hin ].
-unfold NQfrac.
-Search NQnum.
-Check Nat.add_mod.
-(* Num (n//r+x*1//r) = Num (n//r+Num(x)//Den(x)*1//r)
-   = Num (n//r+Num(x)//(Den(x)*r))
-   = Num ((n*Den(x)+Num(x))//r) *)
-unfold NQnum at 1.
+  remember (u (S i) // rad + A (S i) n u * 1 // rad)%NQ as x eqn:Hx.
+  remember (v (S i) // rad + A (S i) n v * 1 // rad)%NQ as y eqn:Hy.
+  move y before x.
+  assert (Hd : NQden x = NQden y). {
+    subst x y.
 ...
-
-rewrite NQadd_pair.
-  rewrite Nat.add_mod; [ symmetry | now apply Nat.pow_nonzero ].
+  }
+  move y before x; unfold NQfrac; f_equal; [ | easy ].
 ...
 assert (H2 : nA i n u mod rad ^ s = nA i n v mod rad ^ s). {
   rewrite nA_split_first; [ symmetry | flia Hin ].
