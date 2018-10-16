@@ -2014,8 +2014,6 @@ assert (Hin : i + 2 ≤ n - 1). {
 }
 set (v j := if eq_nat_dec j (i + 1) then u j - rad else u j).
 assert (H2 : NQfrac (A i n u) = NQfrac (A i n v)). {
-Theorem GQfrac_NQfrac : ∀ x y,
-  GQ.GQfrac x = GQ.GQfrac y → NQfrac x = NQfrac y.
 ...
   rewrite A_split_first; [ symmetry | flia Hin ].
   rewrite A_split_first; [ symmetry | flia Hin ].
