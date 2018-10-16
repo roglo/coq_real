@@ -1174,14 +1174,7 @@ destruct a.
 Qed.
 
 Definition NQfrac x := ((NQnum x mod NQden x) // NQden x)%NQ.
-(*
-Definition NQfrac q :=
-  match q with
-  | NQ0 => (0 // 1)%NQ
-  | NQpos gq => NQpos (GQfrac gq)
-  | NQneg gq => NQneg (GQfrac gq)
-  end.
-*)
+Arguments NQfrac x%NQ.
 
 (* à redéfinir *)
 Definition NQintg q :=

@@ -2014,6 +2014,48 @@ assert (Hin : i + 2 ≤ n - 1). {
 }
 set (v j := if eq_nat_dec j (i + 1) then u j - rad else u j).
 assert (H2 : NQfrac (A i n u) = NQfrac (A i n v)). {
+Print NQfrac.
+Theorem glop : ∀ a b,
+  NQfrac (a // b) = if zerop a then 0%NQ else ((a mod b) // b)%NQ.
+Proof.
+intros.
+destruct a; [ easy | cbn ].
+unfold NQfrac; cbn.
+Require Import GQ. Show.
+unfold GQnum, GQden; cbn.
+Require Import PQ. Show.
+unfold PQred.
+Require Import Nat_ggcd. Show.
+remember (ggcd (PQnum1 (S a // b) + 1) (PQden1 (S a // b) + 1)) as g eqn:Hg.
+symmetry in Hg.
+destruct g as (g, (aa, bb)); cbn.
+remember ggcd as f; simpl in Hg; subst f.
+rewrite Nat.sub_0_r in Hg.
+destruct aa.
+specialize (ggcd_fst_snd (a + 1) (b - 1 + 1)) as H.
+rewrite Hg in H; cbn in H.
+symmetry in H.
+apply Nat.div_small_iff in H.
+exfalso; apply Nat.nle_gt in H; apply H.
+apply Nat_gcd_le_l; flia.
+intros H1.
+apply Nat.gcd_eq_0_l in H1; flia H1.
+rewrite Nat.sub_succ, Nat.sub_0_r.
+destruct bb.
+specialize (ggcd_snd_snd (a + 1) (b - 1 + 1)) as H.
+rewrite Hg in H; cbn in H.
+symmetry in H.
+apply Nat.div_small_iff in H.
+exfalso; apply Nat.nle_gt in H; apply H.
+apply Nat_gcd_le_r; flia.
+intros H1.
+apply Nat.gcd_eq_0_l in H1; flia H1.
+rewrite Nat.sub_succ, Nat.sub_0_r.
+destruct b.
+cbn in Hg.
+rewrite ggcd_1_r in Hg.
+injection Hg; clear Hg; intros; subst; easy.
+rewrite Nat.sub_succ, Nat.sub_0_r in Hg.
 ...
   rewrite A_split_first; [ symmetry | flia Hin ].
   rewrite A_split_first; [ symmetry | flia Hin ].
