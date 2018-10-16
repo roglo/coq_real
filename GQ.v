@@ -1139,6 +1139,7 @@ Definition GQden x := PQden1 (PQ_of_GQ x) + 1.
 
 Definition GQfrac gq := GQ_of_PQ (PQfrac (PQ_of_GQ gq)).
 Definition GQintg gq := PQintg (PQ_of_GQ gq).
+Arguments GQfrac gq%GQ.
 
 Theorem GQnum_neq_0 : ∀ x, GQnum x ≠ 0.
 Proof.
@@ -1173,4 +1174,82 @@ rewrite Hg in H; cbn in H; subst g.
 rewrite Nat.mul_1_l in Hdx, Hnx.
 subst aa bb.
 now do 2 rewrite Nat.add_sub.
+Qed.
+
+Theorem GQfrac_pair : ∀ a b, GQfrac (a // b) = ((a mod b) // b)%GQ.
+Proof.
+intros.
+unfold GQfrac; cbn.
+unfold PQred.
+remember (ggcd (PQnum1 (a // b) + 1) (PQden1 (a // b) + 1)) as g eqn:Hg.
+symmetry in Hg.
+destruct g as (g, (aa, bb)); cbn.
+remember ggcd as f; simpl in Hg; subst f.
+unfold PQfrac; cbn.
+destruct aa.
+-specialize (ggcd_fst_snd (a - 1 + 1) (b - 1 + 1)) as H.
+ rewrite Hg in H; cbn in H.
+ symmetry in H.
+ apply Nat.div_small_iff in H.
+ +exfalso; apply Nat.nle_gt in H; apply H.
+  apply Nat_gcd_le_l; flia.
+ +intros H1.
+  apply Nat.gcd_eq_0_l in H1; flia H1.
+-rewrite Nat.sub_succ, Nat.sub_0_r.
+ destruct bb.
+ +specialize (ggcd_snd_snd (a - 1 + 1) (b - 1 + 1)) as H.
+  rewrite Hg in H; cbn in H.
+  symmetry in H.
+  apply Nat.div_small_iff in H.
+  *exfalso; apply Nat.nle_gt in H; apply H.
+   apply Nat_gcd_le_r; flia.
+  *intros H1.
+   apply Nat.gcd_eq_0_l in H1; flia H1.
+ +rewrite Nat.sub_succ, Nat.sub_0_r.
+  destruct b.
+  *cbn in Hg.
+   rewrite ggcd_1_r in Hg.
+   injection Hg; clear Hg; intros; subst; easy.
+  *rewrite Nat.sub_succ, Nat.sub_0_r in Hg.
+   apply GQeq_eq.
+(*
+   remember (S b) as x; cbn; subst x.
+   unfold PQred.
+   remember ggcd as y.
+   remember (S b) as x; cbn; subst x y.
+   rewrite Nat.add_sub.
+   rewrite Nat.sub_succ, Nat.sub_0_r.
+...
+   apply ggcd_swap in Hg.
+   destruct a.
+  --cbn in Hg.
+    rewrite ggcd_1_r in Hg.
+    injection Hg; clear Hg; intros; subst.
+    cbn.
+    rewrite Nat.sub_diag.
+    destruct bb.
+   ++cbn.
+     unfold GQ_of_PQ.
+     cbn.
+     unfold PQred_gcd.
+    rewrite Nat.mod_1_l.
+...
+*)
+   specialize (ggcd_correct_divisors (a - 1 + 1) (b + 1)) as H.
+   rewrite Hg in H; destruct H as (Ha, Hb).
+   symmetry.
+   rewrite <- Nat.add_1_r, Hb.
+   rewrite Nat.mod_mul_r.
+   remember S as f; simpl; subst f.
+...
+remember div as f.
+cbn.
+
+, Nat.sub_0_r. Hb.
+
+   rewrite Nat.add_1_r in Ha, Hb; rewrite Ha, Hb.
+rewrite Nat.mul_mod_distr_l; [ | easy | now destruct g ].
+rewrite <- NQmul_pair; [ | now destruct g | easy ].
+rewrite NQpair_diag, NQmul_1_l; [ | now destruct g ].
+now do 2 rewrite Nat.add_1_r.
 Qed.
