@@ -1137,9 +1137,12 @@ Qed.
 Definition GQnum x := PQnum1 (PQ_of_GQ x) + 1.
 Definition GQden x := PQden1 (PQ_of_GQ x) + 1.
 
-Definition GQfrac gq := GQ_of_PQ (PQfrac (PQ_of_GQ gq)).
-Definition GQintg gq := PQintg (PQ_of_GQ gq).
-Arguments GQfrac gq%GQ.
+Definition GQfrac x := ((GQnum x mod GQden x) // GQden x)%GQ.
+(*
+Definition GQfrac x := GQ_of_PQ (PQfrac (PQ_of_GQ x)).
+*)
+Definition GQintg x := PQintg (PQ_of_GQ x).
+Arguments GQfrac x%GQ.
 
 Theorem GQnum_neq_0 : ∀ x, GQnum x ≠ 0.
 Proof.
@@ -1176,6 +1179,7 @@ subst aa bb.
 now do 2 rewrite Nat.add_sub.
 Qed.
 
+(*
 Theorem GQfrac_pair : ∀ a b, GQfrac (a // b) = ((a mod b) // b)%GQ.
 Proof.
 intros.
@@ -1241,4 +1245,4 @@ destruct aa.
    rewrite <- Nat.add_1_r, Hb.
    rewrite Nat.mod_mul_r.
    remember S as f; simpl; subst f.
-Abort.
+*)

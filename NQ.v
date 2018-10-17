@@ -1184,14 +1184,75 @@ Definition NQintg q :=
   | NQneg gq => GQintg gq
   end.
 
-(*
 Theorem NQfrac_pos : ∀ x, NQfrac (NQpos x) = NQpos (GQfrac x).
 Proof.
+intros.
+destruct x as ((xn, xd), Hx).
+cbn in Hx.
+unfold GQfrac; cbn.
+unfold NQfrac; cbn.
+unfold "//"%NQ; cbn.
+remember ((xn + 1) mod (xd + 1)) as y eqn:Hy; symmetry in Hy.
+destruct y; [ | easy ].
+apply Nat.mod_divides in Hy; [ | now rewrite Nat.add_1_r ].
+destruct Hy as (c, Hc).
+rewrite Hc in Hx.
+replace (xd + 1) with ((xd + 1) * 1) in Hx at 2 by flia.
+rewrite Nat.gcd_mul_mono_l in Hx.
+apply Nat.eq_mul_1 in Hx.
+destruct Hx as (H1, H2).
+rewrite H1, Nat.mul_1_l in Hc.
+Print "//"%GQ.
+Print PQ.PQ_of_pair.
 ...
-*)
+
+unfold NQfrac; cbn.
+unfold GQfrac; cbn.
+unfold PQ.PQfrac; cbn.
+cbn in Hx; cbn.
+...
+unfold PQ.PQ_of_pair.
+unfold GQ_of_PQ.
+unfold PQ.PQred.
+...
+
+Theorem GQfrac_pair : ∀ a b, GQfrac (a // b) = ((a mod b) // b)%GQ.
+Proof.
+...
 
 Theorem NQfrac_pair : ∀ a b, NQfrac (a // b) = ((a mod b) // b)%NQ.
 Proof.
+(**)
+intros.
+-destruct (zerop a) as [Ha| Ha].
+ +subst a; destruct b; [ easy | cbn; now rewrite Nat.sub_diag ].
+ +remember (a // b)%NQ as x eqn:Hx; symmetry in Hx.
+  destruct x as [| px| px]; [ now destruct a | | ].
+  *rewrite NQfrac_pos.
+...
+   unfold "//"%NQ.
+   remember (a mod b) as c eqn:Hc; symmetry in Hc.
+   destruct c.
+  --destruct b.
+   ++unfold "//"%NQ in Hx.
+     destruct a; [ easy | ].
+     injection Hx; clear Hx; intros.
+     cbn in Hc.
+     unfold "//"%GQ in H.
+     unfold GQ_of_PQ in H.
+     apply GQeq_eq in H.
+     simpl in H.
+     unfold PQ.PQred in H.
+
+...
+
+    apply Nat.mod_divides in Hc.
+
+   remember ((a mod b) // b)%NQ as y eqn:Hy; symmetry in Hy.
+   destruct y as [| py| py].
+  --unfold "//"%NQ in Hy.
+
+...
 intros.
 destruct (zerop a) as [Ha| Ha].
 -subst a; destruct b; [ easy | cbn; now rewrite Nat.sub_diag ].
