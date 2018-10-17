@@ -1137,12 +1137,14 @@ Qed.
 Definition GQnum x := PQnum1 (PQ_of_GQ x) + 1.
 Definition GQden x := PQden1 (PQ_of_GQ x) + 1.
 
-Definition GQfrac x := ((GQnum x mod GQden x) // GQden x)%GQ.
+(* co-fractional part = 1 - fractional part
+   defined instead of fractional part because fractional part does not
+   exist for integer values (would be 0 but 0 ∉ GQ) *)
+Definition GQcfrac x := ((GQden x - GQnum x mod GQden x) // GQden x)%GQ.
 (*
-Definition GQfrac x := GQ_of_PQ (PQfrac (PQ_of_GQ x)).
-*)
 Definition GQintg x := PQintg (PQ_of_GQ x).
-Arguments GQfrac x%GQ.
+*)
+Arguments GQcfrac x%GQ.
 
 Theorem GQnum_neq_0 : ∀ x, GQnum x ≠ 0.
 Proof.

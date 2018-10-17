@@ -1176,23 +1176,28 @@ Qed.
 Definition NQfrac x := ((NQnum x mod NQden x) // NQden x)%NQ.
 Arguments NQfrac x%NQ.
 
-(* à redéfinir *)
+(* à redéfinir
 Definition NQintg q :=
   match q with
   | NQ0 => 0
   | NQpos gq => GQintg gq
   | NQneg gq => GQintg gq
   end.
+*)
 
-Theorem NQfrac_pos : ∀ x, NQfrac (NQpos x) = NQpos (GQfrac x).
+Theorem NQfrac_pos : ∀ x, NQfrac (NQpos x) = (1 - NQpos (GQcfrac x))%NQ.
 Proof.
 intros.
 destruct x as ((xn, xd), Hx).
 cbn in Hx.
-unfold GQfrac; cbn.
+remember NQadd as f.
 unfold NQfrac; cbn.
 unfold "//"%NQ; cbn.
 remember ((xn + 1) mod (xd + 1)) as y eqn:Hy; symmetry in Hy.
+subst f.
+destruct y.
+...
+
 destruct y; [ | easy ].
 apply Nat.mod_divides in Hy; [ | now rewrite Nat.add_1_r ].
 destruct Hy as (c, Hc).
@@ -1216,7 +1221,7 @@ unfold GQ_of_PQ.
 unfold PQ.PQred.
 ...
 
-Theorem GQfrac_pair : ∀ a b, GQfrac (a // b) = ((a mod b) // b)%GQ.
+Theorem GQfrac_pair : ∀ a b, GQcfrac (a // b) = ((b - a mod b) // b)%GQ.
 Proof.
 ...
 
