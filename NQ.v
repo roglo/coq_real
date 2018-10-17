@@ -1193,9 +1193,10 @@ Proof.
 Theorem NQfrac_pair : ∀ a b, NQfrac (a // b) = ((a mod b) // b)%NQ.
 Proof.
 intros.
-destruct a.
--destruct b; [ easy | cbn; now rewrite Nat.sub_diag ].
--unfold NQfrac; cbn.
+destruct (zerop a) as [Ha| Ha].
+-subst a; destruct b; [ easy | cbn; now rewrite Nat.sub_diag ].
+-destruct a; [ easy | clear Ha ].
+ unfold NQfrac; cbn.
  unfold GQnum, GQden; cbn.
  (**)
  Require Import PQ Nat_ggcd.
