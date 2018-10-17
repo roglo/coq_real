@@ -1241,15 +1241,4 @@ destruct aa.
    rewrite <- Nat.add_1_r, Hb.
    rewrite Nat.mod_mul_r.
    remember S as f; simpl; subst f.
-...
-remember div as f.
-cbn.
-
-, Nat.sub_0_r. Hb.
-
-   rewrite Nat.add_1_r in Ha, Hb; rewrite Ha, Hb.
-rewrite Nat.mul_mod_distr_l; [ | easy | now destruct g ].
-rewrite <- NQmul_pair; [ | now destruct g | easy ].
-rewrite NQpair_diag, NQmul_1_l; [ | now destruct g ].
-now do 2 rewrite Nat.add_1_r.
-Qed.
+Abort.
