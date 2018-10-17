@@ -1185,6 +1185,33 @@ Definition NQintg q :=
   end.
 *)
 
+Theorem GQpair_add_l : ∀ a b c,
+  a ≠ 0 → b ≠ 0 → c ≠ 0 → ((a + b) // c = a // c + b // c)%GQ.
+Proof.
+intros * Ha Hb Hc.
+apply GQeq_eq.
+rewrite GQadd_pair; [ | easy | easy | easy | easy ].
+rewrite Nat.mul_comm, <- Nat.mul_add_distr_l.
+rewrite <- GQmul_pair; [ | easy | easy | flia Ha | easy ].
+rewrite GQpair_diag; [ | easy ].
+now rewrite GQmul_1_l.
+Qed.
+
+Theorem GQpair_sub_l : ∀ a b c,
+  b < a → b ≠ 0 → c ≠ 0 → ((a - b) // c = a // c - b // c)%GQ.
+Proof.
+intros * Hba Hb Hc.
+apply GQeq_eq.
+rewrite GQsub_pair; [ | flia Hba | easy | easy | easy | ]; cycle 1. {
+  rewrite Nat.mul_comm.
+  apply Nat.mul_lt_mono_pos_r; [ flia Hc | easy ].
+}
+rewrite Nat.mul_comm, <- Nat.mul_sub_distr_l.
+rewrite <- GQmul_pair; [ | easy | easy | flia Hba | easy ].
+rewrite GQpair_diag; [ | easy ].
+now rewrite GQmul_1_l.
+Qed.
+
 Theorem NQfrac_pos : ∀ x, NQfrac (NQpos x) = (1 - NQpos (GQcfrac x))%NQ.
 Proof.
 intros.
@@ -1193,21 +1220,21 @@ cbn in Hx.
 remember NQadd as f.
 unfold NQfrac; cbn.
 unfold "//"%NQ; cbn.
+rewrite GQpair_diag; [ | easy ].
 remember ((xn + 1) mod (xd + 1)) as y eqn:Hy; symmetry in Hy.
 subst f.
+unfold GQcfrac.
+remember NQadd as f; cbn; subst f.
+rewrite Hy.
 destruct y.
--unfold GQcfrac.
- remember NQadd as f; cbn; subst f.
- rewrite Hy, Nat.sub_0_r.
- replace ((xd + 1) // (xd + 1))%GQ with 1%GQ; cycle 1. {
-   apply GQeq_eq; cbn.
-   unfold PQ.PQ_of_pair.
-   rewrite Nat.add_sub.
-   unfold PQ.PQred.
-   rewrite Nat_ggcd.ggcd_diag; [ easy | flia ].
+-rewrite Nat.sub_0_r.
+ rewrite GQpair_diag; [ easy | flia ].
+-rewrite GQpair_sub_l; [ | | easy | flia ]; cycle 1. {
+   rewrite <- Hy.
+   apply Nat.mod_upper_bound; flia.
  }
- easy.
--idtac.
+ rewrite GQpair_diag; [ | flia ].
+ remember NQadd as f; cbn; subst f.
 ...
 
 destruct y; [ | easy ].
