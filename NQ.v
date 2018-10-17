@@ -1196,6 +1196,18 @@ unfold "//"%NQ; cbn.
 remember ((xn + 1) mod (xd + 1)) as y eqn:Hy; symmetry in Hy.
 subst f.
 destruct y.
+-unfold GQcfrac.
+ remember NQadd as f; cbn; subst f.
+ rewrite Hy, Nat.sub_0_r.
+ replace ((xd + 1) // (xd + 1))%GQ with 1%GQ; cycle 1. {
+   apply GQeq_eq; cbn.
+   unfold PQ.PQ_of_pair.
+   rewrite Nat.add_sub.
+   unfold PQ.PQred.
+   rewrite Nat_ggcd.ggcd_diag; [ easy | flia ].
+ }
+ easy.
+-idtac.
 ...
 
 destruct y; [ | easy ].
