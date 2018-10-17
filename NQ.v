@@ -1289,11 +1289,8 @@ intros.
      apply GQeq_eq in H.
      simpl in H.
      unfold PQ.PQred in H.
-
 ...
-
     apply Nat.mod_divides in Hc.
-
    remember ((a mod b) // b)%NQ as y eqn:Hy; symmetry in Hy.
    destruct y as [| py| py].
   --unfold "//"%NQ in Hy.
