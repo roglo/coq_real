@@ -1212,6 +1212,7 @@ rewrite GQpair_diag; [ | easy ].
 now rewrite GQmul_1_l.
 Qed.
 
+(*
 Theorem NQfrac_pos : ∀ x, NQfrac (NQpos x) = (1 - NQpos (GQcfrac x))%NQ.
 Proof.
 intros.
@@ -1263,10 +1264,11 @@ unfold PQ.PQred.
 Theorem GQfrac_pair : ∀ a b, GQcfrac (a // b) = ((b - a mod b) // b)%GQ.
 Proof.
 ...
+*)
 
 Theorem NQfrac_pair : ∀ a b, NQfrac (a // b) = ((a mod b) // b)%NQ.
 Proof.
-(**)
+(*
 intros.
 -destruct (zerop a) as [Ha| Ha].
  +subst a; destruct b; [ easy | cbn; now rewrite Nat.sub_diag ].
@@ -1295,8 +1297,8 @@ intros.
    remember ((a mod b) // b)%NQ as y eqn:Hy; symmetry in Hy.
    destruct y as [| py| py].
   --unfold "//"%NQ in Hy.
-
 ...
+*)
 intros.
 destruct (zerop a) as [Ha| Ha].
 -subst a; destruct b; [ easy | cbn; now rewrite Nat.sub_diag ].
