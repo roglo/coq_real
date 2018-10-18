@@ -1319,3 +1319,30 @@ destruct a.
   rewrite Nat.mul_comm, Nat.div_mul; [ | now destruct g ].
   destruct bb; [ now rewrite Nat.mul_0_r in H2 | flia ].
 Qed.
+
+Theorem GQpair_add_l : ∀ a b c,
+  a ≠ 0 → b ≠ 0 → c ≠ 0 → ((a + b) // c = a // c + b // c)%GQ.
+Proof.
+intros * Ha Hb Hc.
+apply GQeq_eq.
+rewrite GQadd_pair; [ | easy | easy | easy | easy ].
+rewrite Nat.mul_comm, <- Nat.mul_add_distr_l.
+rewrite <- GQmul_pair; [ | easy | easy | flia Ha | easy ].
+rewrite GQpair_diag; [ | easy ].
+now rewrite GQmul_1_l.
+Qed.
+
+Theorem GQpair_sub_l : ∀ a b c,
+  b < a → b ≠ 0 → c ≠ 0 → ((a - b) // c = a // c - b // c)%GQ.
+Proof.
+intros * Hba Hb Hc.
+apply GQeq_eq.
+rewrite GQsub_pair; [ | flia Hba | easy | easy | easy | ]; cycle 1. {
+  rewrite Nat.mul_comm.
+  apply Nat.mul_lt_mono_pos_r; [ flia Hc | easy ].
+}
+rewrite Nat.mul_comm, <- Nat.mul_sub_distr_l.
+rewrite <- GQmul_pair; [ | easy | easy | flia Hba | easy ].
+rewrite GQpair_diag; [ | easy ].
+now rewrite GQmul_1_l.
+Qed.
