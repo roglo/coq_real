@@ -1174,16 +1174,10 @@ destruct a.
 Qed.
 
 Definition NQfrac x := ((NQnum x mod NQden x) // NQden x)%NQ.
-Arguments NQfrac x%NQ.
+Definition NQintg x := NQnum x / NQden x.
 
-(* à redéfinir
-Definition NQintg q :=
-  match q with
-  | NQ0 => 0
-  | NQpos gq => GQintg gq
-  | NQneg gq => GQintg gq
-  end.
-*)
+Arguments NQfrac x%NQ.
+Arguments NQintg x%NQ.
 
 Theorem NQfrac_pair : ∀ a b, NQfrac (a // b) = ((a mod b) // b)%NQ.
 Proof.

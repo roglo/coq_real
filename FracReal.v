@@ -2014,8 +2014,10 @@ assert (Hin : i + 2 ≤ n - 1). {
 }
 set (v j := if eq_nat_dec j (i + 1) then u j - rad else u j).
 assert (H2 : NQfrac (A i n u) = NQfrac (A i n v)). {
-Print NQfrac.
-Search (NQfrac (_ // _)).
+remember (A i n u) as x; rewrite NQnum_den in Heqx; [ | apply A_ge_0 ].
+remember (A i n v) as y; rewrite NQnum_den in Heqy; [ | apply A_ge_0 ].
+subst x y.
+do 2 rewrite NQfrac_pair.
 ...
 assert (H2 : nA i n u mod rad ^ s = nA i n v mod rad ^ s). {
   rewrite nA_split_first; [ symmetry | flia Hin ].
