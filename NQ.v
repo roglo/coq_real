@@ -1220,7 +1220,27 @@ Theorem glop : ∀ g a b,
      = (((a / g) mod (b / g)) // (b / g))%NQ.
 Proof.
 intros * Ha Hb Hg.
-...
+unfold "//"%GQ.
+unfold GQnum, GQden; cbn.
+unfold PQ.PQred.
+remember Nat_ggcd.ggcd as f; cbn; subst f.
+rewrite Nat.sub_add; [ | flia Ha ].
+rewrite Nat.sub_add; [ | flia Hb ].
+subst g.
+remember (Nat_ggcd.ggcd a b) as g eqn:Hg.
+destruct g as (g, (aa, bb)); cbn.
+rewrite <- Nat_ggcd.ggcd_fst_snd.
+rewrite <- Nat_ggcd.ggcd_snd_snd.
+rewrite <- Hg; cbn.
+Abort.
+
+Theorem glip : ∀ g a b,
+  a ≠ 0
+  → b ≠ 0
+  → g = Nat.gcd a b
+  → ((a mod b) // b)%NQ = (((a / g) mod (b / g)) // (b / g))%NQ.
+Proof.
+Admitted.
 
 Theorem NQfrac_pair : ∀ a b, NQfrac (a // b) = ((a mod b) // b)%NQ.
 Proof.
@@ -1280,17 +1300,32 @@ destruct (zerop a) as [Ha| Ha].
    destruct g1 as (g1, (aa1, bb1)).
    destruct g2 as (g2, (aa2, bb2)).
 ...
-ça m'énerve, c'est interminable alors que la version ci-dessous est plus
-courte et en plus, ça n'utilise pas les nouveaux théorèmes que j'ai ajoutés
-dans GQ !
 *)
+(*
 destruct b.
 rewrite GQnum_pair_0_r; [ | easy ].
 now rewrite GQden_pair_0_r.
 remember (Nat.gcd (S a) (S b)) as g eqn:Hg.
+symmetry.
+rewrite (glip g); [ | easy | easy | easy ].
+subst g.
+rewrite <- Nat_ggcd.ggcd_fst_snd.
+rewrite <- Nat_ggcd.ggcd_snd_snd.
+remember (Nat_ggcd.ggcd (S a) (S b)) as g eqn:Hg.
+destruct g as (g, (aa, bb)).
+remember S as f; cbn; subst f.
+specialize (Nat_ggcd.ggcd_correct_divisors (S a) (S b)) as H.
+rewrite <- Hg in H.
+destruct H as (Ha, Hb).
+rewrite Ha, Hb.
+rewrite <- GQmul_pair.
+rewrite GQpair_diag, GQmul_1_l.
+rewrite GQnum_pair.
+...
+rewrite Nat.mul_mod_distr_l; cycle 1. {
+  destruct bb; [ | easy ].
 ...
 rewrite (glop g); [ | easy | easy | easy ].
-Search ((_ / Nat.gcd _ _)).
 subst g.
 rewrite <- Nat_ggcd.ggcd_fst_snd.
 rewrite <- Nat_ggcd.ggcd_snd_snd.
@@ -1319,6 +1354,7 @@ rewrite NQpair_diag; cycle 1. {
 }
 now rewrite NQmul_1_l.
 ...
+*)
  unfold GQnum, GQden; cbn.
  (**)
  Require Import PQ Nat_ggcd.

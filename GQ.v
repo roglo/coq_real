@@ -1262,3 +1262,22 @@ unfold PQred.
 remember ggcd as f; cbn; subst f.
 now rewrite ggcd_1_r; cbn.
 Qed.
+
+Theorem GQnum_pair : ∀ a b, a ≠ 0 → b ≠ 0 → GQnum (a // b) = a / Nat.gcd a b.
+Proof.
+intros * Ha Hb.
+unfold GQnum, "//"%GQ; cbn.
+unfold PQred.
+remember ggcd as f; cbn; subst f.
+rewrite Nat.sub_add; [ | flia Ha ].
+rewrite Nat.sub_add; [ | flia Hb ].
+remember (ggcd a b) as g eqn:Hg.
+destruct g as (g, (aa, bb)); cbn.
+rewrite <- ggcd_gcd, <- Hg; cbn.
+specialize (ggcd_correct_divisors a b) as H.
+rewrite <- Hg in H.
+destruct H as (H1, H2).
+rewrite H1.
+rewrite Nat.mul_comm, Nat.div_mul; [ | now destruct g ].
+destruct aa; [ now rewrite Nat.mul_0_r in H1 | flia ].
+Qed.
