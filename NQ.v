@@ -2,7 +2,7 @@
 (* allowing us to use Leibnitz' equality. *)
 
 Require Import Utf8 Arith Psatz.
-Require Import GQ.
+Require Import Misc GQ.
 Set Nested Proofs Allowed.
 
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
@@ -1355,6 +1355,14 @@ rewrite NQpair_diag; cycle 1. {
 now rewrite NQmul_1_l.
 ...
 *)
+(**)
+ destruct b.
+ +rewrite GQnum_pair_0_r; [ | easy ].
+  now rewrite GQden_pair_0_r.
+ +rewrite GQnum_pair.
+  rewrite GQden_pair.
+  remember Nat.gcd as f; remember Nat.modulo as g; cbn; subst f g.
+...
  unfold GQnum, GQden; cbn.
  (**)
  Require Import PQ Nat_ggcd.

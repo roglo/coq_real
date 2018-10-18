@@ -242,3 +242,13 @@ rewrite Nat.div_small; [ easy | ].
 -now apply Nat.mod_upper_bound.
 -now apply Nat.lt_add_lt_sub_r.
 Qed.
+
+Definition bool_of_sumbool {A B : Prop} (P : sumbool A B) :=
+  match P with
+  | left _ _ => true
+  | right _ _ => false
+  end.
+Definition sumbool_or {A B C D : Prop} (P : sumbool A B) (Q : sumbool C D) :=
+  orb (bool_of_sumbool P) (bool_of_sumbool Q).
+
+Notation "a ∨∨ b" := (sumbool_or a b) (at level 85, right associativity).

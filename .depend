@@ -2,12 +2,12 @@ Archimedean.vio: Archimedean.v
 Archimedean.vo Archimedean.glob Archimedean.v.beautified: Archimedean.v
 FracReal.vio: FracReal.v Misc.vio Summation.vio NQ.vio
 FracReal.vo FracReal.glob FracReal.v.beautified: FracReal.v Misc.vo Summation.vo NQ.vo
-GQ.vio: GQ.v PQ.vio Nat_ggcd.vio
-GQ.vo GQ.glob GQ.v.beautified: GQ.v PQ.vo Nat_ggcd.vo
+GQ.vio: GQ.v Misc.vio PQ.vio Nat_ggcd.vio
+GQ.vo GQ.glob GQ.v.beautified: GQ.v Misc.vo PQ.vo Nat_ggcd.vo
 Misc.vio: Misc.v
 Misc.vo Misc.glob Misc.v.beautified: Misc.v
-NQ.vio: NQ.v GQ.vio Summation.vio
-NQ.vo NQ.glob NQ.v.beautified: NQ.v GQ.vo Summation.vo
+NQ.vio: NQ.v GQ.vio PQ.vio Nat_ggcd.vio Summation.vio
+NQ.vo NQ.glob NQ.v.beautified: NQ.v GQ.vo PQ.vo Nat_ggcd.vo Summation.vo
 Nat_diff.vio: Nat_diff.v
 Nat_diff.vo Nat_diff.glob Nat_diff.v.beautified: Nat_diff.v
 Nat_ggcd.vio: Nat_ggcd.v

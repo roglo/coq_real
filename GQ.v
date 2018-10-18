@@ -2,7 +2,7 @@
 (* allowing us to use Leibnitz' equality. *)
 
 Require Import Utf8 Arith Morphisms.
-Require Import PQ Nat_ggcd.
+Require Import Misc PQ Nat_ggcd.
 Set Nested Proofs Allowed.
 
 Declare Scope GQ_scope.
@@ -1263,21 +1263,59 @@ remember ggcd as f; cbn; subst f.
 now rewrite ggcd_1_r; cbn.
 Qed.
 
-Theorem GQnum_pair : ∀ a b, a ≠ 0 → b ≠ 0 → GQnum (a // b) = a / Nat.gcd a b.
+Theorem GQnum_pair : ∀ a b,
+  GQnum (a // b) =
+    if zerop a then 1 else if zerop b then a else a / Nat.gcd a b.
 Proof.
-intros * Ha Hb.
+intros.
 unfold GQnum, "//"%GQ; cbn.
 unfold PQred.
 remember ggcd as f; cbn; subst f.
-rewrite Nat.sub_add; [ | flia Ha ].
-rewrite Nat.sub_add; [ | flia Hb ].
-remember (ggcd a b) as g eqn:Hg.
-destruct g as (g, (aa, bb)); cbn.
-rewrite <- ggcd_gcd, <- Hg; cbn.
-specialize (ggcd_correct_divisors a b) as H.
-rewrite <- Hg in H.
-destruct H as (H1, H2).
-rewrite H1.
-rewrite Nat.mul_comm, Nat.div_mul; [ | now destruct g ].
-destruct aa; [ now rewrite Nat.mul_0_r in H1 | flia ].
+destruct a.
+-remember ggcd as f; cbn; subst f.
+ now rewrite ggcd_1_l; cbn.
+-rewrite Nat.sub_add; [ | flia ].
+ destruct b.
+ +remember ggcd as f; cbn; subst f.
+  rewrite ggcd_1_r.
+  now rewrite Nat.sub_succ, Nat.sub_0_r, Nat.add_1_r.
+ +rewrite Nat.sub_add; [ | flia ].
+  remember (ggcd (S a) (S b)) as g eqn:Hg.
+  destruct g as (g, (aa, bb)).
+  remember S as f; cbn; subst f.
+  rewrite <- ggcd_gcd, <- Hg; cbn.
+  specialize (ggcd_correct_divisors (S a) (S b)) as H.
+  rewrite <- Hg in H.
+  destruct H as (H1, H2).
+  rewrite H1.
+  rewrite Nat.mul_comm, Nat.div_mul; [ | now destruct g ].
+  destruct aa; [ now rewrite Nat.mul_0_r in H1 | flia ].
+Qed.
+
+Theorem GQden_pair : ∀ a b,
+  GQden (a // b) = if zerop a ∨∨ zerop b then Nat.max 1 b else b / Nat.gcd a b.
+Proof.
+intros.
+unfold GQden, "//"%GQ; cbn.
+unfold PQred.
+remember ggcd as f; cbn; subst f.
+destruct a.
+-remember ggcd as f; cbn; subst f.
+ rewrite ggcd_1_l; cbn.
+ destruct b; [ easy | flia ].
+-rewrite Nat.sub_add; [ | flia ].
+ destruct b.
+ +remember ggcd as f; cbn; subst f.
+  now rewrite ggcd_1_r.
+ +rewrite Nat.sub_add; [ | flia ].
+  remember (ggcd (S a) (S b)) as g eqn:Hg.
+  destruct g as (g, (aa, bb)).
+  remember S as f; cbn; subst f.
+  rewrite <- ggcd_gcd, <- Hg; cbn.
+  specialize (ggcd_correct_divisors (S a) (S b)) as H.
+  rewrite <- Hg in H.
+  destruct H as (H1, H2).
+  rewrite H2.
+  rewrite Nat.mul_comm, Nat.div_mul; [ | now destruct g ].
+  destruct bb; [ now rewrite Nat.mul_0_r in H2 | flia ].
 Qed.
