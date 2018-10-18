@@ -1248,6 +1248,31 @@ destruct (zerop a) as [Ha| Ha].
     rewrite GQden_pair_1_r in Hm.
     now rewrite Nat.mod_1_r in Hm.
   *f_equal.
+   destruct b; [ easy | ].
+   apply GQeq_eq.
+   unfold "//"%GQ; cbn.
+   unfold PQ.PQred.
+   remember Nat_ggcd.ggcd as f; cbn; subst f.
+   do 3 rewrite Nat.sub_0_r.
+   rewrite Nat.sub_add; cycle 1. {
+     unfold GQden; cbn.
+     unfold PQ.PQred.
+     remember Nat_ggcd.ggcd as f; cbn; subst f.
+     do 2 rewrite Nat.sub_0_r.
+     remember (Nat_ggcd.ggcd (a + 1) (b + 1)) as g eqn:Hg.
+     destruct g as (g, (aa, bb)); cbn.
+     flia.
+   }
+   remember (GQden (GQ_of_PQ (PQ.PQ_of_pair (S a) (S b)))) as d eqn:Hd.
+   remember (Nat_ggcd.ggcd (m + 1) d) as g1 eqn:Hg1; symmetry in Hg1.
+   remember (Nat_ggcd.ggcd (n + 1) (b + 1)) as g2 eqn:Hg2; symmetry in Hg2.
+   move g2 before g1.
+   destruct g1 as (g1, (aa1, bb1)).
+   destruct g2 as (g2, (aa2, bb2)).
+...
+ça m'énerve, c'est interminable alors que la version ci-dessous est plus
+courte et en plus, ça n'utilise pas les nouveaux théorèmes que j'ai ajoutés
+dans GQ !
 ...
  unfold GQnum, GQden; cbn.
  (**)
