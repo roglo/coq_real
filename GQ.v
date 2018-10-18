@@ -1153,6 +1153,13 @@ unfold GQnum.
 now rewrite Nat.add_1_r.
 Qed.
 
+Theorem GQden_neq_0 : ∀ x, GQden x ≠ 0.
+Proof.
+intros x.
+unfold GQden.
+now rewrite Nat.add_1_r.
+Qed.
+
 Theorem GQnum_den : ∀ x, x = (GQnum x // GQden x)%GQ.
 Proof.
 intros x.
@@ -1181,70 +1188,75 @@ subst aa bb.
 now do 2 rewrite Nat.add_sub.
 Qed.
 
-(*
-Theorem GQfrac_pair : ∀ a b, GQfrac (a // b) = ((a mod b) // b)%GQ.
+Theorem GQnum_mult_GQden : ∀ a b n,
+  GQnum (a // b)%GQ = GQden (a // b)%GQ * n
+  → a mod b = 0.
+Proof.
+intros * Hnd.
+unfold "//"%GQ in Hnd.
+unfold GQnum, GQden in Hnd.
+unfold GQ_of_PQ in Hnd; cbn in Hnd.
+unfold PQred in Hnd.
+remember ggcd as f; cbn in Hnd; subst f.
+destruct b; [ easy | ].
+destruct a; [ now rewrite Nat.mod_0_l | ].
+rewrite Nat.sub_add in Hnd; [ | flia ].
+rewrite Nat.sub_add in Hnd; [ | flia ].
+remember (ggcd (S a) (S b)) as g eqn:Hg.
+symmetry in Hg.
+destruct g as (g, (aa, bb)).
+cbn in Hnd.
+specialize (ggcd_correct_divisors (S a) (S b)) as H1.
+rewrite Hg in H1.
+destruct H1 as (Ha, Hb).
+destruct aa; [ now rewrite Nat.mul_comm in Ha | ].
+destruct bb; [ now rewrite Nat.mul_comm in Hb | ].
+rewrite Nat.sub_succ, Nat.sub_0_r, Nat.add_1_r in Hnd.
+rewrite Nat.sub_succ, Nat.sub_0_r, Nat.add_1_r in Hnd.
+rewrite Ha, Hb, Hnd.
+replace (g * S bb) with (g * S bb * 1) by flia.
+rewrite Nat.mul_assoc.
+rewrite Nat.mul_mod_distr_l; [ | easy | ]; cycle 1. {
+  intros H; apply Nat.eq_mul_0 in H.
+  destruct H; [ now subst g | easy ].
+}
+now rewrite Nat.mod_1_r, Nat.mul_comm.
+Qed.
+
+Theorem GQnum_pair_0_r : ∀ a, a ≠ 0 → GQnum (a // 0)%GQ = a.
+Proof.
+intros * Ha.
+unfold GQnum; cbn.
+unfold PQred.
+remember ggcd as f; cbn; subst f.
+rewrite ggcd_1_r; cbn.
+destruct a; [ easy | flia ].
+Qed.
+
+Theorem GQden_pair_0_r : ∀ a, GQden (a // 0)%GQ = 1.
 Proof.
 intros.
-unfold GQfrac; cbn.
+unfold GQden; cbn.
 unfold PQred.
-remember (ggcd (PQnum1 (a // b) + 1) (PQden1 (a // b) + 1)) as g eqn:Hg.
-symmetry in Hg.
-destruct g as (g, (aa, bb)); cbn.
-remember ggcd as f; simpl in Hg; subst f.
-unfold PQfrac; cbn.
-destruct aa.
--specialize (ggcd_fst_snd (a - 1 + 1) (b - 1 + 1)) as H.
- rewrite Hg in H; cbn in H.
- symmetry in H.
- apply Nat.div_small_iff in H.
- +exfalso; apply Nat.nle_gt in H; apply H.
-  apply Nat_gcd_le_l; flia.
- +intros H1.
-  apply Nat.gcd_eq_0_l in H1; flia H1.
--rewrite Nat.sub_succ, Nat.sub_0_r.
- destruct bb.
- +specialize (ggcd_snd_snd (a - 1 + 1) (b - 1 + 1)) as H.
-  rewrite Hg in H; cbn in H.
-  symmetry in H.
-  apply Nat.div_small_iff in H.
-  *exfalso; apply Nat.nle_gt in H; apply H.
-   apply Nat_gcd_le_r; flia.
-  *intros H1.
-   apply Nat.gcd_eq_0_l in H1; flia H1.
- +rewrite Nat.sub_succ, Nat.sub_0_r.
-  destruct b.
-  *cbn in Hg.
-   rewrite ggcd_1_r in Hg.
-   injection Hg; clear Hg; intros; subst; easy.
-  *rewrite Nat.sub_succ, Nat.sub_0_r in Hg.
-   apply GQeq_eq.
-(*
-   remember (S b) as x; cbn; subst x.
-   unfold PQred.
-   remember ggcd as y.
-   remember (S b) as x; cbn; subst x y.
-   rewrite Nat.add_sub.
-   rewrite Nat.sub_succ, Nat.sub_0_r.
-...
-   apply ggcd_swap in Hg.
-   destruct a.
-  --cbn in Hg.
-    rewrite ggcd_1_r in Hg.
-    injection Hg; clear Hg; intros; subst.
-    cbn.
-    rewrite Nat.sub_diag.
-    destruct bb.
-   ++cbn.
-     unfold GQ_of_PQ.
-     cbn.
-     unfold PQred_gcd.
-    rewrite Nat.mod_1_l.
-...
-*)
-   specialize (ggcd_correct_divisors (a - 1 + 1) (b + 1)) as H.
-   rewrite Hg in H; destruct H as (Ha, Hb).
-   symmetry.
-   rewrite <- Nat.add_1_r, Hb.
-   rewrite Nat.mod_mul_r.
-   remember S as f; simpl; subst f.
-*)
+remember ggcd as f; cbn; subst f.
+now rewrite ggcd_1_r; cbn.
+Qed.
+
+Theorem GQnum_pair_1_r : ∀ a, a ≠ 0 → GQnum (a // 1)%GQ = a.
+Proof.
+intros * Ha.
+unfold GQnum; cbn.
+unfold PQred.
+remember ggcd as f; cbn; subst f.
+rewrite ggcd_1_r; cbn.
+destruct a; [ easy | flia ].
+Qed.
+
+Theorem GQden_pair_1_r : ∀ a, GQden (a // 1)%GQ = 1.
+Proof.
+intros.
+unfold GQden; cbn.
+unfold PQred.
+remember ggcd as f; cbn; subst f.
+now rewrite ggcd_1_r; cbn.
+Qed.

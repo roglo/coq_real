@@ -1219,6 +1219,36 @@ destruct (zerop a) as [Ha| Ha].
 -subst a; destruct b; [ easy | cbn; now rewrite Nat.sub_diag ].
 -destruct a; [ easy | clear Ha ].
  unfold NQfrac; cbn.
+(**)
+ unfold "//"%NQ.
+ remember (GQnum (S a // b)%GQ mod GQden (S a // b)%GQ) as m eqn:Hm.
+ symmetry in Hm.
+ remember (S a mod b) as n eqn:Hn; symmetry in Hn.
+ move n before m.
+ destruct m.
+ +apply Nat.mod_divides in Hm; [ | apply GQden_neq_0 ].
+  destruct Hm as (m, Hm).
+  destruct n; [ easy | exfalso ].
+  apply GQnum_mult_GQden in Hm.
+  now rewrite Hm in Hn.
+ +destruct n; [ exfalso | ].
+  *destruct b.
+  --rewrite GQnum_pair_0_r in Hm; [ | easy ].
+    rewrite GQden_pair_0_r in Hm.
+    now rewrite Nat.mod_1_r in Hm.
+  --apply Nat.mod_divides in Hn; [ | easy ].
+    destruct Hn as (n, Hn).
+    replace (S b) with (S b * 1) in Hm by flia.
+    rewrite Hn in Hm.
+    destruct n; [ now rewrite Nat.mul_comm in Hn | ].
+    rewrite <- GQmul_pair in Hm; [ | easy | easy | easy | easy ].
+    rewrite GQpair_diag in Hm; [ | easy ].
+    rewrite GQmul_1_l in Hm.
+    rewrite GQnum_pair_1_r in Hm; [ | easy ].
+    rewrite GQden_pair_1_r in Hm.
+    now rewrite Nat.mod_1_r in Hm.
+  *f_equal.
+...
  unfold GQnum, GQden; cbn.
  (**)
  Require Import PQ Nat_ggcd.
