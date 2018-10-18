@@ -1212,6 +1212,16 @@ rewrite GQpair_diag; [ | easy ].
 now rewrite GQmul_1_l.
 Qed.
 
+Theorem glop : ∀ g a b,
+  a ≠ 0
+  → b ≠ 0
+  → g = Nat.gcd a b
+  → ((GQnum (a // b) mod GQden (a // b)) // GQden (a // b))%NQ
+     = (((a / g) mod (b / g)) // (b / g))%NQ.
+Proof.
+intros * Ha Hb Hg.
+...
+
 Theorem NQfrac_pair : ∀ a b, NQfrac (a // b) = ((a mod b) // b)%NQ.
 Proof.
 intros.
@@ -1219,7 +1229,7 @@ destruct (zerop a) as [Ha| Ha].
 -subst a; destruct b; [ easy | cbn; now rewrite Nat.sub_diag ].
 -destruct a; [ easy | clear Ha ].
  unfold NQfrac; cbn.
-(**)
+(*
  unfold "//"%NQ.
  remember (GQnum (S a // b)%GQ mod GQden (S a // b)%GQ) as m eqn:Hm.
  symmetry in Hm.
@@ -1273,6 +1283,41 @@ destruct (zerop a) as [Ha| Ha].
 ça m'énerve, c'est interminable alors que la version ci-dessous est plus
 courte et en plus, ça n'utilise pas les nouveaux théorèmes que j'ai ajoutés
 dans GQ !
+*)
+destruct b.
+rewrite GQnum_pair_0_r; [ | easy ].
+now rewrite GQden_pair_0_r.
+remember (Nat.gcd (S a) (S b)) as g eqn:Hg.
+...
+rewrite (glop g); [ | easy | easy | easy ].
+Search ((_ / Nat.gcd _ _)).
+subst g.
+rewrite <- Nat_ggcd.ggcd_fst_snd.
+rewrite <- Nat_ggcd.ggcd_snd_snd.
+remember (Nat_ggcd.ggcd (S a) (S b)) as g eqn:Hg.
+destruct g as (g, (aa, bb)).
+remember S as f; cbn; subst f.
+specialize (Nat_ggcd.ggcd_correct_divisors (S a) (S b)) as H.
+rewrite <- Hg in H.
+destruct H as (Ha, Hb).
+rewrite Ha, Hb.
+Search ((_ * _) mod _).
+rewrite Nat.mul_mod_distr_l; cycle 1. {
+  destruct bb; [ | easy ].
+  now rewrite Nat.mul_0_r in Hb.
+} {
+  now intros H; subst g.
+}
+rewrite <- NQmul_pair; cycle 1. {
+  now intros H; subst g.
+} {
+  destruct bb; [ | easy ].
+  now rewrite Nat.mul_0_r in Hb.
+}
+rewrite NQpair_diag; cycle 1. {
+  now intros H; subst g.
+}
+now rewrite NQmul_1_l.
 ...
  unfold GQnum, GQden; cbn.
  (**)

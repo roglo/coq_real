@@ -1136,6 +1136,8 @@ Qed.
 
 Definition GQnum x := PQnum1 (PQ_of_GQ x) + 1.
 Definition GQden x := PQden1 (PQ_of_GQ x) + 1.
+Arguments GQnum x%GQ.
+Arguments GQden x%GQ.
 
 (* co-fractional part = 1 - fractional part
    defined instead of fractional part because fractional part does not
