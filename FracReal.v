@@ -2040,6 +2040,19 @@ assert (H2 : NQfrac (A i n u) = NQfrac (A i n v)). {
   remember (Σ (j = i + 1, n - 1), (u j * rad ^ (n - 1 - j))%nat) as x eqn:Hx.
   remember (Σ (j = i + 1, n - 1), (v j * rad ^ (n - 1 - j))%nat) as y eqn:Hy.
   move y before x.
+  assert (Hxy : y = x - rad ^ (n - i - 1)). {
+    rewrite summation_split_first in Hx, Hy; [ | flia Hin | flia Hin ].
+    unfold v at 1 in Hy.
+    destruct (Nat.eq_dec (i + 1) (i + 1)) as [H1| H1]; [ clear H1 | easy ].
+    rewrite Nat.mul_sub_distr_r in Hy.
+    replace rad with (rad ^ 1) in Hy at 2 by now apply Nat.pow_1_r.
+    rewrite <- Nat.pow_add_r in Hy.
+    replace (1 + (n - 1 - (i + 1))) with (n - i - 1) in Hy by flia Hin.
+    rewrite Hx.
+    rewrite Nat.add_sub_swap.
+    -rewrite Hy.
+     remember summation as f; cbn; subst f.
+     f_equal.
 ...
   remember (A i n u) as x; rewrite NQnum_den in Heqx; [ | apply A_ge_0 ].
   remember (A i n v) as y; rewrite NQnum_den in Heqy; [ | apply A_ge_0 ].
