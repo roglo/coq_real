@@ -2037,6 +2037,9 @@ set (v j := if eq_nat_dec j (i + 1) then u j - rad else u j).
 assert (H2 : NQfrac (A i n u) = NQfrac (A i n v)). {
   unfold NQfrac.
   do 2 rewrite A_num_den.
+  remember (Σ (j = i + 1, n - 1), (u j * rad ^ (n - 1 - j))%nat) as x eqn:Hx.
+  remember (Σ (j = i + 1, n - 1), (v j * rad ^ (n - 1 - j))%nat) as y eqn:Hy.
+  move y before x.
 ...
   remember (A i n u) as x; rewrite NQnum_den in Heqx; [ | apply A_ge_0 ].
   remember (A i n v) as y; rewrite NQnum_den in Heqy; [ | apply A_ge_0 ].
