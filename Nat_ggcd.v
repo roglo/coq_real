@@ -2,6 +2,7 @@
 
 Require Import Utf8 Arith Psatz.
 Set Nested Proofs Allowed.
+Require Import Misc.
 
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 
@@ -180,26 +181,6 @@ specialize (ggcd_gcd b a) as H4.
 rewrite Hab in H3; simpl in H3.
 rewrite <- Hg1 in H4; simpl in H4.
 now rewrite Nat.gcd_comm, <- H3 in H4.
-Qed.
-
-Theorem Nat_gcd_le_l : ∀ a b, a ≠ 0 → Nat.gcd a b ≤ a.
-Proof.
-intros * Ha.
-specialize (Nat.gcd_divide_l a b) as (c, Hc).
-rewrite <- Nat.mul_1_l at 1.
-rewrite Hc at 2.
-apply Nat.mul_le_mono_pos_r.
--apply Nat.neq_0_lt_0.
- intros H.
- now apply Nat.gcd_eq_0_l in H.
--destruct c; [ easy | flia ].
-Qed.
-
-Theorem Nat_gcd_le_r : ∀ a b, b ≠ 0 → Nat.gcd a b ≤ b.
-Proof.
-intros * Hb.
-rewrite Nat.gcd_comm.
-now apply Nat_gcd_le_l.
 Qed.
 
 Theorem ggcd_succ_l_neq_0 : ∀ a b, fst (snd (ggcd (S a) b)) ≠ 0.

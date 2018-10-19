@@ -2056,8 +2056,26 @@ assert (H2 : NQfrac (A i n u) = NQfrac (A i n v)). {
   }
   rewrite Hxy.
   remember (n - i - 1) as s1 eqn:Hs1.
+  do 2 rewrite NQnum_pair.
+...
+  rewrite NQden_pair.
+  rewrite Nat.max_r; [ | apply Nat.neq_0_lt_0; pauto ].
+  rewrite Nat_gcd_sub_diag_l.
+...
   rewrite NQpair_sub_l.
   -rewrite NQpair_diag; [ | pauto ].
+...
+
+unfold NQnum.
+Print GQ.GQ_of_pair.
+Print GQ.GQ_of_PQ.
+
+unfold NQnum.
+Print NQnum.
+Print GQ.GQnum.
+Print GQ.PQ_of_GQ.
+
+Print GQ.PQ_of_GQ.
 ...
 assert (H2 : nA i n u mod rad ^ s = nA i n v mod rad ^ s). {
   rewrite nA_split_first; [ symmetry | flia Hin ].

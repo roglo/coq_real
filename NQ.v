@@ -47,6 +47,8 @@ Definition NQden x :=
   | NQpos a => GQden a
   | NQneg a => GQden a
   end.
+Arguments NQnum x%NQ.
+Arguments NQden x%NQ.
 
 Definition NQcompare x y :=
   match x with
@@ -1250,6 +1252,61 @@ destruct x; [ easy | | ].
  now rewrite Nat.add_1_r.
 -unfold NQden, GQden.
  now rewrite Nat.add_1_r.
+Qed.
+
+Theorem NQnum_pair_1_r : ∀ a, NQnum (a // 1) = a.
+Proof.
+intros.
+destruct a; [ easy | cbn ].
+now apply GQnum_pair_1_r.
+Qed.
+
+Theorem NQden_pair_1_r : ∀ a, NQden (a // 1) = 1.
+Proof.
+intros.
+destruct a; [ easy | cbn ].
+now apply GQden_pair_1_r.
+Qed.
+
+Theorem NQnum_pair : ∀ a b, NQnum (a // b) = a / Nat.gcd a (max 1 b).
+Proof.
+intros.
+destruct a; [ now destruct b | ].
+destruct b. {
+  rewrite NQden_0, Nat.gcd_1_r, NQnum_pair_1_r.
+  symmetry; apply Nat.div_1_r.
+}
+unfold "//"%NQ.
+rewrite Nat.max_r; [ | flia ].
+unfold NQnum.
+now rewrite GQnum_pair.
+Qed.
+
+Theorem NQden_pair : ∀ a b, NQden (a // b) = max 1 (b / Nat.gcd a b).
+Proof.
+intros.
+destruct a.
+-rewrite Nat.gcd_0_l.
+ destruct b; [ easy | ].
+ now rewrite Nat.div_same.
+-destruct b.
+ +rewrite NQden_0.
+  rewrite Nat.gcd_0_r.
+  rewrite Nat.div_0_l; [ | easy ].
+  now rewrite NQden_pair_1_r.
+ +unfold "//"%NQ.
+  unfold NQden.
+  rewrite GQden_pair.
+  remember Nat.gcd as f.
+  remember Nat.max as g; cbn; subst f g.
+  symmetry; apply Nat.max_r.
+  apply Nat.neq_0_lt_0.
+  intros H.
+  apply Nat.div_small_iff in H; [ | ].
+  *apply Nat.nle_gt in H; apply H.
+   now apply Nat_gcd_le_r.
+  *intros H1.
+   now apply Nat.gcd_eq_0 in H1.
 Qed.
 
 Theorem NQnum_den : ∀ x, (0 ≤ x)%NQ → x = (NQnum x // NQden x)%NQ.

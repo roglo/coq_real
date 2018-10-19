@@ -10,8 +10,8 @@ NQ.vio: NQ.v Misc.vio GQ.vio Summation.vio
 NQ.vo NQ.glob NQ.v.beautified: NQ.v Misc.vo GQ.vo Summation.vo
 Nat_diff.vio: Nat_diff.v
 Nat_diff.vo Nat_diff.glob Nat_diff.v.beautified: Nat_diff.v
-Nat_ggcd.vio: Nat_ggcd.v
-Nat_ggcd.vo Nat_ggcd.glob Nat_ggcd.v.beautified: Nat_ggcd.v
+Nat_ggcd.vio: Nat_ggcd.v Misc.vio
+Nat_ggcd.vo Nat_ggcd.glob Nat_ggcd.v.beautified: Nat_ggcd.v Misc.vo
 PQ.vio: PQ.v Misc.vio Nat_ggcd.vio
 PQ.vo PQ.glob PQ.v.beautified: PQ.v Misc.vo Nat_ggcd.vo
 Real01AddAssoc.vio: Real01AddAssoc.v Misc.vio Summation.vio FracReal.vio Real01Norm.vio NQ.vio

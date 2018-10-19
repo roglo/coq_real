@@ -243,6 +243,43 @@ rewrite Nat.div_small; [ easy | ].
 -now apply Nat.lt_add_lt_sub_r.
 Qed.
 
+Theorem Nat_gcd_le_l : ∀ a b, a ≠ 0 → Nat.gcd a b ≤ a.
+Proof.
+intros * Ha.
+specialize (Nat.gcd_divide_l a b) as (c, Hc).
+rewrite <- Nat.mul_1_l at 1.
+rewrite Hc at 2.
+apply Nat.mul_le_mono_pos_r.
+-apply Nat.neq_0_lt_0.
+ intros H.
+ now apply Nat.gcd_eq_0_l in H.
+-destruct c; [ easy | ].
+ apply -> Nat.succ_le_mono.
+ apply Nat.le_0_l.
+Qed.
+
+Theorem Nat_gcd_le_r : ∀ a b, b ≠ 0 → Nat.gcd a b ≤ b.
+Proof.
+intros * Hb.
+rewrite Nat.gcd_comm.
+now apply Nat_gcd_le_l.
+Qed.
+
+Theorem Nat_gcd_add_diag_l : ∀ n m, Nat.gcd (m + n) n = Nat.gcd m n.
+Proof.
+intros.
+rewrite Nat.gcd_comm.
+rewrite Nat.gcd_add_diag_r.
+apply Nat.gcd_comm.
+Qed.
+
+Theorem Nat_gcd_sub_diag_l : ∀ n m, n ≤ m → Nat.gcd (m - n) n = Nat.gcd m n.
+Proof.
+intros * Hnm.
+replace m with (m - n + n) at 2; [ | now apply Nat.sub_add ].
+symmetry; apply Nat_gcd_add_diag_l.
+Qed.
+
 Definition bool_of_sumbool {A B : Prop} (P : sumbool A B) :=
   match P with
   | left _ _ => true
