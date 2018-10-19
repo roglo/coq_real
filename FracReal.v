@@ -945,7 +945,7 @@ Qed.
 *)
 
 (**)
-Theorem nA_9_8_all_18 {r : radix} : ∀ j u i n,
+Theorem A_9_8_all_18 {r : radix} : ∀ j u i n,
   (∀ k, k < j → u (i + k + 1) = rad - 1)
   → u (i + j + 1) = rad - 2
   → (∀ k, u (i + j + k + 2) = 2 * (rad - 1))
@@ -1993,6 +1993,20 @@ rewrite Nat.add_sub_assoc.
 Qed.
 *)
 
+Theorem A_num_den {r : radix} (rg := nat_ord_ring) : ∀ i n u,
+  A i n u =
+  ((Σ (j = i + 1, n - 1), (u j * rad ^ (n - 1 - j))%nat) //
+   rad ^ (n - i - 1))%NQ.
+Proof.
+intros.
+unfold "//"%NQ.
+remember (Σ (j = i + 1, n - 1), (u j * rad ^ (n - 1 - j))) as nA eqn:HnA.
+symmetry in HnA.
+destruct nA.
+-idtac.
+Search (Σ (_ = _, _), _ = 0)%Rg.
+...
+
 (**)
 Theorem A_ge_1_add_first_ge_rad {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
@@ -2015,6 +2029,7 @@ assert (Hin : i + 2 ≤ n - 1). {
 set (v j := if eq_nat_dec j (i + 1) then u j - rad else u j).
 assert (H2 : NQfrac (A i n u) = NQfrac (A i n v)). {
   unfold NQfrac.
+Search A.
 ...
   remember (A i n u) as x; rewrite NQnum_den in Heqx; [ | apply A_ge_0 ].
   remember (A i n v) as y; rewrite NQnum_den in Heqy; [ | apply A_ge_0 ].
