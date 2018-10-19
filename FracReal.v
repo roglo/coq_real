@@ -2049,18 +2049,20 @@ assert (H2 : NQfrac (A i n u) = NQfrac (A i n v)). {
     rewrite <- Nat.pow_add_r in Hy.
     replace (1 + (n - 1 - (i + 1))) with (n - i - 1) in Hy by flia Hin.
     rewrite Hx.
-    rewrite Nat.add_sub_swap.
-    -rewrite Hy.
-     remember summation as f; cbn; subst f.
-     f_equal.
-...
-  remember (A i n u) as x; rewrite NQnum_den in Heqx; [ | apply A_ge_0 ].
-  remember (A i n v) as y; rewrite NQnum_den in Heqy; [ | apply A_ge_0 ].
-  subst x y.
-  do 2 rewrite NQfrac_pair.
-  ============================
-  ((NQnum (A i n u) mod NQden (A i n u)) // NQden (A i n u))%NQ =
-  ((NQnum (A i n v) mod NQden (A i n v)) // NQden (A i n v))%NQ
+    rewrite Nat.add_sub_swap; cycle 1. {
+      replace (n - i - 1) with (1 + (n - i - 2)) by flia Hin.
+      replace (n - 1 - (i + 1)) with (n - i - 2) by flia.
+      rewrite Nat.pow_add_r, Nat.pow_1_r.
+      now apply Nat.mul_le_mono_r.
+    }
+    rewrite Hy.
+    remember summation as f; cbn; subst f.
+    f_equal.
+    apply summation_eq_compat.
+    intros j Hj; f_equal.
+    unfold v.
+    destruct (Nat.eq_dec j (i + 1)) as [H| H]; [ flia Hj H | easy ].
+  }
 ...
 assert (H2 : nA i n u mod rad ^ s = nA i n v mod rad ^ s). {
   rewrite nA_split_first; [ symmetry | flia Hin ].
