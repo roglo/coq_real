@@ -1097,15 +1097,20 @@ rewrite NQpair_diag; [ | easy ].
 now rewrite NQmul_1_l.
 Qed.
 
+Theorem NQden_0 : ∀ a, (a // 0 = a // 1)%NQ.
+Proof. easy. Qed.
+
 Theorem NQsub_pair_pos : ∀ a b c d,
-  b ≠ 0 → d ≠ 0 → b * c < a * d
+  b ≠ 0 → d ≠ 0 → b * c ≤ a * d
   → (a // b - c // d)%NQ = ((a * d - b * c) // (b * d))%NQ.
 Proof.
-intros * Hb Hd Hlt.
+intros * Hb Hd Hle.
 destruct b; [ flia Hb | ].
 destruct d; [ flia Hd | ].
 unfold "-"%NQ.
-destruct a; [ flia Hlt | ].
+destruct a. {
+  destruct c; [ easy | cbn in Hle; flia Hle ].
+}
 remember (S a // S b)%NQ as ab eqn:Hab; symmetry in Hab.
 destruct ab as [| pab| pab]; [ easy | | easy ].
 injection Hab; clear Hab; intros Hab; subst pab.
@@ -1120,18 +1125,25 @@ injection Hab; clear Hab; intros Hab; subst pab.
  +remember (S a) as sa; remember (S b) as sb; simpl; subst sa sb.
   unfold "//"%NQ.
   remember (S a * S d - S b * S c) as x eqn:Hx; symmetry in Hx.
-  destruct x; [ flia Hlt Hx | ].
-  remember (GQcompare (S a // S b) (S c // S d)) as b1 eqn:Hb1.
-  symmetry in Hb1.
-  destruct b1; GQcompare_iff.
-  *apply GQeq_pair in Hb1; [ flia Hlt Hb1 | easy | easy | easy | easy ].
-  *apply -> GQlt_pair in Hb1; [ | easy | easy | easy | easy ].
-   setoid_rewrite Nat.mul_comm in Hb1.
-   flia Hlt Hb1.
-  *f_equal.
-   setoid_rewrite Nat.mul_comm in Hlt.
-   rewrite GQsub_pair; try easy; [ now rewrite Hx | ].
-   now setoid_rewrite Nat.mul_comm.
+  destruct x.
+  *assert (H : S a * S d = S b * S c) by flia Hle Hx.
+   assert (Ha : S a ≠ 0) by easy.
+   assert (Hc : S c ≠ 0) by easy.
+   rewrite (proj2 (GQeq_pair _ _ _ _ Ha Hb Hc Hd)); [ | easy ].
+   now rewrite (proj2 (GQcompare_eq_iff _ _)).
+  *remember (GQcompare (S a // S b) (S c // S d)) as b1 eqn:Hb1.
+   symmetry in Hb1.
+   destruct b1; GQcompare_iff.
+  --apply GQeq_pair in Hb1; [ | easy | easy | easy | easy ].
+    now rewrite Hb1, Nat.sub_diag in Hx.
+  --apply -> GQlt_pair in Hb1; [ | easy | easy | easy | easy ].
+    setoid_rewrite Nat.mul_comm in Hb1.
+    flia Hle Hb1.
+  --f_equal.
+    setoid_rewrite Nat.mul_comm in Hle.
+    rewrite GQsub_pair; [ now rewrite Hx| easy | easy | easy | easy | ].
+    setoid_rewrite Nat.mul_comm.
+    flia Hle Hx.
 Qed.
 
 Theorem NQsub_pair_neg : ∀ a b c d,
@@ -1171,6 +1183,25 @@ destruct a.
  *apply -> GQlt_pair in Hb1; [ | easy | easy | easy | easy ].
   setoid_rewrite Nat.mul_comm in Hb1.
   flia Hlt Hb1.
+Qed.
+
+Theorem NQpair_sub_l : ∀ a b c,
+  b ≤ a → ((a - b) // c)%NQ = (a // c - b // c)%NQ.
+Proof.
+intros * Hba.
+destruct c. {
+  do 3 rewrite NQden_0.
+  rewrite NQsub_pair_pos; [ | easy | easy | ].
+  -now rewrite Nat.mul_1_r, Nat.mul_1_l.
+  -now rewrite Nat.mul_comm; apply Nat.mul_le_mono_r.
+}
+rewrite NQsub_pair_pos; [ | easy | easy | ]; cycle 1. {
+  now rewrite Nat.mul_comm; apply Nat.mul_le_mono_r.
+}
+rewrite Nat.mul_comm, <- Nat.mul_sub_distr_l.
+rewrite <- NQmul_pair; [ | easy | easy ].
+rewrite NQpair_diag; [ | easy ].
+now rewrite NQmul_1_l.
 Qed.
 
 Definition NQfrac x := ((NQnum x mod NQden x) // NQden x)%NQ.
@@ -1231,9 +1262,6 @@ destruct a; [ now apply GQnum_neq_0 in Ha | ].
 rewrite <- Ha; f_equal.
 apply GQnum_den.
 Qed.
-
-Theorem NQden_0 : ∀ a, (a // 0 = a // 1)%NQ.
-Proof. easy. Qed.
 
 Require Import Summation.
 
