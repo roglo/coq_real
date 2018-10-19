@@ -789,3 +789,32 @@ Definition nat_ord_ring :=
      rng_le_refl := Nat.le_refl;
      rng_le_antisymm := Nat.le_antisymm;
      rng_add_le_compat := Nat.add_le_mono |}.
+
+Theorem eq_nat_summation_0 (rg := nat_ord_ring) : ∀ b e (g : _ → nat),
+  Σ (i = b, e), g i = 0 → ∀ i, b ≤ i ≤ e → g i = 0.
+Proof.
+intros * Hs * (Hbi, Hie).
+remember (e - b) as n eqn:Hn.
+assert (H : e = b + n). {
+  rewrite Hn, Nat.add_comm.
+  rewrite Nat.sub_add; [ easy | ].
+  now apply (le_trans _ i).
+}
+subst e; clear Hn.
+rewrite summation_shift in Hs; [ | now apply (le_trans _ i)  ].
+rewrite Nat.add_comm, Nat.add_sub in Hs.
+revert i Hbi Hie.
+induction n; intros.
+-cbn in Hs; do 2 rewrite Nat.add_0_r in Hs.
+ rewrite Nat.add_0_r in Hie.
+ replace i with b; [ easy | now apply Nat.le_antisymm ].
+-rewrite summation_split_last in Hs; [ | apply Nat.le_0_l ].
+ apply Nat.eq_add_0 in Hs.
+ destruct Hs as (Hs, Hgs).
+ destruct (eq_nat_dec i (b + S n)) as [Hi| Hi]; [ now subst i | ].
+ apply IHn; [ easy | easy | ].
+ apply Nat.nlt_ge.
+ intros H; apply Hi; clear Hi.
+ apply Nat.le_antisymm; [ easy | ].
+ rewrite Nat.add_succ_r; apply H.
+Qed.

@@ -2003,8 +2003,16 @@ unfold "//"%NQ.
 remember (Σ (j = i + 1, n - 1), (u j * rad ^ (n - 1 - j))) as nA eqn:HnA.
 symmetry in HnA.
 destruct nA.
+-specialize (eq_nat_summation_0 _ _ _ HnA) as Hs.
+ cbn in Hs; rename i into m.
+ unfold A.
+ apply all_0_summation_0.
+ intros i Hi.
+ specialize (Hs i Hi).
+ apply Nat.eq_mul_0 in Hs.
+ destruct Hs as [Hui| Hrp]; [ now rewrite Hui | ].
+ now apply Nat.pow_nonzero in Hrp.
 -idtac.
-Search (Σ (_ = _, _), _ = 0)%Rg.
 ...
 
 (**)
