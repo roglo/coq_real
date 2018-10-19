@@ -1232,6 +1232,9 @@ rewrite <- Ha; f_equal.
 apply GQnum_den.
 Qed.
 
+Theorem NQden_0 : ∀ a, (a // 0 = a // 1)%NQ.
+Proof. easy. Qed.
+
 Require Import Summation.
 
 Definition NQ_ord_ring_def :=
@@ -1256,3 +1259,30 @@ Definition NQ_ord_ring :=
      rng_le_refl := NQle_refl;
      rng_le_antisymm := NQle_antisymm;
      rng_add_le_compat := NQadd_le_mono |}.
+
+Theorem NQsummation_pair_distr_r (rgi := nat_ord_ring) (rgq := NQ_ord_ring) :
+   ∀ b e (g : _ → nat) a,
+   ((Σ (i = b, e), g i) // a = Σ (i = b, e), (g i // a))%NQ.
+Proof.
+intros.
+destruct (le_dec b e) as [Heb| Hbe]; cycle 1. {
+  apply Nat.nle_gt in Hbe.
+  rewrite summation_empty; [ | easy ].
+  rewrite summation_empty; [ | easy ].
+  easy.
+}
+remember (e - b) as n eqn:Hn.
+assert (H : e = b + n). {
+  rewrite Hn, Nat.add_comm.
+  now rewrite Nat.sub_add.
+}
+subst e; clear Hn Heb.
+rewrite summation_shift; [ symmetry | flia ].
+rewrite summation_shift; [ symmetry | flia ].
+rewrite Nat.add_comm, Nat.add_sub.
+induction n; [ now do 2 rewrite summation_only_one | ].
+rewrite summation_split_last; [ symmetry | apply Nat.le_0_l ].
+rewrite summation_split_last; [ symmetry | apply Nat.le_0_l ].
+rewrite <- IHn.
+destruct a; [ do 3 rewrite NQden_0 | ]; now rewrite NQadd_pair_same_den.
+Qed.
