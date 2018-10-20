@@ -1788,16 +1788,15 @@ Theorem A_upper_bound_for_add_5 {r : radix} : ∀ u i k n,
   → u (i + 1) = rad - 2
   → u (i + k + 2) < 2 * (rad - 1)
   → i + k + 3 ≤ n - 1
-  → A i n u < (rad ^ (k + 2) - 1) * rad ^ (n - i - 1 - (k + 2)).
-...
-  → nA i n u < (rad ^ (k + 2) - 1) * rad ^ (n - i - 1 - (k + 2)).
+  → (A i n u < (1 - 1 // rad ^ (k + 2)))%NQ.
 Proof.
 intros * Hur Hui H2 Hin.
 remember (n - i - 1) as s eqn:Hs.
 specialize radix_ge_2 as Hr.
-rewrite nA_split with (e := i + k + 2); [ | flia Hin ].
+rewrite A_split with (e := i + k + 2); [ | flia Hin ].
 remember (i + k + 2) as j eqn:Hj.
 move j before i.
+...
 replace ((rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))) with
    ((rad ^ (k + 1) - 2) * rad ^ (s - (k + 1)) +
     (2 * rad - 1) * rad ^ (s - (k + 2))).
