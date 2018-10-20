@@ -1825,25 +1825,7 @@ replace (1 - 1 // rad ^ (k + 2))%NQ with
   f_equal; f_equal; rewrite Nat.mul_comm.
   replace (k + 2) with (S (k + 1)); [ easy | flia ].
 }
-...
-  replace (s - (k + 1)) with (s - (k + 2) + 1) by flia Hs Hj Hin.
-  remember (s - (k + 2)) as t eqn:Ht.
-  replace (k + 2) with (k + 1 + 1) by flia.
-  remember (k + 1) as m eqn:Hm.
-  do 2 rewrite Nat.pow_add_r.
-  rewrite Nat.pow_1_r.
-  rewrite Nat.mul_assoc, Nat.mul_shuffle0.
-  rewrite <- Nat.mul_add_distr_r; f_equal.
-  rewrite Nat.mul_sub_distr_r.
-  rewrite Nat.add_sub_assoc; [ f_equal | flia Hr ].
-  rewrite Nat.sub_add; [ easy | ].
-  apply Nat.mul_le_mono_r.
-  subst m.
-  rewrite Nat.add_comm; simpl.
-  replace 2 with (2 * 1) by flia.
-  apply Nat.mul_le_mono; [ easy | ].
-  apply Nat.neq_0_lt_0; pauto.
-}
+apply NQadd_le_lt_mono.
 ...
 replace ((rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))) with
    ((rad ^ (k + 1) - 2) * rad ^ (s - (k + 1)) +
