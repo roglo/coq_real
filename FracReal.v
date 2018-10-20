@@ -1846,6 +1846,14 @@ apply NQadd_le_lt_mono.
  rewrite A_split_first; [ | flia Hj ].
  rewrite <- NQadd_pair_same_den; [ | pauto ].
  apply NQadd_le_mono.
+ +rewrite Nat.add_comm; cbn.
+  rewrite <- NQmul_pair; [ | pauto | pauto ].
+  rewrite NQpair_diag; [ | pauto ].
+  rewrite NQmul_1_r.
+  apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono_pos_l; [ easy | ].
+  now rewrite <- Nat.add_1_r, Hui.
  +idtac.
 ...
 replace ((rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))) with
