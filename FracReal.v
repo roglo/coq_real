@@ -2013,6 +2013,7 @@ Theorem A_ge_1_add_first_ge_rad {r : radix} : ∀ u i,
   → u (i + 1) = 2 * (rad - 1).
 Proof.
 intros * Hur Hu Hui.
+specialize radix_ge_2 as Hr.
 apply A_ge_1_true_iff in Hu.
 unfold min_n in Hu.
 rewrite Nat.add_0_r, Nat.pow_1_r in Hu.
@@ -2059,41 +2060,69 @@ assert (H2 : NQfrac (A i n u) = NQfrac (A i n v)). {
   do 2 rewrite NQnum_pair.
   do 2 rewrite NQden_pair.
   rewrite Nat.max_r; [ | apply Nat.neq_0_lt_0; pauto ].
+  remember (rad ^ s1) as z eqn:Hz.
+  assert (Hzx : z ≤ x). {
+    rewrite Hx.
+    rewrite summation_split_first; [ | flia Hin ].
+    rewrite Hz.
+    replace (n - 1 - (i + 1)) with (s1 - 1) by flia Hs1.
+    replace s1 with (1 + (s1 - 1)) at 1 by flia Hs1 Hin.
+    rewrite Nat.pow_add_r, Nat.pow_1_r.
+    apply le_plus_trans.
+    apply Nat.mul_le_mono_pos_r; [ | easy ].
+    apply Nat.neq_0_lt_0; pauto.
+  }
   rewrite Nat.max_r.
   -rewrite Nat.max_r.
-   +rewrite Nat_gcd_sub_diag_l.
-...
-    *rewrite Nat_gcd_sub_diag_r.
-
-    *remember (Nat.gcd x (rad ^ s1)) as g eqn:Hg.
-...
-assert (H2 : nA i n u mod rad ^ s = nA i n v mod rad ^ s). {
-  rewrite nA_split_first; [ symmetry | flia Hin ].
-  rewrite nA_split_first; [ symmetry | flia Hin ].
-  rewrite Nat.add_mod; [ symmetry | pauto ].
-  rewrite Nat.add_mod; [ symmetry | pauto ].
-  f_equal; f_equal.
-  -replace (n - i - 2) with (s - 1) by flia Hs.
-   replace (rad ^ s) with (rad ^ ((s - 1) + 1)).
-   +rewrite Nat.pow_add_r, Nat.pow_1_r.
-   rewrite Nat.mod_mul_r; [ symmetry | pauto | easy ].
-    rewrite Nat.mod_mul_r; [ symmetry | pauto | easy ].
-    rewrite Nat.mod_mul; [ | pauto ].
-    rewrite Nat.mod_mul; [ | pauto ].
-    rewrite Nat.div_mul; [ | pauto ].
-    rewrite Nat.div_mul; [ | pauto ].
-    do 2 rewrite Nat.add_0_l.
-    f_equal; unfold v.
-    destruct (Nat.eq_dec (i + 1) (i + 1)) as [H2| ]; [ | easy ].
-    replace (u (i + 1)) with ((u (i + 1) - rad) + 1 * rad) at 1 by flia Hui.
-    now apply Nat.mod_add.
-   +f_equal; flia Hs Hin.
-  -f_equal.
-   apply nA_eq_compat.
-   intros j Hj.
-   unfold v.
-   destruct (Nat.eq_dec j (i + 1)) as [H2| ]; [ | easy ].
-   flia Hj H2.
+   +rewrite Nat_gcd_sub_diag_l; [ | easy ].
+    rewrite <- Nat_ggcd.ggcd_fst_snd.
+    rewrite <- Nat_ggcd.ggcd_snd_snd.
+    rewrite <- Nat_ggcd.ggcd_gcd.
+    remember (Nat_ggcd.ggcd x z) as g eqn:Hg.
+    destruct g as (g, (aa, bb)); cbn.
+    specialize (Nat_ggcd.ggcd_correct_divisors x z) as H.
+    rewrite <- Hg in H.
+    destruct H as (Hxg, Hzg).
+    rewrite Hxg, Hzg.
+    rewrite <- Nat.mul_sub_distr_l.
+    rewrite Nat.mul_comm.
+    assert (Hgz : g ≠ 0). {
+      destruct g; [ | flia ].
+      cbn in Hxg; move Hxg at top; subst x.
+      symmetry in Hx.
+      apply eq_nat_summation_0 with (i := i + 1) in Hx.
+      apply Nat.eq_mul_0 in Hx.
+      destruct Hx as [Hx| Hx].
+      flia Hui Hx Hr.
+      now apply Nat.pow_nonzero in Hx.
+      flia Hin.
+    }
+    rewrite Nat.div_mul; [ | easy ].
+    replace aa with ((aa - bb) + bb) at 1.
+    *rewrite Nat_mod_add_same_r; [ easy | ].
+     intros H; subst bb; rewrite Nat.mul_0_r in Hzg; subst z.
+     now apply Nat.pow_nonzero in Hzg.
+    *apply Nat.sub_add.
+     eapply (Nat.mul_le_mono_pos_l _ _ g); [ flia Hgz | ].
+     now rewrite <- Hxg, <- Hzg.
+   +apply Nat.neq_0_lt_0.
+    intros H; apply Nat.div_small_iff in H.
+    *apply Nat.nle_gt in H; apply H, Nat_gcd_le_r.
+     clear H; intros H; rewrite H in Hz.
+     now symmetry in Hz; apply Nat.pow_nonzero in Hz.
+    *intros H1.
+     apply Nat.gcd_eq_0_r in H1.
+     rewrite H1 in Hz.
+     now symmetry in Hz; apply Nat.pow_nonzero in Hz.
+  -apply Nat.neq_0_lt_0.
+   intros H; apply Nat.div_small_iff in H.
+   +apply Nat.nle_gt in H; apply H, Nat_gcd_le_r.
+    clear H; intros H; rewrite H in Hz.
+    now symmetry in Hz; apply Nat.pow_nonzero in Hz.
+   +intros H1.
+    apply Nat.gcd_eq_0_r in H1.
+    rewrite H1 in Hz.
+    now symmetry in Hz; apply Nat.pow_nonzero in Hz.
 }
 rewrite H2 in Hu.
 assert (H3 : ∀ k, v (i + k + 2) ≤ 2 * (rad - 1)). {
@@ -2107,11 +2136,11 @@ assert (H3 : ∀ k, v (i + k + 2) ≤ 2 * (rad - 1)). {
    replace (i + (k + 1) + 1) with (i + k + 2) in Hur by flia.
    apply Hur.
 }
-assert (H4 : A_ge_1 v i 0 = true). {
+assert (H4 : fA_ge_1_ε v i 0 = true). {
   apply A_ge_1_true_iff.
   unfold min_n.
   rewrite Nat.add_0_r, Nat.pow_1_r.
-  now rewrite <- Hn, <- Hs.
+  now rewrite <- Hn.
 }
 specialize (A_ge_1_add_first_ge v i H3 H4) as H5.
 unfold v in H5.
@@ -2215,12 +2244,8 @@ destruct (lt_dec (u (i + 1)) rad) as [H2| H2].
  +right; flia H2 H3.
 -right.
  apply Nat.nlt_ge in H2.
-...
- specialize (A_ge_1_add_first_ge_rad u i Hur Hu H2) as H3.
-
  now specialize (A_ge_1_add_first_ge_rad u i Hur Hu H2) as H3.
 Qed.
-...
 (*
 Theorem A_ge_1_add_first {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
@@ -2507,8 +2532,9 @@ Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
 Proof.
 intros * Hur Hu.
 specialize radix_ge_2 as Hr; move Hr before i.
-...
 specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
+-right; right.
+ exists 0.
 ...
 (*
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
