@@ -1799,6 +1799,32 @@ move j before i.
 replace (1 - 1 // rad ^ (k + 2))%NQ with
    ((rad ^ (k + 1) - 2) // rad ^ (k + 1) +
     (2 * rad - 1) // rad ^ (k + 2))%NQ; cycle 1. {
+  remember ((rad ^ (k + 1) - 2) // rad ^ (k + 1))%NQ as x.
+  replace x with (x * 1)%NQ by apply NQmul_1_r.
+  replace 1%NQ with (rad ^ 1 // rad ^ 1)%NQ at 1 by (apply NQpair_diag; pauto).
+  subst x.
+  rewrite NQmul_pair; [ | pauto | pauto ].
+  rewrite <- Nat.pow_add_r.
+  replace (k + 1 + 1) with (k + 2) by flia.
+  rewrite NQadd_pair_same_den; [| pauto ].
+  rewrite Nat.pow_1_r, Nat.mul_sub_distr_r.
+  rewrite Nat.add_sub_assoc; cycle 1. {
+    apply (Nat.le_trans _ (2 * 1)); [ flia | ].
+    apply Nat.mul_le_mono_pos_l; [ flia | easy ].
+  }
+  rewrite Nat.sub_add; cycle 1. {
+    apply Nat.mul_le_mono_pos_r; [ easy | ].
+    rewrite Nat.add_1_r; cbn.
+    replace 2 with (2 * 1) by easy.
+    apply Nat.mul_le_mono; [ easy | apply Nat.neq_0_lt_0; pauto ].
+  }
+  rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
+    apply Nat.mul_le_mono_pos_l; [ flia | apply Nat.neq_0_lt_0; pauto ].
+  }
+  rewrite Nat.mul_1_l, Nat.mul_1_r.
+  f_equal; f_equal; rewrite Nat.mul_comm.
+  replace (k + 2) with (S (k + 1)); [ easy | flia ].
+}
 ...
   replace (s - (k + 1)) with (s - (k + 2) + 1) by flia Hs Hj Hin.
   remember (s - (k + 2)) as t eqn:Ht.
