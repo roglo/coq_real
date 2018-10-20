@@ -1826,6 +1826,27 @@ replace (1 - 1 // rad ^ (k + 2))%NQ with
   replace (k + 2) with (S (k + 1)); [ easy | flia ].
 }
 apply NQadd_le_lt_mono.
+-replace (rad ^ (k + 1) - 2) with
+     ((rad - 2) * rad ^ k + 2 * (rad ^ k - 1)); cycle 1. {
+   rewrite Nat.mul_sub_distr_r.
+   replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+   rewrite <- Nat.pow_add_r.
+   replace (1 + k) with (k + 1) by flia.
+   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   rewrite Nat.add_sub_assoc.
+   -f_equal.
+    rewrite Nat.sub_add; [ easy | ].
+    replace (k + 1) with (1 + k) by flia.
+    remember 2 as x; simpl; subst x.
+    now apply Nat.mul_le_mono_r.
+   -replace 2 with (2 * 1) at 1 by flia.
+    apply Nat.mul_le_mono_l.
+    apply Nat.neq_0_lt_0; pauto.
+ }
+ rewrite A_split_first; [ | flia Hj ].
+ rewrite <- NQadd_pair_same_den; [ | pauto ].
+ apply NQadd_le_mono.
+ +idtac.
 ...
 replace ((rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))) with
    ((rad ^ (k + 1) - 2) * rad ^ (s - (k + 1)) +
