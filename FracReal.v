@@ -1856,6 +1856,10 @@ apply NQadd_le_lt_mono.
   now rewrite <- Nat.add_1_r, Hui.
  +idtac.
 ...
+rewrite Nat.add_1_r, Nat.pow_succ_r; [ | apply Nat.le_0_l ].
+Check A_upper_bound_for_add.
+
+...
 replace ((rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))) with
    ((rad ^ (k + 1) - 2) * rad ^ (s - (k + 1)) +
     (2 * rad - 1) * rad ^ (s - (k + 2))).
