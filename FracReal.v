@@ -1854,8 +1854,7 @@ apply NQadd_le_lt_mono.
   rewrite Nat.mul_comm.
   apply Nat.mul_le_mono_pos_l; [ easy | ].
   now rewrite <- Nat.add_1_r, Hui.
- +idtac.
-  rewrite Nat.add_1_r, Nat.pow_succ_r; [ | apply Nat.le_0_l ].
+ +rewrite Nat.add_1_r, Nat.pow_succ_r; [ | apply Nat.le_0_l ].
   replace 2 with (1 * 2) by easy.
   rewrite <- Nat.mul_assoc.
   rewrite <- NQmul_pair; [ | pauto | pauto ].
@@ -1883,41 +1882,13 @@ apply NQadd_le_lt_mono.
   intros m.
   replace (S i + m + 1) with (i + m + 2) by flia.
   apply Hur.
--idtac.
+-rewrite A_split_first; [ | flia Hj Hin ].
+ replace (S (j - 1)) with j by flia Hj.
 ...
-replace ((rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))) with
-   ((rad ^ (k + 1) - 2) * rad ^ (s - (k + 1)) +
-    (2 * rad - 1) * rad ^ (s - (k + 2))).
 -apply Nat.add_le_lt_mono.
  +replace (n - j) with (s - (k + 1)) by flia Hs Hj.
   apply Nat.mul_le_mono_r.
-  rewrite nA_split_first; [ | flia Hj Hin ].
-  replace (rad ^ (k + 1) - 2) with
-    ((rad - 2) * rad ^ k + 2 * (rad ^ k - 1)).
-  *replace (j - i - 2) with k by flia Hj.
-   apply Nat.add_le_mono.
-  --now apply Nat.mul_le_mono_r; rewrite Hui.
-  --destruct k.
-   ++unfold nA; rewrite summation_empty; [ easy | flia Hj ].
-   ++replace (S k) with (j - S i - 1) by flia Hj.
-     apply nA_upper_bound_for_add.
-     intros l.
-     replace (S i + l + 1) with (i + l + 2) by flia.
-     apply Hur.
-  *rewrite Nat.mul_sub_distr_r.
-   replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
-   rewrite <- Nat.pow_add_r.
-   replace (1 + k) with (k + 1) by flia.
-   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-   rewrite Nat.add_sub_assoc.
-  --f_equal.
-    rewrite Nat.sub_add; [ easy | ].
-    replace (k + 1) with (1 + k) by flia.
-    remember 2 as x; simpl; subst x.
-    now apply Nat.mul_le_mono_r.
-  --replace 2 with (2 * 1) at 1 by flia.
-    apply Nat.mul_le_mono_l.
-    apply Nat.neq_0_lt_0; pauto.
+...
  +replace (s - (k + 2)) with (n - j - 1) by flia Hs Hj.
   rewrite nA_split_first; [ | flia Hj Hin ].
   replace (j - 1 + 1) with j by flia Hj.
