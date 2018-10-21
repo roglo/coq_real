@@ -1855,10 +1855,35 @@ apply NQadd_le_lt_mono.
   apply Nat.mul_le_mono_pos_l; [ easy | ].
   now rewrite <- Nat.add_1_r, Hui.
  +idtac.
-...
-rewrite Nat.add_1_r, Nat.pow_succ_r; [ | apply Nat.le_0_l ].
-Check A_upper_bound_for_add.
-
+  rewrite Nat.add_1_r, Nat.pow_succ_r; [ | apply Nat.le_0_l ].
+  replace 2 with (1 * 2) by easy.
+  rewrite <- Nat.mul_assoc.
+  rewrite <- NQmul_pair; [ | pauto | pauto ].
+  rewrite NQmul_comm.
+  apply NQmul_le_mono_nonneg_l. {
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQle_pair; [ easy | pauto | apply Nat.le_0_l ].
+  }
+  rewrite Nat.mul_sub_distr_l.
+  rewrite NQpair_sub_l; cycle 1. {
+    apply Nat.mul_le_mono_pos_l; [ pauto | apply Nat.neq_0_lt_0; pauto ].
+  }
+  rewrite Nat.mul_1_r.
+  replace (rad ^ k) with (1 * rad ^ k) at 2 by apply Nat.mul_1_l.
+  rewrite <- NQmul_pair; [ | easy | pauto ].
+  rewrite NQpair_diag, NQmul_1_r; [ | pauto ].
+  replace (2 - 2 // rad ^ k)%NQ with (2 * (1 - 1 // rad ^ k))%NQ; cycle 1. {
+    rewrite NQmul_sub_distr_l, NQmul_1_r.
+    f_equal; f_equal.
+    rewrite NQmul_pair; [ | easy | pauto ].
+    now rewrite Nat.mul_1_l.
+  }
+  replace k with (j - S i - 1) by flia Hj.
+  apply A_upper_bound_for_add.
+  intros m.
+  replace (S i + m + 1) with (i + m + 2) by flia.
+  apply Hur.
+-idtac.
 ...
 replace ((rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))) with
    ((rad ^ (k + 1) - 2) * rad ^ (s - (k + 1)) +
