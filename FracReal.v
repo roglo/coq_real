@@ -1882,7 +1882,8 @@ apply NQadd_le_lt_mono.
   intros m.
   replace (S i + m + 1) with (i + m + 2) by flia.
   apply Hur.
--rewrite A_split_first; [ | flia Hj Hin ].
+-replace (j - i - 1) with (k + 1) by flia Hj.
+ rewrite A_split_first; [ | flia Hj Hin ].
  replace (S (j - 1)) with j by flia Hj.
 ...
 -apply Nat.add_le_lt_mono.
