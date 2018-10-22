@@ -1712,9 +1712,18 @@ apply NQadd_le_lt_mono.
  rewrite <- Nat.add_sub_assoc; [ | flia H3 ].
  rewrite Nat.mul_add_distr_r.
  rewrite <- NQadd_pair_same_den; [ | pauto ].
- apply NQadd_le_mono.
- +idtac.
-
+ destruct j.
+ +rewrite Nat.add_0_r in H3; flia H1 H3.
+ +apply NQadd_le_mono.
+...
+  *eapply NQle_trans.
+ --apply NQlt_le_incl, A_dig_seq_ub; [ | flia ].
+   intros p Hp.
+   replace p with (i + (p - i - 1) + 1) by flia Hp.
+   rewrite H2; [ flia Hr | flia Hp ].
+ --idtac.
+...
+specialize (A_dig_seq_ub u (i + j + 1) i) as H.
 ...
 replace ((rad ^ (j + 2) - 1) * rad ^ (n - k - 1)) with
   ((rad ^ (j + 1) - 3) * rad ^ (n - k) + (3 * rad - 1) * rad ^ (n - k - 1)).
