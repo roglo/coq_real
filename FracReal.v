@@ -1670,23 +1670,36 @@ Theorem A_upper_bound_for_add_4 {r : radix} : ∀ u i j n,
   → (A i n u < 1 - 1 // rad ^ (j + 2))%NQ.
 Proof.
 intros * Hur H1 H2 H3 Hin.
+specialize radix_ge_2 as Hr.
 rewrite A_split with (e := i + j + 2); [ | flia Hin ].
 replace (i + j + 2 - i - 1) with (j + 1) by flia.
 remember (i + j + 2) as k eqn:Hk.
 move k before j.
+rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
+  apply Nat.mul_le_mono_l, Nat.neq_0_lt_0; pauto.
+}
+do 2 rewrite Nat.mul_1_l.
+replace (rad ^ (j + 2) - 1) with
+  ((rad ^ (j + 1) - 3) * rad + (3 * rad - 1)); cycle 1. {
+  rewrite Nat.mul_sub_distr_r.
+  rewrite Nat.add_sub_assoc; cycle 1. {
+    apply (Nat.le_trans _ (3 * 1)); [ flia | ].
+    apply Nat.mul_le_mono_l, Nat.neq_0_lt_0; pauto.
+  }
+  destruct j.
+  -rewrite Nat.add_0_r in H3; flia H1 H3.
+  -replace (S j + 1) with (S (S j)) by flia.
+   rewrite Nat.sub_add; cycle 1. {
+     apply Nat.mul_le_mono_r; cbn.
+     apply (Nat.le_trans _ (2 * (2 * 1))); [ flia | ].
+     apply Nat.mul_le_mono; [ easy | ].
+     apply Nat.mul_le_mono; [ easy | ].
+     apply Nat.neq_0_lt_0; pauto.
+   }
+   rewrite Nat.mul_comm, <- Nat.pow_succ_r'.
+   now replace (S j + 2) with (S (S (S j))) by flia.
+}
 ...
-(*
-           k-1
- i+1      i+j+1
-  9 9 9 9 9≤7 0 0 0 0 0            j+2      n-k-1
-  <---------> <------->        <-----------> <----->
-      j+1        n-k       <?  9 9 9 9 9 9 9 0 0 0 0
-
-+            1818181818
-
-                               9 9 9 9 9 7 0 0 0 0 0
-                             +           2 9 0 0 0 0
-*)
 replace ((rad ^ (j + 2) - 1) * rad ^ (n - k - 1)) with
   ((rad ^ (j + 1) - 3) * rad ^ (n - k) + (3 * rad - 1) * rad ^ (n - k - 1)).
 -apply Nat.add_le_lt_mono.
