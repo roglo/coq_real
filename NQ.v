@@ -1271,14 +1271,6 @@ destruct (zerop a) as [Ha| Ha].
   now rewrite NQmul_1_r.
 Qed.
 
-Theorem NQfrac_le : ∀ x, (NQfrac x ≤ x)%NQ.
-Proof.
-intros x.
-unfold NQfrac.
-destruct x as [| xp| xp]; [ easy | | ].
--cbn.
-...
-
 Theorem NQden_neq_0 : ∀ x, NQden x ≠ 0.
 Proof.
 intros x.
@@ -1353,6 +1345,18 @@ remember (GQnum px) as a eqn:Ha; symmetry in Ha.
 destruct a; [ now apply GQnum_neq_0 in Ha | ].
 rewrite <- Ha; f_equal.
 apply GQnum_den.
+Qed.
+
+Theorem NQfrac_le : ∀ x, (0 ≤ x)%NQ → (NQfrac x ≤ x)%NQ.
+Proof.
+intros x Hx.
+unfold NQfrac.
+destruct x as [| xp| xp]; [ easy | | easy ].
+cbn.
+rewrite NQnum_den; [ | easy ].
+apply NQle_pair; [ apply GQden_neq_0 | apply NQden_neq_0 | ].
+cbn; rewrite Nat.mul_comm.
+apply Nat.mul_le_mono_l, Nat.mod_le, GQden_neq_0.
 Qed.
 
 Require Import Summation.

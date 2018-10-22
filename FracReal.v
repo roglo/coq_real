@@ -2439,18 +2439,9 @@ assert (Hin : i + k + 3 ≤ n - 1). {
 }
 replace (S (k + 1)) with (k + 2) by flia.
 specialize (A_upper_bound_for_add_5 u i k n Hur Hui H2 Hin) as H3.
-eapply NQlt_trans; [ | apply H3 ].
-...
-apply NQfrac_lt.
-...
-rewrite <- Hs in H3.
-rewrite Nat.mod_small; [ easy | ].
-eapply Nat.lt_le_trans; [ apply H3 | ].
-rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-rewrite <- Nat.pow_add_r.
-rewrite Nat.add_sub_assoc; [ | flia Hs Hin ].
-rewrite Nat.add_comm, Nat.add_sub.
-apply Nat.le_sub_l.
+eapply NQle_lt_trans; [ | apply H3 ].
+apply NQfrac_le.
+apply A_ge_0.
 Qed.
 (*
 Theorem A_ge_1_add_8_eq {r : radix} : ∀ u i,
@@ -2726,9 +2717,9 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
    replace (i + k + 2) with (i + (k + 1) + 1) by flia.
    apply Hur.
  }
-...
  specialize (A_ge_1_add_8_eq u i Hur2 H1 j (Hu (j + 1))) as H2.
  easy.
+-idtac.
 ...
 (*
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
