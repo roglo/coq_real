@@ -624,14 +624,14 @@ Qed.
 (**)
 Theorem A_split_last {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
-  → A i n u = (A i (n - 1) u + u (pred n) // rad ^ (n - i - 1))%NQ.
+  → A i n u = (A i (n - 1) u + u (n - 1)%nat // rad ^ (n - i - 1))%NQ.
 Proof.
 intros * Hin.
 unfold A.
 replace (n - 1) with (S (n - 1 - 1)) at 1 by flia Hin.
 rewrite summation_split_last; [ | flia Hin ].
 cbn; f_equal.
-replace (S (n - 1 - 1)) with (pred n) by flia Hin.
+replace (S (n - 1 - 1)) with (n - 1) by flia Hin.
 f_equal; f_equal.
 destruct i; flia.
 Qed.
@@ -1699,6 +1699,22 @@ replace (rad ^ (j + 2) - 1) with
    rewrite Nat.mul_comm, <- Nat.pow_succ_r'.
    now replace (S j + 2) with (S (S (S j))) by flia.
 }
+rewrite <- NQadd_pair_same_den; [ | pauto ].
+apply NQadd_le_lt_mono.
+-rewrite A_split_last; [ | flia Hk ].
+ replace (k - 1) with (i + j + 1) by flia Hk.
+ rewrite Nat.pow_add_r, Nat.pow_1_r.
+ replace (rad ^ j) with (rad ^ j - 1 + 1); cycle 1. {
+   rewrite Nat.sub_add; [ easy | ].
+   apply Nat.neq_0_lt_0; pauto.
+ }
+ rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+ rewrite <- Nat.add_sub_assoc; [ | flia H3 ].
+ rewrite Nat.mul_add_distr_r.
+ rewrite <- NQadd_pair_same_den; [ | pauto ].
+ apply NQadd_le_mono.
+ +idtac.
+
 ...
 replace ((rad ^ (j + 2) - 1) * rad ^ (n - k - 1)) with
   ((rad ^ (j + 1) - 3) * rad ^ (n - k) + (3 * rad - 1) * rad ^ (n - k - 1)).
