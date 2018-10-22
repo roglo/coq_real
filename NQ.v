@@ -885,6 +885,13 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -f_equal; apply GQmul_add_distr_l.
 Qed.
 
+Theorem NQmul_add_distr_r : ∀ x y z, ((x + y) * z = x * z + y * z)%NQ.
+Proof.
+intros.
+setoid_rewrite NQmul_comm.
+apply NQmul_add_distr_l.
+Qed.
+
 Theorem NQmul_sub_distr_l : ∀ x y z, (x * (y - z) = x * y - x * z)%NQ.
 Proof.
 intros.

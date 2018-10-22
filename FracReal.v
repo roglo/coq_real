@@ -1885,47 +1885,37 @@ apply NQadd_le_lt_mono.
 -replace (j - i - 1) with (k + 1) by flia Hj.
  rewrite A_split_first; [ | flia Hj Hin ].
  replace (S (j - 1)) with j by flia Hj.
-...
--apply Nat.add_le_lt_mono.
- +replace (n - j) with (s - (k + 1)) by flia Hs Hj.
-  apply Nat.mul_le_mono_r.
-...
- +replace (s - (k + 2)) with (n - j - 1) by flia Hs Hj.
-  rewrite nA_split_first; [ | flia Hj Hin ].
-  replace (j - 1 + 1) with j by flia Hj.
-  replace (n - (j - 1) - 2) with (n - j - 1) by flia Hj.
-  replace (S (j - 1)) with j by flia Hj.
-  replace (2 * rad - 1) with (2 * rad - 3 + 2) by flia Hr.
-  rewrite Nat.mul_add_distr_r.
-  apply Nat.add_le_lt_mono.
-  *apply Nat.mul_le_mono_r; flia H2.
-  *eapply Nat.le_lt_trans.
-  --apply nA_upper_bound_for_add.
+ replace (2 * rad - 1) with (2 * rad - 3 + 2) by flia Hr.
+ rewrite <- NQadd_pair_same_den; [ | pauto ].
+ rewrite NQmul_add_distr_r.
+ apply NQadd_le_lt_mono.
+ +rewrite NQmul_pair; [ | easy | pauto ].
+  rewrite Nat.mul_1_r, <- Nat.pow_succ_r; [ | flia ].
+  replace (S (k + 1)) with (k + 2) by pauto.
+  apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono_l; flia H2.
+ +rewrite <- NQmul_assoc.
+  rewrite NQmul_pair; [ | pauto | pauto ].
+  rewrite Nat.mul_1_r, <- Nat.pow_succ_r; [ | flia ].
+  replace (S (k + 1)) with (k + 2) by pauto.
+  replace 2 with (2 * 1) at 2 by easy.
+  replace (rad ^ (k + 2)) with (1 * rad ^ (k + 2)) at 2 by flia.
+  rewrite <- NQmul_pair; [ | easy | pauto ].
+  apply NQmul_lt_mono_pos_r.
+  *replace 0%NQ with (0 // 1)%NQ by easy.
+   apply NQlt_pair; [ easy | pauto | pauto ].
+  *eapply NQle_lt_trans.
+  --apply A_upper_bound_for_add.
     intros l.
     replace (j + l + 1) with (i + (k + l + 1) + 2) by flia Hj.
     apply Hur.
-  --rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-    apply Nat.sub_lt; [ | flia ].
-    replace 2 with (2 * 1) at 1 by flia.
-    apply Nat.mul_le_mono_l.
-    apply Nat.neq_0_lt_0; pauto.
--replace (s - (k + 1)) with (s - (k + 2) + 1) by flia Hs Hj Hin.
- remember (s - (k + 2)) as t eqn:Ht.
- replace (k + 2) with (k + 1 + 1) by flia.
- remember (k + 1) as m eqn:Hm.
- do 2 rewrite Nat.pow_add_r.
- rewrite Nat.pow_1_r.
- rewrite Nat.mul_assoc, Nat.mul_shuffle0.
- rewrite <- Nat.mul_add_distr_r; f_equal.
- rewrite Nat.mul_sub_distr_r.
- rewrite Nat.add_sub_assoc; [ f_equal | flia Hr ].
- rewrite Nat.sub_add; [ easy | ].
- apply Nat.mul_le_mono_r.
- subst m.
- rewrite Nat.add_comm; simpl.
- replace 2 with (2 * 1) by flia.
- apply Nat.mul_le_mono; [ easy | ].
- apply Nat.neq_0_lt_0; pauto.
+  --rewrite NQmul_sub_distr_l, NQmul_1_r.
+    apply NQsub_lt.
+    rewrite NQmul_pair; [ | easy | pauto ].
+    rewrite Nat.mul_1_r, Nat.mul_1_l.
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | pauto | flia ].
 Qed.
 (*
 Theorem nA_upper_bound_for_add_5 {r : radix} : ∀ u i k n,
@@ -2448,8 +2438,8 @@ assert (Hin : i + k + 3 ≤ n - 1). {
   destruct rad; [ easy | simpl; flia ].
 }
 replace (S (k + 1)) with (k + 2) by flia.
+specialize (A_upper_bound_for_add_5 u i k n Hur Hui H2 Hin) as H3.
 ...
-specialize (nA_upper_bound_for_add_5 u i k n Hur Hui H2 Hin) as H3.
 rewrite <- Hs in H3.
 rewrite Nat.mod_small; [ easy | ].
 eapply Nat.lt_le_trans; [ apply H3 | ].
