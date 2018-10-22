@@ -1271,6 +1271,14 @@ destruct (zerop a) as [Ha| Ha].
   now rewrite NQmul_1_r.
 Qed.
 
+Theorem NQfrac_le : ∀ x, (NQfrac x ≤ x)%NQ.
+Proof.
+intros x.
+unfold NQfrac.
+destruct x as [| xp| xp]; [ easy | | ].
+-cbn.
+...
+
 Theorem NQden_neq_0 : ∀ x, NQden x ≠ 0.
 Proof.
 intros x.

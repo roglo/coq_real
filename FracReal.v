@@ -2439,6 +2439,9 @@ assert (Hin : i + k + 3 ≤ n - 1). {
 }
 replace (S (k + 1)) with (k + 2) by flia.
 specialize (A_upper_bound_for_add_5 u i k n Hur Hui H2 Hin) as H3.
+eapply NQlt_trans; [ | apply H3 ].
+...
+apply NQfrac_lt.
 ...
 rewrite <- Hs in H3.
 rewrite Nat.mod_small; [ easy | ].
