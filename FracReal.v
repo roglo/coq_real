@@ -1740,6 +1740,28 @@ apply NQadd_le_lt_mono.
 -replace (j + 2) with (1 + (j + 1)) by flia.
  remember (j + 1) as jj; rewrite Nat.pow_add_r; subst jj.
  rewrite Nat.pow_1_r.
+ apply (NQmul_lt_mono_pos_r (rad ^ (j + 1) // 1)%NQ). {
+   replace 0%NQ with (0 // 1)%NQ by easy.
+   apply NQlt_pair; [ easy | pauto | ].
+   cbn; rewrite Nat.add_0_r.
+   apply Nat.neq_0_lt_0; pauto.
+ }
+ rewrite <- NQmul_assoc.
+ rewrite NQmul_pair; [ | pauto | easy ].
+ rewrite Nat.mul_1_l, Nat.mul_1_r.
+ rewrite NQpair_diag; [ rewrite NQmul_1_r | pauto ].
+ rewrite NQmul_pair; [ | rewrite <- Nat.pow_succ_r'; pauto | easy ].
+ rewrite Nat.mul_1_r.
+ rewrite <- NQmul_pair; [ | easy | pauto ].
+ rewrite NQpair_diag; [ | pauto ].
+ rewrite NQmul_1_r.
+ destruct j; [ rewrite Nat.add_0_r in H3; flia H1 H3 | ].
+...
+ eapply NQle_lt_trans.
+ +apply A_dig_seq_ub; [ | flia Hk Hin ].
+  intros p Hp.
+  replace p with (i + (p - i - 1) + 1) by flia Hk Hp.
+  rewrite H2; [ flia Hr | ].
 ...
  specialize (A_dig_seq_ub u n (k - 1)) as H.
  replace (n - (k - 1) - 1) with (n - k) in H by flia Hk.
