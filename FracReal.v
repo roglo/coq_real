@@ -712,8 +712,8 @@ Theorem A_dig_seq_ub {r : radix} : ∀ u n i,
 Proof.
 intros * Hu Hin.
 specialize radix_ge_2 as Hr.
-...
-apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
+(**)
+apply (NQle_trans _ (A i n (λ i, rad - 1))).
 -apply summation_le_compat; intros j Hj; cbn.
  apply NQle_pair; [ pauto | pauto | ].
  rewrite Nat.mul_comm.
@@ -746,10 +746,13 @@ apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
  }
  rewrite NQpair_diag; [ rewrite NQmul_1_r | flia Hr ].
  rewrite <- Nat.pow_succ_r'.
- apply NQlt_pair; [ pauto | easy | ].
- do 2 rewrite Nat.mul_1_r.
- apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
- apply Nat.neq_0_lt_0; pauto.
+ rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
+   apply Nat.mul_le_mono_l, Nat.neq_0_lt_0; pauto.
+ }
+ do 2 rewrite Nat.mul_1_l.
+ apply NQle_pair; [ pauto | pauto | ].
+ replace (S (n - i - 2)) with (n - i - 1) by flia Hin.
+ now rewrite Nat.mul_comm.
 Qed.
 (*
 Theorem nA_dig_seq_ub {r : radix} : ∀ u n i,
@@ -1716,15 +1719,18 @@ apply NQadd_le_lt_mono.
  destruct j.
  +rewrite Nat.add_0_r in H3; flia H1 H3.
  +apply NQadd_le_mono.
-...
-  *eapply NQle_trans.
- --apply NQlt_le_incl, A_dig_seq_ub; [ | flia ].
+  *rewrite Nat.pow_add_r.
+   rewrite <- Nat.mul_assoc, <- NQmul_pair; [ | pauto | pauto ].
+   replace (rad * rad) with (rad ^ 2) by (cbn; flia).
+   rewrite NQpair_diag; [ | pauto ].
+   rewrite NQmul_1_r, NQpair_sub_l; [ | apply Nat.neq_0_lt_0; pauto ].
+   rewrite NQpair_diag; [ | pauto ].
+   replace (S j) with (i + S j + 1 - i - 1) at 2 by flia.
+   apply A_dig_seq_ub; [ | flia ].
    intros p Hp.
    replace p with (i + (p - i - 1) + 1) by flia Hp.
    rewrite H2; [ flia Hr | flia Hp ].
- --idtac.
-...
-specialize (A_dig_seq_ub u (i + j + 1) i) as H.
+  *idtac.
 ...
 replace ((rad ^ (j + 2) - 1) * rad ^ (n - k - 1)) with
   ((rad ^ (j + 1) - 3) * rad ^ (n - k) + (3 * rad - 1) * rad ^ (n - k - 1)).
