@@ -1159,17 +1159,6 @@ destruct ab as [| pab| pab]; [ | | now destruct a ].
    now apply GQadd_pair.
 Qed.
 
-Theorem NQadd_pair_same_den : ∀ a b c,
-  a ≠ 0 → (b // a + c // a)%NQ = ((b + c) // a)%NQ.
-Proof.
-intros * Ha.
-rewrite NQadd_pair; [ | easy | easy ].
-rewrite Nat.mul_comm, <- Nat.mul_add_distr_l.
-rewrite <- NQmul_pair; [ | easy | easy ].
-rewrite NQpair_diag; [ | easy ].
-now rewrite NQmul_1_l.
-Qed.
-
 Theorem NQden_0 : ∀ a, (a // 0 = a // 1)%NQ.
 Proof. easy. Qed.
 
@@ -1256,6 +1245,22 @@ destruct a.
  *apply -> GQlt_pair in Hb1; [ | easy | easy | easy | easy ].
   setoid_rewrite Nat.mul_comm in Hb1.
   flia Hlt Hb1.
+Qed.
+
+Theorem NQpair_add_l : ∀ a b c,
+  ((a + b) // c)%NQ = (a // c + b // c)%NQ.
+Proof.
+intros.
+destruct c. {
+  do 3 rewrite NQden_0.
+  rewrite NQadd_pair; [ | easy | easy ].
+  now rewrite Nat.mul_1_l, Nat.mul_1_r.
+}
+rewrite NQadd_pair; [ | easy | easy ].
+rewrite Nat.mul_comm, <- Nat.mul_add_distr_l.
+rewrite <- NQmul_pair; [ | easy | easy ].
+rewrite NQpair_diag; [ | easy ].
+now rewrite NQmul_1_l.
 Qed.
 
 Theorem NQpair_sub_l : ∀ a b c,
@@ -1452,5 +1457,5 @@ induction n; [ now do 2 rewrite summation_only_one | ].
 rewrite summation_split_last; [ symmetry | apply Nat.le_0_l ].
 rewrite summation_split_last; [ symmetry | apply Nat.le_0_l ].
 rewrite <- IHn.
-destruct a; [ do 3 rewrite NQden_0 | ]; now rewrite NQadd_pair_same_den.
+destruct a; [ do 3 rewrite NQden_0 | ]; now rewrite <- NQpair_add_l.
 Qed.

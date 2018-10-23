@@ -1598,8 +1598,7 @@ apply (NQle_lt_trans _ ((rad - 3) // rad + 2 // rad * (1 - 1 // rad ^ s))%NQ).
   rewrite Nat.mul_comm.
   apply Nat.mul_le_mono_l, Hur.
 -rewrite NQmul_sub_distr_l.
- rewrite NQmul_1_r, NQadd_assoc.
- rewrite NQadd_pair_same_den; [ | easy ].
+ rewrite NQmul_1_r, NQadd_assoc, <- NQpair_add_l.
  replace (rad - 3 + 2) with (rad - 1) by flia H1.
  rewrite NQsub_pair_pos; [ | easy | easy | now apply Nat.mul_le_mono_l ].
  do 2 rewrite Nat.mul_1_l.
@@ -1703,7 +1702,7 @@ replace (rad ^ (j + 2) - 1) with
    rewrite Nat.mul_comm, <- Nat.pow_succ_r'.
    now replace (S j + 2) with (S (S (S j))) by flia.
 }
-rewrite <- NQadd_pair_same_den; [ | pauto ].
+rewrite NQpair_add_l.
 apply NQadd_le_lt_mono.
 -rewrite A_split_last; [ | flia Hk ].
  replace (k - 1) with (i + j + 1) by flia Hk.
@@ -1715,7 +1714,7 @@ apply NQadd_le_lt_mono.
  rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
  rewrite <- Nat.add_sub_assoc; [ | flia H3 ].
  rewrite Nat.mul_add_distr_r.
- rewrite <- NQadd_pair_same_den; [ | pauto ].
+ rewrite NQpair_add_l.
  destruct j.
  +rewrite Nat.add_0_r in H3; flia H1 H3.
  +apply NQadd_le_mono.
@@ -1920,7 +1919,7 @@ replace (1 - 1 // rad ^ (k + 2))%NQ with
   rewrite NQmul_pair; [ | pauto | pauto ].
   rewrite <- Nat.pow_add_r.
   replace (k + 1 + 1) with (k + 2) by flia.
-  rewrite NQadd_pair_same_den; [| pauto ].
+  rewrite <- NQpair_add_l.
   rewrite Nat.pow_1_r, Nat.mul_sub_distr_r.
   rewrite Nat.add_sub_assoc; cycle 1. {
     apply (Nat.le_trans _ (2 * 1)); [ flia | ].
@@ -1958,7 +1957,7 @@ apply NQadd_le_lt_mono.
     apply Nat.neq_0_lt_0; pauto.
  }
  rewrite A_split_first; [ | flia Hj ].
- rewrite <- NQadd_pair_same_den; [ | pauto ].
+ rewrite NQpair_add_l.
  apply NQadd_le_mono.
  +rewrite Nat.add_comm; cbn.
   rewrite <- NQmul_pair; [ | pauto | pauto ].
@@ -2000,7 +1999,7 @@ apply NQadd_le_lt_mono.
  rewrite A_split_first; [ | flia Hj Hin ].
  replace (S (j - 1)) with j by flia Hj.
  replace (2 * rad - 1) with (2 * rad - 3 + 2) by flia Hr.
- rewrite <- NQadd_pair_same_den; [ | pauto ].
+ rewrite NQpair_add_l.
  rewrite NQmul_add_distr_r.
  apply NQadd_le_lt_mono.
  +rewrite NQmul_pair; [ | easy | pauto ].
@@ -2670,15 +2669,7 @@ assert (HA : (A i (i + k + 1) u ≥ 1 - 1 // rad ^ k)%NQ). {
   rewrite NQmul_pair; [ | easy | pauto ].
   rewrite Nat.mul_1_l.
   rewrite NQpair_sub_l; [ | easy ].
-...
   apply NQsub_le_mono.
-...
-(*
-  A VOIR : comparer
-   NQadd_pair_same_den
-   NQpair_sub_l
-*)
-
 ...
 (*
   replace (i + S k + (i + 1) - (i + 1 + j)) with (i + (k - j) + 1) by flia Hj.
