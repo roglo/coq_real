@@ -2666,6 +2666,19 @@ assert (HA : (A i (i + k + 1) u ≥ 1 - 1 // rad ^ k)%NQ). {
   replace (i + 1 + j - i) with (j + 1) by flia.
   rewrite Nat.add_shuffle0.
   rewrite H3; [ | flia Hj ].
+  rewrite NQmul_sub_distr_r, NQmul_1_l.
+  rewrite NQmul_pair; [ | easy | pauto ].
+  rewrite Nat.mul_1_l.
+  rewrite NQpair_sub_l; [ | easy ].
+...
+  apply NQsub_le_mono.
+...
+(*
+  A VOIR : comparer
+   NQadd_pair_same_den
+   NQpair_sub_l
+*)
+
 ...
 (*
   replace (i + S k + (i + 1) - (i + 1 + j)) with (i + (k - j) + 1) by flia Hj.
