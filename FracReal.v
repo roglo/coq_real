@@ -2645,15 +2645,9 @@ enough (H : (1 ≤ A i (i + k + 2) u)%NQ). {
 }
 rewrite A_split_last; [ | flia Hs ].
 replace (i + k + 2 - 1) with (i + k + 1) by flia.
-(*
-assert (HnA : nA i (i + k + 1) u ≥ rad ^ k - 1).
-*)
 assert (HA : (A i (i + k + 1) u ≥ 1 - 1 // rad ^ k)%NQ). {
   destruct k; [ rewrite Nat.pow_0_r, NQsub_diag; apply A_ge_0 | ].
   unfold A.
-(*
-  rewrite summation_rtl.
-*)
   rewrite summation_shift; [ | flia H6 ].
   rewrite Nat.add_sub.
   replace (i + S k - (i + 1)) with k by flia.
@@ -2670,6 +2664,12 @@ assert (HA : (A i (i + k + 1) u ≥ 1 - 1 // rad ^ k)%NQ). {
   rewrite Nat.mul_1_l.
   rewrite NQpair_sub_l; [ | easy ].
   apply NQsub_le_mono.
+  -apply NQle_pair; [ pauto | pauto | ].
+   rewrite Nat.mul_1_l, Nat.add_1_r; cbn.
+   now rewrite Nat.mul_comm.
+  -rewrite Nat.pow_add_r, Nat.pow_1_r, Nat.mul_comm.
+   apply NQle_refl.
+}
 ...
 (*
   replace (i + S k + (i + 1) - (i + 1 + j)) with (i + (k - j) + 1) by flia Hj.
