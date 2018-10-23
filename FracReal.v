@@ -708,10 +708,11 @@ Qed.
 Theorem A_dig_seq_ub {r : radix} : ∀ u n i,
   (∀ j, i < j < n → u j < rad)
   → i + 1 ≤ n - 1
-  → (A i n u < 1)%NQ.
+  → (A i n u ≤ 1 -  1 // rad ^ (n - i - 1))%NQ.
 Proof.
 intros * Hu Hin.
 specialize radix_ge_2 as Hr.
+...
 apply (NQle_lt_trans _ (A i n (λ i, rad - 1))).
 -apply summation_le_compat; intros j Hj; cbn.
  apply NQle_pair; [ pauto | pauto | ].
