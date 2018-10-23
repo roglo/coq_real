@@ -582,6 +582,16 @@ destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
 Qed.
 Arguments NQle_lt_trans x%NQ y%NQ z%NQ.
 
+Theorem NQlt_le_trans: ∀ x y z, (x < y)%NQ → (y ≤ z)%NQ → (x < z)%NQ.
+Proof.
+intros * Hxy Hyz.
+unfold "≤"%NQ, "<"%NQ in *.
+destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
+-eapply GQlt_le_trans; [ apply Hxy | apply Hyz ].
+-eapply GQle_lt_trans; [ apply Hyz | apply Hxy ].
+Qed.
+Arguments NQlt_le_trans x%NQ y%NQ z%NQ.
+
 Theorem NQle_add_l : ∀ x y, (0 ≤ y)%NQ → (x ≤ y + x)%NQ.
 Proof.
 intros * Hy.
