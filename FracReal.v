@@ -2626,6 +2626,55 @@ apply Nat.le_sub_l.
 Qed.
 *)
 
+Theorem nA_lower_bound_when_999_gt_9 {r : radix} : ∀ u i k n,
+  i + k + 3 ≤ n - 1
+  → (∀ j, j < k → u (i + j + 1) = rad - 1)
+  → rad ≤ u (i + k + 1)
+  → (1 ≤ A i n u)%NQ.
+Proof.
+intros * H6 H3 H5.
+remember (n - i - 1) as s eqn:Hs.
+...
+enough (H : rad ^ s ≤ A i (i + k + 2) u * rad ^ (n - (i + k + 2))). {
+  rewrite nA_split with (e := i + k + 2); [ | flia H6 ].
+  now apply le_plus_trans.
+}
+rewrite nA_split_last; [ | flia Hs ].
+replace (i + k + 2 - 1) with (i + k + 1) by flia.
+assert (HnA : nA i (i + k + 1) u ≥ rad ^ k - 1). {
+  destruct k; [ apply Nat.le_0_l | ].
+ unfold nA.
+ rewrite summation_rtl.
+ rewrite summation_shift; [ | flia H6 ].
+ rewrite Nat.add_sub.
+ replace (i + S k - (i + 1)) with k by flia.
+ rewrite power_summation_sub_1; [ | easy ].
+ rewrite summation_mul_distr_l.
+ apply (@summation_le_compat nat_ord_ring_def).
+ intros j Hj; simpl; unfold Nat.le.
+ replace (i + S k + (i + 1) - (i + 1 + j)) with (i + (k - j) + 1) by flia Hj.
+ replace (i + S k - (i + (k - j) + 1)) with j by flia Hj.
+ apply Nat.mul_le_mono_r.
+ rewrite H3; [ easy | flia ].
+}
+apply Nat.le_trans with
+    (m := (rad * (rad ^ k - 1) + rad) * rad ^ (n - (i + k + 2))); cycle 1. {
+  apply Nat.mul_le_mono_r.
+  apply Nat.add_le_mono; [ | easy ].
+  now apply Nat.mul_le_mono_l.
+}
+rewrite Nat.mul_add_distr_r.
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+rewrite Nat.mul_sub_distr_r.
+replace rad with (rad ^ 1) at 2 5 7 by apply Nat.pow_1_r.
+do 3 rewrite <- Nat.pow_add_r.
+replace (n - (i + k + 2)) with (s - (k + 1)) by flia Hs.
+replace (1 + (s - (k + 1))) with (s - k) by flia H6 Hs.
+replace (1 + k + (s - (k + 1))) with s by flia H6 Hs.
+rewrite Nat.sub_add; [ easy | ].
+apply Nat.pow_le_mono; [ easy | easy | ].
+apply Nat.le_sub_l.
+Qed.
 (*
 Theorem nA_lower_bound_when_999_gt_9 {r : radix} : ∀ u i k n,
   i + k + 3 ≤ n - 1
@@ -2675,7 +2724,9 @@ rewrite Nat.sub_add; [ easy | ].
 apply Nat.pow_le_mono; [ easy | easy | ].
 apply Nat.le_sub_l.
 Qed.
+*)
 
+(*
 Theorem nA_le_aft_999 {r : radix} : ∀ u i k,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → (∀ j, j < k → u (i + j + 1) = rad - 1)
@@ -2732,7 +2783,7 @@ assert (H6 : i + k + 3 ≤ n - 1). {
   destruct rr; [ flia Hr | simpl; flia ].
 }
 ...
-specialize (nA_lower_bound_when_999_gt_9 u i k n H6 H3 H5) as H7.
+specialize (A_lower_bound_when_999_gt_9 u i k n H6 H3 H5) as H7.
 specialize (nA_upper_bound_for_add u i n Hur) as H8.
 rewrite <- Hs in H7, H8.
 rewrite Nat_mod_less_small; cycle 1. {
