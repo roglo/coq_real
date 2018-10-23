@@ -820,6 +820,9 @@ split; intros H.
 Qed.
 Arguments NQadd_le_r x%NQ y%NQ z%NQ.
 
+Theorem NQopp_le_mono : ∀ x y, (x ≤ y)%NQ ↔ (- y ≤ - x)%NQ.
+Proof. intros; now destruct x, y. Qed.
+
 Theorem NQsub_le_mono : ∀ x y z t,
   (x ≤ y)%NQ → (z ≤ t)%NQ → (x - t ≤ y - z)%NQ.
 Proof.
@@ -831,21 +834,19 @@ destruct (NQeq_dec x y) as [H1| H1].
  +apply NQlt_le_incl, NQadd_lt_mono_l, NQnle_gt.
   intros H; apply H2.
   apply NQle_antisymm; [ easy | ].
-...
-  now intros H; apply H2, NQle_antisymm.
+  now apply NQopp_le_mono.
 -destruct (NQeq_dec z t) as [H2| H2].
  +subst z.
   apply NQlt_le_incl, NQadd_lt_mono_r, NQnle_gt.
   now intros H; apply H1, NQle_antisymm.
- +apply (NQle_trans _ (x + t)).
-  *apply NQlt_le_incl, NQadd_lt_mono_l, NQnle_gt.
-   now intros H; apply H2, NQle_antisymm.
+ +apply (NQle_trans _ (y - t)).
   *apply NQlt_le_incl, NQadd_lt_mono_r, NQnle_gt.
    now intros H; apply H1, NQle_antisymm.
+  *apply NQlt_le_incl, NQadd_lt_mono_l, NQnle_gt.
+   intros H; apply H2, NQle_antisymm; [ easy | ].
+   now apply NQopp_le_mono.
 Qed.
 Arguments NQsub_le_mono x%NQ y%NQ z%NQ t%NQ.
-
-...
 
 Theorem NQsub_lt : ∀ x y, (0 < x)%NQ → (y - x < y)%NQ.
 Proof.
