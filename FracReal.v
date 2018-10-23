@@ -2633,6 +2633,7 @@ Theorem nA_lower_bound_when_999_gt_9 {r : radix} : ∀ u i k n,
   → (1 ≤ A i n u)%NQ.
 Proof.
 intros * H6 H3 H5.
+specialize radix_ge_2 as Hr.
 remember (n - i - 1) as s eqn:Hs.
 enough (H : (1 ≤ A i (i + k + 2) u)%NQ). {
   rewrite A_split with (e := i + k + 2); [ | flia H6 ].
@@ -2645,19 +2646,31 @@ enough (H : (1 ≤ A i (i + k + 2) u)%NQ). {
 }
 rewrite A_split_last; [ | flia Hs ].
 replace (i + k + 2 - 1) with (i + k + 1) by flia.
-assert (HnA : (A i (i + k + 1) u ≥ 1 - 1 // rad ^ k)%NQ). {
-...
-  destruct k; [ apply Nat.le_0_l | ].
-  unfold nA.
+(*
+assert (HnA : nA i (i + k + 1) u ≥ rad ^ k - 1).
+*)
+assert (HA : (A i (i + k + 1) u ≥ 1 - 1 // rad ^ k)%NQ). {
+  destruct k; [ rewrite Nat.pow_0_r, NQsub_diag; apply A_ge_0 | ].
+  unfold A.
+(*
   rewrite summation_rtl.
+*)
   rewrite summation_shift; [ | flia H6 ].
   rewrite Nat.add_sub.
   replace (i + S k - (i + 1)) with k by flia.
-  rewrite power_summation_sub_1; [ | easy ].
+  rewrite NQpower_summation_inv; [ | flia Hr ].
   rewrite summation_mul_distr_l.
-  apply (@summation_le_compat nat_ord_ring_def).
-  intros j Hj; simpl; unfold Nat.le.
+  apply (@summation_le_compat NQ_ord_ring_def).
+  unfold "≤"%Rg, "*"%Rg, NQ_ord_ring_def.
+  intros j Hj.
+  replace (i + 1 + j - i) with (j + 1) by flia.
+  rewrite Nat.add_shuffle0.
+  rewrite H3; [ | flia Hj ].
+...
+(*
   replace (i + S k + (i + 1) - (i + 1 + j)) with (i + (k - j) + 1) by flia Hj.
+  replace (i + (k - j) + 1 - i) with (k - j + 1) by flia.
+*)
   replace (i + S k - (i + (k - j) + 1)) with j by flia Hj.
   apply Nat.mul_le_mono_r.
   rewrite H3; [ easy | flia ].
