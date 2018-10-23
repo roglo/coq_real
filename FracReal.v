@@ -2634,10 +2634,16 @@ Theorem nA_lower_bound_when_999_gt_9 {r : radix} : ∀ u i k n,
 Proof.
 intros * H6 H3 H5.
 remember (n - i - 1) as s eqn:Hs.
+enough (H : (1 ≤ A i (i + k + 2) u)%NQ). {
+  rewrite A_split with (e := i + k + 2); [ | flia H6 ].
+  eapply NQle_trans; [ apply H | ].
+  apply NQle_add_r.
+  replace 0%NQ with (0 // 1 * A (i + k + 2 - 1) n u)%NQ by easy.
+  rewrite NQmul_comm.
+  apply NQmul_le_mono_nonneg_l; [ apply A_ge_0 | ].
+  apply NQle_pair; [ easy | | ].
 ...
-enough (H : rad ^ s ≤ A i (i + k + 2) u * rad ^ (n - (i + k + 2))). {
-  rewrite nA_split with (e := i + k + 2); [ | flia H6 ].
-  now apply le_plus_trans.
+
 }
 rewrite nA_split_last; [ | flia Hs ].
 replace (i + k + 2 - 1) with (i + k + 1) by flia.

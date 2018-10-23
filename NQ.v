@@ -604,6 +604,12 @@ apply GQlt_le_incl.
 now apply GQsub_lt.
 Qed.
 
+Theorem NQle_add_r : ∀ x y, (0 ≤ y)%NQ → (x ≤ x + y)%NQ.
+Proof.
+intros.
+now rewrite NQadd_comm; apply NQle_add_l.
+Qed.
+
 Theorem NQadd_lt_mono_l : ∀ x y z, (y < z)%NQ ↔ (x + y < x + z)%NQ.
 Proof.
 intros *.
