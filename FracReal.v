@@ -1730,7 +1730,52 @@ apply NQadd_le_lt_mono.
    intros p Hp.
    replace p with (i + (p - i - 1) + 1) by flia Hp.
    rewrite H2; [ flia Hr | flia Hp ].
-  *idtac.
+  *replace (S j + 2) with (k - i - 1 + 1) by flia Hk.
+   rewrite Nat.pow_add_r, Nat.pow_1_r.
+   rewrite <- NQmul_pair; [ | pauto | pauto ].
+   rewrite NQpair_diag, NQmul_1_r; [ | pauto ].
+   apply NQle_pair; [ pauto | pauto | ].
+   rewrite Nat.mul_comm; apply Nat.mul_le_mono_l.
+   flia H3.
+-replace (j + 2) with (1 + (j + 1)) by flia.
+ remember (j + 1) as jj; rewrite Nat.pow_add_r; subst jj.
+ rewrite Nat.pow_1_r.
+...
+ specialize (A_dig_seq_ub u n (k - 1)) as H.
+ replace (n - (k - 1) - 1) with (n - k) in H by flia Hk.
+...
+ rewrite NQpair_sub_l; cycle 1. {
+   apply (Nat.le_trans _ (3 * 1)); [ flia | ].
+   apply Nat.mul_le_mono_l, Nat.neq_0_lt_0; pauto.
+ }
+ rewrite Nat.mul_comm, <- NQmul_pair; [ | pauto | pauto ].
+ rewrite NQpair_diag, NQmul_1_l; [ | pauto ].
+
+...
+(*
+ do 2 rewrite Nat.mul_sub_distr_r.
+ rewrite Nat.mul_1_l.
+*)
+ rewrite Nat.add_sub_assoc.
+ +replace (3 * rad) with (3 * rad ^ 1) by now rewrite Nat.pow_1_r.
+  rewrite <- Nat.mul_assoc, <- Nat.pow_add_r.
+  assert (H4 : 1 + (n - k - 1) = n - k) by flia Hk Hin.
+  rewrite H4, Nat.sub_add.
+  *rewrite Nat.mul_sub_distr_r, Nat.mul_1_l; f_equal.
+   replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+   now rewrite <- Nat.mul_assoc, <- Nat.pow_add_r, H4.
+  *apply Nat.mul_le_mono_r.
+   destruct j.
+  --rewrite Nat.add_0_r in H3; flia H1 H3.
+  --subst x.
+    replace (S j + 1) with (S (S j)) by flia.
+    assert (H5 : rad ^ j ≠ 0) by pauto.
+    destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ easy | simpl; flia H5 ].
+ +remember (rad ^ (n - k - 1)) as y eqn:Hy.
+  replace y with (1 * y) by flia.
+  apply Nat.mul_le_mono; [ | flia ].
+  flia H3.
 ...
 replace ((rad ^ (j + 2) - 1) * rad ^ (n - k - 1)) with
   ((rad ^ (j + 1) - 3) * rad ^ (n - k) + (3 * rad - 1) * rad ^ (n - k - 1)).
