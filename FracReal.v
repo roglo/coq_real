@@ -1755,49 +1755,21 @@ apply NQadd_le_lt_mono.
  rewrite <- NQmul_pair; [ | easy | pauto ].
  rewrite NQpair_diag; [ | pauto ].
  rewrite NQmul_1_r.
- destruct j; [ rewrite Nat.add_0_r in H3; flia H1 H3 | ].
-...
  eapply NQle_lt_trans.
- +apply A_dig_seq_ub; [ | flia Hk Hin ].
-  intros p Hp.
-  replace p with (i + (p - i - 1) + 1) by flia Hk Hp.
-  rewrite H2; [ flia Hr | ].
-...
- specialize (A_dig_seq_ub u n (k - 1)) as H.
- replace (n - (k - 1) - 1) with (n - k) in H by flia Hk.
-...
- rewrite NQpair_sub_l; cycle 1. {
-   apply (Nat.le_trans _ (3 * 1)); [ flia | ].
-   apply Nat.mul_le_mono_l, Nat.neq_0_lt_0; pauto.
- }
- rewrite Nat.mul_comm, <- NQmul_pair; [ | pauto | pauto ].
- rewrite NQpair_diag, NQmul_1_l; [ | pauto ].
-
-...
-(*
- do 2 rewrite Nat.mul_sub_distr_r.
- rewrite Nat.mul_1_l.
-*)
- rewrite Nat.add_sub_assoc.
- +replace (3 * rad) with (3 * rad ^ 1) by now rewrite Nat.pow_1_r.
-  rewrite <- Nat.mul_assoc, <- Nat.pow_add_r.
-  assert (H4 : 1 + (n - k - 1) = n - k) by flia Hk Hin.
-  rewrite H4, Nat.sub_add.
-  *rewrite Nat.mul_sub_distr_r, Nat.mul_1_l; f_equal.
-   replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
-   now rewrite <- Nat.mul_assoc, <- Nat.pow_add_r, H4.
-  *apply Nat.mul_le_mono_r.
-   destruct j.
-  --rewrite Nat.add_0_r in H3; flia H1 H3.
-  --subst x.
-    replace (S j + 1) with (S (S j)) by flia.
-    assert (H5 : rad ^ j ≠ 0) by pauto.
-    destruct rad as [| rr]; [ easy | ].
-    destruct rr; [ easy | simpl; flia H5 ].
- +remember (rad ^ (n - k - 1)) as y eqn:Hy.
-  replace y with (1 * y) by flia.
-  apply Nat.mul_le_mono; [ | flia ].
-  flia H3.
+ +apply A_upper_bound_for_add.
+  intros p; subst k.
+  replace (i + j + 2 - 1 + p + 1) with (i + (j + 1 + p) + 1) by flia.
+  apply Hur.
+ +replace (n - (k - 1) - 1) with (n - k) by flia Hk.
+  rewrite NQmul_sub_distr_l, NQmul_1_r.
+  eapply NQlt_trans; [ now apply NQsub_lt | ].
+  rewrite NQpair_sub_l; cycle 1. {
+    apply (Nat.le_trans _ (3 * 1)); [ flia | ].
+    apply Nat.mul_le_mono_l, Nat.neq_0_lt_0; pauto.
+  }
+  replace rad with (1 * rad) at 2 by flia.
+  rewrite <- NQmul_pair; [ | easy | easy ].
+  rewrite NQpair_diag, NQmul_1_r; [ | easy ].
 ...
 replace ((rad ^ (j + 2) - 1) * rad ^ (n - k - 1)) with
   ((rad ^ (j + 1) - 3) * rad ^ (n - k) + (3 * rad - 1) * rad ^ (n - k - 1)).
