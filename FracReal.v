@@ -2747,24 +2747,50 @@ rewrite A_all_9; [ | intros l Hl; apply H3; flia Hl ].
 replace (i + k + 2 - 1) with (i + k + 1) by flia.
 replace (i + k + 1 - i - 1) with k by flia.
 replace (i + k + 2 - i - 1) with (S k) by flia.
-...
-rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-destruct (le_dec rad (u (i + k + 1))) as [H1| H1].
--rewrite <- Nat.add_sub_swap; cycle 1. {
-   replace rad with (rad * 1) at 1 by flia.
-   apply Nat.mul_le_mono_l.
-   apply Nat.neq_0_lt_0; pauto.
- }
- rewrite <- Nat.add_sub_assoc; [ | easy ].
- apply Nat.add_le_mono_l.
- specialize (Hur k); flia Hur.
+rewrite NQpair_sub_l; [ | easy ].
+rewrite Nat.pow_succ_r'.
+replace rad with (rad * 1) at 4 by flia.
+rewrite <- NQmul_pair; [ | easy | pauto ].
+remember 1%NQ as x.
+rewrite NQpair_diag; [ | easy ].
+rewrite NQmul_1_l; subst x.
+rewrite <- Nat.pow_succ_r'.
+destruct (le_dec (u (i + k + 1)) rad) as [H1| H1].
+-rewrite NQadd_add_swap, <- NQadd_assoc.
+ apply NQadd_le_mono_l.
+ apply NQsub_le_mono.
+ +apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat.mul_1_r, Nat.pow_succ_r'.
+  now apply Nat.mul_le_mono_r.
+ +apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat.mul_1_r, Nat.pow_succ_r'.
+  now apply Nat.mul_le_mono_r.
 -apply Nat.nle_gt in H1.
- apply Nat.le_trans with (m := rad ^ S k - rad + rad).
- +apply Nat.add_le_mono; [ easy | flia H1 ].
- +rewrite Nat.sub_add; [ flia | ].
-  simpl; replace rad with (rad * 1) at 1 by flia.
-  apply Nat.mul_le_mono_l.
-  apply Nat.neq_0_lt_0; pauto.
+ rewrite <- NQadd_assoc.
+ apply NQadd_le_mono_l.
+ apply (NQadd_le_mono_l _ _ (1 // rad ^ k)).
+ rewrite NQadd_assoc, NQsub_diag, NQadd_0_l.
+ rewrite NQadd_assoc, <- NQpair_add_l.
+ replace (1 + 1) with 2 by easy.
+ rewrite NQsub_pair_pos; [ | pauto | pauto | ]; cycle 1. {
+   rewrite Nat.mul_comm; apply Nat.mul_le_mono_l.
+   rewrite Nat.pow_succ_r'.
+   replace (rad ^ k) with (1 * rad ^ k) at 1 by flia.
+   apply Nat.mul_le_mono_r; flia Hr.
+ }
+ replace (rad ^ k) with (1 * rad ^ k) at 1 by flia.
+ rewrite Nat.mul_comm, Nat.pow_succ_r'.
+ do 2 rewrite <- Nat.mul_sub_distr_r.
+ setoid_rewrite Nat.mul_comm.
+ rewrite <- Nat.pow_succ_r'.
+ rewrite Nat.mul_assoc.
+ rewrite <- NQmul_pair; [ | pauto | pauto ].
+ rewrite NQpair_diag; [ | pauto ].
+ rewrite NQmul_1_r.
+ rewrite Nat.mul_comm, <- Nat.pow_succ_r'.
+ apply NQle_pair; [ pauto | pauto | ].
+ rewrite Nat.mul_comm.
+ apply Nat.mul_le_mono_l, Hur.
 Qed.
 (*
 Theorem nA_le_aft_999 {r : radix} : ∀ u i k,
@@ -2873,14 +2899,9 @@ replace (t - i - 1) with (S k) by flia Ht.
 apply NQle_lt_trans with
   (y := (1 + (rad - 2) // rad ^ S k + A (t - 1) n u * 1 // rad ^ (S k))%NQ).
 -apply NQadd_le_mono_r.
+ now rewrite Ht; apply A_le_aft_999.
+-idtac.
 ...
- apply A_le_aft_999.
-...
-replace (s - S k) with (n - t) by flia Hs Ht.
-apply Nat.le_lt_trans with
-  (m := (rad ^ S k + (rad - 2)) * rad ^ (n - t) + nA (t - 1) n u).
--apply Nat.add_le_mono_r.
- apply Nat.mul_le_mono; [ | easy ].
  now subst; apply nA_le_aft_999.
 -rewrite Nat.mul_sub_distr_r.
  rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
