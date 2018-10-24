@@ -2793,17 +2793,35 @@ assert (H6 : i + k + 3 ≤ n - 1). {
 specialize (A_lower_bound_when_999_gt_9 u i k n H6 H3 H5) as H7.
 specialize (A_upper_bound_for_add u i n Hur) as H8.
 rewrite <- Hs in H8.
-...
+unfold NQfrac.
 rewrite Nat_mod_less_small; cycle 1. {
-  split; [ easy | ].
-  eapply Nat.le_lt_trans; [ apply H8 | ].
-  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-  apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
-  replace 2 with (2 * 1) at 1 by flia.
-  apply Nat.mul_le_mono_l.
-  apply Nat.neq_0_lt_0; pauto.
+  split.
+  -rewrite NQnum_den in H7; [ | apply A_ge_0 ].
+   apply NQle_pair in H7; [ | easy | apply NQden_neq_0 ].
+   now do 2 rewrite Nat.mul_1_l in H7.
+  -remember (A i n u) as x in H8.
+   rewrite NQnum_den in Heqx; [ subst x | apply A_ge_0 ].
+   rewrite NQsub_pair_pos in H8; [ | easy | pauto | ]; cycle 1. {
+    apply Nat.mul_le_mono_l, Nat.neq_0_lt_0; pauto.
+   }
+   do 2 rewrite Nat.mul_1_l in H8.
+   rewrite NQmul_pair in H8; [ | easy | pauto ].
+   rewrite Nat.mul_1_l in H8.
+   apply NQle_pair in H8; [ | apply NQden_neq_0 | pauto ].
+   apply (Nat.mul_lt_mono_pos_r (rad ^ s)); [ apply Nat.neq_0_lt_0; pauto | ].
+   eapply Nat.le_lt_trans; [ apply H8 | ].
+   rewrite Nat.mul_comm, Nat.mul_shuffle0.
+   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   apply Nat.sub_lt.
+   +rewrite <- Nat.mul_assoc.
+    apply Nat.mul_le_mono_l.
+    apply Nat_mul_le_pos_r, Nat.neq_0_lt_0; pauto.
+   +replace 0 with (2 * 0) at 1 by easy.
+    apply Nat.mul_lt_mono_pos_l; [ pauto | ].
+    apply Nat.neq_0_lt_0, NQden_neq_0.
 }
-apply Nat.add_lt_mono_r with (p := rad ^ s).
+...
+apply NQadd_lt_mono_r with (y := rad ^ s).
 rewrite Nat.sub_add; [ | easy ].
 rewrite nA_split with (e := i + k + 2); [ | flia H6 ].
 remember (i + k + 2) as t eqn:Ht.
