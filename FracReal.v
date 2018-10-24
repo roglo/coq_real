@@ -2820,6 +2820,13 @@ rewrite Nat_mod_less_small; cycle 1. {
     apply Nat.mul_lt_mono_pos_l; [ pauto | ].
     apply Nat.neq_0_lt_0, NQden_neq_0.
 }
+rewrite NQpair_sub_l; cycle 1. {
+  rewrite NQnum_den in H7; [ | apply A_ge_0 ].
+  apply NQle_pair in H7; [ | easy | apply NQden_neq_0 ].
+  now do 2 rewrite Nat.mul_1_l in H7.
+}
+rewrite <- NQnum_den; [ | apply A_ge_0 ].
+rewrite NQpair_diag; [ | apply NQden_neq_0 ].
 ...
 apply NQadd_lt_mono_r with (y := rad ^ s).
 rewrite Nat.sub_add; [ | easy ].
