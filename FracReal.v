@@ -2625,7 +2625,7 @@ apply Nat.le_sub_l.
 Qed.
 *)
 
-Theorem nA_lower_bound_when_999_gt_9 {r : radix} : ∀ u i k n,
+Theorem A_lower_bound_when_999_gt_9 {r : radix} : ∀ u i k n,
   i + k + 3 ≤ n - 1
   → (∀ j, j < k → u (i + j + 1) = rad - 1)
   → rad ≤ u (i + k + 1)
@@ -2670,32 +2670,18 @@ assert (HA : (A i (i + k + 1) u ≥ 1 - 1 // rad ^ k)%NQ). {
   -rewrite Nat.pow_add_r, Nat.pow_1_r, Nat.mul_comm.
    apply NQle_refl.
 }
-...
-(*
-  replace (i + S k + (i + 1) - (i + 1 + j)) with (i + (k - j) + 1) by flia Hj.
-  replace (i + (k - j) + 1 - i) with (k - j + 1) by flia.
-*)
-  replace (i + S k - (i + (k - j) + 1)) with j by flia Hj.
-  apply Nat.mul_le_mono_r.
-  rewrite H3; [ easy | flia ].
-}
-apply Nat.le_trans with
-    (m := (rad * (rad ^ k - 1) + rad) * rad ^ (n - (i + k + 2))); cycle 1. {
-  apply Nat.mul_le_mono_r.
-  apply Nat.add_le_mono; [ | easy ].
-  now apply Nat.mul_le_mono_l.
-}
-rewrite Nat.mul_add_distr_r.
-rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-rewrite Nat.mul_sub_distr_r.
-replace rad with (rad ^ 1) at 2 5 7 by apply Nat.pow_1_r.
-do 3 rewrite <- Nat.pow_add_r.
-replace (n - (i + k + 2)) with (s - (k + 1)) by flia Hs.
-replace (1 + (s - (k + 1))) with (s - k) by flia H6 Hs.
-replace (1 + k + (s - (k + 1))) with s by flia H6 Hs.
-rewrite Nat.sub_add; [ easy | ].
-apply Nat.pow_le_mono; [ easy | easy | ].
-apply Nat.le_sub_l.
+replace (i + k + 2 - i - 1) with (k + 1) by flia.
+apply NQle_trans with
+  (y := (1 - 1 // rad ^ k + rad // rad ^ (k + 1))%NQ).
+-rewrite Nat.add_1_r, Nat.pow_succ_r'.
+ replace rad with (rad * 1) at 2 by flia.
+ rewrite <- NQmul_pair; [ | easy | pauto ].
+ remember 1%NQ as x; rewrite NQpair_diag; subst x; [ | easy ].
+ rewrite NQmul_1_l, NQsub_add; apply NQle_refl.
+-apply NQadd_le_mono; [ easy | ].
+ apply NQle_pair; [ pauto | pauto | ].
+ rewrite Nat.mul_comm.
+ now apply Nat.mul_le_mono_l.
 Qed.
 (*
 Theorem nA_lower_bound_when_999_gt_9 {r : radix} : ∀ u i k n,
@@ -2804,10 +2790,10 @@ assert (H6 : i + k + 3 ≤ n - 1). {
   destruct rad as [| rr]; [ easy | ].
   destruct rr; [ flia Hr | simpl; flia ].
 }
-...
 specialize (A_lower_bound_when_999_gt_9 u i k n H6 H3 H5) as H7.
-specialize (nA_upper_bound_for_add u i n Hur) as H8.
-rewrite <- Hs in H7, H8.
+specialize (A_upper_bound_for_add u i n Hur) as H8.
+rewrite <- Hs in H8.
+...
 rewrite Nat_mod_less_small; cycle 1. {
   split; [ easy | ].
   eapply Nat.le_lt_trans; [ apply H8 | ].
