@@ -2827,16 +2827,17 @@ rewrite NQpair_sub_l; cycle 1. {
 }
 rewrite <- NQnum_den; [ | apply A_ge_0 ].
 rewrite NQpair_diag; [ | apply NQden_neq_0 ].
-...
-apply NQadd_lt_mono_r with (y := rad ^ s).
-rewrite Nat.sub_add; [ | easy ].
-rewrite nA_split with (e := i + k + 2); [ | flia H6 ].
+apply (NQadd_lt_mono_r _ _ 1).
+rewrite NQsub_add, NQadd_comm, NQadd_assoc.
+replace (1 + 1)%NQ with 2%NQ by easy.
+rewrite A_split with (e := i + k + 2); [ | flia H6 ].
 remember (i + k + 2) as t eqn:Ht.
 move t before s.
 unfold min_n in Hn.
 replace (i + k + 3) with (i + k + 2 + 1) in Hn, H6 by flia.
 rewrite <- Ht in Hn, H6.
 replace (i + k + 1) with (t - 1) in H5 by flia Ht.
+...
 replace (s - S k) with (n - t) by flia Hs Ht.
 apply Nat.le_lt_trans with
   (m := (rad ^ S k + (rad - 2)) * rad ^ (n - t) + nA (t - 1) n u).
