@@ -2734,6 +2734,38 @@ apply Nat.le_sub_l.
 Qed.
 *)
 
+(**)
+Theorem A_le_aft_999 {r : radix} : ∀ u i k,
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
+  → (∀ j, j < k → u (i + j + 1) = rad - 1)
+  → (A i (i + k + 2) u ≤ 1 + (rad - 2) // rad ^ S k)%NQ.
+Proof.
+intros * Hur H3.
+specialize radix_ge_2 as Hr.
+rewrite A_split_last; [ | flia ].
+rewrite A_all_9; [ | intros l Hl; apply H3; flia Hl ].
+replace (i + k + 2 - 1) with (i + k + 1) by flia.
+replace (i + k + 1 - i - 1) with k by flia.
+replace (i + k + 2 - i - 1) with (S k) by flia.
+...
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+destruct (le_dec rad (u (i + k + 1))) as [H1| H1].
+-rewrite <- Nat.add_sub_swap; cycle 1. {
+   replace rad with (rad * 1) at 1 by flia.
+   apply Nat.mul_le_mono_l.
+   apply Nat.neq_0_lt_0; pauto.
+ }
+ rewrite <- Nat.add_sub_assoc; [ | easy ].
+ apply Nat.add_le_mono_l.
+ specialize (Hur k); flia Hur.
+-apply Nat.nle_gt in H1.
+ apply Nat.le_trans with (m := rad ^ S k - rad + rad).
+ +apply Nat.add_le_mono; [ easy | flia H1 ].
+ +rewrite Nat.sub_add; [ flia | ].
+  simpl; replace rad with (rad * 1) at 1 by flia.
+  apply Nat.mul_le_mono_l.
+  apply Nat.neq_0_lt_0; pauto.
+Qed.
 (*
 Theorem nA_le_aft_999 {r : radix} : ∀ u i k,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
@@ -2837,6 +2869,12 @@ unfold min_n in Hn.
 replace (i + k + 3) with (i + k + 2 + 1) in Hn, H6 by flia.
 rewrite <- Ht in Hn, H6.
 replace (i + k + 1) with (t - 1) in H5 by flia Ht.
+replace (t - i - 1) with (S k) by flia Ht.
+apply NQle_lt_trans with
+  (y := (1 + (rad - 2) // rad ^ S k + A (t - 1) n u * 1 // rad ^ (S k))%NQ).
+-apply NQadd_le_mono_r.
+...
+ apply A_le_aft_999.
 ...
 replace (s - S k) with (n - t) by flia Hs Ht.
 apply Nat.le_lt_trans with

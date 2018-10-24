@@ -790,6 +790,26 @@ destruct (NQeq_dec x y) as [H1| H1].
 Qed.
 Arguments NQadd_le_mono x%NQ y%NQ z%NQ t%NQ.
 
+Theorem NQadd_le_mono_l : ∀ x y z, (x ≤ y)%NQ ↔ (z + x ≤ z + y)%NQ.
+Proof.
+intros.
+split; intros Hxy.
+-apply NQadd_le_mono; [ apply NQle_refl | easy ].
+-apply (NQadd_le_mono _ _ (- z) (- z)) in Hxy; [ | apply NQle_refl ].
+ replace (z + x)%NQ with (x + z)%NQ in Hxy by apply NQadd_comm.
+ replace (z + y)%NQ with (y + z)%NQ in Hxy by apply NQadd_comm.
+ now do 2 rewrite NQadd_sub in Hxy.
+Qed.
+Arguments NQadd_le_mono_l x%NQ y%NQ z%NQ.
+
+Theorem NQadd_le_mono_r : ∀ x y z, (x ≤ y)%NQ ↔ (x + z ≤ y + z)%NQ.
+Proof.
+intros.
+setoid_rewrite NQadd_comm.
+apply NQadd_le_mono_l.
+Qed.
+Arguments NQadd_le_mono_r x%NQ y%NQ z%NQ.
+
 Theorem NQadd_le_lt_mono : ∀ x y z t, (x ≤ y → z < t → x + z < y + t)%NQ.
 Proof.
 intros * Hxy Hzt.
