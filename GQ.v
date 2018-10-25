@@ -1,7 +1,7 @@
 (* Positive rationals where num and den are always common primes *)
 (* allowing us to use Leibnitz' equality. *)
 
-Require Import Utf8 Arith Morphisms.
+Require Import Utf8 Arith Morphisms Init.Nat.
 Require Import Misc PQ Nat_ggcd.
 Set Nested Proofs Allowed.
 
@@ -1347,9 +1347,10 @@ rewrite GQpair_diag; [ | easy ].
 now rewrite GQmul_1_l.
 Qed.
 
-Theorem Nat_bezout : ∀ a b (g := Nat.gcd a b),
-  ∃ u v, a * u = b * v + g ∨ b * v = a * u + g.
+Theorem Nat_Bezout : ∀ a b,
+  ∃ u v, max (a * u) (b * v) - min (a * u) (b * v) = Nat.gcd a b.
 Proof.
+intros.
 ...
 
 Theorem glop : ∀ x y, x = PQred x → y = PQred y → (x == y)%PQ ↔ x = y.
@@ -1378,11 +1379,6 @@ destruct bby; [ now subst yd f; rewrite ggcd_1_r in Hgy | ].
 subst f.
 rewrite Nat.sub_succ, Nat.sub_0_r in Hxn, Hxd, Hyn, Hyd.
 subst aax aay bbx bby.
-specialize (Nat_bezout (xn + 1) (xd + 1)) as H.
-rewrite <- ggcd_gcd, <- Hgx in H; cbn in H.
-destruct H as (u & v & Huv).
-destruct Huv as [Huv| Hvu].
-...
 specialize (ggcd_correct_divisors (xn + 1) (xd + 1)) as Hg.
 rewrite <- Hgx in Hg; cbn in Hg.
 destruct Hg as (Hxn, Hxd).
@@ -1395,6 +1391,28 @@ destruct Hxn as [| Hxn]; [ easy | ].
 apply Nat_eq_mul_diag in Hyn.
 destruct Hyn as [| Hyn]; [ easy | ].
 subst gx gy.
+clear Hxd Hyd.
+specialize (Nat_Bezout (xn + 1) (xd + 1)) as H.
+rewrite <- ggcd_gcd, <- Hgx in H; cbn in H.
+destruct H as (ux & vx & Huvx).
+specialize (Nat_Bezout (yn + 1) (yd + 1)) as H.
+rewrite <- ggcd_gcd, <- Hgy in H; cbn in H.
+destruct H as (uy & vy & Huvy).
+move vy before vx; move uy before vx.
+apply (Nat.mul_cancel_r _ _ (yd + 1)) in Huvx; [ | now rewrite Nat.add_1_r ].
+rewrite Nat.mul_1_l in Huvx.
+rewrite Nat.mul_sub_distr_r in Huvx.
+rewrite <- Nat.mul_min_distr_r in Huvx.
+rewrite <- Nat.mul_max_distr_r in Huvx.
+rewrite Nat.mul_shuffle0 in Huvx.
+rewrite Hxy in Huvx.
+rewrite Nat.mul_shuffle0 in Huvx.
+rewrite Nat.mul_comm in Huvx.
+rewrite <- Nat.mul_assoc in Huvx.
+rewrite Nat.mul_min_distr_l in Huvx.
+rewrite Nat.mul_max_distr_l in Huvx.
+rewrite <- Nat.mul_sub_distr_l in Huvx.
+(* donc yd+1 est un multiple de xd+1 *)
 ...
 
 Theorem GQadd_cancel_l : ∀ x y z, (x + y)%GQ = (x + z)%GQ ↔ y = z.
