@@ -1347,13 +1347,97 @@ rewrite GQpair_diag; [ | easy ].
 now rewrite GQmul_1_l.
 Qed.
 
-...
+Fixpoint f_nbezout (n a b : nat) : bool * (nat * nat) :=
+  match n with
+  | 0 => (false, (0, 0))
+  | S n' =>
+      match b with
+      | 0 => (false, (1, 0))
+      | _ =>
+          let (q, r) := (a / b, a mod b) in
+          let (is_neg, uv) := f_nbezout n' b r in
+          let (u, v) := uv in
+          (negb is_neg, (v, u + q * v))
+      end
+  end.
+
+Definition bezout (a b : nat) := f_nbezout (S b) a b.
+
+(*
+Lemma f_div__eucl : ∀ a b q r,
+  0 < b → f_div a b = (q, r) → a = b * q + r ∧ r < b.
+*)
+
+Lemma f_nbezout_gcd : ∀ n a b, ∀ is_neg u v,
+  b < n
+  → f_nbezout n a b = (is_neg, (u, v))
+     → (is_neg = false ∧ a * u = b * v + Nat.gcd a b) ∨
+        (is_neg = true ∧ b * v = a * u + Nat.gcd a b).
+Proof.
+intros * Hbn Hbez.
+revert a b is_neg u v Hbn Hbez.
+induction n; intros; [ easy | ].
+cbn in Hbez.
+destruct b.
+-injection Hbez; intros; subst u v is_neg; clear Hbez.
+ left; split; [ easy | ].
+ now rewrite mult_1_r, Nat.gcd_0_r.
+-apply Nat.succ_lt_mono in Hbn.
+ remember (a / S b) as q eqn:Hq.
+ remember (a mod S b) as r eqn:Hr.
+ move r before q.
+ specialize (Nat.div_mod a (S b)) as H1.
+ assert (H : S b ≠ 0) by easy.
+ specialize (H1 H); clear H.
+ rewrite <- Hq, <- Hr in H1.
+ remember (f_nbezout n (S b) r) as bz eqn:Hbz.
+ destruct bz as (is_neg1, (u1, v1)).
+ injection Hbez; intros; subst u v is_neg; clear Hbez.
+ rewrite Nat.gcd_comm, <- Nat.gcd_mod; [ | easy ].
+ rewrite Nat.gcd_comm.
+ rewrite Nat.add_comm, Nat.mul_comm in H1.
+ rewrite H1 at 2 4.
+ rewrite Nat.mod_add; [ | easy ].
+ rewrite Nat.mod_small; [ | now subst r; apply Nat.mod_upper_bound ].
+ rewrite Nat.add_comm, Nat.mul_comm in H1.
+ rewrite H1, Nat.mul_add_distr_l, Nat.mul_add_distr_r.
+ do 2 rewrite <- Nat.add_assoc.
+ rewrite Nat.add_shuffle3, Nat.mul_assoc, Nat.mul_comm.
+ symmetry in Hbz.
+ apply IHn in Hbz.
+ +destruct Hbz as [(Hn, H)| (Hn, H)]; subst is_neg1.
+  *right; split; [ easy | now rewrite <- H, Nat.add_comm ].
+  *left; split; [ easy | now rewrite <- H, Nat.add_comm ].
+ +apply (Nat.lt_le_trans _ (S b)); [ | easy ].
+  now rewrite Hr; apply Nat.mod_upper_bound.
+Qed.
+
+Theorem bezout_gcd : ∀ a b is_neg u v,
+  bezout a b = (is_neg, (u, v))
+  → (is_neg = false ∧ a * u = b * v + Nat.gcd a b) ∨
+    (is_neg = true ∧ b * v = a * u + Nat.gcd a b).
+Proof.
+intros a b is_neg u v H1.
+apply f_nbezout_gcd in H1; [ easy | now apply Nat.lt_succ_r ].
+Qed.
 
 Theorem Nat_Bezout : ∀ a b,
   ∃ u v, max (a * u) (b * v) - min (a * u) (b * v) = Nat.gcd a b.
 Proof.
 intros.
-...
+remember (bezout a b) as bez eqn:Hbez.
+symmetry in Hbez.
+destruct bez as (is_neg, (u, v)).
+apply bezout_gcd in Hbez.
+exists u, v.
+destruct Hbez as [(Hneg, Hbez)| (Hneg, Hbez)]; rewrite Hbez.
+-rewrite Nat.max_l; [ | flia ].
+ rewrite Nat.min_r; [ | flia ].
+ now rewrite Nat.add_comm, Nat.add_sub.
+-rewrite Nat.max_r; [ | flia ].
+ rewrite Nat.min_l; [ | flia ].
+ now rewrite Nat.add_comm, Nat.add_sub.
+Qed.
 
 Theorem glop : ∀ x y, x = PQred x → y = PQred y → (x == y)%PQ ↔ x = y.
 Proof.
