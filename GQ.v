@@ -1347,6 +1347,46 @@ rewrite GQpair_diag; [ | easy ].
 now rewrite GQmul_1_l.
 Qed.
 
+Theorem glop : ∀ x y, x = PQred x → y = PQred y → (x == y)%PQ ↔ x = y.
+Proof.
+intros * Hx Hy.
+split; [ | now intros; subst y ].
+intros Hxy.
+unfold "=="%PQ, nd in Hxy.
+destruct x as (xn, xd), y as (yn, yd).
+cbn in Hxy.
+unfold PQred in Hx, Hy.
+remember ggcd as f; cbn in Hx, Hy; subst f.
+move Hy after Hx.
+remember (ggcd (xn + 1) (xd + 1)) as gx eqn:Hgx.
+remember (ggcd (yn + 1) (yd + 1)) as gy eqn:Hgy.
+move gx after gy; move Hgy before Hgx.
+destruct gx as (gx, (aax, bbx)).
+destruct gy as (gy, (aay, bby)).
+injection Hx; clear Hx; intros Hxd Hxn.
+injection Hy; clear Hy; intros Hyd Hyn.
+remember ggcd as f.
+destruct aax; [ now subst xn f; rewrite ggcd_1_l in Hgx | ].
+destruct bbx; [ now subst xd f; rewrite ggcd_1_r in Hgx | ].
+destruct aay; [ now subst yn f; rewrite ggcd_1_l in Hgy | ].
+destruct bby; [ now subst yd f; rewrite ggcd_1_r in Hgy | ].
+subst f.
+rewrite Nat.sub_succ, Nat.sub_0_r in Hxn, Hxd, Hyn, Hyd.
+subst aax aay bbx bby.
+specialize (ggcd_correct_divisors (xn + 1) (xd + 1)) as Hg.
+rewrite <- Hgx in Hg; cbn in Hg.
+destruct Hg as (Hxn, Hxd).
+specialize (ggcd_correct_divisors (yn + 1) (yd + 1)) as Hg.
+rewrite <- Hgy in Hg; cbn in Hg.
+destruct Hg as (Hyn, Hyd).
+rewrite Nat.add_1_r in Hxn, Hxd, Hyn, Hyd.
+apply Nat_eq_mul_diag in Hxn.
+destruct Hxn as [| Hxn]; [ easy | ].
+apply Nat_eq_mul_diag in Hyn.
+destruct Hyn as [| Hyn]; [ easy | ].
+subst gx gy.
+...
+
 Theorem GQadd_cancel_l : ∀ x y z, (x + y)%GQ = (x + z)%GQ ↔ y = z.
 Proof.
 intros.
@@ -1391,14 +1431,6 @@ specialize (ggcd_correct_divisors xz1 xz2) as H4.
 rewrite <- Hgy in H3; rewrite <- Hgz in H4.
 destruct H3 as (Hgy1, Hgy2).
 destruct H4 as (Hgz1, Hgz2).
-destruct aay. {
-  rewrite Nat.mul_0_r, Hxy1, Nat.add_1_r in Hgy1.
-  cbn in Hgy1; flia Hgy1.
-}
-destruct aaz. {
-  rewrite Nat.mul_0_r, Hxz1, Nat.add_1_r in Hgz1.
-  cbn in Hgz1; flia Hgz1.
-}
 destruct bby. {
   rewrite Nat.mul_0_r, Hxy2, Nat.add_1_r in Hgy2.
   cbn in Hgy2; flia Hgy2.

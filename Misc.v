@@ -280,6 +280,20 @@ replace m with (m - n + n) at 2; [ | now apply Nat.sub_add ].
 symmetry; apply Nat_gcd_add_diag_l.
 Qed.
 
+Theorem Nat_eq_mul_diag : ∀ p n, p = n * p → p = 0 ∨ n = 1.
+Proof.
+intros * H.
+destruct n; [ now left | ].
+destruct p; [ now left | right ].
+destruct n; [ easy | exfalso ].
+cbn in H.
+apply Nat.succ_inj in H.
+symmetry in H.
+specialize (Nat.eq_le_incl _ _ H) as H1.
+apply Nat.le_add_le_sub_l in H1.
+now rewrite Nat.sub_diag in H1.
+Qed.
+
 Definition bool_of_sumbool {A B : Prop} (P : sumbool A B) :=
   match P with
   | left _ _ => true
