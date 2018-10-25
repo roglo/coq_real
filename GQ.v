@@ -1480,6 +1480,26 @@ specialize (Nat_Bezout (yn + 1) (yd + 1)) as H.
 rewrite <- ggcd_gcd, <- Hgy in H; cbn in H.
 destruct H as (uy & vy & Huvy).
 move vy before vx; move uy before vx.
+(*
+destruct (le_dec ((xn + 1) * ux) ((xd + 1) * vx)) as [H1| H1].
+-rewrite Nat.max_r, Nat.min_l in Huvx; [ | easy | easy ].
+ destruct (le_dec ((yn + 1) * uy) ((yd + 1) * vy)) as [H2| H2].
+ +rewrite Nat.max_r, Nat.min_l in Huvy; [ | easy | easy ].
+  apply (Nat.mul_cancel_r _ _ (xn + 1)) in Huvy; [ | flia ].
+  rewrite Nat.mul_1_l in Huvy.
+  rewrite Nat.mul_sub_distr_r in Huvy.
+  rewrite Nat.mul_comm, Nat.mul_assoc in Huvy.
+  rewrite Hxy in Huvy.
+  do 2 rewrite <- Nat.mul_assoc in Huvy.
+  rewrite <- Nat.mul_sub_distr_l in Huvy.
+  apply (Nat.mul_cancel_r _ _ (yn + 1)) in Huvx; [ | flia ].
+  rewrite Nat.mul_1_l in Huvx.
+  rewrite Nat.mul_sub_distr_r in Huvx.
+  rewrite Nat.mul_comm, Nat.mul_assoc in Huvx.
+  rewrite <- Hxy in Huvx.
+  do 2 rewrite <- Nat.mul_assoc in Huvx.
+  rewrite <- Nat.mul_sub_distr_l in Huvx.
+*)
 apply (Nat.mul_cancel_r _ _ (yd + 1)) in Huvx; [ | now rewrite Nat.add_1_r ].
 rewrite Nat.mul_1_l in Huvx.
 rewrite Nat.mul_sub_distr_r in Huvx.
@@ -1493,7 +1513,32 @@ rewrite <- Nat.mul_assoc in Huvx.
 rewrite Nat.mul_min_distr_l in Huvx.
 rewrite Nat.mul_max_distr_l in Huvx.
 rewrite <- Nat.mul_sub_distr_l in Huvx.
-(* donc yd+1 est un multiple de xd+1 *)
+apply (Nat.mul_cancel_r _ _ (xd + 1)) in Huvy; [ | now rewrite Nat.add_1_r ].
+rewrite Nat.mul_1_l in Huvy.
+rewrite Nat.mul_sub_distr_r in Huvy.
+rewrite <- Nat.mul_min_distr_r in Huvy.
+rewrite <- Nat.mul_max_distr_r in Huvy.
+rewrite Nat.mul_shuffle0 in Huvy.
+rewrite <- Hxy in Huvy.
+rewrite Nat.mul_shuffle0 in Huvy.
+rewrite Nat.mul_comm in Huvy.
+rewrite <- Nat.mul_assoc in Huvy.
+rewrite Nat.mul_min_distr_l in Huvy.
+rewrite Nat.mul_max_distr_l in Huvy.
+rewrite <- Nat.mul_sub_distr_l in Huvy.
+rewrite <- Huvy in Huvx.
+rewrite <- Nat.mul_assoc in Huvx.
+symmetry in Huvx; rewrite Nat.mul_comm in Huvx.
+apply Nat_eq_mul_diag in Huvx.
+destruct Huvx as [Huvx| Huvx]; [ now rewrite Nat.add_1_r in Huvx | ].
+apply Nat.eq_mul_1 in Huvx.
+clear Huvy.
+destruct Huvx as (Huvx, Huvy).
+destruct (le_dec ((xn + 1) * uy) (vy * (xd + 1))) as [H1| H1].
+-rewrite Nat.max_r, Nat.min_l in Huvx; [ | easy | easy ].
+ destruct (le_dec ((yn + 1) * ux) (vx * (yd + 1))) as [H2| H2].
+ +rewrite Nat.max_r, Nat.min_l in Huvy; [ | easy | easy ].
+(* mmm... j'ai pas dû appliquer Bézout sur le bon truc; chiasse. *)
 ...
 
 Theorem GQadd_cancel_l : ∀ x y z, (x + y)%GQ = (x + z)%GQ ↔ y = z.
