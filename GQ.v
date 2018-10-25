@@ -1354,6 +1354,17 @@ split; [ | now intros; subst y ].
 intros Hyz.
 destruct x as (x, Hx), y as (y, Hy), z as (z, Hz).
 move y before x; move z before y.
+apply GQeq_eq; cbn.
+apply GQeq_eq in Hyz.
+cbn in Hyz.
+Search PQred.
+Search (PQred _ = PQred _).
+...
+intros.
+split; [ | now intros; subst y ].
+intros Hyz.
+destruct x as (x, Hx), y as (y, Hy), z as (z, Hz).
+move y before x; move z before y.
 destruct x as (xn, xd), y as (yn, yd), z as (zn, zd).
 cbn in Hx, Hy, Hz.
 unfold "+"%GQ in Hyz; cbn in Hyz.
@@ -1401,4 +1412,11 @@ destruct bbz. {
 do 2 rewrite Nat.sub_succ, Nat.sub_0_r in H1.
 do 2 rewrite Nat.sub_succ, Nat.sub_0_r in H2.
 subst bbz aaz.
+Check Nat.gauss.
+...
+apply (Nat.mul_cancel_r _ _ gz) in Hgy1.
+apply (Nat.mul_cancel_r _ _ gy) in Hgz1.
+symmetry in Hgz1.
+rewrite Nat.mul_comm, Nat.mul_assoc, Nat.mul_shuffle0 in Hgz1.
+rewrite <- Hgy1 in Hgz1.
 ...
