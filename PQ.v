@@ -1609,6 +1609,24 @@ rewrite Nat.sub_add.
 -apply ggcd_succ_l in Hg1; flia Hg1.
 Qed.
 
+Theorem gcd_1_PQred : ∀ x,
+  Nat.gcd (PQnum1 x + 1) (PQden1 x + 1) = 1
+  → x = PQred x.
+Proof.
+intros x Hx.
+destruct x as (xn, xd).
+rewrite <- ggcd_gcd in Hx.
+unfold PQred.
+remember ggcd as f; cbn in Hx; cbn; subst f.
+remember (ggcd (xn + 1) (xd + 1)) as g eqn:Hg.
+destruct g as (g, (aa, bb)); cbn in Hx; subst g.
+specialize (ggcd_correct_divisors (xn + 1) (xd + 1)) as H.
+rewrite <- Hg in H; do 2 rewrite Nat.mul_1_l in H.
+destruct H as (Hxn, Hxd).
+subst aa bb.
+now do 2 rewrite Nat.add_sub.
+Qed.
+
 (*
 Definition PQfrac pq :=
   PQ_of_pair ((PQnum1 pq + 1) mod (PQden1 pq + 1)) (PQden1 pq + 1).

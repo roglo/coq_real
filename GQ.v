@@ -1397,19 +1397,13 @@ move y before x; move z before y.
 apply GQeq_eq; cbn.
 apply GQeq_eq in Hyz.
 cbn in Hyz.
-apply glop; cycle 2.
--apply (PQadd_cancel_l _ _ x).
- rewrite <- PQred_eq; symmetry.
- rewrite <- PQred_eq; symmetry.
- now rewrite Hyz.
--clear -Hy.
- destruct y as (yn, yd).
- remember ggcd as f; cbn in Hy; cbn; subst f.
-...
- rewrite <- ggcd_gcd in Hy.
- unfold PQred.
- remember (ggcd (yn + 1) (yd + 1)) as g eqn:Hg.
- destruct g as (g, (aa, bb)); cbn in Hy.
+apply glop; [ now apply gcd_1_PQred | now apply gcd_1_PQred | ].
+apply (PQadd_cancel_l _ _ x).
+rewrite <- PQred_eq; symmetry.
+rewrite <- PQred_eq; symmetry.
+now rewrite Hyz.
+Qed.
+
 ...
 intros.
 split; [ | now intros; subst y ].
