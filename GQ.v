@@ -1346,3 +1346,58 @@ rewrite <- GQmul_pair; [ | easy | easy | flia Hba | easy ].
 rewrite GQpair_diag; [ | easy ].
 now rewrite GQmul_1_l.
 Qed.
+
+Theorem GQadd_cancel_l : ∀ x y z, (x + y)%GQ = (x + z)%GQ ↔ y = z.
+Proof.
+intros.
+split; intros Hyz.
+-destruct x as (x, Hx), y as (y, Hy), z as (z, Hz).
+ move y before x; move z before y.
+ destruct x as (xn, xd), y as (yn, yd), z as (zn, zd).
+ cbn in Hx, Hy, Hz.
+ unfold "+"%GQ in Hyz; cbn in Hyz.
+ injection Hyz; clear Hyz; intros Hyz.
+ apply GQeq_eq; cbn.
+ unfold PQred in Hyz.
+ remember ggcd as f; cbn in Hyz; subst f.
+ rewrite Nat.sub_add in Hyz; [ | rewrite Nat.add_1_r; cbn; flia ].
+ rewrite Nat.sub_add in Hyz; [ | rewrite Nat.add_1_r; cbn; flia ].
+ rewrite Nat.sub_add in Hyz; [ | rewrite Nat.add_1_r; cbn; flia ].
+ rewrite Nat.sub_add in Hyz; [ | rewrite Nat.add_1_r; cbn; flia ].
+ remember ((xn + 1) * (yd + 1) + (yn + 1) * (xd + 1)) as xy1 eqn:Hxy1.
+ remember ((xn + 1) * (zd + 1) + (zn + 1) * (xd + 1)) as xz1 eqn:Hxz1.
+ move xz1 before xy1.
+ remember ((xd + 1) * (yd + 1)) as xy2 eqn:Hxy2.
+ remember ((xd + 1) * (zd + 1)) as xz2 eqn:Hxz2.
+ move xz2 before xz1; move xy2 before xz1.
+ remember (ggcd xy1 xy2) as gy eqn:Hgy.
+ remember (ggcd xz1 xz2) as gz eqn:Hgz.
+ move gz before gy.
+ destruct gy as (gy, (aay, bby)).
+ destruct gz as (gz, (aaz, bbz)).
+ injection Hyz; clear Hyz; intros H1 H2.
+ specialize (ggcd_correct_divisors xy1 xy2) as H3.
+ specialize (ggcd_correct_divisors xz1 xz2) as H4.
+ rewrite <- Hgy in H3; rewrite <- Hgz in H4.
+ destruct H3 as (Hgy1, Hgy2).
+ destruct H4 as (Hgz1, Hgz2).
+ destruct aay. {
+   rewrite Nat.mul_0_r, Hxy1, Nat.add_1_r in Hgy1.
+   cbn in Hgy1; flia Hgy1.
+ }
+ destruct aaz. {
+   rewrite Nat.mul_0_r, Hxz1, Nat.add_1_r in Hgz1.
+   cbn in Hgz1; flia Hgz1.
+ }
+ destruct bby. {
+   rewrite Nat.mul_0_r, Hxy2, Nat.add_1_r in Hgy2.
+   cbn in Hgy2; flia Hgy2.
+ }
+ destruct bbz. {
+   rewrite Nat.mul_0_r, Hxz2, Nat.add_1_r in Hgz2.
+   cbn in Hgz2; flia Hgz2.
+ }
+ do 2 rewrite Nat.sub_succ, Nat.sub_0_r in H1.
+ do 2 rewrite Nat.sub_succ, Nat.sub_0_r in H2.
+ subst bbz aaz.
+...

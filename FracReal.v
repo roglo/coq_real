@@ -2900,7 +2900,17 @@ apply NQle_lt_trans with
   (y := (1 + (rad - 2) // rad ^ S k + A (t - 1) n u * 1 // rad ^ (S k))%NQ).
 -apply NQadd_le_mono_r.
  now rewrite Ht; apply A_le_aft_999.
--idtac.
+-rewrite NQpair_sub_l; [ | easy ].
+ rewrite NQadd_add_swap, NQadd_assoc.
+ replace 2 with (1 + 1) at 1 by easy.
+ rewrite NQpair_add_l.
+Search (_ - (_ + _))%NQ.
+Check Nat.sub_add_distr.
+Require Import ZArith.
+Check Z.sub_add_distr.
+...
+ rewrite NQsub_add_distr.
+
 ...
  now subst; apply nA_le_aft_999.
 -rewrite Nat.mul_sub_distr_r.

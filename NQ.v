@@ -877,6 +877,50 @@ replace y with (y + 0)%NQ at 1 by apply NQadd_0_r.
 now apply NQadd_lt_mono_l.
 Qed.
 
+Theorem NQadd_cancel_l: ∀ x y z, (x + y = x + z)%NQ ↔ (y = z)%NQ.
+Proof.
+intros.
+split; intros Hxy.
+-destruct x as [| xp| xp]; [ easy | | ].
+ +destruct y as [| yp| yp].
+  *rewrite NQadd_0_r in Hxy.
+   destruct z as [| zp| zp]; [ easy | | ].
+  --cbn in Hxy.
+    injection Hxy; clear Hxy; intros H.
+    symmetry in H; rewrite GQadd_comm in H.
+    now apply GQadd_no_neutral in H.
+  --cbn in Hxy.
+    remember (GQcompare xp zp) as b eqn:Hb; symmetry in Hb.
+    destruct b; [ easy | easy | GQcompare_iff ].
+    injection Hxy; clear Hxy; intros H.
+    symmetry in H.
+    now apply GQsub_no_neutral in H.
+  *destruct z as [| zp| zp].
+  --cbn in Hxy.
+    injection Hxy; clear Hxy; intros H.
+    rewrite GQadd_comm in H.
+    now apply GQadd_no_neutral in H.
+  --cbn in Hxy; f_equal.
+    remember GQadd as f.
+    injection Hxy; clear Hxy; intros H; subst f.
+Search (_ + _ = _ + _)%GQ.
+...
+    apply GQadd_cancel_l in H.
+    rewrite GQadd_comm in H.
+    now apply GQadd_no_neutral in H.
+
+...
+
+Theorem NQadd_cancel_r: ∀ n m p : nat, n + p = m + p ↔ n = m.
+...
+
+Theorem NQsub_add_distr : ∀ x y z, (x - (y + z))%NQ = (x - y - z)%NQ.
+Proof.
+intros.
+Search (_ + _ = _ + _)%NQ.
+Search (_ + _ = _ + _)%nat.
+...
+
 Theorem NQmul_pair : ∀ x y z t,
   y ≠ 0 → t ≠ 0 → ((x // y) * (z // t) = (x * z) // (y * t))%NQ.
 Proof.
