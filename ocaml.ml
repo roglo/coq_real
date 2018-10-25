@@ -2,7 +2,7 @@
 (* translated from coq version and adapted *)
 
 (*
-ocaml -I +site-lib/camlp5 camlp5r.cma nums.cma
+ocaml $(camlp5 -where)/camlp5r.cma nums.cma
 *)
 
 open Big_int;

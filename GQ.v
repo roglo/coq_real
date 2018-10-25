@@ -1347,6 +1347,8 @@ rewrite GQpair_diag; [ | easy ].
 now rewrite GQmul_1_l.
 Qed.
 
+...
+
 Theorem Nat_Bezout : ∀ a b,
   ∃ u v, max (a * u) (b * v) - min (a * u) (b * v) = Nat.gcd a b.
 Proof.
