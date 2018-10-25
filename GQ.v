@@ -1357,8 +1357,6 @@ move y before x; move z before y.
 apply GQeq_eq; cbn.
 apply GQeq_eq in Hyz.
 cbn in Hyz.
-Search PQred.
-Search (PQred _ = PQred _).
 ...
 intros.
 split; [ | now intros; subst y ].
