@@ -1347,6 +1347,11 @@ rewrite GQpair_diag; [ | easy ].
 now rewrite GQmul_1_l.
 Qed.
 
+Theorem Nat_bezout : ∀ a b (g := Nat.gcd a b),
+  ∃ u v, a * u = b * v + g ∨ b * v = a * u + g.
+Proof.
+...
+
 Theorem glop : ∀ x y, x = PQred x → y = PQred y → (x == y)%PQ ↔ x = y.
 Proof.
 intros * Hx Hy.
@@ -1373,6 +1378,11 @@ destruct bby; [ now subst yd f; rewrite ggcd_1_r in Hgy | ].
 subst f.
 rewrite Nat.sub_succ, Nat.sub_0_r in Hxn, Hxd, Hyn, Hyd.
 subst aax aay bbx bby.
+specialize (Nat_bezout (xn + 1) (xd + 1)) as H.
+rewrite <- ggcd_gcd, <- Hgx in H; cbn in H.
+destruct H as (u & v & Huv).
+destruct Huv as [Huv| Hvu].
+...
 specialize (ggcd_correct_divisors (xn + 1) (xd + 1)) as Hg.
 rewrite <- Hgx in Hg; cbn in Hg.
 destruct Hg as (Hxn, Hxd).
