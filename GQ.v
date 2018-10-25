@@ -1361,12 +1361,7 @@ Fixpoint f_nbezout (n a b : nat) : bool * (nat * nat) :=
       end
   end.
 
-Definition bezout (a b : nat) := f_nbezout (S b) a b.
-
-(*
-Lemma f_div__eucl : ∀ a b q r,
-  0 < b → f_div a b = (q, r) → a = b * q + r ∧ r < b.
-*)
+Definition Nat_bezout (a b : nat) := f_nbezout (S b) a b.
 
 Lemma f_nbezout_gcd : ∀ n a b, ∀ is_neg u v,
   b < n
@@ -1413,7 +1408,7 @@ destruct b.
 Qed.
 
 Theorem bezout_gcd : ∀ a b is_neg u v,
-  bezout a b = (is_neg, (u, v))
+  Nat_bezout a b = (is_neg, (u, v))
   → (is_neg = false ∧ a * u = b * v + Nat.gcd a b) ∨
     (is_neg = true ∧ b * v = a * u + Nat.gcd a b).
 Proof.
@@ -1425,7 +1420,7 @@ Theorem Nat_Bezout : ∀ a b,
   ∃ u v, max (a * u) (b * v) - min (a * u) (b * v) = Nat.gcd a b.
 Proof.
 intros.
-remember (bezout a b) as bez eqn:Hbez.
+remember (Nat_bezout a b) as bez eqn:Hbez.
 symmetry in Hbez.
 destruct bez as (is_neg, (u, v)).
 apply bezout_gcd in Hbez.
