@@ -1434,10 +1434,10 @@ destruct Hbez as [(Hneg, Hbez)| (Hneg, Hbez)]; rewrite Hbez.
  now rewrite Nat.add_comm, Nat.add_sub.
 Qed.
 
-Theorem glop : ∀ x y, x = PQred x → (x == y)%PQ → ∃ a, y = (a // a * x)%PQ.
+Theorem PQeq_red_l : ∀ x y,
+  x = PQred x → (x == y)%PQ → ∃ a, y = (a // a * x)%PQ.
 Proof.
 intros * Hx Hxy.
-...
 unfold "=="%PQ, nd in Hxy.
 specialize (PQred_gcd x) as Hg.
 rewrite <- Hx in Hg.
@@ -1451,9 +1451,7 @@ assert (Hd : Nat.divide (xn + 1) ((xd + 1) * (yn + 1))). {
 specialize (Nat.gauss _ _ _ Hd Hg) as H1.
 destruct H1 as (c, Hc).
 exists c.
-unfold PQ_of_nat.
 unfold "*"%PQ; cbn.
-rewrite Nat.add_0_r, Nat.add_sub.
 rewrite Nat.sub_add; cycle 1. {
   destruct c; [ now rewrite Nat.add_1_r in Hc | flia ].
 }
@@ -1462,121 +1460,50 @@ rewrite Nat.add_sub; f_equal.
 symmetry in Hxy.
 rewrite Hc, Nat.mul_shuffle0, Nat.mul_comm in Hxy.
 apply Nat.mul_cancel_l in Hxy; [ | flia ].
-...
+now rewrite Hxy, Nat.add_sub.
+Qed.
 
-Theorem glop : ∀ x y, x = PQred x → y = PQred y → (x == y)%PQ ↔ x = y.
+Theorem PQeq_red : ∀ x y,
+  x = PQred x → y = PQred y → (x == y)%PQ ↔ x = y.
 Proof.
 intros * Hx Hy.
 split; [ | now intros; subst y ].
 intros Hxy.
-unfold "=="%PQ, nd in Hxy.
+specialize (PQeq_red_l x y Hx Hxy) as H1.
+symmetry in Hxy.
+specialize (PQeq_red_l y x Hy Hxy) as H2.
+destruct H1 as (c, Hc).
+destruct H2 as (d, Hd).
+move d before c.
 destruct x as (xn, xd), y as (yn, yd).
-cbn in Hxy.
-unfold PQred in Hx, Hy.
-remember ggcd as f; cbn in Hx, Hy; subst f.
-move Hy after Hx.
-remember (ggcd (xn + 1) (xd + 1)) as gx eqn:Hgx.
-remember (ggcd (yn + 1) (yd + 1)) as gy eqn:Hgy.
-move gx after gy; move Hgy before Hgx.
-destruct gx as (gx, (aax, bbx)).
-destruct gy as (gy, (aay, bby)).
-injection Hx; clear Hx; intros Hxd Hxn.
-injection Hy; clear Hy; intros Hyd Hyn.
-remember ggcd as f.
-destruct aax; [ now subst xn f; rewrite ggcd_1_l in Hgx | ].
-destruct bbx; [ now subst xd f; rewrite ggcd_1_r in Hgx | ].
-destruct aay; [ now subst yn f; rewrite ggcd_1_l in Hgy | ].
-destruct bby; [ now subst yd f; rewrite ggcd_1_r in Hgy | ].
-subst f.
-rewrite Nat.sub_succ, Nat.sub_0_r in Hxn, Hxd, Hyn, Hyd.
-subst aax aay bbx bby.
-specialize (ggcd_correct_divisors (xn + 1) (xd + 1)) as Hg.
-rewrite <- Hgx in Hg; cbn in Hg.
-destruct Hg as (Hxn, Hxd).
-specialize (ggcd_correct_divisors (yn + 1) (yd + 1)) as Hg.
-rewrite <- Hgy in Hg; cbn in Hg.
-destruct Hg as (Hyn, Hyd).
-rewrite Nat.add_1_r in Hxn, Hxd, Hyn, Hyd.
-apply Nat_eq_mul_diag in Hxn.
-destruct Hxn as [| Hxn]; [ easy | ].
-apply Nat_eq_mul_diag in Hyn.
-destruct Hyn as [| Hyn]; [ easy | ].
-subst gx gy.
-clear Hxd Hyd.
-specialize (Nat_Bezout (xn + 1) (xd + 1)) as H.
-rewrite <- ggcd_gcd, <- Hgx in H; cbn in H.
-destruct H as (ux & vx & Huvx).
-specialize (Nat_Bezout (yn + 1) (yd + 1)) as H.
-rewrite <- ggcd_gcd, <- Hgy in H; cbn in H.
-destruct H as (uy & vy & Huvy).
-move vy before vx; move uy before vx.
-assert (H :
-  max ((xn + 1) * uy) ((xd + 1) * vy) -
-  min ((xn + 1) * uy) ((xd + 1) * vy) = 1 ∧
-  max ((yn + 1) * ux) ((yd + 1) * vx) -
-  min ((yn + 1) * ux) ((yd + 1) * vx) = 1). {
-  apply (Nat.mul_cancel_r _ _ (yd + 1)) in Huvx; cycle 1. {
-    now rewrite Nat.add_1_r.
-  }
-  rewrite Nat.mul_1_l in Huvx.
-  rewrite Nat.mul_sub_distr_r in Huvx.
-  rewrite <- Nat.mul_min_distr_r in Huvx.
-  rewrite <- Nat.mul_max_distr_r in Huvx.
-  rewrite Nat.mul_shuffle0 in Huvx.
-  rewrite Hxy in Huvx.
-  rewrite Nat.mul_shuffle0 in Huvx.
-  rewrite Nat.mul_comm in Huvx.
-  rewrite <- Nat.mul_assoc in Huvx.
-  rewrite Nat.mul_min_distr_l in Huvx.
-  rewrite Nat.mul_max_distr_l in Huvx.
-  rewrite <- Nat.mul_sub_distr_l in Huvx.
-  apply (Nat.mul_cancel_r _ _ (xd + 1)) in Huvy; cycle 1. {
-    now rewrite Nat.add_1_r.
-  }
-  rewrite Nat.mul_1_l in Huvy.
-  rewrite Nat.mul_sub_distr_r in Huvy.
-  rewrite <- Nat.mul_min_distr_r in Huvy.
-  rewrite <- Nat.mul_max_distr_r in Huvy.
-  rewrite Nat.mul_shuffle0 in Huvy.
-  rewrite <- Hxy in Huvy.
-  rewrite Nat.mul_shuffle0 in Huvy.
-  rewrite Nat.mul_comm in Huvy.
-  rewrite <- Nat.mul_assoc in Huvy.
-  rewrite Nat.mul_min_distr_l in Huvy.
-  rewrite Nat.mul_max_distr_l in Huvy.
-  rewrite <- Nat.mul_sub_distr_l in Huvy.
-  rewrite <- Huvy in Huvx.
-  rewrite <- Nat.mul_assoc in Huvx.
-  symmetry in Huvx; rewrite Nat.mul_comm in Huvx.
-  apply Nat_eq_mul_diag in Huvx.
-  destruct Huvx as [Huvx| Huvx]; [ now rewrite Nat.add_1_r in Huvx | ].
-  apply Nat.eq_mul_1 in Huvx.
-  replace (vy * (xd + 1)) with ((xd + 1) * vy) in Huvx by apply Nat.mul_comm.
-  replace (vx * (yd + 1)) with ((yd + 1) * vx) in Huvx by apply Nat.mul_comm.
-  easy.
-}
-destruct H as (Huv1, Huv2).
-move Huv1 before Huvx.
-destruct (le_dec ((xn + 1) * ux) ((xd + 1) * vx)) as [H1| H1].
--rewrite Nat.max_r, Nat.min_l in Huvx; [ | easy | easy ].
- apply Nat.add_sub_eq_nz in Huvx; [ | easy ].
- destruct (le_dec ((xn + 1) * uy) ((xd + 1) * vy)) as [H2| H2].
- +rewrite Nat.max_r, Nat.min_l in Huv1; [ | easy | easy ].
-  apply Nat.add_sub_eq_nz in Huv1; [ | easy ].
-  destruct (le_dec ((yn + 1) * uy) ((yd + 1) * vy)) as [H3| H3].
-  *rewrite Nat.max_r, Nat.min_l in Huvy; [ | easy | easy ].
-   apply Nat.add_sub_eq_nz in Huvy; [ | easy ].
-   destruct (le_dec ((yn + 1) * ux) ((yd + 1) * vx)) as [H4| H4].
-  --rewrite Nat.max_r, Nat.min_l in Huv2; [ | easy | easy ].
-    apply Nat.add_sub_eq_nz in Huv2; [ | easy ].
-Search (_ - _ = _ ↔ _).
-...
-rewrite <- Huv1 in Huvx at 3.
-apply Nat.add_sub_eq_nz in Huvx.
-...
-Nat.add_sub_eq_r: ∀ n m p : nat, m + p = n → n - p = m
-Nat.add_sub_eq_l: ∀ n m p : nat, m + p = n → n - m = p
-...
+unfold "*"%PQ in Hc, Hd.
+cbn in Hc, Hd.
+injection Hc; clear Hc; intros H1 H2.
+injection Hd; clear Hd; intros H3 H4.
+destruct d.
+-cbn in H3, H4.
+ rewrite Nat.add_0_r, Nat.add_sub in H3, H4.
+ now subst xd xn.
+-rewrite Nat.sub_add in H3, H4; [ | flia | flia ].
+ destruct c.
+ +cbn in H1, H2.
+  rewrite Nat.add_0_r, Nat.add_sub in H1, H2.
+  now subst xd xn.
+ +rewrite Nat.sub_add in H1, H2; [ | flia | flia ].
+  cbn in H1, H2, H3, H4.
+  rewrite Nat.add_shuffle0, Nat.add_sub in H1, H2, H3, H4.
+  rewrite H1 in H3 at 1.
+  assert (H : c * (xd + 1) + d * (yd + 1) = 0) by flia H3.
+  apply Nat.eq_add_0 in H.
+  destruct H as (H5, H6).
+  apply Nat.eq_mul_0 in H5.
+  apply Nat.eq_mul_0 in H6.
+  destruct H5 as [H5| H5]; [ | flia H5].
+  destruct H6 as [H6| H6]; [ | flia H6].
+  subst c d.
+  rewrite Nat.mul_0_l, Nat.add_0_r in H1, H2.
+  now subst yn yd.
+Qed.
 
 Theorem GQadd_cancel_l : ∀ x y z, (x + y)%GQ = (x + z)%GQ ↔ y = z.
 Proof.
@@ -1588,63 +1515,9 @@ move y before x; move z before y.
 apply GQeq_eq; cbn.
 apply GQeq_eq in Hyz.
 cbn in Hyz.
-apply glop; [ now apply gcd_1_PQred | now apply gcd_1_PQred | ].
+apply PQeq_red; [ now apply gcd_1_PQred | now apply gcd_1_PQred | ].
 apply (PQadd_cancel_l _ _ x).
 rewrite <- PQred_eq; symmetry.
 rewrite <- PQred_eq; symmetry.
 now rewrite Hyz.
 Qed.
-
-...
-intros.
-split; [ | now intros; subst y ].
-intros Hyz.
-destruct x as (x, Hx), y as (y, Hy), z as (z, Hz).
-move y before x; move z before y.
-destruct x as (xn, xd), y as (yn, yd), z as (zn, zd).
-cbn in Hx, Hy, Hz.
-unfold "+"%GQ in Hyz; cbn in Hyz.
-injection Hyz; clear Hyz; intros Hyz.
-apply GQeq_eq; cbn.
-unfold PQred in Hyz.
-remember ggcd as f; cbn in Hyz; subst f.
-rewrite Nat.sub_add in Hyz; [ | rewrite Nat.add_1_r; cbn; flia ].
-rewrite Nat.sub_add in Hyz; [ | rewrite Nat.add_1_r; cbn; flia ].
-rewrite Nat.sub_add in Hyz; [ | rewrite Nat.add_1_r; cbn; flia ].
-rewrite Nat.sub_add in Hyz; [ | rewrite Nat.add_1_r; cbn; flia ].
-remember ((xn + 1) * (yd + 1) + (yn + 1) * (xd + 1)) as xy1 eqn:Hxy1.
-remember ((xn + 1) * (zd + 1) + (zn + 1) * (xd + 1)) as xz1 eqn:Hxz1.
-move xz1 before xy1.
-remember ((xd + 1) * (yd + 1)) as xy2 eqn:Hxy2.
-remember ((xd + 1) * (zd + 1)) as xz2 eqn:Hxz2.
-move xz2 before xz1; move xy2 before xz1.
-remember (ggcd xy1 xy2) as gy eqn:Hgy.
-remember (ggcd xz1 xz2) as gz eqn:Hgz.
-move gz before gy.
-destruct gy as (gy, (aay, bby)).
-destruct gz as (gz, (aaz, bbz)).
-injection Hyz; clear Hyz; intros H1 H2.
-specialize (ggcd_correct_divisors xy1 xy2) as H3.
-specialize (ggcd_correct_divisors xz1 xz2) as H4.
-rewrite <- Hgy in H3; rewrite <- Hgz in H4.
-destruct H3 as (Hgy1, Hgy2).
-destruct H4 as (Hgz1, Hgz2).
-destruct bby. {
-  rewrite Nat.mul_0_r, Hxy2, Nat.add_1_r in Hgy2.
-  cbn in Hgy2; flia Hgy2.
-}
-destruct bbz. {
-  rewrite Nat.mul_0_r, Hxz2, Nat.add_1_r in Hgz2.
-  cbn in Hgz2; flia Hgz2.
-}
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r in H1.
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r in H2.
-subst bbz aaz.
-Check Nat.gauss.
-...
-apply (Nat.mul_cancel_r _ _ gz) in Hgy1.
-apply (Nat.mul_cancel_r _ _ gy) in Hgz1.
-symmetry in Hgz1.
-rewrite Nat.mul_comm, Nat.mul_assoc, Nat.mul_shuffle0 in Hgz1.
-rewrite <- Hgy1 in Hgz1.
-...
