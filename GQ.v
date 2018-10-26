@@ -1347,164 +1347,6 @@ rewrite GQpair_diag; [ | easy ].
 now rewrite GQmul_1_l.
 Qed.
 
-Fixpoint f_nbezout (n a b : nat) : bool * (nat * nat) :=
-  match n with
-  | 0 => (false, (0, 0))
-  | S n' =>
-      match b with
-      | 0 => (false, (1, 0))
-      | _ =>
-          let (q, r) := (a / b, a mod b) in
-          let (is_neg, uv) := f_nbezout n' b r in
-          let (u, v) := uv in
-          (negb is_neg, (v, u + q * v))
-      end
-  end.
-
-Definition Nat_bezout (a b : nat) := f_nbezout (S b) a b.
-
-Lemma f_nbezout_gcd : ∀ n a b, ∀ is_neg u v,
-  b < n
-  → f_nbezout n a b = (is_neg, (u, v))
-     → (is_neg = false ∧ a * u = b * v + Nat.gcd a b) ∨
-        (is_neg = true ∧ b * v = a * u + Nat.gcd a b).
-Proof.
-intros * Hbn Hbez.
-revert a b is_neg u v Hbn Hbez.
-induction n; intros; [ easy | ].
-cbn in Hbez.
-destruct b.
--injection Hbez; intros; subst u v is_neg; clear Hbez.
- left; split; [ easy | ].
- now rewrite mult_1_r, Nat.gcd_0_r.
--apply Nat.succ_lt_mono in Hbn.
- remember (a / S b) as q eqn:Hq.
- remember (a mod S b) as r eqn:Hr.
- move r before q.
- specialize (Nat.div_mod a (S b)) as H1.
- assert (H : S b ≠ 0) by easy.
- specialize (H1 H); clear H.
- rewrite <- Hq, <- Hr in H1.
- remember (f_nbezout n (S b) r) as bz eqn:Hbz.
- destruct bz as (is_neg1, (u1, v1)).
- injection Hbez; intros; subst u v is_neg; clear Hbez.
- rewrite Nat.gcd_comm, <- Nat.gcd_mod; [ | easy ].
- rewrite Nat.gcd_comm.
- rewrite Nat.add_comm, Nat.mul_comm in H1.
- rewrite H1 at 2 4.
- rewrite Nat.mod_add; [ | easy ].
- rewrite Nat.mod_small; [ | now subst r; apply Nat.mod_upper_bound ].
- rewrite Nat.add_comm, Nat.mul_comm in H1.
- rewrite H1, Nat.mul_add_distr_l, Nat.mul_add_distr_r.
- do 2 rewrite <- Nat.add_assoc.
- rewrite Nat.add_shuffle3, Nat.mul_assoc, Nat.mul_comm.
- symmetry in Hbz.
- apply IHn in Hbz.
- +destruct Hbz as [(Hn, H)| (Hn, H)]; subst is_neg1.
-  *right; split; [ easy | now rewrite <- H, Nat.add_comm ].
-  *left; split; [ easy | now rewrite <- H, Nat.add_comm ].
- +apply (Nat.lt_le_trans _ (S b)); [ | easy ].
-  now rewrite Hr; apply Nat.mod_upper_bound.
-Qed.
-
-Theorem bezout_gcd : ∀ a b is_neg u v,
-  Nat_bezout a b = (is_neg, (u, v))
-  → (is_neg = false ∧ a * u = b * v + Nat.gcd a b) ∨
-    (is_neg = true ∧ b * v = a * u + Nat.gcd a b).
-Proof.
-intros a b is_neg u v H1.
-apply f_nbezout_gcd in H1; [ easy | now apply Nat.lt_succ_r ].
-Qed.
-
-Theorem Nat_Bezout : ∀ a b,
-  ∃ u v, max (a * u) (b * v) - min (a * u) (b * v) = Nat.gcd a b.
-Proof.
-intros.
-remember (Nat_bezout a b) as bez eqn:Hbez.
-symmetry in Hbez.
-destruct bez as (is_neg, (u, v)).
-apply bezout_gcd in Hbez.
-exists u, v.
-destruct Hbez as [(Hneg, Hbez)| (Hneg, Hbez)]; rewrite Hbez.
--rewrite Nat.max_l; [ | flia ].
- rewrite Nat.min_r; [ | flia ].
- now rewrite Nat.add_comm, Nat.add_sub.
--rewrite Nat.max_r; [ | flia ].
- rewrite Nat.min_l; [ | flia ].
- now rewrite Nat.add_comm, Nat.add_sub.
-Qed.
-
-Theorem PQeq_red_l : ∀ x y,
-  x = PQred x → (x == y)%PQ → ∃ a, y = (a // a * x)%PQ.
-Proof.
-intros * Hx Hxy.
-unfold "=="%PQ, nd in Hxy.
-specialize (PQred_gcd x) as Hg.
-rewrite <- Hx in Hg.
-destruct x as (xn, xd), y as (yn, yd).
-cbn in Hxy, Hg.
-assert (Hd : Nat.divide (xn + 1) ((xd + 1) * (yn + 1))). {
-  rewrite Nat.mul_comm, <- Hxy.
-  exists (yd + 1).
-  apply Nat.mul_comm.
-}
-specialize (Nat.gauss _ _ _ Hd Hg) as H1.
-destruct H1 as (c, Hc).
-exists c.
-unfold "*"%PQ; cbn.
-rewrite Nat.sub_add; cycle 1. {
-  destruct c; [ now rewrite Nat.add_1_r in Hc | flia ].
-}
-rewrite <- Hc.
-rewrite Nat.add_sub; f_equal.
-symmetry in Hxy.
-rewrite Hc, Nat.mul_shuffle0, Nat.mul_comm in Hxy.
-apply Nat.mul_cancel_l in Hxy; [ | flia ].
-now rewrite Hxy, Nat.add_sub.
-Qed.
-
-Theorem PQeq_red : ∀ x y,
-  x = PQred x → y = PQred y → (x == y)%PQ ↔ x = y.
-Proof.
-intros * Hx Hy.
-split; [ | now intros; subst y ].
-intros Hxy.
-specialize (PQeq_red_l x y Hx Hxy) as H1.
-symmetry in Hxy.
-specialize (PQeq_red_l y x Hy Hxy) as H2.
-destruct H1 as (c, Hc).
-destruct H2 as (d, Hd).
-move d before c.
-destruct x as (xn, xd), y as (yn, yd).
-unfold "*"%PQ in Hc, Hd.
-cbn in Hc, Hd.
-injection Hc; clear Hc; intros H1 H2.
-injection Hd; clear Hd; intros H3 H4.
-destruct d.
--cbn in H3, H4.
- rewrite Nat.add_0_r, Nat.add_sub in H3, H4.
- now subst xd xn.
--rewrite Nat.sub_add in H3, H4; [ | flia | flia ].
- destruct c.
- +cbn in H1, H2.
-  rewrite Nat.add_0_r, Nat.add_sub in H1, H2.
-  now subst xd xn.
- +rewrite Nat.sub_add in H1, H2; [ | flia | flia ].
-  cbn in H1, H2, H3, H4.
-  rewrite Nat.add_shuffle0, Nat.add_sub in H1, H2, H3, H4.
-  rewrite H1 in H3 at 1.
-  assert (H : c * (xd + 1) + d * (yd + 1) = 0) by flia H3.
-  apply Nat.eq_add_0 in H.
-  destruct H as (H5, H6).
-  apply Nat.eq_mul_0 in H5.
-  apply Nat.eq_mul_0 in H6.
-  destruct H5 as [H5| H5]; [ | flia H5].
-  destruct H6 as [H6| H6]; [ | flia H6].
-  subst c d.
-  rewrite Nat.mul_0_l, Nat.add_0_r in H1, H2.
-  now subst yn yd.
-Qed.
-
 Theorem GQadd_cancel_l : ∀ x y z, (x + y)%GQ = (x + z)%GQ ↔ y = z.
 Proof.
 intros.
@@ -1520,4 +1362,11 @@ apply (PQadd_cancel_l _ _ x).
 rewrite <- PQred_eq; symmetry.
 rewrite <- PQred_eq; symmetry.
 now rewrite Hyz.
+Qed.
+
+Theorem GQadd_cancel_r : ∀ x y z, (x + z)%GQ = (y + z)%GQ ↔ x = y.
+Proof.
+intros.
+setoid_rewrite GQadd_comm.
+apply GQadd_cancel_l.
 Qed.

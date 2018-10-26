@@ -1627,9 +1627,73 @@ subst aa bb.
 now do 2 rewrite Nat.add_sub.
 Qed.
 
-(*
-Definition PQfrac pq :=
-  PQ_of_pair ((PQnum1 pq + 1) mod (PQden1 pq + 1)) (PQden1 pq + 1).
-Definition PQintg pq :=
-  (PQnum1 pq + 1) / (PQden1 pq + 1).
-*)
+Theorem PQeq_red_l : ∀ x y,
+  x = PQred x → (x == y)%PQ → ∃ a, y = (a // a * x)%PQ.
+Proof.
+intros * Hx Hxy.
+unfold "=="%PQ, nd in Hxy.
+specialize (PQred_gcd x) as Hg.
+rewrite <- Hx in Hg.
+destruct x as (xn, xd), y as (yn, yd).
+cbn in Hxy, Hg.
+assert (Hd : Nat.divide (xn + 1) ((xd + 1) * (yn + 1))). {
+  rewrite Nat.mul_comm, <- Hxy.
+  exists (yd + 1).
+  apply Nat.mul_comm.
+}
+specialize (Nat.gauss _ _ _ Hd Hg) as H1.
+destruct H1 as (c, Hc).
+exists c.
+unfold "*"%PQ; cbn.
+rewrite Nat.sub_add; cycle 1. {
+  destruct c; [ now rewrite Nat.add_1_r in Hc | flia ].
+}
+rewrite <- Hc.
+rewrite Nat.add_sub; f_equal.
+symmetry in Hxy.
+rewrite Hc, Nat.mul_shuffle0, Nat.mul_comm in Hxy.
+apply Nat.mul_cancel_l in Hxy; [ | flia ].
+now rewrite Hxy, Nat.add_sub.
+Qed.
+
+Theorem PQeq_red : ∀ x y,
+  x = PQred x → y = PQred y → (x == y)%PQ ↔ x = y.
+Proof.
+intros * Hx Hy.
+split; [ | now intros; subst y ].
+intros Hxy.
+specialize (PQeq_red_l x y Hx Hxy) as H1.
+symmetry in Hxy.
+specialize (PQeq_red_l y x Hy Hxy) as H2.
+destruct H1 as (c, Hc).
+destruct H2 as (d, Hd).
+move d before c.
+destruct x as (xn, xd), y as (yn, yd).
+unfold "*"%PQ in Hc, Hd.
+cbn in Hc, Hd.
+injection Hc; clear Hc; intros H1 H2.
+injection Hd; clear Hd; intros H3 H4.
+destruct d.
+-cbn in H3, H4.
+ rewrite Nat.add_0_r, Nat.add_sub in H3, H4.
+ now subst xd xn.
+-rewrite Nat.sub_add in H3, H4; [ | flia | flia ].
+ destruct c.
+ +cbn in H1, H2.
+  rewrite Nat.add_0_r, Nat.add_sub in H1, H2.
+  now subst xd xn.
+ +rewrite Nat.sub_add in H1, H2; [ | flia | flia ].
+  cbn in H1, H2, H3, H4.
+  rewrite Nat.add_shuffle0, Nat.add_sub in H1, H2, H3, H4.
+  rewrite H1 in H3 at 1.
+  assert (H : c * (xd + 1) + d * (yd + 1) = 0) by flia H3.
+  apply Nat.eq_add_0 in H.
+  destruct H as (H5, H6).
+  apply Nat.eq_mul_0 in H5.
+  apply Nat.eq_mul_0 in H6.
+  destruct H5 as [H5| H5]; [ | flia H5].
+  destruct H6 as [H6| H6]; [ | flia H6].
+  subst c d.
+  rewrite Nat.mul_0_l, Nat.add_0_r in H1, H2.
+  now subst yn yd.
+Qed.
