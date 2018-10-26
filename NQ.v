@@ -880,83 +880,140 @@ Qed.
 Theorem NQadd_cancel_l: ∀ x y z, (x + y = x + z)%NQ ↔ (y = z)%NQ.
 Proof.
 intros.
-split; intros Hxy.
--destruct x as [| xp| xp]; [ easy | | ].
- +destruct y as [| yp| yp].
-  *rewrite NQadd_0_r in Hxy.
-   destruct z as [| zp| zp]; [ easy | | ].
-  --cbn in Hxy.
-    injection Hxy as H.
-    symmetry in H; rewrite GQadd_comm in H.
-    now apply GQadd_no_neutral in H.
-  --cbn in Hxy.
-    remember (GQcompare xp zp) as b eqn:Hb; symmetry in Hb.
-    destruct b; [ easy | easy | GQcompare_iff ].
-    injection Hxy as H.
-    symmetry in H.
-    now apply GQsub_no_neutral in H.
-  *destruct z as [| zp| zp].
-  --cbn in Hxy.
-    injection Hxy as H.
-    rewrite GQadd_comm in H.
-    now apply GQadd_no_neutral in H.
-  --cbn in Hxy; f_equal.
-    remember GQadd as f.
-    injection Hxy as H; subst f.
-    now apply GQadd_cancel_l in H.
-  --cbn in Hxy; exfalso.
-    remember (GQcompare xp zp) as b eqn:Hb; symmetry in Hb.
-    destruct b; [ easy | easy | GQcompare_iff ].
-    remember GQadd as f; remember GQsub as g.
-    injection Hxy as H; subst f g.
-    apply (GQadd_cancel_r _ _ zp) in H.
-    rewrite GQsub_add in H; [ | easy ].
-    rewrite <- GQadd_assoc, GQadd_comm in H.
-    now apply GQadd_no_neutral in H.
-  *destruct z as [| zp| zp].
-  --cbn in Hxy; exfalso.
-    remember (GQcompare xp yp) as b eqn:Hb; symmetry in Hb.
-    destruct b; [ easy | easy | GQcompare_iff ].
-    injection Hxy as H.
-    now apply GQsub_no_neutral in H.
-  --cbn in Hxy; exfalso.
-    remember (GQcompare xp yp) as b eqn:Hb; symmetry in Hb.
-    destruct b; [ easy | easy | GQcompare_iff ].
-    remember GQadd as f; remember GQsub as g.
-    injection Hxy as H; subst f g.
-    apply (GQadd_cancel_r _ _ yp) in H.
-    rewrite GQsub_add in H; [ | easy ].
-    rewrite <- GQadd_assoc, GQadd_comm in H.
-    symmetry in H.
-    now apply GQadd_no_neutral in H.
-  --cbn in Hxy; f_equal.
-    remember (GQcompare xp yp) as b1 eqn:Hb1; symmetry in Hb1.
-    remember (GQcompare xp zp) as b2 eqn:Hb2; symmetry in Hb2.
-    destruct b1; GQcompare_iff.
-   ++destruct b2; [ now GQcompare_iff; subst xp | easy | easy ].
-   ++destruct b2; [ easy | GQcompare_iff | easy ].
-     remember GQsub as f; injection Hxy as H; subst f.
-     apply (GQadd_cancel_r _ _ xp) in H.
-     now do 2 rewrite GQsub_add in H.
-   ++destruct b2; [ easy | easy | GQcompare_iff ].
-     remember GQsub as f; injection Hxy as H; subst f.
-     apply (GQadd_cancel_r _ _ yp) in H.
-     rewrite GQsub_add in H; [ | easy ].
-     apply (GQadd_cancel_r _ _ zp) in H.
-     rewrite GQadd_add_swap in H.
-     rewrite GQsub_add in H; [ | easy ].
-     now apply GQadd_cancel_l in H.
- +idtac.
-...
+split; intros Hxy; [ | now subst y ].
+destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
+-rewrite NQadd_0_r in Hxy; cbn in Hxy.
+ injection Hxy as H; symmetry in H; rewrite GQadd_comm in H.
+ now apply GQadd_no_neutral in H.
+-rewrite NQadd_0_r in Hxy; cbn in Hxy.
+ remember (GQcompare xp zp) as b eqn:Hb; symmetry in Hb.
+ destruct b; [ easy | easy | GQcompare_iff ].
+ injection Hxy as H; symmetry in H.
+ now apply GQsub_no_neutral in H.
+-rewrite NQadd_0_r in Hxy; cbn in Hxy.
+ injection Hxy as H; rewrite GQadd_comm in H.
+ now apply GQadd_no_neutral in H.
+-cbn in Hxy.
+ remember GQadd as f; injection Hxy as H; subst f.
+ now apply GQadd_cancel_l in H; subst.
+-cbn in Hxy.
+ remember (GQcompare xp zp) as b eqn:Hb; symmetry in Hb.
+ destruct b; [ easy | easy | GQcompare_iff ].
+ remember GQadd as f; injection Hxy as H; subst f.
+ apply (GQadd_cancel_r _ _ zp) in H.
+ rewrite GQsub_add in H; [ | easy ].
+ rewrite <- GQadd_assoc, GQadd_comm in H.
+ now apply GQadd_no_neutral in H.
+-rewrite NQadd_0_r in Hxy; cbn in Hxy.
+ remember (GQcompare xp yp) as b eqn:Hb; symmetry in Hb.
+ destruct b; [ easy | easy | GQcompare_iff ].
+ injection Hxy as H.
+ now apply GQsub_no_neutral in H.
+-cbn in Hxy.
+ remember (GQcompare xp yp) as b eqn:Hb; symmetry in Hb.
+ destruct b; [ easy | easy | GQcompare_iff ].
+ remember GQadd as f; injection Hxy as H; subst f.
+ apply (GQadd_cancel_r _ _ yp) in H.
+ rewrite GQsub_add in H; [ | easy ].
+ rewrite <- GQadd_assoc, GQadd_comm in H.
+ symmetry in H.
+ now apply GQadd_no_neutral in H.
+-cbn in Hxy; f_equal.
+ remember (GQcompare xp yp) as b1 eqn:Hb1; symmetry in Hb1.
+ remember (GQcompare xp zp) as b2 eqn:Hb2; symmetry in Hb2.
+ destruct b1; GQcompare_iff.
+ +destruct b2; [ now GQcompare_iff; subst | easy | easy ].
+ +destruct b2; [ easy | GQcompare_iff | easy ].
+  remember GQsub as f; injection Hxy as H; subst f.
+  apply (GQadd_cancel_r _ _ xp) in H.
+  now do 2 rewrite GQsub_add in H.
+ +destruct b2; [ easy | easy | GQcompare_iff ].
+  remember GQsub as f; injection Hxy as H; subst f.
+  apply (GQadd_cancel_r _ _ yp) in H.
+  rewrite GQsub_add in H; [ | easy ].
+  apply (GQadd_cancel_r _ _ zp) in H.
+  rewrite GQadd_add_swap in H.
+  rewrite GQsub_add in H; [ | easy ].
+  now apply GQadd_cancel_l in H.
+-rewrite NQadd_0_r in Hxy; cbn in Hxy.
+ remember (GQcompare xp zp) as b eqn:Hb; symmetry in Hb.
+ destruct b; [ easy | easy | GQcompare_iff ].
+ injection Hxy as H; symmetry in H.
+ now apply GQsub_no_neutral in H.
+-rewrite NQadd_0_r in Hxy; cbn in Hxy.
+ injection Hxy as H; symmetry in H.
+ rewrite GQadd_comm in H.
+ now apply GQadd_no_neutral in H.
+-rewrite NQadd_0_r in Hxy; cbn in Hxy.
+ remember (GQcompare xp yp) as b eqn:Hb; symmetry in Hb.
+ destruct b; [ easy | easy | GQcompare_iff ].
+ injection Hxy as H.
+ now apply GQsub_no_neutral in H.
+-(* same as above ⇒ lemma to do? *)
+ cbn in Hxy; f_equal.
+ remember (GQcompare xp yp) as b1 eqn:Hb1; symmetry in Hb1.
+ remember (GQcompare xp zp) as b2 eqn:Hb2; symmetry in Hb2.
+ destruct b1; GQcompare_iff.
+ +destruct b2; [ now GQcompare_iff; subst | easy | easy ].
+ +destruct b2; [ easy | GQcompare_iff | easy ].
+  remember GQsub as f; injection Hxy as H; subst f.
+  apply (GQadd_cancel_r _ _ xp) in H.
+  now do 2 rewrite GQsub_add in H.
+ +destruct b2; [ easy | easy | GQcompare_iff ].
+  remember GQsub as f; injection Hxy as H; subst f.
+  apply (GQadd_cancel_r _ _ yp) in H.
+  rewrite GQsub_add in H; [ | easy ].
+  apply (GQadd_cancel_r _ _ zp) in H.
+  rewrite GQadd_add_swap in H.
+  rewrite GQsub_add in H; [ | easy ].
+  now apply GQadd_cancel_l in H.
+-cbn in Hxy.
+ remember (GQcompare xp yp) as b eqn:Hb; symmetry in Hb.
+ destruct b; [ easy | easy | GQcompare_iff ].
+ remember GQadd as f; injection Hxy as H; subst f.
+ apply (GQadd_cancel_r _ _ yp) in H.
+ rewrite GQsub_add in H; [ | easy ].
+ rewrite <- GQadd_assoc, GQadd_comm in H.
+ symmetry in H.
+ now apply GQadd_no_neutral in H.
+-(* déjà vu *)
+ rewrite NQadd_0_r in Hxy; cbn in Hxy.
+ injection Hxy as H; rewrite GQadd_comm in H.
+ now apply GQadd_no_neutral in H.
+-cbn in Hxy.
+ remember (GQcompare xp zp) as b eqn:Hb; symmetry in Hb.
+ destruct b; [ easy | easy | GQcompare_iff ].
+ remember GQadd as f; injection Hxy as H; subst f.
+ apply (GQadd_cancel_r _ _ zp) in H.
+ rewrite GQsub_add in H; [ | easy ].
+ rewrite <- GQadd_assoc, GQadd_comm in H.
+ now apply GQadd_no_neutral in H.
+-cbn in Hxy; f_equal.
+ remember GQadd as f; injection Hxy as H; subst f.
+ now apply GQadd_cancel_l in H.
+Qed.
 
-Theorem NQadd_cancel_r: ∀ n m p : nat, n + p = m + p ↔ n = m.
+Theorem NQadd_cancel_r: ∀ x y z, (x + z = y + z)%NQ ↔ (x = y)%NQ.
+Proof.
+intros.
+setoid_rewrite NQadd_comm.
+apply NQadd_cancel_l.
+Qed.
+
+Theorem NQopp_add_distr : ∀ x y, (- (x + y))%NQ = (- x - y)%NQ.
+Proof.
+intros.
 ...
 
 Theorem NQsub_add_distr : ∀ x y z, (x - (y + z))%NQ = (x - y - z)%NQ.
 Proof.
 intros.
-Search (_ + _ = _ + _)%NQ.
-Search (_ + _ = _ + _)%nat.
+rewrite <- NQadd_assoc.
+apply NQadd_cancel_l.
+Search (- (_ + _))%NQ.
+Search (- _)%NQ.
+Require Import ZArith.
+Search (- (_ + _))%Z.
 ...
 
 Theorem NQmul_pair : ∀ x y z t,
