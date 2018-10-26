@@ -1434,6 +1434,36 @@ destruct Hbez as [(Hneg, Hbez)| (Hneg, Hbez)]; rewrite Hbez.
  now rewrite Nat.add_comm, Nat.add_sub.
 Qed.
 
+Theorem glop : ∀ x y, x = PQred x → (x == y)%PQ → ∃ a, y = (a // a * x)%PQ.
+Proof.
+intros * Hx Hxy.
+...
+unfold "=="%PQ, nd in Hxy.
+specialize (PQred_gcd x) as Hg.
+rewrite <- Hx in Hg.
+destruct x as (xn, xd), y as (yn, yd).
+cbn in Hxy, Hg.
+assert (Hd : Nat.divide (xn + 1) ((xd + 1) * (yn + 1))). {
+  rewrite Nat.mul_comm, <- Hxy.
+  exists (yd + 1).
+  apply Nat.mul_comm.
+}
+specialize (Nat.gauss _ _ _ Hd Hg) as H1.
+destruct H1 as (c, Hc).
+exists c.
+unfold PQ_of_nat.
+unfold "*"%PQ; cbn.
+rewrite Nat.add_0_r, Nat.add_sub.
+rewrite Nat.sub_add; cycle 1. {
+  destruct c; [ now rewrite Nat.add_1_r in Hc | flia ].
+}
+rewrite <- Hc.
+rewrite Nat.add_sub; f_equal.
+symmetry in Hxy.
+rewrite Hc, Nat.mul_shuffle0, Nat.mul_comm in Hxy.
+apply Nat.mul_cancel_l in Hxy; [ | flia ].
+...
+
 Theorem glop : ∀ x y, x = PQred x → y = PQred y → (x == y)%PQ ↔ x = y.
 Proof.
 intros * Hx Hy.
