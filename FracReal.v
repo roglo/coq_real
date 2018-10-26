@@ -2903,14 +2903,10 @@ apply NQle_lt_trans with
 -rewrite NQpair_sub_l; [ | easy ].
  rewrite NQadd_add_swap, NQadd_assoc.
  replace 2 with (1 + 1) at 1 by easy.
- rewrite NQpair_add_l.
-Search (_ - (_ + _))%NQ.
-Check Nat.sub_add_distr.
-Require Import ZArith.
-Check Z.sub_add_distr.
+ rewrite NQpair_add_l, NQsub_add_distr.
+ apply NQadd_lt_mono_r.
 ...
  rewrite NQsub_add_distr.
-
 ...
  now subst; apply nA_le_aft_999.
 -rewrite Nat.mul_sub_distr_r.
