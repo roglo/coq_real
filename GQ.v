@@ -1533,11 +1533,12 @@ destruct (le_dec ((xn + 1) * ux) ((xd + 1) * vx)) as [H1| H1].
  destruct (le_dec ((xn + 1) * uy) ((xd + 1) * vy)) as [H2| H2].
  +rewrite Nat.max_r, Nat.min_l in Huv1; [ | easy | easy ].
   apply Nat.add_sub_eq_nz in Huv1; [ | easy ].
-...
   destruct (le_dec ((yn + 1) * uy) ((yd + 1) * vy)) as [H3| H3].
   *rewrite Nat.max_r, Nat.min_l in Huvy; [ | easy | easy ].
+   apply Nat.add_sub_eq_nz in Huvy; [ | easy ].
    destruct (le_dec ((yn + 1) * ux) ((yd + 1) * vx)) as [H4| H4].
   --rewrite Nat.max_r, Nat.min_l in Huv2; [ | easy | easy ].
+    apply Nat.add_sub_eq_nz in Huv2; [ | easy ].
 ...
 
 Theorem GQadd_cancel_l : ∀ x y z, (x + y)%GQ = (x + z)%GQ ↔ y = z.
