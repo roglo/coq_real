@@ -1529,16 +1529,31 @@ destruct H as (Huv1, Huv2).
 move Huv1 before Huvx.
 destruct (le_dec ((xn + 1) * ux) ((xd + 1) * vx)) as [H1| H1].
 -rewrite Nat.max_r, Nat.min_l in Huvx; [ | easy | easy ].
+(*
  apply Nat.add_sub_eq_nz in Huvx; [ | easy ].
+*)
  destruct (le_dec ((xn + 1) * uy) ((xd + 1) * vy)) as [H2| H2].
  +rewrite Nat.max_r, Nat.min_l in Huv1; [ | easy | easy ].
+(*
   apply Nat.add_sub_eq_nz in Huv1; [ | easy ].
+*)
   destruct (le_dec ((yn + 1) * uy) ((yd + 1) * vy)) as [H3| H3].
   *rewrite Nat.max_r, Nat.min_l in Huvy; [ | easy | easy ].
+(*
    apply Nat.add_sub_eq_nz in Huvy; [ | easy ].
+*)
    destruct (le_dec ((yn + 1) * ux) ((yd + 1) * vx)) as [H4| H4].
   --rewrite Nat.max_r, Nat.min_l in Huv2; [ | easy | easy ].
+(*
     apply Nat.add_sub_eq_nz in Huv2; [ | easy ].
+*)
+Search (_ - _ = _ ↔ _).
+...
+rewrite <- Huv1 in Huvx at 3.
+apply Nat.add_sub_eq_nz in Huvx.
+...
+Nat.add_sub_eq_r: ∀ n m p : nat, m + p = n → n - p = m
+Nat.add_sub_eq_l: ∀ n m p : nat, m + p = n → n - m = p
 ...
 
 Theorem GQadd_cancel_l : ∀ x y z, (x + y)%GQ = (x + z)%GQ ↔ y = z.
