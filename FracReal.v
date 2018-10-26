@@ -2906,8 +2906,6 @@ apply NQle_lt_trans with
  rewrite NQpair_add_l, NQsub_add_distr.
  apply NQadd_lt_mono_r.
 ...
- rewrite NQsub_add_distr.
-...
  now subst; apply nA_le_aft_999.
 -rewrite Nat.mul_sub_distr_r.
  rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
