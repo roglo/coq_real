@@ -1003,18 +1003,18 @@ Qed.
 Theorem NQopp_add_distr : ∀ x y, (- (x + y))%NQ = (- x - y)%NQ.
 Proof.
 intros.
-...
+destruct x as [| xp| xp], y as [| yp| yp]; try easy.
+-now cbn; destruct (GQcompare xp yp).
+-now cbn; destruct (GQcompare xp yp).
+Qed.
 
 Theorem NQsub_add_distr : ∀ x y z, (x - (y + z))%NQ = (x - y - z)%NQ.
 Proof.
 intros.
 rewrite <- NQadd_assoc.
 apply NQadd_cancel_l.
-Search (- (_ + _))%NQ.
-Search (- _)%NQ.
-Require Import ZArith.
-Search (- (_ + _))%Z.
-...
+apply NQopp_add_distr.
+Qed.
 
 Theorem NQmul_pair : ∀ x y z t,
   y ≠ 0 → t ≠ 0 → ((x // y) * (z // t) = (x * z) // (y * t))%NQ.
