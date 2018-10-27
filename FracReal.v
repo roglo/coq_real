@@ -2901,6 +2901,14 @@ apply NQle_lt_trans with
 -apply NQadd_le_mono_r.
  now rewrite Ht; apply A_le_aft_999.
 -idtac.
+ specialize (A_upper_bound_for_add u (t - 1) n) as H1.
+ assert (H : ∀ j, u (t - 1 + j + 1) ≤ 2 * (rad - 1)). {
+   intros j.
+   replace (t - 1 + j + 1) with (i + (k + j + 1) + 1) by flia Ht.
+   apply Hur.
+ }
+ specialize (H1 H); clear H.
+ replace (n - (t - 1) - 1) with (s - S k) in H1 by flia Hs Ht.
 ...
 -rewrite NQpair_sub_l; [ | easy ].
  rewrite NQadd_add_swap, NQadd_assoc.
