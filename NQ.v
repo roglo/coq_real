@@ -1154,6 +1154,12 @@ destruct y as [| yp| yp]; [ now destruct z | | ].
  now apply GQmul_le_mono_l.
 Qed.
 
+Theorem NQmul_le_mono_nonneg_r : ∀ x y z, (0 ≤ x → y ≤ z → y * x ≤ z * x)%NQ.
+Proof.
+setoid_rewrite NQmul_comm.
+apply NQmul_le_mono_nonneg_l.
+Qed.
+
 Theorem NQmul_lt_mono_pos_l : ∀ x y z,
   (0 < x)%NQ → (y < z)%NQ ↔ (x * y < x * z)%NQ.
 Proof.

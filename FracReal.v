@@ -2900,8 +2900,7 @@ apply NQle_lt_trans with
   (y := (1 + (rad - 2) // rad ^ S k + A (t - 1) n u * 1 // rad ^ (S k))%NQ).
 -apply NQadd_le_mono_r.
  now rewrite Ht; apply A_le_aft_999.
--idtac.
- specialize (A_upper_bound_for_add u (t - 1) n) as H1.
+-specialize (A_upper_bound_for_add u (t - 1) n) as H1.
  assert (H : ∀ j, u (t - 1 + j + 1) ≤ 2 * (rad - 1)). {
    intros j.
    replace (t - 1 + j + 1) with (i + (k + j + 1) + 1) by flia Ht.
@@ -2909,6 +2908,25 @@ apply NQle_lt_trans with
  }
  specialize (H1 H); clear H.
  replace (n - (t - 1) - 1) with (s - S k) in H1 by flia Hs Ht.
+ apply NQle_lt_trans with
+   (y :=
+      ((1 + (rad - 2) // rad ^ S k +
+       2 * (1 - 1 // rad ^ (s - S k)) * 1 // rad ^ S k))%NQ).
+ +apply NQadd_le_mono_l.
+  apply NQmul_le_mono_nonneg_r; [ | easy ].
+  replace 0%NQ with (0 // 1)%NQ by easy.
+  apply NQle_pair; [ easy | pauto | cbn; flia ].
+ +rewrite <- NQmul_assoc, NQmul_sub_distr_r, NQmul_1_l.
+  rewrite NQmul_pair; [ | pauto | pauto ].
+  rewrite Nat.mul_1_l, <- Nat.pow_add_r.
+  rewrite Nat.sub_add; [ | flia Hs H6 Ht ].
+  rewrite NQmul_sub_distr_l.
+  rewrite NQmul_pair; [ rewrite Nat.mul_1_l, Nat.mul_1_r | easy | pauto ].
+  rewrite NQmul_pair; [ rewrite Nat.mul_1_l, Nat.mul_1_r | easy | pauto ].
+  rewrite NQpair_sub_l; [ | easy ].
+  do 2 rewrite NQadd_assoc.
+  rewrite NQsub_add.
+
 ...
 -rewrite NQpair_sub_l; [ | easy ].
  rewrite NQadd_add_swap, NQadd_assoc.
