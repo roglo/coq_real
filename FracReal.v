@@ -2897,25 +2897,11 @@ rewrite <- Ht in Hn, H6.
 replace (i + k + 1) with (t - 1) in H5 by flia Ht.
 replace (t - i - 1) with (S k) by flia Ht.
 apply NQle_lt_trans with
-  (y :=
-     ((1 + (rad - 2) // rad ^ S k) * rad ^ (n - t) // 1 +
-      A (t - 1) n u * 1 // rad ^ S k)%NQ).
--apply NQadd_le_mono_r.
-...
-apply NQle_lt_trans with
-  (y :=
-     (((rad ^ S k + (rad - 2)) * rad ^ (n - t)) // rad ^ S k +
-      A (t - 1) n u * 1 // rad ^ S k)%NQ).
-(*
-apply Nat.le_lt_trans with
-  (m := (rad ^ S k + (rad - 2)) * rad ^ (n - t) + nA (t - 1) n u).
--apply Nat.add_le_mono_r.
-*)
-...
-apply NQle_lt_trans with
   (y := (1 + (rad - 2) // rad ^ S k + A (t - 1) n u * 1 // rad ^ (S k))%NQ).
 -apply NQadd_le_mono_r.
  now rewrite Ht; apply A_le_aft_999.
+-idtac.
+...
 -rewrite NQpair_sub_l; [ | easy ].
  rewrite NQadd_add_swap, NQadd_assoc.
  replace 2 with (1 + 1) at 1 by easy.
