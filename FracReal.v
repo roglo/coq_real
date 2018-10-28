@@ -3149,6 +3149,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
       rewrite Hn.
       destruct rad; [ easy | simpl; flia ].
     }
+...
     replace (n - (i + j) - 1) with (n - i - 1 - j) by flia.
     replace (n - i - 1 - j - S (k + 1)) with (n - i - 1 - S (j + k + 1))
       by flia.
