@@ -2938,64 +2938,16 @@ apply NQle_lt_trans with
    rewrite <- NQpair_add_l.
    apply NQle_pair; [ pauto | easy | ].
    do 2 rewrite Nat.mul_1_r.
-...
--rewrite NQpair_sub_l; [ | easy ].
- rewrite NQadd_add_swap, NQadd_assoc.
- replace 2 with (1 + 1) at 1 by easy.
- rewrite NQpair_add_l, NQsub_add_distr.
- apply NQadd_lt_mono_r.
-...
- now subst; apply nA_le_aft_999.
--rewrite Nat.mul_sub_distr_r.
- rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
- rewrite <- Nat.add_sub_swap.
- +rewrite <- Nat.add_assoc.
-  rewrite <- Nat.add_sub_assoc.
-  *apply Nat.add_lt_mono_l.
-   apply -> Nat.lt_add_lt_sub_l.
-   rewrite Nat.add_assoc.
-   replace (rad ^ (n - t)) with (1 * rad ^ (n - t)) at 1 by flia.
-   rewrite <- Nat.mul_add_distr_r.
-   replace (1 + (rad - 2)) with (rad - 1) by flia Hr.
-   apply Nat.lt_add_lt_sub_l.
-   eapply Nat.le_lt_trans.
-  --apply nA_upper_bound_for_add.
-    intros j.
-    replace (t - 1 + j + 1) with (i + (k + j + 1) + 1) by flia Ht.
-    apply Hur.
-  --replace (n - (t - 1) - 1) with (n - t) by flia Ht.
-    apply -> Nat.lt_add_lt_sub_l.
-    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-    rewrite Nat.add_sub_assoc.
-   ++rewrite <- Nat.mul_add_distr_r.
-     replace (rad - 1 + 2) with (rad + 1) by flia Hr.
-     replace s with (k + 1 + (n - t)) by flia Hs H6 Ht.
-     rewrite Nat.pow_add_r.
-     apply Nat.lt_le_trans with (m := (rad + 1) * rad ^ (n - t)).
-    **apply Nat.sub_lt; [ | flia ].
-      specialize (Nat.pow_nonzero rad (n - t) radix_ne_0) as H10.
-      destruct (rad ^ (n - t)); [ easy | ].
-      destruct rad as [| rr]; [ easy | ].
-      destruct rr; [ flia Hr | ].
-      simpl; flia.
-    **apply Nat.mul_le_mono_r.
-      destruct k.
-    ---rewrite Nat.add_0_r in Ht.
-       rewrite Ht in H5.
-       replace (i + 2 - 1) with (i + 1) in H5 by flia.
-       flia Hr Hk H5.
-    ---do 2 rewrite Nat.add_1_r; simpl.
-       specialize (Nat.pow_nonzero rad k radix_ne_0) as H10.
-       destruct (rad ^ k); [ easy | ].
-       destruct rad as [| rr]; [ easy | ].
-       rewrite Nat.mul_comm, <- Nat.mul_assoc.
-       destruct rr; [ flia Hr | simpl; flia ].
-   ++specialize (Nat.pow_nonzero rad (n - t) radix_ne_0) as H10.
-     destruct (rad ^ (n - t)); [ easy | flia ].
-  *apply Nat.pow_le_mono_r; [ easy | flia Hs Ht ].
- +replace (rad ^ (n - t)) with (1 * rad ^ (n - t)) at 1 by flia.
-  apply Nat.mul_le_mono_r.
-  apply Nat.neq_0_lt_0; pauto.
+   rewrite Nat.add_1_r.
+   clear - Hr Hk.
+   destruct k; [ easy | clear Hk ].
+   induction k.
+  --destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | cbn; flia ].
+  --eapply le_trans; [ apply IHk | ].
+    remember (S (S k)) as x; cbn; subst x.
+    replace (rad ^ S (S k)) with (1 * rad ^ S (S k)) at 1 by flia.
+    apply Nat.mul_le_mono_r; flia Hr.
 Qed.
 (*
 Theorem A_ge_1_add_9_eq {r : radix} : ∀ u i,
@@ -3173,7 +3125,6 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
   assert (H5 : u (i + j + 1) < rad). {
     destruct j; [ rewrite Nat.add_0_r, H1; flia Hr | ].
     remember (S j) as k; assert (Hj : k ≠ 0) by flia Heqk.
-...
     now apply A_ge_1_add_9_eq.
   }
   assert (H : u (i + j + 1) = rad - 2) by flia H2 H4 H5.
@@ -3187,6 +3138,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     apply Hur.
   }
   specialize (A_ge_1_add_8_eq u (i + j) Hur2 H4 k) as H2.
+...
   assert (H5 : A_ge_1 u (i + j) (k + 1) = true). {
     clear - Hr Hur Hu H1 H3 H4.
     specialize (Hu (j + k + 1)) as H5.
