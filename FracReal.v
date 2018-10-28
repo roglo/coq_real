@@ -3056,7 +3056,6 @@ Qed.
 
 (* ... *)
 
-(*
 Theorem add_pow_rad_mod : ∀ r a b c a₁ b₁,
   r ≠ 0
   → a < r ^ a₁
@@ -3078,7 +3077,6 @@ rewrite Nat.mod_small in H1; [ | easy ].
 rewrite Nat.add_comm, Nat.mul_comm in H1.
 now apply Nat.add_le_mono_l in H1.
 Qed.
-*)
 
 (**)
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
@@ -3138,8 +3136,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     apply Hur.
   }
   specialize (A_ge_1_add_8_eq u (i + j) Hur2 H4 k) as H2.
-...
-  assert (H5 : A_ge_1 u (i + j) (k + 1) = true). {
+  assert (H5 : fA_ge_1_ε u (i + j) (k + 1) = true). {
     clear - Hr Hur Hu H1 H3 H4.
     specialize (Hu (j + k + 1)) as H5.
     apply A_ge_1_true_iff in H5.
@@ -3158,7 +3155,9 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     remember (n - i - 1) as s eqn:Hs.
     remember (j + k + 1) as t eqn:Ht.
     move s before n; move t before s.
-    specialize (add_pow_rad_mod rad (rad ^ j - 1) (nA (i + j) n u)) as H7.
+...
+    specialize (add_pow_rad_mod rad (rad ^ j - 1)) as H7.
+    specialize (H7 (NQnum (A (i + j) n u))).
     specialize (H7 ((rad ^ S (k + 1) - 1) * rad ^ (s - S t))).
     specialize (H7 j (s - j) radix_ne_0).
     assert (H : rad ^ j - 1 < rad ^ j). {
@@ -3166,7 +3165,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
       apply Nat.neq_0_lt_0; pauto.
     }
     specialize (H7 H); clear H.
-    assert (H8 : nA (i + j) n u < rad ^ (s - j)). {
+    assert (H8 : NQnum (A (i + j) n u) < rad ^ (s - j)). {
       rewrite Hs.
       replace (n - i - 1 - j) with (n - (i + j) - 1) by flia.
       (* 8/18/18/18 < 1/0/0/0/0 *)
@@ -3174,7 +3173,8 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
       destruct p; [ flia Hin Hp | ].
       replace (rad ^ S p) with
         ((rad - 2) * rad ^ p + (rad ^ S p - (rad - 2) * rad ^ p)).
-      -rewrite nA_split_first; [ | flia Hin ].
+      -rewrite A_split_first; [ | flia Hin ].
+...
        apply Nat.add_le_lt_mono.
        +replace (n - (i + j) - 2) with p by flia Hp.
         apply Nat.mul_le_mono_r.
