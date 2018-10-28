@@ -2926,7 +2926,18 @@ apply NQle_lt_trans with
   rewrite NQpair_sub_l; [ | easy ].
   do 2 rewrite NQadd_assoc.
   rewrite NQsub_add.
-
+  apply NQlt_le_trans with (y := (1 + rad // rad ^ S k)%NQ).
+  *apply NQsub_lt.
+   replace 0%NQ with (0 // 1)%NQ by easy.
+   apply NQlt_pair; [ easy | pauto | cbn; flia ].
+  *apply (NQadd_le_mono_r _ _ (1 // rad ^ S k)%NQ).
+   rewrite NQsub_add.
+   replace 2%NQ with (1 + 1)%NQ by easy.
+   rewrite <- NQadd_assoc.
+   apply NQadd_le_mono_l.
+   rewrite <- NQpair_add_l.
+   apply NQle_pair; [ pauto | easy | ].
+   do 2 rewrite Nat.mul_1_r.
 ...
 -rewrite NQpair_sub_l; [ | easy ].
  rewrite NQadd_add_swap, NQadd_assoc.
