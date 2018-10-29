@@ -3110,18 +3110,49 @@ assert (H : rad ^ j - 1 < rad ^ j). {
   apply Nat.neq_0_lt_0; pauto.
 }
 specialize (H7 H); clear H.
-assert (H8 : (A (i + j) n u < 1 // rad ^ j)%NQ). {
-(*
+assert (H8 : NQnum (A (i + j) n u) < rad ^ (s - j)). {
   rewrite Hs.
   replace (n - i - 1 - j) with (n - (i + j) - 1) by flia.
-*)
   (* 8/18/18/18 < 1/0/0/0/0 *)
   remember (n - (i + j) - 1) as p eqn:Hp.
   destruct p; [ flia Hin Hp | ].
-(*
   replace (rad ^ S p) with
       ((rad - 2) * rad ^ p + (rad ^ S p - (rad - 2) * rad ^ p)).
-  -*)
+...
+  -rewrite A_split_first; [ | flia Hin ].
+   apply Nat.add_le_lt_mono.
+   +replace (n - (i + j) - 2) with p by flia Hp.
+    apply Nat.mul_le_mono_r.
+    now rewrite H4.
+   +rewrite Nat.mul_sub_distr_r.
+    replace (rad * rad ^ p) with (rad ^ S p) by easy.
+    rewrite Nat_sub_sub_assoc.
+    *remember (rad ^ S p + 2 * rad ^ p) as x eqn:Hx.
+     rewrite Nat.add_comm in Hx; subst x.
+     rewrite Nat.add_sub.
+     assert (Hur2 : ∀ k, u (S (i + j) + k + 1) ≤ 2 * (rad - 1)). {
+       intros l.
+       replace (S (i + j) + l + 1) with (i + (S j + l) + 1) by flia.
+       apply Hur.
+     }
+     specialize (nA_upper_bound_for_add u (S (i + j)) n Hur2) as H8.
+     replace (n - S (i + j) - 1) with p in H8 by flia Hp.
+     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H8.
+     eapply Nat.le_lt_trans; [ apply H8 | ].
+     apply Nat.sub_lt; [ | flia ].
+     replace 2 with (2 * 1) at 1 by flia.
+     apply Nat.mul_le_mono_l.
+     apply Nat.neq_0_lt_0; pauto.
+    *split; [ | flia ].
+     rewrite Nat.pow_succ_r; [ | flia ].
+     now apply Nat.mul_le_mono_r.
+  -rewrite Nat.add_sub_assoc.
+   +now rewrite Nat.add_comm, Nat.add_sub.
+   +rewrite Nat.pow_succ_r; [ | flia ].
+    apply Nat.mul_le_mono_r; flia.
+}
+...
+  -
   rewrite A_split_first; [ | flia Hin ].
   rewrite <- Nat.add_1_r, H4.
   replace (1 // rad ^ j)%NQ with
@@ -3129,6 +3160,7 @@ assert (H8 : (A (i + j) n u < 1 // rad ^ j)%NQ). {
     now rewrite NQadd_comm, NQsub_add.
   }
   apply NQadd_le_lt_mono; [ apply NQle_refl | ].
+*)
 ...
 }
 ...
