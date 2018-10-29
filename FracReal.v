@@ -3138,9 +3138,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
   }
   specialize (A_ge_1_add_8_eq u (i + j) Hur2 H4 k) as H2.
   assert (H5 : fA_ge_1_ε u (i + j) (k + 1) = true). {
-    clear - Hur Hu H1 H3 H4.
-    destruct (zerop j) as [| Hj]; [ subst; rewrite Nat.add_0_r; apply Hu | ].
-    clear H1; apply Nat.neq_0_lt_0 in Hj; move Hj after H3.
+    clear - Hur Hu H3 H4.
 ...
     specialize radix_ge_2 as Hr.
     specialize (Hu (j + k + 1)) as H5.
