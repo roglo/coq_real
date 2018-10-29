@@ -3119,15 +3119,16 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
   clear Hjj.
   right; right; exists j.
   split; [ easy | ].
-  specialize (A_ge_1_add_ge u i j Hur Hu H1 H2 H3) as H4.
-  assert (H5 : u (i + j + 1) < rad). {
-    destruct j; [ rewrite Nat.add_0_r, H1; flia Hr | ].
-    remember (S j) as k; assert (Hj : k ≠ 0) by flia Heqk.
-    now apply A_ge_1_add_9_eq.
+  assert (H4 : u (i + j + 1) = rad - 2). {
+    specialize (A_ge_1_add_ge u i j Hur Hu H1 H2 H3) as H4.
+    assert (H5 : u (i + j + 1) < rad). {
+      destruct j; [ rewrite Nat.add_0_r, H1; flia Hr | ].
+      remember (S j) as k; assert (Hj : k ≠ 0) by flia Heqk.
+      now apply A_ge_1_add_9_eq.
+    }
+    flia H2 H4 H5.
   }
-  assert (H : u (i + j + 1) = rad - 2) by flia H2 H4 H5.
-  clear H2 H4 H5; rename H into H4.
-  move j before i.
+  clear H2; move j before i.
   split; [ easy | ].
   intros k; move k before j.
   assert (Hur2 : ∀ k : nat, u (i + j + k + 2) ≤ 2 * (rad - 1)). {
