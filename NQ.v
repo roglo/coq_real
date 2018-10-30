@@ -1573,6 +1573,13 @@ cbn; rewrite Nat.mul_comm.
 apply Nat.mul_le_mono_l, Nat.mod_le, GQden_neq_0.
 Qed.
 
+Theorem NQfrac_add_1_l : ∀ x, NQfrac (1%NQ + x) = NQfrac x.
+Proof.
+intros.
+unfold NQfrac.
+apply NQeq_pair; [ apply NQden_neq_0 | apply NQden_neq_0 | ].
+...
+
 Require Import Summation.
 
 Definition NQ_ord_ring_def :=

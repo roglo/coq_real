@@ -3109,6 +3109,20 @@ rewrite Nat.add_sub in H5.
 replace (i + j + 1 - i - 1) with j in H5 by flia.
 replace (S t) with (j + (k + 2)) in H5 by flia Ht.
 rewrite Nat.pow_add_r in H5.
+assert (H : (A i (i + j + 1) u = 1 - 1 // rad ^ j)%NQ). {
+  replace j with ((i + j + 1) - i - 1) at 2 by flia.
+  apply A_all_9.
+  intros m Hm.
+  apply H3; flia Hm.
+}
+rewrite H in H5.
+rewrite NQadd_add_swap in H5.
+rewrite <- NQadd_assoc in H5.
+replace (1 // rad ^ j)%NQ with (1 * 1 // rad ^ j)%NQ in H5 at 2; cycle 1. {
+  apply NQmul_1_l.
+}
+rewrite <- NQmul_sub_distr_r in H5.
+Search (NQfrac (1 + _)%NQ).
 ...
 rewrite A_split_first; [ | flia Hin ].
 rewrite <- Nat.add_1_r, H4.
