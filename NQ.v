@@ -1573,7 +1573,7 @@ cbn; rewrite Nat.mul_comm.
 apply Nat.mul_le_mono_l, Nat.mod_le, GQden_neq_0.
 Qed.
 
-Theorem NQfrac_add_1_l : ∀ x, NQfrac (1%NQ + x) = NQfrac x.
+Theorem NQfrac_add_1_l : ∀ a x, NQfrac (a // 1 + x)%NQ = NQfrac x.
 Proof.
 intros.
 unfold NQfrac.
