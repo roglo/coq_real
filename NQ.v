@@ -1,11 +1,14 @@
 (* Positive rationals where num and den are always common primes *)
 (* allowing us to use Leibnitz' equality. *)
 
-Require Import Utf8 Arith Psatz.
+Require Import Utf8 Arith Psatz Init.Nat.
 Require Import Misc GQ.
 Set Nested Proofs Allowed.
 
+(* "fast" lia, to improve compilation speed *)
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
+(* "pauto" = "auto" failing if not working *)
+Tactic Notation "pauto" := progress auto.
 
 Declare Scope NQ_scope.
 Delimit Scope NQ_scope with NQ.
@@ -1447,6 +1450,24 @@ rewrite NQpair_diag; [ | easy ].
 now rewrite NQmul_1_l.
 Qed.
 
+Theorem NQpair_mul_l : ∀ a b c, ((a * b) // c)%NQ = (a // c * b // 1)%NQ.
+Proof.
+intros.
+destruct (zerop c) as [Hc| Hc].
+-subst c; do 2 rewrite NQden_0.
+ replace 1 with (1 * 1) at 1 by easy.
+ rewrite NQmul_pair; [ easy | easy | flia ].
+-replace c with (c * 1) at 1 by flia.
+ rewrite NQmul_pair; [ easy | flia Hc | flia ].
+Qed.
+
+Theorem NQpair_mul_r : ∀ a b c, ((a * b) // c)%NQ = (a // 1 * b // c)%NQ.
+Proof.
+intros.
+rewrite Nat.mul_comm, NQmul_comm.
+apply NQpair_mul_l.
+Qed.
+
 Definition NQfrac x := ((NQnum x mod NQden x) // NQden x)%NQ.
 Definition NQintg x := NQnum x / NQden x.
 
@@ -1494,6 +1515,8 @@ destruct x; [ easy | | ].
 -unfold NQden, GQden.
  now rewrite Nat.add_1_r.
 Qed.
+
+Hint Resolve NQden_neq_0.
 
 Theorem NQnum_pair_1_r : ∀ a, NQnum (a // 1) = a.
 Proof.
@@ -1568,17 +1591,43 @@ unfold NQfrac.
 destruct x as [| xp| xp]; [ easy | | easy ].
 cbn.
 rewrite NQnum_den; [ | easy ].
-apply NQle_pair; [ apply GQden_neq_0 | apply NQden_neq_0 | ].
+apply NQle_pair; [ apply GQden_neq_0 | pauto | ].
 cbn; rewrite Nat.mul_comm.
 apply Nat.mul_le_mono_l, Nat.mod_le, GQden_neq_0.
 Qed.
 
-Theorem NQfrac_add_1_l : ∀ a x, NQfrac (a // 1 + x)%NQ = NQfrac x.
+Theorem NQfrac_add_1_l : ∀ a x, (0 ≤ x)%NQ →
+  NQfrac (a // 1 + x)%NQ = NQfrac x.
 Proof.
-intros.
+intros * Hx.
 unfold NQfrac.
-apply NQeq_pair; [ apply NQden_neq_0 | apply NQden_neq_0 | ].
+apply NQeq_pair; [ pauto | pauto | ].
+rewrite (NQnum_den x); [ | easy ].
+rewrite NQadd_pair; [ | easy | pauto ].
+do 2 rewrite Nat.mul_1_l.
+rewrite NQnum_pair.
+rewrite Nat.max_r; [ | apply Nat.neq_0_lt_0; pauto ].
+rewrite <- NQnum_den; [ | easy ].
+rewrite NQden_pair.
+rewrite Nat.max_r; cycle 1. {
+  ...
+}
+Search (Nat.gcd (_ + _)).
+
 ...
+
+rewrite NQpair_add_l, NQpair_mul_r.
+rewrite NQpair_diag; [ | pauto ].
+rewrite NQmul_1_r.
+rewrite NQadd_pair; [ | easy | pauto ].
+do 2 rewrite Nat.mul_1_l.
+rewrite NQpair_add_l, NQpair_mul_r.
+rewrite NQpair_diag; [ | pauto ].
+rewrite NQmul_1_r.
+...
+  ============================
+  NQnum ((a // 1)%NQ + x) mod NQden ((a // 1)%NQ + x) * NQden x =
+  NQden ((a // 1)%NQ + x) * (NQnum x mod NQden x)
 
 Require Import Summation.
 

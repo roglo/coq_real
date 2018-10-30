@@ -2160,10 +2160,10 @@ replace a with (NQnum a // NQden a)%NQ in H2; cycle 1. {
   rewrite <- Ha; apply A_ge_0.
 }
 eapply NQle_lt_trans; [ | apply H2 ].
-apply NQle_pair; [ apply NQden_neq_0 | apply NQden_neq_0 | ].
+apply NQle_pair; [ pauto | pauto | ].
 rewrite Nat.mul_comm.
 apply Nat.mul_le_mono_l.
-apply Nat.mod_le, NQden_neq_0.
+apply Nat.mod_le; pauto.
 Qed.
 (*
 Theorem A_ge_1_add_first_ge {r : radix} : ∀ u i,
@@ -2855,7 +2855,7 @@ unfold NQfrac.
 rewrite Nat_mod_less_small; cycle 1. {
   split.
   -rewrite NQnum_den in H7; [ | apply A_ge_0 ].
-   apply NQle_pair in H7; [ | easy | apply NQden_neq_0 ].
+   apply NQle_pair in H7; [ | easy | pauto ].
    now do 2 rewrite Nat.mul_1_l in H7.
   -remember (A i n u) as x in H8.
    rewrite NQnum_den in Heqx; [ subst x | apply A_ge_0 ].
@@ -2865,7 +2865,7 @@ rewrite Nat_mod_less_small; cycle 1. {
    do 2 rewrite Nat.mul_1_l in H8.
    rewrite NQmul_pair in H8; [ | easy | pauto ].
    rewrite Nat.mul_1_l in H8.
-   apply NQle_pair in H8; [ | apply NQden_neq_0 | pauto ].
+   apply NQle_pair in H8; [ | pauto | pauto ].
    apply (Nat.mul_lt_mono_pos_r (rad ^ s)); [ apply Nat.neq_0_lt_0; pauto | ].
    eapply Nat.le_lt_trans; [ apply H8 | ].
    rewrite Nat.mul_comm, Nat.mul_shuffle0.
@@ -2880,11 +2880,11 @@ rewrite Nat_mod_less_small; cycle 1. {
 }
 rewrite NQpair_sub_l; cycle 1. {
   rewrite NQnum_den in H7; [ | apply A_ge_0 ].
-  apply NQle_pair in H7; [ | easy | apply NQden_neq_0 ].
+  apply NQle_pair in H7; [ | easy | pauto ].
   now do 2 rewrite Nat.mul_1_l in H7.
 }
 rewrite <- NQnum_den; [ | apply A_ge_0 ].
-rewrite NQpair_diag; [ | apply NQden_neq_0 ].
+rewrite NQpair_diag; [ | pauto ].
 apply (NQadd_lt_mono_r _ _ 1).
 rewrite NQsub_add, NQadd_comm, NQadd_assoc.
 replace (1 + 1)%NQ with 2%NQ by easy.
