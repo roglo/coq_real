@@ -3102,6 +3102,9 @@ assert (Hin : i + j + k + 2 ≤ n - 1). {
 }
 remember (n - i - 1) as s eqn:Hs.
 remember (j + k + 1) as t eqn:Ht.
+(**)
+rewrite A_split_first; [ | flia Hin ].
+rewrite <- Nat.add_1_r, H4.
 ...
 specialize (add_pow_rad_mod rad (rad ^ j - 1) (NQnum (A (i + j) n u))) as H7.
 specialize (H7 ((rad ^ S (k + 1) - 1) * rad ^ (s - S t))).
