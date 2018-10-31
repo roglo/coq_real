@@ -294,6 +294,29 @@ apply Nat.le_add_le_sub_l in H1.
 now rewrite Nat.sub_diag in H1.
 Qed.
 
+Theorem Nat_sub_lt_mono_l : ∀ n m p : nat, n < m ≤ p → p - m < p - n.
+Proof.
+intros * (Hnm, Hmp).
+revert n m Hnm Hmp.
+induction p; intros; [ now apply Nat.le_0_r in Hmp; subst m | ].
+destruct (eq_nat_dec m (S p)) as [Hm| Hm].
+-subst m; rewrite Nat.sub_diag.
+ now apply Nat.lt_add_lt_sub_l; rewrite Nat.add_0_r.
+-rewrite Nat.sub_succ_l; cycle 1. {
+   apply Nat.nlt_ge; intros H; apply Hm.
+   now apply Nat.le_antisymm.
+ }
+ rewrite Nat.sub_succ_l; cycle 1. {
+   apply (le_trans _ m); [ now apply Nat.lt_le_incl | ].
+   apply Nat.nlt_ge; intros H; apply Hm.
+   now apply Nat.le_antisymm.
+ }
+ apply -> Nat.succ_lt_mono.
+ apply IHp; [ easy | ].
+ apply Nat.nlt_ge; intros H; apply Hm.
+ now apply Nat.le_antisymm.
+Qed.
+
 Definition bool_of_sumbool {A B : Prop} (P : sumbool A B) :=
   match P with
   | left _ _ => true

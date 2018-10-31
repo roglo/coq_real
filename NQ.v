@@ -866,6 +866,9 @@ split; intros H.
 Qed.
 Arguments NQadd_le_r x%NQ y%NQ z%NQ.
 
+Theorem NQopp_lt_mono : ∀ x y, (x < y)%NQ ↔ (- y < - x)%NQ.
+Proof. intros; now destruct x, y. Qed.
+
 Theorem NQopp_le_mono : ∀ x y, (x ≤ y)%NQ ↔ (- y ≤ - x)%NQ.
 Proof. intros; now destruct x, y. Qed.
 
