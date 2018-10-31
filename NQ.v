@@ -1609,25 +1609,26 @@ rewrite NQnum_pair.
 rewrite Nat.max_r; [ | apply Nat.neq_0_lt_0; pauto ].
 rewrite <- NQnum_den; [ | easy ].
 rewrite NQden_pair.
-rewrite Nat.max_r; cycle 1. {
-  ...
+remember (Nat.gcd (a * NQden x + NQnum x) (NQden x)) as c eqn:Hc.
+assert (Hcz : c ≠ 0). {
+  intros H; rewrite Hc in H.
+  apply Nat.gcd_eq_0_r in H.
+  now apply NQden_neq_0 in H.
 }
-Search (Nat.gcd (_ + _)).
-
+rewrite Nat.max_r; cycle 1. {
+  apply Nat.div_le_lower_bound; [ easy | ].
+  rewrite Nat.mul_1_r; subst c.
+  apply Nat_gcd_le_r; pauto.
+}
+apply (Nat.mul_cancel_l _ _ c); [ easy | ].
+do 2 rewrite Nat.mul_assoc.
+rewrite <- Nat.divide_div_mul_exact; [ | easy | ]; cycle 1. {
+  rewrite Hc; apply Nat.gcd_divide_r.
+}
+remember (c * NQden x / c) as d eqn:Hd.
+rewrite Nat.mul_comm, Nat.div_mul in Hd; [ subst d | easy ].
+rewrite Nat.mul_comm; f_equal.
 ...
-
-rewrite NQpair_add_l, NQpair_mul_r.
-rewrite NQpair_diag; [ | pauto ].
-rewrite NQmul_1_r.
-rewrite NQadd_pair; [ | easy | pauto ].
-do 2 rewrite Nat.mul_1_l.
-rewrite NQpair_add_l, NQpair_mul_r.
-rewrite NQpair_diag; [ | pauto ].
-rewrite NQmul_1_r.
-...
-  ============================
-  NQnum ((a // 1)%NQ + x) mod NQden ((a // 1)%NQ + x) * NQden x =
-  NQden ((a // 1)%NQ + x) * (NQnum x mod NQden x)
 
 Require Import Summation.
 
