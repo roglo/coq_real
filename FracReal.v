@@ -3134,6 +3134,16 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
  rewrite NQmul_1_r in HAz.
  rewrite NQmul_opp_l in HAz.
  rewrite NQmul_pair_den_num in HAz; [ | easy ].
+ specialize (A_ge_0 (i + j + 1) n u) as H.
+ rewrite HAz in H.
+ apply NQnlt_ge in H; apply H; clear H.
+Search (- _ ≤ - _)%NQ.
+Search (- _ < - _)%NQ.
+NQopp_lt_mono
+...
+ replace 0%NQ with (0 // 1)%NQ by easy.
+ apply NQlt_pair.
+
 ...
 -exfalso; apply NQnlt_ge in H5; apply H5; clear H5.
  rewrite HA, NQadd_0_l, NQmul_opp_l, NQmul_1_l.
