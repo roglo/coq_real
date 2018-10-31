@@ -1596,7 +1596,7 @@ cbn; rewrite Nat.mul_comm.
 apply Nat.mul_le_mono_l, Nat.mod_le, GQden_neq_0.
 Qed.
 
-Theorem NQfrac_add_1_l : ∀ a x, (0 ≤ x)%NQ →
+Theorem NQfrac_add_nat_l : ∀ a x, (0 ≤ x)%NQ →
   NQfrac (a // 1 + x)%NQ = NQfrac x.
 Proof.
 intros * Hx.
@@ -1634,8 +1634,12 @@ rewrite <- Nat.mul_mod_distr_l; [ | | easy ]; cycle 1. {
   apply Nat.nle_gt in H; apply H; rewrite Hc.
   apply Nat_gcd_le_r; pauto.
 }
-rewrite Hcd; f_equal.
-...
+rewrite Hcd.
+rewrite <- (proj2 (Nat.div_exact _ c Hcz)).
+-rewrite Nat.add_comm, Nat.mod_add; [ easy | pauto ].
+-rewrite Hc.
+ apply Nat.mod_divide; [ now rewrite <- Hc | apply Nat.gcd_divide_l ].
+Qed.
 
 Require Import Summation.
 
