@@ -1621,13 +1621,20 @@ rewrite Nat.max_r; cycle 1. {
   apply Nat_gcd_le_r; pauto.
 }
 apply (Nat.mul_cancel_l _ _ c); [ easy | ].
-do 2 rewrite Nat.mul_assoc.
-rewrite <- Nat.divide_div_mul_exact; [ | easy | ]; cycle 1. {
-  rewrite Hc; apply Nat.gcd_divide_r.
+assert (Hcd : c * (NQden x / c) = NQden x). {
+  rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
+  -now rewrite Nat.mul_comm, Nat.div_mul.
+  -rewrite Hc; apply Nat.gcd_divide_r.
 }
-remember (c * NQden x / c) as d eqn:Hd.
-rewrite Nat.mul_comm, Nat.div_mul in Hd; [ subst d | easy ].
-rewrite Nat.mul_comm; f_equal.
+do 2 rewrite Nat.mul_assoc.
+rewrite Hcd, Nat.mul_comm; f_equal.
+rewrite <- Nat.mul_mod_distr_l; [ | | easy ]; cycle 1. {
+  intros H.
+  apply Nat.div_small_iff in H; [ | easy ].
+  apply Nat.nle_gt in H; apply H; rewrite Hc.
+  apply Nat_gcd_le_r; pauto.
+}
+rewrite Hcd; f_equal.
 ...
 
 Require Import Summation.
