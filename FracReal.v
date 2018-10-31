@@ -3122,7 +3122,47 @@ replace (1 // rad ^ j)%NQ with (1 * 1 // rad ^ j)%NQ in H5 at 2; cycle 1. {
   apply NQmul_1_l.
 }
 rewrite <- NQmul_sub_distr_r in H5.
+destruct (NQeq_dec (A (i + j) n u) 0) as [HA| HA].
+-exfalso.
+ rewrite A_split_first in HA; [ | flia Hin ].
+ rewrite <- Nat.add_1_r, H4 in HA.
+ rewrite NQadd_move_0_l in HA.
+Search (_ * _ = _ * _)%NQ.
+Require Import ZArith.
+Check NQmul_le_mono_pos_r.
+Check Z.mul_le_mono_pos_r.
+Search (_ * _ = _ * _)%Z.
+...
+Check Z.mul_eq_mono_pos_r.
+...
+
+ apply (NQmul_le_mono_pos_r (rad ^ j // 1)%NQ) in HA.
+...
+-exfalso; apply NQnlt_ge in H5; apply H5; clear H5.
+ rewrite HA, NQadd_0_l, NQmul_opp_l, NQmul_1_l.
+...
+
+-exfalso; apply NQnlt_ge in H5; apply H5; clear H5.
+ rewrite HA, NQadd_0_l, NQmul_opp_l, NQmul_1_l.
+...
 rewrite NQfrac_add_nat_l in H5; cycle 1. {
+  apply (NQmul_le_mono_pos_r (rad ^ j // 1)%NQ).
+  -replace 0%NQ with (0 // 1)%NQ by easy.
+   apply NQlt_pair; [ easy | easy | cbn ].
+   rewrite Nat.add_0_r; apply Nat.neq_0_lt_0; pauto.
+  -rewrite NQmul_0_l, <- NQmul_assoc.
+   rewrite NQmul_pair; [ | pauto | easy ].
+   rewrite Nat.mul_1_l, Nat.mul_1_r.
+   rewrite (NQpair_diag (rad ^ j)); [ | pauto ].
+   rewrite NQmul_1_r.
+   apply (NQadd_le_mono_r _ _ 1%NQ).
+   rewrite NQadd_0_l, NQsub_add.
+...
+
+Check NQmul_le_mono.
+apply (NQmul_le_mono_nonneg_r _ _ (rad ^ j // 1)%NQ).
+
+apply NQle_pair.
 ...
 }
 ...

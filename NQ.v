@@ -555,6 +555,29 @@ rewrite <- NQadd_assoc.
 now rewrite NQsub_diag, NQadd_0_r.
 Qed.
 
+Theorem NQadd_move_0_l : ∀ x y, (x + y)%NQ = 0%NQ ↔ y = (- x)%NQ.
+Proof.
+intros.
+split; intros Hxy.
+-destruct x as [| xp| xp], y as [| yp| yp]; try easy.
+ +cbn in Hxy.
+  remember (GQcompare xp yp) as b eqn:Hb; symmetry in Hb.
+  destruct b; [ GQcompare_iff | easy | easy ].
+  now subst yp.
+ +cbn in Hxy.
+  remember (GQcompare xp yp) as b eqn:Hb; symmetry in Hb.
+  destruct b; [ GQcompare_iff | easy | easy ].
+  now subst yp.
+-now rewrite Hxy, NQsub_diag.
+Qed.
+
+Theorem NQadd_move_0_r : ∀ x y, (x + y)%NQ = 0%NQ ↔ x = (- y)%NQ.
+Proof.
+intros.
+rewrite NQadd_comm.
+apply NQadd_move_0_l.
+Qed.
+
 Theorem NQlt_trans: ∀ x y z, (x < y)%NQ → (y < z)%NQ → (x < z)%NQ.
 Proof.
 intros * Hxy Hyz.
@@ -1182,6 +1205,41 @@ setoid_rewrite NQmul_comm.
 apply NQmul_lt_mono_pos_l.
 Qed.
 
+Theorem NQmul_le_mono_pos_l : ∀ x y z,
+  (0 < x)%NQ → (y ≤ z)%NQ ↔ (x * y ≤ x * z)%NQ.
+Proof.
+intros * Hx.
+destruct x as [| xp| xp]; [ easy | | easy ].
+destruct y as [| yp| yp]; [ now destruct z | | ].
+-destruct z as [| zp| zp]; [ easy | cbn | easy ].
+ apply GQmul_le_mono_l.
+-destruct z as [| zp| zp]; [ easy | easy | cbn ].
+ apply GQmul_le_mono_l.
+Qed.
+
+Theorem NQmul_le_mono_pos_r : ∀ x y z,
+  (0 < x)%NQ → (y ≤ z)%NQ ↔ (y * x ≤ z * x)%NQ.
+Proof.
+setoid_rewrite NQmul_comm.
+apply NQmul_le_mono_pos_l.
+Qed.
+
+Theorem NQmul_cancel_l : ∀ x y z, x ≠ 0%NQ → (x * y)%NQ = (x * z)%NQ ↔ y = z.
+Proof.
+intros * Hx.
+split; intros Hyz; [ | now subst ].
+destruct x as [| xp| xp]; [ easy | | ].
+-destruct y as [| yp| yp], z as [| zp| zp]; try easy.
+ +cbn in Hyz; f_equal.
+  remember GQmul as f.
+  injection Hyz; clear Hyz; intros Hyz; subst f.
+Search (_ * _ = _ * _)%GQ.
+...
+  apply GQmul_cancel_l in Hyz.
+...
+
+Z.mul_cancel_r: ∀ n m p : Z, p ≠ 0%Z → (n * p)%Z = (m * p)%Z ↔ n = m
+
 Theorem NQle_pair : ∀ x y z t,
   y ≠ 0 → t ≠ 0 → (x // y ≤ z // t)%NQ ↔ x * t ≤ y * z.
 Proof.
@@ -1286,6 +1344,9 @@ Proof. easy. Qed.
 
 Theorem NQmul_0_r : ∀ a, (a * 0)%NQ = 0%NQ.
 Proof. intros; now rewrite NQmul_comm. Qed.
+
+Theorem NQmul_opp_l : ∀ x y, (- x * y)%NQ = (- (x * y))%NQ.
+Proof. intros; now destruct x, y. Qed.
 
 Theorem NQadd_pair : ∀ a b c d,
   b ≠ 0 → d ≠ 0 → (a // b + c // d = (a * d + b * c) // (b * d))%NQ.

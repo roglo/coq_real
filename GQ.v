@@ -1350,8 +1350,7 @@ Qed.
 Theorem GQadd_cancel_l : ∀ x y z, (x + y)%GQ = (x + z)%GQ ↔ y = z.
 Proof.
 intros.
-split; [ | now intros; subst y ].
-intros Hyz.
+split; intros Hyz; [ | now subst y ].
 destruct x as (x, Hx), y as (y, Hy), z as (z, Hz).
 move y before x; move z before y.
 apply GQeq_eq; cbn.
@@ -1369,4 +1368,27 @@ Proof.
 intros.
 setoid_rewrite GQadd_comm.
 apply GQadd_cancel_l.
+Qed.
+
+Theorem GQmul_cancel_l : ∀ x y z, (x * y)%GQ = (x * z)%GQ ↔ y = z.
+Proof.
+intros.
+split; intros Hyz; [ | now subst y ].
+destruct x as (x, Hx), y as (y, Hy), z as (z, Hz).
+move y before x; move z before y.
+apply GQeq_eq; cbn.
+apply GQeq_eq in Hyz.
+cbn in Hyz.
+apply PQeq_red; [ now apply gcd_1_PQred | now apply gcd_1_PQred | ].
+apply (PQmul_cancel_l _ _ x).
+rewrite <- PQred_eq; symmetry.
+rewrite <- PQred_eq; symmetry.
+now rewrite Hyz.
+Qed.
+
+Theorem GQmul_cancel_r : ∀ x y z, (x * z)%GQ = (y * z)%GQ ↔ x = y.
+Proof.
+intros.
+setoid_rewrite GQmul_comm.
+apply GQmul_cancel_l.
 Qed.
