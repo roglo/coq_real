@@ -1233,12 +1233,28 @@ destruct x as [| xp| xp]; [ easy | | ].
  +cbn in Hyz; f_equal.
   remember GQmul as f.
   injection Hyz; clear Hyz; intros Hyz; subst f.
-Search (_ * _ = _ * _)%GQ.
-...
-  apply GQmul_cancel_l in Hyz.
-...
+  now apply GQmul_cancel_l in Hyz.
+ +cbn in Hyz; f_equal.
+  remember GQmul as f.
+  injection Hyz; clear Hyz; intros Hyz; subst f.
+  now apply GQmul_cancel_l in Hyz.
+-destruct y as [| yp| yp], z as [| zp| zp]; try easy.
+ +cbn in Hyz; f_equal.
+  remember GQmul as f.
+  injection Hyz; clear Hyz; intros Hyz; subst f.
+  now apply GQmul_cancel_l in Hyz.
+ +cbn in Hyz; f_equal.
+  remember GQmul as f.
+  injection Hyz; clear Hyz; intros Hyz; subst f.
+  now apply GQmul_cancel_l in Hyz.
+Qed.
 
-Z.mul_cancel_r: ∀ n m p : Z, p ≠ 0%Z → (n * p)%Z = (m * p)%Z ↔ n = m
+Theorem NQmul_cancel_r : ∀ x y z, z ≠ 0%NQ → (x * z)%NQ = (y * z)%NQ ↔ x = y.
+Proof.
+intros *.
+setoid_rewrite NQmul_comm.
+apply NQmul_cancel_l.
+Qed.
 
 Theorem NQle_pair : ∀ x y z t,
   y ≠ 0 → t ≠ 0 → (x // y ≤ z // t)%NQ ↔ x * t ≤ y * z.
@@ -1321,6 +1337,16 @@ intros.
 unfold "//"%NQ.
 destruct a; [ easy | ].
 rewrite GQpair_diag; [ now rewrite GQpair_diag | easy ].
+Qed.
+
+Theorem NQmul_inv_pair : ∀ a b, a ≠ 0 → b ≠ 0 → (a // b * b // a = 1)%NQ.
+Proof.
+intros * Ha Hb.
+rewrite NQmul_pair; [ | easy | easy ].
+rewrite Nat.mul_comm.
+apply NQpair_diag.
+intros H; apply Nat.eq_mul_0 in H.
+now destruct H.
 Qed.
 
 Theorem NQmul_1_l : ∀ a, (1 * a)%NQ = a.
@@ -1527,6 +1553,20 @@ Proof.
 intros.
 rewrite Nat.mul_comm, NQmul_comm.
 apply NQpair_mul_l.
+Qed.
+
+Theorem NQmul_pair_den_num : ∀ a b c, b ≠ 0 → (a // b * b // c = a // c)%NQ.
+Proof.
+intros * Hb.
+destruct (zerop c) as [Hc| Hc].
+-subst c; do 2 rewrite NQden_0.
+ rewrite NQmul_pair; [ | easy | easy ].
+ rewrite Nat.mul_1_r, NQpair_mul_r.
+ rewrite NQpair_diag; [ now rewrite NQmul_1_r | easy ].
+-rewrite NQmul_pair; [ | easy | flia Hc ].
+ rewrite Nat.mul_comm.
+ rewrite <- NQmul_pair; [ | easy | flia Hc ].
+ now rewrite NQpair_diag, NQmul_1_l.
 Qed.
 
 Definition NQfrac x := ((NQnum x mod NQden x) // NQden x)%NQ.

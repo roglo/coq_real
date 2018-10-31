@@ -1002,12 +1002,9 @@ replace (n - i - j - 2 + S j) with (n - i - 1) by flia Hin.
 rewrite NQadd_assoc; f_equal.
 destruct j.
 -rewrite Nat.pow_0_r, NQsub_diag, NQadd_0_l, Nat.pow_1_r.
- rewrite NQadd_pair; [ | easy | easy ].
- rewrite Nat.mul_sub_distr_r.
- replace (2 * rad) with (rad * 2) by apply Nat.mul_comm.
- rewrite Nat.sub_add; [ | now apply Nat.mul_le_mono_l ].
- apply NQpair_diag.
- intros H; apply Nat.eq_mul_0 in H; flia Hr H.
+ rewrite <- NQpair_add_l.
+ rewrite Nat.sub_add; [ | easy ].
+ now apply NQpair_diag.
 -rewrite <- NQadd_assoc.
  rewrite NQadd_pair; [ | pauto | pauto ].
  rewrite Nat.mul_comm, Nat.mul_sub_distr_l.
@@ -3109,39 +3106,35 @@ rewrite Nat.add_sub in H5.
 replace (i + j + 1 - i - 1) with j in H5 by flia.
 replace (S t) with (j + (k + 2)) in H5 by flia Ht.
 rewrite Nat.pow_add_r in H5.
-assert (H : (A i (i + j + 1) u = 1 - 1 // rad ^ j)%NQ). {
+assert (HA : (A i (i + j + 1) u = 1 - 1 // rad ^ j)%NQ). {
   replace j with ((i + j + 1) - i - 1) at 2 by flia.
   apply A_all_9.
   intros m Hm.
   apply H3; flia Hm.
 }
-rewrite H in H5.
+rewrite HA in H5.
 rewrite NQadd_add_swap in H5.
 rewrite <- NQadd_assoc in H5.
 replace (1 // rad ^ j)%NQ with (1 * 1 // rad ^ j)%NQ in H5 at 2; cycle 1. {
   apply NQmul_1_l.
 }
 rewrite <- NQmul_sub_distr_r in H5.
-destruct (NQeq_dec (A (i + j) n u) 0) as [HA| HA].
+destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
 -exfalso.
- rewrite A_split_first in HA; [ | flia Hin ].
- rewrite <- Nat.add_1_r, H4 in HA.
- rewrite NQadd_move_0_l in HA.
-Search (_ * _ = _ * _)%NQ.
-Require Import ZArith.
-Check NQmul_le_mono_pos_r.
-Check Z.mul_le_mono_pos_r.
-Search (_ * _ = _ * _)%Z.
+ rewrite A_split_first in HAz; [ | flia Hin ].
+ rewrite <- Nat.add_1_r, H4 in HAz.
+ rewrite NQadd_move_0_l in HAz.
+ apply (NQmul_cancel_r _ _ (rad // 1)%NQ) in HAz; cycle 1. {
+   clear H; intros H.
+   replace 0%NQ with (0 // 1)%NQ in H by easy.
+   apply NQeq_pair in H; [ flia H Hr | easy | easy ].
+ }
+ rewrite <- NQmul_assoc in HAz.
+ rewrite NQmul_inv_pair in HAz; [ | easy | easy ].
+ rewrite NQmul_1_r in HAz.
+ rewrite NQmul_opp_l in HAz.
+ rewrite NQmul_pair_den_num in HAz; [ | easy ].
 ...
-Check Z.mul_eq_mono_pos_r.
-...
-
- apply (NQmul_le_mono_pos_r (rad ^ j // 1)%NQ) in HA.
-...
--exfalso; apply NQnlt_ge in H5; apply H5; clear H5.
- rewrite HA, NQadd_0_l, NQmul_opp_l, NQmul_1_l.
-...
-
 -exfalso; apply NQnlt_ge in H5; apply H5; clear H5.
  rewrite HA, NQadd_0_l, NQmul_opp_l, NQmul_1_l.
 ...
