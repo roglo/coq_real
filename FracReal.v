@@ -3158,7 +3158,9 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
  +replace (rad ^ (k + 2)) with (1 * rad ^ (k + 2)) at 1 by flia.
   apply Nat.mul_le_mono_r.
   now apply Nat_pow_ge_1.
--rewrite NQfrac_add_nat_l in H5; cycle 1. {
+-idtac.
+...
+ rewrite NQfrac_add_nat_l in H5; cycle 1. {
    apply (NQmul_le_mono_pos_r (rad ^ j // 1)%NQ).
    -replace 0%NQ with (0 // 1)%NQ by easy.
     apply NQlt_pair; [ easy | easy | cbn ].
