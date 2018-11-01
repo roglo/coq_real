@@ -3093,12 +3093,14 @@ unfold min_n in H5 |-*.
 replace (i + (j + k + 1) + 3) with (i + j + k + 4) in H5 by flia.
 replace (i + j + (k + 1) + 3) with (i + j + k + 4) by flia.
 remember (rad * (i + j + k + 4)) as n eqn:Hn.
+move n before k.
 assert (Hin : i + j + k + 2 ≤ n - 1). {
   rewrite Hn.
   destruct rad; [ easy | simpl; flia ].
 }
 remember (n - i - 1) as s eqn:Hs.
 remember (j + k + 1) as t eqn:Ht.
+move s before n; move t before s.
 (**)
 replace (S (k + 1)) with (k + 2) by flia.
 rewrite (A_split (i + j + 1)) in H5; [ | flia Hin ].
@@ -3158,7 +3160,9 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
  +replace (rad ^ (k + 2)) with (1 * rad ^ (k + 2)) at 1 by flia.
   apply Nat.mul_le_mono_r.
   now apply Nat_pow_ge_1.
--idtac.
+-destruct (NQlt_le_dec (A (i + j) n u) 1) as [HAn| HAp].
+ +exfalso.
+  apply NQnlt_ge in H5; apply H5; clear H5.
 ...
  rewrite NQfrac_add_nat_l in H5; cycle 1. {
    apply (NQmul_le_mono_pos_r (rad ^ j // 1)%NQ).
