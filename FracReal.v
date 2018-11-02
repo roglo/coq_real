@@ -3163,6 +3163,11 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
 -destruct (NQlt_le_dec (A (i + j) n u) 1) as [HAn| HAp].
  +exfalso.
   apply NQnlt_ge in H5; apply H5; clear H5.
+  rewrite <- NQsub_opp_r, <- NQmul_opp_l.
+  rewrite NQopp_add_distr, NQopp_involutive.
+  remember (- A (i + j) n u + 1)%NQ as x eqn:Hx.
+  rewrite NQadd_comm in Hx; subst x.
+Check NQfrac_add_nat_l.
 ...
  rewrite NQfrac_add_nat_l in H5; cycle 1. {
    apply (NQmul_le_mono_pos_r (rad ^ j // 1)%NQ).

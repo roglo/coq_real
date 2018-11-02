@@ -83,6 +83,7 @@ Notation "x < y" := (NQlt x y) : NQ_scope.
 Notation "x ≤ y" := (NQle x y) : NQ_scope.
 Notation "x > y" := (NQgt x y) : NQ_scope.
 Notation "x ≥ y" := (NQge x y) : NQ_scope.
+Notation "x ≤ y < z" := (NQle x y ∧ NQlt y z) : NQ_scope.
 
 Theorem NQeq_dec : ∀ x y : NQ, {x = y} + {x ≠ y}.
 Proof.
@@ -1755,6 +1756,33 @@ rewrite <- (proj2 (Nat.div_exact _ c Hcz)).
 -rewrite Hc.
  apply Nat.mod_divide; [ now rewrite <- Hc | apply Nat.gcd_divide_l ].
 Qed.
+
+Theorem NQsub_opp_r : ∀ x y, (x - - y = x + y)%NQ.
+Proof. intros; now destruct x, y. Qed.
+
+Theorem NQfrac_lt_1 : ∀ x, (0 ≤ x < 1)%NQ → NQfrac x = x.
+Proof.
+intros * (Hxz, Hx1).
+destruct x as [| xp| xp]; [ easy | | easy ].
+unfold NQfrac; cbn.
+rewrite Nat.mod_small; cycle 1. {
+  cbn in Hx1.
+  replace xp with (GQnum xp // GQden xp)%GQ in Hx1 by now rewrite GQnum_den.
+...
+  apply GQlt_pair in Hx1.
+cbn in Hx1.
+  rewrite GQnum_den in Hx1.
+  unfold GQnum, GQden.
+  destruct xp as (xp, Hxp); cbn; cbn in Hx1.
+...
+-unfold "//"%NQ.
+ remember (GQnum xp) as xn eqn:Hxn; symmetry in Hxn.
+ destruct xn; [ unfold GQnum in Hxn; now rewrite Nat.add_1_r in Hxn | ].
+ f_equal; rewrite <- Hxn.
+ symmetry; apply GQnum_den.
+-idtac.
+-Search (GQnum _).
+...
 
 Require Import Summation.
 
