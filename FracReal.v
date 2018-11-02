@@ -3167,7 +3167,8 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
   rewrite NQopp_add_distr, NQopp_involutive.
   remember (- A (i + j) n u + 1)%NQ as x eqn:Hx.
   rewrite NQadd_comm in Hx; subst x.
-Check NQfrac_add_nat_l.
+  rewrite NQfrac_lt_1.
+(* zut, j'en ai marre *)
 ...
  rewrite NQfrac_add_nat_l in H5; cycle 1. {
    apply (NQmul_le_mono_pos_r (rad ^ j // 1)%NQ).

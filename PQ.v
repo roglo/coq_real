@@ -1358,11 +1358,17 @@ Proof. intros; now rewrite PQred_eq. Qed.
 Theorem PQred_lt_r : ∀ x y, (x < y ↔ x < PQred y)%PQ.
 Proof. intros; now rewrite PQred_eq. Qed.
 
+Theorem PQred_lt : ∀ x y, (x < y)%PQ ↔ (PQred x < PQred y)%PQ.
+Proof. intros; now do 2 rewrite PQred_eq. Qed.
+
 Theorem PQred_le_l : ∀ x y, (x ≤ y)%PQ ↔ (PQred x ≤ y)%PQ.
 Proof. intros; now rewrite PQred_eq. Qed.
 
 Theorem PQred_le_r : ∀ x y, (x ≤ y)%PQ → (x ≤ PQred y)%PQ.
 Proof. intros; now rewrite PQred_eq. Qed.
+
+Theorem PQred_le : ∀ x y, (x ≤ y)%PQ ↔ (PQred x ≤ PQred y)%PQ.
+Proof. intros; now do 2 rewrite PQred_eq. Qed.
 
 Theorem PQred_add_l : ∀ x y, PQred (x + y) = PQred (PQred x + y).
 Proof.

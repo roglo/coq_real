@@ -1768,21 +1768,17 @@ unfold NQfrac; cbn.
 rewrite Nat.mod_small; cycle 1. {
   cbn in Hx1.
   replace xp with (GQnum xp // GQden xp)%GQ in Hx1 by now rewrite GQnum_den.
-...
-  apply GQlt_pair in Hx1.
-cbn in Hx1.
-  rewrite GQnum_den in Hx1.
-  unfold GQnum, GQden.
-  destruct xp as (xp, Hxp); cbn; cbn in Hx1.
-...
--unfold "//"%NQ.
- remember (GQnum xp) as xn eqn:Hxn; symmetry in Hxn.
- destruct xn; [ unfold GQnum in Hxn; now rewrite Nat.add_1_r in Hxn | ].
- f_equal; rewrite <- Hxn.
- symmetry; apply GQnum_den.
--idtac.
--Search (GQnum _).
-...
+  apply GQpair_lt_nat in Hx1; [ | | | easy ]; cycle 1.
+  -apply GQnum_neq_0.
+  -apply GQden_neq_0.
+  -now rewrite Nat.mul_1_r in Hx1.
+}
+unfold "//"%NQ.
+remember (GQnum xp) as xn eqn:Hxn; symmetry in Hxn.
+destruct xn; [ unfold GQnum in Hxn; now rewrite Nat.add_1_r in Hxn | ].
+f_equal; rewrite <- Hxn.
+symmetry; apply GQnum_den.
+Qed.
 
 Require Import Summation.
 
