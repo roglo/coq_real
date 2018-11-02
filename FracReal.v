@@ -3183,8 +3183,11 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
   rewrite NQadd_opp_l.
   rewrite NQfrac_lt_1; cycle 1. {
     split.
-    -rewrite NQmul_sub_distr_r, NQmul_1_l.
-     rewrite NQsub_sub_distr.
+    -apply NQle_0_sub.
+     rewrite NQmul_sub_distr_r, NQmul_1_l.
+     replace 1%NQ with (1 - 0)%NQ by easy.
+     apply NQsub_le_mono.
+     +idtac.
 ...
  rewrite NQfrac_add_nat_l in H5; cycle 1. {
    apply (NQmul_le_mono_pos_r (rad ^ j // 1)%NQ).

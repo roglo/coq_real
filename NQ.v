@@ -269,6 +269,12 @@ Proof. easy. Qed.
 Theorem NQadd_0_r : ∀ x, (x + 0 = x)%NQ.
 Proof. intros; now rewrite NQadd_comm. Qed.
 
+Theorem NQsub_0_l : ∀ x, (0 - x = - x)%NQ.
+Proof. easy. Qed.
+
+Theorem NQsub_0_r : ∀ x, (x - 0 = x)%NQ.
+Proof. intros; now destruct x. Qed.
+
 Theorem NQnle_gt : ∀ x y, ¬ (x ≤ y)%NQ ↔ (y < x)%NQ.
 Proof.
 intros.
@@ -915,6 +921,25 @@ destruct (NQeq_dec x y) as [H1| H1].
    now apply NQopp_le_mono.
 Qed.
 Arguments NQsub_le_mono x%NQ y%NQ z%NQ t%NQ.
+
+Theorem NQle_0_sub : ∀ x y, (0 ≤ y - x)%NQ ↔ (x ≤ y)%NQ.
+Proof.
+intros.
+destruct x as [| xp| xp].
+-now rewrite NQsub_0_r.
+-destruct y as [| yp| yp]; [ easy | cbn | easy ].
+ remember (GQcompare yp xp) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff.
+ +split; [ intros H; subst; apply GQle_refl | easy ].
+ +split; [ easy | intros H; now apply GQnlt_ge in H ].
+ +split; [ intros H; now apply GQlt_le_incl | easy ].
+-destruct y as [| yp| yp]; [ easy | easy | cbn ].
+ remember (GQcompare yp xp) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff.
+ +split; [ intros H; subst; apply GQle_refl | easy ].
+ +split; [ intros H; now apply GQlt_le_incl | easy ].
+ +split; [ easy | intros H; now apply GQnlt_ge in H ].
+Qed.
 
 Theorem NQsub_lt : ∀ x y, (0 < x)%NQ → (y - x < y)%NQ.
 Proof.
