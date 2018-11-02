@@ -185,7 +185,7 @@ Definition NQabs x :=
 
 Notation "- x" := (NQopp x) : NQ_scope.
 Notation "x + y" := (NQadd x y) : NQ_scope.
-Notation "x - y" := (NQadd x (NQopp y)) : NQ_scope.
+Notation "x - y" := (NQsub x y) : NQ_scope.
 Notation "‖ x ‖" := (NQabs x) (at level 60) : NQ_scope.
 
 Definition NQmul_pos_l px y :=
@@ -534,6 +534,16 @@ setoid_rewrite NQadd_comm.
 apply NQadd_add_swap.
 Qed.
 
+Theorem NQadd_sub_assoc : ∀ x y z, (x + (y - z) = (x + y) - z)%NQ.
+Proof. intros; apply NQadd_assoc. Qed.
+
+Theorem NQadd_sub_swap : ∀ x y z, (x + y - z)%NQ = (x - z + y)%NQ.
+Proof.
+intros.
+unfold NQsub.
+apply NQadd_add_swap.
+Qed.
+
 Theorem NQsub_diag : ∀ x, (x - x = 0)%NQ.
 Proof.
 intros.
@@ -542,18 +552,26 @@ destruct x as [| px| px]; [ easy | | ]; simpl.
 -now rewrite GQcompare_diag.
 Qed.
 
+Theorem NQadd_opp_l : ∀ x y, (- x + y)%NQ = (y - x)%NQ.
+Proof. intros; apply NQadd_comm. Qed.
+
+Theorem NQadd_opp_r : ∀ x y, (x + - y)%NQ = (x - y)%NQ.
+Proof. easy. Qed.
+
 Theorem NQsub_add : ∀ a b, (a - b + b)%NQ = a.
 Proof.
 intros.
+unfold NQsub.
 rewrite NQadd_add_swap, <- NQadd_assoc.
-now rewrite NQsub_diag, NQadd_0_r.
+now rewrite NQadd_opp_r, NQsub_diag, NQadd_0_r.
 Qed.
 
 Theorem NQadd_sub : ∀ a b, (a + b - b)%NQ = a.
 Proof.
 intros.
+unfold NQsub.
 rewrite <- NQadd_assoc.
-now rewrite NQsub_diag, NQadd_0_r.
+now rewrite NQadd_opp_r, NQsub_diag, NQadd_0_r.
 Qed.
 
 Theorem NQadd_move_0_l : ∀ x y, (x + y)%NQ = 0%NQ ↔ y = (- x)%NQ.
@@ -569,7 +587,7 @@ split; intros Hxy.
   remember (GQcompare xp yp) as b eqn:Hb; symmetry in Hb.
   destruct b; [ GQcompare_iff | easy | easy ].
   now subst yp.
--now rewrite Hxy, NQsub_diag.
+-now rewrite Hxy, NQadd_opp_r, NQsub_diag.
 Qed.
 
 Theorem NQadd_move_0_r : ∀ x y, (x + y)%NQ = 0%NQ ↔ x = (- y)%NQ.
@@ -825,7 +843,7 @@ split; intros Hxy.
 -apply (NQadd_le_mono _ _ (- z) (- z)) in Hxy; [ | apply NQle_refl ].
  replace (z + x)%NQ with (x + z)%NQ in Hxy by apply NQadd_comm.
  replace (z + y)%NQ with (y + z)%NQ in Hxy by apply NQadd_comm.
- now do 2 rewrite NQadd_sub in Hxy.
+ now do 2 rewrite NQadd_opp_r, NQadd_sub in Hxy.
 Qed.
 Arguments NQadd_le_mono_l x%NQ y%NQ z%NQ.
 
@@ -862,7 +880,7 @@ Proof.
 intros.
 split; intros H.
 -apply (NQadd_le_mono _ _ (- z) (- z)) in H; [ | apply NQle_refl ].
- now do 2 rewrite NQadd_sub in H.
+ now do 2 rewrite NQadd_opp_r, NQadd_sub in H.
 -apply NQadd_le_mono; [ easy | apply NQle_refl ].
 Qed.
 Arguments NQadd_le_r x%NQ y%NQ z%NQ.
@@ -1030,6 +1048,9 @@ setoid_rewrite NQadd_comm.
 apply NQadd_cancel_l.
 Qed.
 
+Theorem NQsub_opp_r : ∀ x y, (x - - y = x + y)%NQ.
+Proof. intros; now destruct x, y. Qed.
+
 Theorem NQopp_add_distr : ∀ x y, (- (x + y))%NQ = (- x - y)%NQ.
 Proof.
 intros.
@@ -1038,12 +1059,28 @@ destruct x as [| xp| xp], y as [| yp| yp]; try easy.
 -now cbn; destruct (GQcompare xp yp).
 Qed.
 
+Theorem NQopp_sub_distr : ∀ x y, (- (x - y))%NQ = (- x + y)%NQ.
+Proof.
+intros.
+unfold NQsub.
+rewrite NQopp_add_distr.
+apply NQsub_opp_r.
+Qed.
+
 Theorem NQsub_add_distr : ∀ x y z, (x - (y + z))%NQ = (x - y - z)%NQ.
 Proof.
 intros.
-rewrite <- NQadd_assoc.
-apply NQadd_cancel_l.
-apply NQopp_add_distr.
+unfold NQsub.
+rewrite NQopp_add_distr.
+apply NQadd_assoc.
+Qed.
+
+Theorem NQsub_sub_distr : ∀ x y z, (x - (y - z))%NQ = (x - y + z)%NQ.
+Proof.
+intros.
+unfold NQsub at 2.
+rewrite NQsub_add_distr.
+now rewrite NQsub_opp_r.
 Qed.
 
 Theorem NQmul_pair : ∀ x y z t,
@@ -1428,7 +1465,7 @@ Proof.
 intros * Hb Hd Hle.
 destruct b; [ flia Hb | ].
 destruct d; [ flia Hd | ].
-unfold "-"%NQ.
+unfold NQsub.
 destruct a. {
   destruct c; [ easy | cbn in Hle; flia Hle ].
 }
@@ -1474,7 +1511,7 @@ Proof.
 intros * Hb Hd Hlt.
 destruct b; [ flia Hb | ].
 destruct d; [ flia Hd | ].
-unfold "-"%NQ.
+unfold NQsub.
 destruct a.
 -destruct c; [ now rewrite Nat.mul_0_r | ].
  remember (S b) as x; simpl; subst x.
@@ -1500,7 +1537,8 @@ destruct a.
   setoid_rewrite Nat.mul_comm in Hlt.
   rewrite GQsub_pair; try easy.
   rewrite <- Hx.
-  f_equal; [ f_equal; apply Nat.mul_comm | apply Nat.mul_comm ].
+  remember S as f; cbn; subst f.
+  f_equal; f_equal; [ f_equal; apply Nat.mul_comm | apply Nat.mul_comm ].
  *apply -> GQlt_pair in Hb1; [ | easy | easy | easy | easy ].
   setoid_rewrite Nat.mul_comm in Hb1.
   flia Hlt Hb1.
@@ -1756,9 +1794,6 @@ rewrite <- (proj2 (Nat.div_exact _ c Hcz)).
 -rewrite Hc.
  apply Nat.mod_divide; [ now rewrite <- Hc | apply Nat.gcd_divide_l ].
 Qed.
-
-Theorem NQsub_opp_r : ∀ x y, (x - - y = x + y)%NQ.
-Proof. intros; now destruct x, y. Qed.
 
 Theorem NQfrac_lt_1 : ∀ x, (0 ≤ x < 1)%NQ → NQfrac x = x.
 Proof.

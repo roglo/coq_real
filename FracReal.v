@@ -999,7 +999,9 @@ rewrite NQmul_pair; [ | pauto | pauto ].
 rewrite Nat.mul_1_r.
 rewrite <- Nat.pow_add_r.
 replace (n - i - j - 2 + S j) with (n - i - 1) by flia Hin.
+unfold NQsub.
 rewrite NQadd_assoc; f_equal.
+rewrite NQadd_opp_r.
 destruct j.
 -rewrite Nat.pow_0_r, NQsub_diag, NQadd_0_l, Nat.pow_1_r.
  rewrite <- NQpair_add_l.
@@ -1594,8 +1596,8 @@ apply (NQle_lt_trans _ ((rad - 3) // rad + 2 // rad * (1 - 1 // rad ^ s))%NQ).
   apply NQle_pair; [ pauto | pauto | ].
   rewrite Nat.mul_comm.
   apply Nat.mul_le_mono_l, Hur.
--rewrite NQmul_sub_distr_l.
- rewrite NQmul_1_r, NQadd_assoc, <- NQpair_add_l.
+-rewrite NQmul_sub_distr_l, NQmul_1_r.
+ rewrite NQadd_sub_assoc, <- NQpair_add_l.
  replace (rad - 3 + 2) with (rad - 1) by flia H1.
  rewrite NQsub_pair_pos; [ | easy | easy | now apply Nat.mul_le_mono_l ].
  do 2 rewrite Nat.mul_1_l.
@@ -2753,8 +2755,10 @@ rewrite NQpair_diag; [ | easy ].
 rewrite NQmul_1_l; subst x.
 rewrite <- Nat.pow_succ_r'.
 destruct (le_dec (u (i + k + 1)) rad) as [H1| H1].
--rewrite NQadd_add_swap, <- NQadd_assoc.
+-rewrite <- NQsub_sub_distr.
  apply NQadd_le_mono_l.
+ rewrite NQopp_sub_distr.
+ rewrite NQadd_opp_l.
  apply NQsub_le_mono.
  +apply NQle_pair; [ pauto | pauto | ].
   rewrite Nat.mul_1_r, Nat.pow_succ_r'.
@@ -2763,12 +2767,14 @@ destruct (le_dec (u (i + k + 1)) rad) as [H1| H1].
   rewrite Nat.mul_1_r, Nat.pow_succ_r'.
   now apply Nat.mul_le_mono_r.
 -apply Nat.nle_gt in H1.
+ unfold NQsub.
  rewrite <- NQadd_assoc.
  apply NQadd_le_mono_l.
  apply (NQadd_le_mono_l _ _ (1 // rad ^ k)).
- rewrite NQadd_assoc, NQsub_diag, NQadd_0_l.
+ rewrite NQadd_assoc, NQadd_opp_r, NQsub_diag, NQadd_0_l.
  rewrite NQadd_assoc, <- NQpair_add_l.
  replace (1 + 1) with 2 by easy.
+ rewrite NQadd_opp_r.
  rewrite NQsub_pair_pos; [ | pauto | pauto | ]; cycle 1. {
    rewrite Nat.mul_comm; apply Nat.mul_le_mono_l.
    rewrite Nat.pow_succ_r'.
@@ -2883,7 +2889,7 @@ rewrite NQpair_sub_l; cycle 1. {
 rewrite <- NQnum_den; [ | apply A_ge_0 ].
 rewrite NQpair_diag; [ | pauto ].
 apply (NQadd_lt_mono_r _ _ 1).
-rewrite NQsub_add, NQadd_comm, NQadd_assoc.
+rewrite NQsub_add, <- NQadd_sub_swap.
 replace (1 + 1)%NQ with 2%NQ by easy.
 rewrite A_split with (e := i + k + 2); [ | flia H6 ].
 remember (i + k + 2) as t eqn:Ht.
@@ -2921,7 +2927,7 @@ apply NQle_lt_trans with
   rewrite NQmul_pair; [ rewrite Nat.mul_1_l, Nat.mul_1_r | easy | pauto ].
   rewrite NQmul_pair; [ rewrite Nat.mul_1_l, Nat.mul_1_r | easy | pauto ].
   rewrite NQpair_sub_l; [ | easy ].
-  do 2 rewrite NQadd_assoc.
+  do 2 rewrite NQadd_sub_assoc.
   rewrite NQsub_add.
   apply NQlt_le_trans with (y := (1 + rad // rad ^ S k)%NQ).
   *apply NQsub_lt.
@@ -3116,15 +3122,19 @@ assert (HA : (A i (i + j + 1) u = 1 - 1 // rad ^ j)%NQ). {
   apply H3; flia Hm.
 }
 rewrite HA in H5.
+unfold NQsub in H5.
 rewrite NQadd_add_swap in H5.
 rewrite <- NQadd_assoc in H5.
 replace (1 // rad ^ j)%NQ with (1 * 1 // rad ^ j)%NQ in H5 at 2; cycle 1. {
   apply NQmul_1_l.
 }
+rewrite NQadd_opp_r in H5.
 rewrite <- NQmul_sub_distr_r in H5.
 destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
 -exfalso; apply NQnlt_ge in H5; apply H5; clear H5.
+ unfold NQsub.
  rewrite HAz, NQadd_0_l, NQmul_opp_l, NQmul_1_l.
+ rewrite NQadd_opp_r.
  rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
    now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
  }
@@ -3134,6 +3144,7 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
    apply Nat.sub_lt; [ | pauto ].
    now apply Nat_pow_ge_1.
  }
+ rewrite NQadd_opp_r.
  rewrite NQsub_pair_pos; [ | easy | | ]; cycle 1. {
    intros H; apply Nat.eq_mul_0 in H.
    now destruct H; apply Nat.pow_nonzero in H.
@@ -3168,11 +3179,12 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
   }
   apply NQnlt_ge in H5; apply H5; clear H5.
   rewrite <- NQsub_opp_r, <- NQmul_opp_l.
-  rewrite NQopp_add_distr, NQopp_involutive.
-  remember (- A (i + j) n u + 1)%NQ as x eqn:Hx.
-  rewrite NQadd_comm in Hx; subst x.
+  rewrite NQopp_sub_distr.
+  rewrite NQadd_opp_l.
   rewrite NQfrac_lt_1; cycle 1. {
-
+    split.
+    -rewrite NQmul_sub_distr_r, NQmul_1_l.
+     rewrite NQsub_sub_distr.
 ...
  rewrite NQfrac_add_nat_l in H5; cycle 1. {
    apply (NQmul_le_mono_pos_r (rad ^ j // 1)%NQ).
