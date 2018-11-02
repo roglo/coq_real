@@ -3107,6 +3107,7 @@ rewrite (A_split (i + j + 1)) in H5; [ | flia Hin ].
 rewrite Nat.add_sub in H5.
 replace (i + j + 1 - i - 1) with j in H5 by flia.
 replace (S t) with (j + (k + 2)) in H5 by flia Ht.
+clear t Ht.
 rewrite Nat.pow_add_r in H5.
 assert (HA : (A i (i + j + 1) u = 1 - 1 // rad ^ j)%NQ). {
   replace j with ((i + j + 1) - i - 1) at 2 by flia.
@@ -3161,14 +3162,17 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
   apply Nat.mul_le_mono_r.
   now apply Nat_pow_ge_1.
 -destruct (NQlt_le_dec (A (i + j) n u) 1) as [HAn| HAp].
- +exfalso.
+ +apply NQnlt_ge; intros H1.
+  rewrite NQfrac_lt_1 in H1; cycle 1. {
+    split; [ apply A_ge_0 | easy ].
+  }
   apply NQnlt_ge in H5; apply H5; clear H5.
   rewrite <- NQsub_opp_r, <- NQmul_opp_l.
   rewrite NQopp_add_distr, NQopp_involutive.
   remember (- A (i + j) n u + 1)%NQ as x eqn:Hx.
   rewrite NQadd_comm in Hx; subst x.
-  rewrite NQfrac_lt_1.
-(* zut, j'en ai marre *)
+  rewrite NQfrac_lt_1; cycle 1. {
+
 ...
  rewrite NQfrac_add_nat_l in H5; cycle 1. {
    apply (NQmul_le_mono_pos_r (rad ^ j // 1)%NQ).
