@@ -1715,87 +1715,45 @@ Theorem NQfrac_add_nat_l : ∀ a x, (0 ≤ x)%NQ →
   NQfrac (a // 1 + x)%NQ = NQfrac x.
 Proof.
 intros * Hx.
-clear Hx.
 unfold NQfrac.
 apply NQeq_pair; [ pauto | pauto | ].
-destruct (NQle_lt_dec 0 x) as [Hx| Hx].
--rewrite (NQnum_den x); [ | easy ].
- rewrite NQadd_pair; [ | easy | pauto ].
- do 2 rewrite Nat.mul_1_l.
- rewrite NQnum_pair.
- rewrite Nat.max_r; [ | apply Nat.neq_0_lt_0; pauto ].
- rewrite <- NQnum_den; [ | easy ].
- rewrite NQden_pair.
- remember (Nat.gcd (a * NQden x + NQnum x) (NQden x)) as c eqn:Hc.
- assert (Hcz : c ≠ 0). {
-   intros H; rewrite Hc in H.
-   apply Nat.gcd_eq_0_r in H.
-   now apply NQden_neq_0 in H.
- }
- rewrite Nat.max_r; cycle 1. {
-   apply Nat.div_le_lower_bound; [ easy | ].
-   rewrite Nat.mul_1_r; subst c.
-   apply Nat_gcd_le_r; pauto.
- }
- apply (Nat.mul_cancel_l _ _ c); [ easy | ].
- assert (Hcd : c * (NQden x / c) = NQden x). {
-   rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
-   -now rewrite Nat.mul_comm, Nat.div_mul.
-   -rewrite Hc; apply Nat.gcd_divide_r.
- }
- do 2 rewrite Nat.mul_assoc.
- rewrite Hcd, Nat.mul_comm; f_equal.
- rewrite <- Nat.mul_mod_distr_l; [ | | easy ]; cycle 1. {
-   intros H.
-   apply Nat.div_small_iff in H; [ | easy ].
-   apply Nat.nle_gt in H; apply H; rewrite Hc.
-   apply Nat_gcd_le_r; pauto.
- }
- rewrite Hcd.
- rewrite <- (proj2 (Nat.div_exact _ c Hcz)).
- +rewrite Nat.add_comm, Nat.mod_add; [ easy | pauto ].
- +rewrite Hc.
-  apply Nat.mod_divide; [ now rewrite <- Hc | apply Nat.gcd_divide_l ].
--rewrite (NQnum_den_neg x); [ | easy ].
-...
- rewrite NQsub_pair_pos; [ | easy | pauto | ].
- do 2 rewrite Nat.mul_1_l.
- rewrite NQnum_pair.
- rewrite Nat.max_r; [ | apply Nat.neq_0_lt_0; pauto ].
- rewrite <- NQnum_den; [ | easy ].
- rewrite NQden_pair.
- remember (Nat.gcd (a * NQden x + NQnum x) (NQden x)) as c eqn:Hc.
- assert (Hcz : c ≠ 0). {
-   intros H; rewrite Hc in H.
-   apply Nat.gcd_eq_0_r in H.
-   now apply NQden_neq_0 in H.
- }
- rewrite Nat.max_r; cycle 1. {
-   apply Nat.div_le_lower_bound; [ easy | ].
-   rewrite Nat.mul_1_r; subst c.
-   apply Nat_gcd_le_r; pauto.
- }
- apply (Nat.mul_cancel_l _ _ c); [ easy | ].
- assert (Hcd : c * (NQden x / c) = NQden x). {
-   rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
-   -now rewrite Nat.mul_comm, Nat.div_mul.
-   -rewrite Hc; apply Nat.gcd_divide_r.
- }
- do 2 rewrite Nat.mul_assoc.
- rewrite Hcd, Nat.mul_comm; f_equal.
- rewrite <- Nat.mul_mod_distr_l; [ | | easy ]; cycle 1. {
-   intros H.
-   apply Nat.div_small_iff in H; [ | easy ].
-   apply Nat.nle_gt in H; apply H; rewrite Hc.
-   apply Nat_gcd_le_r; pauto.
- }
- rewrite Hcd.
- rewrite <- (proj2 (Nat.div_exact _ c Hcz)).
- +rewrite Nat.add_comm, Nat.mod_add; [ easy | pauto ].
- +rewrite Hc.
-  apply Nat.mod_divide; [ now rewrite <- Hc | apply Nat.gcd_divide_l ].
-
-...
+rewrite (NQnum_den x); [ | easy ].
+rewrite NQadd_pair; [ | easy | pauto ].
+do 2 rewrite Nat.mul_1_l.
+rewrite NQnum_pair.
+rewrite Nat.max_r; [ | apply Nat.neq_0_lt_0; pauto ].
+rewrite <- NQnum_den; [ | easy ].
+rewrite NQden_pair.
+remember (Nat.gcd (a * NQden x + NQnum x) (NQden x)) as c eqn:Hc.
+assert (Hcz : c ≠ 0). {
+  intros H; rewrite Hc in H.
+  apply Nat.gcd_eq_0_r in H.
+  now apply NQden_neq_0 in H.
+}
+rewrite Nat.max_r; cycle 1. {
+  apply Nat.div_le_lower_bound; [ easy | ].
+  rewrite Nat.mul_1_r; subst c.
+  apply Nat_gcd_le_r; pauto.
+}
+apply (Nat.mul_cancel_l _ _ c); [ easy | ].
+assert (Hcd : c * (NQden x / c) = NQden x). {
+  rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
+  -now rewrite Nat.mul_comm, Nat.div_mul.
+  -rewrite Hc; apply Nat.gcd_divide_r.
+}
+do 2 rewrite Nat.mul_assoc.
+rewrite Hcd, Nat.mul_comm; f_equal.
+rewrite <- Nat.mul_mod_distr_l; [ | | easy ]; cycle 1. {
+  intros H.
+  apply Nat.div_small_iff in H; [ | easy ].
+  apply Nat.nle_gt in H; apply H; rewrite Hc.
+  apply Nat_gcd_le_r; pauto.
+}
+rewrite Hcd.
+rewrite <- (proj2 (Nat.div_exact _ c Hcz)).
+-rewrite Nat.add_comm, Nat.mod_add; [ easy | pauto ].
+-rewrite Hc.
+ apply Nat.mod_divide; [ now rewrite <- Hc | apply Nat.gcd_divide_l ].
 Qed.
 
 Require Import Summation.
