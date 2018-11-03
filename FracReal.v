@@ -3225,12 +3225,9 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
      rewrite NQmul_pair_den_num; [ | pauto ].
      rewrite NQmul_1_r.
      apply (NQadd_le_mono_r _ _ 1%NQ).
-     rewrite NQadd_0_l, NQsub_add.
-     rewrite A_split_first; [ | flia Hin ].
-     replace (S (i + j)) with (i + j + 1) by flia.
-     rewrite H4.
-...
-}
+     now rewrite NQadd_0_l, NQsub_add.
+  }
+
 ...
 
 (**)
