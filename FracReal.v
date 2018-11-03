@@ -3227,7 +3227,7 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
      apply (NQadd_le_mono_r _ _ 1%NQ).
      now rewrite NQadd_0_l, NQsub_add.
   }
-
+  rewrite NQadd_opp_r in H5.
 ...
 
 (**)
