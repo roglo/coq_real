@@ -3191,6 +3191,16 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
       now apply Nat.mul_le_mono_r, Nat_pow_ge_1.
      +rewrite <- (NQmul_0_l (1 // rad ^ j)%NQ).
       apply NQmul_le_mono_pos_r; [ | apply A_ge_0 ].
+      replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQlt_pair; [ easy | pauto | pauto ].
+    -apply NQsub_lt.
+     replace 0%NQ with (0 * 1 // rad ^ j)%NQ by easy.
+     apply NQmul_lt_mono_pos_r.
+     +replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQlt_pair; [ easy | pauto | pauto ].
+     +now apply NQlt_0_sub.
+  }
+  rewrite NQadd_opp_r.
 ...
  rewrite NQfrac_add_nat_l in H5; cycle 1. {
    apply (NQmul_le_mono_pos_r (rad ^ j // 1)%NQ).

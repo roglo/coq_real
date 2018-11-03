@@ -922,6 +922,23 @@ destruct (NQeq_dec x y) as [H1| H1].
 Qed.
 Arguments NQsub_le_mono x%NQ y%NQ z%NQ t%NQ.
 
+Theorem NQlt_0_sub : ∀ x y, (0 < y - x)%NQ ↔ (x < y)%NQ.
+Proof.
+intros.
+destruct x as [| xp| xp].
+-now rewrite NQsub_0_r.
+-destruct y as [| yp| yp]; [ easy | cbn | easy ].
+ remember (GQcompare yp xp) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ | | easy ].
+ +split; [ easy | subst; apply GQlt_irrefl ].
+ +split; [ easy | now apply GQnlt_ge, GQlt_le_incl ].
+-destruct y as [| yp| yp]; [ easy | easy | cbn ].
+ remember (GQcompare yp xp) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ | easy | ].
+ +split; [ easy | subst; apply GQlt_irrefl ].
+ +split; [ easy | now apply GQnlt_ge, GQlt_le_incl ].
+Qed.
+
 Theorem NQle_0_sub : ∀ x y, (0 ≤ y - x)%NQ ↔ (x ≤ y)%NQ.
 Proof.
 intros.
