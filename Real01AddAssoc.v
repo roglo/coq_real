@@ -685,10 +685,12 @@ Qed.
 Definition add_series (u v : nat → nat) i := u i + v i.
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
-  prop_carr (add_series u (d2n (prop_carr v))) i =
-  prop_carr (add_series u v) i.
+  (∀ k : nat, v (i + k + 1) ≤ 2 * (rad - 1))
+  → prop_carr (add_series u (d2n (prop_carr v))) i =
+     prop_carr (add_series u v) i.
 Proof.
-intros.
+intros * Hv.
+specialize radix_ge_2 as Hr.
 apply digit_eq_eq; simpl.
 unfold add_series.
 do 2 rewrite <- Nat.add_assoc.
@@ -704,8 +706,46 @@ f_equal; f_equal.
 rename i into j.
 unfold nat_prop_carr at 1.
 destruct (LPO_fst (fA_ge_1_ε v j)) as [H1| H1].
--idtac.
-Search (∀ _, fA_ge_1_ε _ _ _ = true).
+-specialize (A_ge_1_add_all_true_if v j Hv H1) as H2.
+ destruct H2 as [H2| [H2| H2]].
+ +unfold NQintg.
+  rewrite Nat.div_small; cycle 1. {
+    rewrite A_all_9; [ | intros; apply H2 ].
+    remember (min_n j 0) as n eqn:Hn.
+    remember (n - j - 1) as s eqn:Hs.
+    move s before n.
+    rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
+      now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
+    }
+    do 2 rewrite Nat.mul_1_l.
+    rewrite NQnum_pair, NQden_pair.
+    rewrite Nat.max_r; [ | now apply Nat_pow_ge_1 ].
+    remember (Nat.gcd (rad ^ s - 1) (rad ^ s)) as g eqn:Hg.
+    assert (Hgz : g ≠ 0). {
+      rewrite Hg; intros H.
+      now apply Nat.gcd_eq_0_r, Nat.pow_nonzero in H.
+    }
+    rewrite Nat.max_r; cycle 1. {
+      apply (Nat.mul_le_mono_pos_l _ _ g); [ now apply Nat.neq_0_lt_0 | ].
+      rewrite Nat.mul_1_r.
+      rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
+      -rewrite Nat.mul_comm, Nat.div_mul; [ | easy ].
+       now rewrite Hg; apply Nat_gcd_le_r, Nat.pow_nonzero.
+      -rewrite Hg; apply Nat.gcd_divide_r.
+    }
+    apply (Nat.mul_lt_mono_pos_l g); [ flia Hgz | ].
+    rewrite <- Nat.divide_div_mul_exact; [ | easy | ]; cycle 1. {
+      rewrite Hg; apply Nat.gcd_divide_l.
+    }
+    rewrite <- Nat.divide_div_mul_exact; [ | easy | ]; cycle 1. {
+      rewrite Hg; apply Nat.gcd_divide_r.
+    }
+    rewrite Nat.mul_comm, Nat.div_mul; [ | easy ].
+    rewrite Nat.mul_comm, Nat.div_mul; [ | easy ].
+    apply Nat.sub_lt; [ | pauto ].
+    now apply Nat_pow_ge_1.
+  }
+  rewrite Nat.add_0_l.
 ...
 
 Theorem truc {r : radix} : ∀ x u,
