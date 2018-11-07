@@ -269,6 +269,12 @@ Proof. easy. Qed.
 Theorem NQadd_0_r : ∀ x, (x + 0 = x)%NQ.
 Proof. intros; now rewrite NQadd_comm. Qed.
 
+Theorem NQsub_0_l : ∀ x, (0 - x = - x)%NQ.
+Proof. easy. Qed.
+
+Theorem NQsub_0_r : ∀ x, (x - 0 = x)%NQ.
+Proof. intros; now destruct x. Qed.
+
 Theorem NQnle_gt : ∀ x y, ¬ (x ≤ y)%NQ ↔ (y < x)%NQ.
 Proof.
 intros.
@@ -916,6 +922,80 @@ destruct (NQeq_dec x y) as [H1| H1].
 Qed.
 Arguments NQsub_le_mono x%NQ y%NQ z%NQ t%NQ.
 
+Theorem NQsub_lt_mono : ∀ x y z t,
+  (x < y)%NQ → (z < t)%NQ → (x - t < y - z)%NQ.
+Proof.
+intros * Hxy Hzt.
+apply (NQlt_trans _ (y - t)).
+-now apply NQadd_lt_mono_r.
+-apply NQadd_lt_mono_l.
+ now apply -> NQopp_lt_mono.
+Qed.
+Arguments NQsub_lt_mono x%NQ y%NQ z%NQ t%NQ.
+
+Theorem NQsub_le_lt_mono : ∀ x y z t,
+  (x ≤ y)%NQ → (z < t)%NQ → (x - t < y - z)%NQ.
+Proof.
+intros * Hxy Hzt.
+destruct (NQeq_dec x y) as [H1| H1].
+-subst x.
+ apply NQadd_lt_mono_l.
+ now apply -> NQopp_lt_mono.
+-apply NQsub_lt_mono; [ | easy ].
+ apply NQnle_gt; intros H2; apply H1; clear H1.
+ now apply NQle_antisymm.
+Qed.
+Arguments NQsub_le_lt_mono x%NQ y%NQ z%NQ t%NQ.
+
+Theorem NQsub_lt_le_mono : ∀ x y z t,
+  (x < y)%NQ → (z ≤ t)%NQ → (x - t < y - z)%NQ.
+Proof.
+intros * Hxy Hzt.
+destruct (NQeq_dec z t) as [H1| H1].
+-subst z.
+ now apply NQadd_lt_mono_r.
+-apply NQsub_lt_mono; [ easy | ].
+ apply NQnle_gt; intros H2; apply H1; clear H1.
+ now apply NQle_antisymm.
+Qed.
+Arguments NQsub_lt_le_mono x%NQ y%NQ z%NQ t%NQ.
+
+Theorem NQlt_0_sub : ∀ x y, (0 < y - x)%NQ ↔ (x < y)%NQ.
+Proof.
+intros.
+destruct x as [| xp| xp].
+-now rewrite NQsub_0_r.
+-destruct y as [| yp| yp]; [ easy | cbn | easy ].
+ remember (GQcompare yp xp) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ | | easy ].
+ +split; [ easy | subst; apply GQlt_irrefl ].
+ +split; [ easy | now apply GQnlt_ge, GQlt_le_incl ].
+-destruct y as [| yp| yp]; [ easy | easy | cbn ].
+ remember (GQcompare yp xp) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ | easy | ].
+ +split; [ easy | subst; apply GQlt_irrefl ].
+ +split; [ easy | now apply GQnlt_ge, GQlt_le_incl ].
+Qed.
+
+Theorem NQle_0_sub : ∀ x y, (0 ≤ y - x)%NQ ↔ (x ≤ y)%NQ.
+Proof.
+intros.
+destruct x as [| xp| xp].
+-now rewrite NQsub_0_r.
+-destruct y as [| yp| yp]; [ easy | cbn | easy ].
+ remember (GQcompare yp xp) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff.
+ +split; [ intros H; subst; apply GQle_refl | easy ].
+ +split; [ easy | intros H; now apply GQnlt_ge in H ].
+ +split; [ intros H; now apply GQlt_le_incl | easy ].
+-destruct y as [| yp| yp]; [ easy | easy | cbn ].
+ remember (GQcompare yp xp) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff.
+ +split; [ intros H; subst; apply GQle_refl | easy ].
+ +split; [ intros H; now apply GQlt_le_incl | easy ].
+ +split; [ easy | intros H; now apply GQnlt_ge in H ].
+Qed.
+
 Theorem NQsub_lt : ∀ x y, (0 < x)%NQ → (y - x < y)%NQ.
 Proof.
 intros * Hxy.
@@ -1082,6 +1162,49 @@ unfold NQsub at 2.
 rewrite NQsub_add_distr.
 now rewrite NQsub_opp_r.
 Qed.
+
+Theorem NQsub_lt_mono_l : ∀ x y z, (x < y)%NQ ↔ (z - y < z - x)%NQ.
+Proof.
+intros.
+split; intros Hxy.
+-apply NQsub_le_lt_mono; [ apply NQle_refl | easy ].
+-apply (NQsub_le_lt_mono z z) in Hxy; [ | apply NQle_refl ].
+ do 2 rewrite NQsub_sub_distr in Hxy.
+ now rewrite NQsub_diag in Hxy.
+Qed.
+Arguments NQsub_lt_mono_l x%NQ y%NQ z%NQ.
+
+Theorem NQsub_lt_mono_r : ∀ x y z, (x < y)%NQ ↔ (x - z < y - z)%NQ.
+Proof.
+intros.
+split; intros Hxy.
+-apply NQsub_lt_le_mono; [ easy | apply NQle_refl ].
+-apply (NQadd_lt_mono_r (x - z) (y - z) z) in Hxy.
+ now do 2 rewrite NQsub_add in Hxy.
+Qed.
+Arguments NQsub_lt_mono_r x%NQ y%NQ z%NQ.
+
+Theorem NQlt_add_lt_sub_l : ∀ x y z, (x + y < z)%NQ ↔ (y < z - x)%NQ.
+Proof.
+intros.
+split; intros Hxyz.
+-apply (NQsub_le_lt_mono x x) in Hxyz; [ | apply NQle_refl ].
+ rewrite NQsub_add_distr, NQsub_diag, NQsub_0_l in Hxyz.
+ apply NQopp_lt_mono in Hxyz.
+ rewrite NQopp_involutive, NQopp_sub_distr in Hxyz.
+ now rewrite NQadd_opp_l in Hxyz.
+-apply (NQadd_lt_mono_r _ _ x) in Hxyz.
+ now rewrite NQsub_add, NQadd_comm in Hxyz.
+Qed.
+Arguments NQlt_add_lt_sub_l x%NQ y%NQ z%NQ.
+
+Theorem NQlt_add_lt_sub_r : ∀ x y z, (x + y < z)%NQ ↔ (x < z - y)%NQ.
+Proof.
+intros.
+rewrite NQadd_comm.
+apply NQlt_add_lt_sub_l.
+Qed.
+Arguments NQlt_add_lt_sub_r x%NQ y%NQ z%NQ.
 
 Theorem NQmul_pair : ∀ x y z t,
   y ≠ 0 → t ≠ 0 → ((x // y) * (z // t) = (x * z) // (y * t))%NQ.

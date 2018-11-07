@@ -1,6 +1,6 @@
 Set Nested Proofs Allowed.
 Require Import Utf8 Arith Psatz NPeano.
-Require Import Misc Summation FracReal.
+Require Import Misc Summation FracReal NQ.
 
 Definition is_num_9_strict_after {r : radix} u i j :=
   if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false.
@@ -110,39 +110,71 @@ induction m; intros.
    --rewrite <- Nat.pow_succ_r'.
      apply Nat.pow_le_mono_r; [ easy | apply Nat.le_succ_diag_r ].
 Qed.
+*)
 
 Theorem not_prop_carr_all_9_all_ge_1 {r : radix} : ∀ u i,
   (∀ k : nat, u (i + k + 1) ≤ 2 * (rad - 1))
-  → (∀ k : nat, A_ge_1 u i k = true)
+  → (∀ k : nat, fA_ge_1_ε u i k = true)
+(**)
+  → (u i + NQintg (A i (rad * (i + 3)) u)) mod rad = rad - 1
+(*
   → (u i + nA i (rad * (i + 3)) u / rad ^ (rad * (i + 3) - i - 1) + 1)
        mod rad = rad - 1
+*)
   → ¬ (∀ k, d2n (prop_carr u) (i + k) = rad - 1).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur H2 H1 Hn.
+intros Hur H2 H1 Hi.
 specialize (A_ge_1_add_all_true_if _ _ Hur H2) as H3.
 destruct H3 as [H3| [H3| H3]].
--rewrite Nat.div_small in H1.
+-unfold NQintg in H1.
+ rewrite Nat.div_small in H1.
  +rewrite Nat.add_0_r in H1.
-  specialize (Hn 1) as H4.
+  specialize (Hi 1) as H4.
   unfold prop_carr, d2n in H4; simpl in H4.
   unfold nat_prop_carr in H4.
-  destruct (LPO_fst (A_ge_1 u (i + 1))) as [H5| H5].
-  *rewrite Nat.div_small in H4.
+  destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H5| H5].
+  *unfold NQintg in H4.
+   rewrite Nat.div_small in H4.
    --rewrite Nat.add_0_l in H4.
      specialize (H3 0); rewrite Nat.add_0_r in H3.
      rewrite H3, Nat.sub_add in H4; [ | easy ].
      rewrite Nat.mod_same in H4; [ | easy ].
      flia Hr H4.
-   --apply nA_dig_seq_ub.
-     ++intros j Hj.
-       specialize (H3 (j - i - 1)).
-       replace (i + (j - i - 1) + 1) with j in H3 by flia Hj.
-       flia Hr H3.
-     ++unfold min_n; destruct rad; [ easy | simpl; flia ].
+   --remember (min_n (i + 1) 0) as n eqn:Hn.
+     specialize (A_dig_seq_ub u n (i + 1)) as H6.
+     assert (H : ∀ j, i + 1 < j < n → u j < rad). {
+       intros j Hj.
+       replace j with (i + (j - i - 1) + 1) by flia Hj.
+       rewrite H3; apply Nat.sub_lt; [ easy | pauto ].
+     }
+     specialize (H6 H); clear H.
+     assert (H : i + 1 + 1 ≤ n - 1). {
+       rewrite Hn; unfold min_n.
+       destruct rad; [ easy | cbn; flia ].
+     }
+     specialize (H6 H); clear H.
+     remember (n - (i + 1) - 1) as s eqn:Hs.
+     move s before n.
+     remember (A (i + 1) n u) as x eqn:Hx in H6.
+     rewrite NQnum_den in Hx; [ | apply A_ge_0 ].
+     rewrite Hx in H6.
+     rewrite NQsub_pair_pos in H6; [ | easy | pauto | ]; cycle 1. {
+       now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
+     }
+     do 2 rewrite Nat.mul_1_l in H6.
+     apply NQle_pair in H6; [ | apply NQden_neq_0 | pauto ].
+     apply (Nat.mul_lt_mono_pos_r (rad ^ s)); [ apply Nat.neq_0_lt_0; pauto | ].
+     eapply le_lt_trans; [ apply H6 | ].
+     rewrite Nat.mul_sub_distr_l.
+     apply Nat.sub_lt; cycle 1. {
+       rewrite Nat.mul_1_r; apply Nat.neq_0_lt_0, NQden_neq_0.
+     }
+     now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
   *destruct H5 as (j & Hjj & Hj); clear H4.
    apply A_ge_1_false_iff in Hj.
+...
    apply Nat.nle_gt in Hj; apply Hj; clear Hj.
    rewrite Nat.mod_small.
    --apply nA_ge_999000.
@@ -317,14 +349,19 @@ Theorem eq_all_prop_carr_9_cond {r : radix} : ∀ u i,
   → ∀ k, ∃ m,
   let n := rad * (i + k + m + 3) in
   let s := n - (i + k) - 1 in
+(**)
+  (NQfrac (A (i + k) n u) < 1 - 1 // rad ^ S m)%NQ ∧
+  (u (i + k) + NQintg (A (i + k) n u)) mod rad = rad - 1.
+(*
   nA (i + k) n u mod rad ^ s < (rad ^ S m - 1) * rad ^ (s - S m) ∧
   (u (i + k) + nA (i + k) n u / rad ^ s) mod rad = rad - 1.
+*)
 Proof.
 intros * Hur Hi *.
 specialize (Hi k) as Huni.
 unfold prop_carr, d2n in Huni; simpl in Huni.
 unfold nat_prop_carr in Huni.
-destruct (LPO_fst (A_ge_1 u (i + k))) as [H2| H2]; simpl in Huni.
+destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H2| H2]; simpl in Huni.
 -assert (Hn' : ∀ l, d2n (prop_carr u) ((i + k) + l) = rad - 1). {
    intros j.
    replace ((i + k) + j) with (i + (k + j)) by flia.
@@ -333,6 +370,7 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H2| H2]; simpl in Huni.
  exfalso; revert Hn'.
  unfold min_n in Huni; rewrite Nat.add_0_r in Huni.
  rewrite Nat.add_assoc in Huni.
+...
  apply not_prop_carr_all_9_all_ge_1; [ | easy | easy ].
  intros l.
  replace (i + k + l + 1) with (i + (k + l) + 1) by flia.
@@ -342,6 +380,7 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H2| H2]; simpl in Huni.
  exists m; easy.
 Qed.
 
+(*
 Theorem eq_all_prop_carr_9_cond1 {r : radix} : ∀ u i n s j,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → s = n - i - 1
@@ -461,6 +500,7 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H4| H4].
    easy.
   *split; [ flia H3 | flia Hr Hur ].
 Qed.
+*)
 
 Theorem eq_all_prop_carr_9_cond2 {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
@@ -717,6 +757,7 @@ destruct (LPO_fst (is_num_9_strict_after u n)) as [H1| H1].
   --rewrite H1 in H2; flia Hr H2.
 Qed.
 
+(*
 Theorem rad_pow_le_lt {r : radix} : ∀ s, s ≠ 0 →
   rad ^ s ≤ 2 * (rad ^ s - 1) < 2 * rad ^ s.
 Proof.
@@ -1050,6 +1091,7 @@ specialize (H1 H); clear H.
 specialize (Hn 1); specialize (H1 0); rewrite Nat.add_0_r in H1.
 rewrite Hn in H1; flia Hr H1.
 Qed.
+*)
 
 Theorem not_prop_carr_all_9 {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
@@ -1081,6 +1123,7 @@ assert (H3 : ∀ k, d2n (prop_carr u) (i + 1 + k) = rad - 1). {
 now apply not_prop_carr_all_9 in H3.
 Qed.
 
+(*
 Theorem freal_normalize_add {r : radix} : ∀ x y,
   freal_norm_eq (freal_normalize (x + y)) (x + y).
 Proof.
