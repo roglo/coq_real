@@ -3787,13 +3787,17 @@ now rewrite Hxy, Hxy'.
 Qed.
 *)
 
-...
-
 Theorem nA_ge_999000 {r : radix} : ∀ u i j,
   (∀ k, rad - 1 ≤ u (i + k + 1))
+(**)
+  → let n1 := rad * (i + j + 3) in
+     let s1 := n1 - i - 1 in
+     (1 - 1 // rad ^ S j ≤ A i n1 u)%NQ.
+(*
   → let n1 := rad * (i + j + 3) in
      let s1 := n1 - i - 1 in
      (rad ^ S j - 1) * rad ^ (s1 - S j) ≤ nA i n1 u.
+*)
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -3805,8 +3809,20 @@ assert (Hin1 : i + j + 2 ≤ n1 - 1). {
   subst n1.
   destruct rad; [ easy | simpl; flia ].
 }
-rewrite nA_split with (e := j + i + 2); [ | flia Hin1 ].
-apply le_plus_trans.
+rewrite A_split with (e := j + i + 2); [ | flia Hin1 ].
+eapply NQle_trans; cycle 1. {
+  apply NQle_add_r.
+  replace (j + i + 2 - i - 1) with (S j) by flia.
+  apply (NQmul_le_mono_pos_r (rad ^ S j // 1)%NQ).
+  -replace 0%NQ with (0 // 1)%NQ by easy.
+   apply NQlt_pair; [ easy | easy | ].
+   rewrite Nat.mul_1_r, Nat.mul_1_l.
+   apply Nat.neq_0_lt_0; pauto.
+  -rewrite NQmul_0_l, <- NQmul_assoc.
+   rewrite NQmul_inv_pair; [ | easy | pauto ].
+   rewrite NQmul_1_r; apply A_ge_0.
+}
+...
 unfold nA.
 rewrite summation_rtl.
 rewrite summation_shift; [ | flia ].
