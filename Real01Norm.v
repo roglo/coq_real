@@ -174,10 +174,11 @@ destruct H3 as [H3| [H3| H3]].
      now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
   *destruct H5 as (j & Hjj & Hj); clear H4.
    apply A_ge_1_false_iff in Hj.
-...
-   apply Nat.nle_gt in Hj; apply Hj; clear Hj.
+   apply NQnle_gt in Hj; apply Hj; clear Hj.
+   unfold NQfrac.
    rewrite Nat.mod_small.
-   --apply nA_ge_999000.
+...
+   --apply A_ge_999000.
      intros k.
      replace (i + 1 + k + 1) with (i + (1 + k) + 1) by flia.
      now rewrite H3.
