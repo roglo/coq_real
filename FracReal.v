@@ -3787,17 +3787,11 @@ now rewrite Hxy, Hxy'.
 Qed.
 *)
 
-Theorem nA_ge_999000 {r : radix} : ∀ u i j,
+Theorem A_ge_999000 {r : radix} : ∀ u i j,
   (∀ k, rad - 1 ≤ u (i + k + 1))
-(**)
   → let n1 := rad * (i + j + 3) in
      let s1 := n1 - i - 1 in
      (1 - 1 // rad ^ S j ≤ A i n1 u)%NQ.
-(*
-  → let n1 := rad * (i + j + 3) in
-     let s1 := n1 - i - 1 in
-     (rad ^ S j - 1) * rad ^ (s1 - S j) ≤ nA i n1 u.
-*)
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -3809,10 +3803,10 @@ assert (Hin1 : i + j + 2 ≤ n1 - 1). {
   subst n1.
   destruct rad; [ easy | simpl; flia ].
 }
-rewrite A_split with (e := j + i + 2); [ | flia Hin1 ].
+rewrite A_split with (e := i + j + 2); [ | flia Hin1 ].
 eapply NQle_trans; cycle 1. {
   apply NQle_add_r.
-  replace (j + i + 2 - i - 1) with (S j) by flia.
+  replace (i + j + 2 - i - 1) with (S j) by flia.
   apply (NQmul_le_mono_pos_r (rad ^ S j // 1)%NQ).
   -replace 0%NQ with (0 // 1)%NQ by easy.
    apply NQlt_pair; [ easy | easy | ].
@@ -3822,22 +3816,21 @@ eapply NQle_trans; cycle 1. {
    rewrite NQmul_inv_pair; [ | easy | pauto ].
    rewrite NQmul_1_r; apply A_ge_0.
 }
-...
-unfold nA.
-rewrite summation_rtl.
+unfold A.
 rewrite summation_shift; [ | flia ].
-rewrite power_summation_sub_1; [ | easy ].
+rewrite NQpower_summation_inv; [ | flia Hr ].
 rewrite summation_mul_distr_l.
-replace (n1 - (j + i + 2)) with (s1 - S j) by (subst n1 s1; flia Hin1).
-apply Nat.mul_le_mono_r.
-replace (j + i + 2 - 1 - (i + 1)) with j by flia.
-apply (@summation_le_compat nat_ord_ring_def).
-intros k Hk; simpl; unfold Nat.le.
-replace (j + i + 2 - 1 + (i + 1) - (i + 1 + k))
-  with (j + i + 1 - k) by flia.
-replace (j + i + 2 - 1 - (j + i + 1 - k)) with k by flia Hk.
-apply Nat.mul_le_mono_r.
-specialize (Hur (j - k)).
-replace (i + (j - k) + 1) with (j + i + 1 - k) in Hur by flia Hk.
-easy.
+replace (i + j + 2 - 1 - (i + 1)) with j by flia Hin1.
+apply summation_le_compat.
+intros k Hk.
+replace (i + 1 + k - i) with (S k) by flia.
+rewrite NQsub_pair_pos; [ | easy | easy | flia Hr ].
+do 2 rewrite Nat.mul_1_l.
+rewrite NQmul_pair; [ | easy | pauto ].
+rewrite Nat.mul_1_r.
+rewrite <- Nat.pow_succ_r; [ | easy ].
+apply NQle_pair; [ pauto | pauto | ].
+rewrite Nat.mul_comm.
+apply Nat.mul_le_mono_l.
+rewrite Nat.add_shuffle0; apply Hur.
 Qed.

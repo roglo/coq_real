@@ -177,12 +177,13 @@ destruct H3 as [H3| [H3| H3]].
    apply NQnle_gt in Hj; apply Hj; clear Hj.
    unfold NQfrac.
    rewrite Nat.mod_small.
-...
-   --apply A_ge_999000.
+   --rewrite <- NQnum_den; [ | apply A_ge_0 ].
+     apply A_ge_999000.
      intros k.
      replace (i + 1 + k + 1) with (i + (1 + k) + 1) by flia.
      now rewrite H3.
-   --apply nA_dig_seq_ub.
+...
+   --apply A_dig_seq_ub.
      ++intros k Hk.
        specialize (H3 (k - i - 1)).
        replace (i + (k - i - 1) + 1) with k in H3 by flia Hk.
