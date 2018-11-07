@@ -116,7 +116,7 @@ Theorem not_prop_carr_all_9_all_ge_1 {r : radix} : ∀ u i,
   (∀ k : nat, u (i + k + 1) ≤ 2 * (rad - 1))
   → (∀ k : nat, fA_ge_1_ε u i k = true)
 (**)
-  → (u i + (NQintg (A i (rad * (i + 3)) u) + 1)) mod rad = rad - 1
+  → (u i + NQintg (A i (rad * (i + 3)) u) + 1) mod rad = rad - 1
 (*
   → (u i + nA i (rad * (i + 3)) u / rad ^ (rad * (i + 3) - i - 1) + 1)
        mod rad = rad - 1
@@ -128,21 +128,34 @@ specialize radix_ge_2 as Hr.
 intros Hur H2 H1 Hi.
 specialize (A_ge_1_add_all_true_if _ _ Hur H2) as H3.
 destruct H3 as [H3| [H3| H3]].
-...
-destruct H3 as [H3| [H3| H3]].
--rewrite Nat.div_small in H1.
+-unfold NQintg in H1.
+ rewrite Nat.div_small in H1.
  +rewrite Nat.add_0_r in H1.
-  specialize (Hn 1) as H4.
+  specialize (Hi 1) as H4.
   unfold prop_carr, d2n in H4; simpl in H4.
   unfold nat_prop_carr in H4.
-  destruct (LPO_fst (A_ge_1 u (i + 1))) as [H5| H5].
-  *rewrite Nat.div_small in H4.
+  destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H5| H5].
+  *unfold NQintg in H4.
+   rewrite Nat.div_small in H4.
    --rewrite Nat.add_0_l in H4.
      specialize (H3 0); rewrite Nat.add_0_r in H3.
      rewrite H3, Nat.sub_add in H4; [ | easy ].
      rewrite Nat.mod_same in H4; [ | easy ].
      flia Hr H4.
-   --apply nA_dig_seq_ub.
+   --specialize (A_dig_seq_ub u (min_n (i + 1) 0) (i + 1)) as H6.
+     assert (H : ∀ j, i + 1 < j < min_n (i + 1) 0 → u j < rad). {
+       intros j Hj.
+       specialize (H3 (j - i - 1)).
+       replace (i + (j - i - 1) + 1) with j in H3 by flia Hj.
+       flia Hr H3.
+     }
+     specialize (H6 H); clear H.
+     assert (H : i + 1 + 1 ≤ min_n (i + 1) 0 - 1). {
+       unfold min_n; destruct rad; [ easy | simpl; flia ].
+     }
+     specialize (H6 H); clear H.
+...
+     apply nA_dig_seq_ub.
      ++intros j Hj.
        specialize (H3 (j - i - 1)).
        replace (i + (j - i - 1) + 1) with j in H3 by flia Hj.
