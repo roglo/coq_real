@@ -295,28 +295,12 @@ destruct H3 as [H3| [H3| H3]].
     }
     apply NQlt_pair in H6; [ | apply NQden_neq_0 | easy ].
     rewrite Nat.mul_1_r in H6.
-    unfold NQintg in H4 |-*.
-    remember (NQnum x / NQden x) as y eqn:Hy.
-    symmetry in Hy.
-    destruct y; [ easy | exfalso ].
     replace (2 * rad - 2 + 1) with (rad + (rad - 1)) in H4 by flia Hr.
-...
-    apply Nat_div_less_small.
-    split; [ | now rewrite Nat.mul_comm ].
-...
-    remember (NQnum x / NQden x) as y eqn:Hy.
-    symmetry in Hy.
-    destruct y.
-    -apply Nat.div_small_iff in Hy; [ | apply NQden_neq_0 ].
-...
-     apply Nat.lt_le_incl in Hy.
-    -apply Nat.divi
-Check Nat.div_small.
-    apply Nat.div_small.
-    apply Nat.mul_le_mono_r (NQde
-...
-    apply (Nat.mul_cancel_l _ _ (NQden x)); [ apply NQden_neq_0 | ].
-    Search (_ * (_ / _)).
+    rewrite <- Nat.add_assoc, Nat_mod_add_same_l in H4; [ | easy ].
+    remember (NQintg x) as y eqn:Hy; symmetry in Hy.
+    destruct y; [ easy | exfalso ].
+    replace (rad - 1 + S y) with (rad + y) in H4 by flia Hr.
+    rewrite Nat_mod_add_same_l in H4; [ | easy ].
 ...
 replace x with (x - rad ^ s + 1 * rad ^ s).
 -rewrite Nat.div_add; [ | pauto ].
