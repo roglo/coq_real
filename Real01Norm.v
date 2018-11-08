@@ -272,6 +272,14 @@ destruct H3 as [H3| [H3| H3]].
     remember (A (i + 1) n u) as x eqn:Hx.
     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
     rewrite Nat.add_assoc, Nat.add_shuffle0 in H4.
+    specialize (A_upper_bound_for_add u (i + 1) n) as H6.
+    rewrite <- Hx in H6.
+    assert (H : ∀ k, u (i + 1 + k + 1) ≤ 2 * (rad - 1)). {
+      intros k.
+      replace (i + 1 + k) with (i + (1 + k)) by flia.
+      apply Hur.
+    }
+    specialize (H6 H); clear H.
 ...
 replace x with (x - rad ^ s + 1 * rad ^ s).
 -rewrite Nat.div_add; [ | pauto ].
