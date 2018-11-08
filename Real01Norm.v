@@ -301,7 +301,17 @@ destruct H3 as [H3| [H3| H3]].
     destruct y; [ easy | exfalso ].
     replace (rad - 1 + S y) with (rad + y) in H4 by flia Hr.
     rewrite Nat_mod_add_same_l in H4; [ | easy ].
-    apply (Nat.mul_cancel_r _ _ (NQden x)) in Hy; [ | easy ].
+    specialize (Nat.div_mod (NQnum x) (NQden x) (NQden_neq_0 _)) as H7.
+    unfold NQintg in Hy.
+    rewrite Hy in H7.
+    destruct y.
+    -rewrite Nat.mod_0_l in H4; [ flia H4 Hr | flia Hr ].
+    -apply Nat.nle_gt in H6; apply H6; rewrite H7.
+     replace (S (S y)) with (2 + y) by easy.
+     rewrite Nat.mul_add_distr_l; flia.
+  }
+  rewrite Nat.add_0_l, Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
+  replace (2 * rad - 2 + 1) with (rad + (rad - 1)) in H4 by flia Hr.
 ...
 replace x with (x - rad ^ s + 1 * rad ^ s).
 -rewrite Nat.div_add; [ | pauto ].
