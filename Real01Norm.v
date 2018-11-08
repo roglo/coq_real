@@ -2,6 +2,8 @@ Set Nested Proofs Allowed.
 Require Import Utf8 Arith Psatz NPeano.
 Require Import Misc Summation FracReal NQ.
 
+Hint Resolve Nat.neq_0_lt_0.
+
 Definition is_num_9_strict_after {r : radix} u i j :=
   if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false.
 
@@ -164,13 +166,11 @@ destruct H3 as [H3| [H3| H3]].
        now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
      }
      do 2 rewrite Nat.mul_1_l in H6.
-     apply NQle_pair in H6; [ | apply NQden_neq_0 | pauto ].
+     apply NQle_pair in H6; [ | easy | pauto ].
      apply (Nat.mul_lt_mono_pos_r (rad ^ s)); [ apply Nat.neq_0_lt_0; pauto | ].
      eapply le_lt_trans; [ apply H6 | ].
      rewrite Nat.mul_sub_distr_l.
-     apply Nat.sub_lt; cycle 1. {
-       rewrite Nat.mul_1_r; apply Nat.neq_0_lt_0, NQden_neq_0.
-     }
+     apply Nat.sub_lt; [ | now rewrite Nat.mul_1_r; apply Nat.neq_0_lt_0 ].
      now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
   *destruct H5 as (j & Hjj & Hj); clear H4.
    apply A_ge_1_false_iff in Hj.
@@ -202,9 +202,9 @@ destruct H3 as [H3| [H3| H3]].
      apply (NQmul_le_mono_pos_r (NQden x // 1)%NQ) in H4; cycle 1. {
        replace 0%NQ with (0 // 1)%NQ by easy.
        apply NQlt_pair; [ easy | pauto | cbn ].
-       rewrite Nat.add_0_r; apply Nat.neq_0_lt_0, NQden_neq_0.
+       now rewrite Nat.add_0_r; apply Nat.neq_0_lt_0.
      }
-     rewrite NQmul_pair_den_num in H4; [ | apply NQden_neq_0 ].
+     rewrite NQmul_pair_den_num in H4; [ | easy ].
      rewrite NQsub_pair_pos in H4; [ | easy | pauto | ]; cycle 1. {
        do 2 rewrite Nat.mul_1_l.
        now apply Nat_pow_ge_1.
@@ -244,9 +244,9 @@ destruct H3 as [H3| [H3| H3]].
     replace 0%NQ with (0 // 1)%NQ by easy.
     apply NQlt_pair; [ easy | easy | ].
     rewrite Nat.mul_1_l; cbn.
-    apply Nat.neq_0_lt_0, NQden_neq_0.
+    now apply Nat.neq_0_lt_0.
   }
-  rewrite NQmul_pair_den_num in H4; [ | apply NQden_neq_0 ].
+  rewrite NQmul_pair_den_num in H4; [ | easy ].
   enough (H : (NQnum x // 1 < NQden x // 1)%NQ). {
     apply NQlt_pair in H; [ | easy | easy ].
     now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
@@ -259,7 +259,7 @@ destruct H3 as [H3| [H3| H3]].
   apply NQlt_pair; [ easy | | ].
   *now apply Nat.neq_0_lt_0, Nat_pow_ge_1.
   *rewrite Nat.mul_0_l, Nat.mul_1_l.
-   apply Nat.neq_0_lt_0, NQden_neq_0.
+   now apply Nat.neq_0_lt_0.
 -specialize (Hi 1) as H4.
  unfold prop_carr, d2n in H4; simpl in H4.
  unfold nat_prop_carr in H4.
@@ -293,7 +293,7 @@ destruct H3 as [H3| [H3| H3]].
       rewrite NQnum_den; [ easy | ].
       rewrite Hx; apply A_ge_0.
     }
-    apply NQlt_pair in H6; [ | apply NQden_neq_0 | easy ].
+    apply NQlt_pair in H6; [ | easy | easy ].
     rewrite Nat.mul_1_r in H6.
     replace (2 * rad - 2 + 1) with (rad + (rad - 1)) in H4 by flia Hr.
     rewrite <- Nat.add_assoc, Nat_mod_add_same_l in H4; [ | easy ].
@@ -301,6 +301,7 @@ destruct H3 as [H3| [H3| H3]].
     destruct y; [ easy | exfalso ].
     replace (rad - 1 + S y) with (rad + y) in H4 by flia Hr.
     rewrite Nat_mod_add_same_l in H4; [ | easy ].
+    apply (Nat.mul_cancel_r _ _ (NQden x)) in Hy; [ | easy ].
 ...
 replace x with (x - rad ^ s + 1 * rad ^ s).
 -rewrite Nat.div_add; [ | pauto ].
@@ -491,12 +492,12 @@ Qed.
        now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
      }
      do 2 rewrite Nat.mul_1_l in H6.
-     apply NQle_pair in H6; [ | apply NQden_neq_0 | pauto ].
+     apply NQle_pair in H6; [ | easy | pauto ].
      apply (Nat.mul_lt_mono_pos_r (rad ^ s)); [ apply Nat.neq_0_lt_0; pauto | ].
      eapply le_lt_trans; [ apply H6 | ].
      rewrite Nat.mul_sub_distr_l.
      apply Nat.sub_lt; cycle 1. {
-       rewrite Nat.mul_1_r; apply Nat.neq_0_lt_0, NQden_neq_0.
+       now rewrite Nat.mul_1_r; apply Nat.neq_0_lt_0.
      }
      now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
   *destruct H5 as (j & Hjj & Hj); clear H4.
@@ -529,9 +530,9 @@ Qed.
      apply (NQmul_le_mono_pos_r (NQden x // 1)%NQ) in H4; cycle 1. {
        replace 0%NQ with (0 // 1)%NQ by easy.
        apply NQlt_pair; [ easy | pauto | cbn ].
-       rewrite Nat.add_0_r; apply Nat.neq_0_lt_0, NQden_neq_0.
+       now rewrite Nat.add_0_r; apply Nat.neq_0_lt_0.
      }
-     rewrite NQmul_pair_den_num in H4; [ | apply NQden_neq_0 ].
+     rewrite NQmul_pair_den_num in H4; [ | easy ].
      rewrite NQsub_pair_pos in H4; [ | easy | pauto | ]; cycle 1. {
        do 2 rewrite Nat.mul_1_l.
        now apply Nat_pow_ge_1.
