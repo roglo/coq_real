@@ -266,6 +266,22 @@ destruct H3 as [H3| [H3| H3]].
  destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H5| H5]; simpl in H4.
  +specialize (H3 0) as H; rewrite Nat.add_0_r in H.
   rewrite H in H4; clear H.
+  replace (NQintg (A (i + 1) (min_n (i + 1) 0) u)) with 1 in H4; cycle 1. {
+    symmetry.
+    remember (min_n (i + 1) 0) as n eqn:Hn.
+    remember (A (i + 1) n u) as x eqn:Hx.
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
+    rewrite Nat.add_assoc, Nat.add_shuffle0 in H4.
+...
+replace x with (x - rad ^ s + 1 * rad ^ s).
+-rewrite Nat.div_add; [ | pauto ].
+ rewrite Nat.div_small; [ easy | ].
+ specialize (nA_upper_bound_for_add u i n Hur) as H1.
+ rewrite <- Hx, <- Hs in H1.
+ specialize (Nat.pow_nonzero rad s radix_ne_0) as H.
+ flia H1 H.
+-rewrite Nat.mul_1_l.
+ now apply Nat.sub_add.
 ...
   rewrite eq_nA_div_1 in H4.
   *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
