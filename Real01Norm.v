@@ -266,7 +266,7 @@ destruct H3 as [H3| [H3| H3]].
  destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H5| H5]; simpl in H4.
  +specialize (H3 0) as H; rewrite Nat.add_0_r in H.
   rewrite H in H4; clear H.
-  replace (NQintg (A (i + 1) (min_n (i + 1) 0) u)) with 1 in H4; cycle 1. {
+  replace (NQintg (A (i + 1) (min_n (i + 1) 0) u)) with 0 in H4; cycle 1. {
     symmetry.
     remember (min_n (i + 1) 0) as n eqn:Hn.
     remember (A (i + 1) n u) as x eqn:Hx.
@@ -280,6 +280,43 @@ destruct H3 as [H3| [H3| H3]].
       apply Hur.
     }
     specialize (H6 H); clear H.
+    assert (H : (x < 2)%NQ). {
+      eapply NQle_lt_trans; [ apply H6 | ].
+      replace 2%NQ with (2 * 1)%NQ by easy.
+      apply NQmul_lt_mono_pos_l; [ easy | ].
+      apply NQsub_lt.
+      replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQlt_pair; [ easy | pauto | pauto ].
+    }
+    clear H6; rename H into H6.
+    replace x with (NQnum x // NQden x)%NQ in H6; cycle 1. {
+      rewrite NQnum_den; [ easy | ].
+      rewrite Hx; apply A_ge_0.
+    }
+    apply NQlt_pair in H6; [ | apply NQden_neq_0 | easy ].
+    rewrite Nat.mul_1_r in H6.
+    unfold NQintg in H4 |-*.
+    remember (NQnum x / NQden x) as y eqn:Hy.
+    symmetry in Hy.
+    destruct y; [ easy | exfalso ].
+    replace (2 * rad - 2 + 1) with (rad + (rad - 1)) in H4 by flia Hr.
+...
+    apply Nat_div_less_small.
+    split; [ | now rewrite Nat.mul_comm ].
+...
+    remember (NQnum x / NQden x) as y eqn:Hy.
+    symmetry in Hy.
+    destruct y.
+    -apply Nat.div_small_iff in Hy; [ | apply NQden_neq_0 ].
+...
+     apply Nat.lt_le_incl in Hy.
+    -apply Nat.divi
+Check Nat.div_small.
+    apply Nat.div_small.
+    apply Nat.mul_le_mono_r (NQde
+...
+    apply (Nat.mul_cancel_l _ _ (NQden x)); [ apply NQden_neq_0 | ].
+    Search (_ * (_ / _)).
 ...
 replace x with (x - rad ^ s + 1 * rad ^ s).
 -rewrite Nat.div_add; [ | pauto ].
