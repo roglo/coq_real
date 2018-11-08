@@ -3614,6 +3614,29 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
 Qed.
 *)
 
+(**)
+Theorem eq_nA_div_1 {r : radix} : ∀ i n u,
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
+  → NQintg (A i n u) ≥ 1
+  → NQintg (A i n u) = 1.
+Proof.
+intros * Hur Hn.
+remember (n - i - 1) as s eqn:Hs.
+remember (NQintg (A i n u)) as x eqn:Hx.
+replace x with (x - rad ^ s + 1 * rad ^ s).
+(*
+-rewrite Nat.div_add; [ | pauto ].
+ rewrite Nat.div_small; [ easy | ].
+ specialize (nA_upper_bound_for_add u i n Hur) as H1.
+*)
+-specialize (A_upper_bound_for_add u i n Hur) as H1.
+...
+ rewrite <- Hx, <- Hs in H1.
+ specialize (Nat.pow_nonzero rad s radix_ne_0) as H.
+ flia H1 H.
+-rewrite Nat.mul_1_l.
+ now apply Nat.sub_add.
+Qed.
 (*
 Theorem eq_nA_div_1 {r : radix} : ∀ i n u,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
@@ -3633,7 +3656,9 @@ replace x with (x - rad ^ s + 1 * rad ^ s).
 -rewrite Nat.mul_1_l.
  now apply Nat.sub_add.
 Qed.
+*)
 
+(*
 Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    A_ge_1 u i (j + k) = true
    → A_ge_1 u (i + j) k = true.
