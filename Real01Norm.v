@@ -266,6 +266,51 @@ destruct H3 as [H3| [H3| H3]].
  destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H5| H5]; simpl in H4.
  +specialize (H3 0) as H; rewrite Nat.add_0_r in H.
   rewrite H in H4; clear H.
+  replace (NQintg (A (i + 1) (min_n (i + 1) 0) u)) with 0 in H4; cycle 1. {
+    symmetry.
+    remember (min_n (i + 1) 0) as n eqn:Hn.
+    remember (A (i + 1) n u) as x eqn:Hx.
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
+    rewrite Nat.add_assoc, Nat.add_shuffle0 in H4.
+    specialize (A_upper_bound_for_add u (i + 1) n) as H6.
+    rewrite <- Hx in H6.
+    assert (H : ∀ k, u (i + 1 + k + 1) ≤ 2 * (rad - 1)). {
+      intros k.
+      replace (i + 1 + k) with (i + (1 + k)) by flia.
+      apply Hur.
+    }
+    specialize (H6 H); clear H.
+    assert (H : (x < 2)%NQ). {
+      eapply NQle_lt_trans; [ apply H6 | ].
+      replace 2%NQ with (2 * 1)%NQ by easy.
+      apply NQmul_lt_mono_pos_l; [ easy | ].
+      apply NQsub_lt.
+      replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQlt_pair; [ easy | pauto | pauto ].
+    }
+    clear H6; rename H into H6.
+    replace x with (NQnum x // NQden x)%NQ in H6; cycle 1. {
+      rewrite NQnum_den; [ easy | ].
+      rewrite Hx; apply A_ge_0.
+    }
+    apply NQlt_pair in H6; [ | apply NQden_neq_0 | easy ].
+    rewrite Nat.mul_1_r in H6.
+    replace (2 * rad - 2 + 1) with (rad + (rad - 1)) in H4 by flia Hr.
+    rewrite <- Nat.add_assoc, Nat_mod_add_same_l in H4; [ | easy ].
+    remember (NQintg x) as y eqn:Hy; symmetry in Hy.
+    destruct y; [ easy | exfalso ].
+    replace (rad - 1 + S y) with (rad + y) in H4 by flia Hr.
+    rewrite Nat_mod_add_same_l in H4; [ | easy ].
+...
+replace x with (x - rad ^ s + 1 * rad ^ s).
+-rewrite Nat.div_add; [ | pauto ].
+ rewrite Nat.div_small; [ easy | ].
+ specialize (nA_upper_bound_for_add u i n Hur) as H1.
+ rewrite <- Hx, <- Hs in H1.
+ specialize (Nat.pow_nonzero rad s radix_ne_0) as H.
+ flia H1 H.
+-rewrite Nat.mul_1_l.
+ now apply Nat.sub_add.
 ...
   rewrite eq_nA_div_1 in H4.
   *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
