@@ -1872,6 +1872,15 @@ rewrite <- Nat.div_mod; [ | pauto ].
 now apply NQnum_den.
 Qed.
 
+Theorem NQfrac_ge_0 : ∀ x, (0 ≤ NQfrac x)%NQ.
+Proof.
+intros.
+unfold NQfrac.
+replace 0%NQ with (0 // 1)%NQ by easy.
+apply NQle_pair; [ easy | easy | ].
+rewrite Nat.mul_1_l; cbn; flia.
+Qed.
+
 Theorem NQfrac_le : ∀ x, (0 ≤ x)%NQ → (NQfrac x ≤ x)%NQ.
 Proof.
 intros x Hx.

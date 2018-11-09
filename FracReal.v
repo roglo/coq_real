@@ -3626,7 +3626,22 @@ remember (n - i - 1) as s eqn:Hs.
 remember (A i n u) as x eqn:Hx in H1.
 rewrite NQintg_frac in Hx; [ subst x | apply A_ge_0 ].
 remember (NQintg (A i n u)) as x eqn:Hx.
-...
+destruct x; [ easy | ].
+destruct x; [ easy | exfalso ].
+apply NQnlt_ge in H1; apply H1; clear H1.
+replace (S (S x)) with (2 + x) by easy.
+rewrite NQpair_add_l.
+rewrite NQmul_sub_distr_l, NQmul_1_r.
+rewrite NQmul_pair; [ | easy | pauto ].
+rewrite Nat.mul_1_r, Nat.mul_1_l.
+unfold NQsub.
+rewrite <- NQadd_assoc.
+apply NQadd_lt_mono_l.
+apply (NQlt_le_trans _ 0); [ easy | ].
+replace 0%NQ with (0 // 1 + 0)%NQ by easy.
+apply NQadd_le_mono.
+-apply NQle_pair; [ easy | easy | flia ].
+-apply NQfrac_ge_0.
 Qed.
 (*
 Theorem eq_nA_div_1 {r : radix} : ∀ i n u,
