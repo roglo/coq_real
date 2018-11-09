@@ -3623,6 +3623,8 @@ Proof.
 intros * Hur Hn.
 specialize (A_upper_bound_for_add u i n Hur) as H1.
 remember (n - i - 1) as s eqn:Hs.
+remember (A i n u) as x eqn:Hx in H1.
+rewrite NQintg_frac in Hx; [ subst x | apply A_ge_0 ].
 ...
 Qed.
 (*
