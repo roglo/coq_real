@@ -274,19 +274,9 @@ destruct H3 as [H3| [H3| H3]].
   *intros k.
    replace (i + 1 + k + 1) with (i + (1 + k) + 1) by flia.
    apply Hur.
-  *idtac.
+  *unfold min_n; rewrite Nat.add_0_r.
+   remember (rad * (i + 1 + 3)) as n1 eqn:Hn1.
 ...
--specialize (Hn 1) as H4.
- unfold prop_carr, d2n in H4; simpl in H4.
- unfold nat_prop_carr in H4.
- destruct (LPO_fst (A_ge_1 u (i + 1))) as [H5| H5]; simpl in H4.
- +specialize (H3 0) as H; rewrite Nat.add_0_r in H.
-  rewrite H in H4; clear H.
-  rewrite eq_nA_div_1 in H4.
-  *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
-   replace (2 * rad - 2 + (1 + 1)) with (2 * rad) in H4 by flia Hr.
-   rewrite Nat.mod_mul in H4; [ | easy ].
-   flia Hr H4.
   *intros k.
    replace (i + 1 + k + 1) with (i + (1 + k) + 1) by flia.
    apply Hur.
