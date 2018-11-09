@@ -1861,6 +1861,17 @@ rewrite <- Ha; f_equal.
 apply GQnum_den.
 Qed.
 
+Theorem NQintg_frac : ∀ x, (0 ≤ x)%NQ → x = (NQintg x // 1 + NQfrac x)%NQ.
+Proof.
+intros * Hx.
+unfold NQintg, NQfrac.
+rewrite NQadd_pair; [ | easy | pauto ].
+do 2 rewrite Nat.mul_1_l.
+rewrite Nat.mul_comm.
+rewrite <- Nat.div_mod; [ | pauto ].
+now apply NQnum_den.
+Qed.
+
 Theorem NQfrac_le : ∀ x, (0 ≤ x)%NQ → (NQfrac x ≤ x)%NQ.
 Proof.
 intros x Hx.
