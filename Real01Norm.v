@@ -276,6 +276,14 @@ destruct H3 as [H3| [H3| H3]].
    apply Hur.
   *unfold min_n; rewrite Nat.add_0_r.
    remember (rad * (i + 1 + 3)) as n1 eqn:Hn1.
+   unfold A.
+   rewrite
+     (summation_eq_compat _
+         (λ j, ((2 * (rad - 1)) // rad ^ (j - (i + 1))))%NQ); cycle 1. {
+     intros j Hj; f_equal.
+     replace j with (i + (j - i - 1) + 1) at 1 by flia Hj.
+     apply H3.
+   }
 ...
   *intros k.
    replace (i + 1 + k + 1) with (i + (1 + k) + 1) by flia.
