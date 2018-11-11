@@ -692,12 +692,23 @@ Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
 Proof.
 intros * Hv.
 specialize radix_ge_2 as Hr.
-unfold P.
-unfold add_series; cbn.
+unfold P, add_series.
+remember (prop_carr v) as pv eqn:Hpv; cbn.
 do 2 rewrite <- Nat.add_assoc.
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
+rewrite Hpv at 1; cbn.
+(*
+...
+intros * Hv.
+specialize radix_ge_2 as Hr.
+unfold P, add_series; cbn.
+do 2 rewrite <- Nat.add_assoc.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal.
+*)
 rewrite Nat.add_mod_idemp_l; [ | easy ].
 rewrite <- Nat.add_assoc.
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
