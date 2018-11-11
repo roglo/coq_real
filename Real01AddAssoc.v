@@ -682,23 +682,22 @@ destruct (LPO_fst (A_ge_1 u i)) as [H1| H1].
 Qed.
 *)
 
-Definition P {r : radix} := prop_carr.
+Definition P {r : radix} u := d2n (prop_carr u).
 Definition add_series (u v : nat → nat) i := u i + v i.
 Notation "u ⊕ v" := (add_series u v) (at level 50).
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, v (i + k + 1) ≤ 2 * (rad - 1))
-  → P (u ⊕ d2n (P v)) i = P (u ⊕ v) i.
+  → P (u ⊕ P v) i = P (u ⊕ v) i.
 Proof.
 intros * Hv.
 specialize radix_ge_2 as Hr.
-apply digit_eq_eq; cbn.
-unfold add_series.
+unfold P.
+unfold add_series; cbn.
 do 2 rewrite <- Nat.add_assoc.
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
-unfold P, prop_carr at 1, d2n; simpl.
 rewrite Nat.add_mod_idemp_l; [ | easy ].
 rewrite <- Nat.add_assoc.
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
