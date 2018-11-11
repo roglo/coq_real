@@ -284,6 +284,7 @@ destruct H3 as [H3| [H3| H3]].
      replace j with (i + (j - i - 1) + 1) at 1 by flia Hj.
      apply H3.
    }
+Abort. (* à terminer
 ...
   *intros k.
    replace (i + 1 + k + 1) with (i + (1 + k) + 1) by flia.
@@ -674,6 +675,7 @@ Qed.
   apply A_ge_1_add_r_true_if in H2.
   now rewrite H2 in Hk.
 Qed.
+*)
 
 (* ∀ k, ∃ m, { A_k^n } < 1 - 1 / r^(m+1) ∧ (u_k + ⌋ A_k^n ⌊) mod r = r-1 *)
 Theorem eq_all_prop_carr_9_cond {r : radix} : ∀ u i,
@@ -702,6 +704,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H2| H2]; simpl in Huni.
  }
  exfalso; revert Hn'.
  unfold min_n in Huni; rewrite Nat.add_0_r in Huni.
+Abort. (* à terminer
 ...
  apply not_prop_carr_all_9_all_ge_1; [ | easy | easy ].
  intros l.
@@ -711,6 +714,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H2| H2]; simpl in Huni.
  apply A_ge_1_false_iff in Hm.
  exists m; easy.
 Qed.
+*)
 
 (*
 Theorem eq_all_prop_carr_9_cond1 {r : radix} : ∀ u i n s j,
@@ -847,6 +851,7 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hi j.
+Abort. (* à terminer
 specialize (eq_all_prop_carr_9_cond u i Hur Hi (j + 1)) as Hun1.
 destruct Hun1 as (m & Hm & Hun); simpl in Hun.
 rewrite Nat.add_assoc in Hm, Hun.
@@ -883,6 +888,7 @@ destruct (lt_dec (u k) (rad - 1)) as [H3| H3].
 -left; split; [ easy | now exists j2 ].
 -right; split; [ easy | now exists j2 ].
 Qed.
+*)
 
 Theorem eq_all_prop_carr_9_cond3 {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
@@ -903,6 +909,8 @@ intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn k.
 rename i into n.
+Abort. (* à terminer
+...
 specialize (eq_all_prop_carr_9_cond2 u n Hur Hn k) as H.
 remember (n + k + 1) as i eqn:Hi.
 replace (n + k + 2) with (i + 1) by flia Hi.
@@ -934,6 +942,7 @@ destruct H as [H| [H| H]]; destruct H as (H1, H2).
  +rewrite H3 in Hj2; flia Hr Hj2.
  +easy.
 Qed.
+*)
 
 Theorem eq_all_prop_carr_9_cond4 {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
@@ -946,6 +955,8 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hi *.
+Abort. (* à terminer
+...
 specialize (eq_all_prop_carr_9_cond3 u i Hur Hi j) as H.
 remember (i + j + 1) as n eqn:Hn.
 subst k; rename n into k; rename Hn into Hk.
@@ -981,6 +992,7 @@ destruct H as [H| [H| H]]; [ now left | | ].
  +rewrite H1 in H2; flia Hr H2.
  +rewrite H1 in H2; flia Hr H2.
 Qed.
+*)
 
 (* chais pas si c'est vrai, ça, mais si ça l'est on peut passer
    directement à A_ge_1_add_all_true_if à eq_all_prop_carr_9 et
@@ -1020,6 +1032,8 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hn.
+Abort. (* à terminer
+...
 specialize (eq_all_prop_carr_9_cond4 u n Hur Hn) as HAF.
 destruct (LPO_fst (is_num_9_strict_after u n)) as [H1| H1].
 -specialize (is_num_9_strict_after_all_9 u n H1) as H2.
@@ -1088,6 +1102,7 @@ destruct (LPO_fst (is_num_9_strict_after u n)) as [H1| H1].
   --rewrite H1 in H2; flia Hr H2.
   --rewrite H1 in H2; flia Hr H2.
 Qed.
+*)
 
 (*
 Theorem rad_pow_le_lt {r : radix} : ∀ s, s ≠ 0 →
@@ -1430,6 +1445,8 @@ Theorem not_prop_carr_all_9 {r : radix} : ∀ u i,
   → ¬ (∀ k, d2n (prop_carr u) (i + k) = rad - 1).
 Proof.
 intros * Hur Hn.
+Abort. (* à terminer
+...
 specialize (eq_all_prop_carr_9 u i Hur Hn) as Hall.
 destruct Hall as [Hall| [Hall| Hall]].
 -now specialize (not_prop_carr_all_9_when_999 u i Hall).
@@ -1437,6 +1454,7 @@ destruct Hall as [Hall| [Hall| Hall]].
 -destruct Hall as (j & Hbef & Hwhi & Haft).
  now specialize (not_prop_carr_all_9_when_9_8_18 u i j Hbef Hwhi Haft).
 Qed.
+*)
 
 Theorem prop_carr_normalizes {r : radix} : ∀ u,
   (∀ i, u i ≤ 2 * (rad - 1))
@@ -1452,8 +1470,11 @@ specialize (is_9_strict_after_all_9 (prop_carr u) _ H1) as H2.
 assert (H3 : ∀ k, d2n (prop_carr u) (i + 1 + k) = rad - 1). {
   now intros k; rewrite Nat.add_shuffle0.
 }
+Abort. (* à terminer
+...
 now apply not_prop_carr_all_9 in H3.
 Qed.
+*)
 
 (*
 Theorem freal_normalize_add {r : radix} : ∀ x y,
