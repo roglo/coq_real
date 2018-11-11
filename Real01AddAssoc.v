@@ -686,6 +686,18 @@ Definition P {r : radix} u := d2n (prop_carr u).
 Definition add_series (u v : nat → nat) i := u i + v i.
 Notation "u ⊕ v" := (add_series u v) (at level 50).
 
+Theorem carry_additive {r : radix} : ∀ u v i,
+  carry (u ⊕ v) i = carry u i + carry v i.
+Proof.
+intros.
+unfold carry.
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
+-destruct (LPO_fst (fA_ge_1_ε u i)) as [H2| H2].
+ +destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
+  *idtac.
+(* chais pas si c'est vrai, tout ça... *)
+...
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, v (i + k + 1) ≤ 2 * (rad - 1))
   → (carry v i + carry (u ⊕ P v) i) mod rad =
