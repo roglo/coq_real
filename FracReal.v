@@ -354,7 +354,7 @@ Qed.
 Definition freal_add_series {r : radix} a b i := fd2n a i + fd2n b i.
 Arguments freal_add_series _ a%F b%F.
 
-Notation "x ⊕ y" := (freal_add_series x y) (at level 50).
+Notation "x ⊕ y" := (freal_add_series x y) (at level 50) : freal_scope.
 
 (*
 Definition sequence_mul (rg := nat_ord_ring) (a b : nat → nat) i :=
@@ -370,6 +370,7 @@ Definition freal_mul_series {r : radix} a b i :=
 (**)
 Definition A {r : radix} (rg := NQ_ord_ring) i n u :=
   (Σ (j = i + 1, n - 1), (u j // rad ^ (j - i))%NQ : NQ).
+
 (**)
 
 (*
@@ -427,7 +428,7 @@ Definition freal_mul_to_seq {r : radix} (a b : FracReal) :=
   prop_carr (freal_mul_series a b).
 *)
 
-Definition freal_add {r : radix} x y := {| freal := prop_carr (x ⊕ y) |}.
+Definition freal_add {r : radix} x y := {| freal := prop_carr (x ⊕ y)%F |}.
 Arguments freal_add _ x%F y%F.
 
 (*
@@ -440,7 +441,8 @@ Notation "a + b" := (freal_add a b) : freal_scope.
 Notation "a * b" := (freal_mul a b) : freal_scope.
 *)
 
-Theorem freal_add_series_comm {r : radix} : ∀ x y i, (x ⊕ y) i = (y ⊕ x) i.
+Theorem freal_add_series_comm {r : radix} : ∀ x y i,
+  (x ⊕ y)%F i = (y ⊕ x)%F i.
 Proof.
 intros.
 unfold "⊕".
@@ -449,7 +451,7 @@ Qed.
 
 (**)
 Theorem A_freal_add_series_comm {r : radix} : ∀ x y i n,
-  A i n (x ⊕ y) = A i n (y ⊕ x).
+  A i n (x ⊕ y)%F = A i n (y ⊕ x)%F.
 Proof.
 intros.
 unfold A; cbn.
@@ -469,7 +471,7 @@ Qed.
 
 (**)
 Theorem A_ge_1_freal_add_series_comm {r : radix} : ∀ x y i k,
-  fA_ge_1_ε (x ⊕ y) i k = fA_ge_1_ε (y ⊕ x) i k.
+  fA_ge_1_ε (x ⊕ y)%F i k = fA_ge_1_ε (y ⊕ x)%F i k.
 Proof.
 intros.
 unfold fA_ge_1_ε.
@@ -487,15 +489,15 @@ Qed.
 
 (**)
 Theorem prop_carr_add_comm {r : radix} : ∀ x y i,
-  prop_carr (x ⊕ y) i = prop_carr (y ⊕ x) i.
+  prop_carr (x ⊕ y)%F i = prop_carr (y ⊕ x)%F i.
 Proof.
 intros.
 apply digit_eq_eq; cbn.
 unfold nat_prop_carr.
 rewrite freal_add_series_comm.
-destruct (LPO_fst (fA_ge_1_ε (x ⊕ y) i)) as [Hxy| Hxy].
+destruct (LPO_fst (fA_ge_1_ε (x ⊕ y)%F i)) as [Hxy| Hxy].
 -setoid_rewrite freal_add_series_comm.
- destruct (LPO_fst (fA_ge_1_ε (y ⊕ x) i)) as [Hyx| Hyx].
+ destruct (LPO_fst (fA_ge_1_ε (y ⊕ x)%F i)) as [Hyx| Hyx].
  +f_equal; f_equal; f_equal; f_equal.
   apply summation_eq_compat.
   intros k Hk; f_equal.
@@ -505,7 +507,7 @@ destruct (LPO_fst (fA_ge_1_ε (x ⊕ y) i)) as [Hxy| Hxy].
   now rewrite Hxy in Hk.
 -destruct Hxy as (k & Hjk & Hk).
  rewrite A_ge_1_freal_add_series_comm in Hk.
- destruct (LPO_fst (fA_ge_1_ε (y ⊕ x) i)) as [Hyx| Hyx].
+ destruct (LPO_fst (fA_ge_1_ε (y ⊕ x)%F i)) as [Hyx| Hyx].
  +now rewrite Hyx in Hk.
  +destruct Hyx as (l & Hjl & Hl).
   destruct (lt_eq_lt_dec k l) as [ [ Hkl | Hkl ] | Hkl ].
@@ -1462,7 +1464,7 @@ Qed.
 *)
 
 Theorem freal_add_series_le_twice_pred {r : radix} : ∀ x y i,
-  (x ⊕ y) i ≤ 2 * (rad - 1).
+  (x ⊕ y)%F i ≤ 2 * (rad - 1).
 Proof.
 intros *.
 unfold "⊕".
