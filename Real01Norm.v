@@ -135,7 +135,7 @@ destruct H3 as [H3| [H3| H3]].
  +rewrite Nat.add_0_r in H1.
   specialize (Hi 1) as H4.
   unfold prop_carr, d2n in H4; simpl in H4.
-  unfold nat_prop_carr in H4.
+  unfold carry in H4.
   destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H5| H5].
   *unfold NQintg in H4.
    rewrite Nat.div_small in H4.
@@ -262,7 +262,7 @@ destruct H3 as [H3| [H3| H3]].
    now apply Nat.neq_0_lt_0.
 -specialize (Hi 1) as H4.
  unfold prop_carr, d2n in H4; simpl in H4.
- unfold nat_prop_carr in H4.
+ unfold carry in H4.
  destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H5| H5]; simpl in H4.
  +specialize (H3 0) as H; rewrite Nat.add_0_r in H.
   rewrite H in H4; clear H.
@@ -384,7 +384,7 @@ Abort. (* à terminer
 -destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
  specialize (Hn (j + 1)) as H3.
  unfold d2n, prop_carr in H3; simpl in H3.
- unfold nat_prop_carr in H3.
+ unfold carry in H3.
  destruct (LPO_fst (A_ge_1 u (i + (j + 1)))) as [H4| H4].
  +unfold min_n in H3; rewrite Nat.add_0_r in H3; simpl in H3.
   remember (rad * (i + (j + 1) + 3)) as n2 eqn:Hn2.
@@ -429,7 +429,7 @@ Qed.
  +rewrite Nat.add_0_r in H1.
   specialize (Hi 1) as H4.
   unfold prop_carr, d2n in H4; simpl in H4.
-  unfold nat_prop_carr in H4.
+  unfold carry in H4.
   destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H5| H5].
   *unfold NQintg in H4.
    rewrite Nat.div_small in H4.
@@ -523,7 +523,7 @@ Qed.
 ...
   specialize (Hi 1) as H4.
   unfold prop_carr, d2n in H4; cbn in H4.
-  unfold nat_prop_carr in H4.
+  unfold carry in H4.
   destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H5| H5]; simpl in H4.
   *specialize (H3 0) as H; rewrite Nat.add_0_r in H.
    rewrite H in H4; clear H.
@@ -636,7 +636,7 @@ Qed.
 -destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
  specialize (Hn (j + 1)) as H3.
  unfold d2n, prop_carr in H3; simpl in H3.
- unfold nat_prop_carr in H3.
+ unfold carry in H3.
  destruct (LPO_fst (A_ge_1 u (i + (j + 1)))) as [H4| H4].
  +unfold min_n in H3; rewrite Nat.add_0_r in H3; simpl in H3.
   remember (rad * (i + (j + 1) + 3)) as n2 eqn:Hn2.
@@ -695,7 +695,7 @@ Proof.
 intros * Hur Hi *.
 specialize (Hi k) as Huni.
 unfold prop_carr, d2n in Huni; simpl in Huni.
-unfold nat_prop_carr in Huni.
+unfold carry in Huni.
 destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H2| H2]; simpl in Huni.
 -assert (Hn' : ∀ l, d2n (prop_carr u) ((i + k) + l) = rad - 1). {
    intros j.
@@ -1007,7 +1007,7 @@ intros * Hur Hi *.
 specialize (Hi 0) as H1.
 unfold d2n, prop_carr in H1; simpl in H1.
 rewrite Nat.add_0_r in H1.
-unfold nat_prop_carr in H1.
+unfold carry in H1.
 destruct (LPO_fst (A_ge_1 u i)) as [H2| H2]; [ apply H2 | ].
 destruct H2 as (j & Hjj & Hj).
 destruct (lt_dec k j) as [H3| H3]; [ now apply Hjj | ].
@@ -1133,7 +1133,7 @@ specialize radix_ge_2 as Hr.
 intros Hall k.
 unfold d2n, prop_carr; simpl.
 rewrite Hall.
-unfold nat_prop_carr.
+unfold carry.
 destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
 -unfold min_n; rewrite Nat.add_0_r.
  remember (rad * (i + k + 3)) as n1 eqn:Hn1.
@@ -1178,7 +1178,7 @@ specialize radix_ge_2 as Hr.
 intros Hall k.
 unfold d2n, prop_carr; simpl.
 rewrite Hall.
-unfold nat_prop_carr.
+unfold carry.
 destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
 -unfold min_n; rewrite Nat.add_0_r.
  remember (rad * (i + k + 3)) as n1 eqn:Hn1.
@@ -1234,7 +1234,7 @@ intros *.
 specialize radix_ge_2 as Hr.
 intros Hbef Hwhi Haft *.
 unfold d2n, prop_carr; simpl.
-unfold nat_prop_carr.
+unfold carry.
 destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
 -unfold min_n; rewrite Nat.add_0_r.
  remember (rad * (i + k + 3)) as n1 eqn:Hn1.
@@ -1517,7 +1517,7 @@ specialize (pouet u i) as H; apply H; clear H.
 intros k.
 specialize (Hn k).
 unfold d2n, prop_carr in Hn; simpl in Hn.
-unfold nat_prop_carr in Hn.
+unfold carry in Hn.
 destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
 -rewrite Nat.add_assoc in Hn.
  now simpl; rewrite Nat.add_0_r.

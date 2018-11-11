@@ -688,8 +688,8 @@ Notation "u ⊕ v" := (add_series u v) (at level 50).
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, v (i + k + 1) ≤ 2 * (rad - 1))
-  → (nat_prop_carr v i + nat_prop_carr (u ⊕ P v) i) mod rad =
-     nat_prop_carr (u ⊕ v) i mod rad.
+  → (carry v i + carry (u ⊕ P v) i) mod rad =
+     carry (u ⊕ v) i mod rad.
 Proof.
 intros * Hv.
 specialize radix_ge_2 as Hr.
@@ -729,13 +729,13 @@ subst pv.
 replace (d2n (prop_carr v)) with (P v) by easy.
 ...
 rename i into j.
-Print nat_prop_carr.
+Print carry.
 Search (fA_ge_1_ε (_ ⊕ _)%F).
 About A_ge_1_freal_add_series_comm.
-unfold nat_prop_carr at 2.
+unfold carry at 2.
 2: easy.
 ...
-unfold nat_prop_carr at 1.
+unfold carry at 1.
 destruct (LPO_fst (fA_ge_1_ε v j)) as [H1| H1].
 -specialize (A_ge_1_add_all_true_if v j Hv H1) as H2.
  destruct H2 as [H2| [H2| H2]].
@@ -829,7 +829,7 @@ specialize radix_ge_2 as Hr.
 intros H1 H2.
 unfold freal_add_series.
 unfold freal_add, fd2n; simpl.
-unfold nat_prop_carr.
+unfold carry.
 destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
 -simpl.
  destruct (LPO_fst (A_ge_1 (y ⊕ x) i)) as [H4| H4].
@@ -925,7 +925,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
        unfold "+"%F, fd2n in H1; simpl in H1.
        unfold "⊕", fd2n in H1; simpl in H1.
        do 3 rewrite fold_fd2n in H1.
-       specialize nat_prop_carr_le_2 as H5.
+       specialize carry_le_2 as H5.
        specialize (H5 (λ i, dig (freal y i) + dig (freal z i)) (i + 1)).
        assert
          (H :
@@ -938,7 +938,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
        }
        specialize (H5 H); clear H.
        remember
-         (nat_prop_carr (λ i, dig (freal y i) + dig (freal z i)) (i + 1))
+         (carry (λ i, dig (freal y i) + dig (freal z i)) (i + 1))
          as c eqn:Hc.
        destruct c.
        -rewrite Nat.add_0_r in H1.
@@ -1024,7 +1024,7 @@ intros * j.
 unfold freal_shift, fd2n.
 unfold "+"%F, "⊕", fd2n; simpl.
 f_equal; f_equal.
-unfold nat_prop_carr.
+unfold carry.
 ...
 ADMITTED.
 rewrite Hxs, Hys.
@@ -1342,7 +1342,7 @@ unfold freal_norm_eq.
 intros i.
 unfold freal_add at 1 3.
 unfold fd2n; simpl.
-unfold nat_prop_carr.
+unfold carry.
 destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
 -simpl.
  remember (rad * (i + 3)) as n1 eqn:Hn1.

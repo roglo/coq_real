@@ -398,7 +398,7 @@ Definition A_ge_1 {r : radix} u i k :=
 (* Propagation of Carries *)
 
 (**)
-Definition nat_prop_carr {r : radix} u i :=
+Definition carry {r : radix} u i :=
   match LPO_fst (fA_ge_1_ε u i) with
   | inl _ =>
       let n := min_n i 0 in
@@ -420,7 +420,7 @@ Definition nat_prop_carr {r : radix} u i :=
 *)
 
 Definition prop_carr {r : radix} u i :=
-  let d := u i + nat_prop_carr u i in
+  let d := u i + carry u i in
   mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0).
 
 (*
@@ -493,7 +493,7 @@ Theorem prop_carr_add_comm {r : radix} : ∀ x y i,
 Proof.
 intros.
 apply digit_eq_eq; cbn.
-unfold nat_prop_carr.
+unfold carry.
 rewrite freal_add_series_comm.
 destruct (LPO_fst (fA_ge_1_ε (x ⊕ y)%F i)) as [Hxy| Hxy].
 -setoid_rewrite freal_add_series_comm.
@@ -525,7 +525,7 @@ Theorem prop_carr_add_comm {r : radix} : ∀ x y i,
 Proof.
 intros.
 apply digit_eq_eq; cbn.
-unfold nat_prop_carr.
+unfold carry.
 rewrite freal_add_series_comm.
 destruct (LPO_fst (A_ge_1 (x ⊕ y) i)) as [Hxy| Hxy].
 -setoid_rewrite freal_add_series_comm.
@@ -1395,7 +1395,7 @@ Proof.
 intros * Hfg *.
 unfold prop_carr.
 apply digit_eq_eq; cbn.
-unfold nat_prop_carr.
+unfold carry.
 rewrite Hfg.
 destruct (LPO_fst (fA_ge_1_ε f i)) as [Hf| Hf].
 -destruct (LPO_fst (fA_ge_1_ε g i)) as [Hg| Hg].
@@ -1432,7 +1432,7 @@ Proof.
 intros * Hfg *.
 unfold prop_carr.
 apply digit_eq_eq; cbn.
-unfold nat_prop_carr.
+unfold carry.
 rewrite Hfg.
 destruct (LPO_fst (A_ge_1 f i)) as [Hf| Hf].
 -destruct (LPO_fst (A_ge_1 g i)) as [Hg| Hg].
