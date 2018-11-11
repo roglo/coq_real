@@ -686,6 +686,15 @@ Definition P {r : radix} u := d2n (prop_carr u).
 Definition add_series (u v : nat → nat) i := u i + v i.
 Notation "u ⊕ v" := (add_series u v) (at level 50).
 
+Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
+  (∀ k : nat, v (i + k + 1) ≤ 2 * (rad - 1))
+  → (nat_prop_carr v i + nat_prop_carr (u ⊕ P v) i) mod rad =
+     nat_prop_carr (u ⊕ v) i mod rad.
+Proof.
+intros * Hv.
+specialize radix_ge_2 as Hr.
+...
+
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, v (i + k + 1) ≤ 2 * (rad - 1))
   → P (u ⊕ P v) i = P (u ⊕ v) i.
@@ -694,6 +703,8 @@ intros * Hv.
 specialize radix_ge_2 as Hr.
 unfold P, add_series.
 remember (prop_carr v) as pv eqn:Hpv; cbn.
+replace (λ i, u i + v i) with (u ⊕ v) by easy.
+replace (λ i, u i + d2n pv i) with (u ⊕ d2n pv) by easy.
 do 2 rewrite <- Nat.add_assoc.
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
@@ -714,7 +725,16 @@ rewrite <- Nat.add_assoc.
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
+subst pv.
+replace (d2n (prop_carr v)) with (P v) by easy.
+...
 rename i into j.
+Print nat_prop_carr.
+Search (fA_ge_1_ε (_ ⊕ _)%F).
+About A_ge_1_freal_add_series_comm.
+unfold nat_prop_carr at 2.
+2: easy.
+...
 unfold nat_prop_carr at 1.
 destruct (LPO_fst (fA_ge_1_ε v j)) as [H1| H1].
 -specialize (A_ge_1_add_all_true_if v j Hv H1) as H2.
