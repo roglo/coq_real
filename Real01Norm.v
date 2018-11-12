@@ -341,6 +341,46 @@ destruct H3 as [H3| [H3| H3]].
    replace (2 * rad - 2 + (1 + 1)) with (2 * rad) in H4 by flia Hr.
    rewrite Nat.mod_mul in H4; [ flia Hr H4 | easy ].
  +destruct H5 as (j & Hjj & Hj); simpl in H4.
+  apply A_ge_1_false_iff in Hj.
+  unfold min_n in Hj, H4.
+  rewrite A_all_18 in Hj; cycle 1. {
+    intros n; replace (i + 1 + n) with (i + (1 + n)) by flia.
+    apply H3.
+  }
+  remember (rad * (i + 1 + j + 3)) as n1 eqn:Hn1.
+  remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
+  assert (Hs12 : 2 ≤ rad ^ s1). {
+    destruct s1.
+    -rewrite Hn1 in Hs1; unfold min_n in Hs1.
+     destruct rad; [ easy | cbn in Hs1; flia Hs1 ].
+    -cbn; replace 2 with (2 * 1) by easy.
+     apply Nat.mul_le_mono; [ easy | ].
+     now apply Nat_pow_ge_1.
+  }
+  apply NQnle_gt in Hj; apply Hj; clear Hj.
+(**)
+  rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
+    now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
+  }
+  do 2 rewrite Nat.mul_1_l.
+  rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
+    rewrite Nat.mul_comm; apply Nat.mul_le_mono_l.
+    now apply Nat_pow_ge_1.
+  }
+  do 2 rewrite Nat.mul_1_l.
+  rewrite NQfrac_pair.
+  apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat_mod_less_small; [ | flia Hs12 ].
+  rewrite Nat_sub_sub_swap.
+  replace (2 * rad ^ s1 - rad ^ s1) with (rad ^ s1) by flia.
+  rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+  rewrite Nat.mul_sub_distr_l.
+  apply Nat.le_sub_le_add_l.
+  rewrite Nat.add_sub_assoc; [ | now apply Nat.mul_le_mono_l ].
+  apply Nat.le_add_le_sub_r.
+  rewrite Nat.add_comm.
+  apply Nat.add_le_mono_r.
+
 ...
  +destruct H5 as (j & Hjj & Hj); simpl in H4.
   apply A_ge_1_false_iff in Hj.
