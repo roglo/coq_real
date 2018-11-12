@@ -274,51 +274,74 @@ destruct H3 as [H3| [H3| H3]].
   *intros k.
    replace (i + 1 + k + 1) with (i + (1 + k) + 1) by flia.
    apply Hur.
-  *unfold min_n; rewrite Nat.add_0_r.
-   remember (rad * (i + 1 + 3)) as n1 eqn:Hn1.
-   unfold A.
-   rewrite
-     (summation_eq_compat _
-         (λ j, ((2 * (rad - 1)) // rad ^ (j - (i + 1))))%NQ); cycle 1. {
-     intros j Hj; f_equal.
-     replace j with (i + (j - i - 1) + 1) at 1 by flia Hj.
+  *exfalso.
+   rewrite A_all_18 in H4; cycle 1. {
+     intros j; replace (i + 1 + j) with (i + (1 + j)) by flia.
      apply H3.
    }
-Abort. (* à terminer
-...
-  *intros k.
-   replace (i + 1 + k + 1) with (i + (1 + k) + 1) by flia.
-   apply Hur.
-  *unfold min_n; rewrite Nat.add_0_r.
-   remember (rad * (i + 1 + 3)) as n1 eqn:Hn1.
+   remember (min_n (i + 1) 0) as n1 eqn:Hn1.
    remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
-   move s1 before n1; symmetry in Hs1.
-   unfold nA.
-   rewrite (summation_eq_compat _ (λ i, 2 * (rad - 1) * rad ^ (n1 - 1 - i))).
-   destruct s1.
-   --apply Nat.sub_0_le in Hs1; apply Nat.nlt_ge in Hs1.
-     exfalso; apply Hs1; clear Hs1; rewrite Hn1.
-     destruct rad; [ easy | simpl; flia ].
-   --rewrite <- summation_mul_distr_l.
-     remember mult as f; remember S as g; simpl; subst f g.
-     rewrite summation_rtl.
-     rewrite summation_shift.
-     ++replace (n1 - 1 - (i + 1 + 1)) with s1 by flia Hs1.
-       rewrite (summation_eq_compat _ (λ i, rad ^ i)).
-       **rewrite <- Nat.mul_assoc, <- power_summation_sub_1; [ | easy ].
-         rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-         replace (2 * rad ^ S s1) with (rad ^ S s1 + rad ^ S s1) by flia.
-         rewrite <- Nat.add_sub_assoc; [ flia | simpl ].
-         replace 2 with (2 * 1) by apply Nat.mul_1_r.
-         apply Nat.mul_le_mono; [ easy | ].
-         now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-       **intros j Hj; f_equal; flia Hs1 Hj.
-     ++rewrite Hn1.
-       destruct rad; [ easy | simpl; flia ].
-   --intros j Hj.
-     specialize (H3 (j - i - 1)).
-     replace (i + (j - i - 1) + 1) with j in H3 by flia Hj.
-     now rewrite H3.
+   move s1 before n1.
+   unfold NQintg in H4.
+   rewrite Nat_div_less_small in H4; cycle 1. {
+     rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
+       rewrite Nat.mul_comm; apply Nat.mul_le_mono_l.
+       now apply Nat_pow_ge_1.
+     }
+     do 2 rewrite Nat.mul_1_l.
+     rewrite NQden_pair, NQnum_pair.
+     rewrite Nat.max_r; cycle 1. {
+       apply Nat.nlt_ge; intros H.
+       apply Nat.lt_1_r in H.
+       apply Nat.div_small_iff in H; cycle 1. {
+         intros H7.
+         apply Nat.gcd_eq_0_r in H7.
+         now apply Nat.pow_nonzero in H7.
+       }
+       apply Nat.nle_gt in H; apply H.
+       apply Nat_gcd_le_r.
+       now apply Nat.pow_nonzero.
+     }
+     rewrite Nat.max_r; [ | now apply Nat_pow_ge_1 ].
+     remember (Nat.gcd (2 * rad ^ s1 - 2) (rad ^ s1)) as g eqn:Hg.
+     assert (Hgz : g ≠ 0). {
+       rewrite Hg; intros H; apply Nat.gcd_eq_0_r in H.
+       now apply Nat.pow_nonzero in H.
+     }
+     assert (Hs12 : 2 ≤ rad ^ s1). {
+       destruct s1.
+       -rewrite Hn1 in Hs1; unfold min_n in Hs1.
+        destruct rad; [ easy | cbn in Hs1; flia Hs1 ].
+       -cbn; replace 2 with (2 * 1) by easy.
+        apply Nat.mul_le_mono; [ easy | ].
+        now apply Nat_pow_ge_1.
+     }
+     split.
+     -apply Nat.div_le_mono; [ easy | ].
+      replace (2 * rad ^ s1) with (rad ^ s1 + rad ^ s1) by flia.
+      rewrite <- Nat.add_sub_assoc; [ apply Nat.le_add_r | easy ].
+     -rewrite <- Nat.divide_div_mul_exact; [ | easy | ]; cycle 1. {
+        rewrite Hg; apply Nat.gcd_divide_r.
+      }
+      apply (Nat.mul_lt_mono_pos_l g); [ now apply Nat.neq_0_lt_0 | ].
+      rewrite <- Nat.divide_div_mul_exact; [ | easy | ]; cycle 1. {
+        rewrite Hg; apply Nat.gcd_divide_l.
+      }
+      rewrite Nat.mul_comm, Nat.div_mul; [ | easy ].
+      rewrite <- Nat.divide_div_mul_exact; [ | easy | ]; cycle 1. {
+        apply (Nat.divide_trans _ (rad ^ s1)).
+        -rewrite Hg; apply Nat.gcd_divide_r.
+        -apply Nat.divide_factor_r.
+      }
+      setoid_rewrite Nat.mul_comm.
+      rewrite Nat.div_mul; [ | easy ].
+      rewrite Nat.mul_comm; apply Nat.sub_lt; [ flia Hs12 | pauto ].
+   }
+   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
+   replace (2 * rad - 2 + (1 + 1)) with (2 * rad) in H4 by flia Hr.
+   rewrite Nat.mod_mul in H4; [ flia Hr H4 | easy ].
+ +destruct H5 as (j & Hjj & Hj); simpl in H4.
+...
  +destruct H5 as (j & Hjj & Hj); simpl in H4.
   apply A_ge_1_false_iff in Hj.
   unfold min_n in Hj, H4.
