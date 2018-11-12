@@ -3666,6 +3666,7 @@ replace x with (x - rad ^ s + 1 * rad ^ s).
 Qed.
 *)
 
+(**)
 Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    fA_ge_1_ε u i (j + k) = true
    → fA_ge_1_ε u (i + j) k = true.
@@ -3691,6 +3692,7 @@ replace (n - i - 1) with (s + j) in Hu by flia Hs Hijn.
 replace (s + j - S (j + k)) with (s - S k) in Hu by flia Hs.
 *)
 move Hu at bottom.
+Abort. (* à compléter
 ...
 revert Hu.
 apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
@@ -3736,6 +3738,7 @@ replace (rad ^ S (j + k) - 1) with
    apply Nat.neq_0_lt_0; pauto.
  +apply Nat.neq_0_lt_0; pauto.
 Qed.
+*)
 (*
 Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    A_ge_1 u i (j + k) = true
