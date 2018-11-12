@@ -3667,8 +3667,8 @@ Qed.
 *)
 
 Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
-   A_ge_1 u i (j + k) = true
-   → A_ge_1 u (i + j) k = true.
+   fA_ge_1_ε u i (j + k) = true
+   → fA_ge_1_ε u (i + j) k = true.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -3678,15 +3678,20 @@ apply A_ge_1_true_iff.
 unfold min_n in Hu |-*.
 replace (i + (j + k) + 3) with (i + j + k + 3) in Hu by flia.
 remember (rad * (i + j + k + 3)) as n eqn:Hn.
+(*
 remember (n - (i + j) - 1) as s eqn:Hs.
 move s before n.
+*)
 assert (Hijn : i + j + 2 ≤ n - 1). {
   rewrite Hn.
   destruct rad; [ easy | simpl; flia ].
 }
+(*
 replace (n - i - 1) with (s + j) in Hu by flia Hs Hijn.
 replace (s + j - S (j + k)) with (s - S k) in Hu by flia Hs.
+*)
 move Hu at bottom.
+...
 revert Hu.
 apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
 intros Hu.
