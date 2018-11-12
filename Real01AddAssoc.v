@@ -687,10 +687,9 @@ Definition add_series (u v : nat → nat) i := u i + v i.
 Notation "u ⊕ v" := (add_series u v) (at level 50).
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
-  (∀ k : nat, v (i + k + 1) ≤ 2 * (rad - 1))
-  → (carry (u ⊕ P v) i + carry v i) mod rad = carry (u ⊕ v) i mod rad.
+  (carry (u ⊕ P v) i + carry v i) mod rad = carry (u ⊕ v) i mod rad.
 Proof.
-intros * Hv.
+intros.
 specialize radix_ge_2 as Hr.
 ...
 
