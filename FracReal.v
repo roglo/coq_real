@@ -433,18 +433,20 @@ Proof.
 intros u i H k.
 specialize (H k).
 unfold fA_ge_1_ε in H.
-destruct
-  (NQlt_le_dec (NQfrac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%NQ)
-  as [H1| H1]; [ easy | clear H ].
-exists (NQfrac (A i (min_n i k) u - (1 - 1 // rad ^ S k)))%NQ.
+remember (A i (min_n i k) u) as x eqn:Hx.
+destruct (NQlt_le_dec (NQfrac x) (1 - 1 // rad ^ S k)%NQ) as [H1| H1];
+  [ easy | clear H ].
+exists (NQfrac x - (1 - 1 // rad ^ S k))%NQ.
+rewrite NQsub_sub_distr.
 split.
-...
-apply NQle_antisymm; [ | easy ].
-Search (NQfrac _ < 1)%NQ.
-(* renommer NQfrac_lt_1 autrement et ajouter théoreme pour dire NQfrac u < 1 *)
-...
+-specialize (NQfrac_lt_1 x) as H2.
+ replace (1 // rad ^ S k)%NQ with (0 + 1 // rad ^ S k)%NQ at 2 by easy.
+ apply NQadd_lt_mono_r.
+ now apply (NQadd_lt_mono_r _ 1%NQ).
+-rewrite NQadd_assoc, NQadd_add_swap, NQsub_add.
+ rewrite NQadd_sub_assoc, NQadd_comm.
+ now rewrite NQadd_sub.
 Qed.
-*)
 
 Theorem freal_add_series_comm {r : radix} : ∀ x y i,
   (x ⊕ y)%F i = (y ⊕ x)%F i.

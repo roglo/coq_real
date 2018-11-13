@@ -1958,6 +1958,15 @@ f_equal; rewrite <- Hxn.
 symmetry; apply GQnum_den.
 Qed.
 
+Theorem NQfrac_lt_1 : ∀ x, (NQfrac x < 1)%NQ.
+Proof.
+intros.
+unfold NQfrac.
+apply NQlt_pair; [ easy | easy | ].
+do 2 rewrite Nat.mul_1_r.
+now apply Nat.mod_upper_bound.
+Qed.
+
 Theorem NQle_decidable : ∀ x y, Decidable.decidable (x ≤ y)%NQ.
 Proof.
 intros.
