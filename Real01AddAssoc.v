@@ -695,9 +695,15 @@ unfold carry.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε v i)) as [H2| H2].
  +destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H3| H3].
+  *specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
+   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H2'.
+   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H3 0) as H3'.
+   rewrite Nat.pow_1_r in H1', H2', H3'.
+...
   *specialize (frac_eq_if_all_fA_ge_1_ε v i H2) as H2'.
    specialize (H2' 0) as (x2 & Hx2 & H2').
    rewrite Nat.pow_1_r in Hx2, H2'.
+...
    specialize (A_ge_0 i (min_n i 0) v) as Hvz.
    remember (A i (min_n i 0) v) as x eqn:Hx.
    specialize (NQintg_frac x Hvz) as Hxd.
