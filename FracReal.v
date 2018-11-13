@@ -2353,9 +2353,12 @@ apply Decidable.contrapositive; [ apply NQle_decidable | ].
 intros Hu.
 apply NQnle_gt in Hu.
 apply NQnle_gt.
-...
+(*
 rewrite Nat.pow_add_r.
 rewrite Nat.mod_mul_r; try pauto.
+*)
+unfold NQfrac in Hu; unfold NQfrac.
+...
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   clear - Hs Hijn.
   destruct j; [ now rewrite Nat.add_0_r | ].
