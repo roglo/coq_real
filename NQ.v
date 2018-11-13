@@ -1938,7 +1938,7 @@ rewrite <- (proj2 (Nat.div_exact _ c Hcz)).
  apply Nat.mod_divide; [ now rewrite <- Hc | apply Nat.gcd_divide_l ].
 Qed.
 
-Theorem NQfrac_lt_1 : ∀ x, (0 ≤ x < 1)%NQ → NQfrac x = x.
+Theorem NQfrac_eq_when_lt_1 : ∀ x, (0 ≤ x < 1)%NQ → NQfrac x = x.
 Proof.
 intros * (Hxz, Hx1).
 destruct x as [| xp| xp]; [ easy | | easy ].

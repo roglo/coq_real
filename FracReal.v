@@ -414,7 +414,7 @@ Notation "a + b" := (freal_add a b) : freal_scope.
 Notation "a * b" := (freal_mul a b) : freal_scope.
 *)
 
-Theorem if_fA_ge_1_ε_all_true_ge {r : radix} : ∀ u i,
+Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ.
 Proof.
@@ -425,9 +425,10 @@ now destruct
   (NQlt_le_dec (NQfrac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%NQ).
 Qed.
 
-Theorem if_fA_ge_1_ε_all_true {r : radix} : ∀ u i,
+Theorem frac_eq_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k, NQfrac (A i (min_n i k) u) = (1 - 1 // rad ^ S k)%NQ.
+  → ∀ k, ∃ x, (x < 1 // rad ^ S k)%NQ ∧
+     NQfrac (A i (min_n i k) u) = (1 - 1 // rad ^ S k + x)%NQ.
 Proof.
 intros u i H k.
 specialize (H k).
@@ -435,11 +436,15 @@ unfold fA_ge_1_ε in H.
 destruct
   (NQlt_le_dec (NQfrac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%NQ)
   as [H1| H1]; [ easy | clear H ].
+exists (NQfrac (A i (min_n i k) u - (1 - 1 // rad ^ S k)))%NQ.
+split.
+...
 apply NQle_antisymm; [ | easy ].
 Search (NQfrac _ < 1)%NQ.
 (* renommer NQfrac_lt_1 autrement et ajouter théoreme pour dire NQfrac u < 1 *)
 ...
 Qed.
+*)
 
 Theorem freal_add_series_comm {r : radix} : ∀ x y i,
   (x ⊕ y)%F i = (y ⊕ x)%F i.
@@ -2115,14 +2120,14 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
   now apply Nat_pow_ge_1.
 -destruct (NQlt_le_dec (A (i + j) n u) 1) as [HAn| HAp].
  +apply NQnlt_ge; intros H1.
-  rewrite NQfrac_lt_1 in H1; cycle 1. {
+  rewrite NQfrac_eq_when_lt_1 in H1; cycle 1. {
     split; [ apply A_ge_0 | easy ].
   }
   apply NQnlt_ge in H5; apply H5; clear H5.
   rewrite <- NQsub_opp_r, <- NQmul_opp_l.
   rewrite NQopp_sub_distr.
   rewrite NQadd_opp_l.
-  rewrite NQfrac_lt_1; cycle 1. {
+  rewrite NQfrac_eq_when_lt_1; cycle 1. {
     split.
     -apply NQle_0_sub.
      rewrite NQmul_sub_distr_r, NQmul_1_l.
