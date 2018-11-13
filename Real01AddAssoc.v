@@ -695,13 +695,25 @@ unfold carry.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε v i)) as [H2| H2].
  +destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H3| H3].
-  *idtac.
-   specialize (frac_eq_if_all_fA_ge_1_ε v i H2) as H2'.
+  *specialize (frac_eq_if_all_fA_ge_1_ε v i H2) as H2'.
    specialize (H2' 0) as (x2 & Hx2 & H2').
    rewrite Nat.pow_1_r in Hx2, H2'.
    specialize (A_ge_0 i (min_n i 0) v) as Hvz.
    remember (A i (min_n i 0) v) as x eqn:Hx.
    specialize (NQintg_frac x Hvz) as Hxd.
+...
+   replace x with (NQnum x // NQden x)%NQ in Hxd at 1; cycle 1. {
+     now symmetry; apply NQnum_den.
+   }
+(*
+   unfold NQfrac in Hxd.
+   rewrite NQadd_pair in Hxd; [ | easy | easy ].
+   do 2 rewrite Nat.mul_1_l in Hxd.
+   apply NQeq_pair in Hxd; [ | easy | easy ].
+   rewrite Nat.mul_comm in Hxd.
+   apply Nat.mul_cancel_l in Hxd; [ | easy ].
+...
+*)
    rewrite H2' in Hxd.
    rewrite NQadd_assoc, NQadd_sub_assoc in Hxd.
    rewrite NQadd_pair in Hxd; [ | easy | easy ].
