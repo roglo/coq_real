@@ -695,12 +695,32 @@ unfold carry.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε v i)) as [H2| H2].
  +destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H3| H3].
-  *specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
-   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H2'.
-   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H3 0) as H3'.
+  *specialize (frac_eq_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
+   specialize (frac_eq_if_all_fA_ge_1_ε _ _ H2 0) as H2'.
+   specialize (frac_eq_if_all_fA_ge_1_ε _ _ H3 0) as H3'.
    rewrite Nat.pow_1_r in H1', H2', H3'.
    remember (min_n i 0) as n eqn:Hn.
    move n before i.
+   destruct H1' as (x1 & Hx1 & H1').
+   destruct H2' as (x2 & Hx2 & H2').
+   destruct H3' as (x3 & Hx3 & H3').
+   move x2 before x1; move x3 before x2.
+   move Hx2 before Hx1; move Hx3 before Hx2.
+   specialize (A_ge_0 i (min_n i 0) v) as Hvz2.
+   rewrite <- Hn in Hvz2.
+   specialize (NQintg_frac (A i n v) Hvz2) as Hxd2.
+   unfold NQfrac in Hxd2.
+   rewrite NQadd_pair in Hxd2; [ | easy | easy ].
+   do 2 rewrite Nat.mul_1_l in Hxd2.
+   remember (A i n v) as a2 eqn:Hz2.
+   replace (NQintg a2 + 1) with
+     ((NQintg a2 * NQden a2 + NQden a2) / NQden a2).
+   replace a2 with (NQnum a2 // NQden a2)%NQ in Hxd2 at 1.
+   apply NQeq_pair in Hxd2.
+   rewrite Nat.mul_comm in Hxd2.
+   apply Nat.mul_cancel_l in Hxd2.
+   replace (NQintg a2 * NQden a2) with (NQnum a2 - NQnum a2 mod NQden a2).
+
 ...
   *specialize (frac_eq_if_all_fA_ge_1_ε v i H2) as H2'.
    specialize (H2' 0) as (x2 & Hx2 & H2').
