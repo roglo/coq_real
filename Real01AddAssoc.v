@@ -699,6 +699,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H2'.
    specialize (frac_ge_if_all_fA_ge_1_ε _ _ H3 0) as H3'.
    rewrite Nat.pow_1_r in H1', H2', H3'.
+   remember (min_n i 0) as n eqn:Hn.
+   move n before i.
 ...
   *specialize (frac_eq_if_all_fA_ge_1_ε v i H2) as H2'.
    specialize (H2' 0) as (x2 & Hx2 & H2').
