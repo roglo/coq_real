@@ -414,6 +414,33 @@ Notation "a + b" := (freal_add a b) : freal_scope.
 Notation "a * b" := (freal_mul a b) : freal_scope.
 *)
 
+Theorem if_fA_ge_1_ε_all_true_ge {r : radix} : ∀ u i,
+  (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ.
+Proof.
+intros u i H k.
+specialize (H k).
+unfold fA_ge_1_ε in H.
+now destruct
+  (NQlt_le_dec (NQfrac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%NQ).
+Qed.
+
+Theorem if_fA_ge_1_ε_all_true {r : radix} : ∀ u i,
+  (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k, NQfrac (A i (min_n i k) u) = (1 - 1 // rad ^ S k)%NQ.
+Proof.
+intros u i H k.
+specialize (H k).
+unfold fA_ge_1_ε in H.
+destruct
+  (NQlt_le_dec (NQfrac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%NQ)
+  as [H1| H1]; [ easy | clear H ].
+apply NQle_antisymm; [ | easy ].
+Search (NQfrac _ < 1)%NQ.
+(* renommer NQfrac_lt_1 autrement et ajouter théoreme pour dire NQfrac u < 1 *)
+...
+Qed.
+
 Theorem freal_add_series_comm {r : radix} : ∀ x y i,
   (x ⊕ y)%F i = (y ⊕ x)%F i.
 Proof.
@@ -2358,6 +2385,7 @@ rewrite Nat.pow_add_r.
 rewrite Nat.mod_mul_r; try pauto.
 *)
 unfold NQfrac in Hu; unfold NQfrac.
+Admitted. (* à terminer
 ...
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   clear - Hs Hijn.

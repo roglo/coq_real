@@ -696,6 +696,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε v i)) as [H2| H2].
  +destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H3| H3].
   *idtac.
+   specialize (fA_ge_1_ε_all_true_if v i H2) as H2'.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
