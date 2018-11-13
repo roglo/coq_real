@@ -3692,13 +3692,12 @@ replace (n - i - 1) with (s + j) in Hu by flia Hs Hijn.
 replace (s + j - S (j + k)) with (s - S k) in Hu by flia Hs.
 *)
 move Hu at bottom.
-Abort. (* à compléter
-...
 revert Hu.
-apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
+apply Decidable.contrapositive; [ apply NQle_decidable | ].
 intros Hu.
-apply Nat.nle_gt in Hu.
-apply Nat.nle_gt.
+apply NQnle_gt in Hu.
+apply NQnle_gt.
+...
 rewrite Nat.pow_add_r.
 rewrite Nat.mod_mul_r; try pauto.
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {

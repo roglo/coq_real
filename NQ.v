@@ -1958,6 +1958,15 @@ f_equal; rewrite <- Hxn.
 symmetry; apply GQnum_den.
 Qed.
 
+Theorem NQle_decidable : ∀ x y, Decidable.decidable (x ≤ y)%NQ.
+Proof.
+intros.
+unfold Decidable.decidable.
+destruct x as [| xp| xp], y as [| yp| yp]; (try now left); (try now right).
+-apply GQle_decidable.
+-apply GQle_decidable.
+Qed.
+
 Require Import Summation.
 
 Definition NQ_ord_ring_def :=

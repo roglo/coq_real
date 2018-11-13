@@ -1407,3 +1407,14 @@ destruct c; [ easy | ].
 do 3 rewrite Nat.sub_succ, Nat.sub_0_r in Habc.
 now do 3 rewrite Nat.add_1_r in Habc.
 Qed.
+
+Theorem GQle_decidable : ∀ x y, Decidable.decidable (x ≤ y)%GQ.
+Proof.
+intros.
+unfold Decidable.decidable.
+unfold "≤"%GQ.
+destruct x as (x & Hx).
+destruct y as (y & Hy).
+move y before x; cbn.
+apply PQle_decidable.
+Qed.

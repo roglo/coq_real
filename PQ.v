@@ -1703,3 +1703,10 @@ destruct d.
   rewrite Nat.mul_0_l, Nat.add_0_r in H1, H2.
   now subst yn yd.
 Qed.
+
+Theorem PQle_decidable : ∀ x y, Decidable.decidable (x ≤ y)%PQ.
+Proof.
+intros.
+unfold Decidable.decidable.
+apply Nat.le_decidable.
+Qed.
