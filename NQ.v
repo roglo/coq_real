@@ -2035,7 +2035,7 @@ Qed.
 Theorem NQintg_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
   NQintg (x + y) =
     NQintg x + NQintg y +
-    if NQle_lt_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
+    if NQlt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
 Proof.
 intros * Hxz Hyz.
 specialize (NQintg_encl x Hxz) as Hx.
@@ -2046,15 +2046,55 @@ assert (Hxyz : (0 ≤ x + y)%NQ). {
 }
 specialize (NQintg_encl (x + y)%NQ Hxyz) as Hz.
 clear Hxyz.
-destruct (NQle_lt_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
+destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
 -rewrite Nat.add_0_r.
  enough (H : (NQintg (x + y) // 1 = (NQintg x + NQintg y) // 1)%NQ). {
    apply NQeq_pair in H; [ | easy | easy ].
    now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
  }
+ replace (NQfrac x) with (x - NQintg x // 1)%NQ in H1; cycle 1. {
+   rewrite (NQintg_frac x Hxz) at 1.
+   now rewrite NQadd_comm, NQadd_sub.
+ }
+ replace (NQfrac y) with (y - NQintg y // 1)%NQ in H1; cycle 1. {
+   rewrite (NQintg_frac y Hyz) at 1.
+   now rewrite NQadd_comm, NQadd_sub.
+ }
+ rewrite NQadd_sub_assoc in H1.
+ rewrite <- NQsub_sub_distr in H1.
+ rewrite NQsub_sub_swap in H1.
+ rewrite NQsub_sub_distr in H1.
+ rewrite NQsub_sub_swap in H1.
+ rewrite <- NQsub_add_distr in H1.
+ rewrite <- NQpair_add_l in H1.
+ rewrite <- NQadd_sub_swap in H1.
+ apply NQlt_add_lt_sub_r in H1.
+ rewrite NQsub_opp_r in H1.
  apply NQle_antisymm.
  +eapply NQle_trans; [ apply Hz | ].
-
+  unfold "<"%NQ in H1; unfold "≤"%NQ.
+  remember (x + y)%NQ as xy eqn:Hxy.
+  symmetry in Hxy.
+  destruct xy as [| pxy| pxy].
+  *apply NQadd_move_0_l in Hxy; rewrite Hxy in Hyz.
+   apply NQopp_le_mono in Hyz.
+   rewrite NQopp_involutive in Hyz; cbn in Hyz.
+   apply NQle_antisymm in Hxz; [ now rewrite Hxy, Hxz | easy ].
+  *remember ((NQintg x + NQintg y) // 1)%NQ as i eqn:Hi.
+   symmetry in Hi.
+   destruct i as [| ip| ip].
+  --replace 0%NQ with (0 // 1)%NQ in Hi by easy.
+    apply NQeq_pair in Hi; [ | easy | easy ].
+    rewrite Nat.mul_1_l, Nat.mul_1_r in Hi.
+    apply Nat.eq_add_0 in Hi.
+    destruct Hi as (Hix, Hiy).
+    cbn in H1.
+    rewrite Hix in Hx; rewrite Hiy in Hy.
+    cbn in Hx, Hy.
+    destruct x as [| px| px]; [ | | easy ].
+   ++destruct y as [| py| py]; [ easy | | easy ].
+     destruct Hy as (_, Hy).
+     unfold "<"%NQ in Hy.
 ..
 intros * Hxz Hyz.
 destruct (NQle_lt_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
