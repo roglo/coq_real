@@ -2006,6 +2006,145 @@ do 2 rewrite Nat.mul_1_r.
 now apply Nat.mod_upper_bound.
 Qed.
 
+Theorem NQintg_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
+  NQintg (x + y) =
+    NQintg x + NQintg y +
+    if NQle_lt_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
+Proof.
+intros * Hxz Hyz.
+destruct (NQle_lt_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
+-rewrite Nat.add_0_r.
+ replace (NQfrac x) with (x - NQintg x // 1)%NQ in H1; cycle 1. {
+   rewrite (NQintg_frac x Hxz) at 1.
+   now rewrite NQadd_comm, NQadd_sub.
+ }
+ replace (NQfrac y) with (y - NQintg y // 1)%NQ in H1; cycle 1. {
+   rewrite (NQintg_frac y Hyz) at 1.
+   now rewrite NQadd_comm, NQadd_sub.
+ }
+ destruct x as [| xp| xp], y as [| yp| yp]; try easy.
+ clear Hxz Hyz.
+ unfold "+"%NQ; cbn.
+...
+
+intros * Hxz Hyz.
+destruct (NQle_lt_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
+-rewrite Nat.add_0_r.
+ replace (NQfrac x) with (x - NQintg x // 1)%NQ in H1; cycle 1. {
+   rewrite (NQintg_frac x Hxz) at 1.
+   now rewrite NQadd_comm, NQadd_sub.
+ }
+ replace (NQfrac y) with (y - NQintg y // 1)%NQ in H1; cycle 1. {
+   rewrite (NQintg_frac y Hyz) at 1.
+   now rewrite NQadd_comm, NQadd_sub.
+ }
+ rewrite NQadd_sub_assoc in H1.
+ rewrite <- NQsub_sub_distr in H1.
+ rewrite NQsub_sub_swap in H1.
+ rewrite NQsub_sub_distr in H1.
+ rewrite NQsub_sub_swap in H1.
+ rewrite <- NQsub_add_distr in H1.
+ rewrite <- NQpair_add_l in H1.
+ rewrite <- NQadd_sub_swap in H1.
+ enough (H : (NQintg (x + y) // 1 = (NQintg x + NQintg y) // 1)%NQ). {
+   apply NQeq_pair in H; [ | easy | easy ].
+   now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
+ }
+ remember (x + y)%NQ as z in H1.
+ rewrite NQintg_frac in Heqz; subst z; cycle 1. {
+   eapply NQle_trans; [ apply Hxz | ].
+   now apply NQle_add_r.
+ }
+...
+
+ apply NQle_antisymm.
+ 2: {
+
+   rewrite <- NQadd_sub_assoc in H1.
+   apply NQle_add_le_sub_l in H1.
+   eapply NQle_trans; [ | ].
+
+
+   apply NQle_sub_le_add_l in H1.
+   apply NQle_sub_le_add_l in H1.
+
+
+ rewrite NQadd_sub_swap in H1.
+ apply NQle_add_le_sub_l in H1.
+ 2: {
+   eapply NQle_trans.
+
+ +rewrite NQsub_pair_neg in H1; [ | easy | easy | ].
+  do 2 rewrite Nat.mul_1_l in H1.
+  rewrite Nat.mul_1_r in H1.
+
+
+
+...
+
+ apply NQle_add_le_sub_l in H1.
+ rewrite <- NQadd_sub_assoc in H1.
+
+...
+ apply NQle_antisymm.
+ +eapply NQle_trans; [ apply H1 | ].
+
+...
+
+
+ apply NQle_antisymm.
+ +remember (x + y)%NQ as z in H1.
+
+
+...
+  destruct x as [| xp| xp], y as [| yp| yp]; try easy.
+...
+
+ unfold NQintg at 1.
+...
+ destruct x as [| xp| xp], y as [| yp| yp]; try easy.
+ clear Hxz Hyz.
+ remember (NQpos xp) as x eqn:Hx.
+ remember (NQpos yp) as y eqn:Hy.
+...
+
+ replace (NQfrac (NQpos xp)) with (NQpos xp - NQintg ( // 1)%NQ in H1; cycle 1. {
+   rewrite (NQintg_frac x Hxz) at 1.
+   now rewrite NQadd_comm, NQadd_sub.
+ }
+ replace (NQfrac y) with (y - NQintg y // 1)%NQ in H1; cycle 1. {
+   rewrite (NQintg_frac y Hyz) at 1.
+   now rewrite NQadd_comm, NQadd_sub.
+ }
+ rewrite NQadd_sub_assoc in H1.
+ rewrite <- NQsub_sub_distr in H1.
+ rewrite NQsub_sub_swap in H1.
+ rewrite NQsub_sub_distr in H1.
+ rewrite NQsub_sub_swap in H1.
+ rewrite <- NQsub_add_distr in H1.
+ rewrite <- NQpair_add_l in H1.
+ enough (H : (NQintg (x + y) // 1 = (NQintg x + NQintg y) // 1)%NQ). {
+   apply NQeq_pair in H; [ | easy | easy ].
+   now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
+ }
+ unfold NQintg at 1.
+...
+   rewrite NQintg_frac at 1.
+...
+ unfold NQfrac in H1.
+ rewrite NQadd_pair in H1; [ | easy | easy ].
+ apply NQle_pair in H1; [ | | easy ]; cycle 1. {
+   intros H2; apply Nat.eq_mul_0 in H2.
+   now destruct H2 as [H2| H2]; apply NQden_neq_0 in H2.
+ }
+ do 2 rewrite Nat.mul_1_r in H1.
+Search NQintg.
+NQintg_frac: ∀ x : NQ, (0 ≤ x)%NQ → x = (NQintg x // 1 + NQfrac x)%NQ
+...
+ rewrite (Nat.div_mod (NQnum x) (NQden x) (NQden_neq_0 _)).
+ rewrite (Nat.div_mod (NQnum y) (NQden y) (NQden_neq_0 _)).
+...
+
 Theorem NQle_decidable : ∀ x y, Decidable.decidable (x ≤ y)%NQ.
 Proof.
 intros.
