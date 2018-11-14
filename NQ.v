@@ -2043,7 +2043,7 @@ assert (Hxyz : (0 ≤ x + y)%NQ). {
   eapply NQle_trans; [ apply Hxz | ].
   now apply NQle_add_r.
 }
-specialize (NQintg_encl (x + y)%NQ Hxyz) as Hxy.
+specialize (NQintg_encl (x + y)%NQ Hxyz) as Hz.
 clear Hxyz.
 destruct (NQle_lt_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
 -rewrite Nat.add_0_r.
