@@ -550,6 +550,13 @@ unfold NQsub.
 apply NQadd_add_swap.
 Qed.
 
+Theorem NQsub_sub_swap : ∀ x y z, (x - y - z = x - z - y)%NQ.
+Proof.
+intros.
+unfold NQsub.
+apply NQadd_add_swap.
+Qed.
+
 Theorem NQsub_diag : ∀ x, (x - x = 0)%NQ.
 Proof.
 intros.
@@ -880,6 +887,38 @@ destruct (NQeq_dec x y) as [H1| H1].
    now intros H; apply H1, NQle_antisymm.
 Qed.
 Arguments NQadd_le_lt_mono x%NQ y%NQ z%NQ t%NQ.
+
+Theorem NQle_sub_le_add_l : ∀ x y z, (x - y ≤ z)%NQ ↔ (x ≤ y + z)%NQ.
+Proof.
+intros.
+split; intros H.
+-apply (NQadd_le_mono_r _ _ y) in H.
+ now rewrite NQsub_add, NQadd_comm in H.
+-apply (NQadd_le_mono_r _ _ y).
+ now rewrite NQsub_add, NQadd_comm.
+Qed.
+
+Theorem NQle_sub_le_add_r : ∀ x y z, (x - y ≤ z)%NQ ↔ (x ≤ z + y)%NQ.
+Proof.
+intros.
+rewrite NQadd_comm; apply NQle_sub_le_add_l.
+Qed.
+
+Theorem NQle_add_le_sub_l : ∀ x y z, (x + y ≤ z)%NQ ↔ (x ≤ z - y)%NQ.
+Proof.
+intros.
+split; intros H.
+-apply (NQadd_le_mono_r _ _ y).
+ now rewrite NQsub_add.
+-apply (NQadd_le_mono_r _ _ y) in H.
+ now rewrite NQsub_add in H.
+Qed.
+
+Theorem NQle_add_le_sub_r : ∀ x y z, (x + y ≤ z)%NQ ↔ (y ≤ z - x)%NQ.
+Proof.
+intros.
+rewrite NQadd_comm; apply NQle_add_le_sub_l.
+Qed.
 
 Theorem NQadd_le_r : ∀ x y z, (x + z ≤ y + z ↔ x ≤ y)%NQ.
 Proof.
