@@ -1044,6 +1044,14 @@ replace y with (y + 0)%NQ at 1 by apply NQadd_0_r.
 now apply NQadd_lt_mono_l.
 Qed.
 
+Theorem NQle_sub_l : ∀ x y, (0 ≤ y)%NQ → (x - y ≤ x)%NQ.
+Proof.
+intros * Hy.
+apply NQle_sub_le_add_r.
+apply NQle_sub_le_add_l.
+now rewrite NQsub_diag.
+Qed.
+
 Theorem NQadd_cancel_l: ∀ x y z, (x + y = x + z)%NQ ↔ (y = z)%NQ.
 Proof.
 intros.
@@ -2006,11 +2014,40 @@ do 2 rewrite Nat.mul_1_r.
 now apply Nat.mod_upper_bound.
 Qed.
 
+Theorem NQintg_encl : ∀ x,
+  (0 ≤ x)%NQ → (NQintg x // 1 ≤ x < NQintg x // 1 + 1)%NQ.
+Proof.
+intros * Hxz.
+specialize (NQintg_frac x Hxz) as Hx.
+assert (Hi : (NQintg x // 1 = x - NQfrac x)%NQ). {
+  rewrite Hx at 2.
+  now rewrite NQadd_sub.
+}
+rewrite Hi.
+split; [ apply NQle_sub_l, NQfrac_ge_0 | ].
+rewrite <- NQadd_sub_swap.
+apply NQlt_add_lt_sub_r.
+apply NQadd_lt_mono_l.
+apply NQfrac_lt_1.
+Qed.
+
 Theorem NQintg_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
   NQintg (x + y) =
     NQintg x + NQintg y +
     if NQle_lt_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
 Proof.
+intros * Hxz Hyz.
+specialize (NQintg_encl x Hxz) as Hx.
+specialize (NQintg_encl y Hyz) as Hy.
+assert (Hxyz : (0 ≤ x + y)%NQ). {
+  eapply NQle_trans; [ apply Hxz | ].
+  now apply NQle_add_r.
+}
+specialize (NQintg_encl (x + y)%NQ Hxyz) as Hxy.
+clear Hxyz.
+destruct (NQle_lt_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
+-rewrite Nat.add_0_r.
+..
 intros * Hxz Hyz.
 destruct (NQle_lt_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
 -rewrite Nat.add_0_r.
