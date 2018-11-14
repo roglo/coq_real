@@ -686,6 +686,19 @@ Definition P {r : radix} u := d2n (prop_carr u).
 Definition add_series (u v : nat → nat) i := u i + v i.
 Notation "u ⊕ v" := (add_series u v) (at level 50).
 
+Theorem A_additive {r : radix} : ∀ i n u v,
+  A i n (u ⊕ v) = (A i n u + A i n v)%NQ.
+Proof.
+intros.
+unfold A, "⊕".
+rewrite summation_eq_compat with
+  (h := λ j, (u j // rad ^ (j - i) + v j // rad ^ (j - i))%NQ);
+  cycle 1. {
+  intros; apply NQpair_add_l.
+}
+now rewrite summation_add_distr.
+Qed.
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (carry (u ⊕ P v) i + carry v i) mod rad = carry (u ⊕ v) i mod rad.
 Proof.
@@ -695,12 +708,22 @@ unfold carry.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε v i)) as [H2| H2].
  +destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H3| H3].
-  *specialize (frac_eq_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
+  *specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
+   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H2'.
+   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H3 0) as H3'.
+   rewrite A_additive in H1', H3'.
+   do 2 rewrite A_additive.
+   remember (A i (min_n i 0) u) as au eqn:Hau.
+   remember (A i (min_n i 0) v) as av eqn:Hav.
+   remember (A i (min_n i 0) (P v)) as apv eqn:Hapv.
+   move apv before i; move av before i; move au before i.
+   move Hav before Hau.
+...
+
+   specialize (frac_eq_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
    specialize (frac_eq_if_all_fA_ge_1_ε _ _ H2 0) as H2'.
    specialize (frac_eq_if_all_fA_ge_1_ε _ _ H3 0) as H3'.
    rewrite Nat.pow_1_r in H1', H2', H3'.
-   remember (min_n i 0) as n eqn:Hn.
-   move n before i.
    destruct H1' as (x1 & Hx1 & H1').
    destruct H2' as (x2 & Hx2 & H2').
    destruct H3' as (x3 & Hx3 & H3').

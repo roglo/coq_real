@@ -414,6 +414,20 @@ Notation "a + b" := (freal_add a b) : freal_scope.
 Notation "a * b" := (freal_mul a b) : freal_scope.
 *)
 
+Theorem A_freal_additive {r : radix} : ∀ i n x y,
+  A i n (x ⊕ y)%F = (A i n (fd2n x) + A i n (fd2n y))%NQ.
+Proof.
+intros.
+unfold A.
+unfold "⊕"%F.
+rewrite summation_eq_compat with
+  (h := λ j, (fd2n x j // rad ^ (j - i) + fd2n y j // rad ^ (j - i))%NQ);
+  cycle 1. {
+  intros; apply NQpair_add_l.
+}
+now rewrite summation_add_distr.
+Qed.
+
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ.
