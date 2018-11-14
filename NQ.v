@@ -84,6 +84,7 @@ Notation "x ≤ y" := (NQle x y) : NQ_scope.
 Notation "x > y" := (NQgt x y) : NQ_scope.
 Notation "x ≥ y" := (NQge x y) : NQ_scope.
 Notation "x ≤ y < z" := (NQle x y ∧ NQlt y z) : NQ_scope.
+Notation "x < y ≤ z" := (NQlt x y ∧ NQle y z) : NQ_scope.
 
 Theorem NQeq_dec : ∀ x y : NQ, {x = y} + {x ≠ y}.
 Proof.
@@ -2047,6 +2048,13 @@ specialize (NQintg_encl (x + y)%NQ Hxyz) as Hz.
 clear Hxyz.
 destruct (NQle_lt_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
 -rewrite Nat.add_0_r.
+ enough (H : (NQintg (x + y) // 1 = (NQintg x + NQintg y) // 1)%NQ). {
+   apply NQeq_pair in H; [ | easy | easy ].
+   now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
+ }
+ apply NQle_antisymm.
+ +eapply NQle_trans; [ apply Hz | ].
+
 ..
 intros * Hxz Hyz.
 destruct (NQle_lt_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
