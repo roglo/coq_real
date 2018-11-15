@@ -2079,6 +2079,11 @@ Theorem NQintg_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
     if NQlt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
 Proof.
 intros * Hxz Hyz.
+destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
+-rewrite Nat.add_0_r.
+ assert (H2 : (0 ≤ NQfrac x + NQfrac y)%NQ). {
+...
+
 assert (H1 : (0 ≤ x + y - NQintg x // 1 - NQintg y // 1 < 2)%NQ). {
   specialize (NQfrac_ge_0 x) as Hx0.
   specialize (NQfrac_ge_0 y) as Hy0.
@@ -2099,8 +2104,6 @@ assert (H1 : (0 ≤ x + y - NQintg x // 1 - NQintg y // 1 < 2)%NQ). {
    apply NQadd_le_lt_mono; [ | easy ].
    now apply NQlt_le_incl.
 }
-destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H2| H2].
--rewrite Nat.add_0_r.
 ...
  assert (H2 : (x + y < 1 + NQintg x // 1+ NQintg y // 1)%NQ). {
    specialize (NQintg_frac x Hxz) as Hx.
