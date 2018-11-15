@@ -2038,12 +2038,6 @@ Theorem NQintg_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
     if NQlt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
 Proof.
 intros * Hxz Hyz.
-assert (H1 : (x + y < NQintg (x + y) // 1 + 1)%NQ). {
-  apply NQintg_encl.
-  eapply NQle_trans; [ apply Hxz | ].
-  now apply NQle_add_r.
-}
-...
 assert (H1 : NQintg x + NQintg y ≤ NQintg (x + y)). {
   assert (Hxyz : (0 ≤ x + y)%NQ). {
     eapply NQle_trans; [ apply Hxz | ].
