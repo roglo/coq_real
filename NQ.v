@@ -2053,6 +2053,7 @@ assert (H1 : NQintg x + NQintg y ≤ NQintg (x + y)). {
   rewrite NQpair_add_l.
   eapply NQle_trans; [ apply NQadd_le_mono_r, Hx | ].
   eapply NQle_trans; [ apply NQadd_le_mono_l, Hy | ].
+  destruct Hxy as (H1, H2).
 ...
 
 Theorem NQle_decidable : ∀ x y, Decidable.decidable (x ≤ y)%NQ.
