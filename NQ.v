@@ -2079,8 +2079,29 @@ Theorem NQintg_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
     if NQlt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
 Proof.
 intros * Hxz Hyz.
-destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
+assert (H1 : (0 ≤ x + y - NQintg x // 1 - NQintg y // 1 < 2)%NQ). {
+  specialize (NQfrac_ge_0 x) as Hx0.
+  specialize (NQfrac_ge_0 y) as Hy0.
+  specialize (NQfrac_lt_1 x) as Hx1.
+  specialize (NQfrac_lt_1 y) as Hy1.
+  specialize (NQintg_frac x Hxz) as Hx.
+  specialize (NQintg_frac y Hyz) as Hy.
+  symmetry in Hx, Hy.
+  apply NQadd_move_l in Hx.
+  apply NQadd_move_l in Hy.
+  rewrite Hx in Hx0, Hx1.
+  rewrite Hy in Hy0, Hy1.
+  rewrite NQadd_sub_swap, <- NQadd_sub_assoc.
+  split.
+  -replace 0%NQ with (0 + 0)%NQ by easy.
+   now apply NQadd_le_mono.
+  -replace 2%NQ with (1 + 1)%NQ by easy.
+   apply NQadd_le_lt_mono; [ | easy ].
+   now apply NQlt_le_incl.
+}
+destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H2| H2].
 -rewrite Nat.add_0_r.
+...
  assert (H2 : (x + y < 1 + NQintg x // 1+ NQintg y // 1)%NQ). {
    specialize (NQintg_frac x Hxz) as Hx.
    specialize (NQintg_frac y Hyz) as Hy.
