@@ -2086,8 +2086,8 @@ destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
    now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
  }
  assert (H2 : (0 ≤ x + y - NQintg x // 1 - NQintg y // 1 < 1)%NQ). {
-admit.
-}
+   admit.
+ }
  assert (H3 : (x + y - 1 < NQintg x // 1 + NQintg y // 1 ≤ x + y)%NQ). {
    admit.
  }
