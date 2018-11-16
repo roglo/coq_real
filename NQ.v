@@ -2073,6 +2073,46 @@ apply NQadd_lt_mono_l.
 apply NQfrac_lt_1.
 Qed.
 
+Theorem NQintg_interv : ∀ n x, (0 ≤ x)%NQ →
+  (n // 1 ≤ x < n // 1 + 1)%NQ ↔ n = NQintg x.
+Proof.
+intros * Hxz.
+split; intros Hx.
+-unfold NQintg.
+ replace x with (NQnum x // NQden x)%NQ in Hx; cycle 1. {
+   now symmetry; apply NQnum_den.
+ }
+ rewrite NQadd_pair in Hx; [ | easy | easy ].
+ do 2 rewrite Nat.mul_1_r in Hx.
+ destruct Hx as (Hnx, Hxn).
+ apply NQle_pair in Hnx; [ | easy | easy ].
+ apply NQlt_pair in Hxn; [ | easy | easy ].
+ rewrite Nat.mul_1_l in Hnx.
+ rewrite Nat.mul_1_r in Hxn.
+ remember (NQnum x) as b.
+ remember (NQden x) as a.
+ clear x Hxz Heqa Heqb.
+ rewrite Nat.mul_comm in Hxn.
+
+...
+ apply Nat.le_antisymm.
+ +apply (Nat.mul_le_mono_pos_l _ _ (NQden x)). {
+    apply Nat.neq_0_lt_0, NQden_neq_0.
+  }
+  eapply le_trans; [ apply Hnx | ].
+...
+ specialize (Nat.div_mod (NQnum x) (NQden x) (NQden_neq_0 _)) as H1.
+ specialize (Nat.mod_upper_bound (NQnum x) (NQden x) (NQden_neq_0 _)) as H2.
+
+...
+
+2: {
+rewrite Hx.
+apply NQintg_encl.
+now destruct x.
+}
+...
+
 Theorem NQintg_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
   NQintg (x + y) =
     NQintg x + NQintg y +
@@ -2085,6 +2125,18 @@ destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
    apply NQeq_pair in H; [ | easy | easy ].
    now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
  }
+ assert
+   (H2 : ((NQintg x + NQintg y) // 1 ≤ x + y <
+          (NQintg x + NQintg y) // 1 + 1)%NQ). {
+   admit.
+ }
+...
+ assert (Hxyz : (0 ≤ x + y)%NQ). {
+   eapply NQle_trans; [ apply Hxz | ].
+   now apply NQle_add_r.
+ }
+ specialize (NQintg_encl (x + y)%NQ Hxyz) as H2.
+...
  assert (H2 : (x + y - 1 < (NQintg x + NQintg y) // 1 ≤ x + y)%NQ). {
    specialize (NQfrac_ge_0 x) as Hx0.
    specialize (NQfrac_ge_0 y) as Hy0.
