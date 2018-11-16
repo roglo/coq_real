@@ -730,10 +730,6 @@ remember (A i (min_n i 0) v) as av eqn:Hav.
 remember (A i (min_n i 0) (P v)) as apv eqn:Hapv.
 move apv before au; move av before au.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
-(*
--specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
- rewrite A_additive, <- Hau, <- Hapv in H1'.
-*)
 -rewrite NQintg_add; [ | subst; apply A_ge_0 | subst; apply A_ge_0 ].
  rewrite NQintg_add_frac.
  destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
