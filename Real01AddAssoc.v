@@ -716,7 +716,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
  rewrite A_additive, <- Hau, <- Hapv in H1'.
 *)
 -rewrite NQintg_add; [ | subst; apply A_ge_0 | subst; apply A_ge_0 ].
-...
+ rewrite NQintg_add_frac.
  destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
  +rewrite NQintg_add; [ | subst; apply A_ge_0 | subst; apply A_ge_0 ].
   rewrite Nat.add_shuffle0.
@@ -741,6 +741,13 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite <- Hau, <- Hapv in H1'.
    rewrite <- Hau, <- Hav in H2'.
    rewrite <- Hav in H3'.
+   rewrite <- NQintg_add_frac.
+...
+
+   destruct (NQlt_le_dec (NQfrac au + NQfrac apv)) as [H4| H4].
+  --rewrite Nat.add_0_r.
+    destruct (NQlt_le_dec (NQfrac au + NQfrac av)) as [H5| H5].
+
 ...
   *specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
    specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H2'.

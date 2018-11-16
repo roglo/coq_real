@@ -866,6 +866,13 @@ destruct (NQeq_dec x y) as [H1| H1].
 Qed.
 Arguments NQadd_le_lt_mono x%NQ y%NQ z%NQ t%NQ.
 
+Theorem NQadd_lt_mono : ∀ x y z t, (x < y → z < t → x + z < y + t)%NQ.
+Proof.
+intros.
+apply NQadd_le_lt_mono; [ | easy ].
+now apply NQlt_le_incl.
+Qed.
+
 Theorem NQle_sub_le_add_l : ∀ x y z, (x - y ≤ z)%NQ ↔ (x ≤ y + z)%NQ.
 Proof.
 intros.
@@ -2124,22 +2131,27 @@ destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
  }
  rewrite Nat.mul_1_l in H1.
  split; [ easy | ].
+ assert (H : (NQpos zp < 2)%NQ). {
+   rewrite <- Hz.
+   replace 2%NQ with (1 + 1)%NQ by easy.
+   apply NQadd_lt_mono; apply NQfrac_lt_1.
+ }
+ cbn in H.
  remember mult as f; cbn; subst f.
-...
+ replace zp with (GQnum zp // GQden zp)%GQ in H by now rewrite GQnum_den.
+ apply GQpair_lt_nat_r in H; [ | | | easy ]; cycle 1. {
+   apply GQnum_neq_0.
+ } {
+   apply GQden_neq_0.
+ }
+ now rewrite Nat.mul_comm in H.
+Qed.
 
 Theorem NQintg_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
   NQintg (x + y) = NQintg x + NQintg y + NQintg (NQfrac x + NQfrac y).
 Proof.
 intros * Hxz Hyz.
-
-...
-
-Theorem NQintg_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
-  NQintg (x + y) =
-    NQintg x + NQintg y +
-    if NQlt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
-Proof.
-intros * Hxz Hyz.
+rewrite NQintg_add_frac.
 symmetry; apply NQintg_interv.
 -replace 0%NQ with (0 + 0)%NQ by easy.
  now apply NQadd_le_mono.
