@@ -317,6 +317,48 @@ destruct (eq_nat_dec m (S p)) as [Hm| Hm].
  now apply Nat.le_antisymm.
 Qed.
 
+Theorem Nat_div_interv : ∀ n a b,
+  n * b ≤ a < (n + 1) * b
+  → n = a / b.
+Proof.
+intros * Hn.
+revert a b Hn.
+induction n; intros.
+-rewrite Nat.mul_0_l, Nat.mul_1_l in Hn.
+ now symmetry; apply Nat.div_small.
+-specialize (IHn (a - b) b) as H1.
+ assert (H : n * b ≤ a - b < (n + 1) * b). {
+   destruct Hn as (H2, H3).
+   assert (Hba : b ≤ a). {
+     eapply Nat.le_trans; [ | apply H2 ].
+     apply Nat_add_le_r.
+   }
+   split.
+   -apply (Nat.add_le_mono_r _ _ b).
+    replace (n * b + b) with (S n * b) by apply Nat.add_comm.
+    rewrite Nat.sub_add; [ apply H2 | easy ].
+   -apply (Nat.add_lt_mono_r _ _ b).
+    rewrite Nat.sub_add; [ | easy ].
+    rewrite Nat.add_1_r in H3; cbn in H3.
+    rewrite Nat.add_1_r; cbn.
+    now rewrite Nat.add_assoc, Nat.add_shuffle0 in H3.
+ }
+ specialize (H1 H); clear H.
+ assert (H : b ≤ a). {
+   apply (Nat.mul_le_mono_pos_l _ _ (S n)); [ apply Nat.lt_0_succ | ].
+   eapply le_trans; [ apply Hn | apply Nat_add_le_r ].
+ }
+ destruct b.
+ +now do 2 rewrite Nat.mul_0_r in Hn.
+ +replace a with (S b + (a - S b)); cycle 1. {
+    rewrite Nat.add_sub_assoc; [ | easy ].
+    now rewrite Nat.add_comm, Nat.add_sub.
+  }
+  rewrite Nat_div_add_same_l; [ | easy ].
+  rewrite <- Nat.add_1_l.
+  now f_equal.
+Qed.
+
 Definition bool_of_sumbool {A B : Prop} (P : sumbool A B) :=
   match P with
   | left _ _ => true

@@ -2056,38 +2056,6 @@ do 2 rewrite Nat.mul_1_r.
 now apply Nat.mod_upper_bound.
 Qed.
 
-(* à mettre dans Misc *)
-Theorem Nat_div_interv : ∀ n a b,
-  n * b ≤ a < (n + 1) * b
-  → n = a / b.
-Proof.
-intros * Hn.
-revert a b Hn.
-induction n; intros.
--rewrite Nat.mul_0_l, Nat.mul_1_l in Hn.
- now symmetry; apply Nat.div_small.
--specialize (IHn (a - b) b) as H1.
- assert (H : n * b ≤ a - b < (n + 1) * b). {
-   destruct Hn as (H2, H3).
-   split.
-   -apply (Nat.add_le_mono_r _ _ b).
-    replace (n * b + b) with (S n * b) by flia.
-    rewrite Nat.sub_add; [ apply H2 | cbn in H2; flia H2 ].
-   -apply (Nat.add_lt_mono_r _ _ b).
-    rewrite Nat.sub_add; [ flia H3 | cbn in H2; flia H2 ].
- }
- specialize (H1 H); clear H.
- assert (H : b ≤ a). {
-   apply (Nat.mul_le_mono_pos_l _ _ (S n)); [ flia | ].
-   eapply le_trans; [ apply Hn | cbn; flia ].
- }
- destruct b; [ flia Hn | ].
- replace a with (S b + (a - S b)) by flia H.
- rewrite Nat_div_add_same_l; [ | easy ].
- rewrite <- Nat.add_1_l.
- now f_equal.
-Qed.
-
 Theorem NQintg_interv : ∀ n x, (0 ≤ x)%NQ →
   (n // 1 ≤ x < n // 1 + 1)%NQ ↔ n = NQintg x.
 Proof.
