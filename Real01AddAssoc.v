@@ -711,12 +711,37 @@ remember (A i (min_n i 0) v) as av eqn:Hav.
 remember (A i (min_n i 0) (P v)) as apv eqn:Hapv.
 move apv before au; move av before au.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
+(*
 -specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
  rewrite A_additive, <- Hau, <- Hapv in H1'.
- rewrite NQintg_add.
+*)
+-rewrite NQintg_add; [ | subst; apply A_ge_0 | subst; apply A_ge_0 ].
 ...
--destruct (LPO_fst (fA_ge_1_ε v i)) as [H2| H2].
- +destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H3| H3].
+ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
+ +rewrite NQintg_add; [ | subst; apply A_ge_0 | subst; apply A_ge_0 ].
+  rewrite Nat.add_shuffle0.
+  rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+  rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+  f_equal; f_equal.
+  do 3 rewrite <- Nat.add_assoc.
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  f_equal; f_equal.
+  destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
+  *do 2 rewrite Nat.add_assoc.
+   rewrite Nat.add_shuffle0, Nat.add_comm.
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   f_equal; f_equal.
+   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
+   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H2'.
+   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H3 0) as H3'.
+   rewrite Nat.pow_1_r in H1', H2', H3'.
+   rewrite A_additive in H1', H2'.
+   rewrite <- Hau, <- Hapv in H1'.
+   rewrite <- Hau, <- Hav in H2'.
+   rewrite <- Hav in H3'.
+...
   *specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
    specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H2'.
    specialize (frac_ge_if_all_fA_ge_1_ε _ _ H3 0) as H3'.
@@ -727,46 +752,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    remember (A i (min_n i 0) (P v)) as apv eqn:Hapv.
    move apv before i; move av before i; move au before i.
    move Hav before Hau.
-...
-
-   specialize (frac_eq_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
-   specialize (frac_eq_if_all_fA_ge_1_ε _ _ H2 0) as H2'.
-   specialize (frac_eq_if_all_fA_ge_1_ε _ _ H3 0) as H3'.
-   rewrite Nat.pow_1_r in H1', H2', H3'.
-   destruct H1' as (x1 & Hx1 & H1').
-   destruct H2' as (x2 & Hx2 & H2').
-   destruct H3' as (x3 & Hx3 & H3').
-   move x2 before x1; move x3 before x2.
-   move Hx2 before Hx1; move Hx3 before Hx2.
-...
-  *specialize (frac_eq_if_all_fA_ge_1_ε v i H2) as H2'.
-   specialize (H2' 0) as (x2 & Hx2 & H2').
-   rewrite Nat.pow_1_r in Hx2, H2'.
-...
-   specialize (A_ge_0 i (min_n i 0) v) as Hvz.
-   remember (A i (min_n i 0) v) as x eqn:Hx.
-   specialize (NQintg_frac x Hvz) as Hxd.
-...
-   replace x with (NQnum x // NQden x)%NQ in Hxd at 1; cycle 1. {
-     now symmetry; apply NQnum_den.
-   }
-(*
-   unfold NQfrac in Hxd.
-   rewrite NQadd_pair in Hxd; [ | easy | easy ].
-   do 2 rewrite Nat.mul_1_l in Hxd.
-   apply NQeq_pair in Hxd; [ | easy | easy ].
-   rewrite Nat.mul_comm in Hxd.
-   apply Nat.mul_cancel_l in Hxd; [ | easy ].
-...
-*)
-   rewrite H2' in Hxd.
-   rewrite NQadd_assoc, NQadd_sub_assoc in Hxd.
-   rewrite NQadd_pair in Hxd; [ | easy | easy ].
-   do 2 rewrite Nat.mul_1_r in Hxd.
-   rewrite NQsub_pair_pos in Hxd; [ | easy | easy | ]; cycle 1. {
-     apply Nat.mul_le_mono; [ flia | easy ].
-   }
-   do 2 rewrite Nat.mul_1_l in Hxd.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,

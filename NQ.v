@@ -2035,7 +2035,7 @@ unfold NQfrac; cbn.
 rewrite Nat.mod_small; cycle 1. {
   cbn in Hx1.
   replace xp with (GQnum xp // GQden xp)%GQ in Hx1 by now rewrite GQnum_den.
-  apply GQpair_lt_nat in Hx1; [ | | | easy ]; cycle 1.
+  apply GQpair_lt_nat_r in Hx1; [ | | | easy ]; cycle 1.
   -apply GQnum_neq_0.
   -apply GQden_neq_0.
   -now rewrite Nat.mul_1_r in Hx1.
@@ -2084,6 +2084,55 @@ split; intros Hx.
  rewrite <- NQadd_sub_swap.
  apply NQlt_add_lt_sub_r, NQadd_lt_mono_l, NQfrac_lt_1.
 Qed.
+
+Theorem NQintg_add_frac : ∀ x y,
+  NQintg (NQfrac x + NQfrac y) =
+  if NQlt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
+Proof.
+intros.
+destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
+-unfold NQintg.
+ rewrite Nat.div_small; [ easy | ].
+ unfold "<"%NQ in H1.
+ remember (NQfrac x + NQfrac y)%NQ as z eqn:Hz.
+ symmetry in Hz.
+ destruct z as [| zp| zp]; [ cbn; pauto | | ].
+ +cbn in H1; cbn.
+  replace zp with (GQnum zp // GQden zp)%GQ in H1 by now rewrite GQnum_den.
+  apply GQpair_lt_nat_r in H1; [ | | | easy ]; cycle 1. {
+    apply GQnum_neq_0.
+  } {
+    apply GQden_neq_0.
+  }
+  now rewrite Nat.mul_1_r in H1.
+ +assert (H : (0 ≤ NQfrac x + NQfrac y)%NQ). {
+    replace 0%NQ with (0 + 0)%NQ by easy.
+    apply NQadd_le_mono; apply NQfrac_ge_0.
+  }
+  now rewrite Hz in H.
+-unfold NQintg.
+ rewrite Nat_div_less_small; [ easy | ].
+ cbn in H1.
+ remember (NQfrac x + NQfrac y)%NQ as z eqn:Hz.
+ symmetry in Hz.
+ destruct z as [| zp| zp]; [ easy | | easy ].
+ replace zp with (GQnum zp // GQden zp)%GQ in H1 by now rewrite GQnum_den.
+ apply GQpair_le_nat_l in H1; [ | easy | | ]; cycle 1. {
+   apply GQnum_neq_0.
+ } {
+   apply GQden_neq_0.
+ }
+ rewrite Nat.mul_1_l in H1.
+ split; [ easy | ].
+ remember mult as f; cbn; subst f.
+...
+
+Theorem NQintg_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
+  NQintg (x + y) = NQintg x + NQintg y + NQintg (NQfrac x + NQfrac y).
+Proof.
+intros * Hxz Hyz.
+
+...
 
 Theorem NQintg_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
   NQintg (x + y) =

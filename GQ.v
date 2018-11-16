@@ -1393,13 +1393,58 @@ setoid_rewrite GQmul_comm.
 apply GQmul_cancel_l.
 Qed.
 
-Theorem GQpair_lt_nat : ∀ a b c, a ≠ 0 → b ≠ 0 → c ≠ 0 →
+Theorem GQpair_lt_nat_l : ∀ a b c, a ≠ 0 → b ≠ 0 → c ≠ 0 →
+  (a // 1 < b // c)%GQ → a * c < b.
+Proof.
+intros * Ha Hb Hc Habc.
+unfold "<"%GQ in Habc; cbn in Habc.
+apply PQred_lt in Habc.
+unfold "<"%PQ, nd in Habc; cbn in Habc.
+rewrite Nat.mul_1_r in Habc.
+destruct a; [ easy | ].
+destruct b; [ easy | ].
+destruct c; [ easy | ].
+do 3 rewrite Nat.sub_succ, Nat.sub_0_r in Habc.
+now do 3 rewrite Nat.add_1_r in Habc.
+Qed.
+
+Theorem GQpair_lt_nat_r : ∀ a b c, a ≠ 0 → b ≠ 0 → c ≠ 0 →
   (a // b < c // 1)%GQ → a < b * c.
 Proof.
 intros * Ha Hb Hc Habc.
 unfold "<"%GQ in Habc; cbn in Habc.
 apply PQred_lt in Habc.
 unfold "<"%PQ, nd in Habc; cbn in Habc.
+rewrite Nat.mul_1_r, Nat.mul_comm in Habc.
+destruct a; [ easy | ].
+destruct b; [ easy | ].
+destruct c; [ easy | ].
+do 3 rewrite Nat.sub_succ, Nat.sub_0_r in Habc.
+now do 3 rewrite Nat.add_1_r in Habc.
+Qed.
+
+Theorem GQpair_le_nat_l : ∀ a b c, a ≠ 0 → b ≠ 0 → c ≠ 0 →
+  (a // 1 ≤ b // c)%GQ → a * c ≤ b.
+Proof.
+intros * Ha Hb Hc Habc.
+unfold "<"%GQ in Habc; cbn in Habc.
+apply PQred_le in Habc.
+unfold "≤"%PQ, nd in Habc; cbn in Habc.
+rewrite Nat.mul_1_r in Habc.
+destruct a; [ easy | ].
+destruct b; [ easy | ].
+destruct c; [ easy | ].
+do 3 rewrite Nat.sub_succ, Nat.sub_0_r in Habc.
+now do 3 rewrite Nat.add_1_r in Habc.
+Qed.
+
+Theorem GQpair_le_nat_r : ∀ a b c, a ≠ 0 → b ≠ 0 → c ≠ 0 →
+  (a // b ≤ c // 1)%GQ → a ≤ b * c.
+Proof.
+intros * Ha Hb Hc Habc.
+unfold "≤"%GQ in Habc; cbn in Habc.
+apply PQred_le in Habc.
+unfold "≤"%PQ, nd in Habc; cbn in Habc.
 rewrite Nat.mul_1_r, Nat.mul_comm in Habc.
 destruct a; [ easy | ].
 destruct b; [ easy | ].
