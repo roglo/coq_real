@@ -2089,23 +2089,21 @@ split; intros Hx.
  apply NQlt_pair in Hxn; [ | easy | easy ].
  rewrite Nat.mul_1_l in Hnx.
  rewrite Nat.mul_1_r in Hxn.
- remember (NQnum x) as b.
- remember (NQden x) as a.
+ remember (NQnum x) as a.
+ remember (NQden x) as b.
  clear x Hxz Heqa Heqb.
  rewrite Nat.mul_comm in Hxn.
-
+ assert (Hn : n * b ≤ a < (n + 1) * b) by easy.
+ clear Hnx Hxn.
 ...
+ destruct b; [ flia Hn | ].
+ specialize (Nat.div_mod a (S b) (Nat.neq_succ_0 _)) as H.
+ rewrite H in Hn.
+ destruct Hn as (H1, H2).
  apply Nat.le_antisymm.
- +apply (Nat.mul_le_mono_pos_l _ _ (NQden x)). {
-    apply Nat.neq_0_lt_0, NQden_neq_0.
-  }
-  eapply le_trans; [ apply Hnx | ].
+ +apply (Nat.mul_le_mono_pos_r _ _ (S b)); [ flia | ].
+  eapply le_trans; [ apply H1 | ].
 ...
- specialize (Nat.div_mod (NQnum x) (NQden x) (NQden_neq_0 _)) as H1.
- specialize (Nat.mod_upper_bound (NQnum x) (NQden x) (NQden_neq_0 _)) as H2.
-
-...
-
 2: {
 rewrite Hx.
 apply NQintg_encl.
