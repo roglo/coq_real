@@ -2214,6 +2214,31 @@ rewrite Nat.div_div; cycle 1. {
 -now rewrite Nat.mul_comm, <- Hc.
 Qed.
 
+Theorem NQpow_pair_l : ∀ n a b, n ≠ 0 → b ≤ a →
+  (n ^ a // n ^ b)%NQ = (n ^ (a - b) // 1)%NQ.
+Proof.
+intros * Hn Hba.
+apply NQeq_pair; [ | easy | ].
+-now apply Nat.pow_nonzero.
+-rewrite Nat.mul_1_r.
+ rewrite <- Nat.pow_add_r; f_equal.
+ rewrite Nat.add_comm.
+ now rewrite Nat.sub_add.
+Qed.
+
+Theorem NQpow_pair_r : ∀ n a b, n ≠ 0 → a ≤ b →
+  (n ^ a // n ^ b)%NQ = (1 // n ^ (b - a))%NQ.
+Proof.
+intros * Hn Hab.
+apply NQeq_pair; [ | | ].
+-now apply Nat.pow_nonzero.
+-now apply Nat.pow_nonzero.
+-rewrite Nat.mul_1_r.
+ rewrite <- Nat.pow_add_r; f_equal.
+ rewrite Nat.add_comm.
+ now rewrite Nat.sub_add.
+Qed.
+
 Theorem NQle_decidable : ∀ x y, Decidable.decidable (x ≤ y)%NQ.
 Proof.
 intros.
@@ -2273,4 +2298,29 @@ rewrite summation_split_last; [ symmetry | apply Nat.le_0_l ].
 rewrite summation_split_last; [ symmetry | apply Nat.le_0_l ].
 rewrite <- IHn.
 destruct a; [ do 3 rewrite NQden_0 | ]; now rewrite <- NQpair_add_l.
+Qed.
+
+Theorem NQsum_pair (rgn := nat_ord_ring) (rnq := NQ_ord_ring) : ∀ a b e f,
+  ((Σ (i = b, e), f i) // a)%NQ = Σ (i = b, e), (f i // a)%NQ.
+Proof.
+intros.
+destruct (lt_dec e b) as [H1| H1]. {
+  rewrite summation_empty; [ | easy ].
+  now rewrite summation_empty.
+}
+apply Nat.nlt_ge in H1.
+unfold summation.
+remember (S e - b) as n eqn:Hn.
+revert a b e Hn H1.
+induction n; intros; [ easy | ].
+cbn.
+rewrite NQpair_add_l; f_equal.
+rewrite Nat.sub_succ_l in Hn; [ | easy ].
+apply Nat.succ_inj in Hn.
+destruct e; [ now subst n | ].
+destruct (eq_nat_dec b (S e)) as [Hbe| Hbe].
+-subst b.
+ now rewrite Nat.sub_diag in Hn; subst n.
+-apply IHn with (e := S e); [ | flia H1 Hbe ].
+ now rewrite Nat.sub_succ.
 Qed.

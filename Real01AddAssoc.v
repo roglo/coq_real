@@ -708,7 +708,15 @@ Theorem A_num_den {r : radix} : ∀ i n u,
 Proof.
 intros.
 unfold A, num_A, den_A.
-...
+rewrite NQsum_pair.
+apply summation_eq_compat.
+intros j Hj.
+rewrite NQpair_mul_r.
+rewrite NQpow_pair_r; [ | easy | flia Hj ].
+rewrite NQmul_pair_den_num; [ | easy ].
+f_equal; f_equal.
+flia Hj.
+Qed.
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (carry (u ⊕ P v) i + carry v i) mod rad = carry (u ⊕ v) i mod rad.
@@ -755,7 +763,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite <- NQintg_add_frac.
    assert (H : NQintg apv = 0). {
      rewrite Hapv.
-...
      rewrite A_num_den.
      rewrite NQintg_pair; cycle 1. {
        unfold den_A.
