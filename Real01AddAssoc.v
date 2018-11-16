@@ -699,6 +699,17 @@ rewrite summation_eq_compat with
 now rewrite summation_add_distr.
 Qed.
 
+Definition num_A {r : radix} (rg := nat_ord_ring) i n u :=
+  Σ (j = i + 1, n - 1), u j * rad ^ (n - j - 1).
+Definition den_A {r : radix} i n := rad ^ (n - i - 1).
+
+Theorem A_num_den {r : radix} : ∀ i n u,
+  A i n u = (num_A i n u // den_A i n)%NQ.
+Proof.
+intros.
+unfold A, num_A, den_A.
+...
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (carry (u ⊕ P v) i + carry v i) mod rad = carry (u ⊕ v) i mod rad.
 Proof.
@@ -742,6 +753,21 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite <- Hau, <- Hav in H2'.
    rewrite <- Hav in H3'.
    rewrite <- NQintg_add_frac.
+   assert (H : NQintg apv = 0). {
+     rewrite Hapv.
+Search NQintg.
+Search A.
+Print A.
+...
+     unfold A, NQintg.
+     apply Nat.div_small.
+
+     rewrite all_0_summation_0; [ easy | ].
+     intros j Hj.
+     unfold NQintg.
+     unfold A.
+Search NQnum.
+Search A.
 ...
 
    destruct (NQlt_le_dec (NQfrac au + NQfrac apv)) as [H4| H4].
