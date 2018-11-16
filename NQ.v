@@ -2106,6 +2106,8 @@ destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
    apply NQeq_pair in H; [ | easy | easy ].
    now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
  }
+ specialize (NQintg_interv) as H.
+(* ras le bol, ça marche peut-être mais faut que je voye *)
 ...
  assert
    (H2 : ((NQintg x + NQintg y) // 1 ≤ x + y <
