@@ -713,6 +713,7 @@ move apv before au; move av before au.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
 -specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
  rewrite A_additive, <- Hau, <- Hapv in H1'.
+ rewrite NQintg_add.
 ...
 -destruct (LPO_fst (fA_ge_1_ε v i)) as [H2| H2].
  +destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H3| H3].
