@@ -2056,21 +2056,36 @@ do 2 rewrite Nat.mul_1_r.
 now apply Nat.mod_upper_bound.
 Qed.
 
-Theorem NQintg_encl : ∀ x,
-  (0 ≤ x)%NQ → (NQintg x // 1 ≤ x < NQintg x // 1 + 1)%NQ.
+(* à mettre dans Misc *)
+Theorem Nat_div_interv : ∀ n a b,
+  n * b ≤ a < (n + 1) * b
+  → n = a / b.
 Proof.
-intros * Hxz.
-specialize (NQintg_frac x Hxz) as Hx.
-assert (Hi : (NQintg x // 1 = x - NQfrac x)%NQ). {
-  rewrite Hx at 2.
-  now rewrite NQadd_sub.
-}
-rewrite Hi.
-split; [ apply NQle_sub_l, NQfrac_ge_0 | ].
-rewrite <- NQadd_sub_swap.
-apply NQlt_add_lt_sub_r.
-apply NQadd_lt_mono_l.
-apply NQfrac_lt_1.
+intros * Hn.
+revert a b Hn.
+induction n; intros.
+-rewrite Nat.mul_0_l, Nat.mul_1_l in Hn.
+ now symmetry; apply Nat.div_small.
+-specialize (IHn (a - b) b) as H1.
+ assert (H : n * b ≤ a - b < (n + 1) * b). {
+   destruct Hn as (H2, H3).
+   split.
+   -apply (Nat.add_le_mono_r _ _ b).
+    replace (n * b + b) with (S n * b) by flia.
+    rewrite Nat.sub_add; [ apply H2 | cbn in H2; flia H2 ].
+   -apply (Nat.add_lt_mono_r _ _ b).
+    rewrite Nat.sub_add; [ flia H3 | cbn in H2; flia H2 ].
+ }
+ specialize (H1 H); clear H.
+ assert (H : b ≤ a). {
+   apply (Nat.mul_le_mono_pos_l _ _ (S n)); [ flia | ].
+   eapply le_trans; [ apply Hn | cbn; flia ].
+ }
+ destruct b; [ flia Hn | ].
+ replace a with (S b + (a - S b)) by flia H.
+ rewrite Nat_div_add_same_l; [ | easy ].
+ rewrite <- Nat.add_1_l.
+ now f_equal.
 Qed.
 
 Theorem NQintg_interv : ∀ n x, (0 ≤ x)%NQ →
@@ -2088,28 +2103,28 @@ split; intros Hx.
  apply NQle_pair in Hnx; [ | easy | easy ].
  apply NQlt_pair in Hxn; [ | easy | easy ].
  rewrite Nat.mul_1_l in Hnx.
- rewrite Nat.mul_1_r in Hxn.
- remember (NQnum x) as a.
- remember (NQden x) as b.
- clear x Hxz Heqa Heqb.
- rewrite Nat.mul_comm in Hxn.
- assert (Hn : n * b ≤ a < (n + 1) * b) by easy.
- clear Hnx Hxn.
-...
- destruct b; [ flia Hn | ].
- specialize (Nat.div_mod a (S b) (Nat.neq_succ_0 _)) as H.
- rewrite H in Hn.
- destruct Hn as (H1, H2).
- apply Nat.le_antisymm.
- +apply (Nat.mul_le_mono_pos_r _ _ (S b)); [ flia | ].
-  eapply le_trans; [ apply H1 | ].
-...
-2: {
-rewrite Hx.
-apply NQintg_encl.
-now destruct x.
-}
-...
+ rewrite Nat.mul_1_r, Nat.mul_comm in Hxn.
+ now apply Nat_div_interv.
+-subst n.
+ specialize (NQintg_frac x Hxz) as Hx.
+ assert (Hi : (NQintg x // 1 = x - NQfrac x)%NQ). {
+   rewrite Hx at 2.
+   now rewrite NQadd_sub.
+ }
+ rewrite Hi.
+ split; [ apply NQle_sub_l, NQfrac_ge_0 | ].
+ rewrite <- NQadd_sub_swap.
+ apply NQlt_add_lt_sub_r, NQadd_lt_mono_l, NQfrac_lt_1.
+Qed.
+
+(*
+Theorem NQintg_encl : ∀ x,
+  (0 ≤ x)%NQ → (NQintg x // 1 ≤ x < NQintg x // 1 + 1)%NQ.
+Proof.
+intros * Hxz.
+now apply NQintg_interv.
+Qed.
+*)
 
 Theorem NQintg_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
   NQintg (x + y) =
@@ -2123,10 +2138,15 @@ destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
    apply NQeq_pair in H; [ | easy | easy ].
    now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
  }
+...
  assert
    (H2 : ((NQintg x + NQintg y) // 1 ≤ x + y <
           (NQintg x + NQintg y) // 1 + 1)%NQ). {
-   admit.
+   apply NQintg_interv.
+   -eapply NQle_trans; [ apply Hxz | ].
+    now apply NQle_add_r.
+   -idtac.
+...
  }
 ...
  assert (Hxyz : (0 ≤ x + y)%NQ). {
