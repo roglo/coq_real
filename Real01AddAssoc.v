@@ -755,19 +755,15 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite <- NQintg_add_frac.
    assert (H : NQintg apv = 0). {
      rewrite Hapv.
-Search NQintg.
-Search A.
-Print A.
 ...
-     unfold A, NQintg.
+     rewrite A_num_den.
+     rewrite NQintg_pair; cycle 1. {
+       unfold den_A.
+       now apply Nat.pow_nonzero.
+     }
      apply Nat.div_small.
-
-     rewrite all_0_summation_0; [ easy | ].
-     intros j Hj.
-     unfold NQintg.
-     unfold A.
-Search NQnum.
-Search A.
+     unfold num_A, den_A.
+     remember (min_n i 0) as n eqn:Hn.
 ...
 
    destruct (NQlt_le_dec (NQfrac au + NQfrac apv)) as [H4| H4].

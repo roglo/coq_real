@@ -2186,6 +2186,34 @@ symmetry; apply NQintg_interv.
    --now apply NQintg_interv.
 Qed.
 
+Theorem NQintg_pair : ∀ a b, b ≠ 0 → NQintg (a // b) = a / b.
+Proof.
+intros * Hbz.
+unfold NQintg.
+rewrite NQnum_pair, NQden_pair.
+rewrite Nat.max_r; [ | flia Hbz ].
+rewrite Nat.max_r; cycle 1. {
+  specialize (Nat.gcd_divide_r a b) as H.
+  destruct H as (c, Hc).
+  rewrite Hc at 1.
+  rewrite Nat.div_mul.
+  -destruct c; [ easy | flia ].
+  -intros H.
+   now apply Nat.gcd_eq_0_r in H.
+}
+specialize (Nat.gcd_divide_r a b) as Hb.
+destruct Hb as (c, Hc).
+rewrite Hc at 2.
+rewrite Nat.div_mul; cycle 1. {
+  intros H; now apply Nat.gcd_eq_0_r in H.
+}
+rewrite Nat.div_div; cycle 1. {
+  intros H; now apply Nat.gcd_eq_0_r in H.
+}
+-now intros H; subst c.
+-now rewrite Nat.mul_comm, <- Hc.
+Qed.
+
 Theorem NQle_decidable : ∀ x y, Decidable.decidable (x ≤ y)%NQ.
 Proof.
 intros.
