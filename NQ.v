@@ -2085,17 +2085,41 @@ destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
    apply NQeq_pair in H; [ | easy | easy ].
    now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
  }
- assert (H2 : (0 ≤ x + y - NQintg x // 1 - NQintg y // 1 < 1)%NQ). {
-   admit.
+ assert (H2 : (x + y - 1 < (NQintg x + NQintg y) // 1 ≤ x + y)%NQ). {
+   specialize (NQfrac_ge_0 x) as Hx0.
+   specialize (NQfrac_ge_0 y) as Hy0.
+   specialize (NQintg_frac x Hxz) as Hx.
+   specialize (NQintg_frac y Hyz) as Hy.
+   symmetry in Hx, Hy.
+   apply NQadd_move_l in Hx.
+   apply NQadd_move_l in Hy.
+   rewrite Hx, Hy in H1.
+   rewrite NQpair_add_l.
+   split.
+   -apply NQlt_sub_lt_add_l.
+    rewrite NQadd_assoc.
+    apply -> NQlt_sub_lt_add_r.
+    rewrite <- NQadd_sub_assoc.
+    apply -> NQlt_sub_lt_add_r.
+    now rewrite NQadd_sub_swap.
+   -rewrite Hx in Hx0.
+    rewrite Hy in Hy0.
+    apply -> NQle_0_sub in Hx0.
+    apply -> NQle_0_sub in Hy0.
+    now apply NQadd_le_mono.
  }
- assert (H3 : (x + y - 1 < NQintg x // 1 + NQintg y // 1 ≤ x + y)%NQ). {
-   admit.
+ assert (H3 : (x + y - 1 < NQintg (x + y) // 1 ≤ x + y)%NQ). {
+   assert (Hxyz : (0 ≤ x + y)%NQ). {
+     eapply NQle_trans; [ apply Hxz | ].
+     now apply NQle_add_r.
+   }
+   specialize (NQintg_encl (x + y)%NQ Hxyz) as Hxy.
+   destruct Hxy as (H4, H5).
+   split; [ | easy ].
+   apply (NQsub_lt_mono_r _ _ 1%NQ) in H5.
+   now rewrite NQadd_sub in H5.
  }
-
 ...
- assert (H2 : (0 ≤ NQfrac x + NQfrac y)%NQ). {
-...
-
 assert (H1 : (0 ≤ x + y - NQintg x // 1 - NQintg y // 1 < 2)%NQ). {
   specialize (NQfrac_ge_0 x) as Hx0.
   specialize (NQfrac_ge_0 y) as Hy0.
