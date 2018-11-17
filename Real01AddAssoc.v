@@ -758,6 +758,12 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite <- Hav in H3'.
    rewrite NQintg_add_frac.
    rewrite NQfrac_add in H1'.
+   remember (NQfrac au + NQfrac apv)%NQ as x eqn:Hx.
+   symmetry in Hx.
+   destruct (NQlt_le_dec x 1) as [H4| H4].
+2: {
+  exfalso; subst x.
+
 ...
 intros * Hxz Hyz.
 symmetry.
