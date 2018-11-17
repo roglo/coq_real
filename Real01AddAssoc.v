@@ -692,6 +692,7 @@ unfold prop_carr, d2n; cbn.
 unfold carry.
 destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H2| H2].
 -idtac.
+ specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H3.
 ...
 
 Definition P {r : radix} u := d2n (prop_carr u).
