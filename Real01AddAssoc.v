@@ -682,6 +682,14 @@ destruct (LPO_fst (A_ge_1 u i)) as [H1| H1].
 Qed.
 *)
 
+Theorem glop {r : radix} : ∀ u i,
+  (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k, d2n (prop_carr u) (i + k + 1) = 0.
+Proof.
+intros * Hu *.
+specialize (frac_ge_if_all_fA_ge_1_ε _ _ Hu k) as H1.
+...
+
 Definition P {r : radix} u := d2n (prop_carr u).
 Definition add_series (u v : nat → nat) i := u i + v i.
 Notation "u ⊕ v" := (add_series u v) (at level 50).
@@ -717,6 +725,11 @@ rewrite NQmul_pair_den_num; [ | easy ].
 f_equal; f_equal.
 flia Hj.
 Qed.
+
+Theorem glop {r : radix} : ∀ u i,
+  (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k, P u (i + k + 1) = 0.
+...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (carry (u ⊕ P v) i + carry v i) mod rad = carry (u ⊕ v) i mod rad.
