@@ -756,7 +756,17 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite <- Hau, <- Hapv in H1'.
    rewrite <- Hau, <- Hav in H2'.
    rewrite <- Hav in H3'.
-   rewrite <- NQintg_add_frac.
+   rewrite NQintg_add_frac.
+Theorem NQfrac_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
+  NQfrac (x + y) = NQfrac (NQfrac x + NQfrac y).
+Proof.
+intros * Hxz Hyz.
+symmetry.
+destruct x as [| xp| xp], y as [| yp| yp]; try easy.
+-now cbn; apply NQfrac_idemp.
+-now cbn; rewrite NQadd_0_r; apply NQfrac_idemp.
+-cbn.
+...
    assert (H : NQintg apv = 0). {
      rewrite Hapv.
      rewrite A_num_den.

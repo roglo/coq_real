@@ -1968,6 +1968,20 @@ rewrite <- Nat.div_mod; [ | pauto ].
 now apply NQnum_den.
 Qed.
 
+Theorem NQfrac_of_intg : ∀ x, (0 ≤ x)%NQ → NQfrac x = (x - NQintg x // 1)%NQ.
+Proof.
+intros * Hx.
+rewrite (NQintg_frac x) at 2; [ | easy ].
+now rewrite NQadd_comm, NQadd_sub.
+Qed.
+
+Theorem NQintg_of_frac : ∀ x, (0 ≤ x)%NQ → (NQintg x // 1 = x - NQfrac x)%NQ.
+Proof.
+intros * Hx.
+rewrite (NQintg_frac x) at 2; [ | easy ].
+now rewrite NQadd_sub.
+Qed.
+
 Theorem NQfrac_ge_0 : ∀ x, (0 ≤ NQfrac x)%NQ.
 Proof.
 intros.
@@ -2034,6 +2048,59 @@ rewrite <- (proj2 (Nat.div_exact _ c Hcz)).
  apply Nat.mod_divide; [ now rewrite <- Hc | apply Nat.gcd_divide_l ].
 Qed.
 
+Theorem NQfrac_sub_nat_r : ∀ a x, (0 ≤ x)%NQ → (a // 1 ≤ x)%NQ →
+  NQfrac (x - a // 1)%NQ = NQfrac x.
+Proof.
+intros * Hx Hax.
+unfold NQfrac.
+apply NQeq_pair; [ pauto | pauto | ].
+rewrite (NQnum_den x); [ | easy ].
+assert (Haxl : a * NQden x ≤ NQnum x). {
+  rewrite (NQnum_den x) in Hax; [ | easy ].
+  apply NQle_pair in Hax; [ | easy | easy ].
+  now rewrite Nat.mul_1_l in Hax.
+}
+rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
+  now rewrite Nat.mul_comm, Nat.mul_1_r.
+}
+do 2 rewrite Nat.mul_1_r.
+rewrite NQnum_pair.
+rewrite Nat.max_r; [ | apply Nat.neq_0_lt_0; pauto ].
+rewrite <- NQnum_den; [ | easy ].
+rewrite NQden_pair.
+remember (Nat.gcd (NQnum x - NQden x * a) (NQden x)) as c eqn:Hc.
+assert (Hcz : c ≠ 0). {
+  intros H; rewrite Hc in H.
+  apply Nat.gcd_eq_0_r in H.
+  now apply NQden_neq_0 in H.
+}
+rewrite Nat.max_r; cycle 1. {
+  apply Nat.div_le_lower_bound; [ easy | ].
+  rewrite Nat.mul_1_r; subst c.
+  apply Nat_gcd_le_r; pauto.
+}
+apply (Nat.mul_cancel_l _ _ c); [ easy | ].
+assert (Hcd : c * (NQden x / c) = NQden x). {
+  rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
+  -now rewrite Nat.mul_comm, Nat.div_mul.
+  -rewrite Hc; apply Nat.gcd_divide_r.
+}
+do 2 rewrite Nat.mul_assoc.
+rewrite Hcd, Nat.mul_comm; f_equal.
+rewrite <- Nat.mul_mod_distr_l; [ | | easy ]; cycle 1. {
+  intros H.
+  apply Nat.div_small_iff in H; [ | easy ].
+  apply Nat.nle_gt in H; apply H; rewrite Hc.
+  apply Nat_gcd_le_r; pauto.
+}
+rewrite Hcd.
+rewrite <- (proj2 (Nat.div_exact _ c Hcz)).
+-rewrite <- (Nat.mod_add _ a); [ | easy ].
+ now rewrite Nat.mul_comm, Nat.sub_add.
+-rewrite Hc.
+ apply Nat.mod_divide; [ now rewrite <- Hc | apply Nat.gcd_divide_l ].
+Qed.
+
 Theorem NQfrac_eq_when_lt_1 : ∀ x, (0 ≤ x < 1)%NQ → NQfrac x = x.
 Proof.
 intros * (Hxz, Hx1).
@@ -2081,15 +2148,18 @@ split; intros Hx.
  rewrite Nat.mul_1_r, Nat.mul_comm in Hxn.
  now apply Nat_div_interv.
 -subst n.
- specialize (NQintg_frac x Hxz) as Hx.
- assert (Hi : (NQintg x // 1 = x - NQfrac x)%NQ). {
-   rewrite Hx at 2.
-   now rewrite NQadd_sub.
- }
- rewrite Hi.
+ rewrite NQintg_of_frac; [ | easy ].
  split; [ apply NQle_sub_l, NQfrac_ge_0 | ].
  rewrite <- NQadd_sub_swap.
  apply NQlt_add_lt_sub_r, NQadd_lt_mono_l, NQfrac_lt_1.
+Qed.
+
+Theorem NQfrac_idemp : ∀ x, (0 ≤ x)%NQ → NQfrac (NQfrac x) = NQfrac x.
+Proof.
+intros * Hxz.
+rewrite (NQfrac_of_intg x); [ | easy ].
+rewrite NQfrac_sub_nat_r; [ | easy | now apply NQintg_interv ].
+now apply NQfrac_of_intg.
 Qed.
 
 Theorem NQintg_add_frac : ∀ x y,
