@@ -757,15 +757,30 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite <- Hau, <- Hav in H2'.
    rewrite <- Hav in H3'.
    rewrite NQintg_add_frac.
-Theorem NQfrac_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
-  NQfrac (x + y) = NQfrac (NQfrac x + NQfrac y).
-Proof.
+   rewrite NQfrac_add in H1'.
+...
 intros * Hxz Hyz.
 symmetry.
 destruct x as [| xp| xp], y as [| yp| yp]; try easy.
 -now cbn; apply NQfrac_idemp.
 -now cbn; rewrite NQadd_0_r; apply NQfrac_idemp.
--cbn.
+-idtac.
+
+unfold "+"%NQ.
+remember (NQfrac (NQpos xp)) as xf eqn:Hxf.
+remember (NQfrac (NQpos yp)) as yf eqn:Hyf.
+symmetry in Hxf, Hyf.
+destruct xf as [| xf| xf], yf as [| yf| yf].
++cbn.
+specialize (NQintg_frac (NQpos xp) Hxz) as H.
+rewrite Hxf, NQadd_0_r in H.
+...
+cbn.
+unfold NQfrac in Hxf.
+replace 0%NQ with (0 // 1)%NQ in Hxf by easy.
+apply NQeq_pair in Hxf.
+rewrite Nat.mul_1_r, Nat.mul_0_r in Hxf.
+
 ...
    assert (H : NQintg apv = 0). {
      rewrite Hapv.
