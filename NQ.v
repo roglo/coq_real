@@ -1429,6 +1429,15 @@ destruct x as [| xp| xp]; [ now left | now right; destruct y | ].
 destruct y as [| yp| yp]; [ now right | easy | easy ].
 Qed.
 
+Theorem NQmul_le_mono_nonneg : ∀ x y z t,
+  (0 ≤ x)%NQ → (x ≤ y)%NQ → (0 ≤ z)%NQ → (z ≤ t)%NQ → (x * z ≤ y * t)%NQ.
+Proof.
+intros * Hx Hxy Hz Hzt.
+destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp], t as [| tp| tp];
+  try easy; cbn in *.
+now apply GQmul_le_mono.
+Qed.
+
 Theorem NQmul_le_mono_nonneg_l : ∀ x y z, (0 ≤ x → y ≤ z → x * y ≤ x * z)%NQ.
 Proof.
 intros * Hx Hyz.

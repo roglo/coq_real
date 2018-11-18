@@ -1101,6 +1101,16 @@ rewrite GQmul_comm.
 apply GQmul_1_l.
 Qed.
 
+Theorem GQmul_le_mono : ∀ x y z t,
+  (x ≤ y)%GQ → (z ≤ t)%GQ → (x * z ≤ y * t)%GQ.
+Proof.
+intros *.
+unfold "≤"%GQ; cbn.
+intros Hxy Hzt.
+do 2 rewrite PQred_eq.
+now apply PQmul_le_mono.
+Qed.
+
 Theorem GQmul_le_mono_l : ∀ x y z, (x ≤ y ↔ z * x ≤ z * y)%GQ.
 Proof.
 intros.

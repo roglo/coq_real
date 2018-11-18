@@ -446,26 +446,44 @@ rewrite <- Nat.pow_add_r; f_equal.
 flia Hj Hin.
 Qed.
 
+Theorem A_ge_0 {r : radix} : ∀ i n u, (0 ≤ A i n u)%NQ.
+Proof.
+intros.
+unfold A.
+set (rg := NQ_ord_ring).
+replace 0%NQ with (Σ (j = i + 1, n - 1), 0)%NQ.
+-apply summation_le_compat.
+ intros j Hj.
+ replace 0%NQ with (0 // 1)%NQ by easy.
+ apply NQle_pair; [ easy | pauto | ].
+ apply Nat.le_0_l.
+-now apply all_0_summation_0.
+Qed.
+
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, (NQfrac (A i (min_n i k l) u) ≥ 1 - 1 // rad ^ S k)%NQ.
 Proof.
 intros u i H k l.
+specialize radix_ge_2 as Hr.
 specialize (H k).
 unfold fA_ge_1_ε in H.
 destruct
   (NQlt_le_dec (NQfrac (A i (min_n i k 0) u))
      (1 - 1 // rad ^ S k)%NQ) as [H1| H1]; [ easy | clear H ].
 eapply NQle_trans; [ apply H1 | ].
-remember (A i (min_n i k 0) u) as n eqn:Hn.
-rewrite A_split with (e := min_n i k 0).
-rewrite <- Hn.
-rewrite NQfrac_add.
-
+-remember (A i (min_n i k 0) u) as n eqn:Hn.
+ rewrite A_split with (e := min_n i k 0); subst n; cycle 1. {
+   unfold min_n; split; [ | flia ].
+   destruct rad; [ easy | cbn; flia ].
+ }
+ rewrite NQfrac_add; [ | apply A_ge_0 | ]; cycle 1. {
+   replace 0%NQ with (0 * 0)%NQ by easy.
+   apply NQmul_le_mono_nonneg; [ easy | | easy | easy ].
+   apply A_ge_0.
+ }
+Search (NQfrac (_ + _)%NQ).
 ...
-Print min_n.
-now destruct
-  (NQlt_le_dec (NQfrac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%NQ).
 Qed.
 
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
@@ -1498,20 +1516,6 @@ apply NQadd_le_lt_mono.
     rewrite Nat.mul_1_r, Nat.mul_1_l.
     replace 0%NQ with (0 // 1)%NQ by easy.
     apply NQlt_pair; [ easy | pauto | flia ].
-Qed.
-
-Theorem A_ge_0 {r : radix} : ∀ i n u, (0 ≤ A i n u)%NQ.
-Proof.
-intros.
-unfold A.
-set (rg := NQ_ord_ring).
-replace 0%NQ with (Σ (j = i + 1, n - 1), 0)%NQ.
--apply summation_le_compat.
- intros j Hj.
- replace 0%NQ with (0 // 1)%NQ by easy.
- apply NQle_pair; [ easy | pauto | ].
- apply Nat.le_0_l.
--now apply all_0_summation_0.
 Qed.
 
 Theorem A_ge_1_add_first_ge {r : radix} : ∀ u i,
