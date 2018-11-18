@@ -428,6 +428,24 @@ rewrite summation_eq_compat with
 now rewrite summation_add_distr.
 Qed.
 
+Theorem A_split {r : radix} : ∀ e u i n,
+  i + 1 ≤ e ≤ n
+  → A i n u = (A i e u + A (e - 1) n u * 1 // rad ^ (e - i - 1))%NQ.
+Proof.
+intros * Hin.
+unfold A.
+rewrite summation_split with (e0 := e - 1); [ | flia Hin ].
+remember (1 // rad ^ (e - i - 1))%NQ as rr; simpl; subst rr; f_equal.
+rewrite summation_mul_distr_r.
+replace (e - 1 + 1) with (S (e - 1)) by flia.
+apply summation_eq_compat.
+intros j Hj.
+rewrite NQmul_pair; [ | pauto | pauto ].
+rewrite Nat.mul_1_r; f_equal.
+rewrite <- Nat.pow_add_r; f_equal.
+flia Hj Hin.
+Qed.
+
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, (NQfrac (A i (min_n i k l) u) ≥ 1 - 1 // rad ^ S k)%NQ.
@@ -439,6 +457,11 @@ destruct
   (NQlt_le_dec (NQfrac (A i (min_n i k 0) u))
      (1 - 1 // rad ^ S k)%NQ) as [H1| H1]; [ easy | clear H ].
 eapply NQle_trans; [ apply H1 | ].
+remember (A i (min_n i k 0) u) as n eqn:Hn.
+rewrite A_split with (e := min_n i k 0).
+rewrite <- Hn.
+rewrite NQfrac_add.
+
 ...
 Print min_n.
 now destruct
@@ -606,24 +629,6 @@ cbn; f_equal.
 replace (S (n - 1 - 1)) with (n - 1) by flia Hin.
 f_equal; f_equal.
 destruct i; flia.
-Qed.
-
-Theorem A_split {r : radix} : ∀ e u i n,
-  i + 1 ≤ e ≤ n
-  → A i n u = (A i e u + A (e - 1) n u * 1 // rad ^ (e - i - 1))%NQ.
-Proof.
-intros * Hin.
-unfold A.
-rewrite summation_split with (e0 := e - 1); [ | flia Hin ].
-remember (1 // rad ^ (e - i - 1))%NQ as rr; simpl; subst rr; f_equal.
-rewrite summation_mul_distr_r.
-replace (e - 1 + 1) with (S (e - 1)) by flia.
-apply summation_eq_compat.
-intros j Hj.
-rewrite NQmul_pair; [ | pauto | pauto ].
-rewrite Nat.mul_1_r; f_equal.
-rewrite <- Nat.pow_add_r; f_equal.
-flia Hj Hin.
 Qed.
 
 Theorem Nat_pow_ge_1 : ∀ a b, 0 < a → 1 ≤ a ^ b.
