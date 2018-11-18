@@ -482,6 +482,7 @@ eapply NQle_trans; [ apply H1 | ].
    apply NQmul_le_mono_nonneg; [ easy | | easy | easy ].
    apply A_ge_0.
  }
+ remember (min_n i k 0) as n eqn:Hn.
 Search (NQfrac (_ + _)%NQ).
 ...
 Qed.
