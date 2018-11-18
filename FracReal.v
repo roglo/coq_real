@@ -373,10 +373,10 @@ Definition A {r : radix} (rg := NQ_ord_ring) i n u :=
 
 (**)
 
-Definition min_n {r : radix} i k := rad * (i + k + 3).
+Definition min_n {r : radix} i k l := rad * (i + k + 3) + l.
 
 Definition fA_ge_1_ε {r : radix} u i k :=
-  let n := min_n i k in
+  let n := min_n i k 0 in
   let s := n - i - 1 in
   if NQlt_le_dec (NQfrac (A i n u)) (1 - 1 // rad ^ S k)%NQ then false else true.
 
@@ -385,10 +385,10 @@ Definition fA_ge_1_ε {r : radix} u i k :=
 Definition carry {r : radix} u i :=
   match LPO_fst (fA_ge_1_ε u i) with
   | inl _ =>
-      let n := min_n i 0 in
+      let n := min_n i 0 0 in
       NQintg (A i n u) + 1
   | inr (exist _ k _) =>
-      let n := min_n i k in
+      let n := min_n i k 0 in
       NQintg (A i n u)
   end.
 
@@ -426,6 +426,23 @@ rewrite summation_eq_compat with
   intros; apply NQpair_add_l.
 }
 now rewrite summation_add_distr.
+Qed.
+
+Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
+  (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k l, (NQfrac (A i (min_n i k l) u) ≥ 1 - 1 // rad ^ S k)%NQ.
+Proof.
+intros u i H k l.
+specialize (H k).
+unfold fA_ge_1_ε in H.
+destruct
+  (NQlt_le_dec (NQfrac (A i (min_n i k 0) u))
+     (1 - 1 // rad ^ S k)%NQ) as [H1| H1]; [ easy | clear H ].
+eapply NQle_trans; [ apply H1 | ].
+...
+Print min_n.
+now destruct
+  (NQlt_le_dec (NQfrac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%NQ).
 Qed.
 
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
