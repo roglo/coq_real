@@ -370,13 +370,15 @@ Definition freal_mul_series {r : radix} a b i :=
 (**)
 Definition A {r : radix} (rg := NQ_ord_ring) i n u :=
   (Σ (j = i + 1, n - 1), (u j // rad ^ (j - i))%NQ : NQ).
+Definition B {r : radix} (rg := NQ_ord_ring) i n u l :=
+  (Σ (j = n, n + l), (u j // rad ^ (j - i))%NQ : NQ).
 
 (**)
 
-Definition min_n {r : radix} i k l := rad * (i + k + 3) + l.
+Definition min_n {r : radix} i k := rad * (i + k + 3).
 
 Definition fA_ge_1_ε {r : radix} u i k :=
-  let n := min_n i k 0 in
+  let n := min_n i k in
   let s := n - i - 1 in
   if NQlt_le_dec (NQfrac (A i n u)) (1 - 1 // rad ^ S k)%NQ then false else true.
 
@@ -385,10 +387,10 @@ Definition fA_ge_1_ε {r : radix} u i k :=
 Definition carry {r : radix} u i :=
   match LPO_fst (fA_ge_1_ε u i) with
   | inl _ =>
-      let n := min_n i 0 0 in
+      let n := min_n i 0 in
       NQintg (A i n u) + 1
   | inr (exist _ k _) =>
-      let n := min_n i k 0 in
+      let n := min_n i k in
       NQintg (A i n u)
   end.
 
@@ -460,20 +462,27 @@ replace 0%NQ with (Σ (j = i + 1, n - 1), 0)%NQ.
 -now apply all_0_summation_0.
 Qed.
 
+Theorem B_of_A {r : radix} : ∀ u i n l,
+  (B i n u l = A (n - 1) (n + l) u * 1 // rad ^ (n - i - 1))%NQ.
+Proof.
+intros.
+unfold B, A.
+...
+
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k l, (NQfrac (A i (min_n i k l) u) ≥ 1 - 1 // rad ^ S k)%NQ.
+  → ∀ k l, (NQfrac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%NQ.
 Proof.
 intros u i H k l.
 specialize radix_ge_2 as Hr.
 specialize (H k).
 unfold fA_ge_1_ε in H.
 destruct
-  (NQlt_le_dec (NQfrac (A i (min_n i k 0) u))
+  (NQlt_le_dec (NQfrac (A i (min_n i k) u))
      (1 - 1 // rad ^ S k)%NQ) as [H1| H1]; [ easy | clear H ].
 eapply NQle_trans; [ apply H1 | ].
--remember (A i (min_n i k 0) u) as n eqn:Hn.
- rewrite A_split with (e := min_n i k 0); subst n; cycle 1. {
+-remember (A i (min_n i k) u) as a eqn:Ha.
+ rewrite A_split with (e := min_n i k); subst a; cycle 1. {
    unfold min_n; split; [ | flia ].
    destruct rad; [ easy | cbn; flia ].
  }
@@ -482,7 +491,9 @@ eapply NQle_trans; [ apply H1 | ].
    apply NQmul_le_mono_nonneg; [ easy | | easy | easy ].
    apply A_ge_0.
  }
- remember (min_n i k 0) as n eqn:Hn.
+ remember (min_n i k) as n eqn:Hn.
+Check B_of_A.
+...
 Search (NQfrac (_ + _)%NQ).
 ...
 Qed.
@@ -2676,3 +2687,4 @@ rewrite Nat.mul_comm.
 apply Nat.mul_le_mono_l.
 rewrite Nat.add_shuffle0; apply Hur.
 Qed.
+y
