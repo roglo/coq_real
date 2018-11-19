@@ -477,6 +477,10 @@ f_equal; f_equal.
 flia Hin Hj.
 Qed.
 
+Theorem summation_pow_opp (rg := NQ_ord_ring) : ∀ r b l,
+  (Σ (j = b, b + l), (1 // r ^ j) = 0)%NQ.
+...
+
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
   (∀ j, u (n + j) ≤ (n + j + 1) * (rad - 1) ^ 2)
   → (B i n u l ≤ (n * (rad - 1) + rad) // rad ^ (n - i - 1))%NQ.
@@ -485,14 +489,26 @@ intros * Hu.
 unfold B.
 eapply NQle_trans.
 -apply summation_le_compat with
-   (g := λ j, (((j + 1) * (rad - 1) ^ 2) // rad ^ (j - i))%NQ).
+   (g := λ j,
+    (((rad - 1) ^ 2 * rad ^ i) // 1 *
+     (j // rad ^ j + 1 // rad ^ j))%NQ).
  intros k Hk.
+ rewrite <- NQpair_add_l.
+ rewrite <- NQpair_mul_r.
  apply NQle_pair; [ pauto | pauto | ].
- rewrite Nat.mul_comm.
- apply Nat.mul_le_mono_l.
- replace k with (n + (k - n)) by flia Hk.
- apply Hu.
--idtac.
+ rewrite Nat.mul_shuffle0.
+ remember (u k * rad ^ k) as x.
+ rewrite Nat.mul_comm; subst x.
+ rewrite <- Nat.mul_assoc, <- Nat.pow_add_r.
+ apply Nat.mul_le_mono.
+ +replace k with (n + (k - n)) by flia Hk.
+  rewrite Nat.mul_comm; apply Hu.
+ +apply Nat.pow_le_mono_r; [ easy | flia ].
+-rewrite <- summation_mul_distr_l.
+ rewrite summation_add_distr.
+...
+replace (n + l - 1) with (n + (l - 1)).
+rewrite summation_pow_opp.
 ...
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
