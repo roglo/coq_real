@@ -478,16 +478,18 @@ flia Hin Hj.
 Qed.
 
 Theorem summation_pow_opp (rg := NQ_ord_ring) : ∀ r b n,
-  (Σ (j = b, b + n), (1 // r ^ j) =
-   (r ^ S n - 1) // (r ^ (b + n) * (r - 1)))%NQ.
+  r ≠ 0
+  → (Σ (j = b, b + n), (1 // r ^ j) =
+      (r ^ S n - 1) // (r ^ (b + n) * (r - 1)))%NQ.
 Proof.
-intros.
+intros * Hr.
 rewrite summation_shift; [ | flia ].
 replace (b + n - b) with n by flia.
 rewrite summation_eq_compat with (h := λ i, (1 // r ^ b * 1 // r ^ i)%NQ);
   cycle 1. {
   intros i Hi.
   rewrite Nat.pow_add_r.
+...
   destruct r.
   -destruct b.
    +remember NQ_of_pair as f; cbn; subst f.
@@ -503,6 +505,9 @@ rewrite summation_eq_compat with (h := λ i, (1 // r ^ b * 1 // r ^ i)%NQ);
 }
 rewrite <- summation_mul_distr_l.
 symmetry.
+rewrite Nat.pow_add_r, <- Nat.mul_assoc.
+replace (r ^ S n - 1) with (1 * (r ^ S n - 1)) by apply Nat.mul_1_l.
+rewrite <- NQmul_pair.
 ...
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
