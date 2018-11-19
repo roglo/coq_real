@@ -478,7 +478,7 @@ flia Hin Hj.
 Qed.
 
 Theorem summation_pow_opp (rg := NQ_ord_ring) : ∀ r b n,
-  r ≠ 0
+  r ≥ 2
   → (Σ (j = b, b + n), (1 // r ^ j) =
       (r ^ S n - 1) // (r ^ (b + n) * (r - 1)))%NQ.
 Proof.
@@ -489,25 +489,24 @@ rewrite summation_eq_compat with (h := λ i, (1 // r ^ b * 1 // r ^ i)%NQ);
   cycle 1. {
   intros i Hi.
   rewrite Nat.pow_add_r.
-...
-  destruct r.
-  -destruct b.
-   +remember NQ_of_pair as f; cbn; subst f.
-    now rewrite Nat.add_0_r, NQmul_1_l.
-   +rewrite Nat.pow_0_l; [ | easy ].
-    rewrite Nat.mul_0_l.
-    rewrite NQden_0, NQmul_1_l.
-    destruct i; [ now rewrite Nat.pow_0_r | ].
-    rewrite Nat.pow_0_l; [ | easy ].
-    symmetry; apply NQden_0.
-  -rewrite NQmul_pair; [ | pauto | pauto ].
-   now rewrite Nat.mul_1_l.
+  destruct r; [ easy | ].
+  rewrite NQmul_pair; [ | pauto | pauto ].
+  now rewrite Nat.mul_1_l.
 }
 rewrite <- summation_mul_distr_l.
 symmetry.
 rewrite Nat.pow_add_r, <- Nat.mul_assoc.
 replace (r ^ S n - 1) with (1 * (r ^ S n - 1)) by apply Nat.mul_1_l.
-rewrite <- NQmul_pair.
+rewrite <- NQmul_pair; cycle 1. {
+  destruct r; [ easy | pauto ].
+} {
+  intros H.
+  apply Nat.eq_mul_0 in H.
+  destruct H as [H| H]; [ | flia Hr H ].
+  revert H; destruct r; [ easy | now apply Nat.pow_nonzero ].
+}
+remember NQ_of_pair as f; remember summation as g; cbn; subst f g.
+f_equal; symmetry.
 ...
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
