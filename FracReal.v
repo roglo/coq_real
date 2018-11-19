@@ -478,10 +478,21 @@ flia Hin Hj.
 Qed.
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
-  (∀ k, u (i + k) ≤ (i + 1) * (rad - 1) ^ 2)
+  (∀ j, u (n + j) ≤ (n + j + 1) * (rad - 1) ^ 2)
   → (B i n u l ≤ (n * (rad - 1) + rad) // rad ^ (n - i - 1))%NQ.
 Proof.
 intros * Hu.
+unfold B.
+eapply NQle_trans.
+-apply summation_le_compat with
+   (g := λ j, (((j + 1) * (rad - 1) ^ 2) // rad ^ (j - i))%NQ).
+ intros k Hk.
+ apply NQle_pair; [ pauto | pauto | ].
+ rewrite Nat.mul_comm.
+ apply Nat.mul_le_mono_l.
+ replace k with (n + (k - n)) by flia Hk.
+ apply Hu.
+-idtac.
 ...
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
