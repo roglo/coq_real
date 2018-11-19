@@ -371,7 +371,7 @@ Definition freal_mul_series {r : radix} a b i :=
 Definition A {r : radix} (rg := NQ_ord_ring) i n u :=
   (Σ (j = i + 1, n - 1), (u j // rad ^ (j - i))%NQ : NQ).
 Definition B {r : radix} (rg := NQ_ord_ring) i n u l :=
-  (Σ (j = n, n + l), (u j // rad ^ (j - i))%NQ : NQ).
+  (Σ (j = n, n + l - 1), (u j // rad ^ (j - i))%NQ : NQ).
 
 (**)
 
@@ -463,11 +463,19 @@ replace 0%NQ with (Σ (j = i + 1, n - 1), 0)%NQ.
 Qed.
 
 Theorem B_of_A {r : radix} : ∀ u i n l,
-  (B i n u l = A (n - 1) (n + l) u * 1 // rad ^ (n - i - 1))%NQ.
+  i + 1 ≤ n → (B i n u l = A (n - 1) (n + l) u * 1 // rad ^ (n - i - 1))%NQ.
 Proof.
-intros.
+intros * Hin.
 unfold B, A.
-...
+rewrite summation_mul_distr_r.
+rewrite Nat.sub_add; [ | flia Hin ].
+apply summation_eq_compat.
+intros j Hj.
+rewrite NQmul_pair; [ | pauto | pauto ].
+rewrite Nat.mul_1_r, <- Nat.pow_add_r.
+f_equal; f_equal.
+flia Hin Hj.
+Qed.
 
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
@@ -492,8 +500,9 @@ eapply NQle_trans; [ apply H1 | ].
    apply A_ge_0.
  }
  remember (min_n i k) as n eqn:Hn.
-Check B_of_A.
-...
+ rewrite <- B_of_A; cycle 1. {
+   rewrite Hn; unfold min_n; destruct rad; [ easy | cbn; flia ].
+ }
 Search (NQfrac (_ + _)%NQ).
 ...
 Qed.
