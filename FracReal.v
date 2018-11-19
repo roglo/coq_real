@@ -477,8 +477,11 @@ f_equal; f_equal.
 flia Hin Hj.
 Qed.
 
-Theorem summation_pow_opp (rg := NQ_ord_ring) : ∀ r b l,
-  (Σ (j = b, b + l), (1 // r ^ j) = 0)%NQ.
+Theorem summation_pow_opp (rg := NQ_ord_ring) : ∀ r b n,
+  (Σ (j = b, b + n), (1 // r ^ j) =
+   (r ^ S n - 1) // (r ^ (b + n) * (r - 1)))%NQ.
+Proof.
+intros.
 ...
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
