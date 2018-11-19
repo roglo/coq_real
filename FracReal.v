@@ -494,15 +494,16 @@ eapply NQle_trans; [ apply H1 | ].
    unfold min_n; split; [ | flia ].
    destruct rad; [ easy | cbn; flia ].
  }
+ rewrite <- B_of_A; cycle 1. {
+   unfold min_n; destruct rad; [ easy | cbn; flia ].
+ }
+...
  rewrite NQfrac_add; [ | apply A_ge_0 | ]; cycle 1. {
    replace 0%NQ with (0 * 0)%NQ by easy.
    apply NQmul_le_mono_nonneg; [ easy | | easy | easy ].
    apply A_ge_0.
  }
  remember (min_n i k) as n eqn:Hn.
- rewrite <- B_of_A; cycle 1. {
-   rewrite Hn; unfold min_n; destruct rad; [ easy | cbn; flia ].
- }
 Search (NQfrac (_ + _)%NQ).
 ...
 Qed.
