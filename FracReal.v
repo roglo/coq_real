@@ -483,6 +483,30 @@ Theorem summation_pow_opp (rg := NQ_ord_ring) : ∀ r b n,
       (r ^ S n - 1) // (r ^ (b + n) * (r - 1)))%NQ.
 Proof.
 intros * Hr.
+revert b.
+induction n; intros.
+-rewrite Nat.add_0_r, Nat.pow_1_r, summation_only_one.
+ replace (r - 1) with (1 * (r - 1)) at 1 by apply Nat.mul_1_l.
+ destruct r; [ easy | ].
+ rewrite <- NQmul_pair; [ | pauto | flia Hr ].
+ rewrite NQpair_diag; [ | flia Hr ].
+ now rewrite NQmul_1_r.
+-replace (b + S n) with (S (b + n)) by flia.
+ rewrite summation_split_last; [ | flia ].
+ rewrite IHn.
+ rewrite NQadd_pair; cycle 1. {
+   intros H; apply Nat.eq_mul_0 in H.
+   destruct H as [H| H]; [ | flia Hr H ].
+   destruct r; [ easy | ].
+   now apply Nat.pow_nonzero in H.
+ } {
+   destruct r; [ easy | pauto ].
+ }
+ rewrite Nat.mul_1_r.
+(* r ^ S (b + n) = r * r ^ (b + n) *)
+
+...
+intros * Hr.
 rewrite summation_shift; [ | flia ].
 replace (b + n - b) with n by flia.
 rewrite summation_eq_compat with (h := λ i, (1 // r ^ b * 1 // r ^ i)%NQ);
@@ -2767,4 +2791,3 @@ rewrite Nat.mul_comm.
 apply Nat.mul_le_mono_l.
 rewrite Nat.add_shuffle0; apply Hur.
 Qed.
-y
