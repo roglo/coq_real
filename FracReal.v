@@ -477,6 +477,21 @@ f_equal; f_equal.
 flia Hin Hj.
 Qed.
 
+Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
+  (∀ k, u (i + k) ≤ (i + 1) * (rad - 1) ^ 2)
+  → (B i n u l ≤ (n * (rad - 1) + rad) // rad ^ (n - i - 1))%NQ.
+Proof.
+intros * Hu.
+...
+
+Theorem B_upper_bound {r : radix} : ∀ u i k l,
+  (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
+Proof.
+intros.
+unfold B.
+Search (1 // _ ^ _)%NQ.
+...
+
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, (NQfrac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%NQ.
