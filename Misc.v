@@ -29,8 +29,43 @@ Theorem list_Forall_inv : ∀ A (P : A → Prop) a l,
   List.Forall P (a :: l) → P a ∧ List.Forall P l.
 Proof.
 intros A P a l H.
-inversion H; split; assumption.
+now inversion H.
 Qed.
+
+(* juste pour voir mais terme pas terrible mais encore simplifiable...
+Definition list_Forall_inv₁ : ∀ A (P : A → Prop) a l,
+  List.Forall P (a :: l) → P a ∧ List.Forall P l :=
+  λ (A : Type) (P : A → Prop) (a : A) (l : list A) (H : List.Forall P (a :: l)),
+  match H in (List.Forall _ l') return (l' = a :: l → P a ∧ List.Forall P l) with
+  | List.Forall_nil _ =>
+      λ H1,
+      match
+        match H1 in (_ = y) return
+           match y with | [] => True | _ :: _ => False end
+        with
+        | eq_refl => I
+        end
+      with end
+  | @List.Forall_cons _ _ x l0 H0 H1 =>
+         λ H2,
+           (λ H3 : x :: l0 = a :: l,
+              let H4 : l0 = l := f_equal (λ e : list A, match e with
+                                                        | [] => l0
+                                                        | _ :: l1 => l1
+                                                        end) H3 in
+              (let H5 : x = a := f_equal (λ e : list A, match e with
+                                                        | [] => x
+                                                        | a0 :: _ => a0
+                                                        end) H3 in
+               (λ H6 : x = a,
+                  let H7 : x = a := H6 in
+                  eq_ind_r (λ a0 : A, l0 = l → P a0 → List.Forall P l0 → P a ∧ List.Forall P l)
+                    (λ H8 : l0 = l,
+                       let H9 : l0 = l := H8 in
+                       eq_ind_r (λ l1 : list A, P a → List.Forall P l1 → P a ∧ List.Forall P l)
+                         (λ (H10 : P a) (H11 : List.Forall P l), conj H10 H11) H9) H7) H5) H4) H2 H0 H1
+  end eq_refl.
+*)
 
 Theorem last_cons_id : ∀ A (a : A) al,
   List.last al a ≠ a
