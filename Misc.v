@@ -13,9 +13,17 @@ Theorem Nat_le_neq_lt : ∀ a b, a ≤ b → a ≠ b → a < b.
 Proof.
 intros a b Hab Hnab.
 apply le_lt_eq_dec in Hab.
-destruct Hab as [Hle| Heq]; [ assumption | idtac ].
-exfalso; apply Hnab; assumption.
+now destruct Hab.
 Qed.
+
+(* pareil, juste pour rire...
+Definition Nat_le_neq_lt₁ : ∀ a b, a ≤ b → a ≠ b → a < b :=
+  λ (a b : nat) (Hab : a ≤ b) (Hnab : a ≠ b),
+  match le_lt_eq_dec a b Hab with
+  | left Hle => Hle
+  | right Heq => match Hnab Heq with end
+  end.
+*)
 
 Theorem list_Forall_inv : ∀ A (P : A → Prop) a l,
   List.Forall P (a :: l) → P a ∧ List.Forall P l.
