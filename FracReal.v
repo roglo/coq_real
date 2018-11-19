@@ -503,64 +503,69 @@ induction n; intros.
    destruct r; [ easy | pauto ].
  }
  rewrite Nat.mul_1_r.
-(* r ^ S (b + n) = r * r ^ (b + n) *)
-
-...
-intros * Hr.
-rewrite summation_shift; [ | flia ].
-replace (b + n - b) with n by flia.
-rewrite summation_eq_compat with (h := λ i, (1 // r ^ b * 1 // r ^ i)%NQ);
-  cycle 1. {
-  intros i Hi.
-  rewrite Nat.pow_add_r.
-  destruct r; [ easy | ].
-  rewrite NQmul_pair; [ | pauto | pauto ].
-  now rewrite Nat.mul_1_l.
-}
-rewrite <- summation_mul_distr_l.
-symmetry.
-rewrite Nat.pow_add_r, <- Nat.mul_assoc.
-replace (r ^ S n - 1) with (1 * (r ^ S n - 1)) by apply Nat.mul_1_l.
-rewrite <- NQmul_pair; cycle 1. {
-  destruct r; [ easy | pauto ].
-} {
-  intros H.
-  apply Nat.eq_mul_0 in H.
-  destruct H as [H| H]; [ | flia Hr H ].
-  revert H; destruct r; [ easy | now apply Nat.pow_nonzero ].
-}
-remember NQ_of_pair as f; remember summation as g; cbn; subst f g.
-f_equal; symmetry.
-...
+ replace (S (b + n)) with (1 + (b + n)) by easy.
+ rewrite Nat.pow_add_r, Nat.pow_1_r.
+ rewrite Nat.mul_assoc, Nat.mul_comm.
+ rewrite <- Nat.mul_add_distr_l.
+ rewrite <- Nat.mul_assoc.
+ rewrite <- NQmul_pair; cycle 1. {
+   destruct r; [ easy | pauto ].
+ } {
+   intros H; apply Nat.eq_mul_0 in H.
+   destruct H as [H| H]; [ flia Hr H | ].
+   apply Nat.eq_mul_0 in H.
+   destruct H as [H| H]; [ flia Hr H | ].
+   destruct r; [ easy | ].
+   now apply Nat.pow_nonzero in H.
+ }
+ rewrite NQpair_diag, NQmul_1_l; cycle 1. {
+   destruct r; [ easy | pauto ].
+ }
+ f_equal; [ | apply Nat.mul_comm ].
+ rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+ rewrite Nat.add_sub_assoc; [ | flia Hr ].
+ rewrite Nat.sub_add; cycle 1. {
+   replace r with (1 * r) at 1 by flia.
+   apply Nat.mul_le_mono_r.
+   apply Nat_pow_ge_1; flia Hr.
+ }
+ now rewrite Nat.mul_comm.
+Qed.
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
-  (∀ j, u (n + j) ≤ (n + j + 1) * (rad - 1) ^ 2)
+  n ≠ 0
+  → (∀ j, u (n + j) ≤ (n + j + 1) * (rad - 1) ^ 2)
   → (B i n u l ≤ (n * (rad - 1) + rad) // rad ^ (n - i - 1))%NQ.
 Proof.
-intros * Hu.
+intros * Hn Hu.
 unfold B.
-eapply NQle_trans.
--apply summation_le_compat with
-   (g := λ j,
-    (((rad - 1) ^ 2 * rad ^ i) // 1 *
-     (j // rad ^ j + 1 // rad ^ j))%NQ).
- intros k Hk.
- rewrite <- NQpair_add_l.
- rewrite <- NQpair_mul_r.
- apply NQle_pair; [ pauto | pauto | ].
- rewrite Nat.mul_shuffle0.
- remember (u k * rad ^ k) as x.
- rewrite Nat.mul_comm; subst x.
- rewrite <- Nat.mul_assoc, <- Nat.pow_add_r.
- apply Nat.mul_le_mono.
- +replace k with (n + (k - n)) by flia Hk.
-  rewrite Nat.mul_comm; apply Hu.
- +apply Nat.pow_le_mono_r; [ easy | flia ].
--rewrite <- summation_mul_distr_l.
- rewrite summation_add_distr.
-...
-replace (n + l - 1) with (n + (l - 1)).
-rewrite summation_pow_opp.
+destruct (zerop l) as [Hl| Hl].
+-subst l.
+ rewrite Nat.add_0_r.
+ rewrite summation_empty; [ | flia Hn ].
+ replace 0%Rg with (0 // 1)%NQ by easy.
+ apply NQle_pair; [ easy | pauto | flia ].
+-eapply NQle_trans.
+ +apply summation_le_compat with
+    (g := λ j,
+       (((rad - 1) ^ 2 * rad ^ i) // 1 *
+        (j // rad ^ j + 1 // rad ^ j))%NQ).
+  intros k Hk.
+  rewrite <- NQpair_add_l, <- NQpair_mul_r.
+  apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat.mul_shuffle0.
+  remember (u k * rad ^ k) as x.
+  rewrite Nat.mul_comm; subst x.
+  rewrite <- Nat.mul_assoc, <- Nat.pow_add_r.
+  apply Nat.mul_le_mono.
+  *replace k with (n + (k - n)) by flia Hk.
+   rewrite Nat.mul_comm; apply Hu.
+  *apply Nat.pow_le_mono_r; [ easy | flia ].
+ +rewrite <- summation_mul_distr_l.
+  rewrite summation_add_distr.
+  rewrite <- Nat.add_sub_assoc; [ | easy ].
+  replace (n + l - 1) with (n + (l - 1)) by flia Hl.
+  rewrite summation_pow_opp; [ | easy ].
 ...
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
@@ -763,14 +768,6 @@ cbn; f_equal.
 replace (S (n - 1 - 1)) with (n - 1) by flia Hin.
 f_equal; f_equal.
 destruct i; flia.
-Qed.
-
-Theorem Nat_pow_ge_1 : ∀ a b, 0 < a → 1 ≤ a ^ b.
-Proof.
-intros * Ha.
-induction b; [ easy | cbn ].
-replace 1 with (1 * 1) by flia.
-apply Nat.mul_le_mono_nonneg; [ flia | easy | flia | easy ].
 Qed.
 
 Theorem A_dig_seq_ub {r : radix} : ∀ u n i,

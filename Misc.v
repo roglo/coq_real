@@ -402,6 +402,15 @@ induction n; intros.
   now f_equal.
 Qed.
 
+Theorem Nat_pow_ge_1 : ∀ a b, 0 < a → 1 ≤ a ^ b.
+Proof.
+intros * Ha.
+induction b; [ easy | cbn ].
+replace 1 with (1 * 1) by easy.
+apply Nat.mul_le_mono_nonneg; [ | easy | apply Nat.le_0_1 | easy ].
+apply Nat.le_0_1.
+Qed.
+
 Definition bool_of_sumbool {A B : Prop} (P : sumbool A B) :=
   match P with
   | left _ _ => true
