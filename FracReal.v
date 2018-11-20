@@ -532,11 +532,12 @@ induction n; intros.
  now rewrite Nat.mul_comm.
 Qed.
 
-(* à voir dans mon cahier... *)
+(* à vérifier *)
 Theorem summation_id_div_pow (rg := NQ_ord_ring) : ∀ r b n,
   r ≥ 2
   → (Σ (j = b, b + n), (j // r ^ j) =
-      (r ^ S n - 1) // (r ^ (b + n) * (r - 1)))%NQ.
+      (b * (r ^ S n - 1) * (r - 1) + r ^ S n - S n * r + n) //
+      (r ^ (b + n) * (r - 1) ^ 2))%NQ.
 Proof.
 intros * Hr.
 ...
