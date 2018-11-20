@@ -477,6 +477,7 @@ f_equal; f_equal.
 flia Hin Hj.
 Qed.
 
+(*
 Theorem summation_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
   r ≥ 2
   → (Σ (j = b, b + n), (1 // r ^ j) =
@@ -531,6 +532,17 @@ induction n; intros.
  }
  now rewrite Nat.mul_comm.
 Qed.
+*)
+
+Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
+  r ≥ 2
+  → (Σ (j = b, b + n), ((j + 1) // r ^ j) =
+        ((b + 1) * r ^ (n + 2) - b * r ^ (n + 1) - (b + n + 2) * r +
+         b + n + 1) //
+        (r ^ (b + n) * (r - 1) ^ 2))%NQ.
+Proof.
+intros * Hr.
+...
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
   n ≠ 0
@@ -549,6 +561,10 @@ destruct (zerop l) as [Hl| Hl].
  +apply summation_le_compat with
     (g := λ j, (((rad - 1) ^ 2 * rad ^ i) // 1 * (j + 1) // rad ^ j)%NQ).
   intros k Hk.
+...
+ +replace (n + l - 1) with (n + (l - 1)) by flia Hl.
+  rewrite <- summation_mul_distr_l.
+  rewrite summation_succ_inv_pow; [ | easy ].
 ...
   rewrite <- NQpair_add_l, <- NQpair_mul_r.
   apply NQle_pair; [ pauto | pauto | ].
