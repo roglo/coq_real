@@ -477,7 +477,7 @@ f_equal; f_equal.
 flia Hin Hj.
 Qed.
 
-Theorem summation_pow_opp (rg := NQ_ord_ring) : ∀ r b n,
+Theorem summation_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
   r ≥ 2
   → (Σ (j = b, b + n), (1 // r ^ j) =
       (r ^ S n - 1) // (r ^ (b + n) * (r - 1)))%NQ.
@@ -532,6 +532,15 @@ induction n; intros.
  now rewrite Nat.mul_comm.
 Qed.
 
+(* à voir dans mon cahier... *)
+Theorem summation_id_div_pow (rg := NQ_ord_ring) : ∀ r b n,
+  r ≥ 2
+  → (Σ (j = b, b + n), (j // r ^ j) =
+      (r ^ S n - 1) // (r ^ (b + n) * (r - 1)))%NQ.
+Proof.
+intros * Hr.
+...
+
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
   n ≠ 0
   → (∀ j, u (n + j) ≤ (n + j + 1) * (rad - 1) ^ 2)
@@ -565,7 +574,9 @@ destruct (zerop l) as [Hl| Hl].
   rewrite summation_add_distr.
   rewrite <- Nat.add_sub_assoc; [ | easy ].
   replace (n + l - 1) with (n + (l - 1)) by flia Hl.
-  rewrite summation_pow_opp; [ | easy ].
+  rewrite summation_inv_pow; [ | easy ].
+...
+  rewrite summation_id_div_pow.
 ...
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
