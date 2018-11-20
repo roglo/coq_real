@@ -532,16 +532,6 @@ induction n; intros.
  now rewrite Nat.mul_comm.
 Qed.
 
-(* à vérifier *)
-Theorem summation_id_div_pow (rg := NQ_ord_ring) : ∀ r b n,
-  r ≥ 2
-  → (Σ (j = b, b + n), (j // r ^ j) =
-      (b * (r ^ S n - 1) * (r - 1) + r ^ S n - S n * r + n) //
-      (r ^ (b + n) * (r - 1) ^ 2))%NQ.
-Proof.
-intros * Hr.
-Abort.
-
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
   n ≠ 0
   → (∀ j, u (n + j) ≤ (n + j + 1) * (rad - 1) ^ 2)
