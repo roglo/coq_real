@@ -16,7 +16,7 @@ apply le_lt_eq_dec in Hab.
 now destruct Hab.
 Qed.
 
-(* pareil, juste pour rire...
+(*
 Definition Nat_le_neq_lt₁ : ∀ a b, a ≤ b → a ≠ b → a < b :=
   λ (a b : nat) (Hab : a ≤ b) (Hnab : a ≠ b),
   match le_lt_eq_dec a b Hab with
@@ -32,31 +32,14 @@ intros A P a l H.
 now inversion H.
 Qed.
 
-(* juste pour voir mais terme pas terrible mais encore simplifiable...
+(*
 Definition list_Forall_inv₁ : ∀ A (P : A → Prop) a l,
-  List.Forall P (a :: l) → P a ∧ List.Forall P l :=
-  λ (A : Type) (P : A → Prop) (a : A) (l : list A) (H : List.Forall P (a :: l)),
+  List.Forall P (a :: l) → P a ∧ List.Forall P l
+:=
+  λ _ P a l H,
   match H in (List.Forall _ l') return (l' = a :: l → P a ∧ List.Forall P l) with
-  | List.Forall_nil _ =>
-      λ H1,
-      match
-        match H1 in (_ = y) return
-           match y with | [] => True | _ :: _ => False end
-        with
-        | eq_refl => I
-        end
-      with end
-  | @List.Forall_cons _ _ x l0 H0 H1 =>
-      λ H2,
-      let H4 := match H2 with eq_refl => eq_refl end in
-      let H5 := f_equal (λ e : list A, match e with
-                                       | [] => x
-                                       | a0 :: _ => a0
-                                       end) H2 in
-      eq_ind_r _
-               (λ H8,
-                eq_ind_r (λ l1, P a → List.Forall P l1 → P a ∧ List.Forall P l)
-                         (λ (H10 : P a) (H11 : List.Forall P l), conj H10 H11) H8) H5 H4 H0 H1
+  | List.Forall_nil _ => λ H1, match H1 with eq_refl => I end
+  | List.Forall_cons _ px pl => λ H1, match H1 with eq_refl => conj px pl end
   end eq_refl.
 *)
 
@@ -72,11 +55,12 @@ Qed.
 Definition last_cons_id₁ : ∀ A (a : A) al,
   List.last al a ≠ a
   → List.last (a :: al) a ≠ a
-:= λ A (a : A) (al : list A),
-   match al as l return (List.last l a ≠ a → List.last (a :: l) a ≠ a) with
-   | [] => id
-   | _ :: _ => id
-   end.
+:=
+  λ A (a : A) (al : list A),
+  match al as l return (List.last l a ≠ a → List.last (a :: l) a ≠ a) with
+  | [] => id
+  | _ :: _ => id
+  end.
 *)
 
 Theorem last_cons_cons : ∀ A (a b : A) al d,
