@@ -68,6 +68,17 @@ intros * Hal.
 now destruct al.
 Qed.
 
+(*
+Definition last_cons_id₁ : ∀ A (a : A) al,
+  List.last al a ≠ a
+  → List.last (a :: al) a ≠ a
+:= λ A (a : A) (al : list A),
+   match al as l return (List.last l a ≠ a → List.last (a :: l) a ≠ a) with
+   | [] => id
+   | _ :: _ => id
+   end.
+*)
+
 Theorem last_cons_cons : ∀ A (a b : A) al d,
   List.last (a :: b :: al) d = List.last (b :: al) d.
 Proof. easy. Qed.
