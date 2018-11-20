@@ -553,14 +553,17 @@ induction n; intros.
    apply Nat.pow_nonzero in H; [ easy | flia Hr ].
  }
  rewrite Nat.mul_comm, <- Nat.mul_assoc; f_equal.
- replace ((b + 1) * S r ^ 2 - b * S r - (b + 2) * S r + b + 1)
-   with (S r ^ 2 * (b + 1) - 2 * S r * (b + 1) + 1 * (b + 1)) by flia.
- rewrite <- Nat.mul_sub_distr_r, <- Nat.mul_add_distr_r; f_equal.
- cbn; rewrite Nat.sub_0_r, Nat.add_0_r, Nat.mul_1_r.
-...
- rewrite Nat_sub_sub_swap.
- replace ((b + 2) * S r) with ((b + 1) * S r + S r) by flia.
- rewrite Nat.
+ destruct r; [ flia Hr | cbn; flia ].
+-replace (b + S n) with (S (b + n)) by flia.
+ rewrite summation_split_last; [ | flia ].
+ rewrite IHn.
+ remember NQ_of_pair as f; cbn; subst f.
+ rewrite Nat.mul_1_r.
+ rewrite NQadd_pair.
+ apply NQeq_pair.
+admit.
+admit.
+
 ...
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
