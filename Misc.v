@@ -43,6 +43,20 @@ Definition list_Forall_inv₁ : ∀ A (P : A → Prop) a l,
   end eq_refl.
 *)
 
+(*
+Inductive myForall (A : Type) (P : A → Type) : list A → Type :=
+    myForall_nil : myForall _ P []
+  | myForall_cons : ∀ (x : A) (l : list A), P x → myForall _ P l → myForall _ P (x :: l).
+
+Definition list_Forall_inv₁ : ∀ A (P : A → Type) a l,
+  myForall _ P (a :: l) → P a * myForall _ P l
+:=
+  λ _ P a l H,
+  match H with
+  | myForall_cons _ _ _ _ px pl => (px, pl)
+  end.
+*)
+
 Theorem last_cons_id : ∀ A (a : A) al,
   List.last al a ≠ a
   → List.last (a :: al) a ≠ a.

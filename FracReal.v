@@ -540,7 +540,7 @@ Theorem summation_id_div_pow (rg := NQ_ord_ring) : ∀ r b n,
       (r ^ (b + n) * (r - 1) ^ 2))%NQ.
 Proof.
 intros * Hr.
-...
+Abort.
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
   n ≠ 0
@@ -557,10 +557,9 @@ destruct (zerop l) as [Hl| Hl].
  apply NQle_pair; [ easy | pauto | flia ].
 -eapply NQle_trans.
  +apply summation_le_compat with
-    (g := λ j,
-       (((rad - 1) ^ 2 * rad ^ i) // 1 *
-        (j // rad ^ j + 1 // rad ^ j))%NQ).
+    (g := λ j, (((rad - 1) ^ 2 * rad ^ i) // 1 * (j + 1) // rad ^ j)%NQ).
   intros k Hk.
+...
   rewrite <- NQpair_add_l, <- NQpair_mul_r.
   apply NQle_pair; [ pauto | pauto | ].
   rewrite Nat.mul_shuffle0.
@@ -572,9 +571,11 @@ destruct (zerop l) as [Hl| Hl].
    rewrite Nat.mul_comm; apply Hu.
   *apply Nat.pow_le_mono_r; [ easy | flia ].
  +rewrite <- summation_mul_distr_l.
+...
   rewrite summation_add_distr.
   rewrite <- Nat.add_sub_assoc; [ | easy ].
   replace (n + l - 1) with (n + (l - 1)) by flia Hl.
+...
   rewrite summation_inv_pow; [ | easy ].
 ...
   rewrite summation_id_div_pow.
