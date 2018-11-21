@@ -578,19 +578,36 @@ induction n; intros.
 -replace (b + S n) with (S (b + n)) by flia.
  rewrite summation_split_last; [ | flia ].
  rewrite IHn.
-(**)
  remember NQ_of_pair as f; remember Nat.pow as g.
  remember S as h; cbn; subst f g h.
  replace (S (b + n) + 2) with (b + n + 3) by flia.
  replace (S (b + n) + 1) with (b + n + 2) by flia.
  replace (S (b + n)) with (b + n + 1) by flia.
- rewrite NQadd_pair; [ | admit | admit ].
+ rewrite NQadd_pair; cycle 1. {
+   destruct r; [ easy | ].
+   apply Nat.neq_mul_0; split; [ pauto | ].
+   rewrite Nat.sub_succ, Nat.sub_0_r.
+   destruct r; [ flia Hr | pauto ].
+ } {
+   destruct r; [ flia Hr | pauto ].
+ }
  rewrite Nat.mul_comm.
- replace (r ^ (b + n + 1)) with (r ^ (b + n) * r) at 1; [ | admit ].
+ replace (r ^ (b + n + 1)) with (r ^ (b + n) * r) at 1; cycle 1. {
+   now do 3 rewrite Nat.pow_add_r; rewrite Nat.pow_1_r.
+ }
  do 3 rewrite <- Nat.mul_assoc.
  rewrite <- Nat.mul_add_distr_l.
- rewrite <- NQmul_pair; [ | admit | admit ].
- rewrite NQpair_diag; [ | admit ].
+ rewrite <- NQmul_pair; cycle 1. {
+   destruct r; [ easy | pauto ].
+ } {
+   destruct r; [ easy | ].
+   apply Nat.neq_mul_0; split; [ | pauto ].
+   rewrite Nat.sub_succ, Nat.sub_0_r.
+   destruct r; [ flia Hr | pauto ].
+ }
+ rewrite NQpair_diag; cycle 1. {
+   destruct r; [ flia Hr | pauto ].
+ }
  rewrite NQmul_1_l.
  f_equal; [ | apply Nat.mul_comm ].
  rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
