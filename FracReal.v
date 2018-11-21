@@ -555,6 +555,18 @@ rewrite Nat.sub_add_distr.
 now replace (b * a) with (a * b) by apply Nat.mul_comm.
 Qed.
 
+(* à mettre dans Misc.v *)
+Theorem Nat_sqr_sub_sqr : ∀ a b, a ^ 2 - b ^ 2 = (a + b) * (a - b).
+Proof.
+intros.
+rewrite Nat.mul_sub_distr_l.
+do 2 rewrite Nat.mul_add_distr_r.
+rewrite Nat.sub_add_distr.
+replace (a * a) with (a ^ 2) by (cbn; flia).
+rewrite Nat.mul_comm, Nat.add_sub.
+f_equal; cbn; flia.
+Qed.
+
 Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
   r ≥ 2
   → (Σ (i = b, b + n), ((i + 1) // r ^ i) =
@@ -680,6 +692,36 @@ induction n; intros.
    -apply Nat.mul_le_mono_l; cbn; rewrite Nat.mul_1_r.
     apply Nat.mul_le_mono; flia Hr.
    -rewrite HeqYYY.
+    apply Nat.le_sub_le_add_r.
+    rewrite <- Nat.mul_sub_distr_l.
+    replace (r * r) with (r ^ 2) by (cbn; flia).
+    rewrite Nat_sqr_sub_sqr.
+    rewrite Nat.add_sub_assoc; [ | flia Hr ].
+    rewrite Nat_sub_sub_assoc; [ | flia Hr ].
+    replace (r + 1 - r) with 1 by flia.
+    rewrite Nat.mul_1_r.
+    destruct b.
+    +cbn; rewrite Nat.add_sub.
+     rewrite Nat.mul_assoc, Nat.mul_comm.
+     apply Nat.mul_le_mono.
+     *destruct r; [ easy | ].
+      destruct r; [ flia Hr | cbn; flia ].
+     *replace (n + 2) with (S (n + 1)) by flia.
+      apply Nat.pow_gt_lin_r; flia Hr.
+    +rewrite Nat.mul_comm.
+....
+     apply Nat.mul_le_mono.
+     *rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+      cbn; rewrite Nat.add_shuffle0.
+      remember (r + r - 1) as x.
+      rewrite <- Nat.add_sub_assoc; [ subst x; flia | ].
+
+
+      replace (S b) with (S (b * 1)) by flia.
+      apply Nat.mul_lt_mono_pos_l.
+...
+    rewrite Nat_sqr_sub; [ | flia Hr ].
+    rewrite Nat.pow_1_l, Nat.mul_1_r.
 ...
  rewrite Nat.add_sub_swap.
  rewrite Nat.add_comm.
