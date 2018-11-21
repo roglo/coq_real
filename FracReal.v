@@ -632,9 +632,18 @@ induction n; intros.
  rewrite Nat.add_comm, Nat.add_assoc, Nat.add_shuffle0.
  rewrite Nat_sqr_sub; [ | flia Hr ].
  rewrite Nat.mul_1_r, Nat.pow_1_l.
-...
  rewrite <- Nat.mul_assoc.
- rewrite <- Nat.add_sub_swap; [ | admit ].
+ replace (S n + 2) with (S n + 1 + 1) in HeqYYY by flia.
+ rewrite Nat.pow_add_r, Nat.pow_1_r, Nat.mul_assoc in HeqYYY.
+ rewrite Nat.mul_shuffle0, <- Nat.mul_sub_distr_r in HeqYYY.
+ rewrite <- Nat.add_sub_swap; cycle 1. {
+   subst YYY.
+   replace (S n + 1) with (n + 2) by flia.
+   replace (r * r) with (r ^ 2) by (cbn; flia).
+   rewrite Nat.pow_add_r, Nat.mul_assoc.
+   apply Nat.mul_le_mono_r.
+...
+ rewrite <- Nat_sub_sub_assoc.
 ...
  rewrite Nat.add_sub_swap.
  rewrite Nat.add_comm.
