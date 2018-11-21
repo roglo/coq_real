@@ -542,6 +542,8 @@ Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
         (r ^ (b + n) * (r - 1) ^ 2))%NQ.
 Proof.
 intros * Hr.
+(* formule à vérifier *)
+...
 revert b.
 induction n; intros.
 -rewrite Nat.add_0_r, summation_only_one.
@@ -563,7 +565,26 @@ induction n; intros.
  apply NQeq_pair.
 admit.
 admit.
+{
+do 8 rewrite Nat.mul_assoc.
+ring_simplify.
+destruct b.
+cbn.
+repeat rewrite Nat.add_0_r.
+repeat rewrite Nat.sub_0_r.
+ring_simplify.
 
+...
+ring_simplify.
+do 2 rewrite Nat.mul_assoc.
+remember (2 * r * r ^ (b + n) * r ^ (b + n) * (r - 1) * (r - 1)) as XXX.
+remember (r * r * r ^ (b + n) * r ^ (b + n) * (r - 1) * (r - 1)) as YYY.
+do 4 rewrite <- Nat.mul_assoc in HeqXXX.
+do 4 rewrite <- Nat.mul_assoc in HeqYYY.
+remember (r * (r ^ (b + n) * (r ^ (b + n) * ((r - 1) * (r - 1))))) as ZZZ.
+subst XXX YYY.
+remember ( n * r * r ^ (b + n) * r ^ (b + n) * (r - 1) * (r - 1) * (r - 1) * (r - 1)) as XXX.
+repeat rewrite <- Nat.mul_assoc in HeqXXX.
 ...
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
