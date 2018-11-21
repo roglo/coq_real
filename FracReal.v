@@ -630,8 +630,10 @@ induction n; intros.
  replace r with (r * 1) at 3 by flia.
  do 2 rewrite <- Nat.mul_add_distr_l.
  rewrite Nat.add_comm, Nat.add_assoc, Nat.add_shuffle0.
+(*
  rewrite Nat_sqr_sub; [ | flia Hr ].
  rewrite Nat.mul_1_r, Nat.pow_1_l.
+*)
  rewrite <- Nat.mul_assoc.
  replace (S n + 2) with (S n + 1 + 1) in HeqYYY by flia.
  rewrite Nat.pow_add_r, Nat.pow_1_r, Nat.mul_assoc in HeqYYY.
@@ -642,21 +644,42 @@ induction n; intros.
    replace (r * r) with (r ^ 2) by (cbn; flia).
    rewrite Nat.pow_add_r, Nat.mul_assoc.
    apply Nat.mul_le_mono_r.
-rewrite Nat.mul_sub_distr_r.
-apply Nat.le_add_le_sub_r.
-...
-   rewrite Nat.add_1_r.
-   destruct b.
-   -rewrite Nat.mul_1_l, Nat.sub_0_r, Nat.add_0_l.
-    destruct (zerop n) as [Hn| Hn]; [ subst n | ].
-    +now rewrite Nat.add_0_l, Nat.pow_0_r, Nat.mul_1_r.
+   rewrite Nat.mul_sub_distr_r.
+   apply Nat.le_add_le_sub_r.
+   rewrite <- Nat.mul_assoc, Nat.mul_add_distr_r, Nat.mul_1_l.
+   rewrite Nat.add_comm, Nat.add_assoc, Nat.add_assoc.
+   rewrite <- Nat.add_assoc.
+   destruct (zerop n) as [Hn| Hn]; [ subst n | ].
+   -rewrite Nat.pow_0_r, Nat.add_0_l.
+    do 2 rewrite Nat.mul_1_r.
+    apply Nat.add_le_mono; [ | easy ].
+    replace (b + b) with (b * 2) by flia.
+    now apply Nat.mul_le_mono_l.
+   -apply Nat.add_le_mono.
+    +replace b with (b * 1) at 2 by flia.
+     rewrite <- Nat.mul_add_distr_l.
+     apply Nat.mul_le_mono_l.
+     destruct r; [ easy | cbn ].
+     apply Nat.add_le_mono_l.
+     replace 1 with (1 * 1) by easy.
+     apply Nat.mul_le_mono; [ flia Hr | ].
+     apply Nat_pow_ge_1; flia.
     +destruct r; [ easy | cbn ].
      apply Nat.add_le_mono.
      *apply Nat.lt_le_incl, Nat.pow_gt_lin_r; flia Hr.
      *replace 2 with (1 * 2) by easy.
       apply Nat.mul_le_mono; [ flia Hr | ].
-...
- rewrite <- Nat_sub_sub_assoc.
+      destruct n; [ easy | cbn ].
+      replace 2 with (1 + 1 * 1) by easy.
+      apply Nat.add_le_mono; [ apply Nat_pow_ge_1; flia | ].
+      apply Nat.mul_le_mono; [ flia Hr | ].
+      apply Nat_pow_ge_1; flia.
+ }
+ rewrite <- Nat_sub_sub_assoc; cycle 1. {
+   split.
+   -apply Nat.mul_le_mono_l; cbn; rewrite Nat.mul_1_r.
+    apply Nat.mul_le_mono; flia Hr.
+   -rewrite HeqYYY.
 ...
  rewrite Nat.add_sub_swap.
  rewrite Nat.add_comm.
