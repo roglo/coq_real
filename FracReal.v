@@ -534,16 +534,25 @@ induction n; intros.
 Qed.
 *)
 
+(*
+Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r n,
+  r ≥ 2
+  → (Σ (i = 0, n), ((i + 1) // r ^ i) =
+        (r ^ (n + 2) - (n + 2) * r + n + 1) // (r ^ n * (r - 1) ^ 2))%NQ.
+Proof.
+intros * Hr.
+induction n; intros.
+...
+*)
+
 Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
   r ≥ 2
-  → (Σ (j = b, b + n), ((j + 1) // r ^ j) =
+  → (Σ (i = b, b + n), ((i + 1) // r ^ i) =
         ((b + 1) * r ^ (n + 2) - b * r ^ (n + 1) - (b + n + 2) * r +
          b + n + 1) //
         (r ^ (b + n) * (r - 1) ^ 2))%NQ.
 Proof.
 intros * Hr.
-(* formule à vérifier *)
-...
 revert b.
 induction n; intros.
 -rewrite Nat.add_0_r, summation_only_one.
@@ -559,6 +568,34 @@ induction n; intros.
 -replace (b + S n) with (S (b + n)) by flia.
  rewrite summation_split_last; [ | flia ].
  rewrite IHn.
+(**)
+ remember NQ_of_pair as f; remember Nat.pow as g.
+ remember S as h; cbn; subst f g h.
+ replace (S (b + n) + 2) with (b + n + 3) by flia.
+ replace (S (b + n) + 1) with (b + n + 2) by flia.
+ replace (S (b + n)) with (b + n + 1) by flia.
+ rewrite NQadd_pair; [ | admit | admit ].
+ rewrite Nat.mul_comm.
+ replace (r ^ (b + n + 1)) with (r ^ (b + n) * r) at 1; [ | admit ].
+ do 3 rewrite <- Nat.mul_assoc.
+ rewrite <- Nat.mul_add_distr_l.
+ rewrite <- NQmul_pair; [ | admit | admit ].
+ rewrite NQpair_diag; [ | admit ].
+ rewrite NQmul_1_l.
+ f_equal; [ | apply Nat.mul_comm ].
+ rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
+ do 2 rewrite Nat.mul_add_distr_l.
+ do 2 rewrite Nat.mul_sub_distr_l.
+ rewrite Nat.mul_assoc, Nat.mul_shuffle0, Nat.mul_comm.
+ rewrite <- Nat.pow_succ_r; [ | flia ].
+ rewrite <- Nat.add_succ_l.
+ remember ((b + 1) * r ^ (S n + 2)) as XXX.
+ rewrite Nat.mul_assoc, Nat.mul_shuffle0, Nat.mul_comm.
+ rewrite <- Nat.pow_succ_r; [ | flia ].
+ rewrite <- Nat.add_succ_l.
+ remember (b * r ^ (S n + 1)) as YYY.
+
+...
  remember NQ_of_pair as f; cbn; subst f.
  rewrite Nat.mul_1_r.
  rewrite NQadd_pair.
@@ -566,8 +603,11 @@ induction n; intros.
 admit.
 admit.
 {
-do 8 rewrite Nat.mul_assoc.
-ring_simplify.
+replace (r * r ^ (b + n)) with (r ^ (b + n + 1)).
+{
+do 5 rewrite Nat.mul_assoc.
+...
+
 destruct b.
 cbn.
 repeat rewrite Nat.add_0_r.
