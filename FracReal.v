@@ -620,11 +620,10 @@ induction n; intros.
  rewrite Nat.mul_assoc, Nat.mul_shuffle0, Nat.mul_comm.
  rewrite <- Nat.pow_succ_r; [ | flia ].
  rewrite <- Nat.add_succ_l.
- remember (b * r ^ (S n + 1)) as YYY.
+ remember (XXX - b * r ^ (S n + 1)) as YYY; subst XXX.
  rewrite Nat.mul_comm.
  remember ((r - 1) ^ 2 * (b + n + 2)) as x.
  rewrite Nat.mul_comm in Heqx; subst x.
- remember (XXX - YYY - (b + n + 2) * r * r) as ZZZ.
  do 3 rewrite <- Nat.add_assoc.
  rewrite Nat.add_comm.
  do 2 rewrite Nat.add_assoc.
@@ -632,7 +631,7 @@ induction n; intros.
  do 2 rewrite <- Nat.mul_add_distr_l.
  rewrite Nat.add_comm, Nat.add_assoc, Nat.add_shuffle0.
  rewrite Nat_sqr_sub; [ | flia Hr ].
- rewrite Nat.mul_1_r, Nat.pow_1_l; subst ZZZ.
+ rewrite Nat.mul_1_r, Nat.pow_1_l.
 ...
  rewrite <- Nat.mul_assoc.
  rewrite <- Nat.add_sub_swap; [ | admit ].
