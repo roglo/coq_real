@@ -534,16 +534,26 @@ induction n; intros.
 Qed.
 *)
 
-(*
-Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r n,
-  r ≥ 2
-  → (Σ (i = 0, n), ((i + 1) // r ^ i) =
-        (r ^ (n + 2) - (n + 2) * r + n + 1) // (r ^ n * (r - 1) ^ 2))%NQ.
+(* à mettre dans Misc.v *)
+Theorem Nat_sqr_sub : ∀ a b, b ≤ a → (a - b) ^ 2 = a ^ 2 + b ^ 2 - 2 * a * b.
 Proof.
-intros * Hr.
-induction n; intros.
-...
-*)
+intros * Hba.
+cbn.
+do 3 rewrite Nat.mul_1_r.
+rewrite Nat.add_0_r.
+rewrite Nat.mul_sub_distr_l.
+do 2 rewrite Nat.mul_sub_distr_r.
+rewrite Nat.mul_add_distr_r.
+rewrite Nat_sub_sub_swap.
+rewrite Nat_sub_sub_assoc; cycle 1. {
+  split; [ now apply Nat.mul_le_mono_r | ].
+  apply (le_trans _ (a * a)).
+  -now apply Nat.mul_le_mono_l.
+  -apply Nat.le_add_r.
+}
+rewrite Nat.sub_add_distr.
+now replace (b * a) with (a * b) by apply Nat.mul_comm.
+Qed.
 
 Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
   r ≥ 2
@@ -594,7 +604,9 @@ induction n; intros.
  rewrite <- Nat.pow_succ_r; [ | flia ].
  rewrite <- Nat.add_succ_l.
  remember (b * r ^ (S n + 1)) as YYY.
-(* en principe, sur le papier, c'est ok *)
+ rewrite Nat.mul_comm.
+ rewrite Nat_sqr_sub; [ | flia Hr ].
+ rewrite Nat.mul_1_r, Nat.pow_1_l.
 ...
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
