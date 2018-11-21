@@ -594,37 +594,7 @@ induction n; intros.
  rewrite <- Nat.pow_succ_r; [ | flia ].
  rewrite <- Nat.add_succ_l.
  remember (b * r ^ (S n + 1)) as YYY.
-
-...
- remember NQ_of_pair as f; cbn; subst f.
- rewrite Nat.mul_1_r.
- rewrite NQadd_pair.
- apply NQeq_pair.
-admit.
-admit.
-{
-replace (r * r ^ (b + n)) with (r ^ (b + n + 1)).
-{
-do 5 rewrite Nat.mul_assoc.
-...
-
-destruct b.
-cbn.
-repeat rewrite Nat.add_0_r.
-repeat rewrite Nat.sub_0_r.
-ring_simplify.
-
-...
-ring_simplify.
-do 2 rewrite Nat.mul_assoc.
-remember (2 * r * r ^ (b + n) * r ^ (b + n) * (r - 1) * (r - 1)) as XXX.
-remember (r * r * r ^ (b + n) * r ^ (b + n) * (r - 1) * (r - 1)) as YYY.
-do 4 rewrite <- Nat.mul_assoc in HeqXXX.
-do 4 rewrite <- Nat.mul_assoc in HeqYYY.
-remember (r * (r ^ (b + n) * (r ^ (b + n) * ((r - 1) * (r - 1))))) as ZZZ.
-subst XXX YYY.
-remember ( n * r * r ^ (b + n) * r ^ (b + n) * (r - 1) * (r - 1) * (r - 1) * (r - 1)) as XXX.
-repeat rewrite <- Nat.mul_assoc in HeqXXX.
+(* en principe, sur le papier, c'est ok *)
 ...
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
