@@ -605,8 +605,25 @@ induction n; intros.
  rewrite <- Nat.add_succ_l.
  remember (b * r ^ (S n + 1)) as YYY.
  rewrite Nat.mul_comm.
+ remember ((r - 1) ^ 2 * (b + n + 2)) as x.
+ rewrite Nat.mul_comm in Heqx; subst x.
+ remember (XXX - YYY - (b + n + 2) * r * r) as ZZZ.
+ do 3 rewrite <- Nat.add_assoc.
+ rewrite Nat.add_comm.
+ do 2 rewrite Nat.add_assoc.
+ replace r with (r * 1) at 3 by flia.
+ do 2 rewrite <- Nat.mul_add_distr_l.
+ rewrite Nat.add_comm, Nat.add_assoc, Nat.add_shuffle0.
  rewrite Nat_sqr_sub; [ | flia Hr ].
- rewrite Nat.mul_1_r, Nat.pow_1_l.
+ rewrite Nat.mul_1_r, Nat.pow_1_l; subst ZZZ.
+...
+ rewrite <- Nat.mul_assoc.
+ rewrite <- Nat.add_sub_swap; [ | admit ].
+...
+ rewrite Nat.add_sub_swap.
+ rewrite Nat.add_comm.
+ rewrite <- Nat.add_sub_assoc; [ | admit ].
+ rewrite <- Nat.mul_sub_distr_l, Nat.add_comm.
 ...
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
