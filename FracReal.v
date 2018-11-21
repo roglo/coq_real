@@ -642,6 +642,19 @@ induction n; intros.
    replace (r * r) with (r ^ 2) by (cbn; flia).
    rewrite Nat.pow_add_r, Nat.mul_assoc.
    apply Nat.mul_le_mono_r.
+rewrite Nat.mul_sub_distr_r.
+apply Nat.le_add_le_sub_r.
+...
+   rewrite Nat.add_1_r.
+   destruct b.
+   -rewrite Nat.mul_1_l, Nat.sub_0_r, Nat.add_0_l.
+    destruct (zerop n) as [Hn| Hn]; [ subst n | ].
+    +now rewrite Nat.add_0_l, Nat.pow_0_r, Nat.mul_1_r.
+    +destruct r; [ easy | cbn ].
+     apply Nat.add_le_mono.
+     *apply Nat.lt_le_incl, Nat.pow_gt_lin_r; flia Hr.
+     *replace 2 with (1 * 2) by easy.
+      apply Nat.mul_le_mono; [ flia Hr | ].
 ...
  rewrite <- Nat_sub_sub_assoc.
 ...
