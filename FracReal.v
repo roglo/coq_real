@@ -538,7 +538,9 @@ Theorem summation_id_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
       ((b * r ^ (n + 2) - (b - 1) * r ^ (n + 1) - (b + n + 1) * r + (b + n))
       // (r ^ (b + n) * (r - 1) ^ 2)))%NQ.
 Proof.
+(* marche pas pour b=0 *)
 intros * Hr.
+...
 revert b.
 induction n; intros.
 -rewrite Nat.add_0_r, Nat.add_0_l, Nat.pow_1_r, summation_only_one.
@@ -582,8 +584,71 @@ induction n; intros.
    -apply Nat.pow_nonzero; flia Hr.
    -apply Nat.pow_nonzero; flia Hr.
  }
-Admitted. (*
+ (* simplification (r-1)² *)
+ symmetry.
+ repeat rewrite <- Nat.mul_assoc.
+ rewrite Nat.mul_comm.
+ repeat rewrite <- Nat.mul_assoc.
+ rewrite Nat.mul_comm.
+ symmetry; rewrite Nat.mul_assoc.
+ f_equal.
+ (* simplification r^{b+n+1} *)
+ symmetry; rewrite Nat.mul_comm.
+ f_equal; [ | f_equal; flia ].
+ (* simplification r^{b+n} *)
+ remember (r ^ (b + n) * ((r - 1) ^ 2 * S (b + n))) as x eqn:Hx.
+ rewrite Nat.mul_comm in Hx; subst x.
+ remember (r ^ S (b + n)) as x eqn:Hx.
+ cbn in Hx; subst x.
+ rewrite Nat.mul_assoc.
+ rewrite <- Nat.mul_add_distr_r; f_equal.
+ (* *)
+ symmetry.
+ rewrite Nat.mul_add_distr_r, Nat.mul_sub_distr_r, Nat.mul_sub_distr_r.
+ do 2 rewrite <- Nat.mul_assoc.
+ replace (r ^ (n + 2) * r) with (r ^ (S n + 2)) by (cbn; flia).
+ do 2 replace (r ^ (n + 1) * r) with (r ^ (S n + 1)) by (cbn; flia).
+ remember (b * r ^ (S n + 2) - (b - 1) * r ^ (S n + 1)) as XXX.
+ rewrite <- Nat.add_assoc.
+ destruct b.
+ +cbn in HeqXXX; subst XXX; cbn.
+  rewrite Nat.mul_1_r.
 ...
+  replace ((r - 1) * (r - 1)) with (r ^ 2 + 1 - 2 * r). 2: {
+    rewrite Nat.mul_sub_distr_r.
+    do 2 rewrite Nat.mul_sub_distr_l.
+    cbn; flia Hr.
+  }
+  rewrite Nat.mul_sub_distr_r.
+  rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+
+...
+
+ rewrite <- Nat.add_sub_swap. 2: {
+   subst XXX.
+   replace (r ^ (S n + 2)) with (r * r ^ (S n + 1)). 2: {
+     cbn; f_equal.
+     now replace (n + 2) with (1 + (n + 1)) by flia.
+   }
+   rewrite Nat.mul_assoc, <- Nat.mul_sub_distr_r.
+   rewrite <- Nat.mul_assoc.
+   apply Nat.mul_le_mono.
+
+
+ }
+ rewrite <- Nat.add_sub_swap. 2: {
+   subst XXX.
+   admit.
+ }
+ rewrite <- Nat.add_sub_assoc. 2: {
+   admit.
+ }
+ symmetry.
+ rewrite <- Nat.add_sub_assoc. 2: {
+   admit.
+ }
+ f_equal.
+ ...
  rewrite Nat.mul_1_r.
  replace (S (b + n)) with (1 + (b + n)) by easy.
  rewrite Nat.pow_add_r, Nat.pow_1_r.
@@ -639,6 +704,7 @@ replace ((r ^ S n - 1) // (r ^ (b + n) * (r - 1)))%NQ with
 rewrite <- NQpair_add_l; f_equal.
 do 2 rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+...
 
 rewrite Nat_sub_sub_assoc. 2: {
   admit.
