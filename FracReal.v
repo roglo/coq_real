@@ -708,15 +708,15 @@ induction n; intros.
       destruct r; [ flia Hr | cbn; flia ].
      *replace (n + 2) with (S (n + 1)) by flia.
       apply Nat.pow_gt_lin_r; flia Hr.
-    +rewrite Nat.mul_comm.
-....
+    +replace (S n + 1) with (n + 2) by flia.
+     rewrite Nat.pow_add_r, Nat.mul_assoc.
      apply Nat.mul_le_mono.
+     *idtac.
+...
      *rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
       cbn; rewrite Nat.add_shuffle0.
       remember (r + r - 1) as x.
       rewrite <- Nat.add_sub_assoc; [ subst x; flia | ].
-
-
       replace (S b) with (S (b * 1)) by flia.
       apply Nat.mul_lt_mono_pos_l.
 ...
