@@ -477,7 +477,6 @@ f_equal; f_equal.
 flia Hin Hj.
 Qed.
 
-(*
 Theorem summation_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
   r ≥ 2
   → (Σ (j = b, b + n), (1 // r ^ j) =
@@ -532,40 +531,89 @@ induction n; intros.
  }
  now rewrite Nat.mul_comm.
 Qed.
-*)
 
-(* à mettre dans Misc.v *)
-Theorem Nat_sqr_sub : ∀ a b, b ≤ a → (a - b) ^ 2 = a ^ 2 + b ^ 2 - 2 * a * b.
+Theorem summation_id_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
+  r ≥ 2
+  → (Σ (i = b, b + n), (i // r ^ i) =
+      ((b * r ^ (n + 2) - (b - 1) * r ^ (n + 1) - (b + n + 1) * r + (b + n))
+      // (r ^ (b + n) * (r - 1) ^ 2)))%NQ.
 Proof.
-intros * Hba.
-cbn.
-do 3 rewrite Nat.mul_1_r.
-rewrite Nat.add_0_r.
-rewrite Nat.mul_sub_distr_l.
-do 2 rewrite Nat.mul_sub_distr_r.
-rewrite Nat.mul_add_distr_r.
-rewrite Nat_sub_sub_swap.
-rewrite Nat_sub_sub_assoc; cycle 1. {
-  split; [ now apply Nat.mul_le_mono_r | ].
-  apply (le_trans _ (a * a)).
-  -now apply Nat.mul_le_mono_l.
-  -apply Nat.le_add_r.
-}
-rewrite Nat.sub_add_distr.
-now replace (b * a) with (a * b) by apply Nat.mul_comm.
+intros * Hr.
+revert b.
+induction n; intros.
+-rewrite Nat.add_0_r, Nat.add_0_l, Nat.pow_1_r, summation_only_one.
+ rewrite <- Nat.sub_add_distr.
+ destruct (zerop b) as [Hb| Hb]; [ now subst b | ].
+ replace ((b - 1) * r + (b + 1) * r) with (b * (2 * r)). 2: {
+   rewrite Nat.mul_sub_distr_r, Nat.mul_add_distr_r.
+   rewrite <- Nat.add_sub_swap; [ flia | now apply Nat.mul_le_mono_r ].
+ }
+ replace b with (b * 1) at 5 by flia.
+ rewrite <- Nat.mul_sub_distr_l, <- Nat.mul_add_distr_l.
+ rewrite <- Nat.add_sub_swap. 2: {
+   replace (r ^ 2) with (r * r) by (cbn; flia).
+   now apply Nat.mul_le_mono_r.
+ }
+ replace 1 with (1 ^ 2) at 2 by easy.
+ replace (2 * r) with (2 * r * 1) by flia.
+ rewrite <- Nat_sqr_sub; [ | flia Hr ].
+ rewrite <- NQmul_pair by (apply Nat.pow_nonzero; flia Hr).
+ rewrite NQpair_diag by (apply Nat.pow_nonzero; flia Hr).
+ now rewrite NQmul_1_r.
+-replace (b + S n) with (S (b + n)) at 1 by flia.
+ rewrite summation_split_last; [ | flia ].
+ rewrite IHn.
+ rewrite NQadd_pair; cycle 1. {
+   intros H; apply Nat.eq_mul_0 in H.
+   destruct H as [H| H].
+   -destruct r; [ easy | now apply Nat.pow_nonzero in H ].
+   -apply Nat.pow_nonzero in H; [ easy | flia Hr ].
+ } {
+   destruct r; [ easy | now apply Nat.pow_nonzero ].
+ }
+ apply NQeq_pair. {
+   apply Nat.neq_mul_0; split.
+   -apply Nat.neq_mul_0; split.
+    +destruct r; [ easy | pauto ].
+    +apply Nat.pow_nonzero; flia Hr.
+   -apply Nat.pow_nonzero; flia Hr.
+ } {
+   apply Nat.neq_mul_0; split.
+   -apply Nat.pow_nonzero; flia Hr.
+   -apply Nat.pow_nonzero; flia Hr.
+ }
+...
+ rewrite Nat.mul_1_r.
+ replace (S (b + n)) with (1 + (b + n)) by easy.
+ rewrite Nat.pow_add_r, Nat.pow_1_r.
+ rewrite Nat.mul_assoc, Nat.mul_comm.
+ rewrite <- Nat.mul_add_distr_l.
+ rewrite <- Nat.mul_assoc.
+ rewrite <- NQmul_pair; cycle 1. {
+   destruct r; [ easy | pauto ].
+ } {
+   intros H; apply Nat.eq_mul_0 in H.
+   destruct H as [H| H]; [ flia Hr H | ].
+   apply Nat.eq_mul_0 in H.
+   destruct H as [H| H]; [ flia Hr H | ].
+   destruct r; [ easy | ].
+   now apply Nat.pow_nonzero in H.
+ }
+ rewrite NQpair_diag, NQmul_1_l; cycle 1. {
+   destruct r; [ easy | pauto ].
+ }
+ f_equal; [ | apply Nat.mul_comm ].
+ rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+ rewrite Nat.add_sub_assoc; [ | flia Hr ].
+ rewrite Nat.sub_add; cycle 1. {
+   replace r with (1 * r) at 1 by flia.
+   apply Nat.mul_le_mono_r.
+   apply Nat_pow_ge_1; flia Hr.
+ }
+ now rewrite Nat.mul_comm.
 Qed.
 
-(* à mettre dans Misc.v *)
-Theorem Nat_sqr_sub_sqr : ∀ a b, a ^ 2 - b ^ 2 = (a + b) * (a - b).
-Proof.
-intros.
-rewrite Nat.mul_sub_distr_l.
-do 2 rewrite Nat.mul_add_distr_r.
-rewrite Nat.sub_add_distr.
-replace (a * a) with (a ^ 2) by (cbn; flia).
-rewrite Nat.mul_comm, Nat.add_sub.
-f_equal; cbn; flia.
-Qed.
+...
 
 Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
   r ≥ 2
@@ -574,6 +622,14 @@ Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
          b + n + 1) //
         (r ^ (b + n) * (r - 1) ^ 2))%NQ.
 Proof.
+intros * Hr.
+rewrite summation_eq_compat with (h := λ i, (i // r ^ i + 1 // r ^ i)%NQ);
+  [ | intros i Hi; apply NQpair_add_l ].
+rewrite summation_add_distr.
+rewrite summation_inv_pow; [ | easy ].
+...
+...
+(* version directe ; chiante, pas finie, mais autre piste envisagée *)
 intros * Hr.
 revert b.
 induction n; intros.
@@ -633,6 +689,23 @@ induction n; intros.
  rewrite <- Nat.pow_succ_r; [ | flia ].
  rewrite <- Nat.add_succ_l.
  remember (XXX - b * r ^ (S n + 1)) as YYY; subst XXX.
+(* autre piste envisagée *)
+(**)
+ do 7 rewrite <- Nat.add_assoc.
+ rewrite <- Nat.add_sub_swap; cycle 1. {
+   subst YYY.
+   apply Nat.le_add_le_sub_r.
+   replace (S n + 2) with (1 + (n + 2)) by flia.
+   replace (S n + 1) with (n + 2) by flia.
+   remember (n + 2) as x; rewrite Nat.pow_add_r; subst x.
+   rewrite Nat.pow_1_r.
+   admit.
+ }
+ rewrite <- Nat.add_sub_swap; cycle 1. {
+   subst YYY.
+   admit.
+ }
+...
  rewrite Nat.mul_comm.
  remember ((r - 1) ^ 2 * (b + n + 2)) as x.
  rewrite Nat.mul_comm in Heqx; subst x.

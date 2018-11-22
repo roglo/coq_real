@@ -404,6 +404,37 @@ induction n; intros.
   now f_equal.
 Qed.
 
+Theorem Nat_sqr_sub : ∀ a b, b ≤ a → (a - b) ^ 2 = a ^ 2 + b ^ 2 - 2 * a * b.
+Proof.
+intros * Hba.
+cbn.
+do 3 rewrite Nat.mul_1_r.
+rewrite Nat.add_0_r.
+rewrite Nat.mul_sub_distr_l.
+do 2 rewrite Nat.mul_sub_distr_r.
+rewrite Nat.mul_add_distr_r.
+rewrite Nat_sub_sub_swap.
+rewrite Nat_sub_sub_assoc; cycle 1. {
+  split; [ now apply Nat.mul_le_mono_r | ].
+  apply (le_trans _ (a * a)).
+  -now apply Nat.mul_le_mono_l.
+  -apply Nat.le_add_r.
+}
+rewrite Nat.sub_add_distr.
+now replace (b * a) with (a * b) by apply Nat.mul_comm.
+Qed.
+
+Theorem Nat_sqr_sub_sqr : ∀ a b, a ^ 2 - b ^ 2 = (a + b) * (a - b).
+Proof.
+intros.
+rewrite Nat.mul_sub_distr_l.
+do 2 rewrite Nat.mul_add_distr_r.
+rewrite Nat.sub_add_distr.
+replace (a * a) with (a ^ 2) by now cbn; rewrite Nat.mul_1_r.
+rewrite Nat.mul_comm, Nat.add_sub.
+now f_equal; cbn; rewrite Nat.mul_1_r.
+Qed.
+
 Theorem Nat_pow_ge_1 : ∀ a b, 0 < a → 1 ≤ a ^ b.
 Proof.
 intros * Ha.
