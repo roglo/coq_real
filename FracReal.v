@@ -582,6 +582,7 @@ induction n; intros.
    -apply Nat.pow_nonzero; flia Hr.
    -apply Nat.pow_nonzero; flia Hr.
  }
+Admitted. (*
 ...
  rewrite Nat.mul_1_r.
  replace (S (b + n)) with (1 + (b + n)) by easy.
@@ -614,6 +615,7 @@ induction n; intros.
 Qed.
 
 ...
+*)
 
 Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
   r ≥ 2
@@ -622,12 +624,71 @@ Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
          b + n + 1) //
         (r ^ (b + n) * (r - 1) ^ 2))%NQ.
 Proof.
+(* version utilisant summation_id_inv_pow *)
 intros * Hr.
 rewrite summation_eq_compat with (h := λ i, (i // r ^ i + 1 // r ^ i)%NQ);
   [ | intros i Hi; apply NQpair_add_l ].
 rewrite summation_add_distr.
 rewrite summation_inv_pow; [ | easy ].
-...
+rewrite summation_id_inv_pow; [ | easy ].
+remember S as f; cbn; subst f.
+replace ((r ^ S n - 1) // (r ^ (b + n) * (r - 1)))%NQ with
+   (((r ^ S n - 1) * (r - 1)) // (r ^ (b + n) * (r - 1) ^ 2))%NQ. 2: {
+  admit.
+}
+rewrite <- NQpair_add_l; f_equal.
+do 2 rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+
+rewrite Nat_sub_sub_assoc. 2: {
+  admit.
+}
+rewrite Nat_sub_sub_assoc. 2: {
+  admit.
+}
+rewrite Nat.add_sub_assoc. 2: {
+  admit.
+}
+rewrite <- Nat.add_sub_swap. 2: {
+  admit.
+}
+rewrite <- Nat.add_sub_swap. 2: {
+  admit.
+}
+rewrite <- Nat.add_sub_swap. 2: {
+  admit.
+}
+rewrite <- Nat.add_sub_swap. 2: {
+  admit.
+}
+rewrite <- Nat.add_sub_swap. 2: {
+  admit.
+}
+rewrite <- Nat.add_sub_swap. 2: {
+  admit.
+}
+rewrite <- Nat.add_sub_swap. 2: {
+  admit.
+}
+rewrite <- Nat.add_sub_swap. 2: {
+  admit.
+}
+rewrite <- Nat.add_sub_swap. 2: {
+  admit.
+}
+rewrite <- Nat.add_sub_swap. 2: {
+  admit.
+}
+rewrite <- Nat.add_sub_swap. 2: {
+  admit.
+}
+rewrite Nat.add_sub_assoc. 2: {
+  admit.
+}
+do 4 rewrite <- Nat.sub_add_distr.
+symmetry; rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+
+
 ...
 (* version directe ; chiante, pas finie, mais autre piste envisagée *)
 intros * Hr.
