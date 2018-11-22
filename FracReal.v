@@ -711,22 +711,39 @@ induction n; intros.
     +replace (S n + 1) with (n + 2) by flia.
      rewrite Nat.pow_add_r, Nat.mul_assoc.
      apply Nat.mul_le_mono.
-     *idtac.
-...
      *rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-      cbn; rewrite Nat.add_shuffle0.
-      remember (r + r - 1) as x.
-      rewrite <- Nat.add_sub_assoc; [ subst x; flia | ].
-      replace (S b) with (S (b * 1)) by flia.
-      apply Nat.mul_lt_mono_pos_l.
-...
-    rewrite Nat_sqr_sub; [ | flia Hr ].
-    rewrite Nat.pow_1_l, Nat.mul_1_r.
-...
- rewrite Nat.add_sub_swap.
- rewrite Nat.add_comm.
- rewrite <- Nat.add_sub_assoc; [ | admit ].
- rewrite <- Nat.mul_sub_distr_l, Nat.add_comm.
+      rewrite Nat.add_sub_swap; cycle 1. {
+        replace (S b) with (S b * 1) at 1 by flia.
+        apply Nat.mul_le_mono_l; flia Hr.
+      }
+      replace (S b) with (S b * 1) at 3 by flia.
+      rewrite <- Nat.mul_sub_distr_l.
+      rewrite Nat.mul_add_distr_r, <- Nat.add_assoc.
+      apply Nat.add_le_mono.
+     --replace (S b) with (S b * 1) at 1 by flia.
+       rewrite <- Nat.mul_assoc.
+       apply Nat.mul_le_mono_l.
+       replace 1 with (1 * 1) at 1 by easy.
+       apply Nat.mul_le_mono; [ flia Hr | ].
+       apply Nat_pow_ge_1; flia Hr.
+     --rewrite <- Nat.pow_succ_r; [ | flia ].
+       replace (n + 2) with (S (S n)) by flia.
+       apply Nat.pow_gt_lin_r; flia Hr.
+     *destruct r; [ easy | ].
+      rewrite <- Nat.add_sub_assoc; [ | flia Hr ].
+      rewrite Nat.sub_succ, Nat.sub_0_r.
+      cbn; rewrite Nat.mul_1_r.
+      apply -> Nat.succ_le_mono.
+      apply Nat.add_le_mono_l.
+      replace r with (r * 1) at 1 by flia.
+      apply Nat.mul_le_mono_l; flia Hr.
+ }
+ rewrite <- Nat.mul_sub_distr_l.
+ replace (r * r) with (r ^ 2) by (cbn; flia).
+ rewrite Nat_sqr_sub_sqr.
+ replace (r + (r - 1)) with (2 * r - 1) by flia.
+ replace (r - (r - 1)) with 1 by flia Hr.
+ rewrite Nat.mul_1_r.
 ...
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
