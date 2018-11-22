@@ -744,6 +744,18 @@ induction n; intros.
  replace (r + (r - 1)) with (2 * r - 1) by flia.
  replace (r - (r - 1)) with 1 by flia Hr.
  rewrite Nat.mul_1_r.
+ replace (S n) with (n + 1) by flia.
+ repeat rewrite Nat.mul_add_distr_r.
+ repeat rewrite Nat.mul_add_distr_l.
+ repeat rewrite Nat.mul_sub_distr_l.
+ do 4 rewrite Nat.mul_1_r.
+ repeat rewrite Nat.mul_assoc.
+ repeat rewrite Nat.add_assoc.
+ rewrite Nat.add_sub_assoc.
+ rewrite Nat.add_sub_assoc.
+ replace (b * 2 * r) with (2 * b * r) by flia.
+ replace (b * n * 2) with (2 * b * n) by flia.
+ replace (2 * 2 * r) with (4 * r) by flia.
 ...
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
