@@ -680,7 +680,6 @@ induction n; intros.
 Qed.
 
 ...
-*)
 
 Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
   r ≥ 2
