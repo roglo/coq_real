@@ -81,6 +81,13 @@ Theorem last_cons_cons : ∀ A (a b : A) al d,
   List.last (a :: b :: al) d = List.last (b :: al) d.
 Proof. easy. Qed.
 
+(*
+Definition last_cons_cons₁ : ∀ A (a b : A) al d,
+  List.last (a :: b :: al) d = List.last (b :: al) d
+:=
+  λ _ _ _ _ _, eq_refl.
+*)
+
 Theorem last_cons_ne : ∀ A (a d : A) al,
   a ≠ d
   → List.last al d ≠ d
