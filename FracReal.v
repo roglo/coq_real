@@ -708,13 +708,18 @@ replace 1%NQ with (r // 1 * 1 // r)%NQ at 1. 2: {
 }
 rewrite NQmul_1_l.
 rewrite <- NQmul_assoc, summation_mul_distr_l.
-rewrite summation_eq_compat with (h := λ i, ((i + 1) // r ^ (i + 1))%NQ). 2: {
+set (g i := (i // r ^ i)%NQ).
+rewrite summation_eq_compat with (h := λ i, g (S i)). 2: {
   intros i Hi.
   remember NQ_of_pair as f; cbn; subst f.
   rewrite NQmul_pair; [ | flia Hr | apply Nat_pow_neq_0; flia Hr ].
+  unfold g.
   rewrite Nat.mul_1_l; f_equal.
-  now rewrite Nat.add_1_r.
+  apply Nat.add_1_r.
 }
+rewrite <- summation_succ_succ; subst g.
+replace (S (b + n)) with (S b + n) by easy.
+rewrite summation_id_inv_pow; [ | easy ].
 ...
 
 Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
