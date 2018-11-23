@@ -874,6 +874,7 @@ eapply NQle_lt_trans.
  apply Hu.
 -apply NQlt_pair. 1, 2: now apply Nat_pow_neq_0.
  rewrite Nat.mul_1_r.
+...
  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
  rewrite <- Nat.add_sub_swap. 2: {
    rewrite Nat.mul_comm.
@@ -883,6 +884,7 @@ eapply NQle_lt_trans.
  replace rad with (1 * rad) at 2 by flia.
  rewrite <- Nat.mul_add_distr_r, <- Nat.mul_assoc.
  replace (rad * rad ^ S k) with (rad ^ S (S k)) by (cbn; flia).
+...
  eapply Nat.add_lt_mono_r.
  +rewrite Nat.sub_add.
   *rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
