@@ -806,7 +806,13 @@ destruct (zerop l) as [Hl| Hl].
     apply Nat.mul_le_mono_l; flia Hr.
   }
   rewrite <- Nat_sub_sub_distr.
-  *apply Nat.lt_le_incl, Nat.sub_lt.
+  *apply Nat.lt_le_incl, Nat.sub_lt. 2: {
+     apply Nat.lt_add_lt_sub_r; rewrite Nat.add_0_l.
+     rewrite Nat.mul_add_distr_r.
+     destruct rad; [ easy | ].
+     rewrite Nat.mul_comm; cbn; flia.
+   }
+   apply Nat.le_sub_le_add_r.
 ...
   rewrite <- NQpair_add_l, <- NQpair_mul_r.
   apply NQle_pair; [ pauto | pauto | ].
