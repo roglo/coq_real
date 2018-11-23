@@ -619,8 +619,57 @@ induction n; intros.
  do 2 rewrite <- Nat.mul_assoc.
  replace (r ^ (n + 1) * r) with (r ^ (S n + 1)) by (cbn; flia).
  remember ((b * (r - 1) + 1) * r ^ (S n + 1)) as XXX.
+ replace (r * r) with (r ^ 2) by (cbn; flia).
+ replace (S (b + n)) with (b + n + 1) by flia.
+ rewrite Nat.add_shuffle0, Nat.mul_comm.
+Search (_ - (_ - _)).
+rewrite <- Nat_sub_sub_distr.
+...
+ rewrite Nat_sub_sub_assoc.
 ...
  rewrite <- Nat.add_assoc.
+ rewrite <- Nat.add_sub_swap. 2: {
+   subst XXX.
+   replace (S n + 1) with (n + 2) by flia.
+   rewrite Nat.pow_add_r, Nat.mul_assoc.
+   apply Nat.mul_le_mono_r.
+   rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+   rewrite <- Nat.add_assoc.
+   apply Nat.add_le_mono.
+   -replace b with (b * (1 * 1)) at 1 by flia.
+    rewrite <- Nat.mul_assoc.
+    apply Nat.mul_le_mono_l.
+    apply Nat.mul_le_mono; [ flia Hr | ].
+    apply Nat_pow_ge_1; flia Hr.
+   -rewrite Nat.add_1_r.
+    apply Nat.pow_gt_lin_r; flia Hr.
+ }
+ rewrite <- Nat.add_sub_swap. 2: {
+   subst XXX.
+   rewrite Nat.pow_add_r, Nat.pow_1_r, Nat.mul_assoc.
+   apply Nat.mul_le_mono_r.
+   rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+   rewrite <- Nat.add_assoc.
+   apply Nat.add_le_mono.
+   -replace b with (b * (1 * 1)) at 1 by flia.
+    rewrite <- Nat.mul_assoc.
+    apply Nat.mul_le_mono_l.
+    apply Nat.mul_le_mono; [ flia Hr | ].
+    apply Nat_pow_ge_1; flia Hr.
+   -rewrite Nat.add_1_r.
+    apply Nat.pow_gt_lin_r; flia Hr.
+ }
+ rewrite Nat.add_assoc.
+ replace (S (b + n)) with (b + n + 1) by flia.
+ remember ((b + n) * r) as x; rewrite Nat.mul_comm; subst x.
+...
+ rewrite Nat.add_sub_swap.
+
+ rewrite <- Nat.add_sub_assoc. 2: {
+   apply Nat.mul_le_mono_l.
+...
+ rewrite <- Nat.mul_sub_distr_l.
+...
  destruct b.
  +cbn in HeqXXX; subst XXX; cbn.
   rewrite Nat.mul_1_r.

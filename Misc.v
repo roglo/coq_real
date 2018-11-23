@@ -134,19 +134,11 @@ replace b with (1 * b) at 1 by apply Nat.mul_1_l.
 now rewrite Nat.div_add.
 Qed.
 
-Theorem Nat_add_le_l : ∀ a b, b ≤ a + b.
+Theorem Nat_le_add_l : ∀ a b, b ≤ a + b.
 Proof.
 intros.
 replace b with (0 + b) at 1 by easy.
 apply Nat.add_le_mono_r.
-apply Nat.le_0_l.
-Qed.
-
-Theorem Nat_add_le_r : ∀ a b, a ≤ a + b.
-Proof.
-intros.
-replace a with (a + 0) at 1 by easy.
-apply Nat.add_le_mono_l.
 apply Nat.le_0_l.
 Qed.
 
@@ -243,6 +235,16 @@ induction b; intros.
  rewrite Nat.sub_succ, H1.
  rewrite Nat.add_succ_r.
  now rewrite Nat.sub_succ.
+Qed.
+
+Theorem Nat_sub_sub_distr : ∀ a b c, c ≤ b ≤ a → a - (b - c) = a - b + c.
+Proof.
+intros.
+rewrite <- Nat.add_sub_swap; [ | easy ].
+apply Nat_sub_sub_assoc.
+split; [ easy | ].
+apply (Nat.le_trans _ a); [ easy | ].
+apply Nat.le_add_r.
 Qed.
 
 Theorem Nat_mod_less_small : ∀ a b,
@@ -383,7 +385,7 @@ induction n; intros.
    destruct Hn as (H2, H3).
    assert (Hba : b ≤ a). {
      eapply Nat.le_trans; [ | apply H2 ].
-     apply Nat_add_le_r.
+     apply Nat.le_add_r.
    }
    split.
    -apply (Nat.add_le_mono_r _ _ b).
@@ -398,7 +400,7 @@ induction n; intros.
  specialize (H1 H); clear H.
  assert (H : b ≤ a). {
    apply (Nat.mul_le_mono_pos_l _ _ (S n)); [ apply Nat.lt_0_succ | ].
-   eapply le_trans; [ apply Hn | apply Nat_add_le_r ].
+   eapply le_trans; [ apply Hn | apply Nat.le_add_r ].
  }
  destruct b.
  +now do 2 rewrite Nat.mul_0_r in Hn.
