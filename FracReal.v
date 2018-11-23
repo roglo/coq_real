@@ -812,7 +812,6 @@ destruct (zerop l) as [Hl| Hl].
      destruct rad; [ easy | ].
      rewrite Nat.mul_comm; cbn; flia.
    }
-(**)
    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
    replace (n + l) with ((n + l) * 1) at 2 by flia.
    rewrite Nat.add_sub_swap; [ | now apply Nat.mul_le_mono_l ].
@@ -834,75 +833,37 @@ destruct (zerop l) as [Hl| Hl].
   *split.
   --destruct rad; [ easy | ].
     rewrite Nat.mul_comm; cbn; flia.
-  --idtac.
-...
-  --rewrite Nat.mul_add_distr_l.
-    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+  --destruct l; [ easy | cbn ].
+    rewrite Nat.mul_comm, <- Nat.mul_assoc.
+    apply Nat.mul_le_mono_l.
+    rewrite Nat.mul_add_distr_l.
+    rewrite <- Nat.add_assoc.
     apply Nat.add_le_mono.
-   ++destruct l; [ easy | cbn ].
-     rewrite Nat.mul_comm, <- Nat.mul_assoc.
-     apply Nat.mul_le_mono_l.
-...
-     destruct n; [ easy | cbn ].
-     replace (S (n + S l)) with (S (S l) + n) by flia.
-     rewrite Nat.mul_add_distr_l.
-     apply Nat.add_le_mono.
-    **apply (le_trans _ (rad ^ l)).
-    ---destruct rad; [ easy | cbn ].
-    **apply (le_trans _ (rad ^ l)); [ now apply Nat.pow_gt_lin_r | ].
-      replace (rad ^ l) with (rad ^ l * 1) at 1 by flia.
-      apply Nat.mul_le_mono_l; flia Hr.
-    **idtac.
-...
-    **destruct rad as [| rr]; [ easy | cbn ].
-      destruct rr; [ flia Hr | ].
-      rewrite Nat.sub_0_r.
-      rewrite Nat.mul_succ_r.
-      destruct n.
-      cbn.
-...
-    **rewrite Nat.mul_comm.
-      replace (S n) with (S n * 1) by flia.
-      apply Nat.mul_le_mono.
-    ---destruct rad as [| rr]; [ easy | cbn ].
-       rewrite Nat.sub_0_r.
-       destruct rr; [ flia Hr | ].
-       rewrite Nat.mul_comm; cbn.
-...
-   apply Nat.le_sub_le_add_r.
-   destruct l; [ easy | ].
-   cbn; rewrite Nat.mul_comm.
-   rewrite <- Nat.mul_assoc.
-...
-   apply Nat.mul_le_mono_l.
-...
-  rewrite <- NQpair_add_l, <- NQpair_mul_r.
-  apply NQle_pair; [ pauto | pauto | ].
-  rewrite Nat.mul_shuffle0.
-  remember (u k * rad ^ k) as x.
-  rewrite Nat.mul_comm; subst x.
-  rewrite <- Nat.mul_assoc, <- Nat.pow_add_r.
-  apply Nat.mul_le_mono.
-  *replace k with (n + (k - n)) by flia Hk.
-   rewrite Nat.mul_comm; apply Hu.
-  *apply Nat.pow_le_mono_r; [ easy | flia ].
- +rewrite <- summation_mul_distr_l.
-...
-  rewrite summation_add_distr.
-  rewrite <- Nat.add_sub_assoc; [ | easy ].
-  replace (n + l - 1) with (n + (l - 1)) by flia Hl.
-...
-  rewrite summation_inv_pow; [ | easy ].
-...
-  rewrite summation_id_div_pow.
-...
+   ++rewrite Nat.mul_comm.
+     replace n with (n * 1 * 1) at 1 by flia.
+     apply Nat.mul_le_mono; [ apply Nat.mul_le_mono_l; flia Hr | ].
+     now apply Nat_pow_ge_1.
+   ++replace (rad ^ l * rad) with (rad ^ S l) by (cbn; flia).
+     rewrite Nat.add_1_r.
+     now apply Nat.pow_gt_lin_r.
+Qed.
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
   (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
 Proof.
 intros.
-unfold B.
-Search (1 // _ ^ _)%NQ.
+specialize radix_ge_2 as Hr.
+eapply NQle_lt_trans.
+-apply B_gen_upper_bound. {
+   unfold min_n.
+   apply Nat.neq_mul_0.
+   split; [ easy | flia ].
+ } {
+   unfold min_n.
+   destruct rad; [ easy | cbn; flia ].
+ }
+ intros j.
+ admit.
 ...
 
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
