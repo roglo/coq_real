@@ -849,20 +849,45 @@ destruct (zerop l) as [Hl| Hl].
 Qed.
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
-  (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
+  (∀ j, u (i + j) ≤ (i + j + 1) * (rad - 1) ^ 2)
+  → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
 Proof.
-intros.
+intros * Hu.
 specialize radix_ge_2 as Hr.
+remember (min_n i k) as n eqn:Hn.
 eapply NQle_lt_trans.
 -apply B_gen_upper_bound. {
-   unfold min_n.
+   subst n; unfold min_n.
    apply Nat.neq_mul_0.
    split; [ easy | flia ].
  } {
-   unfold min_n.
+   subst n; unfold min_n.
    destruct rad; [ easy | cbn; flia ].
  }
  intros j.
+ replace (n + j) with (i + (n + j - i)). 2: {
+   rewrite Nat.add_comm.
+   apply Nat.sub_add.
+   subst n; unfold min_n.
+   destruct rad; [ easy | cbn; flia ].
+ }
+ apply Hu.
+-apply NQlt_pair. 1, 2: now apply Nat_pow_neq_0.
+ rewrite Nat.mul_1_r.
+ rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+ rewrite <- Nat.add_sub_swap. 2: {
+   rewrite Nat.mul_comm.
+   destruct rad; [ easy | cbn; flia ].
+ }
+ rewrite Nat.mul_sub_distr_r.
+ replace rad with (1 * rad) at 2 by flia.
+ rewrite <- Nat.mul_add_distr_r, <- Nat.mul_assoc.
+ replace (rad * rad ^ S k) with (rad ^ S (S k)) by (cbn; flia).
+ eapply Nat.add_lt_mono_r.
+ +rewrite Nat.sub_add.
+  *rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+   apply Nat.add_lt_mono.
+  --idtac.
 ...
 
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
