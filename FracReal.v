@@ -817,8 +817,58 @@ destruct (zerop l) as [Hl| Hl].
    replace (n + l) with ((n + l) * 1) at 2 by flia.
    rewrite Nat.add_sub_swap; [ | now apply Nat.mul_le_mono_l ].
    rewrite <- Nat.mul_sub_distr_l.
+   rewrite Nat.mul_add_distr_l.
+   apply Nat.add_le_mono.
+  --rewrite Nat.mul_assoc.
+    apply Nat.mul_le_mono_r.
+    destruct n; [ easy | ].
+    rewrite Nat.mul_comm; cbn.
+    replace (S (n + l)) with (S l + n) by flia.
+    apply Nat.add_le_mono; [ now apply Nat.pow_gt_lin_r | ].
+    replace n with (n * 1) at 1 by flia.
+    apply Nat.mul_le_mono_l.
+    now apply Nat_pow_ge_1.
+  --replace rad with (1 * rad) at 1 by flia.
+    apply Nat.mul_le_mono_r.
+    now apply Nat_pow_ge_1.
+  *split.
+  --destruct rad; [ easy | ].
+    rewrite Nat.mul_comm; cbn; flia.
+  --idtac.
 ...
-
+  --rewrite Nat.mul_add_distr_l.
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+    apply Nat.add_le_mono.
+   ++destruct l; [ easy | cbn ].
+     rewrite Nat.mul_comm, <- Nat.mul_assoc.
+     apply Nat.mul_le_mono_l.
+...
+     destruct n; [ easy | cbn ].
+     replace (S (n + S l)) with (S (S l) + n) by flia.
+     rewrite Nat.mul_add_distr_l.
+     apply Nat.add_le_mono.
+    **apply (le_trans _ (rad ^ l)).
+    ---destruct rad; [ easy | cbn ].
+    **apply (le_trans _ (rad ^ l)); [ now apply Nat.pow_gt_lin_r | ].
+      replace (rad ^ l) with (rad ^ l * 1) at 1 by flia.
+      apply Nat.mul_le_mono_l; flia Hr.
+    **idtac.
+...
+    **destruct rad as [| rr]; [ easy | cbn ].
+      destruct rr; [ flia Hr | ].
+      rewrite Nat.sub_0_r.
+      rewrite Nat.mul_succ_r.
+      destruct n.
+      cbn.
+...
+    **rewrite Nat.mul_comm.
+      replace (S n) with (S n * 1) by flia.
+      apply Nat.mul_le_mono.
+    ---destruct rad as [| rr]; [ easy | cbn ].
+       rewrite Nat.sub_0_r.
+       destruct rr; [ flia Hr | ].
+       rewrite Nat.mul_comm; cbn.
+...
    apply Nat.le_sub_le_add_r.
    destruct l; [ easy | ].
    cbn; rewrite Nat.mul_comm.
