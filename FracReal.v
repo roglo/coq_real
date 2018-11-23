@@ -790,6 +790,23 @@ destruct (zerop l) as [Hl| Hl].
   rewrite Nat.mul_comm, Nat.mul_assoc.
   rewrite <- Nat.pow_add_r.
   replace (i + (n - i - 1)) with (n - 1) by flia Hi.
+  replace (n + l - 1) with (n - 1 + l) by flia Hn.
+  rewrite Nat.pow_add_r.
+  do 3 rewrite <- Nat.mul_assoc.
+  apply Nat.mul_le_mono_l.
+  rewrite Nat.mul_assoc.
+  rewrite Nat.mul_shuffle0.
+  apply Nat.mul_le_mono_r.
+  do 2 rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+  rewrite Nat.add_sub_assoc; [ | easy ].
+  rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+  rewrite Nat.mul_comm.
+  rewrite Nat.sub_add. 2: {
+    replace (rad ^ l) with (rad ^ l * 1) at 1 by flia.
+    apply Nat.mul_le_mono_l; flia Hr.
+  }
+  rewrite <- Nat_sub_sub_distr.
+  *apply Nat.lt_le_incl, Nat.sub_lt.
 ...
   rewrite <- NQpair_add_l, <- NQpair_mul_r.
   apply NQle_pair; [ pauto | pauto | ].
