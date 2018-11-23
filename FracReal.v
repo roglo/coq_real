@@ -812,7 +812,19 @@ destruct (zerop l) as [Hl| Hl].
      destruct rad; [ easy | ].
      rewrite Nat.mul_comm; cbn; flia.
    }
+(**)
+   rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+   replace (n + l) with ((n + l) * 1) at 2 by flia.
+   rewrite Nat.add_sub_swap; [ | now apply Nat.mul_le_mono_l ].
+   rewrite <- Nat.mul_sub_distr_l.
+...
+
    apply Nat.le_sub_le_add_r.
+   destruct l; [ easy | ].
+   cbn; rewrite Nat.mul_comm.
+   rewrite <- Nat.mul_assoc.
+...
+   apply Nat.mul_le_mono_l.
 ...
   rewrite <- NQpair_add_l, <- NQpair_mul_r.
   apply NQle_pair; [ pauto | pauto | ].
