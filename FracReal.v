@@ -740,10 +740,12 @@ Qed.
 
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
   n ≠ 0
+  → i < n
   → (∀ j, u (n + j) ≤ (n + j + 1) * (rad - 1) ^ 2)
   → (B i n u l ≤ (n * (rad - 1) + rad) // rad ^ (n - i - 1))%NQ.
 Proof.
-intros * Hn Hu.
+intros * Hn Hi Hu.
+specialize radix_ge_2 as Hr.
 unfold B.
 destruct (zerop l) as [Hl| Hl].
 -subst l.
@@ -755,10 +757,34 @@ destruct (zerop l) as [Hl| Hl].
  +apply summation_le_compat with
     (g := λ j, (((rad - 1) ^ 2 * rad ^ i) // 1 * (j + 1) // rad ^ j)%NQ).
   intros k Hk.
-...
+  remember Nat.pow as f; cbn; subst f.
+  rewrite <- NQpair_mul_r.
+  apply NQle_pair; [ now apply Nat_pow_neq_0 | now apply Nat_pow_neq_0 | ].
+  apply (Nat.mul_le_mono_pos_l _ _ (rad ^ i)). {
+    now apply Nat.neq_0_lt_0, Nat_pow_neq_0.
+  }
+  do 2 rewrite Nat.mul_assoc.
+  rewrite <- Nat.pow_add_r.
+  replace (i + (k - i)) with k by flia Hi Hk.
+  rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono_l.
+  rewrite Nat.mul_shuffle0, Nat.mul_comm.
+  apply Nat.mul_le_mono_r.
+  rewrite Nat.mul_comm.
+  replace k with (n + (k - n)) by flia Hk.
+  apply Hu.
  +replace (n + l - 1) with (n + (l - 1)) by flia Hl.
   rewrite <- summation_mul_distr_l.
   rewrite summation_succ_inv_pow; [ | easy ].
+  remember Nat.pow as f; cbn; subst f.
+  rewrite Nat.sub_add; [ | easy ].
+  replace (n + (l - 1)) with (n + l - 1) by flia Hl.
+  rewrite Nat.sub_add; [ | flia Hl ].
+  replace (n + l - 1 + 2) with (n + l + 1) by flia Hl.
+  rewrite <- NQpair_mul_r.
+  apply NQle_pair; [ | now apply Nat_pow_neq_0 | ]. {
+    apply Nat.neq_mul_0; split; apply Nat_pow_neq_0; flia Hr.
+  }
 ...
   rewrite <- NQpair_add_l, <- NQpair_mul_r.
   apply NQle_pair; [ pauto | pauto | ].
