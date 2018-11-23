@@ -453,6 +453,13 @@ apply Nat.mul_le_mono_nonneg; [ | easy | apply Nat.le_0_1 | easy ].
 apply Nat.le_0_1.
 Qed.
 
+Theorem Nat_pow_neq_0 : ∀ a b, a ≠ 0 → a ^ b ≠ 0.
+Proof.
+intros * Ha.
+destruct a; [ easy | ].
+now apply Nat.pow_nonzero.
+Qed.
+
 Definition bool_of_sumbool {A B : Prop} (P : sumbool A B) :=
   match P with
   | left _ _ => true

@@ -562,44 +562,30 @@ induction n; intros.
     destruct r; [ easy | ].
     destruct r; [ flia Hr | cbn; flia ].
   }
-  rewrite <- NQmul_pair; cycle 1. {
-    destruct r; [ easy | pauto ].
-  } {
-    destruct r; [ easy | ].
-    rewrite Nat.sub_succ, Nat.sub_0_r.
-    destruct r; [ flia Hr | pauto ].
-  }
+  rewrite <- NQmul_pair by (apply Nat_pow_neq_0; flia Hr).
   rewrite NQpair_diag; [ now rewrite NQmul_1_r | ].
-  destruct r; [ easy | ].
-  rewrite Nat.sub_succ, Nat.sub_0_r.
-  destruct r; [ flia Hr | pauto ].
+  apply Nat_pow_neq_0; flia Hr.
 -replace (b + S n) with (S (b + n)) at 1 by flia.
  rewrite summation_split_last; [ | flia ].
  rewrite IHn.
  rewrite NQadd_pair; cycle 1. {
-   intros H; apply Nat.eq_mul_0 in H.
-   destruct H as [H| H].
-   -destruct r; [ easy | now apply Nat.pow_nonzero in H ].
-   -apply Nat.pow_nonzero in H; [ easy | flia Hr ].
+   apply Nat.neq_mul_0.
+   split; apply Nat_pow_neq_0; flia Hr.
  } {
-   destruct r; [ easy | now apply Nat.pow_nonzero ].
+   apply Nat_pow_neq_0; flia Hr.
  }
  apply NQeq_pair. {
    apply Nat.neq_mul_0; split.
-   -apply Nat.neq_mul_0; split.
-    +destruct r; [ easy | pauto ].
-    +apply Nat.pow_nonzero; flia Hr.
+   -apply Nat.neq_mul_0; split; apply Nat_pow_neq_0; flia Hr.
    -apply Nat.pow_nonzero; flia Hr.
  } {
-   apply Nat.neq_mul_0; split.
-   -apply Nat.pow_nonzero; flia Hr.
-   -apply Nat.pow_nonzero; flia Hr.
+   apply Nat.neq_mul_0; split; apply Nat_pow_neq_0; flia Hr.
  }
  (* simplification (r-1)² *)
  symmetry.
- repeat rewrite <- Nat.mul_assoc.
+ do 3 rewrite <- Nat.mul_assoc.
  rewrite Nat.mul_comm.
- repeat rewrite <- Nat.mul_assoc.
+ do 2 rewrite <- Nat.mul_assoc.
  rewrite Nat.mul_comm.
  symmetry; rewrite Nat.mul_assoc.
  f_equal.
@@ -707,6 +693,29 @@ induction n; intros.
   *rewrite Nat.add_1_r.
    apply Nat.pow_gt_lin_r; flia Hr.
 Qed.
+
+Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
+  r ≥ 2
+  → (Σ (i = b, b + n), ((i + 1) // r ^ i) =
+       (((b + 1) * (r - 1) + 1) * r ^ (n + 1) - (b + n + 2) * r + (b + n + 1))
+       // (r ^ (b + n) * (r - 1) ^ 2))%NQ.
+Proof.
+(* version utilisant seulement summation_id_inv_pow *)
+intros * Hr.
+apply (NQmul_cancel_l 1%NQ); [ easy | ].
+replace 1%NQ with (r // 1 * 1 // r)%NQ at 1. 2: {
+  now rewrite NQmul_inv_pair by flia Hr.
+}
+rewrite NQmul_1_l.
+rewrite <- NQmul_assoc, summation_mul_distr_l.
+rewrite summation_eq_compat with (h := λ i, ((i + 1) // r ^ (i + 1))%NQ). 2: {
+  intros i Hi.
+  remember NQ_of_pair as f; cbn; subst f.
+  rewrite NQmul_pair; [ | flia Hr | apply Nat_pow_neq_0; flia Hr ].
+  rewrite Nat.mul_1_l; f_equal.
+  now rewrite Nat.add_1_r.
+}
+...
 
 Theorem summation_succ_inv_pow (rg := NQ_ord_ring) : ∀ r b n,
   r ≥ 2
