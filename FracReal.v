@@ -785,6 +785,11 @@ destruct (zerop l) as [Hl| Hl].
   apply NQle_pair; [ | now apply Nat_pow_neq_0 | ]. {
     apply Nat.neq_mul_0; split; apply Nat_pow_neq_0; flia Hr.
   }
+  rewrite Nat.mul_shuffle0.
+  do 2 rewrite <- Nat.mul_assoc.
+  rewrite Nat.mul_comm, Nat.mul_assoc.
+  rewrite <- Nat.pow_add_r.
+  replace (i + (n - i - 1)) with (n - 1) by flia Hi.
 ...
   rewrite <- NQpair_add_l, <- NQpair_mul_r.
   apply NQle_pair; [ pauto | pauto | ].
