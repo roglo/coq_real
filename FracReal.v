@@ -863,7 +863,6 @@ eapply NQle_lt_trans.
    destruct rad; [ easy | cbn; flia ].
  }
  intros j.
- admit.
 ...
 
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
