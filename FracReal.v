@@ -874,6 +874,57 @@ eapply NQle_lt_trans.
  apply Hu.
 -apply NQlt_pair. 1, 2: now apply Nat_pow_neq_0.
  rewrite Nat.mul_1_r.
+ (* as said in my paper... but could be proved in a simpler way...*)
+ remember (n - (i + k + 2)) as m eqn:Hm.
+ remember ((rad - 1) * (i + k + 2) + rad) as b eqn:Hb.
+ move b before m.
+ assert (Hnm : n = m + (i + k + 2)). {
+   rewrite Hm; rewrite Nat.sub_add; [ easy | ].
+   subst n; unfold min_n.
+   destruct rad; [ easy | cbn; flia ].
+ }
+ remember (n * (rad - 1) + rad) as x eqn:Hx.
+ rewrite Hnm, Nat.mul_comm in Hx.
+ rewrite Nat.mul_add_distr_l in Hx.
+ rewrite <- Nat.add_assoc in Hx.
+ rewrite <- Hb in Hx; subst x.
+ rewrite Hnm; unfold min_n.
+ replace (m + (i + k + 2) - i - 1) with (m + S k) by flia.
+ rewrite Nat.pow_add_r.
+ apply Nat.mul_lt_mono_pos_r; [ apply Nat.neq_0_lt_0; pauto | ].
+ rewrite Nat.mul_comm.
+ rewrite Hn in Hm; unfold min_n in Hm.
+ replace (i + k + 2) with (1 * (i + k + 2)) in Hm by flia.
+ replace (i + k + 3) with (i + k + 2 + 1) in Hm by flia.
+ rewrite Nat.mul_add_distr_l, Nat.mul_1_r in Hm.
+ rewrite Nat.add_sub_swap in Hm; [ | now apply Nat.mul_le_mono_r ].
+ rewrite <- Nat.mul_sub_distr_r, <- Hb in Hm.
+ subst b.
+(*
+ assert (Hmz : m ≠ 0) by (rewrite Hm, Hb; flia Hr).
+ clear - Hr Hmz.
+*)
+ clear - Hr Hb.
+(**)
+ revert i k Hb.
+ induction m; intros; [ cbn; flia | ].
+ apply (lt_le_trans _ (rad - 1 + rad ^ m + 1)).
+ +cbn; do 2 rewrite <- Nat.add_assoc.
+  apply Nat.add_lt_mono_l.
+  replace (S m) with (m + 1) by flia.
+  rewrite Nat.add_assoc.
+  apply Nat.add_lt_mono_r.
+(* bon, à voir... *)
+...
+ +rewrite Nat.add_shuffle0.
+  rewrite Nat.sub_add; [ | easy ].
+  destruct m.
+  rewrite Nat.pow_0_r, Nat.pow_1_r.
+  clear IHm.
+  induction m.
+  rewrite Nat.pow_0_r, Nat.pow_1_r.
+...
+ rewrite Hn at 1; unfold min_n.
 ...
  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
  rewrite <- Nat.add_sub_swap. 2: {
