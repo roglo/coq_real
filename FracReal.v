@@ -890,6 +890,7 @@ destruct (eq_nat_dec b (S m)) as [H1| H1].
  }
  replace (m + m * r - m) with (m * r) by flia.
  destruct m; [ flia Hr Hb | ].
+ (* si ça marche, là, c'est bon *)
 ...
 -destruct n; [ cbn in Hm; flia Hm | ].
  cbn.
