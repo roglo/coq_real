@@ -879,86 +879,19 @@ intros Hmb.
 clear - Hr Hmb.
 revert b Hmb.
 induction m; intros; [ cbn; flia Hmb | ].
-apply (le_lt_trans _ (r - 1 + r ^ m)).
--destruct (eq_nat_dec b (S m)) as [H1| H1].
- +subst b; cbn; clear Hmb.
-  rewrite <- Nat.add_assoc.
-  apply Nat.add_le_mono_l.
-  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-  rewrite <- Nat.add_sub_swap. 2: {
-    replace m with (m * 1) at 1 by flia.
-    apply Nat.mul_le_mono_l; flia Hr.
-  }
-  rewrite <- Nat.add_sub_assoc; [ | flia ].
-  replace (S m - m) with 1 by flia.
-...
-  destruct r; [ easy | ].
-  destruct r; [ flia Hr | ].
-  clear.
-  revert r.
-  induction m; intros; [ easy | ].
-  rewrite <- Nat.add_1_r.
-  rewrite Nat.mul_add_distr_r, Nat.mul_1_l, Nat.add_shuffle0.
-  apply (le_trans _ (S (S r) ^ m + S (S r))).
-  *apply Nat.add_le_mono_r, IHm.
-  *destruct m.
-   rewrite Nat.pow_0_r, Nat.pow_1_r.
-   cbn in IHm.
-(* fuck *)
-Search (_ ≤ _ ^ _).
-...
-
-  replace (m * r - m + S m) with (m * r + 1)
-...
-
-  destruct m; [ cbn; easy | cbn ].
-  destruct m.
-  *specialize (IHm 1 (le_refl _)).
-   rewrite Nat.mul_1_l, Nat.pow_1_r in IHm.
-   flia Hr IHm.
-  *cbn.
-...
-  *rewrite Nat.mul_1_r, Nat.add_0_r.
-   destruct r; [ easy | cbn ].
-   rewrite Nat.sub_0_r.
-   cbn in IHm.
-   rewrite Nat.sub_0_r, Nat.add_0_r in IHm.
-   rewrite Nat.mul_1_r in IHm.
-
-  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-  rewrite <- Nat.add_sub_swap. 2: {
-    replace m with (m * 1) at 1 by flia.
-    apply Nat.mul_le_mono_l; flia Hr.
-  }
-  rewrite <- Nat.add_sub_assoc; [ | flia ].
-  replace (S m - m) with 1 by flia.
-  clear IHm.
-  induction m; [ cbn; flia | ].
-  cbn.
-destruct m.
-cbn.
-...
-
-  apply (le_trans _ (r + r ^ m)).
-  *rewrite <- Nat.add_assoc.
-   apply Nat.add_le_mono_l, IHm.
-  *destruct r; [ easy | ].
-   cbn.
-   rewrite <- Nat.add_1_r.
-   rewrite Nat.add_shuffle0, Nat.add_comm.
-   apply Nat.add_le_mono_l.
-
-
-  rewrite Nat.add_1_r.
-
-Search (_ < _ ^ _).
-...
-  Check Nat.pow_gt_lin_r.
-
-
-  destruct r; [ easy | ].
-  rewrite Nat.sub_succ, Nat.sub_0_r.
-Search (_ < _ ^ _).
+destruct (eq_nat_dec b (S m)) as [H1| H1].
+-subst b; cbn; clear Hmb.
+ rewrite Nat.add_shuffle0.
+ replace (r - 1 + S m) with (r + m) by flia Hr.
+ rewrite <- Nat.add_assoc.
+ rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+ rewrite Nat.add_sub_assoc. 2: {
+   replace m with (m * 1) at 1 by flia.
+   apply Nat.mul_le_mono_l; flia Hr.
+ }
+ destruct m.
+ +cbn.
+  (* faux ! *)
 ...
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
