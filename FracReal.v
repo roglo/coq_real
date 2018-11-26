@@ -884,7 +884,21 @@ clear - Hr Hmb Hb2; revert b Hmb Hb2.
 induction m; intros.
 -apply Nat.le_0_r in Hmb; subst b; cbn; flia.
 -destruct b; [ easy | ].
- replace (S m * (r - 1)) with (m * (r - 1) + (r - 1)) by (cbn; flia).
+ destruct (eq_nat_dec m b) as [H1| H1].
+ +subst b; clear Hmb.
+  rewrite <- Nat.mul_succ_r.
+  replace (S (r - 1)) with r by flia Hr.
+  destruct m; [ flia Hb2 | ].
+  destruct m; [ flia Hb2 | clear Hb2 ].
+...
+ +replace (S m * (r - 1)) with (m * (r - 1) + (r - 1)) by (cbn; flia).
+  rewrite Nat.add_shuffle0.
+  apply (lt_le_trans _ (r ^ m + (r - 1))).
+  *apply Nat.add_lt_mono_r.
+   apply IHm; [ flia Hmb H1 | easy ].
+  *idtac.
+...
+...
  rewrite <- Nat.add_assoc.
  replace (r - 1 + S b) with (r + b) by flia Hr.
  rewrite Nat.add_assoc, Nat.add_shuffle0.
