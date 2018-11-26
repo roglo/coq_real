@@ -875,15 +875,18 @@ enough (H : m ≥ b → m * (r - 1) + b < r ^ m). {
   now rewrite <- Hb.
 }
 intros Hmb.
-clear n Hikn Hm.
-revert b Hb Hmb.
+(**)
+clear - Hr Hmb.
+revert b Hmb.
 induction m; intros; [ cbn; flia Hmb | ].
-destruct b.
--symmetry in Hb.
- apply Nat.eq_add_0 in Hb.
- flia Hr Hb.
--apply Nat.succ_le_mono in Hmb.
- cbn.
+apply (le_lt_trans _ (r - 1 + r ^ m)).
+-destruct (eq_nat_dec b (S m)) as [H1| H1].
+ +subst b; cbn; clear Hmb.
+  rewrite <- Nat.add_assoc.
+  apply Nat.add_le_mono_l.
+  destruct r; [ easy | ].
+  rewrite Nat.sub_succ, Nat.sub_0_r.
+Search (_ < _ ^ _).
 ...
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
