@@ -876,6 +876,34 @@ enough (H : m ≥ b → m * (r - 1) + b < r ^ m). {
 }
 intros Hmb.
 (**)
+assert (Hb2 : b ≥ 3). {
+  rewrite Nat.mul_add_distr_l in Hb.
+  flia Hb Hr.
+}
+clear - Hr Hmb Hb2; revert b Hmb Hb2.
+induction m; intros.
+-apply Nat.le_0_r in Hmb; subst b; cbn; flia.
+-destruct b; [ easy | ].
+ replace (S m * (r - 1)) with (m * (r - 1) + (r - 1)) by (cbn; flia).
+ rewrite <- Nat.add_assoc.
+ replace (r - 1 + S b) with (r + b) by flia Hr.
+ rewrite Nat.add_assoc, Nat.add_shuffle0.
+ apply (lt_le_trans _ (r ^ m + r)).
+ +apply Nat.add_lt_mono_r.
+  destruct (eq_nat_dec b 2) as [Hb| Hb].
+  *subst b.
+   destruct m; [ flia Hmb | ].
+   cbn.
+(* oh, fait chier, tiens *)
+....
+  *cbn.
+   destruct r; [ easy | cbn ].
+   apply Nat.add_le_mono_l.
+   destruct m.
+   cbn.
+cbn in IHm.
+(* fuck you *)
+...
 revert i k n b Hikn Hm Hb Hmb.
 induction m; intros; [ cbn; flia Hmb | ].
 ...
@@ -924,8 +952,7 @@ destruct (eq_nat_dec b (S m)) as [H1| H1].
   *replace (S r ^ m) with (1 * S r ^ m) at 1 by flia.
    apply Nat.mul_le_mono_r; flia Hr.
 Qed.
-
-...
+*)
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
   (∀ j, u (i + j) ≤ (i + j + 1) * (rad - 1) ^ 2)
