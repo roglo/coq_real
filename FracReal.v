@@ -848,17 +848,18 @@ destruct (zerop l) as [Hl| Hl].
      now apply Nat.pow_gt_lin_r.
 Qed.
 
-Theorem minimum_value_for_A_upper_bound {r : radix} : ∀ i k n,
-  i + k + 2 ≤ n
-  → n ≥ rad * (i + k + 3)
-  → n * (rad - 1) + rad < rad ^ (n - (i + k + 2)).
+Theorem minimum_value_for_A_upper_bound : ∀ r i k n,
+  r ≥ 2
+  → i + k + 2 ≤ n
+  → n ≥ r * (i + k + 3)
+  → n * (r - 1) + r < r ^ (n - (i + k + 2)).
 Proof.
-intros * Hikn Hn.
+intros * Hr Hikn Hn.
 remember (n - (i + k + 2)) as m eqn:Hm.
-remember ((rad - 1) * (i + k + 2) + rad) as b eqn:Hb.
+remember ((r - 1) * (i + k + 2) + r) as b eqn:Hb.
 move b before m.
 revert Hn.
-enough (H : m ≥ b → m * (rad - 1) + b < rad ^ m). {
+enough (H : m ≥ b → m * (r - 1) + b < r ^ m). {
   intros Hmb.
   assert (H1 : n = m + (i + k + 2)) by flia Hm Hikn.
   subst n; clear Hm.
@@ -866,15 +867,23 @@ enough (H : m ≥ b → m * (rad - 1) + b < rad ^ m). {
   rewrite Nat.mul_add_distr_l, Nat.mul_1_r in Hmb.
   apply Nat.le_sub_le_add_r in Hmb.
   replace (i + k + 2) with (1 * (i + k + 2)) in Hmb at 2 by flia.
-  rewrite Nat.add_sub_swap in Hmb by now apply Nat.mul_le_mono_r.
+  rewrite Nat.add_sub_swap in Hmb by now apply Nat.mul_le_mono_r; flia Hr.
   rewrite <- Nat.mul_sub_distr_r, <- Hb in Hmb.
   specialize (H Hmb).
   rewrite Nat.mul_add_distr_r, <- Nat.add_assoc.
-  remember (m * (rad - 1)) as x; rewrite Nat.mul_comm; subst x.
+  remember (m * (r - 1)) as x; rewrite Nat.mul_comm; subst x.
   now rewrite <- Hb.
 }
 intros Hmb.
 clear n Hikn Hm.
+revert b Hb Hmb.
+induction m; intros; [ cbn; flia Hmb | ].
+destruct b.
+-symmetry in Hb.
+ apply Nat.eq_add_0 in Hb.
+ flia Hr Hb.
+-apply Nat.succ_le_mono in Hmb.
+ cbn.
 ...
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
