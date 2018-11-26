@@ -848,6 +848,12 @@ destruct (zerop l) as [Hl| Hl].
      now apply Nat.pow_gt_lin_r.
 Qed.
 
+Theorem lower_bound_for_n {r : radix} : ∀ i k n,
+  n ≥ rad * (i + k + 3)
+  → n * (rad - 1) + rad < rad ^ (n - (i + k + 2)).
+Proof.
+...
+
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
   (∀ j, u (i + j) ≤ (i + j + 1) * (rad - 1) ^ 2)
   → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
@@ -893,7 +899,8 @@ eapply NQle_lt_trans.
    rewrite Nat.mul_1_r, Nat.mul_1_l.
    now replace (n - i - 1 - S k) with (n - (i + k + 2)) by flia.
  }
- (* cf article *)
+...
+ apply lower_bound_for_n; rewrite Hn; pauto.
 ...
 -apply NQlt_pair. 1, 2: now apply Nat_pow_neq_0.
  rewrite Nat.mul_1_r.
