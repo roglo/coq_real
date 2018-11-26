@@ -890,7 +890,7 @@ destruct (eq_nat_dec b (S m)) as [H1| H1].
  }
  replace (m + m * r - m) with (m * r) by flia.
  destruct m; [ flia Hr Hb | ].
- admit.
+...
 -destruct n; [ cbn in Hm; flia Hm | ].
  cbn.
  apply (lt_le_trans _ (r - 1 + r ^ m)).
@@ -900,8 +900,19 @@ destruct (eq_nat_dec b (S m)) as [H1| H1].
   destruct (eq_nat_dec (S n) (i + k + 2)) as [H2| H2].
   *now rewrite H2, Nat.sub_diag in Hm.
   *flia H2 Hikn.
- +idtac.
-  (* à voir... *)
+ +destruct r; [ easy | ].
+  rewrite Nat.sub_succ, Nat.sub_0_r; cbn.
+  apply Nat.add_le_mono.
+  *apply (le_trans _ (r ^ m)).
+  --destruct m; [ flia Hb Hmb H1 | cbn ].
+    replace r with (r * 1) at 1 by flia.
+    apply Nat.mul_le_mono_l.
+    apply Nat_pow_ge_1; flia Hr.
+  --apply Nat.pow_le_mono_l; flia.
+  *replace (S r ^ m) with (1 * S r ^ m) at 1 by flia.
+   apply Nat.mul_le_mono_r; flia Hr.
+Qed.
+
 ...
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
