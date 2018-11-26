@@ -878,6 +878,7 @@ intros Hmb.
 (**)
 revert i k n b Hikn Hm Hb Hmb.
 induction m; intros; [ cbn; flia Hmb | ].
+...
 destruct (eq_nat_dec b (S m)) as [H1| H1].
 -move H1 at top; subst b; cbn; clear Hmb.
  rewrite Nat.add_shuffle0.
@@ -889,16 +890,18 @@ destruct (eq_nat_dec b (S m)) as [H1| H1].
    apply Nat.mul_le_mono_l; flia Hr.
  }
  replace (m + m * r - m) with (m * r) by flia.
+ rewrite Nat.add_comm, <- Nat.mul_succ_l, Nat.mul_comm.
+ apply Nat.mul_lt_mono_pos_l; [ flia Hr | ].
  destruct m; [ flia Hr Hb | ].
  destruct m.
- +rewrite Nat.mul_1_l, Nat.pow_1_r.
-  destruct r; [ easy | ].
-  cbn; apply -> Nat.succ_lt_mono.
-  apply Nat.add_lt_mono_l.
-  destruct r; [ easy | ].
-  destruct r; [ cbn in Hb; flia Hb | ].
-  cbn; flia.
  +cbn.
+  destruct r; [ easy | ].
+  cbn in Hb.
+  rewrite Nat.sub_0_r in Hb.
+  destruct r; [ flia Hr | cbn in Hb; flia Hb ].
+ +destruct r; [ easy | ].
+  destruct r; [ flia Hr | ].
+  destruct m; intros; [ cbn; flia | ].
 ...
 -destruct n; [ cbn in Hm; flia Hm | ].
  cbn.
