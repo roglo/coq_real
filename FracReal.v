@@ -849,10 +849,32 @@ destruct (zerop l) as [Hl| Hl].
 Qed.
 
 Theorem minimum_value_for_A_upper_bound {r : radix} : ∀ i k n,
-  n ≥ rad * (i + k + 3)
+  i + k + 2 ≤ n
+  → n ≥ rad * (i + k + 3)
   → n * (rad - 1) + rad < rad ^ (n - (i + k + 2)).
 Proof.
-intros * Hn.
+intros * Hikn Hn.
+remember (n - (i + k + 2)) as m eqn:Hm.
+remember ((rad - 1) * (i + k + 2) + rad) as b eqn:Hb.
+move b before m.
+revert Hn.
+enough (H : m ≥ b → m * (rad - 1) + b < rad ^ m). {
+  intros Hmb.
+  assert (H1 : n = m + (i + k + 2)) by flia Hm Hikn.
+  subst n; clear Hm.
+  replace (i + k + 3) with (i + k + 2 + 1) in Hmb by flia.
+  rewrite Nat.mul_add_distr_l, Nat.mul_1_r in Hmb.
+  apply Nat.le_sub_le_add_r in Hmb.
+  replace (i + k + 2) with (1 * (i + k + 2)) in Hmb at 2 by flia.
+  rewrite Nat.add_sub_swap in Hmb by now apply Nat.mul_le_mono_r.
+  rewrite <- Nat.mul_sub_distr_r, <- Hb in Hmb.
+  specialize (H Hmb).
+  rewrite Nat.mul_add_distr_r, <- Nat.add_assoc.
+  remember (m * (rad - 1)) as x; rewrite Nat.mul_comm; subst x.
+  now rewrite <- Hb.
+}
+intros Hmb.
+clear n Hikn Hm.
 ...
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
