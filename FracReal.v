@@ -872,6 +872,29 @@ eapply NQle_lt_trans.
    destruct rad; [ easy | cbn; flia ].
  }
  apply Hu.
+(**)
+-enough (H : n * (rad - 1) + rad < rad ^ (n - (i + k + 2))). {
+   apply (NQmul_lt_mono_pos_r (rad ^ (n - i - 1) // 1)%NQ). 1: {
+     replace 0%NQ with (0 // 1)%NQ by easy.
+     apply NQlt_pair; [ easy | easy | ].
+     rewrite Nat.mul_0_l, Nat.mul_1_l.
+     apply Nat.neq_0_lt_0; pauto.
+   }
+   rewrite NQmul_pair, Nat.mul_comm; [ | pauto | easy ].
+   rewrite <- NQmul_pair; [ | pauto | easy ].
+   rewrite NQpair_diag, NQmul_1_l; [ | pauto ].
+   rewrite NQmul_pair; [ | pauto | easy ].
+   rewrite Nat.mul_1_l, Nat.mul_1_r.
+   rewrite NQpow_pair_l; [ | easy | ]. 2: {
+     subst n; unfold min_n.
+     destruct rad; [ easy | cbn; flia ].
+   }
+   apply NQlt_pair; [ easy | easy | ].
+   rewrite Nat.mul_1_r, Nat.mul_1_l.
+   now replace (n - i - 1 - S k) with (n - (i + k + 2)) by flia.
+ }
+ (* cf article *)
+...
 -apply NQlt_pair. 1, 2: now apply Nat_pow_neq_0.
  rewrite Nat.mul_1_r.
  (* as said in my paper... but could be proved in a simpler way...*)
