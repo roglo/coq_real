@@ -876,11 +876,10 @@ enough (H : m ≥ b → m * (r - 1) + b < r ^ m). {
 }
 intros Hmb.
 (**)
-clear - Hr Hmb.
-revert b Hmb.
+revert i k n b Hikn Hm Hb Hmb.
 induction m; intros; [ cbn; flia Hmb | ].
 destruct (eq_nat_dec b (S m)) as [H1| H1].
--subst b; cbn; clear Hmb.
+-move H1 at top; subst b; cbn; clear Hmb.
  rewrite Nat.add_shuffle0.
  replace (r - 1 + S m) with (r + m) by flia Hr.
  rewrite <- Nat.add_assoc.
@@ -889,9 +888,20 @@ destruct (eq_nat_dec b (S m)) as [H1| H1].
    replace m with (m * 1) at 1 by flia.
    apply Nat.mul_le_mono_l; flia Hr.
  }
- destruct m.
- +cbn.
-  (* faux ! *)
+ replace (m + m * r - m) with (m * r) by flia.
+ destruct m; [ flia Hr Hb | ].
+ admit.
+-destruct n; [ cbn in Hm; flia Hm | ].
+ cbn.
+ apply (lt_le_trans _ (r - 1 + r ^ m)).
+ +rewrite <- Nat.add_assoc.
+  apply Nat.add_lt_mono_l.
+  apply (IHm i k n); [ | flia Hm | easy | flia Hmb H1 ].
+  destruct (eq_nat_dec (S n) (i + k + 2)) as [H2| H2].
+  *now rewrite H2, Nat.sub_diag in Hm.
+  *flia H2 Hikn.
+ +idtac.
+  (* à voir... *)
 ...
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
