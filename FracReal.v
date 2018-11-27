@@ -1061,7 +1061,18 @@ split.
  +rewrite NQintg_add; [ | apply A_ge_0 | easy ].
   rewrite NQfrac_1, NQadd_0_r.
   now rewrite NQintg_NQfrac, Nat.add_0_r.
--idtac.
+-apply (NQadd_lt_mono_l (NQintg (A i n u) // 1)) in H2.
+ do 2 rewrite NQadd_assoc in H2.
+ rewrite <- NQintg_frac in H2; [ | apply A_ge_0 ].
+ rewrite NQadd_pair in H2; [ | easy | easy ].
+ do 2 rewrite Nat.mul_1_r in H2.
+ replace (NQintg (A i n u) + 1) with (NQintg (A i n u + 1)%NQ) in H2.
+ +easy.
+ +rewrite NQintg_add; [ | apply A_ge_0 | easy ].
+  rewrite NQfrac_1, NQadd_0_r.
+  now rewrite NQintg_NQfrac, Nat.add_0_r.
+Qed.
+
 ...
 
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
