@@ -880,7 +880,6 @@ enough (H : m ≥ b → m * (r - 1) + b < r ^ m). {
   now rewrite <- Hb.
 }
 intros Hmb.
-(**)
 assert (Hb2 : b ≥ 3). {
   rewrite Nat.mul_add_distr_l in Hb.
   flia Hb Hr.
@@ -893,36 +892,20 @@ induction m; intros.
  +subst b; clear Hmb.
   rewrite <- Nat.mul_succ_r.
   replace (S (r - 1)) with r by flia Hr.
-  destruct m; [ flia Hb2 | ].
-  destruct m; [ flia Hb2 | clear Hb2 ].
-  destruct r; [ easy | ].
-  destruct r; [ flia Hr | ].
-  clear.
-  replace (S (S (S m))) with (m + 3) by flia.
-  replace (S (S r)) with (r + 2) by flia.
   rewrite Nat.mul_comm.
-  apply Nat_mul_lt_pow.
+...
+  apply Nat_mul_lt_pow; [ flia Hr | flia Hb2 ].
  +replace (S m * (r - 1)) with (m * (r - 1) + (r - 1)) by (cbn; flia).
   rewrite Nat.add_shuffle0.
   apply (lt_le_trans _ (r ^ m + (r - 1))).
   *apply Nat.add_lt_mono_r.
    apply IHm; [ flia Hmb H1 | easy ].
-  *idtac.
-   destruct m; [ flia Hmb Hb2 | ].
-   destruct m; [ flia Hmb Hb2 | ].
-   destruct r; [ flia Hr | ].
-   destruct r; [ flia Hr | ].
-   rewrite Nat.sub_succ, Nat.sub_0_r.
-   destruct m.
-  --destruct r; [ cbn; flia | ].
-    destruct r; [ cbn; flia | ].
-    destruct r; [ cbn | ].
-    ...
-  --destruct m.
-    destruct r; [ cbn; flia | ].
-    destruct r; [ cbn; flia | ].
-    destruct r; [ cbn | ].
-   ...
+  *destruct r; [ flia Hr | cbn ].
+   rewrite Nat.sub_0_r.
+   apply Nat.add_le_mono_l.
+   replace r with (r * 1) at 1 by flia.
+   apply Nat.mul_le_mono_l.
+   apply Nat_pow_ge_1; flia.
 Qed.
 
 ...
