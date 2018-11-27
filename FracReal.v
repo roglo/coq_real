@@ -967,7 +967,7 @@ induction m; intros.
 Qed.
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
-  (∀ j, u (i + j) ≤ (i + j + 1) * (rad - 1) ^ 2)
+  (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
 Proof.
 intros * Hu.
@@ -983,14 +983,9 @@ eapply NQle_lt_trans.
    destruct rad; [ easy | cbn; flia ].
  }
  intros j.
- replace (n + j) with (i + (n + j - i)). 2: {
-   rewrite Nat.add_comm.
-   apply Nat.sub_add.
-   subst n; unfold min_n.
-   destruct rad; [ easy | cbn; flia ].
- }
  apply Hu.
-(**)
+ subst n; unfold min_n.
+ destruct rad; [ easy | cbn; flia ].
 -enough (H : n * (rad - 1) + rad < rad ^ (n - (i + k + 2))). {
    apply (NQmul_lt_mono_pos_r (rad ^ (n - i - 1) // 1)%NQ). 1: {
      replace 0%NQ with (0 // 1)%NQ by easy.
@@ -1016,10 +1011,48 @@ eapply NQle_lt_trans.
  destruct rad; [ easy | cbn; flia ].
 Qed.
 
-Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
+Theorem first_frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ.
+Proof.
+intros u i H k.
+specialize (H k).
+unfold fA_ge_1_ε in H.
+now destruct
+  (NQlt_le_dec (NQfrac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%NQ).
+Qed.
+
+Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
+  (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
+  → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, (NQfrac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%NQ.
 Proof.
+intros u i Hur HfA k l.
+specialize radix_ge_2 as Hr.
+assert
+  (H1 : ∀ k l,
+    (1 - 1 // rad ^ S k ≤
+    NQfrac (A i (min_n i k) u) + B i (min_n i k) u l <
+    (1 + 1 // rad ^ S k))%NQ). {
+  clear k l; intros k l.
+  split.
+  -specialize (first_frac_ge_if_all_fA_ge_1_ε u i HfA k) as H.
+   eapply NQle_trans; [ apply H | ].
+   apply NQle_sub_le_add_l.
+   rewrite NQsub_diag.
+   apply B_ge_0.
+  -apply NQadd_lt_mono; [ apply NQfrac_lt_1 | ].
+   apply B_upper_bound, Hur.
+}
+specialize (H1 k l).
+rewrite B_of_A in H1.
+specialize (A_split (min_n i k) u i (min_n i k + l)) as H2.
+...
+(A i (min_n i k) u) + A (min_n i k - 1) (min_n i k + l) u * 1 // rad ^ (min_n i k - i - 1) <
+(A i (min_n i k) u + A (min_n i k - 1) (min_n i k + l) u * 1 // rad ^ (min_n i k - i - 1))%NQ
+rewrite <- H2 in H1.
+...
+
 intros u i H k l.
 specialize radix_ge_2 as Hr.
 specialize (H k).
@@ -1043,17 +1076,6 @@ rewrite NQfrac_add; [ | apply A_ge_0 | apply B_ge_0 ].
  +apply NQle_add_r, NQfrac_ge_0.
  +idtac.
 ...
-Qed.
-
-Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
-  (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ.
-Proof.
-intros u i H k.
-specialize (H k).
-unfold fA_ge_1_ε in H.
-now destruct
-  (NQlt_le_dec (NQfrac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%NQ).
 Qed.
 
 Theorem frac_eq_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
