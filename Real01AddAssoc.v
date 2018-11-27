@@ -687,6 +687,10 @@ Theorem glop {r : radix} : ∀ u i,
   → ∀ k, d2n (prop_carr u) (i + k + 1) = 0.
 Proof.
 intros * Hu *.
+specialize (A_bounds_if_all_fA_ge_1_ε u i) as H1.
+...
+specialize (frac_ge_if_all_fA_ge_1_ε _ _ Hu k) as H1.
+...
 specialize (frac_ge_if_all_fA_ge_1_ε _ _ Hu k) as H1.
 unfold prop_carr, d2n; cbn.
 unfold carry.
