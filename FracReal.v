@@ -851,6 +851,25 @@ Qed.
 Theorem Nat_mul_lt_pow : ∀ a b, a ≥ 2 → b ≥ 3 → a * b < a ^ b.
 Proof.
 intros * Ha Hb.
+destruct a; [ flia Ha | ].
+destruct a; [ flia Ha | ].
+clear Ha.
+replace (S (S a)) with (a + 2) by flia.
+destruct b; [ flia Hb | ].
+destruct b; [ flia Hb | ].
+destruct b; [ flia Hb | ].
+clear Hb.
+replace (S (S (S b))) with (b + 3) by flia.
+revert b.
+induction a; intros.
+-rewrite Nat.add_0_l.
+ rewrite Nat.mul_add_distr_l.
+ rewrite Nat.pow_add_r.
+ replace (2 * 3) with 6 by easy.
+ replace (2 ^ 3) with 8 by easy.
+...
+Search (_ < _ ^ _).
+Nat.pow_gt_lin_r: ∀ a b : nat, 1 < a → b < a ^ b
 ...
 
 Theorem minimum_value_for_A_upper_bound : ∀ r i k n,
