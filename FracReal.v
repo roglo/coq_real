@@ -1084,6 +1084,16 @@ unfold A, B.
 now replace (i + 1 + (n - i - 1 + l)) with (n + l) by flia Hin.
 Qed.
 
+Theorem ApB_A {r : radix} : ∀ u i n l,
+  i + 1 ≤ n
+  → (A i n u + B i n u l = A i (n + l) u)%NQ.
+Proof.
+intros * Hin.
+rewrite B_of_A; [ | easy ].
+symmetry; apply A_split.
+flia Hin.
+Qed.
+
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → (∀ k, fA_ge_1_ε u i k = true)
@@ -1098,6 +1108,8 @@ assert (Hin : i + 1 ≤ n). {
   rewrite Hn; unfold min_n.
   destruct rad; [ easy | cbn; flia ].
 }
+rewrite ApB_A in H1; [ | easy ].
+...
 rewrite ApB_B in H1; [ | easy ].
 rewrite B_of_A in H1; [ | easy ].
 rewrite Nat.add_sub in H1.
@@ -1105,7 +1117,9 @@ replace (i + 1 + (n - i - 1 + l)) with (n + l) in H1 by flia Hin.
 replace (i + 1 - i - 1) with 0 in H1 by flia.
 rewrite Nat.pow_0_r, NQmul_1_r in H1.
 ...
-
+≤ A i n u + B i n u l <
+≤ A i (n + l) u <
+...
 intros u i H k l.
 specialize radix_ge_2 as Hr.
 specialize (H k).
