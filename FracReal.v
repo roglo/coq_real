@@ -1044,6 +1044,7 @@ assert
   -apply NQadd_lt_mono; [ apply NQfrac_lt_1 | ].
    apply B_upper_bound, Hur.
 }
+...
 specialize (H1 k l).
 rewrite B_of_A in H1.
 specialize (A_split (min_n i k) u i (min_n i k + l)) as H2.
