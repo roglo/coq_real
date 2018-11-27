@@ -1028,15 +1028,15 @@ destruct
   (NQlt_le_dec (NQfrac (A i (min_n i k) u))
      (1 - 1 // rad ^ S k)%NQ) as [H1| H1]; [ easy | clear H ].
 eapply NQle_trans; [ apply H1 | ].
--remember (A i (min_n i k) u) as a eqn:Ha.
- rewrite A_split with (e := min_n i k); subst a; cycle 1. {
-   unfold min_n; split; [ | flia ].
-   destruct rad; [ easy | cbn; flia ].
- }
- rewrite <- B_of_A; cycle 1. {
-   unfold min_n; destruct rad; [ easy | cbn; flia ].
- }
- rewrite NQfrac_add; [ | apply A_ge_0 | apply B_ge_0 ].
+remember (A i (min_n i k) u) as a eqn:Ha.
+rewrite A_split with (e := min_n i k); subst a; cycle 1. {
+  unfold min_n; split; [ | flia ].
+  destruct rad; [ easy | cbn; flia ].
+}
+rewrite <- B_of_A; cycle 1. {
+  unfold min_n; destruct rad; [ easy | cbn; flia ].
+}
+rewrite NQfrac_add; [ | apply A_ge_0 | apply B_ge_0 ].
 ...
  remember (NQfrac (A i (min_n i k) u)) as x.
  rewrite NQfrac_eq_when_lt_1; [ | subst x ].
