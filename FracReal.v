@@ -1039,6 +1039,31 @@ split.
  apply B_upper_bound, Hur.
 Qed.
 
+Theorem ApB_bounds {r : radix} : ∀ u i k l n,
+  (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → n = min_n i k
+  → (NQintg (A i n u + 1) // 1 - 1 // rad ^ S k ≤ A i n u + B i n u l <
+     (NQintg (A i n u + 1) // 1 + 1 // rad ^ S k))%NQ.
+Proof.
+intros * Hur Hfa Hn.
+specialize (fApB_bounds u i k l Hur Hfa) as (H1, H2).
+rewrite <- Hn in H1, H2.
+split.
+-apply (NQadd_le_mono_l _ _ (NQintg (A i n u) // 1)) in H1.
+ rewrite NQadd_sub_assoc in H1.
+ rewrite NQadd_pair in H1; [ | easy | easy ].
+ do 2 rewrite Nat.mul_1_r in H1.
+ rewrite NQadd_assoc in H1.
+ rewrite <- NQintg_frac in H1; [ | apply A_ge_0 ].
+ replace (NQintg (A i n u) + 1) with (NQintg (A i n u + 1)%NQ) in H1.
+ +easy.
+ +rewrite NQintg_add; [ | apply A_ge_0 | easy ].
+  rewrite NQfrac_1, NQadd_0_r.
+  now rewrite NQintg_NQfrac, Nat.add_0_r.
+-idtac.
+...
+
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → (∀ k, fA_ge_1_ε u i k = true)

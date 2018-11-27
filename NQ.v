@@ -1991,6 +1991,12 @@ rewrite (NQintg_frac x) at 2; [ | easy ].
 now rewrite NQadd_sub.
 Qed.
 
+Theorem NQfrac_0 : NQfrac 0 = 0%NQ.
+Proof. easy. Qed.
+
+Theorem NQfrac_1 : NQfrac 1 = 0%NQ.
+Proof. easy. Qed.
+
 Theorem NQfrac_ge_0 : ∀ x, (0 ≤ NQfrac x)%NQ.
 Proof.
 intros.
@@ -1998,6 +2004,15 @@ unfold NQfrac.
 replace 0%NQ with (0 // 1)%NQ by easy.
 apply NQle_pair; [ easy | easy | ].
 rewrite Nat.mul_1_l; cbn; flia.
+Qed.
+
+Theorem NQfrac_lt_1 : ∀ x, (NQfrac x < 1)%NQ.
+Proof.
+intros.
+unfold NQfrac.
+apply NQlt_pair; [ easy | easy | ].
+do 2 rewrite Nat.mul_1_r.
+now apply Nat.mod_upper_bound.
 Qed.
 
 Theorem NQfrac_le : ∀ x, (0 ≤ x)%NQ → (NQfrac x ≤ x)%NQ.
@@ -2010,6 +2025,25 @@ rewrite NQnum_den; [ | easy ].
 apply NQle_pair; [ apply GQden_neq_0 | pauto | ].
 cbn; rewrite Nat.mul_comm.
 apply Nat.mul_le_mono_l, Nat.mod_le, GQden_neq_0.
+Qed.
+
+Theorem NQintg_small : ∀ x, (0 ≤ x < 1)%NQ → NQintg x = 0.
+Proof.
+intros * (Hx1, Hx2).
+destruct x as [| xp| xp]; [ easy | | easy ].
+unfold NQintg; cbn.
+apply Nat.div_small.
+unfold "<"%NQ in Hx2; cbn in Hx2.
+unfold "<"%GQ in Hx2; cbn in Hx2.
+unfold PQ.PQlt, PQ.nd in Hx2; cbn in Hx2.
+now rewrite Nat.mul_1_r, Nat.add_0_r in Hx2.
+Qed.
+
+Theorem NQintg_NQfrac : ∀ x, NQintg (NQfrac x) = 0.
+Proof.
+intros.
+apply NQintg_small.
+split; [ apply NQfrac_ge_0 | apply NQfrac_lt_1 ].
 Qed.
 
 Theorem NQfrac_add_nat_l : ∀ a x, (0 ≤ x)%NQ →
@@ -2128,15 +2162,6 @@ remember (GQnum xp) as xn eqn:Hxn; symmetry in Hxn.
 destruct xn; [ unfold GQnum in Hxn; now rewrite Nat.add_1_r in Hxn | ].
 f_equal; rewrite <- Hxn.
 symmetry; apply GQnum_den.
-Qed.
-
-Theorem NQfrac_lt_1 : ∀ x, (NQfrac x < 1)%NQ.
-Proof.
-intros.
-unfold NQfrac.
-apply NQlt_pair; [ easy | easy | ].
-do 2 rewrite Nat.mul_1_r.
-now apply Nat.mod_upper_bound.
 Qed.
 
 Theorem NQintg_interv : ∀ n x, (0 ≤ x)%NQ →
