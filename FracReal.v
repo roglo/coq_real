@@ -848,6 +848,11 @@ destruct (zerop l) as [Hl| Hl].
      now apply Nat.pow_gt_lin_r.
 Qed.
 
+Theorem Nat_mul_lt_pow : ∀ a b, a ≥ 2 → b ≥ 3 → a * b < a ^ b.
+Proof.
+intros * Ha Hb.
+...
+
 Theorem minimum_value_for_A_upper_bound : ∀ r i k n,
   r ≥ 2
   → i + k + 2 ≤ n
@@ -895,25 +900,28 @@ induction m; intros.
   clear.
   replace (S (S (S m))) with (m + 3) by flia.
   replace (S (S r)) with (r + 2) by flia.
-  destruct m.
-  *rewrite Nat.add_0_l.
-   destruct r; [ cbn; flia | ].
-   destruct r; [ cbn; flia | ].
-   destruct r; [ cbn; flia | ].
-   destruct r; [ cbn; flia | ].
-   destruct r; [ cbn; flia | ].
-   ...
-  *destruct m.
-  --destruct r; [ cbn; flia | ].
-    destruct r; [ cbn; flia | ].
-    ...
-  --...
+  rewrite Nat.mul_comm.
+  apply Nat_mul_lt_pow.
  +replace (S m * (r - 1)) with (m * (r - 1) + (r - 1)) by (cbn; flia).
   rewrite Nat.add_shuffle0.
   apply (lt_le_trans _ (r ^ m + (r - 1))).
   *apply Nat.add_lt_mono_r.
    apply IHm; [ flia Hmb H1 | easy ].
   *idtac.
+   destruct m; [ flia Hmb Hb2 | ].
+   destruct m; [ flia Hmb Hb2 | ].
+   destruct r; [ flia Hr | ].
+   destruct r; [ flia Hr | ].
+   rewrite Nat.sub_succ, Nat.sub_0_r.
+   destruct m.
+  --destruct r; [ cbn; flia | ].
+    destruct r; [ cbn; flia | ].
+    destruct r; [ cbn | ].
+    ...
+  --destruct m.
+    destruct r; [ cbn; flia | ].
+    destruct r; [ cbn; flia | ].
+    destruct r; [ cbn | ].
    ...
 Qed.
 
