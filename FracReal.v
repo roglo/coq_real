@@ -1073,8 +1073,6 @@ split.
   now rewrite NQintg_NQfrac, Nat.add_0_r.
 Qed.
 
-...
-
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → (∀ k, fA_ge_1_ε u i k = true)
