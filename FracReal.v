@@ -890,83 +890,34 @@ induction m; intros.
   replace (S (r - 1)) with r by flia Hr.
   destruct m; [ flia Hb2 | ].
   destruct m; [ flia Hb2 | clear Hb2 ].
-...
+  destruct r; [ easy | ].
+  destruct r; [ flia Hr | ].
+  clear.
+  replace (S (S (S m))) with (m + 3) by flia.
+  replace (S (S r)) with (r + 2) by flia.
+  destruct m.
+  *rewrite Nat.add_0_l.
+   destruct r; [ cbn; flia | ].
+   destruct r; [ cbn; flia | ].
+   destruct r; [ cbn; flia | ].
+   destruct r; [ cbn; flia | ].
+   destruct r; [ cbn; flia | ].
+   ...
+  *destruct m.
+  --destruct r; [ cbn; flia | ].
+    destruct r; [ cbn; flia | ].
+    ...
+  --...
  +replace (S m * (r - 1)) with (m * (r - 1) + (r - 1)) by (cbn; flia).
   rewrite Nat.add_shuffle0.
   apply (lt_le_trans _ (r ^ m + (r - 1))).
   *apply Nat.add_lt_mono_r.
    apply IHm; [ flia Hmb H1 | easy ].
   *idtac.
-...
-...
- rewrite <- Nat.add_assoc.
- replace (r - 1 + S b) with (r + b) by flia Hr.
- rewrite Nat.add_assoc, Nat.add_shuffle0.
- apply (lt_le_trans _ (r ^ m + r)).
- +apply Nat.add_lt_mono_r.
-  destruct (eq_nat_dec b 2) as [Hb| Hb].
-  *subst b.
-   destruct m; [ flia Hmb | ].
-   cbn.
-(* oh, fait chier, tiens *)
-....
-  *cbn.
-   destruct r; [ easy | cbn ].
-   apply Nat.add_le_mono_l.
-   destruct m.
-   cbn.
-cbn in IHm.
-(* fuck you *)
-...
-revert i k n b Hikn Hm Hb Hmb.
-induction m; intros; [ cbn; flia Hmb | ].
-...
-destruct (eq_nat_dec b (S m)) as [H1| H1].
--move H1 at top; subst b; cbn; clear Hmb.
- rewrite Nat.add_shuffle0.
- replace (r - 1 + S m) with (r + m) by flia Hr.
- rewrite <- Nat.add_assoc.
- rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
- rewrite Nat.add_sub_assoc. 2: {
-   replace m with (m * 1) at 1 by flia.
-   apply Nat.mul_le_mono_l; flia Hr.
- }
- replace (m + m * r - m) with (m * r) by flia.
- rewrite Nat.add_comm, <- Nat.mul_succ_l, Nat.mul_comm.
- apply Nat.mul_lt_mono_pos_l; [ flia Hr | ].
- destruct m; [ flia Hr Hb | ].
- destruct m.
- +cbn.
-  destruct r; [ easy | ].
-  cbn in Hb.
-  rewrite Nat.sub_0_r in Hb.
-  destruct r; [ flia Hr | cbn in Hb; flia Hb ].
- +destruct r; [ easy | ].
-  destruct r; [ flia Hr | ].
-  destruct m; intros; [ cbn; flia | ].
-...
--destruct n; [ cbn in Hm; flia Hm | ].
- cbn.
- apply (lt_le_trans _ (r - 1 + r ^ m)).
- +rewrite <- Nat.add_assoc.
-  apply Nat.add_lt_mono_l.
-  apply (IHm i k n); [ | flia Hm | easy | flia Hmb H1 ].
-  destruct (eq_nat_dec (S n) (i + k + 2)) as [H2| H2].
-  *now rewrite H2, Nat.sub_diag in Hm.
-  *flia H2 Hikn.
- +destruct r; [ easy | ].
-  rewrite Nat.sub_succ, Nat.sub_0_r; cbn.
-  apply Nat.add_le_mono.
-  *apply (le_trans _ (r ^ m)).
-  --destruct m; [ flia Hb Hmb H1 | cbn ].
-    replace r with (r * 1) at 1 by flia.
-    apply Nat.mul_le_mono_l.
-    apply Nat_pow_ge_1; flia Hr.
-  --apply Nat.pow_le_mono_l; flia.
-  *replace (S r ^ m) with (1 * S r ^ m) at 1 by flia.
-   apply Nat.mul_le_mono_r; flia Hr.
+   ...
 Qed.
-*)
+
+...
 
 Theorem B_upper_bound {r : radix} : ∀ u i k l,
   (∀ j, u (i + j) ≤ (i + j + 1) * (rad - 1) ^ 2)
