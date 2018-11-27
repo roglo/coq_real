@@ -1073,6 +1073,17 @@ split.
   now rewrite NQintg_NQfrac, Nat.add_0_r.
 Qed.
 
+Theorem ApB_B {r : radix} : ∀ u i n l,
+  i + 1 ≤ n
+  → (A i n u + B i n u l = B i (i + 1) u (n - i - 1 + l))%NQ.
+Proof.
+intros * Hin.
+rewrite B_of_A at 1; [ | easy ].
+rewrite <- A_split; [ | flia Hin ].
+unfold A, B.
+now replace (i + 1 + (n - i - 1 + l)) with (n + l) by flia Hin.
+Qed.
+
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → (∀ k, fA_ge_1_ε u i k = true)
@@ -1080,15 +1091,19 @@ Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
 Proof.
 intros u i Hur HfA k l.
 specialize radix_ge_2 as Hr.
-specialize (fApB_bounds u i k l Hur HfA) as H1.
-...
-specialize (H1 k l).
-rewrite B_of_A in H1.
-specialize (A_split (min_n i k) u i (min_n i k + l)) as H2.
-...
-(A i (min_n i k) u) + A (min_n i k - 1) (min_n i k + l) u * 1 // rad ^ (min_n i k - i - 1) <
-(A i (min_n i k) u + A (min_n i k - 1) (min_n i k + l) u * 1 // rad ^ (min_n i k - i - 1))%NQ
-rewrite <- H2 in H1.
+remember (min_n i k) as n eqn:Hn.
+move n before l.
+specialize (ApB_bounds u i k l n Hur HfA Hn) as H1.
+assert (Hin : i + 1 ≤ n). {
+  rewrite Hn; unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
+rewrite ApB_B in H1; [ | easy ].
+rewrite B_of_A in H1; [ | easy ].
+rewrite Nat.add_sub in H1.
+replace (i + 1 + (n - i - 1 + l)) with (n + l) in H1 by flia Hin.
+replace (i + 1 - i - 1) with 0 in H1 by flia.
+rewrite Nat.pow_0_r, NQmul_1_r in H1.
 ...
 
 intros u i H k l.
