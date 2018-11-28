@@ -127,8 +127,8 @@ Hint Resolve digit_lt_radix digit_le_pred_radix.
 
 (* Frac Real *)
 
-Declare Scope freal_scope.
-Delimit Scope freal_scope with F.
+Declare Scope ureal_scope.
+Delimit Scope ureal_scope with F.
 
 Record FracReal {r : radix} := { freal : nat → digit }.
 Arguments freal r _%F.
@@ -315,14 +315,14 @@ Definition freal_le {r : radix} x y :=
 (*
 Definition freal_0 {r : radix} := {| freal i := digit_0 |}.
 
-Notation "0" := (freal_0) : freal_scope.
+Notation "0" := (freal_0) : ureal_scope.
 *)
-Notation "a = b" := (freal_eq a b) : freal_scope.
+Notation "a = b" := (freal_eq a b) : ureal_scope.
 (*
-Notation "a ≠ b" := (¬ freal_eq a b) : freal_scope.
+Notation "a ≠ b" := (¬ freal_eq a b) : ureal_scope.
 *)
-Notation "a < b" := (freal_lt a b) : freal_scope.
-Notation "a ≤ b" := (freal_le a b) : freal_scope.
+Notation "a < b" := (freal_lt a b) : ureal_scope.
+Notation "a ≤ b" := (freal_le a b) : ureal_scope.
 
 Theorem is_9_strict_after_all_9 {r : radix} : ∀ u i,
   (∀ j, is_9_strict_after u i j = true)
@@ -354,7 +354,7 @@ Qed.
 Definition freal_add_series {r : radix} a b i := fd2n a i + fd2n b i.
 Arguments freal_add_series _ a%F b%F.
 
-Notation "x ⊕ y" := (freal_add_series x y) (at level 50) : freal_scope.
+Notation "x ⊕ y" := (freal_add_series x y) (at level 50) : ureal_scope.
 
 (*
 Definition sequence_mul (rg := nat_ord_ring) (a b : nat → nat) i :=
@@ -411,9 +411,9 @@ Definition freal_mul {r : radix} (a b : FracReal) :=
   {| freal := freal_mul_to_seq a b |}.
 *)
 
-Notation "a + b" := (freal_add a b) : freal_scope.
+Notation "a + b" := (freal_add a b) : ureal_scope.
 (*
-Notation "a * b" := (freal_mul a b) : freal_scope.
+Notation "a * b" := (freal_mul a b) : ureal_scope.
 *)
 
 Theorem A_freal_additive {r : radix} : ∀ i n x y,
