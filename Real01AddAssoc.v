@@ -682,6 +682,7 @@ destruct (LPO_fst (A_ge_1 u i)) as [H1| H1].
 Qed.
 *)
 
+(*
 Theorem glop {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, d2n (prop_carr u) (i + k + 1) = 0.
@@ -700,6 +701,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H2| H2].
  remember (A (i + k + 1) (min_n (i + k + 1) 0) u) as x eqn:Hx.
  rewrite Nat.pow_1_r in H3.
 ...
+*)
 
 Definition P {r : radix} u := d2n (prop_carr u).
 Definition add_series (u v : nat → nat) i := u i + v i.
@@ -737,10 +739,12 @@ f_equal; f_equal.
 flia Hj.
 Qed.
 
+(*
 Theorem glop {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, P u (i + k + 1) = 0.
 ...
+*)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (carry (u ⊕ P v) i + carry v i) mod rad = carry (u ⊕ v) i mod rad.
@@ -791,6 +795,7 @@ rewrite NQfrac_add in H2'.
    destruct (NQlt_le_dec x 1) as [H5| H5].
    subst x.
    rewrite NQfrac_eq_when_lt_1 in H2'.
+specialize (A_bounds_if_all_fA_ge_1_ε (P v) i) as H2''.
 
 ...
 intros * Hxz Hyz.

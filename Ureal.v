@@ -1011,7 +1011,7 @@ eapply NQle_lt_trans.
  destruct rad; [ easy | cbn; flia ].
 Qed.
 
-Theorem first_frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
+Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ.
 Proof.
@@ -1030,7 +1030,7 @@ Theorem fApB_bounds {r : radix} : ∀ u i k l,
 Proof.
 intros * Hur HfA.
 split.
--specialize (first_frac_ge_if_all_fA_ge_1_ε u i HfA k) as H.
+-specialize (frac_ge_if_all_fA_ge_1_ε u i HfA k) as H.
  eapply NQle_trans; [ apply H | ].
  apply NQle_sub_le_add_l.
  rewrite NQsub_diag.
