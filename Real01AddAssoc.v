@@ -823,6 +823,9 @@ rewrite NQintg_add in H3''; [ | | easy ].
 rewrite NQintg_1 in H3''.
 rewrite NQfrac_1, NQadd_0_r in H3''.
 rewrite NQintg_NQfrac, Nat.add_0_r in H3''.
+Print carry.
+Print min_n.
+Abort. (*
 ...
 intros * Hxz Hyz.
 symmetry.
@@ -875,6 +878,7 @@ rewrite Nat.mul_1_r, Nat.mul_0_r in Hxf.
    move apv before i; move av before i; move au before i.
    move Hav before Hau.
 ...
+*)
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, v (i + k + 1) ≤ 2 * (rad - 1))
@@ -908,6 +912,15 @@ rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
 subst pv.
 replace (d2n (prop_carr v)) with (P v) by easy.
+(**)
+remember (λ (u : nat → nat) i, u i mod rad) as M.
+transitivity ((carry v i + carry (u ⊕ M (v ⊕ carry v)) i) mod rad). {
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  f_equal; f_equal.
+  now subst M.
+}
+
 ...
 rename i into j.
 Print carry.
