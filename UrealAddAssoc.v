@@ -10,25 +10,25 @@ specialize radix_ge_2 as H; lia.
 Qed.
 
 Definition digit_9 {r : radix} := mkdig _ (rad - 1) pred_rad_lt_rad.
-Definition freal_999 {r : radix} := {| freal i := digit_9 |}.
+Definition ureal_999 {r : radix} := {| ureal i := digit_9 |}.
 
-Definition freal_shift {r : radix} k x := {| freal i := freal x (k + i) |}.
-Arguments freal_shift _ _ x%F.
+Definition ureal_shift {r : radix} k x := {| ureal i := ureal x (k + i) |}.
+Arguments ureal_shift _ _ x%F.
 
 (*
 Require Import Morphisms.
 Instance gr_add_morph {r : radix} :
-  Proper (freal_norm_eq ==> freal_norm_eq ==> iff) freal_norm_le.
+  Proper (ureal_norm_eq ==> ureal_norm_eq ==> iff) ureal_norm_le.
 Proof.
 assert
   (H : ∀ x1 x2 y1 y2,
-   freal_norm_eq x1 y1
-   → freal_norm_eq x2 y2
-   → freal_norm_le x1 x2
-   → freal_norm_le y1 y2). {
+   ureal_norm_eq x1 y1
+   → ureal_norm_eq x2 y2
+   → ureal_norm_le x1 x2
+   → ureal_norm_le y1 y2). {
   intros * H1 H2 Hxx.
-  unfold freal_norm_le in Hxx |-*.
-  unfold freal_norm_eq in H1, H2.
+  unfold ureal_norm_le in Hxx |-*.
+  unfold ureal_norm_eq in H1, H2.
   destruct (LPO_fst (has_same_digits y1 y2)) as [Hs| Hs]; [ easy | ].
   destruct Hs as (j & Hjj & Hj).
   rewrite <- H1, <- H2.
@@ -60,7 +60,7 @@ split; intros.
 -now apply (H y1 y2).
 Qed.
 
-Theorem nA_freal_add_series {r : radix} : ∀ x y i n,
+Theorem nA_ureal_add_series {r : radix} : ∀ x y i n,
    nA i n (x ⊕ y) = nA i n (fd2n x) + nA i n (fd2n y).
 Proof.
 intros.
@@ -71,13 +71,13 @@ erewrite summation_eq_compat; cycle 1.
 -apply summation_add_distr.
 Qed.
 
-Theorem nA_freal_add_series_lt {r : radix} : ∀ i n x y,
+Theorem nA_ureal_add_series_lt {r : radix} : ∀ i n x y,
   nA i n (x ⊕ y) < 2 * rad ^ (n - i - 1).
 Proof.
 intros.
 eapply le_lt_trans.
 -apply nA_upper_bound_for_add.
- intros k; apply freal_add_series_le_twice_pred.
+ intros k; apply ureal_add_series_le_twice_pred.
 -rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
  apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
  replace 2 with (2 * 1) at 1 by flia.
@@ -95,15 +95,15 @@ intros Hxy.
 split.
 -intros.
  specialize (Hxy k).
- unfold freal_add_series in Hxy.
- specialize (digit_lt_radix (freal x (n + k + 1))) as H1.
- specialize (digit_lt_radix (freal y (n + k + 1))) as H2.
+ unfold ureal_add_series in Hxy.
+ specialize (digit_lt_radix (ureal x (n + k + 1))) as H1.
+ specialize (digit_lt_radix (ureal y (n + k + 1))) as H2.
  unfold fd2n in Hxy |-*; lia.
 -intros.
  specialize (Hxy k).
- unfold freal_add_series in Hxy.
- specialize (digit_lt_radix (freal x (n + k + 1))) as H1.
- specialize (digit_lt_radix (freal y (n + k + 1))) as H2.
+ unfold ureal_add_series in Hxy.
+ specialize (digit_lt_radix (ureal x (n + k + 1))) as H1.
+ specialize (digit_lt_radix (ureal y (n + k + 1))) as H2.
  unfold fd2n in Hxy |-*; lia.
 Qed.
 
@@ -115,7 +115,7 @@ Proof.
 intros * Hxy Hx *.
 specialize (Hxy k).
 specialize (Hx k).
-unfold freal_add_series in Hxy; lia.
+unfold ureal_add_series in Hxy; lia.
 Qed.
 
 Theorem le_90_198_mod_100 {r : radix} : ∀ j n s k,
@@ -163,8 +163,8 @@ intros * H2 H3 H4.
 specialize (eq_add_series_18_eq_9 _ _ _ H4) as Hzy.
 destruct Hzy as (Hy, Hz).
 specialize (eq_add_series_eq_l _ _ _ _ H3 Hy) as Hx.
-unfold freal_add in H2.
-unfold freal_add_series at 1 in H2.
+unfold ureal_add in H2.
+unfold ureal_add_series at 1 in H2.
 unfold fd2n at 2 in H2; simpl in H2.
 remember (y ⊕ z) as yz eqn:Hyz.
 assert (H5 : ∀ k, d2n (prop_carr yz) (i + 1 + k) = rad - 1). {
@@ -174,10 +174,10 @@ assert (H5 : ∀ k, d2n (prop_carr yz) (i + 1 + k) = rad - 1). {
   now replace (i + k + 1) with (i + 1 + k) in H2 by flia.
 }
 apply not_prop_carr_all_9 in H5; [ easy | ].
-intros k; subst yz; apply freal_add_series_le_twice_pred.
+intros k; subst yz; apply ureal_add_series_le_twice_pred.
 Qed.
 
-Theorem A_ge_1_freal_add_series_all_true {r : radix} : ∀ y z i,
+Theorem A_ge_1_ureal_add_series_all_true {r : radix} : ∀ y z i,
   (∀ k, A_ge_1 (y ⊕ z) i k = true)
   → ∀ k, fd2n (y + z) (i + k + 1) = 0.
 Proof.
@@ -186,9 +186,9 @@ specialize radix_ge_2 as Hr.
 intros H1 *.
 (* à simplifier peut-être *)
 apply A_ge_1_add_all_true_if in H1; cycle 1.
--intros; apply freal_add_series_le_twice_pred.
+-intros; apply ureal_add_series_le_twice_pred.
 -destruct H1 as [H1| [H1| H1]].
- +unfold freal_add, fd2n; simpl.
+ +unfold ureal_add, fd2n; simpl.
   unfold nat_prop_carr.
   destruct (LPO_fst (A_ge_1 (y ⊕ z) (i + k + 1))) as
       [H4| H4].
@@ -247,7 +247,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
      destruct rad; [ easy | simpl; flia ].
    ++apply Nat.sub_le_mono_l.
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
- +unfold freal_add, fd2n; simpl.
+ +unfold ureal_add, fd2n; simpl.
   unfold nat_prop_carr.
   destruct (LPO_fst (A_ge_1 (y ⊕ z) (i + k + 1))) as
       [H4| H4].
@@ -288,7 +288,7 @@ apply A_ge_1_add_all_true_if in H1; cycle 1.
     replace (i + k + 1 + j) with (i + (k + j + 1)) by flia.
     apply H1.
   --rewrite <- Hs3; now apply (le_90_198_mod_100 (i + k + 1) n3).
- +unfold freal_add, fd2n; simpl.
+ +unfold ureal_add, fd2n; simpl.
   unfold nat_prop_carr.
   destruct H1 as (j1 & H1bef & H1whi & H1aft).
   destruct (LPO_fst (A_ge_1 (y ⊕ z) (i + k + 1))) as
@@ -412,9 +412,9 @@ Theorem add_assoc_case_11_11 {r : radix} : ∀ x y z i n1 s1,
   → (∀ k, (z ⊕ (y + x)) (i + k + 1) = rad - 1)
   → (∀ k, A_ge_1 (y ⊕ z) i k = true)
   → (∀ k, A_ge_1 (y ⊕ x) i k = true)
-  → (dig (freal x i) +
+  → (dig (ureal x i) +
        ((y ⊕ z) i + (nA i n1 (y ⊕ z) / rad ^ s1 + 1)) mod rad) mod rad =
-    (dig (freal z i) +
+    (dig (ureal z i) +
        ((y ⊕ x) i + (nA i n1 (y ⊕ x) / rad ^ s1 + 1)) mod rad) mod rad.
 Proof.
 intros *.
@@ -430,10 +430,10 @@ assert (Hr2s1 : 2 ≤ rad ^ s1). {
    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 }
 apply A_ge_1_add_all_true_if in H4; cycle 1.
--intros; apply freal_add_series_le_twice_pred.
+-intros; apply ureal_add_series_le_twice_pred.
 -rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
  rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
- unfold freal_add_series at 1 3.
+ unfold ureal_add_series at 1 3.
  do 6 rewrite Nat.add_assoc.
  do 2 rewrite fold_fd2n.
  replace (fd2n z i + fd2n y i + fd2n x i) with
@@ -442,7 +442,7 @@ apply A_ge_1_add_all_true_if in H4; cycle 1.
  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
  f_equal; f_equal.
  apply A_ge_1_add_all_true_if in H3; cycle 1.
- +intros; apply freal_add_series_le_twice_pred.
+ +intros; apply ureal_add_series_le_twice_pred.
  +destruct H3 as [H3| [H3| H3]].
   *rewrite nA_all_9; [ | intros; apply H3 ].
    destruct H4 as [H4| [H4| H4]].
@@ -467,7 +467,7 @@ apply A_ge_1_add_all_true_if in H4; cycle 1.
   --exfalso.
     destruct H4 as (j2 & H2bef & H2whi & H2aft).
     specialize (eq_add_series_18_eq_9 _ _ _ H3) as (Hy, _).
-    unfold freal_add_series in H2whi.
+    unfold ureal_add_series in H2whi.
     rewrite Hy in H2whi; flia Hr H2whi.
   *destruct H3 as (j1 & H1bef & H1whi & H1aft).
    rewrite (nA_9_8_all_18 j1); [ | easy | easy | easy ].
@@ -480,7 +480,7 @@ apply A_ge_1_add_all_true_if in H4; cycle 1.
    ++exfalso.
      apply eq_add_series_18_eq_9 in H4.
      destruct H4 as (Hy & _).
-     unfold freal_add_series in H1whi.
+     unfold ureal_add_series in H1whi.
      rewrite Hy in H1whi; flia Hr H1whi.
    ++destruct H4 as (j2 & H2bef & H2whi & H2aft).
      rewrite (nA_9_8_all_18 j2); [ | easy | easy | easy ].
@@ -499,9 +499,9 @@ Theorem add_assoc_case_11_12 {r : radix} :  ∀ j2 x y z i n1 s1 n2 s2,
   → (∀ k, fd2n x (i + k + 1) = rad - 1)
   → (∀ k, A_ge_1 (y ⊕ z) i k = true)
   → A_ge_1 (y ⊕ x) i j2 = false
-  → (dig (freal x i) +
+  → (dig (ureal x i) +
        ((y ⊕ z) i + (nA i n1 (y ⊕ z) / rad ^ s1 + 1)) mod rad) mod rad =
-    (dig (freal z i) +
+    (dig (ureal z i) +
        ((y ⊕ x) i + nA i n2 (y ⊕ x) / rad ^ s2) mod rad) mod rad.
 Proof.
 intros *.
@@ -531,7 +531,7 @@ assert (Hr2s2 : 2 ≤ rad ^ s2). {
 }
 rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
 rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
-unfold freal_add_series at 1 3.
+unfold ureal_add_series at 1 3.
 do 5 rewrite Nat.add_assoc.
 do 2 rewrite fold_fd2n.
 replace (fd2n z i + fd2n y i + fd2n x i) with
@@ -541,7 +541,7 @@ rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
 apply A_ge_1_add_all_true_if in H3; cycle 1.
--intros; apply freal_add_series_le_twice_pred.
+-intros; apply ureal_add_series_le_twice_pred.
 -destruct H3 as [H3| [H3| H3]].
  +rewrite nA_all_9; [ | intros; apply H3 ].
   rewrite <- Hs1.
@@ -565,16 +565,16 @@ apply A_ge_1_add_all_true_if in H3; cycle 1.
     apply (@summation_le_compat _ nat_ord_ring).
     intros j Hj; simpl; unfold Nat.le.
     apply Nat.mul_le_mono_r.
-    unfold freal_add_series.
+    unfold ureal_add_series.
     flia.
   *rewrite Nat_div_less_small; [ easy | ].
    apply Nat.nlt_ge in H4.
-   split; [ easy | rewrite Hs2; apply nA_freal_add_series_lt ].
+   split; [ easy | rewrite Hs2; apply nA_ureal_add_series_lt ].
  +exfalso.
   specialize (eq_add_series_18_eq_9 _ _ _ H3) as (Hy, Hz).
   apply Nat.nle_gt in Hj2; apply Hj2; clear Hj2.
   rewrite nA_all_18; cycle 1.
-  *intros; unfold freal_add_series; rewrite Hx, Hy; flia.
+  *intros; unfold ureal_add_series; rewrite Hx, Hy; flia.
   *rewrite <- Hs2; now apply (le_90_198_mod_100 i n2).
  +destruct H3 as (j1 & H1bef & H1whi & H1aft).
   rewrite (nA_9_8_all_18 j1); [ | easy | easy | easy ].
@@ -600,10 +600,10 @@ apply A_ge_1_add_all_true_if in H3; cycle 1.
      apply (@summation_le_compat _ nat_ord_ring).
      intros j Hj; simpl; unfold Nat.le.
      apply Nat.mul_le_mono_r.
-     unfold freal_add_series; flia.
+     unfold ureal_add_series; flia.
   --apply Nat.nlt_ge in H3.
     rewrite Nat_div_less_small; [ now rewrite Nat.mod_1_l | ].
-    split; [ easy | rewrite Hs2; apply nA_freal_add_series_lt ].
+    split; [ easy | rewrite Hs2; apply nA_ureal_add_series_lt ].
 Qed.
 
 Theorem not_all_18_x_yz {r : radix} : ∀ x y z i,
@@ -614,7 +614,7 @@ specialize (eq_add_series_18_eq_9 _ _ _ H1) as (_, H2).
 unfold "+"%F, fd2n in H2; simpl in H2.
 specialize (not_prop_carr_all_9 (y ⊕ z)) as H; unfold d2n in H.
 apply H with (i := i + 1); intros k.
--apply freal_add_series_le_twice_pred.
+-apply ureal_add_series_le_twice_pred.
 -rewrite Nat.add_shuffle0; apply H2.
 Qed.
 
@@ -923,7 +923,7 @@ transitivity ((carry v i + carry (u ⊕ M (v ⊕ carry v)) i) mod rad). {
 rename i into j.
 Print carry.
 Search (fA_ge_1_ε (_ ⊕ _)%F).
-About A_ge_1_freal_add_series_comm.
+About A_ge_1_ureal_add_series_comm.
 unfold carry at 2.
 2: easy.
 ...
@@ -972,13 +972,13 @@ destruct (LPO_fst (fA_ge_1_ε v j)) as [H1| H1].
 ...
 
 Theorem truc {r : radix} : ∀ x u,
-  ({| freal := prop_carr (x ⊕ {| freal := prop_carr u |}) |} =
-   {| freal := prop_carr (add_series (fd2n x) (d2n (prop_carr u))) |})%F.
+  ({| ureal := prop_carr (x ⊕ {| ureal := prop_carr u |}) |} =
+   {| ureal := prop_carr (add_series (fd2n x) (d2n (prop_carr u))) |})%F.
 Proof. easy. Qed.
 
 Theorem pouet {r : radix} : ∀ x y z i,
-  add_series (λ j, dig (freal x j)) (y ⊕ z) i =
-  add_series (λ j, dig (freal z j)) (y ⊕ x) i.
+  add_series (λ j, dig (ureal x j)) (y ⊕ z) i =
+  add_series (λ j, dig (ureal z j)) (y ⊕ x) i.
 Proof.
 intros.
 unfold add_series, "⊕", fd2n.
@@ -987,21 +987,21 @@ do 2 rewrite Nat.add_assoc.
 now rewrite Nat.add_shuffle0.
 Qed.
 
-Theorem freal_add_assoc {r : radix} : ∀ x y z, (x + (y + z) = z + (y + x))%F.
+Theorem ureal_add_assoc {r : radix} : ∀ x y z, (x + (y + z) = z + (y + x))%F.
 Proof.
 intros.
 unfold "+"%F.
 do 2 rewrite truc.
 intros i.
-unfold freal_normalize, fd2n; simpl.
+unfold ureal_normalize, fd2n; simpl.
 apply digit_eq_eq.
 rewrite <- prop_carr_normalizes; cycle 1. {
   intros j.
-  apply (freal_add_series_le_twice_pred x {| freal := prop_carr (y ⊕ z) |} j).
+  apply (ureal_add_series_le_twice_pred x {| ureal := prop_carr (y ⊕ z) |} j).
 }
 rewrite <- prop_carr_normalizes; cycle 1. {
   intros j.
-  apply (freal_add_series_le_twice_pred z {| freal := prop_carr (y ⊕ x) |} j).
+  apply (ureal_add_series_le_twice_pred z {| ureal := prop_carr (y ⊕ x) |} j).
 }
 do 2 rewrite Hugo_Herbelin.
 apply prop_carr_eq_compat.
@@ -1019,8 +1019,8 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros H1 H2.
-unfold freal_add_series.
-unfold freal_add, fd2n; simpl.
+unfold ureal_add_series.
+unfold ureal_add, fd2n; simpl.
 unfold carry.
 destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
 -simpl.
@@ -1030,8 +1030,8 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
   apply (add_assoc_case_11_12 j2); try easy.
   intros k.
   specialize (H1 k) as H5.
-  unfold freal_add_series in H5.
-  rewrite A_ge_1_freal_add_series_all_true in H5; [ | easy ].
+  unfold ureal_add_series in H5.
+  rewrite A_ge_1_ureal_add_series_all_true in H5; [ | easy ].
   now rewrite Nat.add_0_r in H5.
 -destruct H3 as (j1 & Hjj1 & Hj1); simpl.
  destruct (LPO_fst (A_ge_1 (y ⊕ x) i)) as [H4| H4].
@@ -1039,13 +1039,13 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
   apply (add_assoc_case_11_12 j1); try easy.
   intros k.
   specialize (H2 k) as H5.
-  unfold freal_add_series in H5.
-  rewrite A_ge_1_freal_add_series_all_true in H5; [ | easy ].
+  unfold ureal_add_series in H5.
+  rewrite A_ge_1_ureal_add_series_all_true in H5; [ | easy ].
   now rewrite Nat.add_0_r in H5.
  +destruct H4 as (j2 & Hjj2 & Hj2); simpl.
   rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
   rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
-  unfold freal_add_series at 1 3.
+  unfold ureal_add_series at 1 3.
   do 4 rewrite Nat.add_assoc.
   do 2 rewrite fold_fd2n.
   replace (fd2n z i + fd2n y i + fd2n x i) with
@@ -1092,7 +1092,7 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
   --exfalso.
     apply Nat.nlt_ge in H4.
     rewrite Nat_mod_less_small in Hj2; cycle 1.
-   ++split; [ easy | rewrite Hs2; apply nA_freal_add_series_lt ].
+   ++split; [ easy | rewrite Hs2; apply nA_ureal_add_series_lt ].
    ++move Hn1 before s2; move Hs1 before Hn1.
      move Hn2 before Hs1; move Hs2 before Hn2.
      move Hr2s1 before Hs2; move Hr2s2 before Hr2s1.
@@ -1118,19 +1118,19 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
        unfold "⊕", fd2n in H1; simpl in H1.
        do 3 rewrite fold_fd2n in H1.
        specialize carry_le_2 as H5.
-       specialize (H5 (λ i, dig (freal y i) + dig (freal z i)) (i + 1)).
+       specialize (H5 (λ i, dig (ureal y i) + dig (ureal z i)) (i + 1)).
        assert
          (H :
-          ∀ k, (λ i, dig (freal y i) + dig (freal z i)) (i + 1 + k + 1) ≤
+          ∀ k, (λ i, dig (ureal y i) + dig (ureal z i)) (i + 1 + k + 1) ≤
                  2 * (rad - 1)). {
          intros k.
-         specialize (digit_lt_radix (freal y (i + 1 + k + 1))) as H6.
-         specialize (digit_lt_radix (freal z (i + 1 + k + 1))) as H7.
+         specialize (digit_lt_radix (ureal y (i + 1 + k + 1))) as H6.
+         specialize (digit_lt_radix (ureal z (i + 1 + k + 1))) as H7.
          flia H6 H7.
        }
        specialize (H5 H); clear H.
        remember
-         (carry (λ i, dig (freal y i) + dig (freal z i)) (i + 1))
+         (carry (λ i, dig (ureal y i) + dig (ureal z i)) (i + 1))
          as c eqn:Hc.
        destruct c.
        -rewrite Nat.add_0_r in H1.
@@ -1144,8 +1144,8 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
           right; right; right; right; right.
           flia Hr H1.
          *split; [ easy | ].
-          specialize (digit_lt_radix (freal y (i + 1))) as Hy.
-          specialize (digit_lt_radix (freal z (i + 1))) as Hz.
+          specialize (digit_lt_radix (ureal y (i + 1))) as Hy.
+          specialize (digit_lt_radix (ureal z (i + 1))) as Hz.
           unfold fd2n; flia Hy Hz.
        -destruct c.
         +destruct (lt_dec (fd2n y (i + 1) + fd2n z (i + 1) + 1) rad) as [H6| H6].
@@ -1157,8 +1157,8 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
          --rewrite Nat.add_sub_assoc in H1; [ | easy ].
            right; right; right; right; left; flia Hr H1.
          --split; [ easy | ].
-           specialize (digit_lt_radix (freal y (i + 1))) as Hy.
-           specialize (digit_lt_radix (freal z (i + 1))) as Hz.
+           specialize (digit_lt_radix (ureal y (i + 1))) as Hy.
+           specialize (digit_lt_radix (ureal z (i + 1))) as Hz.
            unfold fd2n; flia Hy Hz.
         +destruct c; [ clear H5 | flia H5 ].
          destruct (lt_dec (fd2n y (i + 1) + fd2n z (i + 1) + 2) rad) as [H6| H6].
@@ -1175,15 +1175,15 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
 (* case 3r-3 to be added! *)
 ...
      }
-     remember (freal_shift (i + 1) x) as xs eqn:Hxs.
-     remember (freal_shift (i + 1) y) as ys eqn:Hys.
+     remember (ureal_shift (i + 1) x) as xs eqn:Hxs.
+     remember (ureal_shift (i + 1) y) as ys eqn:Hys.
      move ys before xs.
      assert (Hlex : (xs + ys ≤ xs)%F). {
        unfold "≤"%F.
-       rewrite freal_normalize_add.
-       remember (freal_normalize xs) as xsn eqn:Hxsn.
+       rewrite ureal_normalize_add.
+       remember (ureal_normalize xs) as xsn eqn:Hxsn.
        move xsn before ys.
-       unfold freal_norm_le.
+       unfold ureal_norm_le.
        destruct (LPO_fst (has_same_digits (xs + ys)%F xsn)) as [H5| H5];
          [ easy | ].
        destruct H5 as (j & Hjj & Hj).
@@ -1195,9 +1195,9 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
        apply Nat.nle_gt in H6; apply H6; clear H6.
 (**)
        subst xsn.
-       unfold freal_normalize, fd2n at 2; simpl.
+       unfold ureal_normalize, fd2n at 2; simpl.
        unfold normalize.
-       destruct (LPO_fst (is_9_strict_after (freal xs) j)) as [H5| H5].
+       destruct (LPO_fst (is_9_strict_after (ureal xs) j)) as [H5| H5].
        -specialize (is_9_strict_after_all_9 _ _ H5) as H6; clear H5.
         assert (H5 : ∀ k, fd2n x (i + j + k + 2) = rad - 1). {
           intros k.
@@ -1207,30 +1207,30 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
           unfold fd2n.
           now replace (i + 1 + (j + k + 1)) with (i + j + k + 2) in H6 by flia.
         }
-        destruct (lt_dec (S (d2n (freal xs) j)) rad) as [H7| H7].
+        destruct (lt_dec (S (d2n (ureal xs) j)) rad) as [H7| H7].
         +simpl.
          unfold d2n, fd2n.
-Theorem glop {r : radix} : ∀ x y i, freal_norm_eq (freal_shift i (x + y)) (freal_shift i x + freal_shift i y)%F.
+Theorem glop {r : radix} : ∀ x y i, ureal_norm_eq (ureal_shift i (x + y)) (ureal_shift i x + ureal_shift i y)%F.
 Proof.
 intros * j.
-unfold freal_shift, fd2n.
+unfold ureal_shift, fd2n.
 unfold "+"%F, "⊕", fd2n; simpl.
 f_equal; f_equal.
 unfold carry.
 ...
 ADMITTED.
 rewrite Hxs, Hys.
-Search freal_norm_eq.
+Search ureal_norm_eq.
 ...
 rewrite <- glop.
-unfold freal_shift; simpl.
+unfold ureal_shift; simpl.
 ...
        rewrite Hxsn, Hxs, Hys.
-       unfold freal_shift, fd2n; simpl.
+       unfold ureal_shift, fd2n; simpl.
        unfold "⊕", fd2n; simpl.
        unfold normalize.
 ...
-       destruct (freal_eq_dec xs freal_999) as [Hx| Hx].
+       destruct (ureal_eq_dec xs ureal_999) as [Hx| Hx].
 ...
      remember (max n1 n2) as n3 eqn:Hn3.
      remember (n3 - i - 1) as s3 eqn:Hs3.
@@ -1270,7 +1270,7 @@ unfold freal_shift; simpl.
              by flia H.
             eapply le_lt_trans.
            **apply nA_upper_bound_for_add.
-             intros; apply freal_add_series_le_twice_pred.
+             intros; apply ureal_add_series_le_twice_pred.
            **rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
              apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
              replace 2 with (2 * 1) at 1 by flia.
@@ -1329,7 +1329,7 @@ unfold freal_shift; simpl.
              by flia H.
             eapply le_lt_trans.
            **apply nA_upper_bound_for_add.
-             intros; apply freal_add_series_le_twice_pred.
+             intros; apply ureal_add_series_le_twice_pred.
            **rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
              apply Nat.sub_lt; [ | apply Nat.lt_0_2 ].
              replace 2 with (2 * 1) at 1 by flia.
@@ -1357,7 +1357,7 @@ unfold freal_shift; simpl.
            now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
          *eapply le_lt_trans.
          --apply nA_upper_bound_for_add.
-           intros k; apply freal_add_series_le_twice_pred.
+           intros k; apply ureal_add_series_le_twice_pred.
          --apply Nat.mul_lt_mono_pos_l; [ apply Nat.lt_0_2 | ].
            replace (n2 - (n1 - 1) - 1) with (s2 - s1); cycle 1.
           ++rewrite Hs1, Hs2.
@@ -1479,7 +1479,7 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
      assert (Hxyx : nA i n3 (fd2n (y + x)) < nA i n3 (fd2n x)). {
        move Hj2' at bottom; move H4' at bottom.
 ...
-     rewrite nA_freal_add_series in Hj1', Hj2', H3', H4', H1', H2'.
+     rewrite nA_ureal_add_series in Hj1', Hj2', H3', H4', H1', H2'.
      eapply Nat.add_le_mono_r in H4'.
      rewrite <- Nat.add_assoc, H1' in H4'.
      apply Nat.nlt_ge in H4'; apply H4'; clear H4'.
@@ -1499,7 +1499,7 @@ Pas clair... tout dépend de ce qu'on entend par "≤".
        apply Nat.lt_succ_r.
        apply (Nat.add_le_mono_l _ _ (nA i n3 (fd2n x))).
        rewrite H1'.
-rewrite nA_freal_add_series, Nat.add_comm in H4.
+rewrite nA_ureal_add_series, Nat.add_comm in H4.
 (* ça veut dire que ce que je cherche à démontrer est faux ? *)
 ...
        rewrite Nat.add_comm in Hj2'.
@@ -1511,28 +1511,28 @@ rewrite nA_freal_add_series, Nat.add_comm in H4.
 ...
   *apply Nat.nlt_ge in H3.
    rewrite Nat_div_less_small; cycle 1.
-  --split; [ easy | rewrite Hs1; apply nA_freal_add_series_lt ].
+  --split; [ easy | rewrite Hs1; apply nA_ureal_add_series_lt ].
   --destruct (lt_dec (nA i n2 (y ⊕ x)) (rad ^ s2)) as [H4| H4].
    ++exfalso.
      ... (* same as above, I guess, by symmetry between x and z *)
    ++apply Nat.nlt_ge in H4.
      rewrite Nat_div_less_small; [ easy | ].
-     split; [ easy | rewrite Hs2; apply nA_freal_add_series_lt ].
+     split; [ easy | rewrite Hs2; apply nA_ureal_add_series_lt ].
 ...
 *)
 
-Theorem freal_add_assoc {r : radix} : ∀ x y z,
-  freal_norm_eq (x + (y + z)) ((x + y) + z).
+Theorem ureal_add_assoc {r : radix} : ∀ x y z,
+  ureal_norm_eq (x + (y + z)) ((x + y) + z).
 Proof.
 intros.
 specialize radix_ge_2 as Hr.
-specialize (freal_add_comm (x + y) z) as H.
+specialize (ureal_add_comm (x + y) z) as H.
 rewrite H; clear H.
-specialize (freal_add_comm x y) as H.
+specialize (ureal_add_comm x y) as H.
 rewrite H; clear H.
-unfold freal_norm_eq.
+unfold ureal_norm_eq.
 intros i.
-unfold freal_add at 1 3.
+unfold ureal_add at 1 3.
 unfold fd2n; simpl.
 unfold carry.
 destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
@@ -1576,7 +1576,7 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
         apply H2aft.
       }
       now apply not_all_18_x_yz in H2.
-   ++intros k; apply freal_add_series_le_twice_pred.
+   ++intros k; apply ureal_add_series_le_twice_pred.
   --now apply not_all_18_x_yz in H1.
   --destruct H1 as (j1 & _ & _ & H1aft).
     remember (i + j1 + 1) as n eqn:Hn.
@@ -1603,7 +1603,7 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
      ...
    ++apply Nat.nlt_ge in H2.
      assert (H : rad ^ s1 ≤ nA i n1 (z ⊕ (y + x)) < 2 * rad ^ s1). {
-       split; [ easy | rewrite Hs1; apply nA_freal_add_series_lt ].
+       split; [ easy | rewrite Hs1; apply nA_ureal_add_series_lt ].
      }
      rewrite Nat_mod_less_small in Hj2; [ | easy ].
      rewrite Nat_div_less_small; [ clear H | easy ].
@@ -1621,12 +1621,12 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
       apply H1aft.
     }
     now apply not_all_18_x_yz in H3.
- +intros k; apply freal_add_series_le_twice_pred.
+ +intros k; apply ureal_add_series_le_twice_pred.
 -destruct H1 as (j1 & Hjj1 & Hj1); simpl.
  destruct (LPO_fst (A_ge_1 (z ⊕ (y + x)) i)) as [H2| H2].
  +simpl.
   apply A_ge_1_add_all_true_if in H2; cycle 1.
-  *intros k; apply freal_add_series_le_twice_pred.
+  *intros k; apply ureal_add_series_le_twice_pred.
   *symmetry.
    destruct H2 as [H2| [H2| H2]].
   --rewrite nA_all_9; [ | intros; apply H2 ].

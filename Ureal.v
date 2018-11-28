@@ -130,15 +130,15 @@ Hint Resolve digit_lt_radix digit_le_pred_radix.
 Declare Scope ureal_scope.
 Delimit Scope ureal_scope with F.
 
-Record FracReal {r : radix} := { freal : nat → digit }.
-Arguments freal r _%F.
+Record Ureal {r : radix} := { ureal : nat → digit }.
+Arguments ureal r _%F.
 
-Definition fd2n {r : radix} x (i : nat) := dig (freal x i).
+Definition fd2n {r : radix} x (i : nat) := dig (ureal x i).
 Arguments fd2n _ x%F i%nat.
 
 (* *)
 
-Theorem fold_fd2n {r : radix} : ∀ x i, dig (freal x i) = fd2n x i.
+Theorem fold_fd2n {r : radix} : ∀ x i, dig (ureal x i) = fd2n x i.
 Proof. easy. Qed.
 
 Theorem NQpower_summation (rg := NQ_ord_ring) : ∀ a n,
@@ -276,53 +276,53 @@ Definition normalize {r : radix} (u : nat → digit) i :=
   | inr _ => u i
  end.
 
-Definition freal_normalize {r : radix} x :=
-  {| freal i := normalize (freal x) i |}.
+Definition ureal_normalize {r : radix} x :=
+  {| ureal i := normalize (ureal x) i |}.
 
-Arguments freal_normalize r x%F.
+Arguments ureal_normalize r x%F.
 
 Definition has_same_digits {r : radix} x y i :=
   if Nat.eq_dec (fd2n x i) (fd2n y i) then true else false.
 
-Definition freal_norm_eq {r : radix} x y := ∀ i, fd2n x i = fd2n y i.
-Arguments freal_norm_eq _ x%F y%F.
+Definition ureal_norm_eq {r : radix} x y := ∀ i, fd2n x i = fd2n y i.
+Arguments ureal_norm_eq _ x%F y%F.
 
-Definition freal_norm_lt {r : radix} x y :=
+Definition ureal_norm_lt {r : radix} x y :=
   match LPO_fst (has_same_digits x y) with
   | inl _ => False
   | inr (exist _ i _) =>
       if lt_dec (fd2n x i) (fd2n y i) then True else False
   end.
 
-Definition freal_norm_le {r : radix} x y :=
+Definition ureal_norm_le {r : radix} x y :=
   match LPO_fst (has_same_digits x y) with
   | inl _ => True
   | inr (exist _ i _) =>
       if lt_dec (fd2n x i) (fd2n y i) then True else False
   end.
 
-Definition freal_eq {r : radix} x y :=
-  freal_norm_eq (freal_normalize x) (freal_normalize y).
+Definition ureal_eq {r : radix} x y :=
+  ureal_norm_eq (ureal_normalize x) (ureal_normalize y).
 
-Arguments freal_eq _ x%F y%F.
+Arguments ureal_eq _ x%F y%F.
 
-Definition freal_lt {r : radix} x y :=
-  freal_norm_lt (freal_normalize x) (freal_normalize y).
+Definition ureal_lt {r : radix} x y :=
+  ureal_norm_lt (ureal_normalize x) (ureal_normalize y).
 
-Definition freal_le {r : radix} x y :=
-  freal_norm_le (freal_normalize x) (freal_normalize y).
+Definition ureal_le {r : radix} x y :=
+  ureal_norm_le (ureal_normalize x) (ureal_normalize y).
 
 (*
-Definition freal_0 {r : radix} := {| freal i := digit_0 |}.
+Definition ureal_0 {r : radix} := {| ureal i := digit_0 |}.
 
-Notation "0" := (freal_0) : ureal_scope.
+Notation "0" := (ureal_0) : ureal_scope.
 *)
-Notation "a = b" := (freal_eq a b) : ureal_scope.
+Notation "a = b" := (ureal_eq a b) : ureal_scope.
 (*
-Notation "a ≠ b" := (¬ freal_eq a b) : ureal_scope.
+Notation "a ≠ b" := (¬ ureal_eq a b) : ureal_scope.
 *)
-Notation "a < b" := (freal_lt a b) : ureal_scope.
-Notation "a ≤ b" := (freal_le a b) : ureal_scope.
+Notation "a < b" := (ureal_lt a b) : ureal_scope.
+Notation "a ≤ b" := (ureal_le a b) : ureal_scope.
 
 Theorem is_9_strict_after_all_9 {r : radix} : ∀ u i,
   (∀ j, is_9_strict_after u i j = true)
@@ -351,16 +351,16 @@ Qed.
 
 (* Addition, Multiplication *)
 
-Definition freal_add_series {r : radix} a b i := fd2n a i + fd2n b i.
-Arguments freal_add_series _ a%F b%F.
+Definition ureal_add_series {r : radix} a b i := fd2n a i + fd2n b i.
+Arguments ureal_add_series _ a%F b%F.
 
-Notation "x ⊕ y" := (freal_add_series x y) (at level 50) : ureal_scope.
+Notation "x ⊕ y" := (ureal_add_series x y) (at level 50) : ureal_scope.
 
 (*
 Definition sequence_mul (rg := nat_ord_ring) (a b : nat → nat) i :=
   Σ (j = 0, i), a j * b (i - j).
 
-Definition freal_mul_series {r : radix} a b i :=
+Definition ureal_mul_series {r : radix} a b i :=
   match i with
   | 0 => 0
   | S i' => sequence_mul (fd2n a) (fd2n b) i'
@@ -399,24 +399,24 @@ Definition prop_carr {r : radix} u i :=
   mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0).
 
 (*
-Definition freal_mul_to_seq {r : radix} (a b : FracReal) :=
-  prop_carr (freal_mul_series a b).
+Definition ureal_mul_to_seq {r : radix} (a b : Ureal) :=
+  prop_carr (ureal_mul_series a b).
 *)
 
-Definition freal_add {r : radix} x y := {| freal := prop_carr (x ⊕ y)%F |}.
-Arguments freal_add _ x%F y%F.
+Definition ureal_add {r : radix} x y := {| ureal := prop_carr (x ⊕ y)%F |}.
+Arguments ureal_add _ x%F y%F.
 
 (*
-Definition freal_mul {r : radix} (a b : FracReal) :=
-  {| freal := freal_mul_to_seq a b |}.
+Definition ureal_mul {r : radix} (a b : Ureal) :=
+  {| ureal := ureal_mul_to_seq a b |}.
 *)
 
-Notation "a + b" := (freal_add a b) : ureal_scope.
+Notation "a + b" := (ureal_add a b) : ureal_scope.
 (*
-Notation "a * b" := (freal_mul a b) : ureal_scope.
+Notation "a * b" := (ureal_mul a b) : ureal_scope.
 *)
 
-Theorem A_freal_additive {r : radix} : ∀ i n x y,
+Theorem A_ureal_additive {r : radix} : ∀ i n x y,
   A i n (x ⊕ y)%F = (A i n (fd2n x) + A i n (fd2n y))%NQ.
 Proof.
 intros.
@@ -1161,7 +1161,7 @@ split.
  now rewrite NQadd_sub.
 Qed.
 
-Theorem freal_add_series_comm {r : radix} : ∀ x y i,
+Theorem ureal_add_series_comm {r : radix} : ∀ x y i,
   (x ⊕ y)%F i = (y ⊕ x)%F i.
 Proof.
 intros.
@@ -1169,21 +1169,21 @@ unfold "⊕".
 apply Nat.add_comm.
 Qed.
 
-Theorem A_freal_add_series_comm {r : radix} : ∀ x y i n,
+Theorem A_ureal_add_series_comm {r : radix} : ∀ x y i n,
   A i n (x ⊕ y)%F = A i n (y ⊕ x)%F.
 Proof.
 intros.
 unfold A; cbn.
 apply summation_eq_compat; intros j Hj.
-now rewrite freal_add_series_comm.
+now rewrite ureal_add_series_comm.
 Qed.
 
-Theorem A_ge_1_freal_add_series_comm {r : radix} : ∀ x y i k,
+Theorem A_ge_1_ureal_add_series_comm {r : radix} : ∀ x y i k,
   fA_ge_1_ε (x ⊕ y)%F i k = fA_ge_1_ε (y ⊕ x)%F i k.
 Proof.
 intros.
 unfold fA_ge_1_ε.
-now rewrite A_freal_add_series_comm.
+now rewrite A_ureal_add_series_comm.
 Qed.
 
 Theorem prop_carr_add_comm {r : radix} : ∀ x y i,
@@ -1192,34 +1192,34 @@ Proof.
 intros.
 apply digit_eq_eq; cbn.
 unfold carry.
-rewrite freal_add_series_comm.
+rewrite ureal_add_series_comm.
 destruct (LPO_fst (fA_ge_1_ε (x ⊕ y)%F i)) as [Hxy| Hxy].
--setoid_rewrite freal_add_series_comm.
+-setoid_rewrite ureal_add_series_comm.
  destruct (LPO_fst (fA_ge_1_ε (y ⊕ x)%F i)) as [Hyx| Hyx].
  +f_equal; f_equal; f_equal; f_equal.
   apply summation_eq_compat.
   intros k Hk; f_equal.
-  apply freal_add_series_comm.
+  apply ureal_add_series_comm.
  +destruct Hyx as (k & Hjk & Hk).
-  rewrite A_ge_1_freal_add_series_comm in Hk.
+  rewrite A_ge_1_ureal_add_series_comm in Hk.
   now rewrite Hxy in Hk.
 -destruct Hxy as (k & Hjk & Hk).
- rewrite A_ge_1_freal_add_series_comm in Hk.
+ rewrite A_ge_1_ureal_add_series_comm in Hk.
  destruct (LPO_fst (fA_ge_1_ε (y ⊕ x)%F i)) as [Hyx| Hyx].
  +now rewrite Hyx in Hk.
  +destruct Hyx as (l & Hjl & Hl).
   destruct (lt_eq_lt_dec k l) as [ [ Hkl | Hkl ] | Hkl ].
   *apply Hjl in Hkl.
    now rewrite Hk in Hkl.
-  *rewrite freal_add_series_comm, A_freal_add_series_comm.
+  *rewrite ureal_add_series_comm, A_ureal_add_series_comm.
    now subst k.
   *apply Hjk in Hkl.
-   rewrite A_ge_1_freal_add_series_comm in Hkl.
+   rewrite A_ge_1_ureal_add_series_comm in Hkl.
    now rewrite Hl in Hkl.
 Qed.
 
 Theorem dig_unorm_add_comm {r : radix} : ∀ x y i,
-  freal (x + y) i = freal (y + x) i.
+  ureal (x + y) i = ureal (y + x) i.
 Proof.
 intros; cbn.
 apply prop_carr_add_comm.
@@ -1241,11 +1241,11 @@ unfold has_same_digits.
 now destruct (Nat.eq_dec (fd2n x i) (fd2n y i)).
 Qed.
 
-Theorem freal_add_comm {r : radix} : ∀ x y : FracReal,
-  freal_norm_eq (x + y) (y + x).
+Theorem ureal_add_comm {r : radix} : ∀ x y : Ureal,
+  ureal_norm_eq (x + y) (y + x).
 Proof.
 intros.
-unfold freal_norm_eq.
+unfold ureal_norm_eq.
 remember (x + y)%F as nxy eqn:Hnxy.
 remember (y + x)%F as nyx eqn:Hnyx.
 intros i.
@@ -1253,7 +1253,7 @@ subst nxy nyx; unfold fd2n; f_equal.
 apply dig_unorm_add_comm.
 Qed.
 
-Arguments freal_add_comm _ x%F y%F.
+Arguments ureal_add_comm _ x%F y%F.
 
 Theorem A_split_first {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
@@ -1694,44 +1694,44 @@ Qed.
 
 Require Import Setoid.
 
-Theorem freal_eq_refl {r : radix} : reflexive _ freal_eq.
+Theorem ureal_eq_refl {r : radix} : reflexive _ ureal_eq.
 Proof.
 intros x.
-unfold freal_eq, freal_norm_eq.
-remember (freal_normalize x) as y eqn:Hy.
+unfold ureal_eq, ureal_norm_eq.
+remember (ureal_normalize x) as y eqn:Hy.
 destruct (LPO_fst (has_same_digits y y)) as [Hs| Hs]; [ easy | exfalso ].
 destruct Hs as (i & Hji & Hyy).
 now apply has_same_digits_false_iff in Hyy.
 Qed.
 
-Theorem freal_eq_sym {r : radix} : symmetric _ freal_eq.
+Theorem ureal_eq_sym {r : radix} : symmetric _ ureal_eq.
 Proof.
 intros x y Hxy.
-unfold freal_eq, freal_norm_eq in Hxy |-*.
-remember (freal_normalize x) as nx eqn:Hnx.
-remember (freal_normalize y) as ny eqn:Hny.
+unfold ureal_eq, ureal_norm_eq in Hxy |-*.
+remember (ureal_normalize x) as nx eqn:Hnx.
+remember (ureal_normalize y) as ny eqn:Hny.
 intros i; symmetry; apply Hxy.
 Qed.
 
-Theorem freal_eq_trans {r : radix} : transitive _ freal_eq.
+Theorem ureal_eq_trans {r : radix} : transitive _ ureal_eq.
 Proof.
 intros x y z Hxy Hyz.
-unfold freal_eq, freal_norm_eq in Hxy, Hyz |-*.
-remember (freal_normalize x) as nx eqn:Hnx.
-remember (freal_normalize y) as ny eqn:Hny.
-remember (freal_normalize z) as nz eqn:Hnz.
+unfold ureal_eq, ureal_norm_eq in Hxy, Hyz |-*.
+remember (ureal_normalize x) as nx eqn:Hnx.
+remember (ureal_normalize y) as ny eqn:Hny.
+remember (ureal_normalize z) as nz eqn:Hnz.
 intros i.
 now rewrite Hxy, Hyz.
 Qed.
 
-Add Parametric Relation {r : radix} : (FracReal) freal_eq
- reflexivity proved by freal_eq_refl
- symmetry proved by freal_eq_sym
- transitivity proved by freal_eq_trans
- as freal_eq_rel.
+Add Parametric Relation {r : radix} : (Ureal) ureal_eq
+ reflexivity proved by ureal_eq_refl
+ symmetry proved by ureal_eq_sym
+ transitivity proved by ureal_eq_trans
+ as ureal_eq_rel.
 
 Theorem all_eq_seq_all_eq {r : radix} : ∀ x y,
-  (∀ k, has_same_digits x y k = true) → (∀ k, freal x k = freal y k).
+  (∀ k, has_same_digits x y k = true) → (∀ k, ureal x k = ureal y k).
 Proof.
 intros * Hk *.
 specialize (Hk k).
@@ -1795,7 +1795,7 @@ destruct (LPO_fst (fA_ge_1_ε f i)) as [Hf| Hf].
    now rewrite Hl in Hjk.
 Qed.
 
-Theorem freal_add_series_le_twice_pred {r : radix} : ∀ x y i,
+Theorem ureal_add_series_le_twice_pred {r : radix} : ∀ x y i,
   (x ⊕ y)%F i ≤ 2 * (rad - 1).
 Proof.
 intros *.
@@ -3174,56 +3174,56 @@ Qed.
 *)
 
 (*
-Theorem freal_norm_eq_refl {r : radix} : reflexive _ freal_norm_eq.
+Theorem ureal_norm_eq_refl {r : radix} : reflexive _ ureal_norm_eq.
 Proof.
 intros x.
-unfold freal_norm_eq.
+unfold ureal_norm_eq.
 destruct (LPO_fst (has_same_digits x x)) as [Hs| Hs]; [ easy | exfalso ].
 destruct Hs as (i & Hji & Hyy).
 now apply has_same_digits_false_iff in Hyy.
 Qed.
 
-Theorem freal_norm_eq_sym {r : radix} : symmetric _ freal_norm_eq.
+Theorem ureal_norm_eq_sym {r : radix} : symmetric _ ureal_norm_eq.
 Proof.
 intros x y Hxy.
-unfold freal_norm_eq in Hxy |-*.
+unfold ureal_norm_eq in Hxy |-*.
 intros i; symmetry; apply Hxy.
 Qed.
 
-Theorem freal_norm_eq_trans {r : radix} : transitive _ freal_norm_eq.
+Theorem ureal_norm_eq_trans {r : radix} : transitive _ ureal_norm_eq.
 Proof.
 intros x y z Hxy Hyz.
-unfold freal_norm_eq in Hxy, Hyz |-*.
+unfold ureal_norm_eq in Hxy, Hyz |-*.
 intros i.
 now rewrite Hxy, Hyz.
 Qed.
 
-Add Parametric Relation {r : radix} : (FracReal) freal_norm_eq
- reflexivity proved by freal_norm_eq_refl
- symmetry proved by freal_norm_eq_sym
- transitivity proved by freal_norm_eq_trans
- as freal_norm_eq_rel.
+Add Parametric Relation {r : radix} : (Ureal) ureal_norm_eq
+ reflexivity proved by ureal_norm_eq_refl
+ symmetry proved by ureal_norm_eq_sym
+ transitivity proved by ureal_norm_eq_trans
+ as ureal_norm_eq_rel.
 
-Add Parametric Morphism {r : radix} : freal_normalize
-  with signature freal_norm_eq ==> freal_norm_eq
-  as freal_norm_morph.
+Add Parametric Morphism {r : radix} : ureal_normalize
+  with signature ureal_norm_eq ==> ureal_norm_eq
+  as ureal_norm_morph.
 Proof.
 intros x y Hxy.
-unfold freal_norm_eq in Hxy |-*.
+unfold ureal_norm_eq in Hxy |-*.
 intros i.
-unfold fd2n, freal_normalize; simpl.
+unfold fd2n, ureal_normalize; simpl.
 unfold normalize.
 unfold fd2n in Hxy.
-destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
--destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H3| H3].
- +destruct (lt_dec (S (d2n (freal x) i)) rad) as [H4| H4].
+destruct (LPO_fst (is_9_strict_after (ureal x) i)) as [H2| H2].
+-destruct (LPO_fst (is_9_strict_after (ureal y) i)) as [H3| H3].
+ +destruct (lt_dec (S (d2n (ureal x) i)) rad) as [H4| H4].
   *simpl.
-   destruct (lt_dec (S (d2n (freal y) i)) rad) as [H5| H5].
+   destruct (lt_dec (S (d2n (ureal y) i)) rad) as [H5| H5].
   --simpl; unfold d2n.
     now rewrite Hxy.
   --unfold d2n in H4, H5.
     now rewrite Hxy in H4.
-  *destruct (lt_dec (S (d2n (freal y) i)) rad) as [H5| ]; [ | easy ].
+  *destruct (lt_dec (S (d2n (ureal y) i)) rad) as [H5| ]; [ | easy ].
    unfold d2n in H4, H5.
    now rewrite Hxy in H4.
  +exfalso.
@@ -3234,7 +3234,7 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
   unfold d2n in H2, Hj.
   now rewrite Hxy in H2.
 -destruct H2 as (j & Hjj & Hj).
- destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H2| H2].
+ destruct (LPO_fst (is_9_strict_after (ureal y) i)) as [H2| H2].
  +specialize (H2 j).
   apply is_9_strict_after_true_iff in H2.
   apply is_9_strict_after_false_iff in Hj.
@@ -3243,15 +3243,15 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
  +now rewrite Hxy.
 Qed.
 
-Add Parametric Morphism {r : radix} : freal_add
-  with signature freal_norm_eq ==> freal_norm_eq ==> freal_norm_eq
-  as freal_add_morph.
+Add Parametric Morphism {r : radix} : ureal_add
+  with signature ureal_norm_eq ==> ureal_norm_eq ==> ureal_norm_eq
+  as ureal_add_morph.
 Proof.
 intros x y Hxy x' y' Hxy'.
-unfold freal_norm_eq in Hxy, Hxy'.
-unfold freal_norm_eq.
+unfold ureal_norm_eq in Hxy, Hxy'.
+unfold ureal_norm_eq.
 intros i.
-unfold fd2n, freal_add.
+unfold fd2n, ureal_add.
 unfold fd2n in Hxy, Hxy'.
 f_equal; simpl.
 apply prop_carr_eq_compat.
