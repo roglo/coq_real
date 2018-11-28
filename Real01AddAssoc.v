@@ -1,7 +1,7 @@
 (* Reals between 0 and 1; associativity of addition *)
 
 Require Import Utf8 Arith NPeano Psatz PeanoNat.
-Require Import Misc Summation Ureal Real01Norm NQ.
+Require Import Misc Summation Ureal UrealNorm NQ.
 Set Nested Proofs Allowed.
 
 Theorem pred_rad_lt_rad {r : radix} : rad - 1 < rad.
@@ -823,8 +823,6 @@ rewrite NQintg_add in H3''; [ | | easy ].
 rewrite NQintg_1 in H3''.
 rewrite NQfrac_1, NQadd_0_r in H3''.
 rewrite NQintg_NQfrac, Nat.add_0_r in H3''.
-Print carry.
-Print min_n.
 Abort. (*
 ...
 intros * Hxz Hyz.

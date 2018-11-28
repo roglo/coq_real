@@ -12,16 +12,16 @@ Nat_ggcd.vio: Nat_ggcd.v Misc.vio
 Nat_ggcd.vo Nat_ggcd.glob Nat_ggcd.v.beautified: Nat_ggcd.v Misc.vo
 PQ.vio: PQ.v Misc.vio Nat_ggcd.vio
 PQ.vo PQ.glob PQ.v.beautified: PQ.v Misc.vo Nat_ggcd.vo
-Real01AddAssoc.vio: Real01AddAssoc.v Misc.vio Summation.vio Ureal.vio Real01Norm.vio NQ.vio
-Real01AddAssoc.vo Real01AddAssoc.glob Real01AddAssoc.v.beautified: Real01AddAssoc.v Misc.vo Summation.vo Ureal.vo Real01Norm.vo NQ.vo
-Real01Norm.vio: Real01Norm.v Misc.vio Summation.vio Ureal.vio NQ.vio
-Real01Norm.vo Real01Norm.glob Real01Norm.v.beautified: Real01Norm.v Misc.vo Summation.vo Ureal.vo NQ.vo
+Real01AddAssoc.vio: Real01AddAssoc.v Misc.vio Summation.vio Ureal.vio UrealNorm.vio NQ.vio
+Real01AddAssoc.vo Real01AddAssoc.glob Real01AddAssoc.v.beautified: Real01AddAssoc.v Misc.vo Summation.vo Ureal.vo UrealNorm.vo NQ.vo
 Small.vio: Small.v Misc.vio Summation.vio
 Small.vo Small.glob Small.v.beautified: Small.v Misc.vo Summation.vo
 Summation.vio: Summation.v Misc.vio
 Summation.vo Summation.glob Summation.v.beautified: Summation.v Misc.vo
 Ureal.vio: Ureal.v Misc.vio Summation.vio NQ.vio
 Ureal.vo Ureal.glob Ureal.v.beautified: Ureal.v Misc.vo Summation.vo NQ.vo
+UrealNorm.vio: UrealNorm.v Misc.vio Summation.vio Ureal.vio NQ.vio
+UrealNorm.vo UrealNorm.glob UrealNorm.v.beautified: UrealNorm.v Misc.vo Summation.vo Ureal.vo NQ.vo
 Xnat.vio: Xnat.v Misc.vio Summation.vio
 Xnat.vo Xnat.glob Xnat.v.beautified: Xnat.v Misc.vo Summation.vo
 cat.vio: cat.v
