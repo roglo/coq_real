@@ -1991,6 +1991,12 @@ rewrite (NQintg_frac x) at 2; [ | easy ].
 now rewrite NQadd_sub.
 Qed.
 
+Theorem NQintg_0 : NQintg 0 = 0.
+Proof. easy. Qed.
+
+Theorem NQintg_1 : NQintg 1 = 1.
+Proof. easy. Qed.
+
 Theorem NQfrac_0 : NQfrac 0 = 0%NQ.
 Proof. easy. Qed.
 

@@ -786,6 +786,18 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite <- Hav in H3'.
    rewrite NQintg_add_frac.
    rewrite NQfrac_add in H1'.
+specialize (A_bounds_if_all_fA_ge_1_ε (u ⊕ P v) i) as H1''.
+enough (H : (∀ j : nat, j ≥ i → (u ⊕ P v) j ≤ (j + 1) * (rad - 1) ^ 2)).
+specialize (H1'' H H1 0 0); clear H.
+rewrite Nat.add_0_r, Nat.pow_1_r in H1''.
+rewrite A_additive in H1''.
+rewrite <- Hau, <- Hapv in H1''.
+rewrite NQintg_add in H1''; [ | | easy ].
+rewrite NQintg_1 in H1''.
+rewrite NQfrac_1, NQadd_0_r in H1''.
+rewrite NQintg_NQfrac, Nat.add_0_r in H1''.
+rewrite NQintg_add in H1''.
+rewrite NQintg_add_frac in H1''.
    remember (NQfrac au + NQfrac apv)%NQ as x eqn:Hx.
    destruct (NQlt_le_dec x 1) as [H4| H4].
 2: {
@@ -795,8 +807,6 @@ rewrite NQfrac_add in H2'.
    destruct (NQlt_le_dec x 1) as [H5| H5].
    subst x.
    rewrite NQfrac_eq_when_lt_1 in H2'.
-specialize (A_bounds_if_all_fA_ge_1_ε (P v) i) as H2''.
-
 ...
 intros * Hxz Hyz.
 symmetry.
