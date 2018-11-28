@@ -1,4 +1,4 @@
-TARGET=Real01AddAssoc.vo
+TARGET=UrealAddAssoc.vo
 FILESFORDEP=`LC_ALL=C ls *.v`
 
 all: $(TARGET)
