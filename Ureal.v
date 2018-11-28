@@ -758,7 +758,7 @@ Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
   → (∀ j, u (n + j) ≤ (n + j + 1) * (rad - 1) ^ 2)
   → (B i n u l ≤ (n * (rad - 1) + rad) // rad ^ (n - i - 1))%NQ.
 Proof.
-intros * Hn Hi Hu.
+intros * Hn Hi Hur.
 specialize radix_ge_2 as Hr.
 unfold B.
 destruct (zerop l) as [Hl| Hl].
@@ -786,7 +786,7 @@ destruct (zerop l) as [Hl| Hl].
   apply Nat.mul_le_mono_r.
   rewrite Nat.mul_comm.
   replace k with (n + (k - n)) by flia Hk.
-  apply Hu.
+  apply Hur.
  +replace (n + l - 1) with (n + (l - 1)) by flia Hl.
   rewrite <- summation_mul_distr_l.
   rewrite summation_succ_inv_pow; [ | easy ].
@@ -970,7 +970,7 @@ Theorem B_upper_bound {r : radix} : ∀ u i k l,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
 Proof.
-intros * Hu.
+intros * Hur.
 specialize radix_ge_2 as Hr.
 remember (min_n i k) as n eqn:Hn.
 eapply NQle_lt_trans.
@@ -983,7 +983,7 @@ eapply NQle_lt_trans.
    destruct rad; [ easy | cbn; flia ].
  }
  intros j.
- apply Hu.
+ apply Hur.
  subst n; unfold min_n.
  destruct rad; [ easy | cbn; flia ].
 -enough (H : n * (rad - 1) + rad < rad ^ (n - (i + k + 2))). {
