@@ -1022,55 +1022,67 @@ now destruct
   (NQlt_le_dec (NQfrac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%NQ).
 Qed.
 
-Theorem fApB_bounds {r : radix} : ∀ u i k l,
-  (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
-  → (∀ k, fA_ge_1_ε u i k = true)
-  → (1 - 1 // rad ^ S k ≤ NQfrac (A i (min_n i k) u) + B i (min_n i k) u l <
-     (1 + 1 // rad ^ S k))%NQ.
+Theorem fApB_lower_bound {r : radix} : ∀ u i k l,
+  (∀ k, fA_ge_1_ε u i k = true)
+  → (1 - 1 // rad ^ S k ≤ NQfrac (A i (min_n i k) u) + B i (min_n i k) u l)%NQ.
 Proof.
-intros * Hur HfA.
-split.
--specialize (frac_ge_if_all_fA_ge_1_ε u i HfA k) as H.
- eapply NQle_trans; [ apply H | ].
- apply NQle_sub_le_add_l.
- rewrite NQsub_diag.
- apply B_ge_0.
--apply NQadd_lt_mono; [ apply NQfrac_lt_1 | ].
- apply B_upper_bound, Hur.
+intros * HfA.
+specialize (frac_ge_if_all_fA_ge_1_ε u i HfA k) as H.
+eapply NQle_trans; [ apply H | ].
+apply NQle_sub_le_add_l.
+rewrite NQsub_diag.
+apply B_ge_0.
 Qed.
 
-Theorem ApB_bounds {r : radix} : ∀ u i k l n,
+Theorem fApB_upper_bound {r : radix} : ∀ u i k l,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
-  → (∀ k, fA_ge_1_ε u i k = true)
-  → n = min_n i k
-  → (NQintg (A i n u + 1) // 1 - 1 // rad ^ S k ≤ A i n u + B i n u l <
-     (NQintg (A i n u + 1) // 1 + 1 // rad ^ S k))%NQ.
+  → (NQfrac (A i (min_n i k) u) + B i (min_n i k) u l <
+      1 + 1 // rad ^ S k)%NQ.
 Proof.
-intros * Hur Hfa Hn.
-specialize (fApB_bounds u i k l Hur Hfa) as (H1, H2).
-rewrite <- Hn in H1, H2.
-split.
--apply (NQadd_le_mono_l _ _ (NQintg (A i n u) // 1)) in H1.
- rewrite NQadd_sub_assoc in H1.
- rewrite NQadd_pair in H1; [ | easy | easy ].
- do 2 rewrite Nat.mul_1_r in H1.
- rewrite NQadd_assoc in H1.
- rewrite <- NQintg_frac in H1; [ | apply A_ge_0 ].
- replace (NQintg (A i n u) + 1) with (NQintg (A i n u + 1)%NQ) in H1.
- +easy.
- +rewrite NQintg_add; [ | apply A_ge_0 | easy ].
-  rewrite NQfrac_1, NQadd_0_r.
-  now rewrite NQintg_NQfrac, Nat.add_0_r.
--apply (NQadd_lt_mono_l (NQintg (A i n u) // 1)) in H2.
- do 2 rewrite NQadd_assoc in H2.
- rewrite <- NQintg_frac in H2; [ | apply A_ge_0 ].
- rewrite NQadd_pair in H2; [ | easy | easy ].
- do 2 rewrite Nat.mul_1_r in H2.
- replace (NQintg (A i n u) + 1) with (NQintg (A i n u + 1)%NQ) in H2.
- +easy.
- +rewrite NQintg_add; [ | apply A_ge_0 | easy ].
-  rewrite NQfrac_1, NQadd_0_r.
-  now rewrite NQintg_NQfrac, Nat.add_0_r.
+intros * Hur.
+apply NQadd_lt_mono; [ apply NQfrac_lt_1 | ].
+apply B_upper_bound, Hur.
+Qed.
+
+Theorem ApB_lower_bound {r : radix} : ∀ u i k l n,
+  (∀ k, fA_ge_1_ε u i k = true)
+  → n = min_n i k
+  → (NQintg (A i n u + 1) // 1 - 1 // rad ^ S k ≤ A i n u + B i n u l)%NQ.
+Proof.
+intros * Hfa Hn.
+specialize (fApB_lower_bound u i k l Hfa) as H1.
+rewrite <- Hn in H1.
+apply (NQadd_le_mono_l _ _ (NQintg (A i n u) // 1)) in H1.
+rewrite NQadd_sub_assoc in H1.
+rewrite NQadd_pair in H1; [ | easy | easy ].
+do 2 rewrite Nat.mul_1_r in H1.
+rewrite NQadd_assoc in H1.
+rewrite <- NQintg_frac in H1; [ | apply A_ge_0 ].
+replace (NQintg (A i n u) + 1) with (NQintg (A i n u + 1)%NQ) in H1.
++easy.
++rewrite NQintg_add; [ | apply A_ge_0 | easy ].
+ rewrite NQfrac_1, NQadd_0_r.
+ now rewrite NQintg_NQfrac, Nat.add_0_r.
+Qed.
+
+Theorem ApB_upper_bound {r : radix} : ∀ u i k l n,
+  (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
+  → n = min_n i k
+  → (A i n u + B i n u l < NQintg (A i n u + 1) // 1 + 1 // rad ^ S k)%NQ.
+Proof.
+intros * Hur Hn.
+specialize (fApB_upper_bound u i k l Hur) as H1.
+rewrite <- Hn in H1.
+apply (NQadd_lt_mono_l (NQintg (A i n u) // 1)) in H1.
+do 2 rewrite NQadd_assoc in H1.
+rewrite <- NQintg_frac in H1; [ | apply A_ge_0 ].
+rewrite NQadd_pair in H1; [ | easy | easy ].
+do 2 rewrite Nat.mul_1_r in H1.
+replace (NQintg (A i n u) + 1) with (NQintg (A i n u + 1)%NQ) in H1.
++easy.
++rewrite NQintg_add; [ | apply A_ge_0 | easy ].
+ rewrite NQfrac_1, NQadd_0_r.
+ now rewrite NQintg_NQfrac, Nat.add_0_r.
 Qed.
 
 Theorem ApB_B {r : radix} : ∀ u i n l,
@@ -1094,24 +1106,36 @@ symmetry; apply A_split.
 flia Hin.
 Qed.
 
-Theorem A_bounds_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
-  (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
-  → (∀ k, fA_ge_1_ε u i k = true)
+Theorem A_lower_bound_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
+  (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l,
      (NQintg (A i (min_n i k) u + 1) // 1 - 1 // rad ^ S k ≤
-      A i (min_n i k + l) u <
-      NQintg (A i (min_n i k) u + 1) // 1 + 1 // rad ^ S k)%NQ.
+      A i (min_n i k + l) u)%NQ.
 Proof.
-intros u i Hur HfA k l.
+intros u i HfA k l.
 specialize radix_ge_2 as Hr.
 remember (min_n i k) as n eqn:Hn.
 move n before l.
-specialize (ApB_bounds u i k l n Hur HfA Hn) as H1.
-assert (Hin : i + 1 ≤ n). {
-  rewrite Hn; unfold min_n.
-  destruct rad; [ easy | cbn; flia ].
-}
-now rewrite ApB_A in H1.
+specialize (ApB_lower_bound u i k l n HfA Hn) as H1.
+rewrite ApB_A in H1; [ easy | ].
+rewrite Hn; unfold min_n.
+destruct rad; [ easy | cbn; flia ].
+Qed.
+
+Theorem A_upper_bound {r : radix} : ∀ u i,
+  (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
+  → ∀ k l,
+     (A i (min_n i k + l) u <
+      NQintg (A i (min_n i k) u + 1) // 1 + 1 // rad ^ S k)%NQ.
+Proof.
+intros u i Hur k l.
+specialize radix_ge_2 as Hr.
+remember (min_n i k) as n eqn:Hn.
+move n before l.
+specialize (ApB_upper_bound u i k l n Hur Hn) as H1.
+rewrite ApB_A in H1; [ easy | ].
+rewrite Hn; unfold min_n.
+destruct rad; [ easy | cbn; flia ].
 Qed.
 
 Theorem frac_eq_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
