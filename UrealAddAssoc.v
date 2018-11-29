@@ -787,7 +787,9 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ M (v ⊕ carry v)) i)) as [H1| H1].
    rewrite <- Hau, <- Hav in H2'.
    rewrite <- Hav in H3'.
    rewrite NQintg_add_frac.
+(*
    rewrite NQfrac_add in H1'.
+*)
 specialize (A_lower_bound_if_all_fA_ge_1_ε _ i H1 0 0) as H1''.
 rewrite Nat.add_0_r, Nat.pow_1_r in H1''.
 rewrite A_additive in H1''.
@@ -802,7 +804,9 @@ rewrite NQintg_add_frac in H1''.
    destruct (NQlt_le_dec x 1) as [H4| H4].
 2: {
   subst x.
+(*
 rewrite NQfrac_add in H2'.
+*)
 specialize (A_lower_bound_if_all_fA_ge_1_ε (u ⊕ v) i H2 0 0) as H2''.
 rewrite Nat.add_0_r, Nat.pow_1_r in H2''.
 rewrite A_additive in H2''.
@@ -817,7 +821,9 @@ rewrite NQintg_add_frac in H2''.
    destruct (NQlt_le_dec x 1) as [H5| H5].
 move H5 before H4.
    subst x.
+(*
    rewrite NQfrac_eq_when_lt_1 in H2'.
+*)
 rewrite Nat.add_0_r in H2''.
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0 0) as H3''.
 rewrite Nat.add_0_r, Nat.pow_1_r in H3''.
