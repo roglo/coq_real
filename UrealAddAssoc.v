@@ -748,17 +748,18 @@ Theorem glop {r : radix} : ∀ u i,
 *)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
-  (carry (u ⊕ P v) i + carry v i) mod rad = carry (u ⊕ v) i mod rad.
+  (carry v i + carry (u ⊕ M (v ⊕ carry v)) i) mod rad = carry (u ⊕ v) i mod rad.
 Proof.
 intros.
 specialize radix_ge_2 as Hr.
-unfold carry.
+rewrite Nat.add_comm.
+unfold carry at 1 3 4.
 do 2 rewrite A_additive.
 remember (A i (min_n i 0) u) as au eqn:Hau.
 remember (A i (min_n i 0) v) as av eqn:Hav.
-remember (A i (min_n i 0) (P v)) as apv eqn:Hapv.
+remember (A i (min_n i 0) (M (v ⊕ carry v))) as apv eqn:Hapv.
 move apv before au; move av before au.
-destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ M (v ⊕ carry v)) i)) as [H1| H1].
 -rewrite NQintg_add; [ | subst; apply A_ge_0 | subst; apply A_ge_0 ].
  rewrite NQintg_add_frac.
  destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
@@ -787,7 +788,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite <- Hav in H3'.
    rewrite NQintg_add_frac.
    rewrite NQfrac_add in H1'.
-specialize (A_lower_bound_if_all_fA_ge_1_ε (u ⊕ P v) i H1 0 0) as H1''.
+specialize (A_lower_bound_if_all_fA_ge_1_ε _ i H1 0 0) as H1''.
 rewrite Nat.add_0_r, Nat.pow_1_r in H1''.
 rewrite A_additive in H1''.
 rewrite <- Hau, <- Hapv in H1''.
@@ -824,8 +825,8 @@ rewrite NQintg_add in H3''; [ | | easy ].
 rewrite NQintg_1 in H3''.
 rewrite NQfrac_1, NQadd_0_r in H3''.
 rewrite NQintg_NQfrac, Nat.add_0_r in H3''.
-Abort. (*
 ...
+Abort. (*
 intros * Hxz Hyz.
 symmetry.
 destruct x as [| xp| xp], y as [| yp| yp]; try easy.
