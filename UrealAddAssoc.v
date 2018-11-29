@@ -815,6 +815,7 @@ rewrite NQintg_add in H2''.
 rewrite NQintg_add_frac in H2''.
    remember (NQfrac au + NQfrac av)%NQ as x eqn:Hx.
    destruct (NQlt_le_dec x 1) as [H5| H5].
+move H5 before H4.
    subst x.
    rewrite NQfrac_eq_when_lt_1 in H2'.
 rewrite Nat.add_0_r in H2''.
