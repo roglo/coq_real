@@ -386,12 +386,8 @@ Definition fA_ge_1_ε {r : radix} u i k :=
 
 Definition carry {r : radix} u i :=
   match LPO_fst (fA_ge_1_ε u i) with
-  | inl _ =>
-      let n := min_n i 0 in
-      NQintg (A i n u) + 1
-  | inr (exist _ k _) =>
-      let n := min_n i k in
-      NQintg (A i n u)
+  | inl _ => NQintg (A i (min_n i 0) u) + 1
+  | inr (exist _ k _) => NQintg (A i (min_n i k) u)
   end.
 
 Definition prop_carr {r : radix} u i :=
