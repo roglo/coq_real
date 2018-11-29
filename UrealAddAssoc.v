@@ -825,6 +825,7 @@ rewrite NQintg_add in H3''; [ | | easy ].
 rewrite NQintg_1 in H3''.
 rewrite NQfrac_1, NQadd_0_r in H3''.
 rewrite NQintg_NQfrac, Nat.add_0_r in H3''.
+(* question: est-ce prouvable ou est-ce exfalso ? *)
 ...
 Abort. (*
 intros * Hxz Hyz.
