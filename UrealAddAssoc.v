@@ -825,6 +825,27 @@ move H5 before H4.
    rewrite NQfrac_eq_when_lt_1 in H2'.
 *)
 rewrite Nat.add_0_r in H2''.
+specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0) as H3''.
+rewrite Nat.pow_1_r in H3''.
+rewrite <- Hav in H3''.
+rewrite NQintg_add in H3''; [ | | easy ].
+rewrite NQintg_1 in H3''.
+rewrite NQfrac_1, NQadd_0_r in H3''.
+rewrite NQintg_NQfrac, Nat.add_0_r in H3''.
+assert (H : ∀ l : nat,
+           ((NQintg av + 1) // 1 - 1 // rad ≤ av + B i (min_n i 0) v l)%NQ). {
+  intros l.
+  specialize (H3'' l).
+  rewrite <- ApB_A, <- Hav in H3''.
+  easy.
+  unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
+clear H3''; rename H into H3''.
+remember (min_n i 0) as n eqn:Hn.
+
+...
+
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0 0) as H3''.
 rewrite Nat.add_0_r, Nat.pow_1_r in H3''.
 rewrite <- Hav in H3''.
