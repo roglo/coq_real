@@ -706,6 +706,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H2| H2].
 Definition P {r : radix} u := d2n (prop_carr u).
 Definition add_series (u v : nat → nat) i := u i + v i.
 Notation "u ⊕ v" := (add_series u v) (at level 50).
+Definition M {r : radix} (u : nat → _) i := u i mod rad.
 
 Theorem A_additive {r : radix} : ∀ i n u v,
   A i n (u ⊕ v) = (A i n u + A i n v)%NQ.
@@ -911,13 +912,13 @@ f_equal; f_equal.
 subst pv.
 replace (d2n (prop_carr v)) with (P v) by easy.
 (**)
-remember (λ (u : nat → nat) i, u i mod rad) as M.
 transitivity ((carry v i + carry (u ⊕ M (v ⊕ carry v)) i) mod rad). {
   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
   f_equal; f_equal.
-  now subst M.
 }
+...
+unfold carry at 1 2 4.
 
 ...
 rename i into j.
