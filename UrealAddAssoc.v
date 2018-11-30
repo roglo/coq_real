@@ -832,18 +832,23 @@ rewrite NQintg_add in H3''; [ | | easy ].
 rewrite NQintg_1 in H3''.
 rewrite NQfrac_1, NQadd_0_r in H3''.
 rewrite NQintg_NQfrac, Nat.add_0_r in H3''.
-assert (H : ∀ l : nat,
-           ((NQintg av + 1) // 1 - 1 // rad ≤ av + B i (min_n i 0) v l)%NQ). {
-  intros l.
-  specialize (H3'' l).
-  rewrite <- ApB_A, <- Hav in H3''.
+assert
+  (H : ∀ l,
+   l ≥ min_n i 0
+   → ((NQintg av + 1) // 1 - 1 // rad ≤ B i (i + 1) v l)%NQ). {
+  intros l Hl.
+  specialize (H3'' (l - min_n i 0 + i + 1)).
+  assert (Hin : i + 1 ≤ min_n i 0). {
+    unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  }
+  rewrite <- ApB_A in H3''; [ | easy ].
+  rewrite ApB_B in H3''; [ | easy ].
+  replace (min_n i 0 - i - 1 + (l - min_n i 0 + i + 1)) with l in H3''
+    by flia Hl Hin.
   easy.
-  unfold min_n.
-  destruct rad; [ easy | cbn; flia ].
 }
 clear H3''; rename H into H3''.
-remember (min_n i 0) as n eqn:Hn.
-
 ...
 
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0 0) as H3''.
