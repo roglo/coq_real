@@ -459,6 +459,14 @@ f_equal; f_equal.
 flia Hin Hj.
 Qed.
 
+Theorem A_of_B {r : radix} : ∀ u i l,
+  A i (i + l + 1) u = B i (i + 1) u l.
+Proof.
+intros.
+unfold A, B.
+now rewrite Nat.add_shuffle0.
+Qed.
+
 Theorem A_ge_0 {r : radix} : ∀ i n u, (0 ≤ A i n u)%NQ.
 Proof.
 intros.
