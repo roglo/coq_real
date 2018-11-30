@@ -790,8 +790,11 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ M (v ⊕ carry v)) i)) as [H1| H1].
 (*
    rewrite NQfrac_add in H1'.
 *)
-specialize (A_lower_bound_if_all_fA_ge_1_ε _ i H1 0 0) as H1''.
+specialize (A_lower_bound_if_all_fA_ge_1_ε _ i H1 0) as H1''.
+rewrite Nat.pow_1_r in H1''.
+(*
 rewrite Nat.add_0_r, Nat.pow_1_r in H1''.
+*)
 rewrite A_additive in H1''.
 rewrite <- Hau, <- Hapv in H1''.
 rewrite NQintg_add in H1''; [ | | easy ].
@@ -869,6 +872,23 @@ assert
   easy.
 }
 clear H2''; rename H into H2''; move H2'' after H3''.
+assert (H : ∀ l,
+           l ≥ min_n i 0
+           → ((NQintg au + NQintg apv + 1 + 1) // 1 - 1 // rad
+              ≤ B i (i + 1) (u ⊕ M (v ⊕ carry v)) l)%NQ). {
+  intros l Hl.
+  specialize (H1'' (l - min_n i 0 + i + 1)).
+  assert (Hin : i + 1 ≤ min_n i 0). {
+    unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  }
+  rewrite <- ApB_A in H1''; [ | easy ].
+  rewrite ApB_B in H1''; [ | easy ].
+  replace (min_n i 0 - i - 1 + (l - min_n i 0 + i + 1)) with l in H1''
+    by flia Hl Hin.
+  easy.
+}
+clear H1''; rename H into H1''; move H1'' after H2''.
 ...
 
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0 0) as H3''.
