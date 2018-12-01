@@ -841,7 +841,7 @@ rewrite NQintg_NQfrac, Nat.add_0_r in H3''.
 assert
   (H : ∀ l,
    l ≥ min_n i 0
-   → ((NQintg av + 1) // 1 - 1 // rad ≤ B i (i + 1) v l)%NQ). {
+   → ((NQintg av + 1) // 1 - 1 // rad ≤ A i (i + l + 1) v)%NQ). {
   intros l Hl.
   specialize (H3'' (l - min_n i 0 + i + 1)).
   assert (Hin : i + 1 ≤ min_n i 0). {
@@ -852,13 +852,14 @@ assert
   rewrite ApB_B in H3''; [ | easy ].
   replace (min_n i 0 - i - 1 + (l - min_n i 0 + i + 1)) with l in H3''
     by flia Hl Hin.
+  rewrite <- A_of_B in H3''.
   easy.
 }
 clear H3''; rename H into H3''.
 assert
   (H : ∀ l,
    l ≥ min_n i 0
-   → ((NQintg au + NQintg av + 1) // 1 - 1 // rad ≤ B i (i + 1) (u ⊕ v) l)%NQ). {
+   → ((NQintg au + NQintg av + 1) // 1 - 1 // rad ≤ A i (i + l + 1) u + A i (i + l + 1) v)%NQ). {
   intros l Hl.
   specialize (H2'' (l - min_n i 0 + i + 1)).
   assert (Hin : i + 1 ≤ min_n i 0). {
@@ -869,13 +870,16 @@ assert
   rewrite ApB_B in H2''; [ | easy ].
   replace (min_n i 0 - i - 1 + (l - min_n i 0 + i + 1)) with l in H2''
     by flia Hl Hin.
+  rewrite <- A_of_B in H2''.
+  rewrite A_additive in H2''.
   easy.
 }
 clear H2''; rename H into H2''; move H2'' after H3''.
 assert (H : ∀ l,
            l ≥ min_n i 0
            → ((NQintg au + NQintg apv + 1 + 1) // 1 - 1 // rad
-              ≤ A i (i + l + 1) (u ⊕ M (v ⊕ carry v)))%NQ). {
+              ≤ A i (i + l + 1) u +
+                A i (i + l + 1) (M (v ⊕ carry v)))%NQ). {
   intros l Hl.
   specialize (H1'' (l - min_n i 0 + i + 1)).
   assert (Hin : i + 1 ≤ min_n i 0). {
@@ -887,10 +891,10 @@ assert (H : ∀ l,
   replace (min_n i 0 - i - 1 + (l - min_n i 0 + i + 1)) with l in H1''
     by flia Hl Hin.
   rewrite <- A_of_B in H1''.
+  rewrite A_additive in H1''.
   easy.
 }
 clear H1''; rename H into H1''; move H1'' after H2''.
-(* on peut faire la même chose pour H2'' et H3'' (A au lieu de B) *)
 ...
 
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0 0) as H3''.
