@@ -895,6 +895,8 @@ assert (H : ∀ l,
   easy.
 }
 clear H1''; rename H into H1''; move H1'' after H2''.
+Check A_lower_bound_if_all_fA_ge_1_ε.
+Check A_upper_bound.
 ...
 
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0 0) as H3''.
