@@ -846,36 +846,36 @@ rewrite NQintg_NQfrac, Nat.add_0_r in H3''.
 assert
   (H : ∀ l,
    l ≥ min_n i 0
-   → ((NQintg av + 1) // 1 - 1 // rad ≤ A i (i + l + 1) v)%NQ). {
+   → ((NQintg av + 1) // 1 - 1 // rad ≤ A i (i + l) v)%NQ). {
   intros l Hl.
-  specialize (H3'' (l - min_n i 0 + i + 1)).
+  specialize (H3'' (l - min_n i 0 + i)).
   assert (Hin : i + 1 ≤ min_n i 0). {
     unfold min_n.
     destruct rad; [ easy | cbn; flia ].
   }
   rewrite <- ApB_A in H3''; [ | easy ].
   rewrite ApB_B in H3''; [ | easy ].
-  replace (min_n i 0 - i - 1 + (l - min_n i 0 + i + 1)) with l in H3''
-    by flia Hl Hin.
   rewrite <- A_of_B in H3''.
+  replace (i + (min_n i 0 - i - 1 + (l - min_n i 0 + i)) + 1) with (i + l) in H3''
+    by flia Hl Hin.
   easy.
 }
 clear H3''; rename H into H3''.
 assert
   (H : ∀ l,
    l ≥ min_n i 0
-   → ((NQintg au + NQintg av + 1) // 1 - 1 // rad ≤ A i (i + l + 1) u + A i (i + l + 1) v)%NQ). {
+   → ((NQintg au + NQintg av + 1) // 1 - 1 // rad ≤ A i (i + l) u + A i (i + l) v)%NQ). {
   intros l Hl.
-  specialize (H2'' (l - min_n i 0 + i + 1)).
+  specialize (H2'' (l - min_n i 0 + i)).
   assert (Hin : i + 1 ≤ min_n i 0). {
     unfold min_n.
     destruct rad; [ easy | cbn; flia ].
   }
   rewrite <- ApB_A in H2''; [ | easy ].
   rewrite ApB_B in H2''; [ | easy ].
-  replace (min_n i 0 - i - 1 + (l - min_n i 0 + i + 1)) with l in H2''
-    by flia Hl Hin.
   rewrite <- A_of_B in H2''.
+  replace (i + (min_n i 0 - i - 1 + (l - min_n i 0 + i)) + 1) with (i + l) in H2''
+    by flia Hl Hin.
   rewrite A_additive in H2''.
   easy.
 }
@@ -904,9 +904,9 @@ enough (H : ∀ j, j ≥ i → (u ⊕ M (v ⊕ carry v)) j ≤ (j + 1) * (rad - 
 assert (H1''' : ∀ l, l ≥ min_n i 0 → (A i (i + l) u + A i (i + l) (M (v ⊕ carry v)) <
            (NQintg au + NQintg apv + 1 + 1) // 1 + 1 // rad)%NQ). {
 intros l Hl.
-specialize (A_upper_bound (u ⊕ M (v ⊕ carry v)) i H 0 (i + 1 + l - min_n i 0)) as H1'''.
+specialize (A_upper_bound (u ⊕ M (v ⊕ carry v)) i H 0 (i + l - min_n i 0)) as H1'''.
 rewrite Nat.add_sub_assoc in H1'''; [ | flia Hl ].
-rewrite Nat.add_comm, Nat.add_sub, Nat.add_shuffle0 in H1'''.
+rewrite Nat.add_comm, Nat.add_sub in H1'''.
 do 2 rewrite A_additive in H1'''.
 rewrite Nat.pow_1_r in H1'''.
 rewrite <- Hau, <- Hapv in H1'''.
@@ -915,7 +915,6 @@ rewrite NQintg_1, NQfrac_1, NQadd_0_r, NQintg_NQfrac, Nat.add_0_r in H1'''.
 rewrite NQintg_add in H1'''; [ | easy | easy ].
 rewrite NQintg_add_frac in H1'''.
 apply NQnlt_ge in H4.
-...
 now destruct (NQlt_le_dec (NQfrac au + NQfrac apv) 1).
 }
 clear H.
