@@ -892,6 +892,7 @@ now destruct (NQlt_le_dec (NQfrac au + NQfrac apv) 1).
 }
 clear H.
 move H1''' before H1''.
+(* y a un rad ^ k qu'il faut mettre dans H3'' à la place de rad *)
 ...
 
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0 0) as H3''.
