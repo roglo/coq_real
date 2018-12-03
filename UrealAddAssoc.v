@@ -4,6 +4,9 @@ Require Import Utf8 Arith NPeano Psatz PeanoNat.
 Require Import Misc Summation Ureal UrealNorm NQ.
 Set Nested Proofs Allowed.
 
+Hint Resolve A_ge_0.
+Hint Resolve NQfrac_ge_0.
+
 Theorem pred_rad_lt_rad {r : radix} : rad - 1 < rad.
 Proof.
 specialize radix_ge_2 as H; lia.
@@ -893,6 +896,14 @@ now destruct (NQlt_le_dec (NQfrac au + NQfrac apv) 1).
 clear H.
 move H1''' before H1''.
 (* y a un rad ^ k qu'il faut mettre dans H3'' à la place de rad *)
+assert (∀ k l (n := min_n i k), ((NQintg (A i n v) + 1) // 1 - 1 // rad ^ S k ≤ A i (n + l) v)%NQ). {
+  clear n Hn Hau Hav Hapv H1'' H1''' H2'' H3'' Hin.
+  intros.
+  specialize (A_lower_bound_if_all_fA_ge_1_ε _ i H3 k l) as H3''.
+  rewrite NQintg_add in H3''; [ | pauto | easy ].
+  rewrite NQintg_1, NQfrac_1, NQadd_0_r, NQintg_NQfrac, Nat.add_0_r in H3''.
+  now fold n in H3''.
+}
 ...
 
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0 0) as H3''.
