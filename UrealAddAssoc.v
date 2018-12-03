@@ -755,9 +755,10 @@ specialize radix_ge_2 as Hr.
 rewrite Nat.add_comm.
 unfold carry at 1 3 4.
 do 2 rewrite A_additive.
-remember (A i (min_n i 0) u) as au eqn:Hau.
-remember (A i (min_n i 0) v) as av eqn:Hav.
-remember (A i (min_n i 0) (M (v ⊕ carry v))) as apv eqn:Hapv.
+remember (min_n i 0) as n eqn:Hn.
+remember (A i n u) as au eqn:Hau.
+remember (A i n v) as av eqn:Hav.
+remember (A i n (M (v ⊕ carry v))) as apv eqn:Hapv.
 move apv before au; move av before au.
 assert (Haunn : (0 ≤ au)%NQ) by (rewrite Hau; apply A_ge_0).
 assert (Havnn : (0 ≤ av)%NQ) by (rewrite Hav; apply A_ge_0).
@@ -786,7 +787,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ M (v ⊕ carry v)) i)) as [H1| H1].
    specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
    specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H2'.
    specialize (frac_ge_if_all_fA_ge_1_ε _ _ H3 0) as H3'.
-   rewrite Nat.pow_1_r in H1', H2', H3'.
+   rewrite <- Hn, Nat.pow_1_r in H1', H2', H3'.
    rewrite A_additive in H1', H2'.
    rewrite <- Hau, <- Hapv in H1'.
    rewrite <- Hau, <- Hav in H2'.
@@ -796,7 +797,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ M (v ⊕ carry v)) i)) as [H1| H1].
    rewrite NQfrac_add in H1'.
 *)
 specialize (A_lower_bound_if_all_fA_ge_1_ε _ i H1 0) as H1''.
-rewrite Nat.pow_1_r in H1''.
+rewrite <- Hn, Nat.pow_1_r in H1''.
 (*
 rewrite Nat.add_0_r, Nat.pow_1_r in H1''.
 *)
@@ -816,7 +817,7 @@ rewrite NQintg_add_frac in H1''.
 rewrite NQfrac_add in H2'.
 *)
 specialize (A_lower_bound_if_all_fA_ge_1_ε (u ⊕ v) i H2 0) as H2''.
-rewrite Nat.pow_1_r in H2''.
+rewrite <- Hn, Nat.pow_1_r in H2''.
 (*
 rewrite Nat.add_0_r, Nat.pow_1_r in H2''.
 *)
@@ -837,7 +838,7 @@ move H5 before H4.
 *)
 rewrite Nat.add_0_r in H2''.
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0) as H3''.
-rewrite Nat.pow_1_r in H3''.
+rewrite <- Hn, Nat.pow_1_r in H3''.
 rewrite <- Hav in H3''.
 rewrite NQintg_add in H3''; [ | easy | easy ].
 rewrite NQintg_1 in H3''.
@@ -845,67 +846,66 @@ rewrite NQfrac_1, NQadd_0_r in H3''.
 rewrite NQintg_NQfrac, Nat.add_0_r in H3''.
 assert
   (H : ∀ l,
-   l ≥ min_n i 0
+   l ≥ n
    → ((NQintg av + 1) // 1 - 1 // rad ≤ A i (i + l) v)%NQ). {
   intros l Hl.
-  specialize (H3'' (l - min_n i 0 + i)).
-  assert (Hin : i + 1 ≤ min_n i 0). {
-    unfold min_n.
+  specialize (H3'' (l - n + i)).
+  assert (Hin : i + 1 ≤ n). {
+    rewrite Hn; unfold min_n.
     destruct rad; [ easy | cbn; flia ].
   }
   rewrite <- ApB_A in H3''; [ | easy ].
   rewrite ApB_B in H3''; [ | easy ].
   rewrite <- A_of_B in H3''.
-  replace (i + (min_n i 0 - i - 1 + (l - min_n i 0 + i)) + 1) with (i + l) in H3''
+  replace (i + (n - i - 1 + (l - n + i)) + 1) with (i + l) in H3''
     by flia Hl Hin.
   easy.
 }
 clear H3''; rename H into H3''.
 assert
   (H : ∀ l,
-   l ≥ min_n i 0
+   l ≥ n
    → ((NQintg au + NQintg av + 1) // 1 - 1 // rad ≤ A i (i + l) u + A i (i + l) v)%NQ). {
   intros l Hl.
-  specialize (H2'' (l - min_n i 0 + i)).
-  assert (Hin : i + 1 ≤ min_n i 0). {
-    unfold min_n.
+  specialize (H2'' (l - n + i)).
+  assert (Hin : i + 1 ≤ n). {
+    rewrite Hn; unfold min_n.
     destruct rad; [ easy | cbn; flia ].
   }
   rewrite <- ApB_A in H2''; [ | easy ].
   rewrite ApB_B in H2''; [ | easy ].
   rewrite <- A_of_B in H2''.
-  replace (i + (min_n i 0 - i - 1 + (l - min_n i 0 + i)) + 1) with (i + l) in H2''
+  replace (i + (n - i - 1 + (l - n + i)) + 1) with (i + l) in H2''
     by flia Hl Hin.
   rewrite A_additive in H2''.
   easy.
 }
 clear H2''; rename H into H2''; move H2'' after H3''.
 assert (H : ∀ l,
-           l ≥ min_n i 0
+           l ≥ n
            → ((NQintg au + NQintg apv + 1 + 1) // 1 - 1 // rad
-              ≤ A i (i + l) u +
-                A i (i + l) (M (v ⊕ carry v)))%NQ). {
+              ≤ A i l u + A i l (M (v ⊕ carry v)))%NQ). {
   intros l Hl.
-  specialize (H1'' (l - min_n i 0 + i)).
-  assert (Hin : i + 1 ≤ min_n i 0). {
-    unfold min_n.
+  specialize (H1'' (l - n)).
+  assert (Hin : i + 1 ≤ n). {
+    rewrite Hn; unfold min_n.
     destruct rad; [ easy | cbn; flia ].
   }
   rewrite <- ApB_A in H1''; [ | easy ].
   rewrite ApB_B in H1''; [ | easy ].
   rewrite <- A_of_B in H1''.
-  replace (i + (min_n i 0 - i - 1 + (l - min_n i 0 + i)) + 1) with (i + l) in H1''
+  replace (i + (n - i - 1 + (l - n)) + 1) with l in H1''
     by flia Hl Hin.
   rewrite A_additive in H1''.
   easy.
 }
 clear H1''; rename H into H1''; move H1'' after H2''.
 enough (H : ∀ j, j ≥ i → (u ⊕ M (v ⊕ carry v)) j ≤ (j + 1) * (rad - 1) ^ 2).
-assert (H1''' : ∀ l, l ≥ min_n i 0 → (A i (i + l) u + A i (i + l) (M (v ⊕ carry v)) <
+assert (H1''' : ∀ l, l ≥ n → (A i (i + l) u + A i (i + l) (M (v ⊕ carry v)) <
            (NQintg au + NQintg apv + 1 + 1) // 1 + 1 // rad)%NQ). {
 intros l Hl.
-specialize (A_upper_bound (u ⊕ M (v ⊕ carry v)) i H 0 (i + l - min_n i 0)) as H1'''.
-rewrite Nat.add_sub_assoc in H1'''; [ | flia Hl ].
+specialize (A_upper_bound (u ⊕ M (v ⊕ carry v)) i H 0 (i + l - n)) as H1'''.
+rewrite <- Hn, Nat.add_sub_assoc in H1'''; [ | flia Hl ].
 rewrite Nat.add_comm, Nat.add_sub in H1'''.
 do 2 rewrite A_additive in H1'''.
 rewrite Nat.pow_1_r in H1'''.
