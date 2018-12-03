@@ -759,6 +759,11 @@ remember (A i (min_n i 0) u) as au eqn:Hau.
 remember (A i (min_n i 0) v) as av eqn:Hav.
 remember (A i (min_n i 0) (M (v ⊕ carry v))) as apv eqn:Hapv.
 move apv before au; move av before au.
+assert (Haunn : (0 ≤ au)%NQ) by (rewrite Hau; apply A_ge_0).
+assert (Havnn : (0 ≤ av)%NQ) by (rewrite Hav; apply A_ge_0).
+assert (Hapvnn : (0 ≤ apv)%NQ) by (rewrite Hapv; apply A_ge_0).
+assert (Hauvnn : (0 ≤ au + av)%NQ) by now apply NQadd_nonneg_nonneg.
+assert (Haupvnn : (0 ≤ au + apv)%NQ) by now apply NQadd_nonneg_nonneg.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ M (v ⊕ carry v)) i)) as [H1| H1].
 -rewrite NQintg_add; [ | subst; apply A_ge_0 | subst; apply A_ge_0 ].
  rewrite NQintg_add_frac.
@@ -797,11 +802,11 @@ rewrite Nat.add_0_r, Nat.pow_1_r in H1''.
 *)
 rewrite A_additive in H1''.
 rewrite <- Hau, <- Hapv in H1''.
-rewrite NQintg_add in H1''; [ | | easy ].
+rewrite NQintg_add in H1''; [ | easy | easy ].
 rewrite NQintg_1 in H1''.
 rewrite NQfrac_1, NQadd_0_r in H1''.
 rewrite NQintg_NQfrac, Nat.add_0_r in H1''.
-rewrite NQintg_add in H1''.
+rewrite NQintg_add in H1''; [ | easy | easy ].
 rewrite NQintg_add_frac in H1''.
    remember (NQfrac au + NQfrac apv)%NQ as x eqn:Hx.
    destruct (NQlt_le_dec x 1) as [H4| H4].
@@ -817,11 +822,11 @@ rewrite Nat.add_0_r, Nat.pow_1_r in H2''.
 *)
 rewrite A_additive in H2''.
 rewrite <- Hau, <- Hav in H2''.
-rewrite NQintg_add in H2''; [ | | easy ].
+rewrite NQintg_add in H2''; [ | easy | easy ].
 rewrite NQintg_1 in H2''.
 rewrite NQfrac_1, NQadd_0_r in H2''.
 rewrite NQintg_NQfrac, Nat.add_0_r in H2''.
-rewrite NQintg_add in H2''.
+rewrite NQintg_add in H2''; [ | easy | easy ].
 rewrite NQintg_add_frac in H2''.
    remember (NQfrac au + NQfrac av)%NQ as x eqn:Hx.
    destruct (NQlt_le_dec x 1) as [H5| H5].
@@ -834,7 +839,7 @@ rewrite Nat.add_0_r in H2''.
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0) as H3''.
 rewrite Nat.pow_1_r in H3''.
 rewrite <- Hav in H3''.
-rewrite NQintg_add in H3''; [ | | easy ].
+rewrite NQintg_add in H3''; [ | easy | easy ].
 rewrite NQintg_1 in H3''.
 rewrite NQfrac_1, NQadd_0_r in H3''.
 rewrite NQintg_NQfrac, Nat.add_0_r in H3''.
@@ -895,17 +900,22 @@ assert (H : ∀ l,
   easy.
 }
 clear H1''; rename H into H1''; move H1'' after H2''.
-Check A_lower_bound_if_all_fA_ge_1_ε.
-Check A_upper_bound.
 enough (H : ∀ j, j ≥ i → (u ⊕ M (v ⊕ carry v)) j ≤ (j + 1) * (rad - 1) ^ 2).
-assert (H1''' : ∀ l, l ≥ min_n i 0 → (A i (i + l + 1) u + A i (i + l + 1) (M (v ⊕ carry v)) < NQintg (au + apv + 1) // 1 + 1 // rad)%NQ). {
+assert (H1''' : ∀ l, l ≥ min_n i 0 → (A i (i + l + 1) u + A i (i + l + 1) (M (v ⊕ carry v)) <
+           (NQintg au + NQintg apv + 1 + 1) // 1 + 1 // rad)%NQ). {
 intros l Hl.
 specialize (A_upper_bound (u ⊕ M (v ⊕ carry v)) i H 0 (i + 1 + l - min_n i 0)) as H1'''.
 rewrite Nat.add_sub_assoc in H1'''; [ | flia Hl ].
 rewrite Nat.add_comm, Nat.add_sub, Nat.add_shuffle0 in H1'''.
 do 2 rewrite A_additive in H1'''.
 rewrite Nat.pow_1_r in H1'''.
-now rewrite <- Hau, <- Hapv in H1'''.
+rewrite <- Hau, <- Hapv in H1'''.
+rewrite NQintg_add in H1'''; [ | easy | easy ].
+rewrite NQintg_1, NQfrac_1, NQadd_0_r, NQintg_NQfrac, Nat.add_0_r in H1'''.
+rewrite NQintg_add in H1'''; [ | easy | easy ].
+rewrite NQintg_add_frac in H1'''.
+apply NQnlt_ge in H4.
+now destruct (NQlt_le_dec (NQfrac au + NQfrac apv) 1).
 }
 clear H.
 move H1''' before H1''.

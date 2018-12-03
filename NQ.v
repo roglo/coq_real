@@ -2379,6 +2379,13 @@ destruct x as [| xp| xp], y as [| yp| yp]; (try now left); (try now right).
 -apply GQle_decidable.
 Qed.
 
+Theorem NQadd_nonneg_nonneg : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ → (0 ≤ x + y)%NQ.
+Proof.
+intros * Hx Hy.
+replace 0%NQ with (0 + 0)%NQ by easy.
+now apply NQadd_le_mono.
+Qed.
+
 Require Import Summation.
 
 Definition NQ_ord_ring_def :=
