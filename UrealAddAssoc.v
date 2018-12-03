@@ -844,69 +844,42 @@ rewrite NQintg_add in H3''; [ | easy | easy ].
 rewrite NQintg_1 in H3''.
 rewrite NQfrac_1, NQadd_0_r in H3''.
 rewrite NQintg_NQfrac, Nat.add_0_r in H3''.
-assert
-  (H : ∀ l,
-   l ≥ n
-   → ((NQintg av + 1) // 1 - 1 // rad ≤ A i (i + l) v)%NQ). {
-  intros l Hl.
-  specialize (H3'' (l - n + i)).
   assert (Hin : i + 1 ≤ n). {
     rewrite Hn; unfold min_n.
     destruct rad; [ easy | cbn; flia ].
   }
-  rewrite <- ApB_A in H3''; [ | easy ].
-  rewrite ApB_B in H3''; [ | easy ].
-  rewrite <- A_of_B in H3''.
-  replace (i + (n - i - 1 + (l - n + i)) + 1) with (i + l) in H3''
-    by flia Hl Hin.
-  easy.
-}
-clear H3''; rename H into H3''.
 assert
   (H : ∀ l,
-   l ≥ n
-   → ((NQintg au + NQintg av + 1) // 1 - 1 // rad ≤ A i (i + l) u + A i (i + l) v)%NQ). {
-  intros l Hl.
-  specialize (H2'' (l - n + i)).
-  assert (Hin : i + 1 ≤ n). {
-    rewrite Hn; unfold min_n.
-    destruct rad; [ easy | cbn; flia ].
-  }
+   ((NQintg au + NQintg av + 1) // 1 - 1 // rad ≤ A i (n + l) u + A i (n + l) v)%NQ). {
+  intros.
+  specialize (H2'' l).
   rewrite <- ApB_A in H2''; [ | easy ].
   rewrite ApB_B in H2''; [ | easy ].
   rewrite <- A_of_B in H2''.
-  replace (i + (n - i - 1 + (l - n + i)) + 1) with (i + l) in H2''
-    by flia Hl Hin.
+  replace (i + (n - i - 1 + l) + 1) with (n + l) in H2'' by flia Hin.
   rewrite A_additive in H2''.
   easy.
 }
 clear H2''; rename H into H2''; move H2'' after H3''.
 assert (H : ∀ l,
-           l ≥ n
-           → ((NQintg au + NQintg apv + 1 + 1) // 1 - 1 // rad
-              ≤ A i l u + A i l (M (v ⊕ carry v)))%NQ). {
-  intros l Hl.
-  specialize (H1'' (l - n)).
-  assert (Hin : i + 1 ≤ n). {
-    rewrite Hn; unfold min_n.
-    destruct rad; [ easy | cbn; flia ].
-  }
+           ((NQintg au + NQintg apv + 1 + 1) // 1 - 1 // rad
+              ≤ A i (n + l) u + A i (n + l) (M (v ⊕ carry v)))%NQ). {
+  intros.
+  specialize (H1'' l).
   rewrite <- ApB_A in H1''; [ | easy ].
   rewrite ApB_B in H1''; [ | easy ].
   rewrite <- A_of_B in H1''.
-  replace (i + (n - i - 1 + (l - n)) + 1) with l in H1''
-    by flia Hl Hin.
+  replace (i + (n - i - 1 + l) + 1) with (n + l) in H1'' by flia Hin.
   rewrite A_additive in H1''.
   easy.
 }
 clear H1''; rename H into H1''; move H1'' after H2''.
 enough (H : ∀ j, j ≥ i → (u ⊕ M (v ⊕ carry v)) j ≤ (j + 1) * (rad - 1) ^ 2).
-assert (H1''' : ∀ l, l ≥ n → (A i (i + l) u + A i (i + l) (M (v ⊕ carry v)) <
+assert (H1''' : ∀ l, (A i (n + l) u + A i (n + l) (M (v ⊕ carry v)) <
            (NQintg au + NQintg apv + 1 + 1) // 1 + 1 // rad)%NQ). {
-intros l Hl.
-specialize (A_upper_bound (u ⊕ M (v ⊕ carry v)) i H 0 (i + l - n)) as H1'''.
-rewrite <- Hn, Nat.add_sub_assoc in H1'''; [ | flia Hl ].
-rewrite Nat.add_comm, Nat.add_sub in H1'''.
+intros.
+specialize (A_upper_bound (u ⊕ M (v ⊕ carry v)) i H 0 l) as H1'''.
+rewrite <- Hn in H1'''.
 do 2 rewrite A_additive in H1'''.
 rewrite Nat.pow_1_r in H1'''.
 rewrite <- Hau, <- Hapv in H1'''.
