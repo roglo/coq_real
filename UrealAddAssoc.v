@@ -897,6 +897,18 @@ assert (H : ∀ l,
 clear H1''; rename H into H1''; move H1'' after H2''.
 Check A_lower_bound_if_all_fA_ge_1_ε.
 Check A_upper_bound.
+enough (H : ∀ j, j ≥ i → (u ⊕ M (v ⊕ carry v)) j ≤ (j + 1) * (rad - 1) ^ 2).
+assert (H1''' : ∀ l, l ≥ min_n i 0 → (A i (i + l + 1) u + A i (i + l + 1) (M (v ⊕ carry v)) < NQintg (au + apv + 1) // 1 + 1 // rad)%NQ). {
+intros l Hl.
+specialize (A_upper_bound (u ⊕ M (v ⊕ carry v)) i H 0 (i + 1 + l - min_n i 0)) as H1'''.
+rewrite Nat.add_sub_assoc in H1'''; [ | flia Hl ].
+rewrite Nat.add_comm, Nat.add_sub, Nat.add_shuffle0 in H1'''.
+do 2 rewrite A_additive in H1'''.
+rewrite Nat.pow_1_r in H1'''.
+now rewrite <- Hau, <- Hapv in H1'''.
+}
+clear H.
+move H1''' before H1''.
 ...
 
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0 0) as H3''.
