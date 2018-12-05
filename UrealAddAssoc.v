@@ -904,6 +904,12 @@ assert (∀ k l (n := min_n i k), ((NQintg (A i n v) + 1) // 1 - 1 // rad ^ S k 
   rewrite NQintg_1, NQfrac_1, NQadd_0_r, NQintg_NQfrac, Nat.add_0_r in H3''.
   now fold n in H3''.
 }
+assert (∀ k, NQintg (A i (min_n i k) v) = NQintg (A i (min_n i 0) v)). {
+  (* point important parce que ça permettrait d'éliminer k de NQintg(A) *)
+  intros.
+  (* if faut compléter la preuve que NQintg(A) est compris entre A-1-1/r^(k+1)
+     et A-1+1/r^(k+1), donc dans un intervalle < 1 (∀ k) et comme NQintg(A) est
+     un entier, tous les NQintg(A) sont égaux *)
 ...
 
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0 0) as H3''.
