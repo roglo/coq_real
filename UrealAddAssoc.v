@@ -900,6 +900,7 @@ now destruct (NQlt_le_dec (NQfrac au + NQfrac apv) 1).
 clear H.
 move H1''' before H1''.
 *)
+(*
 assert (∀ k l (n := min_n i k), ((NQintg (A i n v) + 1) // 1 - 1 // rad ^ S k ≤ A i (n + l) v)%NQ). {
   clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin.
   intros.
@@ -908,12 +909,23 @@ assert (∀ k l (n := min_n i k), ((NQintg (A i n v) + 1) // 1 - 1 // rad ^ S k 
   rewrite NQintg_1, NQfrac_1, NQadd_0_r, NQintg_NQfrac, Nat.add_0_r in H3''.
   now fold n in H3''.
 }
-assert (∀ k l (n := min_n i k), (A i (n + l) v - 1 - 1 // rad ^ S k < NQintg (A i (min_n i k) v) // 1 ≤ A i (n + l) v - 1 + 1 // rad ^ S k)%NQ). {
-  clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin H.
+*)
+assert (HAintg_interv : ∀ k l (n := min_n i k), (A i (n + l) v - 1 - 1 // rad ^ S k < NQintg (A i (min_n i k) v) // 1 ≤ A i (n + l) v - 1 + 1 // rad ^ S k)%NQ). {
+  clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin.
   intros.
   split.
   -specialize (A_upper_bound v i Hvr k l) as H.
-
+   rewrite NQintg_add in H; [ | easy | easy ].
+   rewrite NQintg_1, NQfrac_1, NQadd_0_r, NQintg_NQfrac, Nat.add_0_r in H.
+   rewrite NQpair_add_l, <- NQadd_add_swap in H.
+   now do 2 apply NQlt_sub_lt_add_r in H.
+  -specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 k l) as H.
+   rewrite NQintg_add in H; [ | easy | easy ].
+   rewrite NQintg_1, NQfrac_1, NQadd_0_r, NQintg_NQfrac, Nat.add_0_r in H.
+   rewrite NQpair_add_l, NQadd_sub_swap in H.
+   apply NQle_add_le_sub_l in H.
+   now apply -> NQle_sub_le_add_r in H.
+}
 ...
 
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0 0) as H3''.
