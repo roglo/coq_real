@@ -910,7 +910,7 @@ assert (∀ k l (n := min_n i k), ((NQintg (A i n v) + 1) // 1 - 1 // rad ^ S k 
   now fold n in H3''.
 }
 *)
-assert (HAintg_interv : ∀ k l (n := min_n i k), (A i (n + l) v - 1 - 1 // rad ^ S k < NQintg (A i (min_n i k) v) // 1 ≤ A i (n + l) v - 1 + 1 // rad ^ S k)%NQ). {
+assert (HAintg_interv : ∀ k l (n := min_n i k), (A i (n + l) v - 1 - 1 // rad ^ S k < NQintg (A i n v) // 1 ≤ A i (n + l) v - 1 + 1 // rad ^ S k)%NQ). {
   clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin.
   intros.
   split.
