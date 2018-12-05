@@ -751,9 +751,12 @@ Theorem glop {r : radix} : ∀ u i,
 *)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
-  (carry v i + carry (u ⊕ M (v ⊕ carry v)) i) mod rad = carry (u ⊕ v) i mod rad.
+  (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
+  → (∀ j, j ≥ i → v j ≤ (j + 1) * (rad - 1) ^ 2)
+  → (carry v i + carry (u ⊕ M (v ⊕ carry v)) i) mod rad =
+     carry (u ⊕ v) i mod rad.
 Proof.
-intros.
+intros * Hur Hvr.
 specialize radix_ge_2 as Hr.
 rewrite Nat.add_comm.
 unfold carry at 1 3 4.
@@ -877,6 +880,7 @@ assert (H : ∀ l,
   easy.
 }
 clear H1''; rename H into H1''; move H1'' after H2''.
+(*
 enough (H : ∀ j, j ≥ i → (u ⊕ M (v ⊕ carry v)) j ≤ (j + 1) * (rad - 1) ^ 2).
 assert (H1''' : ∀ l, (A i (n + l) u + A i (n + l) (M (v ⊕ carry v)) <
            (NQintg au + NQintg apv + 1 + 1) // 1 + 1 // rad)%NQ). {
@@ -895,15 +899,21 @@ now destruct (NQlt_le_dec (NQfrac au + NQfrac apv) 1).
 }
 clear H.
 move H1''' before H1''.
-(* y a un rad ^ k qu'il faut mettre dans H3'' à la place de rad *)
+*)
 assert (∀ k l (n := min_n i k), ((NQintg (A i n v) + 1) // 1 - 1 // rad ^ S k ≤ A i (n + l) v)%NQ). {
-  clear n Hn Hau Hav Hapv H1'' H1''' H2'' H3'' Hin.
+  clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin.
   intros.
   specialize (A_lower_bound_if_all_fA_ge_1_ε _ i H3 k l) as H3''.
   rewrite NQintg_add in H3''; [ | pauto | easy ].
   rewrite NQintg_1, NQfrac_1, NQadd_0_r, NQintg_NQfrac, Nat.add_0_r in H3''.
   now fold n in H3''.
 }
+assert (∀ k l (n := min_n i k), (A i (n + l) v - 1 - 1 // rad ^ S k < NQintg (A i (min_n i k) v) // 1 ≤ A i (n + l) v - 1 + 1 // rad ^ S k)%NQ). {
+  clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin H.
+  intros.
+  split.
+  -specialize (A_upper_bound v i Hvr k l) as H.
+
 ...
 
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0 0) as H3''.
