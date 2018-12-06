@@ -743,12 +743,12 @@ f_equal; f_equal.
 flia Hj.
 Qed.
 
-(*
-Theorem glop {r : radix} : ∀ u i,
-  (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k, P u (i + k + 1) = 0.
-...
-*)
+Theorem M_upper_bound {r : radix} : ∀ u i, M u i < rad.
+Proof.
+intros.
+unfold M.
+now apply Nat.mod_upper_bound.
+Qed.
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
@@ -952,7 +952,7 @@ assert (L3 : ∀ l, (NQintg (A i n v) // 1 + 1 - 1 // rad ≤ A i (n + l) v < NQ
   rewrite <- Hn, Nat.pow_1_r in H.
   easy.
 }
-assert (M1 : ∀ k l (n := min_n i k), (1 - 1 // rad ^ S k ≤ NQfrac (A i n v) + B i n v l < 1 + 1 // rad ^ S k)%NQ). {
+assert (M3 : ∀ k l (n := min_n i k), (1 - 1 // rad ^ S k ≤ NQfrac (A i n v) + B i n v l < 1 + 1 // rad ^ S k)%NQ). {
   clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin L1 L2 L3.
   intros k l.
   split.
@@ -963,13 +963,50 @@ assert (M1 : ∀ k l (n := min_n i k), (1 - 1 // rad ^ S k ≤ NQfrac (A i n v) 
   -apply NQadd_lt_mono; [ apply NQfrac_lt_1 | ].
    now apply B_upper_bound.
 }
-assert (M2 : ∀ k l (n := min_n i k), l ≥ n - i - 1 → (NQintg (A i n v) // 1 + 1 - 1 // rad ^ S k ≤ B i (i + 1) v l < NQintg (A i n v) // 1 + 1 + 1 // rad ^ S k)%NQ). {
+assert (N3 : ∀ k l (n := min_n i k), l ≥ n - i - 1 → (NQintg (A i n v) // 1 + 1 - 1 // rad ^ S k ≤ B i (i + 1) v l < NQintg (A i n v) // 1 + 1 + 1 // rad ^ S k)%NQ). {
   clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin L1 L2 L3.
   intros k l n Hl.
   assert (Hin : i + 1 ≤ n). {
     unfold n, min_n.
     destruct rad; [ easy | cbn; flia ].
   }
+  specialize (M3 k (l - (n - i - 1))).
+  fold n in M3.
+  split.
+  -destruct M3 as (M3, _).
+   apply (NQadd_le_mono_l _ _ (NQintg (A i n v) // 1)) in M3.
+   rewrite NQadd_sub_assoc, NQadd_assoc, <- NQintg_frac in M3; [ | pauto ].
+   rewrite ApB_B in M3; [ | easy ].
+   now replace (n - i - 1 + (l - (n - i - 1))) with l in M3 by flia Hl.
+  -destruct M3 as (_, M3).
+   apply (NQadd_lt_mono_l (NQintg (A i n v) // 1)) in M3.
+   rewrite NQadd_assoc, NQadd_assoc, <- NQintg_frac in M3; [ | pauto ].
+   rewrite ApB_B in M3; [ | easy ].
+   now replace (n - i - 1 + (l - (n - i - 1))) with l in M3 by flia Hl.
+}
+(* well, HAintg_interv' is almost identical to N3 *)
+assert (N1 : ∀ k l (n := min_n i k), l ≥ n - i - 1 → (NQintg (A i n (M (v ⊕ carry v))) // 1 + 1 - 1 // rad ^ S k ≤ B i (i + 1) (M (v ⊕ carry v)) l < NQintg (A i n (M (v ⊕ carry v))) // 1 + 1 + 1 // rad ^ S k)%NQ). {
+  clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin L1 L2 L3.
+  intros k l n Hl.
+  assert (Hin : i + 1 ≤ n). {
+    unfold n, min_n.
+    destruct rad; [ easy | cbn; flia ].
+  }
+  assert (N1 : (1 - 1 // rad ^ S k ≤ NQfrac (A i n (u ⊕ M (v ⊕ carry v))) + B i n (u ⊕ M (v ⊕ carry v)) l < 1 + 1 // rad ^ S k)%NQ). {
+    split.
+    -specialize (H1 k) as N1.
+     apply A_ge_1_true_iff in N1.
+     eapply NQle_trans; [ apply N1 | ].
+     apply NQle_add_r, B_ge_0.
+    -apply NQadd_lt_mono; [ apply NQfrac_lt_1 | ].
+     apply B_upper_bound.
+     intros j Hj.
+     unfold "⊕" at 1.
+(* well, u j must be less than (j + 1) * (rad - 1) ^ 2; actually the hyp Hur should say
+   (2 * rad - 1) since we are in the addition *)
+...
+}
+...
   specialize (M1 k (l - (n - i - 1))).
   fold n in M1.
   split.
@@ -983,9 +1020,9 @@ assert (M2 : ∀ k l (n := min_n i k), l ≥ n - i - 1 → (NQintg (A i n v) // 
    rewrite NQadd_assoc, NQadd_assoc, <- NQintg_frac in M1; [ | pauto ].
    rewrite ApB_B in M1; [ | easy ].
    now replace (n - i - 1 + (l - (n - i - 1))) with l in M1 by flia Hl.
-}
-Check A_of_B.
-(* well, HAintg_interv' is almost identical to M2 *)
+...
+
+assert (Havr : ∀ j : nat, j ≥ i → M (v ⊕ carry v) j < (j + 1) * (rad).
 ...
 assert (M3 : ∀ k l (n := min_n i k), l ≥ n - i - 1 → B i (i + 1) v l = (NQintg (A i n v) // 1 + 1)%NQ). {
   clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin L1 L2 L3.
