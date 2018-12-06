@@ -963,7 +963,7 @@ assert (M3 : ∀ k l (n := min_n i k), (1 - 1 // rad ^ S k ≤ NQfrac (A i n v) 
   -apply NQadd_lt_mono; [ apply NQfrac_lt_1 | ].
    now apply B_upper_bound.
 }
-assert (N3 : ∀ k l (n := min_n i k), l ≥ n - i - 1 → (NQintg (A i n v) // 1 + 1 - 1 // rad ^ S k ≤ B i (i + 1) v l < NQintg (A i n v) // 1 + 1 + 1 // rad ^ S k)%NQ). {
+assert (N3 : ∀ k l (n := min_n i k), l ≥ n - i - 1 → (NQintg (A i n v) // 1 + 1 - 1 // rad ^ S k ≤ A i (i + l + 1) v < NQintg (A i n v) // 1 + 1 + 1 // rad ^ S k)%NQ). {
   clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin L1 L2 L3.
   intros k l n Hl.
   assert (Hin : i + 1 ≤ n). {
@@ -977,14 +977,16 @@ assert (N3 : ∀ k l (n := min_n i k), l ≥ n - i - 1 → (NQintg (A i n v) // 
    apply (NQadd_le_mono_l _ _ (NQintg (A i n v) // 1)) in M3.
    rewrite NQadd_sub_assoc, NQadd_assoc, <- NQintg_frac in M3; [ | pauto ].
    rewrite ApB_B in M3; [ | easy ].
-   now replace (n - i - 1 + (l - (n - i - 1))) with l in M3 by flia Hl.
+   replace (n - i - 1 + (l - (n - i - 1))) with l in M3 by flia Hl.
+   now rewrite <- A_of_B in M3.
   -destruct M3 as (_, M3).
    apply (NQadd_lt_mono_l (NQintg (A i n v) // 1)) in M3.
    rewrite NQadd_assoc, NQadd_assoc, <- NQintg_frac in M3; [ | pauto ].
    rewrite ApB_B in M3; [ | easy ].
-   now replace (n - i - 1 + (l - (n - i - 1))) with l in M3 by flia Hl.
+   replace (n - i - 1 + (l - (n - i - 1))) with l in M3 by flia Hl.
+   now rewrite <- A_of_B in M3.
 }
-(* well, HAintg_interv' is almost identical to N3 *)
+(* well, HAintg_interv' is identical to N3 *)
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
