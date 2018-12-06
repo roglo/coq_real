@@ -990,6 +990,10 @@ assert (M3 : ∀ k l (n := min_n i k), l ≥ n - i - 1 → B i (i + 1) v l = (NQ
   specialize (M2 k l Hl).
   fold n in M2.
 ...
+  (* non, ça va pas: *)
+  apply NQintg_interv.
+NQintg_interv: ∀ (n : nat) (x : NQ), (0 ≤ x)%NQ → (n // 1 ≤ x < n // 1 + 1)%NQ ↔ n = NQintg x
+...
 
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0 0) as H3''.
 rewrite Nat.add_0_r, Nat.pow_1_r in H3''.
