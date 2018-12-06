@@ -866,6 +866,14 @@ destruct (NQeq_dec x y) as [H1| H1].
 Qed.
 Arguments NQadd_le_lt_mono x%NQ y%NQ z%NQ t%NQ.
 
+Theorem NQadd_lt_le_mono : ∀ x y z t, (x < y → z ≤ t → x + z < y + t)%NQ.
+Proof.
+intros * Hxy Hzt.
+setoid_rewrite NQadd_comm.
+now apply NQadd_le_lt_mono.
+Qed.
+Arguments NQadd_lt_le_mono x%NQ y%NQ z%NQ t%NQ.
+
 Theorem NQadd_lt_mono : ∀ x y z t, (x < y → z < t → x + z < y + t)%NQ.
 Proof.
 intros.
