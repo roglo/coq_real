@@ -984,6 +984,7 @@ assert (M2 : ∀ k l (n := min_n i k), l ≥ n - i - 1 → (NQintg (A i n v) // 
    rewrite ApB_B in M1; [ | easy ].
    now replace (n - i - 1 + (l - (n - i - 1))) with l in M1 by flia Hl.
 }
+...
 assert (M3 : ∀ k l (n := min_n i k), l ≥ n - i - 1 → B i (i + 1) v l = (NQintg (A i n v) // 1 + 1)%NQ). {
   clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin L1 L2 L3.
   intros k l n Hl.
