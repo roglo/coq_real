@@ -789,6 +789,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
   --rewrite Nat.add_0_l.
     destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1) as [H5| H5].
    ++rewrite Nat.mod_0_l; [ | easy ].
+     rewrite Hv'.
 ...
 intros * Hur Hvr.
 specialize radix_ge_2 as Hr.
