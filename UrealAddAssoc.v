@@ -761,7 +761,6 @@ specialize radix_ge_2 as Hr.
 remember (M (v ⊕ carry v)) as v' eqn:Hv'.
 move v' before v; move Hv' before i.
 unfold carry.
-do 2 rewrite A_additive.
 remember (min_n i 0) as n eqn:Hn.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
@@ -772,6 +771,24 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
   f_equal; f_equal.
   destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   *rewrite Nat.add_assoc.
+   do 2 rewrite A_additive.
+   rewrite NQintg_add; [ symmetry | pauto | pauto ].
+   rewrite NQintg_add; [ symmetry | pauto | pauto ].
+   do 4 rewrite <- Nat.add_assoc.
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   f_equal; f_equal.
+   do 2 rewrite Nat.add_assoc.
+   rewrite Nat.add_shuffle0, Nat.add_comm.
+   rewrite <- Nat.add_assoc.
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   f_equal; f_equal.
+   do 2 rewrite NQintg_add_frac.
+   destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1) as [H4| H4].
+  --rewrite Nat.add_0_l.
+    destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1) as [H5| H5].
+   ++idtac.
 ...
 intros * Hur Hvr.
 specialize radix_ge_2 as Hr.
