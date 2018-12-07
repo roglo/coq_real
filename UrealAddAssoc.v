@@ -789,7 +789,22 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
   --rewrite Nat.add_0_l.
     destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1) as [H5| H5].
    ++rewrite Nat.mod_0_l; [ | easy ].
-     rewrite Hv'.
+     specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
+     specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H2'.
+     specialize (frac_ge_if_all_fA_ge_1_ε _ _ H3 0) as H3'.
+     rewrite <- Hn, Nat.pow_1_r in H1', H2', H3'.
+     move H4 at bottom; move H5 at bottom.
+     rewrite A_additive in H1', H2'.
+     rewrite NQfrac_add in H1'; [ | pauto | pauto ].
+     rewrite NQfrac_add in H2'; [ | pauto | pauto ].
+     rewrite NQfrac_small in H1'. 2: {
+       split; [ | easy ].
+       now apply NQadd_nonneg_nonneg.
+     }
+     rewrite NQfrac_small in H2'. 2: {
+       split; [ | easy ].
+       now apply NQadd_nonneg_nonneg.
+     }
 ...
 intros * Hur Hvr.
 specialize radix_ge_2 as Hr.

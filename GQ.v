@@ -1172,6 +1172,8 @@ unfold GQden.
 now rewrite Nat.add_1_r.
 Qed.
 
+Hint Resolve GQnum_neq_0 GQden_neq_0.
+
 Theorem GQnum_den : ∀ x, x = (GQnum x // GQden x)%GQ.
 Proof.
 intros x.

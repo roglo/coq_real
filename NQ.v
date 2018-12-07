@@ -1999,6 +1999,26 @@ rewrite (NQintg_frac x) at 2; [ | easy ].
 now rewrite NQadd_sub.
 Qed.
 
+Theorem NQfrac_small : ∀ x, (0 ≤ x < 1)%NQ → NQfrac x = x.
+Proof.
+intros * Hx.
+destruct x as [| px| px]; [ easy | | easy ].
+cbn in Hx; destruct Hx as (_, Hx).
+rewrite (GQnum_den px) in Hx.
+apply GQpair_lt_nat_r in Hx; [ | easy | easy | easy ].
+rewrite Nat.mul_1_r in Hx.
+unfold NQfrac; cbn.
+rewrite Nat.mod_small; [ | easy ].
+unfold "//"%NQ.
+remember (GQnum px) as nx eqn:Hnx.
+remember (GQden px) as dx eqn:Hdx.
+symmetry in Hnx, Hdx.
+move dx before nx.
+destruct nx; [ now apply GQnum_neq_0 in Hnx | f_equal ].
+destruct dx; [ now apply GQden_neq_0 in Hdx | ].
+now rewrite (GQnum_den px), Hnx, Hdx.
+Qed.
+
 Theorem NQintg_0 : NQintg 0 = 0.
 Proof. easy. Qed.
 
