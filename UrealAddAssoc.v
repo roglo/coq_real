@@ -758,8 +758,7 @@ Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
 Proof.
 intros * Hur Hvr.
 specialize radix_ge_2 as Hr.
-rewrite Nat.add_comm.
-unfold carry at 1 3 4.
+unfold carry at 1 2 4.
 do 2 rewrite A_additive.
 remember (min_n i 0) as n eqn:Hn.
 remember (A i n u) as au eqn:Hau.
@@ -771,6 +770,7 @@ assert (Havnn : (0 ≤ av)%NQ) by (rewrite Hav; apply A_ge_0).
 assert (Hapvnn : (0 ≤ apv)%NQ) by (rewrite Hapv; apply A_ge_0).
 assert (Hauvnn : (0 ≤ au + av)%NQ) by now apply NQadd_nonneg_nonneg.
 assert (Haupvnn : (0 ≤ au + apv)%NQ) by now apply NQadd_nonneg_nonneg.
+rewrite Nat.add_comm.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ M (v ⊕ carry v)) i)) as [H1| H1].
 -rewrite NQintg_add; [ | subst; apply A_ge_0 | subst; apply A_ge_0 ].
  rewrite NQintg_add_frac.
@@ -799,14 +799,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ M (v ⊕ carry v)) i)) as [H1| H1].
    rewrite <- Hau, <- Hav in H2'.
    rewrite <- Hav in H3'.
    rewrite NQintg_add_frac.
-(*
-   rewrite NQfrac_add in H1'.
-*)
 specialize (A_lower_bound_if_all_fA_ge_1_ε _ i H1 0) as H1''.
 rewrite <- Hn, Nat.pow_1_r in H1''.
-(*
-rewrite Nat.add_0_r, Nat.pow_1_r in H1''.
-*)
 rewrite A_additive in H1''.
 rewrite <- Hau, <- Hapv in H1''.
 rewrite NQintg_add in H1''; [ | easy | easy ].
@@ -819,14 +813,8 @@ rewrite NQintg_add_frac in H1''.
    destruct (NQlt_le_dec x 1) as [H4| H4].
 2: {
   subst x.
-(*
-rewrite NQfrac_add in H2'.
-*)
 specialize (A_lower_bound_if_all_fA_ge_1_ε (u ⊕ v) i H2 0) as H2''.
 rewrite <- Hn, Nat.pow_1_r in H2''.
-(*
-rewrite Nat.add_0_r, Nat.pow_1_r in H2''.
-*)
 rewrite A_additive in H2''.
 rewrite <- Hau, <- Hav in H2''.
 rewrite NQintg_add in H2''; [ | easy | easy ].
@@ -839,9 +827,6 @@ rewrite NQintg_add_frac in H2''.
    destruct (NQlt_le_dec x 1) as [H5| H5].
 move H5 before H4.
    subst x.
-(*
-   rewrite NQfrac_eq_when_lt_1 in H2'.
-*)
 rewrite Nat.add_0_r in H2''.
 specialize (A_lower_bound_if_all_fA_ge_1_ε v i H3 0) as H3''.
 rewrite <- Hn, Nat.pow_1_r in H3''.
@@ -880,36 +865,6 @@ assert (H : ∀ l,
   easy.
 }
 clear H1''; rename H into H1''; move H1'' after H2''.
-(*
-enough (H : ∀ j, j ≥ i → (u ⊕ M (v ⊕ carry v)) j ≤ (j + 1) * (rad - 1) ^ 2).
-assert (H1''' : ∀ l, (A i (n + l) u + A i (n + l) (M (v ⊕ carry v)) <
-           (NQintg au + NQintg apv + 1 + 1) // 1 + 1 // rad)%NQ). {
-intros.
-specialize (A_upper_bound (u ⊕ M (v ⊕ carry v)) i H 0 l) as H1'''.
-rewrite <- Hn in H1'''.
-do 2 rewrite A_additive in H1'''.
-rewrite Nat.pow_1_r in H1'''.
-rewrite <- Hau, <- Hapv in H1'''.
-rewrite NQintg_add in H1'''; [ | easy | easy ].
-rewrite NQintg_1, NQfrac_1, NQadd_0_r, NQintg_NQfrac, Nat.add_0_r in H1'''.
-rewrite NQintg_add in H1'''; [ | easy | easy ].
-rewrite NQintg_add_frac in H1'''.
-apply NQnlt_ge in H4.
-now destruct (NQlt_le_dec (NQfrac au + NQfrac apv) 1).
-}
-clear H.
-move H1''' before H1''.
-*)
-(*
-assert (∀ k l (n := min_n i k), ((NQintg (A i n v) + 1) // 1 - 1 // rad ^ S k ≤ A i (n + l) v)%NQ). {
-  clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin.
-  intros.
-  specialize (A_lower_bound_if_all_fA_ge_1_ε _ i H3 k l) as H3''.
-  rewrite NQintg_add in H3''; [ | pauto | easy ].
-  rewrite NQintg_1, NQfrac_1, NQadd_0_r, NQintg_NQfrac, Nat.add_0_r in H3''.
-  now fold n in H3''.
-}
-*)
 assert (HAintg_interv : ∀ k l (n := min_n i k), (A i (n + l) v - 1 - 1 // rad ^ S k < NQintg (A i n v) // 1 ≤ A i (n + l) v - 1 + 1 // rad ^ S k)%NQ). {
   clear n Hn Hau Hav Hapv H1'' H2'' H3'' Hin.
   intros.
