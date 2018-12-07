@@ -758,6 +758,23 @@ Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
 Proof.
 intros * Hur Hvr.
 specialize radix_ge_2 as Hr.
+remember (M (v ⊕ carry v)) as v' eqn:Hv'.
+move v' before v; move Hv' before i.
+unfold carry.
+do 2 rewrite A_additive.
+remember (min_n i 0) as n eqn:Hn.
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
+-destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
+ +rewrite Nat.add_comm.
+  rewrite Nat.add_shuffle0.
+  rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+  rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+  f_equal; f_equal.
+  destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
+  *rewrite Nat.add_assoc.
+...
+intros * Hur Hvr.
+specialize radix_ge_2 as Hr.
 unfold carry at 1 2 4.
 do 2 rewrite A_additive.
 remember (min_n i 0) as n eqn:Hn.
