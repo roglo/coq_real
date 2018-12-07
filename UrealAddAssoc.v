@@ -805,6 +805,14 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
        split; [ | easy ].
        now apply NQadd_nonneg_nonneg.
      }
+     assert
+       (H1'' : ∀ k,
+         (NQfrac (A i (min_n i k) u + A i (min_n i k) v') ≥
+         1 - 1 // rad ^ S k)%NQ). {
+       intros k.
+       specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 k) as H.
+       now rewrite A_additive in H.
+     }
 ...
 intros * Hur Hvr.
 specialize radix_ge_2 as Hr.
