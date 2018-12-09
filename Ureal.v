@@ -1200,7 +1200,7 @@ rewrite ureal_add_series_comm.
 destruct (LPO_fst (fA_ge_1_ε (x ⊕ y)%F i)) as [Hxy| Hxy].
 -setoid_rewrite ureal_add_series_comm.
  destruct (LPO_fst (fA_ge_1_ε (y ⊕ x)%F i)) as [Hyx| Hyx].
- +f_equal; f_equal; f_equal; f_equal.
+ +f_equal; f_equal; f_equal.
   apply summation_eq_compat.
   intros k Hk; f_equal.
   apply ureal_add_series_comm.

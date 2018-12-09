@@ -72,7 +72,7 @@ value nat_prop_carr r min_n u i =
   match lpo_fst (a_ge_1 r min_n u i) with
   | None →
       let n = min_n r i 0 in
-      succ_big_int (div_big_int (nA r i n u) (pow r (n - i - 1)))
+      (*succ_big_int*) (div_big_int (nA r i n u) (pow r (n - i - 1)))
   | Some k →
       let n = min_n r i k in
       div_big_int (nA r i n u) (pow r (n - i - 1))
