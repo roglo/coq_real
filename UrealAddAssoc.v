@@ -765,47 +765,35 @@ remember (min_n i 0) as n eqn:Hn.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
  +rewrite Nat.add_comm.
-  rewrite Nat.add_shuffle0.
-  rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
-  rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
-  f_equal; f_equal.
   destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
-  *rewrite Nat.add_assoc.
+  *idtac.
 (* suite possible si j'arrive à prouver tout ça (faut que ça soye vrai) :
    Si on suppose que le ∀ k, fA_ge_1_ε v i k = true veut dire
-   que R(v) se termine en 999 (R(v), non encore défini, serait un
-   report de retenue sans normalisation, chais pas si c'est possible
-   d'avoir un algorithme qui fasse ça)... alors si ça s'applique aussi
-   sur u⊕v, on a R(u⊕v) se termine en 999 et donc que u se termine en
-   999 ou en 000. Mais, du coup, R(u⊕v') serait égal à R(v') et donc
+   que P(v) se termine en 999... alors si ça s'applique aussi
+   sur u⊕v, on a P(u⊕v) se termine en 999 et donc que u se termine en
+   999 ou en 000. Mais, du coup, P(u⊕v') serait égal à P(v') et donc
    v' se terminerait en 999. Mais M(...) ne peut pas se terminer en
    999 donc contradiction. *)
 Print prop_carr.
 Print carry.
 Print normalize.
-(* R aurait donc un carry sans le "+1" dans le cas inl ? ce serait possible,
-   ça ? Est-ce que mathématiquement P(u)=R(u) ? le P étant normalisant et
-   pas le R ? *)
 ...
 Theorem glop {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε v i k = true)
   → ∀ k, prop_carr_no_norm v (i + k) = rad - 1.
-
 ...
-   do 2 rewrite A_additive.
+  *do 2 rewrite A_additive.
    rewrite NQintg_add; [ symmetry | pauto | pauto ].
    rewrite NQintg_add; [ symmetry | pauto | pauto ].
-   do 4 rewrite <- Nat.add_assoc.
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   f_equal; f_equal.
-   do 2 rewrite Nat.add_assoc.
-   rewrite Nat.add_shuffle0, Nat.add_comm.
-   rewrite <- Nat.add_assoc.
+   do 3 rewrite <- Nat.add_assoc.
    rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
    rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
    f_equal; f_equal.
    rewrite Nat.add_assoc.
+   rewrite Nat.add_comm.
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   f_equal; f_equal.
    do 2 rewrite NQintg_add_frac.
    destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1) as [H4| H4].
   --rewrite Nat.add_0_r.

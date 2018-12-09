@@ -167,15 +167,11 @@ split.
  rewrite Nat.mul_comm; apply Nat.sub_lt; [ flia Hs12 | pauto ].
 Qed.
 
+(*
 Theorem not_prop_carr_all_9_all_ge_1 {r : radix} : ∀ u i,
   (∀ k : nat, u (i + k + 1) ≤ 2 * (rad - 1))
   → (∀ k : nat, fA_ge_1_ε u i k = true)
-(**)
   → (u i + NQintg (A i (rad * (i + 3)) u) + 1) mod rad = rad - 1
-(*
-  → (u i + nA i (rad * (i + 3)) u / rad ^ (rad * (i + 3) - i - 1) + 1)
-       mod rad = rad - 1
-*)
   → ¬ (∀ k, d2n (prop_carr u) (i + k) = rad - 1).
 Proof.
 intros *.
@@ -424,6 +420,7 @@ Search (fA_ge_1_ε _  _ _ = true).
   apply A_ge_1_add_r_true_if in H2.
   now rewrite H2 in Hk.
 Qed.
+*)
 *)
 
 (* ∀ k, ∃ m, { A_k^n } < 1 - 1 / r^(m+1) ∧ (u_k + ⌋ A_k^n ⌊) mod r = r-1 *)
