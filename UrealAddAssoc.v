@@ -784,9 +784,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
    rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
    f_equal; f_equal.
+   rewrite Nat.add_assoc.
    do 2 rewrite NQintg_add_frac.
    destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1) as [H4| H4].
-  --rewrite Nat.add_0_l.
+  --rewrite Nat.add_0_r.
     destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1) as [H5| H5].
    ++rewrite Nat.mod_0_l; [ | easy ].
      specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
