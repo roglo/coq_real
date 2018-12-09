@@ -777,10 +777,15 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
 Print prop_carr.
 Print carry.
 Print normalize.
-...
 Theorem glop {r : radix} : ∀ u i,
-  (∀ k, fA_ge_1_ε v i k = true)
-  → ∀ k, prop_carr_no_norm v (i + k) = rad - 1.
+  (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k, dig (prop_carr u (i + k)) = rad - 1.
+Proof.
+intros * Hu *.
+unfold prop_carr; cbn.
+unfold carry.
+destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1].
+-idtac.
 ...
   *do 2 rewrite A_additive.
    rewrite NQintg_add; [ symmetry | pauto | pauto ].
