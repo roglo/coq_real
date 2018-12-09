@@ -787,6 +787,9 @@ unfold carry.
 destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1].
 -specialize (H1 0).
  apply A_ge_1_true_iff in H1.
+ remember (i + k + 1) as j eqn:Hj.
+ remember (min_n j 0) as n eqn:Hn.
+ move n before j.
 ...
   *do 2 rewrite A_additive.
    rewrite NQintg_add; [ symmetry | pauto | pauto ].
