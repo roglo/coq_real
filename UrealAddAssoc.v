@@ -782,6 +782,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    999 donc contradiction. *)
 Print prop_carr.
 Print carry.
+Print normalize.
 (* R aurait donc un carry sans le "+1" dans le cas inl ? ce serait possible,
    ça ? Est-ce que mathématiquement P(u)=R(u) ? le P étant normalisant et
    pas le R ? *)

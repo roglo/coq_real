@@ -386,7 +386,7 @@ Definition fA_ge_1_ε {r : radix} u i k :=
 
 Definition carry {r : radix} u i :=
   match LPO_fst (fA_ge_1_ε u i) with
-  | inl _ => NQintg (A i (min_n i 0) u) + 1
+  | inl _ => NQintg (A i (min_n i 0) u)
   | inr (exist _ k _) => NQintg (A i (min_n i k) u)
   end.
 
