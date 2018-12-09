@@ -785,7 +785,8 @@ intros * Hu *.
 unfold prop_carr; cbn.
 unfold carry.
 destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1].
--idtac.
+-specialize (H1 k).
+ apply A_ge_1_true_iff in H1.
 ...
   *do 2 rewrite A_additive.
    rewrite NQintg_add; [ symmetry | pauto | pauto ].
