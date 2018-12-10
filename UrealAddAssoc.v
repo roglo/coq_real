@@ -786,13 +786,26 @@ unfold prop_carr; cbn.
 unfold carry.
 destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1].
 -rename k into l.
- clear Hu.
  remember (i + l + 1) as j eqn:Hj.
  remember (min_n j 0) as n eqn:Hn.
  move n before j; move Hn before Hj.
- specialize (frac_ge_if_all_fA_ge_1_ε u j H1) as H2.
- specialize (H2 0) as H3.
- rewrite <- Hn, Nat.pow_1_r in H3.
+ specialize (frac_ge_if_all_fA_ge_1_ε u i Hu) as H2.
+ specialize (H2 (j - i)) as H3.
+ rewrite (A_split (j + 1)) in H3.
+ rewrite Nat.add_sub in H3.
+ replace (j + 1 - i - 1) with (j - i) in H3 by flia.
+ unfold min_n in H3.
+ replace (i + (j - i) + 3) with (j + 3) in H3 by flia Hj.
+ replace (rad * (j + 3)) with n in H3. 2: {
+   rewrite Hn; unfold min_n; now rewrite Nat.add_0_r.
+ }
+ rewrite NQfrac_add in H3; [ | pauto | ].
+Search (NQfrac (_ * _)%NQ).
+...
+ rewrite Hn in H3.
+ specialize (frac_eq_if_all_fA_ge_1_ε u j H1 0) as H4.
+ destruct H4 as (x & Hx & H4).
+ rewrite H4 in H3.
 ...
   *do 2 rewrite A_additive.
    rewrite NQintg_add; [ symmetry | pauto | pauto ].
