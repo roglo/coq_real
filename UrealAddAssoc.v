@@ -800,7 +800,13 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1].
    rewrite Hn; unfold min_n; now rewrite Nat.add_0_r.
  }
  rewrite NQfrac_add in H3; [ | pauto | ].
-Search (NQfrac (_ * _)%NQ).
+ remember (A j n u) as x eqn:Hx in H3.
+ rewrite NQnum_den in Hx; [ | pauto ].
+ subst x.
+ rewrite NQmul_pair in H3; [ | pauto | pauto ].
+ rewrite Nat.mul_1_r in H3.
+ rewrite NQfrac_pair in H3.
+ remember (NQden (A j n u) * rad ^ (j - i)) as d eqn:Hd.
 ...
  rewrite Hn in H3.
  specialize (frac_eq_if_all_fA_ge_1_ε u j H1 0) as H4.
