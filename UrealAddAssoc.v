@@ -768,7 +768,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
   destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   *idtac.
 (* suite possible si j'arrive à prouver tout ça (faut que ça soye vrai) :
-   Si on suppose que le ∀ k, fA_ge_1_ε v i k = true veut dire
+   Si on suppose que le ∀ k, fA_ge_1_ε v i k = true implique
    que P(v) se termine en 999... alors si ça s'applique aussi
    sur u⊕v, on a P(u⊕v) se termine en 999 et donc que u se termine en
    999 ou en 000. Mais, du coup, P(u⊕v') serait égal à P(v') et donc
@@ -785,11 +785,14 @@ intros * Hu *.
 unfold prop_carr; cbn.
 unfold carry.
 destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1].
--specialize (H1 0).
- apply A_ge_1_true_iff in H1.
- remember (i + k + 1) as j eqn:Hj.
+-rename k into l.
+ clear Hu.
+ remember (i + l + 1) as j eqn:Hj.
  remember (min_n j 0) as n eqn:Hn.
- move n before j.
+ move n before j; move Hn before Hj.
+ specialize (frac_ge_if_all_fA_ge_1_ε u j H1) as H2.
+ specialize (H2 0) as H3.
+ rewrite <- Hn, Nat.pow_1_r in H3.
 ...
   *do 2 rewrite A_additive.
    rewrite NQintg_add; [ symmetry | pauto | pauto ].
