@@ -775,7 +775,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    999 ou en 000. Mais, du coup, P(u⊕v') serait égal à P(v') et donc
    v' se terminerait en 999. Mais M(...) ne peut pas se terminer en
    999 donc contradiction. *)
-
 (* mais prouver que ∀ k, fA_ge_1_ε v i k = true implique P(v) se termine
    en 999 n'a pas l'air facile (voir ci-dessous) ; alors j'ai pensé à
    redéfinir P pour que ça impose qu'il vaille 9 (ou 0, au choix) à partir
