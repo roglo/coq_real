@@ -767,6 +767,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
  +rewrite Nat.add_comm.
   destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   *idtac.
+...
 (* suite possible si j'arrive à prouver tout ça (faut que ça soye vrai) :
    Si on suppose que le ∀ k, fA_ge_1_ε v i k = true implique
    que P(v) se termine en 999... alors si ça s'applique aussi
