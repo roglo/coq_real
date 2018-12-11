@@ -779,10 +779,10 @@ Print carry.
 Print normalize.
 Theorem glop {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k, dig (prop_carr u (i + k + 1)) = rad - 1.
+  → ∀ k, P u (i + k + 1) = rad - 1.
 Proof.
 intros * Hu *.
-unfold prop_carr; cbn.
+unfold P, prop_carr; cbn.
 unfold carry.
 destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1].
 -rename k into l.
