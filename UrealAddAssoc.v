@@ -750,6 +750,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
    rewrite A_additive.
    rewrite NQintg_add; [ | pauto | pauto ].
    exfalso.
+Check A_lower_bound_if_all_fA_ge_1_ε.
+Check A_upper_bound.
 ...
 
 Definition num_A {r : radix} (rg := nat_ord_ring) i n u :=
