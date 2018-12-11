@@ -740,9 +740,16 @@ f_equal; f_equal.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε u i)) as [H2| H2].
  +destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
-  *rewrite A_additive.
-Search (NQintg (_ + _)).
-(* mouais : c'est vrai, ça ? ou peut-être exfalso ? *)
+  *specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
+   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H2'.
+   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H3 0) as H3'.
+   rewrite Nat.pow_1_r in H1', H2', H3'.
+   rewrite A_additive in H1'.
+   remember (min_n i 0) as n eqn:Hn.
+   rewrite NQfrac_add in H1'; [ | pauto | pauto ].
+   rewrite A_additive.
+   rewrite NQintg_add; [ | pauto | pauto ].
+   exfalso.
 ...
 
 Definition num_A {r : radix} (rg := nat_ord_ring) i n u :=
