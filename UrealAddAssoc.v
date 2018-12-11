@@ -724,6 +724,27 @@ rewrite summation_eq_compat with
 now rewrite summation_add_distr.
 Qed.
 
+Theorem P_additive {r : radix} : ∀ u v i,
+  P (u ⊕ v) i = (P u i + P v i) mod rad.
+Proof.
+intros.
+unfold P, prop_carr, d2n; cbn.
+unfold carry.
+rewrite Nat.add_mod_idemp_l; [ | easy ].
+rewrite Nat.add_mod_idemp_r; [ | easy ].
+rewrite Nat.add_shuffle0, Nat.add_assoc.
+rewrite <- Nat.add_assoc.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal.
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
+-destruct (LPO_fst (fA_ge_1_ε u i)) as [H2| H2].
+ +destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
+  *rewrite A_additive.
+Search (NQintg (_ + _)).
+(* mouais : c'est vrai, ça ? ou peut-être exfalso ? *)
+...
+
 Definition num_A {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - j - 1).
 Definition den_A {r : radix} i n := rad ^ (n - i - 1).
@@ -767,7 +788,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
  +rewrite Nat.add_comm.
   destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   *idtac.
-...
 (* suite possible si j'arrive à prouver tout ça (faut que ça soye vrai) :
    Si on suppose que le ∀ k, fA_ge_1_ε v i k = true implique
    que P(v) se termine en 999... alors si ça s'applique aussi
@@ -816,6 +836,14 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1].
  rewrite Nat.mul_1_r in H3.
  rewrite NQfrac_pair in H3.
  remember (NQden (A j n u) * rad ^ (j - i)) as d eqn:Hd.
+...
+(* la suite si j'arrive à prouver glop *)
+specialize (glop _ _ H3) as H4.
+specialize (glop _ _ H2) as H5.
+assert (H6 : (∀ k, P u (i + k + 1) = 0)). {
+  intros k; specialize (H4 k); specialize (H5 k).
+  rewrite P_additive, H4 in H5.
+  (* devrait le faire *)
 ...
  rewrite Hn in H3.
  specialize (frac_eq_if_all_fA_ge_1_ε u j H1 0) as H4.
