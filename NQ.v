@@ -2327,40 +2327,29 @@ rewrite NQadd_comm, <- NQadd_assoc, NQfrac_add_nat_l; cycle 1. {
 easy.
 Qed.
 
-Theorem NQfrac_add' : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
+Theorem NQfrac_add_cond : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
   NQfrac (x + y) =
     if NQlt_le_dec (NQfrac x + NQfrac y) 1 then (NQfrac x + NQfrac y)%NQ
     else (NQfrac x + NQfrac y - 1)%NQ.
 Proof.
 intros * Hxz Hyz.
-destruct (NQlt_le_dec (NQfrac x + NQfrac y)) as [H1| H1].
--rewrite NQfrac_add; [ | easy | easy ].
- apply NQfrac_small.
- split; [ | easy ].
- replace 0%NQ with (0 + 0)%NQ by easy.
- apply NQadd_le_mono; pauto.
--idtac.
-...
-NQintg_add_frac: ∀ x y : NQ, NQintg (NQfrac x + NQfrac y) = (if NQlt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1)
-...
-
-rewrite (NQintg_frac x Hxz) at 1.
-rewrite (NQintg_frac y Hyz) at 1.
-rewrite NQadd_comm, <- NQadd_assoc, NQfrac_add_nat_l; cycle 1. {
-  replace 0%NQ with (0 + (0 // 1 + 0))%NQ by easy.
-  apply NQadd_le_mono; [ apply NQfrac_ge_0 | ].
-  apply NQadd_le_mono; [ | apply NQfrac_ge_0 ].
-  apply NQle_pair; [ easy | easy | ].
-  rewrite Nat.mul_0_l, Nat.mul_1_l.
-  apply Nat.le_0_l.
-}
-rewrite NQadd_comm, <- NQadd_assoc, NQfrac_add_nat_l; cycle 1. {
+rewrite NQfrac_of_intg. 2: {
   replace 0%NQ with (0 + 0)%NQ by easy.
-  apply NQadd_le_mono; apply NQfrac_ge_0.
+  now apply NQadd_le_mono.
 }
-easy.
+rewrite NQintg_add; [ | easy | easy ].
+rewrite NQintg_add_frac.
+destruct (NQlt_le_dec (NQfrac x + NQfrac y)) as [H1| H1].
+-rewrite Nat.add_0_r.
+ rewrite NQpair_add_l, NQsub_add_distr.
+ rewrite NQadd_sub_swap, <- NQadd_sub_assoc.
+ now f_equal; symmetry; apply NQfrac_of_intg.
+-rewrite NQpair_add_l, NQsub_add_distr.
+ f_equal.
+ rewrite NQpair_add_l, NQsub_add_distr.
+ rewrite NQadd_sub_swap, <- NQadd_sub_assoc.
+ now f_equal; symmetry; apply NQfrac_of_intg.
 Qed.
-...
 
 Theorem NQintg_pair : ∀ a b, b ≠ 0 → NQintg (a // b) = a / b.
 Proof.

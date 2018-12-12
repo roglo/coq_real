@@ -3066,8 +3066,10 @@ apply NQnle_gt.
 rewrite Nat.pow_add_r.
 rewrite Nat.mod_mul_r; try pauto.
 *)
-unfold NQfrac in Hu.
-Search (NQfrac (_ + _)).
+rewrite A_split with (e := i + j + 1); [ | flia Hijn ].
+rewrite Nat.add_sub.
+rewrite NQfrac_add_cond.
+
 ...
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   clear - Hs Hijn.
