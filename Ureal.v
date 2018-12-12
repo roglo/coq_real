@@ -481,6 +481,8 @@ replace 0%NQ with (Σ (j = i + 1, n - 1), 0)%NQ.
 -now apply all_0_summation_0.
 Qed.
 
+Hint Resolve A_ge_0.
+
 Theorem B_ge_0 {r : radix} : ∀ i n u l, (0 ≤ B i n u l)%NQ.
 Proof.
 intros.
@@ -3068,8 +3070,16 @@ rewrite Nat.mod_mul_r; try pauto.
 *)
 rewrite A_split with (e := i + j + 1); [ | flia Hijn ].
 rewrite Nat.add_sub.
-rewrite NQfrac_add_cond.
-
+replace (i + j + 1 - i - 1) with j by flia.
+rewrite NQfrac_add_cond; [ | pauto | ]. 2: {
+  replace 0%NQ with (0 * 0)%NQ by easy.
+  now apply NQmul_le_mono_nonneg.
+}
+destruct
+  (NQlt_le_dec
+     (NQfrac (A i (i + j + 1) u) + NQfrac (A (i + j) n u * 1 // rad ^ j))%NQ)
+  as [H1| H1].
+-idtac.
 ...
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   clear - Hs Hijn.
