@@ -5,7 +5,6 @@ Require Import Misc Summation Ureal UrealNorm NQ.
 Set Nested Proofs Allowed.
 
 Hint Resolve A_ge_0.
-Hint Resolve NQfrac_ge_0.
 
 Theorem pred_rad_lt_rad {r : radix} : rad - 1 < rad.
 Proof.

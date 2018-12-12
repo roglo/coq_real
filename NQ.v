@@ -2040,6 +2040,8 @@ apply NQle_pair; [ easy | easy | ].
 rewrite Nat.mul_1_l; cbn; flia.
 Qed.
 
+Hint Resolve NQfrac_ge_0.
+
 Theorem NQfrac_lt_1 : ∀ x, (NQfrac x < 1)%NQ.
 Proof.
 intros.
@@ -2176,26 +2178,6 @@ rewrite <- (proj2 (Nat.div_exact _ c Hcz)).
  now rewrite Nat.mul_comm, Nat.sub_add.
 -rewrite Hc.
  apply Nat.mod_divide; [ now rewrite <- Hc | apply Nat.gcd_divide_l ].
-Qed.
-
-Theorem NQfrac_eq_when_lt_1 : ∀ x, (0 ≤ x < 1)%NQ → NQfrac x = x.
-Proof.
-intros * (Hxz, Hx1).
-destruct x as [| xp| xp]; [ easy | | easy ].
-unfold NQfrac; cbn.
-rewrite Nat.mod_small; cycle 1. {
-  cbn in Hx1.
-  replace xp with (GQnum xp // GQden xp)%GQ in Hx1 by now rewrite GQnum_den.
-  apply GQpair_lt_nat_r in Hx1; [ | | | easy ]; cycle 1.
-  -apply GQnum_neq_0.
-  -apply GQden_neq_0.
-  -now rewrite Nat.mul_1_r in Hx1.
-}
-unfold "//"%NQ.
-remember (GQnum xp) as xn eqn:Hxn; symmetry in Hxn.
-destruct xn; [ unfold GQnum in Hxn; now rewrite Nat.add_1_r in Hxn | ].
-f_equal; rewrite <- Hxn.
-symmetry; apply GQnum_den.
 Qed.
 
 Theorem NQintg_interv : ∀ n x, (0 ≤ x)%NQ →
@@ -2344,6 +2326,41 @@ rewrite NQadd_comm, <- NQadd_assoc, NQfrac_add_nat_l; cycle 1. {
 }
 easy.
 Qed.
+
+Theorem NQfrac_add' : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
+  NQfrac (x + y) =
+    if NQlt_le_dec (NQfrac x + NQfrac y) 1 then (NQfrac x + NQfrac y)%NQ
+    else (NQfrac x + NQfrac y - 1)%NQ.
+Proof.
+intros * Hxz Hyz.
+destruct (NQlt_le_dec (NQfrac x + NQfrac y)) as [H1| H1].
+-rewrite NQfrac_add; [ | easy | easy ].
+ apply NQfrac_small.
+ split; [ | easy ].
+ replace 0%NQ with (0 + 0)%NQ by easy.
+ apply NQadd_le_mono; pauto.
+-idtac.
+...
+NQintg_add_frac: ∀ x y : NQ, NQintg (NQfrac x + NQfrac y) = (if NQlt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1)
+...
+
+rewrite (NQintg_frac x Hxz) at 1.
+rewrite (NQintg_frac y Hyz) at 1.
+rewrite NQadd_comm, <- NQadd_assoc, NQfrac_add_nat_l; cycle 1. {
+  replace 0%NQ with (0 + (0 // 1 + 0))%NQ by easy.
+  apply NQadd_le_mono; [ apply NQfrac_ge_0 | ].
+  apply NQadd_le_mono; [ | apply NQfrac_ge_0 ].
+  apply NQle_pair; [ easy | easy | ].
+  rewrite Nat.mul_0_l, Nat.mul_1_l.
+  apply Nat.le_0_l.
+}
+rewrite NQadd_comm, <- NQadd_assoc, NQfrac_add_nat_l; cycle 1. {
+  replace 0%NQ with (0 + 0)%NQ by easy.
+  apply NQadd_le_mono; apply NQfrac_ge_0.
+}
+easy.
+Qed.
+...
 
 Theorem NQintg_pair : ∀ a b, b ≠ 0 → NQintg (a // b) = a / b.
 Proof.

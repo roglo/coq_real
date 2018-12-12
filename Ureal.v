@@ -2799,14 +2799,14 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
   now apply Nat_pow_ge_1.
 -destruct (NQlt_le_dec (A (i + j) n u) 1) as [HAn| HAp].
  +apply NQnlt_ge; intros H1.
-  rewrite NQfrac_eq_when_lt_1 in H1; cycle 1. {
+  rewrite NQfrac_small in H1; cycle 1. {
     split; [ apply A_ge_0 | easy ].
   }
   apply NQnlt_ge in H5; apply H5; clear H5.
   rewrite <- NQsub_opp_r, <- NQmul_opp_l.
   rewrite NQopp_sub_distr.
   rewrite NQadd_opp_l.
-  rewrite NQfrac_eq_when_lt_1; cycle 1. {
+  rewrite NQfrac_small; cycle 1. {
     split.
     -apply NQle_0_sub.
      rewrite NQmul_sub_distr_r, NQmul_1_l.
@@ -3033,12 +3033,6 @@ apply NQadd_le_mono.
 -apply NQfrac_ge_0.
 Qed.
 
-Theorem NQden_A {r : radix} : ∀ u i n,
-  NQden (A i n u) = rad ^ ((n - i - 1) * (n - i) / 2).
-Proof.
-intros.
-...
-
 (**)
 Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    fA_ge_1_ε u i (j + k) = true
@@ -3072,17 +3066,8 @@ apply NQnle_gt.
 rewrite Nat.pow_add_r.
 rewrite Nat.mod_mul_r; try pauto.
 *)
-unfold NQfrac in Hu; unfold NQfrac.
-Search (NQden (A _ _ _)).
-...
-Check NQden_A.
-rewrite NQden_A in Hu.
-rewrite <- Hs in Hu.
-replace (n - (i + j)) with (s + 1) in Hu by flia Hs Hijn.
-rewrite NQden_A.
-(* oh la la, chais pas si je vais y arriver, mais bon, je vais essayer
-  de faire NQden_A, si ça ne fait pas de bien, ça ne peut pas faire de
-  mal *)
+unfold NQfrac in Hu.
+Search (NQfrac (_ + _)).
 ...
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   clear - Hs Hijn.
