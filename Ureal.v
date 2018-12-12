@@ -3081,6 +3081,23 @@ destruct
   as [H1| H1].
 -rewrite NQadd_comm.
 ...
+ replace (1 - 1 // rad ^ S (j + k))%NQ with
+   ((1 - 1 // rad ^ S k) * 1 // rad ^ j + (1 - 1 // rad ^ j))%NQ. 2: {
+   rewrite NQadd_comm.
+   rewrite NQmul_sub_distr_r, NQmul_1_l.
+   rewrite NQadd_sub_assoc, NQsub_add; f_equal.
+   rewrite NQmul_pair; [ | pauto | pauto ].
+   rewrite Nat.mul_1_l; f_equal.
+   rewrite <- Nat.pow_add_r; f_equal.
+   now symmetry; rewrite Nat.add_comm.
+ }
+ apply NQadd_lt_mono.
+Search (_ * _ < _ * _)%NQ.
+ apply -> NQmul_lt_mono_pos_r.
+
+ +apply NQmul_lt_nonneg.
+
+...
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   clear - Hs Hijn.
   destruct j; [ now rewrite Nat.add_0_r | ].
