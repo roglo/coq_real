@@ -3079,7 +3079,7 @@ destruct
   (NQlt_le_dec
      (NQfrac (A i (i + j + 1) u) + NQfrac (A (i + j) n u * 1 // rad ^ j))%NQ)
   as [H1| H1].
--idtac.
+-rewrite NQadd_comm.
 ...
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   clear - Hs Hijn.
