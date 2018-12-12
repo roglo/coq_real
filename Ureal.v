@@ -3079,7 +3079,7 @@ destruct
   (NQlt_le_dec
      (NQfrac (A i (i + j + 1) u) + NQfrac (A (i + j) n u * 1 // rad ^ j))%NQ)
   as [H1| H1].
--rewrite NQadd_comm.
+-idtac.
 ...
  replace (1 - 1 // rad ^ S (j + k))%NQ with
    ((1 - 1 // rad ^ S k) * 1 // rad ^ j + (1 - 1 // rad ^ j))%NQ. 2: {
