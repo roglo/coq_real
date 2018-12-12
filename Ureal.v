@@ -373,6 +373,9 @@ Definition A {r : radix} (rg := NQ_ord_ring) i n u :=
 Definition B {r : radix} (rg := NQ_ord_ring) i n u l :=
   (Σ (j = n, n + l - 1), (u j // rad ^ (j - i))%NQ : NQ).
 
+Definition NA {r : radix} (rg := nat_ord_ring) i n u :=
+  Σ (j = i + 1, n - 1), (u j * rad ^ (n - 1 - j)).
+
 (**)
 
 Definition min_n {r : radix} i k := rad * (i + k + 3).
@@ -3080,12 +3083,16 @@ destruct
      (NQfrac (A i (i + j + 1) u) + NQfrac (A (i + j) n u * 1 // rad ^ j))%NQ)
   as [H1| H1].
 -idtac.
-...
-  Theorem glop : A i n u * rad ^ (n - i - 1) = un nombre entier
+Theorem glop {r : radix} : ∀ u i n,
+  (A i n u * rad ^ (n - i - 1) // 1 = NA i n u // 1)%NQ.
+Proof.
+intros.
 ...
 assert
-  ((NQfrac (A (i + j) n u) * rad ^ s // 1 =
-   ce nombre entier (A i n u * rad ^ (n - i - 1) // 1) mod rad ^ s // 1)%NQ).
+  ((NQfrac (A (i + j) n u) =
+    (NA i n u * rad ^ (n - i - 1) mod rad ^ s) // rad ^ s)%NQ).
+...
+rewrite H in Hu.
 ...
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   clear - Hs Hijn.
