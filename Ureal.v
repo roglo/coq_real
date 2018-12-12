@@ -3033,6 +3033,12 @@ apply NQadd_le_mono.
 -apply NQfrac_ge_0.
 Qed.
 
+Theorem NQden_A {r : radix} : ∀ u i n,
+  NQden (A i n u) = rad ^ ((n - i - 1) * (n - i) / 2).
+Proof.
+intros.
+...
+
 (**)
 Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    fA_ge_1_ε u i (j + k) = true
@@ -3046,10 +3052,8 @@ apply A_ge_1_true_iff.
 unfold min_n in Hu |-*.
 replace (i + (j + k) + 3) with (i + j + k + 3) in Hu by flia.
 remember (rad * (i + j + k + 3)) as n eqn:Hn.
-(*
 remember (n - (i + j) - 1) as s eqn:Hs.
 move s before n.
-*)
 assert (Hijn : i + j + 2 ≤ n - 1). {
   rewrite Hn.
   destruct rad; [ easy | simpl; flia ].
@@ -3069,7 +3073,16 @@ rewrite Nat.pow_add_r.
 rewrite Nat.mod_mul_r; try pauto.
 *)
 unfold NQfrac in Hu; unfold NQfrac.
-Abort. (* à terminer
+Search (NQden (A _ _ _)).
+...
+Check NQden_A.
+rewrite NQden_A in Hu.
+rewrite <- Hs in Hu.
+replace (n - (i + j)) with (s + 1) in Hu by flia Hs Hijn.
+rewrite NQden_A.
+(* oh la la, chais pas si je vais y arriver, mais bon, je vais essayer
+  de faire NQden_A, si ça ne fait pas de bien, ça ne peut pas faire de
+  mal *)
 ...
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   clear - Hs Hijn.
