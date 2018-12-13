@@ -3087,6 +3087,12 @@ Theorem glop {r : radix} : ∀ u i n,
   (A i n u * rad ^ (n - i - 1) // 1 = NA i n u // 1)%NQ.
 Proof.
 intros.
+remember (A i n u) as x eqn:Hx.
+rewrite NQnum_den in Hx; [ subst x | easy ].
+rewrite NQmul_pair; [ rewrite Nat.mul_1_r | easy | easy ].
+apply NQeq_pair; [ easy | easy | rewrite Nat.mul_1_r ].
+Search (NQnum (A _ _ _)).
+Search (NQden (A _ _ _)).
 ...
 assert
   ((NQfrac (A (i + j) n u) =
