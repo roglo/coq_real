@@ -3118,6 +3118,7 @@ rewrite NQfrac_add_cond; [ | pauto | ]. 2: {
 remember
   (NQfrac (A i (i + j + 1) u) + NQfrac (A (i + j) n u * 1 // rad ^ j))%NQ
   as x eqn:Hx.
+destruct (NQlt_le_dec x 1) as [H1| H1].
 ...
 rewrite A_of_NA in Hx.
 replace (i + j + 1 - i - 1) with j in Hx by flia.
