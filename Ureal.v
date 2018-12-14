@@ -3049,6 +3049,17 @@ rewrite NQpair_mul_r, NQpair_diag; [ | pauto ].
 now rewrite NQmul_1_r.
 Qed.
 
+Theorem A_of_NA {r : radix} : ∀ u i n,
+  (A i n u = NA i n u // rad ^ (n - i - 1))%NQ.
+Proof.
+intros.
+replace (NA i n u) with (NA i n u * 1) by flia.
+rewrite NQpair_mul_r, <- A_mul_pow.
+rewrite <- NQmul_assoc.
+rewrite NQmul_inv_pair; [ | pauto | easy ].
+symmetry; apply NQmul_1_r.
+Qed.
+
 Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    fA_ge_1_ε u i (j + k) = true
    → fA_ge_1_ε u (i + j) k = true.
@@ -3092,14 +3103,16 @@ destruct
   (NQlt_le_dec
      (NQfrac (A i (i + j + 1) u) + NQfrac (A (i + j) n u * 1 // rad ^ j))%NQ)
   as [H1| H1].
--idtac.
- assert
-   ((NQfrac (A (i + j) n u) =
-     (NA i n u * rad ^ (n - i - 1) mod rad ^ s) // rad ^ s)%NQ). {
-Check A_mul_pow.
-(* non c'est pas ça... *)
-...
-rewrite H in Hu.
+-rewrite A_of_NA in Hu.
+ rewrite NQfrac_pair, <- Hs in Hu.
+ rewrite A_of_NA in H1.
+ replace (i + j + 1 - i - 1) with j in H1 by flia.
+ rewrite NQfrac_pair in H1.
+ rewrite A_of_NA, <- Hs in H1.
+ rewrite NQmul_pair in H1; [ | pauto | pauto ].
+ rewrite Nat.mul_1_r in H1.
+ rewrite NQfrac_pair in H1.
+ rewrite Nat.mod_mul_r in H1; [ | pauto | pauto ].
 ...
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   clear - Hs Hijn.
