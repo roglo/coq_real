@@ -3108,6 +3108,7 @@ apply NQnle_gt.
 rewrite Nat.pow_add_r.
 rewrite Nat.mod_mul_r; try pauto.
 *)
+...
 rewrite A_split with (e := i + j + 1); [ | flia Hijn ].
 rewrite Nat.add_sub.
 replace (i + j + 1 - i - 1) with j by flia.
