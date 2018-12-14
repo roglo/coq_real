@@ -3042,20 +3042,12 @@ Theorem A_mul_pow {r : radix} : ∀ u i n,
   (A i n u * rad ^ (n - i - 1) // 1 = NA i n u // 1)%NQ.
 Proof.
 intros.
-unfold A.
-rewrite summation_mul_distr_r.
-remember summation as f; remember NA as g; cbn; subst f g.
-rewrite summation_eq_compat with
-  (h := λ j, ((u j * rad ^ (n - j - 1)) // 1)%NQ). 2: {
-  intros j Hj.
-  rewrite NQmul_pair; [ | pauto | easy ].
-  rewrite Nat.mul_comm.
-  rewrite <- NQmul_pair; [ | pauto | easy ].
-  rewrite NQpow_pair_l; [ | easy | flia Hj ].
-  replace (n - i - 1 - (j - i)) with (n - j - 1) by flia Hj.
-  now rewrite NQmul_comm, NQmul_pair.
-}
-...
+rewrite A_num_den.
+rewrite NQmul_pair; [ | pauto | easy ].
+rewrite Nat.mul_1_r.
+rewrite NQpair_mul_r, NQpair_diag; [ | pauto ].
+now rewrite NQmul_1_r.
+Qed.
 
 Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    fA_ge_1_ε u i (j + k) = true
@@ -3103,9 +3095,9 @@ destruct
 -idtac.
 Check A_mul_pow.
 ...
-assert
-  ((NQfrac (A (i + j) n u) =
-    (NA i n u * rad ^ (n - i - 1) mod rad ^ s) // rad ^ s)%NQ).
+ assert
+   ((NQfrac (A (i + j) n u) =
+     (NA i n u * rad ^ (n - i - 1) mod rad ^ s) // rad ^ s)%NQ). {
 ...
 rewrite H in Hu.
 ...
