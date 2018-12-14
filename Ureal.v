@@ -3099,6 +3099,20 @@ rewrite NQfrac_add_cond; [ | pauto | ]. 2: {
   replace 0%NQ with (0 * 0)%NQ by easy.
   now apply NQmul_le_mono_nonneg.
 }
+remember
+  (NQfrac (A i (i + j + 1) u) + NQfrac (A (i + j) n u * 1 // rad ^ j))%NQ
+  as x eqn:Hx.
+rewrite A_of_NA in Hx.
+replace (i + j + 1 - i - 1) with j in Hx by flia.
+rewrite NQfrac_pair in Hx.
+rewrite A_of_NA, <- Hs in Hx.
+rewrite NQmul_pair in Hx; [ | pauto | pauto ].
+rewrite Nat.mul_1_r in Hx.
+rewrite NQfrac_pair in Hx.
+rewrite Nat.mod_mul_r in Hx; [ | pauto | pauto ].
+rewrite NQadd_assoc in Hx.
+...
+
 destruct
   (NQlt_le_dec
      (NQfrac (A i (i + j + 1) u) + NQfrac (A (i + j) n u * 1 // rad ^ j))%NQ)
