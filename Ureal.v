@@ -3137,22 +3137,11 @@ assert (H1 : NA (i + j) n u mod rad ^ s = NA i n u mod rad ^ s). {
   rewrite Nat.mod_mul; [ easy | pauto ].
 }
 rewrite H1 in Hx.
-...
+rewrite NQpair_add_l in Hx.
+rewrite <- NQmul_pair in Hx; [ | pauto | pauto ].
+rewrite NQpair_diag, NQmul_1_l in Hx; [ | pauto ].
+rewrite NQadd_assoc in Hx.
 
-destruct
-  (NQlt_le_dec
-     (NQfrac (A i (i + j + 1) u) + NQfrac (A (i + j) n u * 1 // rad ^ j))%NQ)
-  as [H1| H1].
--rewrite A_of_NA in Hu.
- rewrite NQfrac_pair, <- Hs in Hu.
- rewrite A_of_NA in H1.
- replace (i + j + 1 - i - 1) with j in H1 by flia.
- rewrite NQfrac_pair in H1.
- rewrite A_of_NA, <- Hs in H1.
- rewrite NQmul_pair in H1; [ | pauto | pauto ].
- rewrite Nat.mul_1_r in H1.
- rewrite NQfrac_pair in H1.
- rewrite Nat.mod_mul_r in H1; [ | pauto | pauto ].
 ...
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   clear - Hs Hijn.
