@@ -3060,6 +3060,22 @@ rewrite NQmul_inv_pair; [ | pauto | easy ].
 symmetry; apply NQmul_1_r.
 Qed.
 
+Theorem NA_split {r : radix} : ∀ e u i n,
+  i + 1 ≤ e ≤ n → NA i n u = NA i e u * rad ^ (n - e) + NA (e - 1) n u.
+Proof.
+intros * Hin.
+unfold NA.
+rewrite (summation_split _ _ (e - 1)); [ | flia Hin ].
+remember summation as f; cbn; subst f.
+f_equal.
+-rewrite summation_mul_distr_r.
+ apply summation_eq_compat; intros j Hj; cbn.
+ rewrite <- Nat.mul_assoc; f_equal.
+ rewrite <- Nat.pow_add_r; f_equal.
+ flia Hin Hj.
+-now replace (S (e - 1)) with (e - 1 + 1) by flia Hin.
+Qed.
+
 Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    fA_ge_1_ε u i (j + k) = true
    → fA_ge_1_ε u (i + j) k = true.
@@ -3110,7 +3126,17 @@ rewrite NQmul_pair in Hx; [ | pauto | pauto ].
 rewrite Nat.mul_1_r in Hx.
 rewrite NQfrac_pair in Hx.
 rewrite Nat.mod_mul_r in Hx; [ | pauto | pauto ].
-rewrite NQadd_assoc in Hx.
+assert (H1 : NA (i + j) n u mod rad ^ s = NA i n u mod rad ^ s). {
+  clear - Hs Hijn.
+  destruct j; [ now rewrite Nat.add_0_r | ].
+  symmetry.
+  rewrite NA_split with (e := i + j + 2); [ | flia Hijn ].
+  replace (i + j + 2 - 1) with (i + S j) by flia.
+  replace (n - (i + j + 2)) with s by flia Hs.
+  rewrite <- Nat.add_mod_idemp_l; [ | pauto ].
+  rewrite Nat.mod_mul; [ easy | pauto ].
+}
+rewrite H1 in Hx.
 ...
 
 destruct
