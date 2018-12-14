@@ -3038,7 +3038,25 @@ apply NQadd_le_mono.
 -apply NQfrac_ge_0.
 Qed.
 
-(**)
+Theorem A_mul_pow {r : radix} : ∀ u i n,
+  (A i n u * rad ^ (n - i - 1) // 1 = NA i n u // 1)%NQ.
+Proof.
+intros.
+unfold A.
+rewrite summation_mul_distr_r.
+remember summation as f; remember NA as g; cbn; subst f g.
+rewrite summation_eq_compat with
+  (h := λ j, ((u j * rad ^ (n - j - 1)) // 1)%NQ). 2: {
+  intros j Hj.
+  rewrite NQmul_pair; [ | pauto | easy ].
+  rewrite Nat.mul_comm.
+  rewrite <- NQmul_pair; [ | pauto | easy ].
+  rewrite NQpow_pair_l; [ | easy | flia Hj ].
+  replace (n - i - 1 - (j - i)) with (n - j - 1) by flia Hj.
+  now rewrite NQmul_comm, NQmul_pair.
+}
+...
+
 Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    fA_ge_1_ε u i (j + k) = true
    → fA_ge_1_ε u (i + j) k = true.
@@ -3083,16 +3101,7 @@ destruct
      (NQfrac (A i (i + j + 1) u) + NQfrac (A (i + j) n u * 1 // rad ^ j))%NQ)
   as [H1| H1].
 -idtac.
-Theorem glop {r : radix} : ∀ u i n,
-  (A i n u * rad ^ (n - i - 1) // 1 = NA i n u // 1)%NQ.
-Proof.
-intros.
-remember (A i n u) as x eqn:Hx.
-rewrite NQnum_den in Hx; [ subst x | easy ].
-rewrite NQmul_pair; [ rewrite Nat.mul_1_r | easy | easy ].
-apply NQeq_pair; [ easy | easy | rewrite Nat.mul_1_r ].
-Search (NQnum (A _ _ _)).
-Search (NQden (A _ _ _)).
+Check A_mul_pow.
 ...
 assert
   ((NQfrac (A (i + j) n u) =
@@ -3137,74 +3146,7 @@ replace (rad ^ S (j + k) - 1) with
    apply Nat.neq_0_lt_0; pauto.
  +apply Nat.neq_0_lt_0; pauto.
 Qed.
-*)
-(*
-Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
-   A_ge_1 u i (j + k) = true
-   → A_ge_1 u (i + j) k = true.
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hu.
-apply A_ge_1_true_iff in Hu.
-apply A_ge_1_true_iff.
-unfold min_n in Hu |-*.
-replace (i + (j + k) + 3) with (i + j + k + 3) in Hu by flia.
-remember (rad * (i + j + k + 3)) as n eqn:Hn.
-remember (n - (i + j) - 1) as s eqn:Hs.
-move s before n.
-assert (Hijn : i + j + 2 ≤ n - 1). {
-  rewrite Hn.
-  destruct rad; [ easy | simpl; flia ].
-}
-replace (n - i - 1) with (s + j) in Hu by flia Hs Hijn.
-replace (s + j - S (j + k)) with (s - S k) in Hu by flia Hs.
-move Hu at bottom.
-revert Hu.
-apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
-intros Hu.
-apply Nat.nle_gt in Hu.
-apply Nat.nle_gt.
-rewrite Nat.pow_add_r.
-rewrite Nat.mod_mul_r; try pauto.
-assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
-  clear - Hs Hijn.
-  destruct j; [ now rewrite Nat.add_0_r | ].
-  symmetry.
-  rewrite nA_split with (e := i + j + 2); [ | flia Hijn ].
-  replace (i + j + 2 - 1) with (i + S j) by flia.
-  replace (n - (i + j + 2)) with s by flia Hs.
-  rewrite <- Nat.add_mod_idemp_l; [ | pauto ].
-  rewrite Nat.mod_mul; [ easy | pauto ].
-}
-rewrite H1 in Hu.
-replace (rad ^ S (j + k) - 1) with
-  (rad ^ S k - 1 + (rad ^ j - 1) * rad ^ S k).
--rewrite Nat.mul_add_distr_r.
- apply Nat.add_lt_le_mono; [ easy | ].
- rewrite <- Nat.mul_assoc, Nat.mul_comm.
- rewrite <- Nat.pow_add_r.
- replace (S k + (s - S k)) with s.
- +apply Nat.mul_le_mono_pos_r.
-  *apply Nat.neq_0_lt_0; pauto.
-  *rewrite Nat.sub_1_r.
-   apply Nat.lt_le_pred.
-   apply Nat.mod_upper_bound.
-   pauto.
- +rewrite Nat.add_sub_assoc; [ flia | ].
-  rewrite Hs, Hn.
-  destruct rad; [ easy | simpl; flia ].
--rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
- rewrite Nat.add_comm.
- rewrite Nat.add_sub_assoc.
- +rewrite Nat.sub_add.
-  *rewrite <- Nat.pow_add_r.
-   now replace (j + S k) with (S (j + k)).
-  *apply Nat_mul_le_pos_l.
-   apply Nat.neq_0_lt_0; pauto.
- +apply Nat.neq_0_lt_0; pauto.
-Qed.
-*)
+
 
 (*
 Theorem ureal_norm_eq_refl {r : radix} : reflexive _ ureal_norm_eq.
