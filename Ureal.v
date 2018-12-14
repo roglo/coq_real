@@ -3093,11 +3093,11 @@ destruct
      (NQfrac (A i (i + j + 1) u) + NQfrac (A (i + j) n u * 1 // rad ^ j))%NQ)
   as [H1| H1].
 -idtac.
-Check A_mul_pow.
-...
  assert
    ((NQfrac (A (i + j) n u) =
      (NA i n u * rad ^ (n - i - 1) mod rad ^ s) // rad ^ s)%NQ). {
+Check A_mul_pow.
+(* non c'est pas ça... *)
 ...
 rewrite H in Hu.
 ...
