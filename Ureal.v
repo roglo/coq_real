@@ -3108,6 +3108,9 @@ apply NQnle_gt.
 rewrite Nat.pow_add_r.
 rewrite Nat.mod_mul_r; try pauto.
 *)
+rewrite A_of_NA, NQfrac_pair, <- Hs in Hu.
+rewrite A_of_NA, NQfrac_pair.
+(*
 ...
 rewrite A_split with (e := i + j + 1); [ | flia Hijn ].
 rewrite Nat.add_sub.
@@ -3129,6 +3132,7 @@ rewrite NQmul_pair in Hx; [ | pauto | pauto ].
 rewrite Nat.mul_1_r in Hx.
 rewrite NQfrac_pair in Hx.
 rewrite Nat.mod_mul_r in Hx; [ | pauto | pauto ].
+*)
 assert (H1 : NA (i + j) n u mod rad ^ s = NA i n u mod rad ^ s). {
   clear - Hs Hijn.
   destruct j; [ now rewrite Nat.add_0_r | ].
@@ -3139,12 +3143,13 @@ assert (H1 : NA (i + j) n u mod rad ^ s = NA i n u mod rad ^ s). {
   rewrite <- Nat.add_mod_idemp_l; [ | pauto ].
   rewrite Nat.mod_mul; [ easy | pauto ].
 }
-rewrite H1 in Hx.
+rewrite H1 in Hu.
+(*
 rewrite NQpair_add_l in Hx.
 rewrite <- NQmul_pair in Hx; [ | pauto | pauto ].
 rewrite NQpair_diag, NQmul_1_l in Hx; [ | pauto ].
 rewrite NQadd_assoc in Hx.
-
+*)
 ...
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   clear - Hs Hijn.
