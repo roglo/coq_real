@@ -3150,6 +3150,45 @@ rewrite <- NQmul_pair in Hx; [ | pauto | pauto ].
 rewrite NQpair_diag, NQmul_1_l in Hx; [ | pauto ].
 rewrite NQadd_assoc in Hx.
 *)
+replace (n - i - 1) with (s + j) by flia Hs Hijn.
+rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+  apply Nat.mul_le_mono_l.
+  now apply Nat_pow_ge_1.
+}
+do 2 rewrite Nat.mul_1_l.
+apply NQlt_pair; [ pauto | pauto | ].
+rewrite Nat.mul_comm.
+replace (S (j + k)) with (j + S k) at 1 by flia.
+replace (s + j) with (j + s) at 2 by flia.
+do 3 rewrite Nat.pow_add_r.
+do 2 rewrite <-  Nat.mul_assoc.
+apply Nat.mul_lt_mono_pos_l; [ apply Nat.neq_0_lt_0; pauto | ].
+rewrite Nat.mul_comm.
+rewrite NQsub_pair_pos in Hu; [ | easy | pauto | ]. 2: {
+  apply Nat.mul_le_mono_l.
+  now apply Nat_pow_ge_1.
+}
+do 2 rewrite Nat.mul_1_l in Hu.
+apply NQlt_pair in Hu; [ | pauto | pauto ].
+rewrite Nat.mod_mul_r; [ | pauto | pauto ].
+rewrite Nat.mul_add_distr_r.
+...
+replace (rad ^ S (j + k) - 1) with
+  (rad ^ S k - 1 + (rad ^ j - 1) * rad ^ S k).
+-rewrite Nat.mul_add_distr_l.
+ apply Nat.add_lt_le_mono; [ easy | ].
+ rewrite <- Nat.mul_assoc, Nat.mul_comm.
+ rewrite <- Nat.pow_add_r.
+ replace (S k + (s - S k)) with s.
+ +apply Nat.mul_le_mono_pos_r.
+  *apply Nat.neq_0_lt_0; pauto.
+  *rewrite Nat.sub_1_r.
+   apply Nat.lt_le_pred.
+   apply Nat.mod_upper_bound.
+   pauto.
+ +rewrite Nat.add_sub_assoc; [ flia | ].
+  rewrite Hs, Hn.
+  destruct rad; [ easy | simpl; flia ].
 ...
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   clear - Hs Hijn.
