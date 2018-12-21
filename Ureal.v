@@ -3094,45 +3094,14 @@ assert (Hijn : i + j + 2 ≤ n - 1). {
   rewrite Hn.
   destruct rad; [ easy | simpl; flia ].
 }
-(*
-replace (n - i - 1) with (s + j) in Hu by flia Hs Hijn.
-replace (s + j - S (j + k)) with (s - S k) in Hu by flia Hs.
-*)
 move Hu at bottom.
 revert Hu.
 apply Decidable.contrapositive; [ apply NQle_decidable | ].
 intros Hu.
 apply NQnle_gt in Hu.
 apply NQnle_gt.
-(*
-rewrite Nat.pow_add_r.
-rewrite Nat.mod_mul_r; try pauto.
-*)
 rewrite A_of_NA, NQfrac_pair, <- Hs in Hu.
 rewrite A_of_NA, NQfrac_pair.
-(*
-...
-rewrite A_split with (e := i + j + 1); [ | flia Hijn ].
-rewrite Nat.add_sub.
-replace (i + j + 1 - i - 1) with j by flia.
-rewrite NQfrac_add_cond; [ | pauto | ]. 2: {
-  replace 0%NQ with (0 * 0)%NQ by easy.
-  now apply NQmul_le_mono_nonneg.
-}
-remember
-  (NQfrac (A i (i + j + 1) u) + NQfrac (A (i + j) n u * 1 // rad ^ j))%NQ
-  as x eqn:Hx.
-destruct (NQlt_le_dec x 1) as [H1| H1].
-...
-rewrite A_of_NA in Hx.
-replace (i + j + 1 - i - 1) with j in Hx by flia.
-rewrite NQfrac_pair in Hx.
-rewrite A_of_NA, <- Hs in Hx.
-rewrite NQmul_pair in Hx; [ | pauto | pauto ].
-rewrite Nat.mul_1_r in Hx.
-rewrite NQfrac_pair in Hx.
-rewrite Nat.mod_mul_r in Hx; [ | pauto | pauto ].
-*)
 assert (H1 : NA (i + j) n u mod rad ^ s = NA i n u mod rad ^ s). {
   clear - Hs Hijn.
   destruct j; [ now rewrite Nat.add_0_r | ].
@@ -3144,12 +3113,6 @@ assert (H1 : NA (i + j) n u mod rad ^ s = NA i n u mod rad ^ s). {
   rewrite Nat.mod_mul; [ easy | pauto ].
 }
 rewrite H1 in Hu.
-(*
-rewrite NQpair_add_l in Hx.
-rewrite <- NQmul_pair in Hx; [ | pauto | pauto ].
-rewrite NQpair_diag, NQmul_1_l in Hx; [ | pauto ].
-rewrite NQadd_assoc in Hx.
-*)
 replace (n - i - 1) with (s + j) by flia Hs Hijn.
 rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
   apply Nat.mul_le_mono_l.
@@ -3172,62 +3135,32 @@ do 2 rewrite Nat.mul_1_l in Hu.
 apply NQlt_pair in Hu; [ | pauto | pauto ].
 rewrite Nat.mod_mul_r; [ | pauto | pauto ].
 rewrite Nat.mul_add_distr_r.
-...
-replace (rad ^ S (j + k) - 1) with
-  (rad ^ S k - 1 + (rad ^ j - 1) * rad ^ S k).
--rewrite Nat.mul_add_distr_l.
- apply Nat.add_lt_le_mono; [ easy | ].
- rewrite <- Nat.mul_assoc, Nat.mul_comm.
- rewrite <- Nat.pow_add_r.
- replace (S k + (s - S k)) with s.
- +apply Nat.mul_le_mono_pos_r.
-  *apply Nat.neq_0_lt_0; pauto.
-  *rewrite Nat.sub_1_r.
-   apply Nat.lt_le_pred.
-   apply Nat.mod_upper_bound.
-   pauto.
- +rewrite Nat.add_sub_assoc; [ flia | ].
-  rewrite Hs, Hn.
-  destruct rad; [ easy | simpl; flia ].
-...
-assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
-  clear - Hs Hijn.
-  destruct j; [ now rewrite Nat.add_0_r | ].
-  symmetry.
-  rewrite nA_split with (e := i + j + 2); [ | flia Hijn ].
-  replace (i + j + 2 - 1) with (i + S j) by flia.
-  replace (n - (i + j + 2)) with s by flia Hs.
-  rewrite <- Nat.add_mod_idemp_l; [ | pauto ].
-  rewrite Nat.mod_mul; [ easy | pauto ].
-}
-rewrite H1 in Hu.
-replace (rad ^ S (j + k) - 1) with
-  (rad ^ S k - 1 + (rad ^ j - 1) * rad ^ S k).
--rewrite Nat.mul_add_distr_r.
- apply Nat.add_lt_le_mono; [ easy | ].
- rewrite <- Nat.mul_assoc, Nat.mul_comm.
- rewrite <- Nat.pow_add_r.
- replace (S k + (s - S k)) with s.
- +apply Nat.mul_le_mono_pos_r.
-  *apply Nat.neq_0_lt_0; pauto.
-  *rewrite Nat.sub_1_r.
-   apply Nat.lt_le_pred.
-   apply Nat.mod_upper_bound.
-   pauto.
- +rewrite Nat.add_sub_assoc; [ flia | ].
-  rewrite Hs, Hn.
-  destruct rad; [ easy | simpl; flia ].
--rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
- rewrite Nat.add_comm.
- rewrite Nat.add_sub_assoc.
- +rewrite Nat.sub_add.
-  *rewrite <- Nat.pow_add_r.
-   now replace (j + S k) with (S (j + k)).
-  *apply Nat_mul_le_pos_l.
-   apply Nat.neq_0_lt_0; pauto.
- +apply Nat.neq_0_lt_0; pauto.
+apply
+  (Nat.lt_le_trans _
+     (rad ^ s * (rad ^ S k - 1) +
+      (rad ^ s * (rad ^ S (j + k) - 1) -  rad ^ s * (rad ^ S k - 1)))).
+-apply Nat.add_lt_le_mono; [ apply Hu | ].
+ rewrite <- Nat.mul_assoc, <- Nat.mul_sub_distr_l.
+ apply Nat.mul_le_mono_pos_l; [ apply Nat.neq_0_lt_0; pauto | ].
+ rewrite Nat_sub_sub_assoc.
+ +rewrite Nat.sub_add; [ | now apply Nat_pow_ge_1 ].
+  replace (rad ^ S k) with (1 * rad ^ S k) at 2 by flia.
+  rewrite <- Nat.add_succ_r, Nat.pow_add_r.
+  rewrite <- Nat.mul_sub_distr_r.
+  apply Nat.mul_le_mono_pos_r; [ apply Nat.neq_0_lt_0; pauto | ].
+  rewrite Nat.sub_1_r.
+  apply Nat.lt_le_pred.
+  apply Nat.mod_upper_bound; pauto.
+ +rewrite Nat.sub_add; [ | now apply Nat_pow_ge_1 ].
+  split; [ now apply Nat_pow_ge_1 | ].
+  apply Nat.pow_le_mono_r; [ easy | flia ].
+-rewrite Nat.add_sub_assoc.
+ +now rewrite Nat.add_comm, Nat.add_sub.
+ +apply Nat.mul_le_mono_l.
+  apply Nat.sub_le_mono_r.
+  apply Nat.pow_le_mono; [ easy | easy | ].
+  apply -> Nat.succ_le_mono; flia.
 Qed.
-
 
 (*
 Theorem ureal_norm_eq_refl {r : radix} : reflexive _ ureal_norm_eq.

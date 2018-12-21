@@ -749,9 +749,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
    exfalso.
 Check A_lower_bound_if_all_fA_ge_1_ε.
 Check A_upper_bound.
-Search (∀ _, fA_ge_1_ε _ _ _ = true).
-...
 Check A_ge_1_add_r_true_if.
+...
 Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    fA_ge_1_ε u i (j + k) = true
    → fA_ge_1_ε u (i + j) k = true.
