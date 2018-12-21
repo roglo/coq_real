@@ -721,7 +721,7 @@ rewrite summation_eq_compat with
 now rewrite summation_add_distr.
 Qed.
 
-(* mmm.... this theorem is likely false
+(* mmm.... this theorem is likely false *)
 Theorem P_additive {r : radix} : ∀ u v i,
   P (u ⊕ v) i = (P u i + P v i) mod rad.
 Proof.
@@ -756,7 +756,6 @@ Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    fA_ge_1_ε u i (j + k) = true
    → fA_ge_1_ε u (i + j) k = true.
 ...
-*)
 
 Definition num_A {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - j - 1).
