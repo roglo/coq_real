@@ -728,30 +728,33 @@ Proof.
 intros * Hu *.
 unfold P, prop_carr; cbn.
 unfold carry.
-destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1].
--rename k into l.
- remember (i + l + 1) as j eqn:Hj.
- remember (min_n j 0) as n eqn:Hn.
- move n before j; move Hn before Hj.
- specialize (frac_ge_if_all_fA_ge_1_ε u i Hu) as H2.
- specialize (H2 (j - i)) as H3.
- rewrite (A_split (j + 1)) in H3.
- rewrite Nat.add_sub in H3.
- replace (j + 1 - i - 1) with (j - i) in H3 by flia.
- unfold min_n in H3.
- replace (i + (j - i) + 3) with (j + 3) in H3 by flia Hj.
- replace (rad * (j + 3)) with n in H3. 2: {
-   rewrite Hn; unfold min_n; now rewrite Nat.add_0_r.
- }
- rewrite NQfrac_add in H3; [ | pauto | ].
- remember (A j n u) as x eqn:Hx in H3.
- rewrite NQnum_den in Hx; [ | pauto ].
- subst x.
- rewrite NQmul_pair in H3; [ | pauto | pauto ].
- rewrite Nat.mul_1_r in H3.
- rewrite NQfrac_pair in H3.
- remember (NQden (A j n u) * rad ^ (j - i)) as d eqn:Hd.
-Check A_ge_1_add_r_true_if.
+destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1]. 2: {
+  destruct H1 as (j & _ & H1).
+  rewrite <- Nat.add_assoc in H1.
+  rewrite A_ge_1_add_r_true_if in H1; [ easy | apply Hu ].
+}
+rename k into l.
+remember (i + l + 1) as j eqn:Hj.
+remember (min_n j 0) as n eqn:Hn.
+move n before j; move Hn before Hj.
+specialize (frac_ge_if_all_fA_ge_1_ε u i Hu) as H2.
+specialize (H2 (j - i)) as H3.
+rewrite (A_split (j + 1)) in H3.
+rewrite Nat.add_sub in H3.
+replace (j + 1 - i - 1) with (j - i) in H3 by flia.
+unfold min_n in H3.
+replace (i + (j - i) + 3) with (j + 3) in H3 by flia Hj.
+replace (rad * (j + 3)) with n in H3. 2: {
+  rewrite Hn; unfold min_n; now rewrite Nat.add_0_r.
+}
+rewrite NQfrac_add in H3; [ | pauto | ].
+remember (A j n u) as x eqn:Hx in H3.
+rewrite NQnum_den in Hx; [ | pauto ].
+subst x.
+rewrite NQmul_pair in H3; [ | pauto | pauto ].
+rewrite Nat.mul_1_r in H3.
+rewrite NQfrac_pair in H3.
+remember (NQden (A j n u) * rad ^ (j - i)) as d eqn:Hd.
 ...
 
 (* mmm.... this theorem is likely false *)
