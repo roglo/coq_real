@@ -738,6 +738,7 @@ remember (i + l + 1) as j eqn:Hj.
 remember (min_n j 0) as n eqn:Hn.
 move n before j; move Hn before Hj.
 specialize (frac_ge_if_all_fA_ge_1_ε u i Hu) as H2.
+...
 specialize (H2 (j - i)) as H3.
 rewrite (A_split (j + 1)) in H3.
 rewrite Nat.add_sub in H3.
