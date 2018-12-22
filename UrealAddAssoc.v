@@ -738,7 +738,24 @@ remember (i + l + 1) as j eqn:Hj.
 remember (min_n j 0) as n eqn:Hn.
 move n before j; move Hn before Hj.
 (**)
-specialize (frac_ge_if_all_fA_ge_1_ε u j H1) as H2.
+assert
+  (H2 : ∀ k,
+   (NQfrac (A (j - 1) (min_n (j - 1) k) u) ≥ 1 - 1 // rad ^ S k)%NQ). {
+  intros k.
+  apply frac_ge_if_all_fA_ge_1_ε.
+  intros m.
+  replace (j - 1) with (i + l) by flia Hj.
+  apply A_ge_1_add_r_true_if, Hu.
+}
+specialize (H2 42) as H3.
+rewrite (A_split (j + 1)) in H3.
+unfold A at 1 in H3.
+rewrite Nat.sub_add in H3; [ | flia Hj ].
+rewrite Nat.add_sub, summation_only_one in H3.
+replace (j - (j - 1)) with 1 in H3 by flia Hj.
+replace (j + 1 - (j - 1) - 1) with 1 in H3 by flia Hj.
+rewrite Nat.pow_1_r in H3.
+
 ...
 specialize (frac_ge_if_all_fA_ge_1_ε u i Hu) as H2.
 specialize (H2 (j - i)) as H3.
