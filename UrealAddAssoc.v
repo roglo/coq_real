@@ -726,6 +726,7 @@ Theorem all_fA_ge_1_ε_999 {r : radix} : ∀ u i,
   → ∀ k, P u (i + k + 1) = rad - 1.
 Proof.
 intros * Hu *.
+specialize radix_ge_2 as Hr.
 unfold P, prop_carr; cbn.
 unfold carry.
 destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1]. 2: {
@@ -739,23 +740,28 @@ remember (min_n j 0) as n eqn:Hn.
 move n before j; move Hn before Hj.
 (**)
 assert
-  (H2 : ∀ k,
-   (NQfrac (A (j - 1) (min_n (j - 1) k) u) ≥ 1 - 1 // rad ^ S k)%NQ). {
+  (H2 : ∀ k, (NQfrac (u j // rad + A j (min_n (j - 1) k) u * 1 // rad)
+        ≥ 1 - 1 // rad ^ S k)%NQ). {
   intros k.
-  apply frac_ge_if_all_fA_ge_1_ε.
-  intros m.
-  replace (j - 1) with (i + l) by flia Hj.
-  apply A_ge_1_add_r_true_if, Hu.
+  assert
+    (H2 : (NQfrac (A (j - 1) (min_n (j - 1) k) u) ≥ 1 - 1 // rad ^ S k)%NQ). {
+    apply frac_ge_if_all_fA_ge_1_ε.
+    intros m.
+    replace (j - 1) with (i + l) by flia Hj.
+    apply A_ge_1_add_r_true_if, Hu.
+  }
+  rewrite (A_split (j + 1)) in H2. 2: {
+    split; [ flia Hj | ].
+    unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  }
+  unfold A at 1 in H2.
+  rewrite Nat.sub_add in H2; [ | flia Hj ].
+  rewrite Nat.add_sub, summation_only_one in H2.
+  replace (j - (j - 1)) with 1 in H2 by flia Hj.
+  replace (j + 1 - (j - 1) - 1) with 1 in H2 by flia Hj.
+  now rewrite Nat.pow_1_r in H2.
 }
-specialize (H2 42) as H3.
-rewrite (A_split (j + 1)) in H3.
-unfold A at 1 in H3.
-rewrite Nat.sub_add in H3; [ | flia Hj ].
-rewrite Nat.add_sub, summation_only_one in H3.
-replace (j - (j - 1)) with 1 in H3 by flia Hj.
-replace (j + 1 - (j - 1) - 1) with 1 in H3 by flia Hj.
-rewrite Nat.pow_1_r in H3.
-
 ...
 specialize (frac_ge_if_all_fA_ge_1_ε u i Hu) as H2.
 specialize (H2 (j - i)) as H3.
