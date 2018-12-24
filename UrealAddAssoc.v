@@ -721,6 +721,25 @@ rewrite summation_eq_compat with
 now rewrite summation_add_distr.
 Qed.
 
+Definition num_A {r : radix} (rg := nat_ord_ring) i n u :=
+  Σ (j = i + 1, n - 1), u j * rad ^ (n - j - 1).
+Definition den_A {r : radix} i n := rad ^ (n - i - 1).
+
+Theorem A_num_den {r : radix} : ∀ i n u,
+  A i n u = (num_A i n u // den_A i n)%NQ.
+Proof.
+intros.
+unfold A, num_A, den_A.
+rewrite NQsum_pair.
+apply summation_eq_compat.
+intros j Hj.
+rewrite NQpair_mul_r.
+rewrite NQpow_pair_r; [ | easy | flia Hj ].
+rewrite NQmul_pair_den_num; [ | easy ].
+f_equal; f_equal.
+flia Hj.
+Qed.
+
 Theorem all_fA_ge_1_ε_999 {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, P u (i + k + 1) = rad - 1.
@@ -762,6 +781,31 @@ assert
   replace (j + 1 - (j - 1) - 1) with 1 in H2 by flia Hj.
   now rewrite Nat.pow_1_r in H2.
 }
+assert
+  (H3 : ∀ k (m := min_n (j - 1) k),
+   (((u j * den_A j m + num_A j m u) mod (den_A j m * rad)) // (den_A j m * rad)
+   ≥ 1 - 1 // rad ^ S k)%NQ). {
+  intros k m.
+  specialize (H2 k).
+  rewrite A_num_den in H2.
+  rewrite NQmul_pair in H2; [ | unfold den_A; pauto | easy ].
+  rewrite NQadd_pair in H2; [ | easy | ]. 2: {
+    apply Nat.neq_mul_0; split; [ unfold den_A; pauto | easy ].
+  }
+  rewrite Nat.mul_1_r in H2.
+  rewrite Nat.mul_assoc, Nat.mul_comm in H2.
+  rewrite <- Nat.mul_add_distr_l in H2.
+  rewrite <- NQmul_pair in H2; [ | easy | ]. 2: {
+    apply Nat.neq_mul_0; split; [ unfold den_A; pauto | easy ].
+  }
+  rewrite NQpair_diag in H2; [ | easy ].
+  rewrite NQmul_1_l in H2.
+  fold m in H2.
+  rewrite NQfrac_pair in H2.
+  easy.
+}
+rewrite A_num_den.
+rewrite NQintg_pair; [ | unfold den_A; pauto ].
 ...
 specialize (frac_ge_if_all_fA_ge_1_ε u i Hu) as H2.
 specialize (H2 (j - i)) as H3.
@@ -818,25 +862,6 @@ Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    fA_ge_1_ε u i (j + k) = true
    → fA_ge_1_ε u (i + j) k = true.
 ...
-
-Definition num_A {r : radix} (rg := nat_ord_ring) i n u :=
-  Σ (j = i + 1, n - 1), u j * rad ^ (n - j - 1).
-Definition den_A {r : radix} i n := rad ^ (n - i - 1).
-
-Theorem A_num_den {r : radix} : ∀ i n u,
-  A i n u = (num_A i n u // den_A i n)%NQ.
-Proof.
-intros.
-unfold A, num_A, den_A.
-rewrite NQsum_pair.
-apply summation_eq_compat.
-intros j Hj.
-rewrite NQpair_mul_r.
-rewrite NQpow_pair_r; [ | easy | flia Hj ].
-rewrite NQmul_pair_den_num; [ | easy ].
-f_equal; f_equal.
-flia Hj.
-Qed.
 
 Theorem M_upper_bound {r : radix} : ∀ u i, M u i < rad.
 Proof.
