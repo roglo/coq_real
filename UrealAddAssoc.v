@@ -826,6 +826,7 @@ rewrite Nat.mul_1_r in H3.
 rewrite NQfrac_pair in H3.
 remember (NQden (A j n u) * rad ^ (j - i)) as d eqn:Hd.
 ...
+(**)
 
 (* mmm.... this theorem is likely false *)
 Theorem P_additive {r : radix} : ∀ u v i,
@@ -857,6 +858,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
 Check A_lower_bound_if_all_fA_ge_1_ε.
 Check A_upper_bound.
 Check A_ge_1_add_r_true_if.
+...
+specialize (all_fA_ge_1_ε_999 _ _ H1) as H1''.
+specialize (all_fA_ge_1_ε_999 _ _ H2) as H2''.
+specialize (all_fA_ge_1_ε_999 _ _ H3) as H3''.
 ...
 Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    fA_ge_1_ε u i (j + k) = true
