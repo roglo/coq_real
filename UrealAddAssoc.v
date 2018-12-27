@@ -758,11 +758,12 @@ apply Nat.le_antisymm. {
   now apply Nat.lt_le_pred, Nat.mod_upper_bound.
 }
 apply Nat.nlt_ge; intros H2.
-specialize (Hu 0) as H3.
+specialize (Hu 1) as H3.
 apply A_ge_1_true_iff in H3.
-remember (min_n i 0) as m eqn:Hm.
+remember (min_n i 1) as m eqn:Hm.
 move m before n; move Hm before Hn.
-rewrite Nat.pow_1_r in H3.
+assert (H : n = m) by (rewrite Hn, Hm; unfold min_n; ring).
+clear Hm; subst m.
 apply NQnlt_ge in H3; apply H3; clear H3.
 ...
 replace (u (i + 1) + NQintg (A (i + 1) n u)) with
