@@ -789,6 +789,32 @@ rewrite <- NQmul_pair in Hx; [ | easy | easy ].
 rewrite NQmul_comm in Hx; subst x.
 rewrite <- NQmul_add_distr_r.
 remember (u (i + 1)%nat // 1 + A (i + 1) n u)%NQ as x.
+remember x as y eqn:Hy.
+rewrite NQnum_den in Hy. 2: {
+  subst x y.
+  replace 0%NQ with (0 + 0)%NQ by easy.
+  apply NQadd_le_mono; [ | easy ].
+  replace 0%NQ with (0 // 1)%NQ by easy.
+  apply NQle_pair; [ easy | easy | flia ].
+}
+subst y.
+remember (NQnum x) as xn.
+remember (NQden x) as xd.
+move xd before xn.
+assert (Hxd : xd ≠ 0) by (subst xd; apply NQden_neq_0).
+move H2 at bottom.
+rewrite NQintg_pair in H2; [ | easy ].
+rewrite NQmul_pair; [ | easy | easy ].
+rewrite Nat.mul_1_r, NQfrac_pair.
+rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+  do 2 rewrite Nat.mul_1_l.
+  now apply Nat_pow_ge_1.
+}
+do 2 rewrite Nat.mul_1_l.
+apply NQlt_pair; [ now apply Nat.neq_mul_0 | pauto | ].
+rewrite Nat.mul_shuffle0, Nat.pow_2_r, Nat.mul_assoc.
+apply Nat.mul_lt_mono_pos_r; [ easy | ].
+rewrite Nat.mod_mul_r; [ | easy | easy ].
 ...
 
 Theorem all_fA_ge_1_ε_999 {r : radix} : ∀ u i,
