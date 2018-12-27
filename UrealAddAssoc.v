@@ -752,9 +752,31 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H1| H1]. 2: {
   destruct H1 as (j & _ & H1).
   rewrite A_ge_1_add_r_true_if in H1; [ easy | apply Hu ].
 }
-remember (i + 1) as j eqn:Hj.
-remember (min_n j 0) as n eqn:Hn.
-move n before j; move Hn before Hj.
+remember (min_n (i + 1) 0) as n eqn:Hn.
+apply Nat.le_antisymm. {
+  rewrite Nat.sub_1_r.
+  now apply Nat.lt_le_pred, Nat.mod_upper_bound.
+}
+apply Nat.nlt_ge; intros H2.
+specialize (Hu 0) as H3.
+apply A_ge_1_true_iff in H3.
+rewrite Nat.pow_1_r in H3.
+rewrite A_split_first in H3. 2: {
+  unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
+apply NQnlt_ge in H3; apply H3; clear H3.
+remember (u (S i) // rad)%NQ as x eqn:Hx.
+rewrite <- NQmul_1_r in Hx.
+rewrite NQmul_pair in Hx; [ | easy | easy ].
+rewrite Nat.mul_comm in Hx.
+rewrite <- NQmul_pair in Hx; [ | easy | easy ].
+rewrite NQmul_comm in Hx; subst x.
+rewrite <- NQmul_add_distr_r.
+rewrite NQsub_pair_pos; [ | easy | easy | flia Hr ].
+rewrite <- Nat.mul_sub_distr_l, Nat.mul_comm.
+rewrite <- NQmul_pair; [ | easy | easy ].
+remember ((u (S i) // 1 + A (S i) (min_n i 0) u) * 1 // rad)%NQ as x eqn:Hx.
 ...
 
 Theorem all_fA_ge_1_ε_999 {r : radix} : ∀ u i,
