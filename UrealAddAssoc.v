@@ -777,6 +777,7 @@ rewrite NQsub_pair_pos; [ | easy | easy | flia Hr ].
 rewrite <- Nat.mul_sub_distr_l, Nat.mul_comm.
 rewrite <- NQmul_pair; [ | easy | easy ].
 remember ((u (S i) // 1 + A (S i) (min_n i 0) u) * 1 // rad)%NQ as x eqn:Hx.
+rewrite <- Nat.add_1_r in Hx.
 ...
 
 Theorem all_fA_ge_1_ε_999 {r : radix} : ∀ u i,
