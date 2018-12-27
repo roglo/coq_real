@@ -749,7 +749,7 @@ specialize radix_ge_2 as Hr.
 unfold P, prop_carr; cbn.
 unfold carry.
 destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H1| H1]. 2: {
-  destruct H1 as (j & _ & H1).
+  destruct H1 as (j & Hj & H1).
   rewrite A_ge_1_add_r_true_if in H1; [ easy | apply Hu ].
 }
 remember (min_n (i + 1) 0) as n eqn:Hn.
@@ -836,92 +836,12 @@ Theorem all_fA_ge_1_ε_999 {r : radix} : ∀ u i,
   → ∀ k, P u (i + k + 1) = rad - 1.
 Proof.
 intros * Hu *.
-Inspect 1.
-...
-specialize radix_ge_2 as Hr.
-unfold P, prop_carr; cbn.
-unfold carry.
-destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1]. 2: {
-  destruct H1 as (j & _ & H1).
-  rewrite <- Nat.add_assoc in H1.
-  rewrite A_ge_1_add_r_true_if in H1; [ easy | apply Hu ].
-}
-rename k into l.
-remember (i + l + 1) as j eqn:Hj.
-remember (min_n j 0) as n eqn:Hn.
-move n before j; move Hn before Hj.
-(**)
-assert
-  (H2 : ∀ k, (NQfrac (u j // rad + A j (min_n (j - 1) k) u * 1 // rad)
-        ≥ 1 - 1 // rad ^ S k)%NQ). {
-  intros k.
-  assert
-    (H2 : (NQfrac (A (j - 1) (min_n (j - 1) k) u) ≥ 1 - 1 // rad ^ S k)%NQ). {
-    apply frac_ge_if_all_fA_ge_1_ε.
-    intros m.
-    replace (j - 1) with (i + l) by flia Hj.
-    apply A_ge_1_add_r_true_if, Hu.
-  }
-  rewrite (A_split (j + 1)) in H2. 2: {
-    split; [ flia Hj | ].
-    unfold min_n.
-    destruct rad; [ easy | cbn; flia ].
-  }
-  unfold A at 1 in H2.
-  rewrite Nat.sub_add in H2; [ | flia Hj ].
-  rewrite Nat.add_sub, summation_only_one in H2.
-  replace (j - (j - 1)) with 1 in H2 by flia Hj.
-  replace (j + 1 - (j - 1) - 1) with 1 in H2 by flia Hj.
-  now rewrite Nat.pow_1_r in H2.
-}
-assert
-  (H3 : ∀ k (m := min_n (j - 1) k),
-   (((u j * den_A j m + num_A j m u) mod (den_A j m * rad)) // (den_A j m * rad)
-   ≥ 1 - 1 // rad ^ S k)%NQ). {
-  intros k m.
-  specialize (H2 k).
-  rewrite A_num_den in H2.
-  rewrite NQmul_pair in H2; [ | unfold den_A; pauto | easy ].
-  rewrite NQadd_pair in H2; [ | easy | ]. 2: {
-    apply Nat.neq_mul_0; split; [ unfold den_A; pauto | easy ].
-  }
-  rewrite Nat.mul_1_r in H2.
-  rewrite Nat.mul_assoc, Nat.mul_comm in H2.
-  rewrite <- Nat.mul_add_distr_l in H2.
-  rewrite <- NQmul_pair in H2; [ | easy | ]. 2: {
-    apply Nat.neq_mul_0; split; [ unfold den_A; pauto | easy ].
-  }
-  rewrite NQpair_diag in H2; [ | easy ].
-  rewrite NQmul_1_l in H2.
-  fold m in H2.
-  rewrite NQfrac_pair in H2.
-  easy.
-}
-rewrite A_num_den.
-rewrite NQintg_pair; [ | unfold den_A; pauto ].
-...
-specialize (frac_ge_if_all_fA_ge_1_ε u i Hu) as H2.
-specialize (H2 (j - i)) as H3.
-rewrite (A_split (j + 1)) in H3.
-rewrite Nat.add_sub in H3.
-replace (j + 1 - i - 1) with (j - i) in H3 by flia.
-unfold min_n in H3.
-replace (i + (j - i) + 3) with (j + 3) in H3 by flia Hj.
-replace (rad * (j + 3)) with n in H3. 2: {
-  rewrite Hn; unfold min_n; now rewrite Nat.add_0_r.
-}
-rewrite NQfrac_add in H3; [ | pauto | ].
-remember (A j n u) as x eqn:Hx in H3.
-rewrite NQnum_den in Hx; [ | pauto ].
-subst x.
-rewrite NQmul_pair in H3; [ | pauto | pauto ].
-rewrite Nat.mul_1_r in H3.
-rewrite NQfrac_pair in H3.
-remember (NQden (A j n u) * rad ^ (j - i)) as d eqn:Hd.
-...
-(**)
+apply fA_ge_1_ε_999.
+intros l.
+apply A_ge_1_add_r_true_if, Hu.
+Qed.
 
-(* mmm.... this theorem is likely false *)
+(* mmm.... this theorem is likely false
 Theorem P_additive {r : radix} : ∀ u v i,
   P (u ⊕ v) i = (P u i + P v i) mod rad.
 Proof.
@@ -960,6 +880,7 @@ Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    fA_ge_1_ε u i (j + k) = true
    → fA_ge_1_ε u (i + j) k = true.
 ...
+*)
 
 Theorem M_upper_bound {r : radix} : ∀ u i, M u i < rad.
 Proof.
@@ -992,6 +913,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    999 ou en 000. Mais, du coup, P(u⊕v') serait égal à P(v') et donc
    v' se terminerait en 999. Mais M(...) ne peut pas se terminer en
    999 donc contradiction. *)
+...
 (* mais prouver que ∀ k, fA_ge_1_ε v i k = true implique P(v) se termine
    en 999 n'a pas l'air facile (voir ci-dessous) ; alors j'ai pensé à
    redéfinir P pour que ça impose qu'il vaille 9 (ou 0, au choix) à partir
