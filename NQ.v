@@ -2034,9 +2034,11 @@ Proof. easy. Qed.
 Theorem NQfrac_of_nat : ∀ n, NQfrac (n // 1) = 0%NQ.
 Proof.
 intros.
-...
 unfold NQfrac.
-...
+rewrite NQnum_pair_1_r.
+rewrite NQden_pair_1_r.
+now rewrite Nat.mod_1_r.
+Qed.
 
 Theorem NQfrac_ge_0 : ∀ x, (0 ≤ NQfrac x)%NQ.
 Proof.
