@@ -787,44 +787,14 @@ rewrite (A_split m) in H2. 2: {
   destruct rad; [ easy | cbn; flia ].
 }
 rewrite NQadd_assoc in H2.
-...
-remember (A (i + 1) m u) as x eqn:Hx in |-*.
-rewrite NQintg_frac in Hx; [ subst x | easy ].
-rewrite NQmul_add_distr_r.
-rewrite NQmul_pair; [ | easy | easy ].
-rewrite Nat.mul_1_l, Nat.mul_1_r.
-rewrite NQadd_assoc.
-rewrite <- NQpair_add_l.
-...
+remember (u (i + 1)%nat // rad)%NQ as x eqn:Hx.
+rewrite <- NQmul_1_r in Hx.
+rewrite NQmul_pair in Hx; [ | easy | easy ].
+rewrite Nat.mul_comm in Hx.
+rewrite <- NQmul_pair in Hx; [ | easy | easy ].
+rewrite NQmul_comm in Hx; subst x.
+rewrite <- NQmul_add_distr_r.
 remember (u (i + 1)%nat // 1 + A (i + 1) m u)%NQ as x.
-...
-remember (A (m - 1) (m + rad) u * 1 // rad ^ (m - (i + 1) - 1))%NQ as x.
-...
-remember (A (i + 1) m u) as x eqn:Hx.
-rewrite NQintg_frac in Hx; [ subst x | easy ].
-rewrite NQmul_add_distr_r.
-rewrite NQmul_pair; [ | easy | easy ].
-rewrite Nat.mul_1_l.
-rewrite NQadd_assoc.
-rewrite <- NQpair_add_l.
-rewrite <- Nat.add_1_r.
-assert (H : n = m + rad) by (rewrite Hn, Hm; unfold min_n; ring).
-clear Hn; subst n.
-rewrite (A_split m) in H2. 2: {
-  rewrite Hm; unfold min_n.
-  destruct rad; [ easy | cbn; flia ].
-}
-remember (A (m - 1) (m + rad) u * 1 // rad ^ (m - (i + 1) - 1))%NQ as x.
-rewrite NQintg_add in H2; [ | easy | ]. 2: {
-  subst x.
-  replace 0%NQ with (0 * 0)%NQ by easy.
-  now apply NQmul_le_mono_nonneg.
-}
-do 2 rewrite Nat.add_assoc in H2.
-remember (u (i + 1) + NQintg (A (i + 1) m u)) as y eqn:Hy.
-move y before x.
-remember (NQfrac (A (i + 1) m u)) as z eqn:Hz.
-move z before x; move Hz before Hy.
 ...
 
 Theorem all_fA_ge_1_ε_999 {r : radix} : ∀ u i,
