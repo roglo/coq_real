@@ -763,16 +763,18 @@ apply A_ge_1_true_iff in H3.
 remember (min_n i 0) as m eqn:Hm.
 move m before n; move Hm before Hn.
 rewrite Nat.pow_1_r in H3.
-rewrite A_split_first in H3. 2: {
+apply NQnlt_ge in H3; apply H3; clear H3.
+...
+rewrite A_split_first. 2: {
   subst m; unfold min_n.
   destruct rad; [ easy | cbn; flia ].
 }
-apply NQnlt_ge in H3; apply H3; clear H3.
-remember (A (S i) m u) as x eqn:Hx.
+rewrite <- Nat.add_1_r.
+remember (A (i + 1) m u) as x eqn:Hx.
 rewrite NQintg_frac in Hx; [ subst x | easy ].
 rewrite NQmul_add_distr_r.
 rewrite NQmul_pair; [ | easy | easy ].
-rewrite Nat.mul_1_r, Nat.mul_1_l.
+rewrite Nat.mul_1_l.
 rewrite NQadd_assoc.
 rewrite <- NQpair_add_l.
 rewrite <- Nat.add_1_r.
