@@ -764,6 +764,17 @@ remember (min_n i 0) as m eqn:Hm.
 move m before n; move Hm before Hn.
 rewrite Nat.pow_1_r in H3.
 apply NQnlt_ge in H3; apply H3; clear H3.
+replace (u (i + 1) + NQintg (A (i + 1) n u)) with
+  (NQintg (u (i + 1)%nat // 1 + A (i + 1) n u))%NQ in H2. 2: {
+  rewrite NQintg_add; [ | | easy ]. 2: {
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQle_pair; [ easy | easy | flia ].
+  }
+  rewrite NQintg_pair; [ | easy ].
+  rewrite Nat.div_1_r, <- Nat.add_assoc; f_equal.
+Search (NQfrac (_ // 1)).
+
+
 ...
 rewrite A_split_first. 2: {
   subst m; unfold min_n.

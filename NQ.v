@@ -2031,6 +2031,13 @@ Proof. easy. Qed.
 Theorem NQfrac_1 : NQfrac 1 = 0%NQ.
 Proof. easy. Qed.
 
+Theorem NQfrac_of_nat : ∀ n, NQfrac (n // 1) = 0%NQ.
+Proof.
+intros.
+...
+unfold NQfrac.
+...
+
 Theorem NQfrac_ge_0 : ∀ x, (0 ≤ NQfrac x)%NQ.
 Proof.
 intros.
