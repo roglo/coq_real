@@ -772,15 +772,24 @@ replace (u (i + 1) + NQintg (A (i + 1) n u)) with
   }
   rewrite NQintg_pair; [ | easy ].
   rewrite Nat.div_1_r, <- Nat.add_assoc; f_equal.
-Search (NQfrac (_ // 1)).
-
-
-...
+  rewrite NQfrac_of_nat, NQadd_0_l, NQintg_NQfrac, Nat.add_0_r.
+  easy.
+}
 rewrite A_split_first. 2: {
   subst m; unfold min_n.
   destruct rad; [ easy | cbn; flia ].
 }
 rewrite <- Nat.add_1_r.
+assert (H : n = m + rad) by (rewrite Hn, Hm; unfold min_n; ring).
+clear Hn; subst n.
+rewrite (A_split m) in H2. 2: {
+  rewrite Hm; unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
+rewrite NQadd_assoc in H2.
+...
+remember (A (m - 1) (m + rad) u * 1 // rad ^ (m - (i + 1) - 1))%NQ as x.
+...
 remember (A (i + 1) m u) as x eqn:Hx.
 rewrite NQintg_frac in Hx; [ subst x | easy ].
 rewrite NQmul_add_distr_r.
