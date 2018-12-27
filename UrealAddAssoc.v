@@ -760,24 +760,22 @@ apply Nat.le_antisymm. {
 apply Nat.nlt_ge; intros H2.
 specialize (Hu 0) as H3.
 apply A_ge_1_true_iff in H3.
+remember (min_n i 0) as m eqn:Hm.
+move m before n; move Hm before Hn.
 rewrite Nat.pow_1_r in H3.
 rewrite A_split_first in H3. 2: {
-  unfold min_n.
+  subst m; unfold min_n.
   destruct rad; [ easy | cbn; flia ].
 }
 apply NQnlt_ge in H3; apply H3; clear H3.
-remember (u (S i) // rad)%NQ as x eqn:Hx.
-rewrite <- NQmul_1_r in Hx.
-rewrite NQmul_pair in Hx; [ | easy | easy ].
-rewrite Nat.mul_comm in Hx.
-rewrite <- NQmul_pair in Hx; [ | easy | easy ].
-rewrite NQmul_comm in Hx; subst x.
-rewrite <- NQmul_add_distr_r.
-rewrite NQsub_pair_pos; [ | easy | easy | flia Hr ].
-rewrite <- Nat.mul_sub_distr_l, Nat.mul_comm.
-rewrite <- NQmul_pair; [ | easy | easy ].
-remember ((u (S i) // 1 + A (S i) (min_n i 0) u) * 1 // rad)%NQ as x eqn:Hx.
-rewrite <- Nat.add_1_r in Hx.
+remember (A (S i) m u) as x eqn:Hx.
+rewrite NQintg_frac in Hx; [ subst x | easy ].
+rewrite NQmul_add_distr_r.
+rewrite NQmul_pair; [ | easy | easy ].
+rewrite Nat.mul_1_r, Nat.mul_1_l.
+rewrite NQadd_assoc.
+rewrite <- NQpair_add_l.
+rewrite <- Nat.add_1_r.
 ...
 
 Theorem all_fA_ge_1_ε_999 {r : radix} : ∀ u i,
