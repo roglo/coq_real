@@ -788,6 +788,16 @@ rewrite (A_split m) in H2. 2: {
 }
 rewrite NQadd_assoc in H2.
 ...
+remember (A (i + 1) m u) as x eqn:Hx in |-*.
+rewrite NQintg_frac in Hx; [ subst x | easy ].
+rewrite NQmul_add_distr_r.
+rewrite NQmul_pair; [ | easy | easy ].
+rewrite Nat.mul_1_l, Nat.mul_1_r.
+rewrite NQadd_assoc.
+rewrite <- NQpair_add_l.
+...
+remember (u (i + 1)%nat // 1 + A (i + 1) m u)%NQ as x.
+...
 remember (A (m - 1) (m + rad) u * 1 // rad ^ (m - (i + 1) - 1))%NQ as x.
 ...
 remember (A (i + 1) m u) as x eqn:Hx.
