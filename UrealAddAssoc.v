@@ -815,13 +815,29 @@ apply NQlt_pair; [ now apply Nat.neq_mul_0 | pauto | ].
 rewrite Nat.mul_shuffle0, Nat.pow_2_r, Nat.mul_assoc.
 apply Nat.mul_lt_mono_pos_r; [ easy | ].
 rewrite Nat.mod_mul_r; [ | easy | easy ].
-...
+(**)
+apply (lt_le_trans _ ((xd + xd * (rad - 2)) * rad)).
+-apply Nat.mul_lt_mono_pos_r; [ easy | ].
+ apply Nat.add_lt_le_mono; [ now apply Nat.mod_upper_bound | ].
+ apply Nat.mul_le_mono_pos_l; [ now apply Nat.neq_0_lt_0 | ].
+ replace (rad - 2) with (pred (rad - 1)) by flia.
+ now apply Nat.lt_le_pred.
+-replace xd with (xd * 1) at 1 by flia.
+ rewrite <- Nat.mul_add_distr_l.
+ rewrite <- Nat.mul_assoc.
+ apply Nat.mul_le_mono_pos_l; [ now apply Nat.neq_0_lt_0 | ].
+ replace (1 + (rad - 2)) with (rad - 1) by flia Hr.
+ rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+ now apply Nat.sub_le_mono_l.
+Qed.
 
 Theorem all_fA_ge_1_ε_999 {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, P u (i + k + 1) = rad - 1.
 Proof.
 intros * Hu *.
+Inspect 1.
+...
 specialize radix_ge_2 as Hr.
 unfold P, prop_carr; cbn.
 unfold carry.
