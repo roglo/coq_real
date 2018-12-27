@@ -740,6 +740,23 @@ f_equal; f_equal.
 flia Hj.
 Qed.
 
+Theorem fA_ge_1_ε_999 {r : radix} : ∀ u i,
+  (∀ k, fA_ge_1_ε u i k = true)
+  → P u (i + 1) = rad - 1.
+Proof.
+intros * Hu *.
+specialize radix_ge_2 as Hr.
+unfold P, prop_carr; cbn.
+unfold carry.
+destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H1| H1]. 2: {
+  destruct H1 as (j & _ & H1).
+  rewrite A_ge_1_add_r_true_if in H1; [ easy | apply Hu ].
+}
+remember (i + 1) as j eqn:Hj.
+remember (min_n j 0) as n eqn:Hn.
+move n before j; move Hn before Hj.
+...
+
 Theorem all_fA_ge_1_ε_999 {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, P u (i + k + 1) = rad - 1.
