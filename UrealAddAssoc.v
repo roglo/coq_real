@@ -939,9 +939,6 @@ assert (H : ∀ k,
   flia.
 }
 ...
-NQintg_add:
-  ∀ x y : NQ, (0 ≤ x)%NQ → (0 ≤ y)%NQ → NQintg (x + y) = NQintg x + NQintg y + NQintg (NQfrac x + NQfrac y)
-...
 (**)
 
 Theorem M_upper_bound {r : radix} : ∀ u i, M u i < rad.
