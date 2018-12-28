@@ -866,9 +866,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
    rewrite NQfrac_add in H1'; [ | pauto | pauto ].
    rewrite A_additive.
    rewrite NQintg_add; [ | pauto | pauto ].
-   specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
-   specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
-   specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
    symmetry; rewrite Nat.add_comm; symmetry.
    remember (NQintg (A i n u) + NQintg (A i n v)) as x eqn:Hx.
    replace x with (x + 0) at 2 by flia.
@@ -876,6 +873,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
    rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
    f_equal; f_equal; rewrite Nat.mod_0_l; [ | easy ].
    clear x Hx.
+...
+   specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
+   specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
+   specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
    unfold P, d2n, prop_carr in H'1, H'2, H'3.
    cbn in H'1, H'2, H'3.
    unfold carry in H'1, H'2, H'3.
