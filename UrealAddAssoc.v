@@ -841,7 +841,7 @@ intros l.
 apply A_ge_1_add_r_true_if, Hu.
 Qed.
 
-(* mmm.... this theorem is likely false
+(* mmm.... this theorem is likely false *)
 Theorem P_additive {r : radix} : ∀ u v i,
   P (u ⊕ v) i = (P u i + P v i) mod rad.
 Proof.
@@ -880,7 +880,7 @@ Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    fA_ge_1_ε u i (j + k) = true
    → fA_ge_1_ε u (i + j) k = true.
 ...
-*)
+(**)
 
 Theorem M_upper_bound {r : radix} : ∀ u i, M u i < rad.
 Proof.
@@ -913,19 +913,13 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    999 ou en 000. Mais, du coup, P(u⊕v') serait égal à P(v') et donc
    v' se terminerait en 999. Mais M(...) ne peut pas se terminer en
    999 donc contradiction. *)
-Check all_fA_ge_1_ε_999.
+   specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
+   specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
+   specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
+   assert (H4 : (∀ k, P u (i + k + 1) = 0)). {
+     intros k; specialize (H'3 k); specialize (H'2 k).
 ...
-(* mais prouver que ∀ k, fA_ge_1_ε v i k = true implique P(v) se termine
-   en 999 n'a pas l'air facile (voir ci-dessous) ; alors j'ai pensé à
-   redéfinir P pour que ça impose qu'il vaille 9 (ou 0, au choix) à partir
-   de i+1. Problème : que faire pour i ? Si c'est valable en i-1 alors pour
-   i, c'est 9 (ou 0), sinon c'est ui mod 10 (ou (ui+1) mod 10). L'inconvénient
-   est qu'il faut faire un deuxième appel à LPO pour i-1. C'est con, parce
-   que fA_ge_1_ε pour i-1 devrait être proche de celui pour i : mais là,
-   encore, c'est pas facile à voir. *)
-Print prop_carr.
-Print carry.
-Print normalize.
+     rewrite P_additive, H'3 in H'2.
 ...
 (* la suite si j'arrive à prouver glop *)
 specialize (glop _ _ H3) as H4.
