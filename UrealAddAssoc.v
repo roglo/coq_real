@@ -841,6 +841,7 @@ intros l.
 apply A_ge_1_add_r_true_if, Hu.
 Qed.
 
+(*
 Theorem fA_ge_1_ε_999_P {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → P u i ≠ rad - 1
@@ -871,22 +872,13 @@ Theorem glop :
   (∀ k, u (i + k) ≤ (i + k + 1) * (rad - 1) ^ 2)
   → ...
 ...
+*)
 
 Theorem P_additive {r : radix} : ∀ u v i,
   P (u ⊕ v) i = (P u i + P v i) mod rad.
 Proof.
-intros.
 (*
-unfold P, prop_carr, d2n; cbn.
-unfold carry.
-rewrite Nat.add_mod_idemp_l; [ | easy ].
-rewrite Nat.add_mod_idemp_r; [ | easy ].
-rewrite Nat.add_shuffle0, Nat.add_assoc.
-rewrite <- Nat.add_assoc.
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-f_equal; f_equal.
-*)
+intros.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε u i)) as [H2| H2].
  +destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
@@ -896,7 +888,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
    now rewrite <- Nat.add_mod.
   *idtac.
 ...
-
+*)
 intros.
 unfold P, prop_carr, d2n; cbn.
 unfold carry.
