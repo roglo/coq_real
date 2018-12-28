@@ -841,7 +841,6 @@ intros l.
 apply A_ge_1_add_r_true_if, Hu.
 Qed.
 
-(* mmm.... this theorem is likely false
 Theorem P_additive {r : radix} : ∀ u v i,
   P (u ⊕ v) i = (P u i + P v i) mod rad.
 Proof.
@@ -867,15 +866,83 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
    rewrite NQfrac_add in H1'; [ | pauto | pauto ].
    rewrite A_additive.
    rewrite NQintg_add; [ | pauto | pauto ].
-   exfalso.
-Check A_lower_bound_if_all_fA_ge_1_ε.
-Check A_upper_bound.
-Check A_ge_1_add_r_true_if.
-specialize (all_fA_ge_1_ε_999 _ _ H1) as H1''.
-specialize (all_fA_ge_1_ε_999 _ _ H2) as H2''.
-specialize (all_fA_ge_1_ε_999 _ _ H3) as H3''.
+   specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
+   specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
+   specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
+   symmetry; rewrite Nat.add_comm; symmetry.
+   remember (NQintg (A i n u) + NQintg (A i n v)) as x eqn:Hx.
+   replace x with (x + 0) at 2 by flia.
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   f_equal; f_equal; rewrite Nat.mod_0_l; [ | easy ].
+   clear x Hx.
+   unfold P, d2n, prop_carr in H'1, H'2, H'3.
+   cbn in H'1, H'2, H'3.
+   unfold carry in H'1, H'2, H'3.
+   assert (H''1 :
+     ∀ k,
+       (u (i + k + 1) + v (i + k + 1) +
+        NQintg
+          (A (i + k + 1) (min_n (i + k + 1) 0) u +
+           A (i + k + 1) (min_n (i + k + 1) 0) v)) mod rad =
+       rad - 1). {
+     intros; specialize (H'1 k).
+     destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + k + 1))) as [H| H].
+     -now rewrite A_additive in H'1.
+     -destruct H as (j & Hj & Hjj).
+      rewrite <- Nat.add_assoc in Hjj.
+      rewrite A_ge_1_add_r_true_if in Hjj; [ easy | apply H1 ].
+   }
+   move H''1 before H'1; clear H'1; rename H''1 into H'1.
+   assert (H''2 :
+     ∀ k,
+       (u (i + k + 1) +
+        NQintg (A (i + k + 1) (min_n (i + k + 1) 0) u)) mod rad = rad - 1). {
+     intros; specialize (H'2 k).
+     destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H| H]; [ easy | ].
+     destruct H as (j & Hj & Hjj).
+     rewrite <- Nat.add_assoc in Hjj.
+     rewrite A_ge_1_add_r_true_if in Hjj; [ easy | apply H2 ].
+   }
+   move H''2 before H'2; clear H'2; rename H''2 into H'2.
+   assert (H''3 :
+     ∀ k,
+       (v (i + k + 1) +
+        NQintg (A (i + k + 1) (min_n (i + k + 1) 0) v)) mod rad = rad - 1). {
+     intros; specialize (H'3 k).
+     destruct (LPO_fst (fA_ge_1_ε v (i + k + 1))) as [H| H]; [ easy | ].
+     destruct H as (j & Hj & Hjj).
+     rewrite <- Nat.add_assoc in Hjj.
+     rewrite A_ge_1_add_r_true_if in Hjj; [ easy | apply H3 ].
+   }
+   move H''3 before H'3; clear H'3; rename H''3 into H'3.
+Search (NQintg (_ + _)).
+assert (H : ∀ k,
+  (2 * rad - 2 + NQintg (NQfrac (A (i + k + 1) (min_n (i + k + 1) 0) u) + NQfrac (A (i + k + 1) (min_n (i + k + 1) 0) v))) mod rad = rad - 1). {
+  intros k.
+  specialize (H'1 k); specialize (H'2 k); specialize (H'3 k).
+  rewrite NQintg_add in H'1; [ | easy | easy ].
+  remember (A (i + k + 1) (min_n (i + k + 1) 0) u) as x eqn:Hx.
+  remember (A (i + k + 1) (min_n (i + k + 1) 0) v) as y eqn:Hy.
+  move y before x.
+  rewrite Nat.add_assoc in H'1.
+  rewrite Nat.add_shuffle1 in H'1.
+  rewrite <- Nat.add_assoc in H'1.
+  rewrite <- Nat.add_mod_idemp_l in H'1; [ | easy ].
+  rewrite H'2, Nat.add_comm, <- Nat.add_assoc in H'1.
+  rewrite <- Nat.add_mod_idemp_l in H'1; [ | easy ].
+  rewrite H'3 in H'1; rewrite <- H'1.
+  f_equal.
+  rewrite Nat.add_comm; symmetry.
+  rewrite Nat.add_comm; symmetry.
+  rewrite <- Nat.add_assoc; f_equal.
+  flia.
+}
 ...
-*)
+NQintg_add:
+  ∀ x y : NQ, (0 ≤ x)%NQ → (0 ≤ y)%NQ → NQintg (x + y) = NQintg x + NQintg y + NQintg (NQfrac x + NQfrac y)
+...
+(**)
 
 Theorem M_upper_bound {r : radix} : ∀ u i, M u i < rad.
 Proof.
