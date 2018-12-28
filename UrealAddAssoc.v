@@ -1053,6 +1053,18 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    rewrite Hv' at 2.
    rewrite NQintg_A_M, Nat.add_0_r.
    do 2 rewrite NQintg_add_frac.
+   destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1)
+     as [AA1| AA1].
+  --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
+      as [AA2| AA2]; [ easy | ].
+    exfalso.
+...
+    apply NQnle_gt in AA1; apply AA1; clear AA1.
+    specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H.
+    rewrite <- Hn, A_additive, Nat.pow_1_r in H.
+    rewrite NQfrac_add_cond in H; [ | easy | easy ].
+    destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1) as [H4| H4].
+   ++idtac.
 ...
 (**)
    assert (H4 : (∀ k, P u (i + k + 1) = 0) ∨ (∀ k, P u (i + k + 1) = rad - 1)). {
