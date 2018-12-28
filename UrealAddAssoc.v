@@ -1024,6 +1024,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
    specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
    exfalso.
+...
 (**)
    assert (H4 : (∀ k, P u (i + k + 1) = 0) ∨ (∀ k, P u (i + k + 1) = rad - 1)). {
 destruct (eq_nat_dec (P u (i + 1)) 0) as [H4| H4]; [ left | right ].
