@@ -1019,7 +1019,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    sur u⊕v, on a P(u⊕v) se termine en 999 et donc que u se termine en
    999 ou en 000. Mais, du coup, P(u⊕v') serait égal à P(v') et donc
    v' se terminerait en 999. Mais M(...) ne peut pas se terminer en
-   999 donc contradiction. *)
+   999 (<- bin si dans la version actuelle) donc contradiction. *)
    specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
    specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
    specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
