@@ -1019,6 +1019,14 @@ split; [ easy | ].
 apply A_M_upper_bound.
 Qed.
 
+Theorem NQfrac_A_M {r : radix} : ∀ i n u, NQfrac (A i n (M u)) = A i n (M u).
+Proof.
+intros.
+apply NQfrac_small.
+split; [ easy | ].
+apply A_M_upper_bound.
+Qed.
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → (∀ j, j ≥ i → v j ≤ (j + 1) * (rad - 1) ^ 2)
@@ -1058,6 +1066,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1)
       as [AA3| AA3]; [ easy | ].
     exfalso.
+    rewrite Hv', NQfrac_A_M, <- Hv' in AA3.
 ...
     specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
     specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
