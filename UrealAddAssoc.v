@@ -861,7 +861,15 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. 2: {
 clear H1.
 remember (min_n i 0) as n eqn:Hn.
 move n before i.
-Check all_fA_ge_1_ε_999.
+specialize (all_fA_ge_1_ε_999 _ _ Hu) as H1.
+unfold P, d2n, prop_carr in H1; cbn in H1.
+(* theorem false, counter example: u=3/9/9/2009/9/9... P(u)=5/9/9/9/9... *)
+Search (NQintg (A _ _ _)).
+Search ((rad - 1) ^ 2).
+...
+Theorem glop :
+  (∀ k, u (i + k) ≤ (i + k + 1) * (rad - 1) ^ 2)
+  → ...
 ...
 
 Theorem P_additive {r : radix} : ∀ u v i,
