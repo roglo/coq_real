@@ -843,9 +843,25 @@ Qed.
 
 Theorem fA_ge_1_ε_999_P {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
+  → P u i ≠ rad - 1
   → P u i = u i mod rad.
 Proof.
-intros * Hu.
+intros * Hu Hp.
+unfold P, d2n, prop_carr in Hp; cbn in Hp.
+unfold P, d2n, prop_carr; cbn.
+replace (u i) with (u i + 0) at 2 by flia.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal; rewrite Nat.mod_0_l; [ | easy ].
+unfold carry in Hp; unfold carry.
+destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. 2: {
+  destruct H1 as (j & Hj & H1).
+  now rewrite Hu in H1.
+}
+clear H1.
+remember (min_n i 0) as n eqn:Hn.
+move n before i.
+Check all_fA_ge_1_ε_999.
 ...
 
 Theorem P_additive {r : radix} : ∀ u v i,
