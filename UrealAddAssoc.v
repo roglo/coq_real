@@ -841,7 +841,7 @@ intros l.
 apply A_ge_1_add_r_true_if, Hu.
 Qed.
 
-(* mmm.... this theorem is likely false *)
+(* mmm.... this theorem is likely false
 Theorem P_additive {r : radix} : ∀ u v i,
   P (u ⊕ v) i = (P u i + P v i) mod rad.
 Proof.
@@ -871,16 +871,11 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
 Check A_lower_bound_if_all_fA_ge_1_ε.
 Check A_upper_bound.
 Check A_ge_1_add_r_true_if.
-...
 specialize (all_fA_ge_1_ε_999 _ _ H1) as H1''.
 specialize (all_fA_ge_1_ε_999 _ _ H2) as H2''.
 specialize (all_fA_ge_1_ε_999 _ _ H3) as H3''.
 ...
-Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
-   fA_ge_1_ε u i (j + k) = true
-   → fA_ge_1_ε u (i + j) k = true.
-...
-(**)
+*)
 
 Theorem M_upper_bound {r : radix} : ∀ u i, M u i < rad.
 Proof.
@@ -920,14 +915,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
      intros k; specialize (H'3 k); specialize (H'2 k).
 ...
      rewrite P_additive, H'3 in H'2.
-...
-(* la suite si j'arrive à prouver glop *)
-specialize (glop _ _ H3) as H4.
-specialize (glop _ _ H2) as H5.
-assert (H6 : (∀ k, P u (i + k + 1) = 0)). {
-  intros k; specialize (H4 k); specialize (H5 k).
-  rewrite P_additive, H4 in H5.
-  (* devrait le faire *)
 ...
  rewrite Hn in H3.
  specialize (frac_eq_if_all_fA_ge_1_ε u j H1 0) as H4.
