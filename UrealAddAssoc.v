@@ -874,6 +874,7 @@ Theorem glop :
 ...
 *)
 
+(* is it true? is it required?
 Theorem P_additive {r : radix} : ∀ u v i,
   P (u ⊕ v) i = (P u i + P v i) mod rad.
 Proof.
@@ -986,7 +987,7 @@ assert (H : ∀ k,
   flia.
 }
 ...
-(**)
+*)
 
 Theorem M_upper_bound {r : radix} : ∀ u i, M u i < rad.
 Proof.
@@ -1022,10 +1023,54 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
    specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
    specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
-   assert (H4 : (∀ k, P u (i + k + 1) = 0)). {
-     intros k; specialize (H'3 k); specialize (H'2 k).
+   exfalso.
+(**)
+   assert (H4 : (∀ k, P u (i + k + 1) = 0) ∨ (∀ k, P u (i + k + 1) = rad - 1)). {
+destruct (eq_nat_dec (P u (i + 1)) 0) as [H4| H4]; [ left | right ].
+intros k.
+specialize (H'2 k); specialize (H'3 k).
 ...
-     rewrite P_additive, H'3 in H'2.
+unfold P, d2n, prop_carr in H'2, H'3, H4 |-*; cbn in H'2, H'3, H4 |-*.
+unfold "⊕" in H'2 at 1.
+unfold carry in H'2, H'3, H4 |-*.
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + k + 1))) as [H| H].
+clear H.
+destruct (LPO_fst (fA_ge_1_ε v (i + k + 1))) as [H| H].
+clear H.
+destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H'4| H].
+destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H| H].
+clear H.
+remember (min_n (i + k + 1) 0) as m eqn:Hm.
+rewrite A_additive in H'2.
+rewrite NQintg_add in H'2; [ | easy | easy ].
+remember (A (i + k + 1) m u) as x eqn:Hx.
+remember (A (i + k + 1) m v) as y eqn:Hy.
+move y before x.
+rewrite Nat.add_shuffle1 in H'2.
+do 2 rewrite Nat.add_assoc in H'2.
+remember (u (i + k + 1) + NQintg x) as z eqn:Hz.
+rewrite Nat.add_comm, Nat.add_assoc, Nat.add_assoc in H'2.
+rewrite Nat.add_shuffle0 in H'2.
+rewrite <- Nat.add_assoc, Nat.add_comm in H'2.
+rewrite <- Nat.add_mod_idemp_l in H'2; [ | easy ].
+rewrite H'3 in H'2.
+rewrite Nat.add_assoc in H'2.
+specialize (all_fA_ge_1_ε_999 _ _ H'4) as H5.
+...
+assert (NQintg (NQfrac x + NQfrac y) = 0). {
+  apply NQintg_small.
+  split.
+  -replace 0%NQ with (0 + 0)%NQ by easy.
+   now apply NQadd_le_mono.
+  -rewrite Hx, Hy.
+   (* faux *)
+...
+}
+rewrite H in H'2.
+rewrite Nat.add_0_r in H'2.
+(* ici, en réfléchissant un peu, ça devrait le faire *)
+...
+
 ...
  rewrite Hn in H3.
  specialize (frac_eq_if_all_fA_ge_1_ε u j H1 0) as H4.
