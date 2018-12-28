@@ -1035,10 +1035,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
  +rewrite Nat.add_comm.
   destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
-  *specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
-   specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
-   specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
-   do 2 rewrite A_additive.
+  *do 2 rewrite A_additive.
    rewrite NQintg_add; [ symmetry | easy | easy ].
    rewrite NQintg_add; [ symmetry | easy | easy ].
    do 3 rewrite <- Nat.add_assoc.
@@ -1052,12 +1049,20 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    rewrite Nat.add_comm.
    rewrite Hv' at 2.
    rewrite NQintg_A_M, Nat.add_0_r.
+   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as AA2.
+   rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
+   rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
    do 2 rewrite NQintg_add_frac.
-   destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1)
-     as [AA1| AA1].
-  --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
-      as [AA2| AA2]; [ easy | ].
+   destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
+      as [AA1| AA1].
+  --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1)
+      as [AA3| AA3]; [ easy | ].
     exfalso.
+...
+    specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
+    specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
+    specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
+...
     specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H.
     rewrite <- Hn, A_additive, Nat.pow_1_r in H.
     rewrite NQfrac_add_cond in H; [ | easy | easy ].
