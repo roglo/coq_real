@@ -841,9 +841,38 @@ intros l.
 apply A_ge_1_add_r_true_if, Hu.
 Qed.
 
+Theorem fA_ge_1_ε_999_P {r : radix} : ∀ u i,
+  (∀ k, fA_ge_1_ε u i k = true)
+  → P u i = u i mod rad.
+Proof.
+intros * Hu.
+...
+
 Theorem P_additive {r : radix} : ∀ u v i,
   P (u ⊕ v) i = (P u i + P v i) mod rad.
 Proof.
+intros.
+(*
+unfold P, prop_carr, d2n; cbn.
+unfold carry.
+rewrite Nat.add_mod_idemp_l; [ | easy ].
+rewrite Nat.add_mod_idemp_r; [ | easy ].
+rewrite Nat.add_shuffle0, Nat.add_assoc.
+rewrite <- Nat.add_assoc.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal.
+*)
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
+-destruct (LPO_fst (fA_ge_1_ε u i)) as [H2| H2].
+ +destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
+  *rewrite fA_ge_1_ε_999_P; [ | easy ].
+   rewrite fA_ge_1_ε_999_P; [ | easy ].
+   rewrite fA_ge_1_ε_999_P; [ | easy ].
+   now rewrite <- Nat.add_mod.
+  *idtac.
+...
+
 intros.
 unfold P, prop_carr, d2n; cbn.
 unfold carry.
@@ -873,6 +902,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
    rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
    f_equal; f_equal; rewrite Nat.mod_0_l; [ | easy ].
    clear x Hx.
+   (*exfalso*)
 ...
    specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
    specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
