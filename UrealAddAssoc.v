@@ -996,6 +996,29 @@ unfold M.
 now apply Nat.mod_upper_bound.
 Qed.
 
+Theorem A_M_upper_bound {r : radix} : ∀ u i n, (A i n (M u) < 1)%NQ.
+Proof.
+intros.
+destruct (le_dec (i + 1) (n - 1)) as [H1| H1].
+-eapply NQle_lt_trans.
+ +apply A_dig_seq_ub; [ | easy ].
+  intros j Hj; apply M_upper_bound.
+ +apply NQsub_lt.
+  replace 0%NQ with (0 // 1)%NQ by easy.
+  apply NQlt_pair; [ easy | pauto | pauto ].
+-apply Nat.nle_gt in H1.
+ unfold A.
+ now rewrite summation_empty.
+Qed.
+
+Theorem NQintg_A_M {r : radix} : ∀ i n u, NQintg (A i n (M u)) = 0.
+Proof.
+intros.
+apply NQintg_small.
+split; [ easy | ].
+apply A_M_upper_bound.
+Qed.
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → (∀ j, j ≥ i → v j ≤ (j + 1) * (rad - 1) ^ 2)
@@ -1012,18 +1035,24 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
  +rewrite Nat.add_comm.
   destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
-  *idtac.
-(* suite possible si j'arrive à prouver tout ça (faut que ça soye vrai) :
-   Si on suppose que le ∀ k, fA_ge_1_ε v i k = true implique
-   que P(v) se termine en 999... alors si ça s'applique aussi
-   sur u⊕v, on a P(u⊕v) se termine en 999 et donc que u se termine en
-   999 ou en 000. Mais, du coup, P(u⊕v') serait égal à P(v') et donc
-   v' se terminerait en 999. Mais M(...) ne peut pas se terminer en
-   999 (<- bin si dans la version actuelle) donc contradiction. *)
-   specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
+  *specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
    specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
    specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
-   exfalso.
+   do 2 rewrite A_additive.
+   rewrite NQintg_add; [ symmetry | easy | easy ].
+   rewrite NQintg_add; [ symmetry | easy | easy ].
+   do 3 rewrite <- Nat.add_assoc.
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   f_equal; f_equal.
+   rewrite Nat.add_assoc, Nat.add_comm.
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   f_equal; f_equal.
+   rewrite Nat.add_comm.
+   rewrite Hv' at 2.
+   rewrite NQintg_A_M, Nat.add_0_r.
+   do 2 rewrite NQintg_add_frac.
 ...
 (**)
    assert (H4 : (∀ k, P u (i + k + 1) = 0) ∨ (∀ k, P u (i + k + 1) = rad - 1)). {
