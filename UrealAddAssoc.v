@@ -1058,6 +1058,13 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
       as [AA2| AA2]; [ easy | ].
     exfalso.
+    specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H.
+    rewrite <- Hn, A_additive, Nat.pow_1_r in H.
+    rewrite NQfrac_add_cond in H; [ | easy | easy ].
+    destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1) as [H4| H4].
+   ++now apply NQnle_gt in H4.
+   ++clear H4 AA2.
+     apply NQnlt_ge in H; apply H; clear H.
 ...
     apply NQnle_gt in AA1; apply AA1; clear AA1.
     specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H.
