@@ -1019,6 +1019,14 @@ split; [ easy | ].
 apply A_M_upper_bound.
 Qed.
 
+Theorem NQintg_P_M {r : radix} : ∀ i n u, NQintg (A i n (P u)) = 0.
+Proof.
+intros.
+apply NQintg_small.
+split; [ easy | ].
+apply A_M_upper_bound.
+Qed.
+
 Theorem NQfrac_A_M {r : radix} : ∀ i n u, NQfrac (A i n (M u)) = A i n (M u).
 Proof.
 intros.
@@ -1027,21 +1035,13 @@ split; [ easy | ].
 apply A_M_upper_bound.
 Qed.
 
-(*
-Theorem NA_of_M {r : radix} : ∀ u i n,
-  NA i n (M u) = NA i n u mod rad.
+Theorem NQfrac_P_M {r : radix} : ∀ i n u, NQfrac (A i n (P u)) = A i n (P u).
 Proof.
 intros.
-unfold NA.
-...
-
-Theorem A_of_M {r : radix} : ∀ u i n,
-  A i n (M u) = ((NA i n u mod rad) // rad ^ (n - i - 1))%NQ.
-Proof.
-intros.
-rewrite A_of_NA.
-...
-*)
+apply NQfrac_small.
+split; [ easy | ].
+apply A_M_upper_bound.
+Qed.
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
@@ -1072,8 +1072,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    f_equal; f_equal.
    rewrite Nat.add_comm.
    rewrite Hv' at 2.
-...
-   rewrite NQintg_A_M, Nat.add_0_r.
+   rewrite NQintg_P_M, Nat.add_0_r.
    specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
    rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
@@ -1083,8 +1082,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1)
       as [AA3| AA3]; [ easy | ].
     exfalso.
-    rewrite Hv', NQfrac_A_M in AA3.
-Abort. (*
+    rewrite Hv', NQfrac_P_M in AA3.
 ...
 rewrite A_of_M in AA3.
 Search NA_add.
@@ -1099,7 +1097,6 @@ A i n (P u) < 1 ?
     specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
     specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
 ...
-*)
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, v (i + k + 1) ≤ 2 * (rad - 1))
