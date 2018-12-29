@@ -1027,16 +1027,31 @@ split; [ easy | ].
 apply A_M_upper_bound.
 Qed.
 
+(*
+Theorem NA_of_M {r : radix} : ∀ u i n,
+  NA i n (M u) = NA i n u mod rad.
+Proof.
+intros.
+unfold NA.
+...
+
+Theorem A_of_M {r : radix} : ∀ u i n,
+  A i n (M u) = ((NA i n u mod rad) // rad ^ (n - i - 1))%NQ.
+Proof.
+intros.
+rewrite A_of_NA.
+...
+*)
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → (∀ j, j ≥ i → v j ≤ (j + 1) * (rad - 1) ^ 2)
-  → carry (u ⊕ v) i mod rad =
-     (carry (u ⊕ M (v ⊕ carry v)) i + carry v i) mod rad.
+  → carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
 Proof.
 intros * Hur Hvr.
 specialize radix_ge_2 as Hr.
 symmetry; rewrite Nat.add_comm.
-remember (M (v ⊕ carry v)) as v' eqn:Hv'.
+remember (P v) as v' eqn:Hv'.
 move v' before v; move Hv' before i.
 unfold carry.
 remember (min_n i 0) as n eqn:Hn.
@@ -1057,6 +1072,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    f_equal; f_equal.
    rewrite Nat.add_comm.
    rewrite Hv' at 2.
+...
    rewrite NQintg_A_M, Nat.add_0_r.
    specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
@@ -1067,6 +1083,12 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1)
       as [AA3| AA3]; [ easy | ].
     exfalso.
+    rewrite Hv', NQfrac_A_M in AA3.
+Abort. (*
+...
+rewrite A_of_M in AA3.
+Search NA_add.
+...
     rewrite Hv', NQfrac_A_M, <- Hv' in AA3.
 ...
 A i ∞ (P u) = A i ∞ u
@@ -1077,11 +1099,32 @@ A i n (P u) < 1 ?
     specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
     specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
 ...
+*)
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, v (i + k + 1) ≤ 2 * (rad - 1))
   → P (u ⊕ P v) i = P (u ⊕ v) i.
 Proof.
+intros * Hv.
+specialize radix_ge_2 as Hr.
+remember (P v) as v' eqn:Hv'; cbn.
+unfold P, add_series.
+replace (λ i, u i + v i) with (u ⊕ v) by easy.
+replace (λ i, u i + v' i) with (u ⊕ v') by easy.
+do 2 rewrite <- Nat.add_assoc.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal.
+remember (v' i) as x eqn:Hx.
+rewrite Hv' in Hx; subst x; cbn.
+rewrite Nat.add_mod_idemp_l; [ | easy ].
+rewrite <- Nat.add_assoc.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal.
+subst v'; rewrite Nat.add_comm; symmetry.
+...
+
 intros * Hv.
 specialize radix_ge_2 as Hr.
 unfold P, add_series.
