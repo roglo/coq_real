@@ -1030,11 +1030,12 @@ Qed.
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → (∀ j, j ≥ i → v j ≤ (j + 1) * (rad - 1) ^ 2)
-  → (carry v i + carry (u ⊕ M (v ⊕ carry v)) i) mod rad =
-     carry (u ⊕ v) i mod rad.
+  → carry (u ⊕ v) i mod rad =
+     (carry (u ⊕ M (v ⊕ carry v)) i + carry v i) mod rad.
 Proof.
 intros * Hur Hvr.
 specialize radix_ge_2 as Hr.
+symmetry; rewrite Nat.add_comm.
 remember (M (v ⊕ carry v)) as v' eqn:Hv'.
 move v' before v; move Hv' before i.
 unfold carry.
