@@ -1067,11 +1067,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
       as [AA3| AA3]; [ easy | ].
     exfalso.
     rewrite Hv', NQfrac_A_M, <- Hv' in AA3.
-    remember (NQfrac (A i n v)) as x eqn:Hx.
-    rewrite NQfrac_small in Hx. 2: {
-      split; [ easy | ].
-    specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
-Search (A _ _ (P _)).
 ...
 A i ∞ (P u) = A i ∞ u
 A i n (P u) =? A i n u + ε
