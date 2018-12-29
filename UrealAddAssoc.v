@@ -1080,7 +1080,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1)
       as [AA3| AA3]; [ easy | ].
     exfalso.
-    rewrite Hv', NQfrac_P_M in AA3.
+    subst v'; rewrite NQfrac_P_M in AA3.
 ...
 rewrite A_of_M in AA3.
 Search NA_add.
