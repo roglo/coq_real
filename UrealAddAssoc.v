@@ -1082,14 +1082,13 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
     exfalso.
     subst v'; rewrite NQfrac_P_M in AA3.
 ...
-rewrite A_of_M in AA3.
-Search NA_add.
+  --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1)
+      as [AA3| AA3]; [ | easy ].
+    exfalso.
+    subst v'; rewrite NQfrac_P_M in AA3.
+    (* if I prove that NQfrac (A i n u) ≤ A i n (P u), it works *)
 ...
-    rewrite Hv', NQfrac_A_M, <- Hv' in AA3.
-...
-A i ∞ (P u) = A i ∞ u
-A i n (P u) =? A i n u + ε
-A i n (P u) < 1 ?
+  *destruct H3 as (j & Hj & Hjj).
 ...
     specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
     specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
