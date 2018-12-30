@@ -682,27 +682,6 @@ destruct (LPO_fst (A_ge_1 u i)) as [H1| H1].
 Qed.
 *)
 
-(*
-Theorem glop {r : radix} : ∀ u i,
-  (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k, d2n (prop_carr u) (i + k + 1) = 0.
-Proof.
-intros * Hu *.
-specialize (A_bounds_if_all_fA_ge_1_ε u i) as H1.
-...
-specialize (frac_ge_if_all_fA_ge_1_ε _ _ Hu k) as H1.
-...
-specialize (frac_ge_if_all_fA_ge_1_ε _ _ Hu k) as H1.
-unfold prop_carr, d2n; cbn.
-unfold carry.
-destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H2| H2].
--idtac.
- specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H3.
- remember (A (i + k + 1) (min_n (i + k + 1) 0) u) as x eqn:Hx.
- rewrite Nat.pow_1_r in H3.
-...
-*)
-
 Definition P {r : radix} u := d2n (prop_carr u).
 Definition add_series (u v : nat → nat) i := u i + v i.
 Notation "u ⊕ v" := (add_series u v) (at level 50).
