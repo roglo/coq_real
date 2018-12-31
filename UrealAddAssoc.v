@@ -1028,11 +1028,9 @@ Proof.
 intros.
 specialize radix_ge_2 as Hr.
 symmetry; rewrite Nat.add_comm.
-remember (P v) as v' eqn:Hv'.
-move v' before v; move Hv' before i.
 unfold carry.
 remember (min_n i 0) as n eqn:Hn.
-destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
  +rewrite Nat.add_comm.
   destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
@@ -1048,7 +1046,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
    f_equal; f_equal.
    rewrite Nat.add_comm.
-   rewrite Hv' at 2.
    rewrite NQintg_P_M, Nat.add_0_r.
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
@@ -1056,18 +1053,18 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v') i)) as [H1| H1].
    do 2 rewrite NQintg_add_frac.
    destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
       as [AA1| AA1].
-  --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1)
+  --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [AA3| AA3]; [ easy | ].
     exfalso.
-    subst v'; rewrite NQfrac_P_M in AA3.
+    rewrite NQfrac_P_M in AA3.
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1) as H'1.
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as H'2.
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3) as H'3.
 ...
-  --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v')) 1)
+  --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [AA3| AA3]; [ | easy ].
     exfalso.
-    subst v'; rewrite NQfrac_P_M in AA3.
+    rewrite NQfrac_P_M in AA3.
     (* if I prove that NQfrac (A i n u) ≤ A i n (P u), it works *)
 ...
   *destruct H3 as (j & Hj & Hjj).
