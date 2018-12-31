@@ -1062,7 +1062,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     rewrite <- Hn, Nat.pow_1_r in H'3.
 (* d'après H3, A i n (P v) n'a que des 9 ; donc, d'après AA1, u n'a pas
    que des 0 entre i+1 et n-1, sinon ça ne serait pas assez pour dépasser
-   1. *)
+   1. Donc v ne peut pas avoir que des 9, ça contradirait AA3. *)
 ...
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [AA3| AA3]; [ | easy ].
