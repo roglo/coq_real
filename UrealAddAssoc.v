@@ -1052,14 +1052,14 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
    do 2 rewrite NQintg_add_frac.
    destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
-      as [AA1| AA1].
+      as [AA3| AA3].
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
-      as [AA3| AA3]; [ easy | ].
+      as [AA1| AA1]; [ easy | ].
     exfalso.
-    rewrite NQfrac_P_M in AA3.
-    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1) as H'1.
-    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as H'2.
-    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3) as H'3.
+    move AA1 after AA2; move AA3 after AA2.
+    rewrite NQfrac_P_M in AA1.
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3 0) as H'3.
+    rewrite <- Hn, Nat.pow_1_r in H'3.
 ...
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [AA3| AA3]; [ | easy ].
@@ -1068,6 +1068,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     (* if I prove that NQfrac (A i n u) ≤ A i n (P u), it works *)
 ...
   *destruct H3 as (j & Hj & Hjj).
+...
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1) as H'1.
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as H'2.
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3) as H'3.
 ...
     specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
     specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
