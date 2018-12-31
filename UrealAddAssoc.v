@@ -1060,6 +1060,9 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     rewrite NQfrac_P_M in AA1.
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3 0) as H'3.
     rewrite <- Hn, Nat.pow_1_r in H'3.
+(* d'après H3, A i n (P v) n'a que des 9 ; donc, d'après AA1, u n'a pas
+   que des 0 entre i+1 et n-1, sinon ça ne serait pas assez pour dépasser
+   1. *)
 ...
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [AA3| AA3]; [ | easy ].
