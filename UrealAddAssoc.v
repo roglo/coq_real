@@ -1067,8 +1067,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    1. Donc v ne peut pas avoir que des 9, ça contradirait AA3. Du coup,
    comment est v ? P(v) est 999... mais pas v. Si on considère que v est
    le résultat d'une addition, alors ayant déjà prouvé que v ne peut être
-   que 999... ou 999...9998/18/18... ou 18/18/18.., je pourrais m'en sortir,
-   mais j'aimerais que ce théorème ne dépende pas du fait que u et v soient
+   que 999...9998/18/18... ou 18/18/18.., je pourrais m'en sortir, mais
+   j'aimerais que ce théorème ne dépende pas du fait que u et v soient
    des résultats d'addition. *)
 (*
 essai de contre-exemple :
