@@ -1068,6 +1068,15 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    que 999... ou 999...9998/18/18... ou 18/18/18.., je pourrais m'en sortir,
    mais j'aimerais que ce théorème ne dépende pas du fait que u et v soient
    des résultats d'addition. *)
+(*
+essai de contre-exemple :
+                 n
+   u=0/0/0/.../1/999...89/9/9/9...
+   v=9/9/9/.../8/19      /9/9/9...
+P(v)=9/9/9/.../9/9       /9/9/9...
+
+bin non ; déjà ça marche pas pour H1
+*)
 ...
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [AA3| AA3]; [ | easy ].
