@@ -1062,7 +1062,12 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     rewrite <- Hn, Nat.pow_1_r in H'3.
 (* d'après H3, A i n (P v) n'a que des 9 ; donc, d'après AA1, u n'a pas
    que des 0 entre i+1 et n-1, sinon ça ne serait pas assez pour dépasser
-   1. Donc v ne peut pas avoir que des 9, ça contradirait AA3. *)
+   1. Donc v ne peut pas avoir que des 9, ça contradirait AA3. Du coup,
+   comment est v ? P(v) est 999... mais pas v. Si on considère que v est
+   le résultat d'une addition, alors ayant déjà prouvé que v ne peut être
+   que 999... ou 999...9998/18/18... ou 18/18/18.., je pourrais m'en sortir,
+   mais j'aimerais que ce théorème ne dépende pas du fait que u et v soient
+   des résultats d'addition. *)
 ...
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [AA3| AA3]; [ | easy ].
