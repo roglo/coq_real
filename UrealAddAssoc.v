@@ -1084,32 +1084,47 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
         replace j with (i + (j - i - 1) + 1) by flia Hj.
         now apply all_fA_ge_1_ε_999.
       }
-Search (Σ (_ = _, _), (_ // _)%NQ).
-About NQsummation_pair_distr_r.
-Check NQsummation_pair_distr_l.
+      rewrite NQsummation_pair_distr_l.
+      assert (Hin : i + 1 ≤ n - 1). {
+        rewrite Hn; unfold min_n.
+        destruct rad; [ easy | cbn; flia ].
+      }
+      rewrite summation_shift; [ | easy ].
+      rewrite summation_eq_compat with
+        (h := λ j, (1 // rad * 1 // rad ^ j)%NQ). 2: {
+        intros j Hj.
+        replace (i + 1 + j - i) with (1 + j) by flia.
+        rewrite Nat.pow_add_r, Nat.pow_1_r.
+        rewrite NQmul_pair; [ | easy | pauto ].
+        now rewrite Nat.mul_1_l.
+      }
+      rewrite <- summation_mul_distr_l.
+      rewrite NQpower_summation; [ | easy ].
+      replace (n - 1 - (i + 1)) with (s - 1) by flia.
+      replace (S (s - 1)) with s by flia Hin.
+      rewrite NQmul_pair; [ | easy | ]. 2: {
+        apply Nat.neq_mul_0.
+        split; [ pauto | flia Hr ].
+      }
+      rewrite Nat.mul_1_l.
+      rewrite NQmul_pair; [ | easy | ]. 2: {
+        apply Nat.neq_mul_0.
+        split; [ easy | ].
+        apply Nat.neq_mul_0.
+        split; [ pauto | flia Hr ].
+      }
+      rewrite Nat.mul_1_l, Nat.mul_comm, Nat.mul_assoc.
+      rewrite <- NQmul_pair; [ | | flia Hr ]. 2: {
+        apply Nat.neq_mul_0.
+        split; [ easy | pauto ].
+      }
+      rewrite NQpair_diag; [ | flia Hr ].
+      rewrite NQmul_1_r.
+      replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+      rewrite <- Nat.pow_add_r.
+      replace (1 + (s - 1)) with s by flia Hin.
 ...
-rewrite NQsummation_pair_distr_l.
-Search (Σ (_ = _, _), (1 // _))%NQ.
-rewrite summation_shift; [ | ].
-rewrite summation_eq_compat with (h := λ j, (1 // rad * 1 // rad ^ j)%NQ). 2: {
-  intros j Hj.
-  replace (i + 1 + j - i) with (1 + j) by flia.
-  rewrite Nat.pow_add_r, Nat.pow_1_r.
-  rewrite NQmul_pair; [ | easy | pauto ].
-  now rewrite Nat.mul_1_l.
-}
-rewrite <- summation_mul_distr_l.
-rewrite NQpower_summation.
-...
-NQpower_summation:
-  ∀ (rg : ord_ring := NQ_ord_ring) (a n : nat),
-    a > 1 → Σ (i = 0, n), (1 // a ^ i)%NQ = ((a ^ S n - 1) // (a ^ n * (a - 1)))%NQ
-NQpower_summation_inv:
-  ∀ (rg : ord_ring := NQ_ord_ring) (a n : nat),
-    a > 0 → (1 - 1 // a ^ S n)%NQ = ((1 - 1 // a) * (Σ (i = 0, n), 1 // a ^ i))%NQ
-...
-
-    assert (H4 : (NQfrac (A i n u) ≥ 1)%NQ). {
+    assert (H5 : (NQfrac (A i n u) ≥ 1)%NQ). {
 ...
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [AA3| AA3]; [ | easy ].
