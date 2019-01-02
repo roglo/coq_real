@@ -1137,11 +1137,13 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       now rewrite NQsub_opp_r, NQadd_0_l in AA1.
     }
 ...
-    assert (H6 : u ⊕ P v ≥ 9/9/9...9/9/10).
+    assert (H6 : u⊕P(v)≥9/9/9...9/9/10)
 ...
     assert (H7 : P(u⊕P(v))≥1/0/0/0...0/0/0).
 ...
-    assert (H8 : P(u⊕P(v))=9/9/9...9/9/9).
+    assert (H8 : ∀ k, P v (i + k + 1) = rad - 1). {
+        now apply all_fA_ge_1_ε_999.
+    }
 ...
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [AA3| AA3]; [ | easy ].
