@@ -1074,6 +1074,42 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    P(u⊕P(v))≥1/0/0/0...0/0/0
    or, d'après H1, P(u⊕P(v))=9/9/9...9/9/9 → contradiction
 *)
+    set (s := n - i - 1).
+    assert (H4 : (A i n (P v) = 1 - 1 // rad ^ s)%NQ). {
+      unfold A.
+      rewrite summation_eq_compat with
+         (h := λ j, ((rad - 1) // rad ^ (j - i))%NQ). 2: {
+        intros j Hj.
+        f_equal.
+        replace j with (i + (j - i - 1) + 1) by flia Hj.
+        now apply all_fA_ge_1_ε_999.
+      }
+Search (Σ (_ = _, _), (_ // _)%NQ).
+About NQsummation_pair_distr_r.
+Check NQsummation_pair_distr_l.
+...
+rewrite NQsummation_pair_distr_l.
+Search (Σ (_ = _, _), (1 // _))%NQ.
+rewrite summation_shift; [ | ].
+rewrite summation_eq_compat with (h := λ j, (1 // rad * 1 // rad ^ j)%NQ). 2: {
+  intros j Hj.
+  replace (i + 1 + j - i) with (1 + j) by flia.
+  rewrite Nat.pow_add_r, Nat.pow_1_r.
+  rewrite NQmul_pair; [ | easy | pauto ].
+  now rewrite Nat.mul_1_l.
+}
+rewrite <- summation_mul_distr_l.
+rewrite NQpower_summation.
+...
+NQpower_summation:
+  ∀ (rg : ord_ring := NQ_ord_ring) (a n : nat),
+    a > 1 → Σ (i = 0, n), (1 // a ^ i)%NQ = ((a ^ S n - 1) // (a ^ n * (a - 1)))%NQ
+NQpower_summation_inv:
+  ∀ (rg : ord_ring := NQ_ord_ring) (a n : nat),
+    a > 0 → (1 - 1 // a ^ S n)%NQ = ((1 - 1 // a) * (Σ (i = 0, n), 1 // a ^ i))%NQ
+...
+
+    assert (H4 : (NQfrac (A i n u) ≥ 1)%NQ). {
 ...
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [AA3| AA3]; [ | easy ].

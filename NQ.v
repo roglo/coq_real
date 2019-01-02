@@ -2455,7 +2455,7 @@ Definition NQ_ord_ring :=
      rng_add_le_compat := NQadd_le_mono |}.
 
 Theorem NQsummation_pair_distr_r (rgi := nat_ord_ring) (rgq := NQ_ord_ring) :
-   ∀ b e (g : _ → nat) a,
+   ∀ b e g a,
    ((Σ (i = b, e), g i) // a = Σ (i = b, e), (g i // a))%NQ.
 Proof.
 intros.
@@ -2479,6 +2479,24 @@ rewrite summation_split_last; [ symmetry | apply Nat.le_0_l ].
 rewrite summation_split_last; [ symmetry | apply Nat.le_0_l ].
 rewrite <- IHn.
 destruct a; [ do 3 rewrite NQden_0 | ]; now rewrite <- NQpair_add_l.
+Qed.
+
+Theorem NQsummation_pair_distr_l (rgi := nat_ord_ring) (rgp := NQ_ord_ring) :
+  ∀ b e g a,
+  ((Σ (i = b, e), a // g i = a // 1 * Σ (i = b, e), (1 // g i))%NQ).
+Proof.
+intros.
+rewrite summation_eq_compat with (h := λ i, (a // 1 * 1 // g i)%NQ). 2: {
+  intros i Hi.
+  destruct (eq_nat_dec (g i) 0) as [H1| H1]. {
+    rewrite H1.
+    do 2 rewrite NQden_0.
+    now rewrite NQmul_1_r.
+  }
+  rewrite NQmul_pair; [ | easy | easy ].
+  now rewrite Nat.mul_1_r, Nat.mul_1_l.
+}
+now rewrite <- summation_mul_distr_l.
 Qed.
 
 Theorem NQsum_pair (rgn := nat_ord_ring) (rnq := NQ_ord_ring) : ∀ a b e f,
