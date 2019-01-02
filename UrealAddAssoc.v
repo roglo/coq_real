@@ -1136,16 +1136,13 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       apply NQle_sub_le_add_r in AA1.
       now rewrite NQsub_opp_r, NQadd_0_l in AA1.
     }
+    (*
+       u ≥ 0/0/0...0/0/1
+       P(v)=9/9/9...9/9/9
+       u⊕P(v)≥9/9/9...9/9/10
+     *)
 ...
-    assert (H6 : ∀ j, i < j < s - 1 → (u ⊕ P v) j = rad - 1). {
-      intros j Hj.
-      unfold "⊕".
-      replace (u i) with 0. 2: {
-(* ah oui mais non ! *)
-...
-    assert (H7 : (u ⊕ P v) (s - 1) = rad). {
-...
-    assert (H6, H7 : u⊕P(v)≥9/9/9...9/9/10)
+    assert (H6 : u⊕P(v)≥9/9/9...9/9/10)
 ...
     assert (H8 : P(u⊕P(v))≥1/0/0/0...0/0/0).
 ...
