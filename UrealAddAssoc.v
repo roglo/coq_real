@@ -1067,12 +1067,13 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    1. Donc v ne peut pas avoir que des 9, ça contradirait AA3. Du coup,
    comment est v ? P(v) est 999... mais pas v. D'après H'3, v est supérieur
    ou égal à 9000... Donc, d'après AA3, u est inférieur à 1000... *)
-...
-(* Si on considère que v est
-   le résultat d'une addition, alors ayant déjà prouvé que v ne peut être
-   que 999...9998/18/18... ou 18/18/18.., je pourrais m'en sortir, mais
-   j'aimerais que ce théorème ne dépende pas du fait que u et v soient
-   des résultats d'addition. *)
+(*
+   u ≥ 0/0/0...0/0/1
+   P(v)=9/9/9...9/9/9
+   u⊕P(v)≥9/9/9...9/9/10
+   P(u⊕P(v))≥1/0/0/0...0/0/0
+   or, d'après H1, P(u⊕P(v))=9/9/9...9/9/9 → contradiction
+*)
 ...
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [AA3| AA3]; [ | easy ].
