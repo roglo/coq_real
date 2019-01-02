@@ -1129,8 +1129,15 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       }
       now do 2 rewrite Nat.mul_1_l.
     }
+    assert (H5 : (NQfrac (A i n u) ≥ 1 // rad ^ s)%NQ). {
+      rewrite H4, NQadd_comm, <- NQadd_sub_swap, <- NQadd_sub_assoc in AA1.
+      apply NQle_sub_le_add_l in AA1.
+      rewrite NQsub_diag in AA1.
+      apply NQle_sub_le_add_r in AA1.
+      now rewrite NQsub_opp_r, NQadd_0_l in AA1.
+    }
 ...
-    assert (H5 : (NQfrac (A i n u) ≥ 1)%NQ). {
+    assert (H6 : u ⊕ P v ≥ 9/9/9...9/9/10
 ...
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [AA3| AA3]; [ | easy ].
