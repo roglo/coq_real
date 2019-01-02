@@ -1136,6 +1136,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       apply NQle_sub_le_add_r in AA1.
       now rewrite NQsub_opp_r, NQadd_0_l in AA1.
     }
+...
     assert (H6 : ∀ j, i < j < s - 1 → (u ⊕ P v) j = rad - 1). {
       intros j Hj.
       unfold "⊕".
