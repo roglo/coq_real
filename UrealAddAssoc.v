@@ -1123,6 +1123,12 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
       rewrite <- Nat.pow_add_r.
       replace (1 + (s - 1)) with s by flia Hin.
+      rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+        do 2 rewrite Nat.mul_1_l.
+        now apply Nat_pow_ge_1.
+      }
+      now do 2 rewrite Nat.mul_1_l.
+    }
 ...
     assert (H5 : (NQfrac (A i n u) ≥ 1)%NQ). {
 ...
