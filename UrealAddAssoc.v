@@ -1141,6 +1141,9 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
        P(v)=9/9/9...9/9/9
        u⊕P(v)≥9/9/9...9/9/10
      *)
+    assert (H6 : (NQfrac (A i n (u ⊕ P v)) ≥ 1)%NQ). {
+(* attends, mais c'est quoi, ce bordel ? si c'est ce qu'on veut vraiment
+   pour H6, on l'a directement à partir de AA1, non ? *)
 ...
     assert (H6 : u⊕P(v)≥9/9/9...9/9/10)
 ...
