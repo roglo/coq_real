@@ -1141,10 +1141,9 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
        P(v)=9/9/9...9/9/9
        u⊕P(v)≥9/9/9...9/9/10
      *)
-    assert (H6 : (NQfrac (A i n (u ⊕ P v)) ≥ 1)%NQ). {
-(* bin non, un NQfrac peut pas être supérieur à 1 ! *)
+    assert (H6 : A i n (u ⊕ P v) ≥ 1)%NQ). {
 ...
-assert (NQfrac (A i n u) ≤ NQfrac (A i n (P u)))%NQ). {
+assert (∀ i n u, A i n u ≤ A i n (P u))%NQ). {
 ...
     assert (H6 : u⊕P(v)≥9/9/9...9/9/10)
 ...
