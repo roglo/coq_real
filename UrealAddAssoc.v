@@ -1190,7 +1190,9 @@ rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
 subst v'; rewrite Nat.add_comm; symmetry.
 ...
-
+apply pre_Hugo_Herbelin.
+Qed.
+...
 intros * Hv.
 specialize radix_ge_2 as Hr.
 unfold P, add_series.
@@ -1285,6 +1287,7 @@ Theorem truc {r : radix} : ∀ x u,
    {| ureal := prop_carr (add_series (fd2n x) (d2n (prop_carr u))) |})%F.
 Proof. easy. Qed.
 
+(*
 Theorem pouet {r : radix} : ∀ x y z i,
   add_series (λ j, dig (ureal x j)) (y ⊕ z) i =
   add_series (λ j, dig (ureal z j)) (y ⊕ x) i.
@@ -1295,6 +1298,7 @@ rewrite Nat.add_assoc, Nat.add_comm.
 do 2 rewrite Nat.add_assoc.
 now rewrite Nat.add_shuffle0.
 Qed.
+*)
 
 Theorem ureal_add_assoc {r : radix} : ∀ x y z, (x + (y + z) = z + (y + x))%F.
 Proof.
@@ -1304,6 +1308,7 @@ do 2 rewrite truc.
 intros i.
 unfold ureal_normalize, fd2n; simpl.
 apply digit_eq_eq.
+...
 rewrite <- prop_carr_normalizes; cycle 1. {
   intros j.
   apply (ureal_add_series_le_twice_pred x {| ureal := prop_carr (y ⊕ z) |} j).
