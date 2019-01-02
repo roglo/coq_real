@@ -1139,6 +1139,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     assert (H6 : ∀ j, i < j < s - 1 → (u ⊕ P v) j = rad - 1). {
       intros j Hj.
       unfold "⊕".
+      replace (u i) with 0. 2: {
+(* ah oui mais non ! *)
 ...
     assert (H7 : (u ⊕ P v) (s - 1) = rad). {
 ...
