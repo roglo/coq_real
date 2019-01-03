@@ -1148,8 +1148,11 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
         -now apply NQfrac_le.
         -apply NQle_refl.
       }
-      easy.
+      apply AA1.
     }
+    assert (H7 : (A i n (P (u ⊕ P v)) < 1)%NQ). {
+      specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
+...
 Theorem glop {r : radix} : ∀ i n u, (A i n u ≤ A i n (P u))%NQ.
 Proof.
 intros.
@@ -1157,7 +1160,6 @@ intros.
 euh... contradictoire avec NQfrac_P_M !
 NQfrac_P_M:
   ∀ (r : radix) (i n : nat) (u : nat → nat), NQfrac (A i n (P u)) = A i n (P u)
-...
     specialize (glop i n (u ⊕ P v)) as H7.
     specialize (all_fA_ge_1_ε_999 _ _ H1) as H8.
     apply NQnlt_ge in H6; apply H6; clear H6.
