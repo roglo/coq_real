@@ -1022,46 +1022,7 @@ split; [ easy | ].
 apply A_M_upper_bound.
 Qed.
 
-Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
-  carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
-Proof.
-intros.
-specialize radix_ge_2 as Hr.
-symmetry; rewrite Nat.add_comm.
-unfold carry.
-remember (min_n i 0) as n eqn:Hn.
-destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
--destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
- +rewrite Nat.add_comm.
-  destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
-  *do 2 rewrite A_additive.
-   rewrite NQintg_add; [ symmetry | easy | easy ].
-   rewrite NQintg_add; [ symmetry | easy | easy ].
-   do 3 rewrite <- Nat.add_assoc.
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   f_equal; f_equal.
-   rewrite Nat.add_assoc, Nat.add_comm.
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   f_equal; f_equal.
-   rewrite Nat.add_comm.
-   rewrite NQintg_P_M, Nat.add_0_r.
-   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
-   rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
-   rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
-   do 2 rewrite NQintg_add_frac.
-   destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
-      as [AA3| AA3].
-  --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
-      as [AA1| AA1]; [ easy | ].
-    exfalso.
-    move AA1 after AA2; move AA3 after AA2.
-    rewrite NQfrac_P_M in AA1.
-    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3 0) as H'3.
-    rewrite <- Hn, Nat.pow_1_r in H'3.
-    clear AA2.
-Theorem glop {r : radix} : ∀ i u v,
+Theorem P_add_999 {r : radix} : ∀ i u v,
   (∀ k, v (i + k + 1) = rad - 1)
   → ∀ k, P (u ⊕ v) (i + k + 1) = P u (i + k + 1).
 Proof.
@@ -1150,7 +1111,48 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + k + 1))) as [H1| H1].
    rewrite Nat.sub_add; [ | easy ].
    now rewrite Nat.mod_same.
  +destruct H2 as (j & Hj & Hjj).
+...
 
+Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
+  carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
+Proof.
+intros.
+specialize radix_ge_2 as Hr.
+symmetry; rewrite Nat.add_comm.
+unfold carry.
+remember (min_n i 0) as n eqn:Hn.
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
+-destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
+ +rewrite Nat.add_comm.
+  destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
+  *do 2 rewrite A_additive.
+   rewrite NQintg_add; [ symmetry | easy | easy ].
+   rewrite NQintg_add; [ symmetry | easy | easy ].
+   do 3 rewrite <- Nat.add_assoc.
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   f_equal; f_equal.
+   rewrite Nat.add_assoc, Nat.add_comm.
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   f_equal; f_equal.
+   rewrite Nat.add_comm.
+   rewrite NQintg_P_M, Nat.add_0_r.
+   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
+   rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
+   rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
+   do 2 rewrite NQintg_add_frac.
+   destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
+      as [AA3| AA3].
+  --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
+      as [AA1| AA1]; [ easy | ].
+    exfalso.
+    move AA1 after AA2; move AA3 after AA2.
+    rewrite NQfrac_P_M in AA1.
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3 0) as H'3.
+    rewrite <- Hn, Nat.pow_1_r in H'3.
+    clear AA2.
+Search (∀ _, P _ = P _).
 ...
     set (s := n - i - 1).
     assert (Hin : i + 1 ≤ n - 1). {
