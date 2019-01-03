@@ -1075,6 +1075,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    or, d'après H1, P(u⊕P(v))=9/9/9...9/9/9 → contradiction
 *)
     set (s := n - i - 1).
+    assert (Hin : i + 1 ≤ n - 1). {
+      rewrite Hn; unfold min_n.
+      destruct rad; [ easy | cbn; flia ].
+    }
     assert (H4 : (A i n (P v) = 1 - 1 // rad ^ s)%NQ). {
       unfold A.
       rewrite summation_eq_compat with
@@ -1085,10 +1089,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
         now apply all_fA_ge_1_ε_999.
       }
       rewrite NQsummation_pair_distr_l.
-      assert (Hin : i + 1 ≤ n - 1). {
-        rewrite Hn; unfold min_n.
-        destruct rad; [ easy | cbn; flia ].
-      }
       rewrite summation_shift; [ | easy ].
       rewrite summation_eq_compat with
         (h := λ j, (1 // rad * 1 // rad ^ j)%NQ). 2: {
@@ -1152,6 +1152,46 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     }
     assert (H7 : (A i n (P (u ⊕ P v)) < 1)%NQ). {
       specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
+      unfold A.
+      rewrite summation_shift; [ | easy ].
+      rewrite summation_eq_compat with
+        (h := λ j, ((rad - 1) // rad * 1 // rad ^ j)%NQ). 2: {
+        intros j Hj.
+        replace (i + 1 + j - i) with (1 + j) by flia.
+        rewrite Nat.pow_add_r, Nat.pow_1_r.
+        rewrite NQmul_pair; [ | easy | pauto ].
+        rewrite Nat.mul_1_r; f_equal.
+        rewrite Nat.add_shuffle0; apply H'1.
+      }
+      rewrite <- summation_mul_distr_l.
+      rewrite NQpower_summation; [ | easy ].
+      replace (n - 1 - (i + 1)) with (s - 1) by flia.
+      replace (S (s - 1)) with s by flia Hin.
+      rewrite NQmul_pair; [ | easy | ]. 2: {
+        apply Nat.neq_mul_0.
+        split; [ pauto | flia Hr ].
+      }
+      rewrite Nat.mul_assoc, Nat.mul_shuffle0.
+      rewrite <- NQmul_pair; [ | | pauto ]. 2: {
+        apply Nat.neq_mul_0.
+        split; [ easy | flia Hr ].
+      }
+      replace (rad - 1) with (1 * (rad - 1)) by flia.
+      rewrite <- NQmul_pair; [ | easy | flia Hr ].
+      rewrite Nat.mul_1_l, NQpair_diag; [ | flia Hr ].
+      rewrite NQmul_1_r.
+      rewrite NQmul_pair; [ | easy | pauto ].
+      rewrite Nat.mul_1_l.
+      apply NQlt_pair; [ | easy | ]. {
+        apply Nat.neq_mul_0.
+        split; [ easy | pauto ].
+      }
+      do 2 rewrite Nat.mul_1_r.
+      rewrite <- Nat.pow_succ_r; [ | flia Hin ].
+      replace (S (s - 1)) with s by flia Hin.
+      apply Nat.sub_lt; [ | pauto ].
+      now apply Nat_pow_ge_1.
+    }
 ...
 Theorem glop {r : radix} : ∀ i n u, (A i n u ≤ A i n (P u))%NQ.
 Proof.
