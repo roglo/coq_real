@@ -1141,17 +1141,27 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
        P(v)=9/9/9...9/9/9
        u⊕P(v)≥9/9/9...9/9/10
      *)
-    assert (H6 : A i n (u ⊕ P v) ≥ 1)%NQ). {
-...
-assert (∀ i n u, A i n u ≤ A i n (P u))%NQ). {
-...
-    assert (H6 : u⊕P(v)≥9/9/9...9/9/10)
-...
-    assert (H8 : P(u⊕P(v))≥1/0/0/0...0/0/0).
-...
-    assert (H9 : ∀ k, P v (i + k + 1) = rad - 1). {
-        now apply all_fA_ge_1_ε_999.
+    assert (H6 : (A i n (u ⊕ P v) ≥ 1)%NQ). {
+      rewrite A_additive.
+      eapply NQle_trans. 2: {
+        eapply NQadd_le_mono.
+        -now apply NQfrac_le.
+        -apply NQle_refl.
+      }
+      easy.
     }
+Theorem glop {r : radix} : ∀ i n u, (A i n u ≤ A i n (P u))%NQ.
+Proof.
+intros.
+...
+euh... contradictoire avec NQfrac_P_M !
+NQfrac_P_M:
+  ∀ (r : radix) (i n : nat) (u : nat → nat), NQfrac (A i n (P u)) = A i n (P u)
+...
+    specialize (glop i n (u ⊕ P v)) as H7.
+    specialize (all_fA_ge_1_ε_999 _ _ H1) as H8.
+    apply NQnlt_ge in H6; apply H6; clear H6.
+    eapply NQle_lt_trans; [ apply H7 | ].
 ...
   --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [AA3| AA3]; [ | easy ].
