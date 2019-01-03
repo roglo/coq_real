@@ -1061,6 +1061,96 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3 0) as H'3.
     rewrite <- Hn, Nat.pow_1_r in H'3.
     clear AA2.
+Theorem glop {r : radix} : ∀ i u v,
+  (∀ k, v (i + k + 1) = rad - 1)
+  → ∀ k, P (u ⊕ v) (i + k + 1) = P u (i + k + 1).
+Proof.
+intros * Hv *.
+unfold P, d2n, prop_carr; cbn.
+unfold "⊕" at 1.
+rewrite <- Nat.add_assoc.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal.
+rewrite Hv.
+unfold carry.
+remember (min_n (i + k + 1) 0) as n eqn:Hn.
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + k + 1))) as [H1| H1].
+-destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H2| H2].
+ +rewrite A_additive.
+  rewrite NQintg_add; [ | easy | easy ].
+  rewrite Nat.add_comm.
+  remember (A (i + k + 1) n u) as x eqn:Hx.
+  remember (A (i + k + 1) n v) as y eqn:Hy.
+  move y before x.
+  do 2 rewrite <- Nat.add_assoc.
+  replace (NQintg x) with (NQintg x + 0) at 2 by apply Nat.add_0_r.
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  f_equal; f_equal.
+  rewrite Nat.mod_0_l; [ | easy ].
+  rewrite Nat.add_assoc.
+  rewrite NQintg_small. 2: {
+    subst y; split; [ easy | ].
+    (* bon, ça devrait le faire *)
+    admit.
+  }
+  rewrite Nat.add_0_l.
+  rewrite NQintg_add_frac.
+  set (s := n - (i + k + 1) - 1).
+  assert (H3 : (A (i + k + 1) n u = 1 - 1 // rad ^ s)%NQ). {
+    specialize (all_fA_ge_1_ε_999 _ _ H2) as H.
+    unfold A.
+    (* ouais bon, ça devrait le faire *)
+    admit.
+  }
+  assert (H4 : (A (i + k + 1) n v = 1 - 1 // rad ^ s)%NQ). {
+    specialize (all_fA_ge_1_ε_999 _ _ H2) as H.
+    unfold A.
+    (* ouais bon, ça devrait le faire *)
+    admit.
+  }
+  destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H5| H5].
+  *exfalso; subst x y.
+   apply NQnle_gt in H5; apply H5; clear H5.
+   rewrite NQfrac_small. 2: {
+     split; [ easy | ].
+     rewrite H3.
+     apply NQsub_lt.
+     replace 0%NQ with (0 // 1)%NQ by easy.
+     apply NQlt_pair; [ easy | pauto | cbn; pauto ].
+   }
+   rewrite H3, H4.
+   rewrite NQfrac_small. 2: {
+     split.
+     -rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+        do 2 rewrite Nat.mul_1_l.
+        now apply Nat_pow_ge_1.
+      }
+      do 2 rewrite Nat.mul_1_l.
+      replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQle_pair; [ easy | pauto | flia ].
+     -apply NQsub_lt.
+      replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQlt_pair; [ easy | pauto | flia ].
+   }
+   rewrite NQadd_sub_assoc, NQadd_comm.
+   rewrite <- NQadd_sub_assoc.
+   apply NQle_sub_le_add_l.
+   rewrite NQsub_diag.
+   apply NQle_0_sub.
+   apply NQle_add_le_sub_l.
+   rewrite <- NQpair_add_l.
+   apply NQle_pair; [ pauto | easy | ].
+   do 2 rewrite Nat.mul_1_r; cbn.
+   unfold s.
+   (* bon on va supposer que ça marche *)
+   admit.
+  *rewrite Nat.add_comm.
+   rewrite Nat.sub_add; [ | easy ].
+   now rewrite Nat.mod_same.
+ +destruct H2 as (j & Hj & Hjj).
+
 ...
     set (s := n - i - 1).
     assert (Hin : i + 1 ≤ n - 1). {
