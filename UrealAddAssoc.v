@@ -1041,6 +1041,39 @@ assert (Hin : i + k + 2 ≤ n - 1). {
   rewrite Hn; unfold min_n.
   destruct rad; [ easy | cbn; flia ].
 }
+set (s := n - (i + k + 1) - 1).
+assert (HAv : (A (i + k + 1) n v = 1 - 1 // rad ^ s)%NQ). {
+  unfold A.
+  rewrite summation_shift; [ | flia Hin ].
+  rewrite summation_eq_compat with
+    (h := λ j, ((rad - 1) // rad * 1 // rad ^ j)%NQ). 2: {
+    intros j Hj.
+    rewrite NQmul_pair; [ | easy | pauto ].
+    replace (i + k + 1 + 1 + j - (i + k + 1)) with (1 + j) by flia.
+    rewrite Nat.pow_add_r, Nat.pow_1_r, Nat.mul_1_r; f_equal.
+    replace (i + k + 1 + 1 + j) with (i + (k + j + 1) + 1) by flia.
+    apply Hv.
+  }
+  rewrite <- summation_mul_distr_l.
+  replace (n - 1 - (i + k + 1 + 1)) with (n - i - k - 3) by flia.
+  rewrite NQpower_summation; [ | easy ].
+  rewrite NQmul_pair; [ | easy | ]. 2: {
+    apply Nat.neq_mul_0.
+    split; [ pauto | flia Hr ].
+  }
+  rewrite Nat.mul_assoc, Nat.mul_comm.
+  rewrite <- NQmul_pair; [ | | flia Hr ]. 2: {
+    apply Nat.neq_mul_0; pauto.
+  }
+  rewrite NQpair_diag, NQmul_1_r; [ | flia Hr ].
+  rewrite <- Nat.pow_succ_r; [ | flia Hin ].
+  replace (S (n - i - k - 3)) with s by flia Hin.
+  rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+    do 2 rewrite Nat.mul_1_l.
+    now apply Nat_pow_ge_1.
+  }
+  now do 2 rewrite Nat.mul_1_l.
+}
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + k + 1))) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H2| H2].
  +rewrite A_additive.
@@ -1056,44 +1089,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + k + 1))) as [H1| H1].
   f_equal; f_equal.
   rewrite Nat.mod_0_l; [ | easy ].
   rewrite Nat.add_assoc.
-  set (s := n - (i + k + 1) - 1).
-  assert (H3 : (y = 1 - 1 // rad ^ s)%NQ). {
-    subst y.
-    unfold A.
-    rewrite summation_shift; [ | flia Hin ].
-    rewrite summation_eq_compat with
-      (h := λ j, ((rad - 1) // rad * 1 // rad ^ j)%NQ). 2: {
-      intros j Hj.
-      rewrite NQmul_pair; [ | easy | pauto ].
-      replace (i + k + 1 + 1 + j - (i + k + 1)) with (1 + j) by flia.
-      rewrite Nat.pow_add_r, Nat.pow_1_r, Nat.mul_1_r; f_equal.
-      replace (i + k + 1 + 1 + j) with (i + (k + j + 1) + 1) by flia.
-      apply Hv.
-    }
-    rewrite <- summation_mul_distr_l.
-    replace (n - 1 - (i + k + 1 + 1)) with (n - i - k - 3) by flia.
-    rewrite NQpower_summation; [ | easy ].
-    rewrite NQmul_pair; [ | easy | ]. 2: {
-      apply Nat.neq_mul_0.
-      split; [ pauto | flia Hr ].
-    }
-    rewrite Nat.mul_assoc, Nat.mul_comm.
-    rewrite <- NQmul_pair; [ | | flia Hr ]. 2: {
-      apply Nat.neq_mul_0; pauto.
-    }
-    rewrite NQpair_diag, NQmul_1_r; [ | flia Hr ].
-    rewrite <- Nat.pow_succ_r; [ | flia Hin ].
-    replace (S (n - i - k - 3)) with s by flia Hin.
-    rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
-      do 2 rewrite Nat.mul_1_l.
-      now apply Nat_pow_ge_1.
-    }
-    now do 2 rewrite Nat.mul_1_l.
-  }
   assert (H4 : NQintg y = 0). {
     apply NQintg_small.
     subst y; split; [ easy | ].
-    rewrite H3.
+    rewrite HAv.
     apply NQsub_lt.
     replace 0%NQ with (0 // 1)%NQ by easy.
     apply NQlt_pair; [ easy | pauto | flia ].
