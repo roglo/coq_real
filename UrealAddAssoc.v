@@ -1060,21 +1060,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     rewrite NQfrac_P_M in AA1.
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3 0) as H'3.
     rewrite <- Hn, Nat.pow_1_r in H'3.
-    (* AA2 useless because of H'3 *)
     clear AA2.
-(* d'après H3, A i n (P v) n'a que des 9 ; donc, d'après AA1, u n'a pas
-   que des 0 entre i+1 et n-1, sinon ça ne serait pas assez pour dépasser
-   1. Donc v ne peut pas avoir que des 9, ça contradirait AA3. Du coup,
-   comment est v ? P(v) est 999... mais pas v. D'après H'3, v est supérieur
-   ou égal à 9000... Donc, d'après AA3, u est inférieur à 1000... *)
-(*
-   u ≥ 0/0/0...0/0/1
-   P(v)=9/9/9...9/9/9
-   u⊕P(v)≥9/9/9...9/9/10
-...
-   P(u⊕P(v))≥1/0/0/0...0/0/0
-   or, d'après H1, P(u⊕P(v))=9/9/9...9/9/9 → contradiction
-*)
     set (s := n - i - 1).
     assert (Hin : i + 1 ≤ n - 1). {
       rewrite Hn; unfold min_n.
@@ -1137,11 +1123,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       apply NQle_sub_le_add_r in AA1.
       now rewrite NQsub_opp_r, NQadd_0_l in AA1.
     }
-    (*
-       u ≥ 0/0/0...0/0/1
-       P(v)=9/9/9...9/9/9
-       u⊕P(v)≥9/9/9...9/9/10
-     *)
     assert (H6 : (A i n (u ⊕ P v) ≥ 1)%NQ). {
       rewrite A_additive.
       eapply NQle_trans. 2: {
