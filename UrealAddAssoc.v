@@ -1056,8 +1056,9 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + k + 1))) as [H1| H1].
   f_equal; f_equal.
   rewrite Nat.mod_0_l; [ | easy ].
   rewrite Nat.add_assoc.
-  rewrite NQintg_small. 2: {
-    subst y; split; [ easy | ].
+  set (s := n - (i + k + 1) - 1).
+  assert (H3 : (y = 1 - 1 // rad ^ s)%NQ). {
+    subst y.
     unfold A.
     rewrite summation_shift; [ | flia Hin ].
     rewrite summation_eq_compat with
@@ -1082,65 +1083,61 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + k + 1))) as [H1| H1].
     }
     rewrite NQpair_diag, NQmul_1_r; [ | flia Hr ].
     rewrite <- Nat.pow_succ_r; [ | flia Hin ].
-    apply NQlt_pair; [ pauto | easy | ].
-    do 2 rewrite Nat.mul_1_r.
-    apply Nat.sub_lt; [ | pauto ].
-    now apply Nat_pow_ge_1.
-  }
-  rewrite Nat.add_0_l.
-  rewrite NQintg_add_frac.
-  set (s := n - (i + k + 1) - 1).
-  assert (H3 : (A (i + k + 1) n u = 1 - 1 // rad ^ s)%NQ). {
-    specialize (all_fA_ge_1_ε_999 _ _ H2) as H.
-    unfold A.
-...
-  }
-  assert (H4 : (A (i + k + 1) n v = 1 - 1 // rad ^ s)%NQ). {
-    specialize (all_fA_ge_1_ε_999 _ _ H2) as H.
-    unfold A.
-    (* ouais bon, ça devrait le faire *)
-...
-  }
-  destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H5| H5].
-  *exfalso; subst x y.
-   apply NQnle_gt in H5; apply H5; clear H5.
-   rewrite NQfrac_small. 2: {
-     split; [ easy | ].
-     rewrite H3.
-     apply NQsub_lt.
-     replace 0%NQ with (0 // 1)%NQ by easy.
-     apply NQlt_pair; [ easy | pauto | cbn; pauto ].
-   }
-   rewrite H3, H4.
-   rewrite NQfrac_small. 2: {
-     split.
-     -rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
-        do 2 rewrite Nat.mul_1_l.
-        now apply Nat_pow_ge_1.
-      }
+    replace (S (n - i - k - 3)) with s by flia Hin.
+    rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
       do 2 rewrite Nat.mul_1_l.
-      replace 0%NQ with (0 // 1)%NQ by easy.
-      apply NQle_pair; [ easy | pauto | flia ].
-     -apply NQsub_lt.
-      replace 0%NQ with (0 // 1)%NQ by easy.
-      apply NQlt_pair; [ easy | pauto | flia ].
-   }
-   rewrite NQadd_sub_assoc, NQadd_comm.
-   rewrite <- NQadd_sub_assoc.
-   apply NQle_sub_le_add_l.
-   rewrite NQsub_diag.
-   apply NQle_0_sub.
-   apply NQle_add_le_sub_l.
-   rewrite <- NQpair_add_l.
-   apply NQle_pair; [ pauto | easy | ].
-   do 2 rewrite Nat.mul_1_r; cbn.
-   unfold s.
-   (* bon on va supposer que ça marche *)
-...
-  *rewrite Nat.add_comm.
-   rewrite Nat.sub_add; [ | easy ].
-   now rewrite Nat.mod_same.
+      now apply Nat_pow_ge_1.
+    }
+    now do 2 rewrite Nat.mul_1_l.
+  }
+  assert (H4 : NQintg y = 0). {
+    apply NQintg_small.
+    subst y; split; [ easy | ].
+    rewrite H3.
+    apply NQsub_lt.
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | pauto | flia ].
+  }
+  rewrite H4, Nat.add_0_l.
+  rewrite NQintg_add_frac.
+  destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H5| H5]. 2: {
+    rewrite Nat.add_comm, Nat.sub_add; [ | easy ].
+    now apply Nat.mod_same.
+  }
+  exfalso.
+  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
+  rewrite <- Hn, <- Hx, Nat.pow_1_r in AA2.
+  apply NQnlt_ge in AA2; apply AA2; clear AA2.
+  assert (H6 : (NQfrac y = 1 - 1 // rad ^ s)%NQ). {
+    rewrite NQfrac_of_intg; [ | now rewrite Hy ].
+    now rewrite H4, NQsub_0_r.
+  }
+  apply NQlt_add_lt_sub_r.
+  eapply NQle_lt_trans; [ | apply H5 ].
+  apply NQadd_le_mono_l.
+  rewrite H6.
+  apply NQle_add_le_sub_r.
+  rewrite NQadd_pair; [ | pauto | easy ].
+  rewrite Nat.mul_1_l, Nat.mul_1_r.
+  apply NQle_pair; [ | easy | ].
+  *apply Nat.neq_mul_0; pauto.
+  *do 2 rewrite Nat.mul_1_r.
+   destruct (zerop s) as [H7| H7].
+  --exfalso; unfold s in H7.
+    rewrite Hn in H7; unfold min_n in H7.
+    destruct rad; [ easy | cbn in H7; flia H7 ].
+  --destruct s; [ flia H7 | cbn ].
+    replace rad with (rad * 1) at 1 by flia.
+    rewrite <- Nat.mul_add_distr_l, Nat.mul_comm.
+    apply Nat.mul_le_mono_r.
+    destruct s; [ cbn; flia Hr | cbn ].
+    apply Nat.mul_lt_mono_pos_l; [ easy | ].
+    replace (rad ^ s) with (1 * rad ^ s) at 1 by flia.
+    apply Nat.mul_lt_mono_pos_r; [ | easy ].
+    now apply Nat_pow_ge_1.
  +destruct H2 as (j & Hj & Hjj).
+...
+-destruct H1 as (j & Hj & Hjj).
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
@@ -1182,7 +1179,18 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3 0) as H'3.
     rewrite <- Hn, Nat.pow_1_r in H'3.
     clear AA2.
-Search (∀ _, P _ = P _).
+    specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
+    specialize (all_fA_ge_1_ε_999 _ _ H3) as H''3.
+Search (∀ _, P _ _ = P _ _).
+specialize (P_add_999 i u (P v) H''3) as H.
+...
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1) as H'1.
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as H'2.
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3) as H'3.
+...
+    specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
+    specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
+
 ...
     set (s := n - i - 1).
     assert (Hin : i + 1 ≤ n - 1). {
