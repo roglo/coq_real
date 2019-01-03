@@ -1071,6 +1071,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    u ≥ 0/0/0...0/0/1
    P(v)=9/9/9...9/9/9
    u⊕P(v)≥9/9/9...9/9/10
+...
    P(u⊕P(v))≥1/0/0/0...0/0/0
    or, d'après H1, P(u⊕P(v))=9/9/9...9/9/9 → contradiction
 *)
