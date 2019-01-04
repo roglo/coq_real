@@ -1186,6 +1186,27 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1) as H'''1.
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as H'''2.
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3) as H'''3.
+    assert (Aup : (NQfrac (A i n u) > 0)%NQ). {
+      apply NQle_sub_le_add_r in AA1.
+      eapply NQlt_le_trans; [ | apply AA1 ].
+      apply NQlt_add_lt_sub_l; rewrite NQadd_0_r.
+      apply A_M_upper_bound.
+    }
+assert (Au : ∀ k, (NQfrac (A i (min_n i k) u) > 0)%NQ). {
+  intros k.
+...
+  specialize (H'''2 k).
+  specialize (H'''3 k).
+  rewrite A_additive in H'''2.
+  rewrite NQfrac_add in H'''2; [ | easy | easy ].
+...
+assert (H'''4 : ∀ k : nat, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ). {
+  intros.
+  specialize (H'''2 k).
+  specialize (H'''3 k).
+  rewrite A_additive in H'''2.
+  rewrite NQfrac_add in H'''2; [ | easy | easy ].
+
 ...
     specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
     specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
