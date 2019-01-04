@@ -1022,6 +1022,7 @@ split; [ easy | ].
 apply A_M_upper_bound.
 Qed.
 
+(* faux
 Theorem P_add_999 {r : radix} : ∀ i u v,
   (∀ k, v (i + k + 1) = rad - 1)
   → ∀ k, P (u ⊕ v) (i + k + 1) = P u (i + k + 1).
@@ -1138,6 +1139,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + k + 1))) as [H1| H1].
 ...
 -destruct H1 as (j & Hj & Hjj).
 ...
+*)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
@@ -1180,8 +1182,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     clear AA2.
     specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
     specialize (all_fA_ge_1_ε_999 _ _ H3) as H''3.
-Search (∀ _, P _ _ = P _ _).
-specialize (P_add_999 i u (P v) H''3) as H.
 ...
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1) as H'1.
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as H'2.
