@@ -1183,14 +1183,12 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     specialize (all_fA_ge_1_ε_999 _ _ H1) as H''1.
     specialize (all_fA_ge_1_ε_999 _ _ H2) as H''2.
     specialize (all_fA_ge_1_ε_999 _ _ H3) as H''3.
-...
-    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1) as H'1.
-    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as H'2.
-    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3) as H'3.
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1) as H'''1.
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as H'''2.
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3) as H'''3.
 ...
     specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
     specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
-
 ...
     set (s := n - i - 1).
     assert (Hin : i + 1 ≤ n - 1). {
