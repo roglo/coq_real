@@ -853,7 +853,7 @@ Theorem glop :
 ...
 *)
 
-(* is it true? is it required? *)
+(* it is false *)
 Theorem P_additive {r : radix} : ∀ u v i,
   P (u ⊕ v) i = (P u i + P v i) mod rad.
 Proof.
