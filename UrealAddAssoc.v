@@ -853,7 +853,8 @@ Theorem glop :
 ...
 *)
 
-(* it is false *)
+(* it is false; moreover, it is too close to theorem Hugo_Herbelin
+   below; j'ai juste tourné en rond
 Theorem P_additive {r : radix} : ∀ u v i,
   P (u ⊕ v) i = (P u i + P v i) mod rad.
 Proof.
@@ -970,6 +971,7 @@ assert (H : ∀ k,
   flia.
 }
 ...
+*)
 
 Theorem M_upper_bound {r : radix} : ∀ u i, M u i < rad.
 Proof.
