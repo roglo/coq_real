@@ -902,7 +902,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
    specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
    specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
    specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
-(* P u i = 9, P v i = 9, but P (u ⊕ v) i = 9 ≠ (9 + 9) mod 10 *)
+(* P u i = 9, P v i = 9,
+   but P (u ⊕ v) i = 9 ≠ (9 + 9) mod 10
+   therefore the theorem is false
+   but perhaps there is another formulation for it *)
 ...
    unfold P, d2n, prop_carr in H'1, H'2, H'3.
    cbn in H'1, H'2, H'3.
