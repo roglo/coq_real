@@ -1204,8 +1204,8 @@ assert (H : ∀ k, (NQfrac (A i (min_n i k) u + A i (min_n i k) v) ≥ 1 - 1 // 
   specialize (H'''3 k).
   rewrite A_additive in H'''1.
   rewrite A_additive in H'''2.
-  rewrite NQfrac_add in H'''1; [ | easy | easy ].
-  rewrite NQfrac_add in H'''2; [ | easy | easy ].
+  rewrite NQfrac_add_cond in H'''1; [ | easy | easy ].
+  rewrite NQfrac_add_cond in H'''2; [ | easy | easy ].
   rewrite NQfrac_P_M in H'''1.
 Search (A _ _ (P _)).
 ...
