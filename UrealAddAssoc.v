@@ -853,7 +853,7 @@ Theorem glop :
 ...
 *)
 
-(* is it true? is it required?
+(* is it true? is it required? *)
 Theorem P_additive {r : radix} : ∀ u v i,
   P (u ⊕ v) i = (P u i + P v i) mod rad.
 Proof.
@@ -882,9 +882,9 @@ f_equal; f_equal.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε u i)) as [H2| H2].
  +destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
-  *specialize (frac_ge_if_all_fA_ge_1_ε _ _ H1 0) as H1'.
-   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H2 0) as H2'.
-   specialize (frac_ge_if_all_fA_ge_1_ε _ _ H3 0) as H3'.
+  *specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as H1'.
+   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as H2'.
+   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3 0) as H3'.
    rewrite Nat.pow_1_r in H1', H2', H3'.
    rewrite A_additive in H1'.
    remember (min_n i 0) as n eqn:Hn.
@@ -899,10 +899,11 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
    f_equal; f_equal; rewrite Nat.mod_0_l; [ | easy ].
    clear x Hx.
    (*exfalso*)
-...
    specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
    specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
    specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
+(* P u i = 9, P v i = 9, but P (u ⊕ v) i = 9 ≠ (9 + 9) mod 10 *)
+...
    unfold P, d2n, prop_carr in H'1, H'2, H'3.
    cbn in H'1, H'2, H'3.
    unfold carry in H'1, H'2, H'3.
@@ -966,7 +967,6 @@ assert (H : ∀ k,
   flia.
 }
 ...
-*)
 
 Theorem M_upper_bound {r : radix} : ∀ u i, M u i < rad.
 Proof.
