@@ -1197,6 +1197,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       apply NQlt_add_lt_sub_l; rewrite NQadd_0_r.
       apply A_M_upper_bound.
     }
+...
 assert (H : ∀ k, (NQfrac (A i (min_n i k) u + A i (min_n i k) v) ≥ 1 - 1 // rad ^ S k)%NQ). {
   intros.
   specialize (H'''1 k).
