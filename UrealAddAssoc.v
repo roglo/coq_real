@@ -1197,6 +1197,19 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       apply NQlt_add_lt_sub_l; rewrite NQadd_0_r.
       apply A_M_upper_bound.
     }
+assert (H : ∀ k, (NQfrac (A i (min_n i k) u + A i (min_n i k) v) ≥ 1 - 1 // rad ^ S k)%NQ). {
+  intros.
+  specialize (H'''1 k).
+  specialize (H'''2 k).
+  specialize (H'''3 k).
+  rewrite A_additive in H'''1.
+  rewrite A_additive in H'''2.
+  rewrite NQfrac_add in H'''1; [ | easy | easy ].
+  rewrite NQfrac_add in H'''2; [ | easy | easy ].
+  rewrite NQfrac_P_M in H'''1.
+Search (A _ _ (P _)).
+...
+}
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
