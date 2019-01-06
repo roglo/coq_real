@@ -1182,7 +1182,11 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     replace j with (i + (j - i - 1) + 1) by flia Hj.
     now rewrite A3, H'3.
   --idtac.
-Search (NQfrac (A _ _ _)).
+(* Here, NQfrac(A(P v))=0.999...999 and NQfrac(A(v))=0.999...998 with
+   therefore a difference of 0.000...001. If NQfrac(A(u))≠0.000...001,
+   then the two parts are equal (equal to 1) and it is ok. Otherwise,
+   if NQfrac(A(u))=0.000...001, then the left hand part is 1 but the
+   right hand part is 0. *)
 ...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
