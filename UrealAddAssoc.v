@@ -1171,6 +1171,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    f_equal; f_equal.
    rewrite Nat.add_comm.
    rewrite NQintg_P_M, Nat.add_0_r.
+(* si v=999... alors P(v)=999... aussi, non ? donc v=P(v), non ? *)
+...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
    rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
