@@ -1177,6 +1177,12 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    specialize (A_ge_1_add_all_true_if v i Hv H3) as H'3.
    destruct H'3 as [H'3| [H'3| H'3]].
   --replace (A i n (P v)) with (A i n v); [ easy | ].
+    apply A_eq_compat.
+    intros j Hj.
+    replace j with (i + (j - i - 1) + 1) by flia Hj.
+    now rewrite A3, H'3.
+  --idtac.
+Search (NQfrac (A _ _ _)).
 ...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
