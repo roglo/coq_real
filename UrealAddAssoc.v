@@ -1187,6 +1187,14 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    then the two parts are equal (equal to 1) and it is ok. Otherwise,
    if NQfrac(A(u))=0.000...001, then the left hand part is 1 but the
    right hand part is 0. *)
+(* possible counter-example:
+                          n
+   u= 0/ 0/ 0/...0/ 0/ 1/ 0/ 0...
+   v=18/18/18...
+
+No: u⊕v=18/18/18...18/18/19/18/18...
+and H2 would be false
+*)
 ...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
