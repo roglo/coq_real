@@ -1147,9 +1147,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + k + 1))) as [H1| H1].
 *)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
-  carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
+  (∀ k, v (i + k + 1) ≤ 2 * (rad - 1))
+  → carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
 Proof.
-intros.
+intros * Hv.
 specialize radix_ge_2 as Hr.
 symmetry; rewrite Nat.add_comm.
 unfold carry.
@@ -1171,6 +1172,11 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    f_equal; f_equal.
    rewrite Nat.add_comm.
    rewrite NQintg_P_M, Nat.add_0_r.
+(**)
+   specialize (all_fA_ge_1_ε_999 _ _ H3) as A3.
+   specialize (A_ge_1_add_all_true_if v i Hv H3) as H'3.
+   destruct H'3 as [H'3| [H'3| H'3]].
+  --replace (A i n (P v)) with (A i n v); [ easy | ].
 ...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
