@@ -1272,7 +1272,8 @@ and H2 would be false
         replace 0%NQ with (0 // 1)%NQ by easy.
         apply NQlt_pair; [ easy | pauto | cbn; flia ].
       }
-    **idtac.
+    **assert (H : x = (1 // rad ^ s)%NQ). {
+        apply NQle_antisymm; [ | easy ].
 ...
 
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
