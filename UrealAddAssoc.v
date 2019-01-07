@@ -1146,6 +1146,117 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + k + 1))) as [H1| H1].
 ...
 *)
 
+Theorem pre_Hugo_Herbelin_lemma {r : radix} : ∀ i n u v,
+  n = min_n i 0
+  → (∀ k, fA_ge_1_ε (u ⊕ P v) i k = true)
+  → (∀ k, fA_ge_1_ε v i k = true)
+  → NQintg (NQfrac (A i n u) + (1 - 1 // rad ^ (n - i - 1))%NQ) =
+     NQintg (NQfrac (A i n u) + (1 - 2 // rad ^ (n - i - 1))%NQ).
+Proof.
+intros * Hn H1 H3.
+specialize radix_ge_2 as Hr.
+specialize (all_fA_ge_1_ε_999 _ _ H3) as A3.
+assert (H4 : (0 ≤ 1 - 2 // rad ^ (n - i - 1))%NQ). {
+  rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+    do 2 rewrite Nat.mul_1_l.
+    remember (n - i - 1) as s eqn:Hs.
+    destruct s.
+    -rewrite Hn in Hs; unfold min_n in Hs.
+     rewrite Nat.add_0_r, Nat.mul_add_distr_l in Hs.
+     destruct rad; [ easy | cbn in Hs; flia Hs ].
+    -cbn.
+     replace 2 with (2 * 1) by flia.
+     apply Nat.mul_le_mono; [ easy | now apply Nat_pow_ge_1 ].
+  }
+  do 2 rewrite Nat.mul_1_l.
+  replace 0%NQ with (0 // 1)%NQ by easy.
+  apply NQle_pair; [ easy | pauto | ].
+  rewrite Nat.mul_0_l, Nat.mul_1_l; flia.
+}
+set (s := n - i - 1) in H4 |-*.
+remember (NQfrac (A i n u)) as x eqn:Hx.
+destruct (NQlt_le_dec x (1 // rad ^ s)%NQ) as [H5| H5].
+-rewrite NQintg_small. 2: {
+   split.
+   -replace 0%NQ with (0 + 0)%NQ by easy.
+    subst x; apply NQadd_le_mono; [ easy | ].
+    eapply NQle_trans; [ apply H4 | ].
+    apply NQsub_le_mono; [ apply NQle_refl | ].
+    apply NQle_pair; [ pauto | pauto | ].
+    rewrite Nat.mul_comm; apply Nat.mul_le_mono_l; pauto.
+   -rewrite NQadd_comm, <- NQsub_sub_distr.
+    apply NQsub_lt, NQlt_add_lt_sub_l.
+    now rewrite NQadd_0_r.
+ }
+ rewrite NQintg_small; [ easy | ]. {
+   split.
+   -replace 0%NQ with (0 + 0)%NQ by easy.
+    now subst x; apply NQadd_le_mono.
+   -rewrite NQadd_comm, <- NQsub_sub_distr.
+    apply NQsub_lt, NQlt_add_lt_sub_l.
+    rewrite NQadd_0_r.
+    eapply NQlt_trans; [ apply H5 | ].
+    apply NQlt_pair; [ pauto | pauto | ].
+    rewrite Nat.mul_comm.
+    apply Nat.mul_lt_mono_pos_l; [ | pauto ].
+    now apply Nat_pow_ge_1.
+ }
+-destruct (NQle_lt_dec (2 // rad ^ s) x) as [H6| H6].
+ +do 2 rewrite NQadd_sub_assoc.
+  rewrite NQadd_comm.
+  do 2 rewrite <- NQadd_sub_assoc.
+  rewrite NQintg_add_nat_l; [ | now apply NQle_add_le_sub_l ].
+  rewrite NQintg_add_nat_l; [ | now apply NQle_add_le_sub_l ].
+  rewrite NQintg_small. 2: {
+    split; [ now apply NQle_add_le_sub_l | ].
+    apply (NQlt_trans _ x); [ | subst x; apply NQfrac_lt_1 ].
+    apply NQsub_lt.
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | pauto | cbn; flia ].
+  }
+  rewrite NQintg_small; [ easy | ]. {
+    split; [ now apply NQle_add_le_sub_l | ].
+    apply (NQlt_trans _ x); [ | subst x; apply NQfrac_lt_1 ].
+    apply NQsub_lt.
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | pauto | cbn; flia ].
+  }
+ +assert (H7 : x = (1 // rad ^ s)%NQ). {
+    apply NQle_antisymm; [ | easy ].
+    rewrite A_num_den, NQfrac_pair in Hx.
+    unfold den_A in Hx.
+    fold s in Hx; subst x.
+    apply NQle_pair; [ pauto | pauto | ].
+    rewrite Nat.mul_comm.
+    apply Nat.mul_le_mono_l.
+    apply NQlt_pair in H6; [ | pauto | pauto ].
+    rewrite Nat.mul_comm in H6.
+    apply Nat.mul_lt_mono_pos_l in H6; [ | now apply Nat_pow_ge_1 ].
+    now apply Nat.lt_le_pred in H6.
+  }
+  exfalso; subst x.
+  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as AA1.
+  rewrite <- Hn, A_additive, Nat.pow_1_r in AA1.
+  rewrite NQfrac_add in AA1; [ | pauto | pauto ].
+  rewrite H7 in AA1.
+  rewrite A_all_9 in AA1; [ | easy ].
+  fold s in AA1.
+  rewrite (NQfrac_small (1 - 1 // rad ^ s)%NQ) in AA1. 2: {
+    split.
+    -eapply NQle_trans; [ apply H4 | ].
+     apply NQsub_le_mono; [ apply NQle_refl | ].
+     apply NQle_pair; [ pauto | pauto | flia ].
+    -apply NQsub_lt.
+     replace 0%NQ with (0 // 1)%NQ by easy.
+     apply NQlt_pair; [ easy | pauto | cbn; flia ].
+  }
+  rewrite NQadd_comm, NQsub_add, NQfrac_1 in AA1.
+  apply NQnlt_ge in AA1; apply AA1.
+  apply NQlt_add_lt_sub_r.
+  rewrite NQadd_0_l.
+  apply NQlt_pair; [ easy | pauto | flia Hr ].
+Qed.
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, v (i + k + 1) ≤ 2 * (rad - 1))
   → carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
@@ -1216,99 +1327,37 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       replace 0%NQ with (0 // 1)%NQ by easy.
       apply NQlt_pair; [ easy | pauto | cbn; pauto ].
     }
-    destruct (NQlt_le_dec x (1 // rad ^ s)%NQ) as [H5| H5].
-   ++rewrite NQintg_small. 2: {
-       split.
-       -replace 0%NQ with (0 + 0)%NQ by easy.
-        subst x; apply NQadd_le_mono; [ easy | ].
-        eapply NQle_trans; [ apply H4 | ].
-        apply NQsub_le_mono; [ apply NQle_refl | ].
-        apply NQle_pair; [ pauto | pauto | ].
-        rewrite Nat.mul_comm; apply Nat.mul_le_mono_l; pauto.
-       -rewrite NQadd_comm, <- NQsub_sub_distr.
-        apply NQsub_lt, NQlt_add_lt_sub_l.
-        now rewrite NQadd_0_r.
-     }
-     rewrite NQintg_small; [ easy | ]. {
-       split.
-       -replace 0%NQ with (0 + 0)%NQ by easy.
-        now subst x; apply NQadd_le_mono.
-       -rewrite NQadd_comm, <- NQsub_sub_distr.
-        apply NQsub_lt, NQlt_add_lt_sub_l.
-        rewrite NQadd_0_r.
-        eapply NQlt_trans; [ apply H5 | ].
-        apply NQlt_pair; [ pauto | pauto | ].
-        rewrite Nat.mul_comm.
-        apply Nat.mul_lt_mono_pos_l; [ | pauto ].
-        now apply Nat_pow_ge_1.
-     }
-   ++destruct (NQle_lt_dec (2 // rad ^ s) x) as [H6| H6].
-    **do 2 rewrite NQadd_sub_assoc.
-      rewrite NQadd_comm.
-      do 2 rewrite <- NQadd_sub_assoc.
-      rewrite NQintg_add_nat_l; [ | now apply NQle_add_le_sub_l ].
-      rewrite NQintg_add_nat_l; [ | now apply NQle_add_le_sub_l ].
-      rewrite NQintg_small. 2: {
-        split; [ now apply NQle_add_le_sub_l | ].
-        apply (NQlt_trans _ x); [ | subst x; apply NQfrac_lt_1 ].
-        apply NQsub_lt.
-        replace 0%NQ with (0 // 1)%NQ by easy.
-        apply NQlt_pair; [ easy | pauto | cbn; flia ].
-      }
-      rewrite NQintg_small; [ easy | ]. {
-        split; [ now apply NQle_add_le_sub_l | ].
-        apply (NQlt_trans _ x); [ | subst x; apply NQfrac_lt_1 ].
-        apply NQsub_lt.
-        replace 0%NQ with (0 // 1)%NQ by easy.
-        apply NQlt_pair; [ easy | pauto | cbn; flia ].
-      }
-    **assert (H7 : x = (1 // rad ^ s)%NQ). {
-        apply NQle_antisymm; [ | easy ].
-        rewrite A_num_den, NQfrac_pair in Hx.
-        unfold den_A in Hx.
-        fold s in Hx; subst x.
-        apply NQle_pair; [ pauto | pauto | ].
-        rewrite Nat.mul_comm.
-        apply Nat.mul_le_mono_l.
-        apply NQlt_pair in H6; [ | pauto | pauto ].
-        rewrite Nat.mul_comm in H6.
-        apply Nat.mul_lt_mono_pos_l in H6; [ | now apply Nat_pow_ge_1 ].
-        now apply Nat.lt_le_pred in H6.
-      }
-      exfalso; subst x.
-      specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as AA1.
-      rewrite <- Hn, A_additive, Nat.pow_1_r in AA1.
-      rewrite NQfrac_add in AA1; [ | pauto | pauto ].
-      rewrite H7 in AA1.
-      rewrite A_all_9 in AA1; [ | easy ].
-      fold s in AA1.
-      rewrite (NQfrac_small (1 - 1 // rad ^ s)%NQ) in AA1. 2: {
-        split.
-        -eapply NQle_trans; [ apply H4 | ].
-         apply NQsub_le_mono; [ apply NQle_refl | ].
-         apply NQle_pair; [ pauto | pauto | flia ].
-        -apply NQsub_lt.
-         replace 0%NQ with (0 // 1)%NQ by easy.
-         apply NQlt_pair; [ easy | pauto | cbn; flia ].
-      }
-      rewrite NQadd_comm, NQsub_add, NQfrac_1 in AA1.
-      apply NQnlt_ge in AA1; apply AA1.
-      apply NQlt_add_lt_sub_r.
-      rewrite NQadd_0_l.
-      apply NQlt_pair; [ easy | pauto | flia Hr ].
+    f_equal.
+    subst s x.
+    now eapply pre_Hugo_Herbelin_lemma.
   --destruct H'3 as (j & Hbef & Hwhi & Haft).
     rewrite NQfrac_P_M.
     remember (NQfrac (A i n u)) as x eqn:Hx.
     rewrite A_all_9; [ | intros; apply A3 ].
     rewrite (A_9_8_all_18 j); [ | easy | easy | easy ].
-    set (s := n - i - 1) in H4 |-*.
-    destruct (le_dec (i + j + 1) (n - 1)) as [H5| H5].
-   ++rewrite NQfrac_small. 2: {
-       split; [ easy | ].
-       apply NQsub_lt.
+    destruct (le_dec (i + j + 1) (n - 1)) as [H5| H5]. 2: {
+      rewrite NQfrac_small; [ easy | ].
+      split.
+      -apply NQle_add_le_sub_l.
+       rewrite NQadd_0_l.
+       apply NQle_pair; [ pauto | easy | ].
+       do 2 rewrite Nat.mul_1_r.
+       now apply Nat_pow_ge_1.
+      -apply NQsub_lt.
        replace 0%NQ with (0 // 1)%NQ by easy.
        apply NQlt_pair; [ easy | pauto | flia ].
-     }
+    }
+    set (s := n - i - 1) in H4 |-*.
+    rewrite NQfrac_small. 2: {
+      split; [ easy | ].
+      apply NQsub_lt.
+      replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQlt_pair; [ easy | pauto | flia ].
+    }
+    f_equal.
+    subst x s.
+    now eapply pre_Hugo_Herbelin_lemma.
+  *destruct H3 as (j & Hj & Hjj).
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
