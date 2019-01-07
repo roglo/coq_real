@@ -1269,15 +1269,15 @@ remember (min_n i 0) as n eqn:Hn.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
  +rewrite Nat.add_comm.
+  do 2 rewrite A_additive.
+  rewrite NQintg_add; [ symmetry | easy | easy ].
+  rewrite NQintg_add; [ symmetry | easy | easy ].
+  do 3 rewrite <- Nat.add_assoc.
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  f_equal; f_equal.
   destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
-  *do 2 rewrite A_additive.
-   rewrite NQintg_add; [ symmetry | easy | easy ].
-   rewrite NQintg_add; [ symmetry | easy | easy ].
-   do 3 rewrite <- Nat.add_assoc.
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   f_equal; f_equal.
-   rewrite Nat.add_assoc, Nat.add_comm.
+  *rewrite Nat.add_assoc, Nat.add_comm.
    rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
    rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
    f_equal; f_equal.
@@ -1358,6 +1358,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     subst x s.
     now eapply pre_Hugo_Herbelin_lemma.
   *destruct H3 as (j & Hj & Hjj).
+   rewrite Nat.add_assoc.
+   rewrite NQintg_P_M, Nat.add_0_l.
+   rewrite NQfrac_P_M.
+   symmetry; rewrite Nat.add_comm; symmetry.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
