@@ -1225,14 +1225,22 @@ and H2 would be false
       replace 0%NQ with (0 // 1)%NQ by easy.
       apply NQlt_pair; [ easy | pauto | cbn; pauto ].
     }
+(*
     rewrite NQadd_comm, <- NQadd_sub_swap; symmetry.
     rewrite NQadd_comm, <- NQadd_sub_swap; symmetry.
     do 2 rewrite <- NQadd_sub_assoc.
-    set (s := n - i - 1).
-...
-    destruct (NQle_lt_dec x (1 // rad ^ s)%NQ) as [H5| H5].
+*)
+    set (s := n - i - 1) in H4 |-*.
+    destruct (NQlt_le_dec x (1 // rad ^ s)%NQ) as [H5| H5].
    ++rewrite NQintg_small. 2: {
        split.
+       -replace 0%NQ with (0 + 0)%NQ by easy.
+        subst x; apply NQadd_le_mono; [ easy | ].
+        eapply NQle_trans; [ apply H4 | ].
+        apply NQsub_le_mono; [ apply NQle_refl | ].
+        apply NQle_pair; [ pauto | pauto | ].
+        rewrite Nat.mul_comm; apply Nat.mul_le_mono_l; pauto.
+       -rewrite NQadd_comm.
 ...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
