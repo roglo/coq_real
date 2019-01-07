@@ -1181,21 +1181,12 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     intros j Hj.
     replace j with (i + (j - i - 1) + 1) by flia Hj.
     now rewrite A3, H'3.
-  --idtac.
-(* Here, NQfrac(A(P v))=0.999...999 and NQfrac(A(v))=0.999...998 with
-   therefore a difference of 0.000...001. If NQfrac(A(u))≠0.000...001,
-   then the two parts are equal (equal to 1) and it is ok. Otherwise,
-   if NQfrac(A(u))=0.000...001, then the left hand part is 1 but the
-   right hand part is 0. *)
-(* possible counter-example:
-                          n
-   u= 0/ 0/ 0/...0/ 0/ 1/ 0/ 0...
-   v=18/18/18...
-
-No: u⊕v=18/18/18...18/18/19/18/18...
-and H2 would be false
-*)
-    rewrite NQfrac_P_M.
+  (* Here, NQfrac(A(P v))=0.999...999 and NQfrac(A(v))=0.999...998 with
+     therefore a difference of 0.000...001. If NQfrac(A(u))≠0.000...001,
+     then the two parts are equal (equal to 1) and it is ok. Otherwise,
+     if NQfrac(A(u))=0.000...001, then the left hand part is 1 but the
+     right hand part is 0. *)
+   --rewrite NQfrac_P_M.
     remember (NQfrac (A i n u)) as x eqn:Hx.
     rewrite A_all_9; [ | intros; apply A3 ].
     rewrite A_all_18; [ | easy ].
