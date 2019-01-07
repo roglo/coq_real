@@ -1274,15 +1274,18 @@ and H2 would be false
       }
     **assert (H : x = (1 // rad ^ s)%NQ). {
         apply NQle_antisymm; [ | easy ].
-...
-        rewrite (NQnum_den x) in H5; [ | subst x; pauto ].
-        rewrite (NQnum_den x) in H6; [ | subst x; pauto ].
-        rewrite (NQnum_den x); [ | subst x; pauto ].
-        apply NQle_pair in H5; [ | pauto | pauto ].
-        apply NQlt_pair in H6; [ | easy | pauto ].
-        apply NQle_pair; [ easy | pauto | ].
-        rewrite Nat.mul_1_l, Nat.mul_comm in H5.
-        rewrite Nat.mul_1_r.
+        rewrite A_num_den, NQfrac_pair in Hx.
+        unfold den_A in Hx.
+        fold s in Hx; subst x.
+        apply NQle_pair; [ pauto | pauto | ].
+        rewrite Nat.mul_comm.
+        apply Nat.mul_le_mono_l.
+        apply NQlt_pair in H6; [ | pauto | pauto ].
+        rewrite Nat.mul_comm in H6.
+        apply Nat.mul_lt_mono_pos_l in H6; [ | now apply Nat_pow_ge_1 ].
+        now apply Nat.lt_le_pred in H6.
+      }
+      exfalso; clear H4 H5 H6; rename H into H4.
 ...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
