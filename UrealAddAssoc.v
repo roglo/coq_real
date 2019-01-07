@@ -1263,7 +1263,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
         replace 0%NQ with (0 // 1)%NQ by easy.
         apply NQlt_pair; [ easy | pauto | cbn; flia ].
       }
-    **assert (H : x = (1 // rad ^ s)%NQ). {
+    **assert (H7 : x = (1 // rad ^ s)%NQ). {
         apply NQle_antisymm; [ | easy ].
         rewrite A_num_den, NQfrac_pair in Hx.
         unfold den_A in Hx.
@@ -1276,7 +1276,28 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
         apply Nat.mul_lt_mono_pos_l in H6; [ | now apply Nat_pow_ge_1 ].
         now apply Nat.lt_le_pred in H6.
       }
-      exfalso; clear H4 H5 H6; rename H into H4.
+      exfalso; subst x.
+      specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as AA1.
+      rewrite <- Hn, A_additive, Nat.pow_1_r in AA1.
+      rewrite NQfrac_add in AA1; [ | pauto | pauto ].
+      rewrite H7 in AA1.
+      rewrite A_all_9 in AA1; [ | easy ].
+      fold s in AA1.
+      rewrite (NQfrac_small (1 - 1 // rad ^ s)%NQ) in AA1. 2: {
+        split.
+        -eapply NQle_trans; [ apply H4 | ].
+         apply NQsub_le_mono; [ apply NQle_refl | ].
+         apply NQle_pair; [ pauto | pauto | flia ].
+        -apply NQsub_lt.
+         replace 0%NQ with (0 // 1)%NQ by easy.
+         apply NQlt_pair; [ easy | pauto | cbn; flia ].
+      }
+      rewrite NQadd_comm, NQsub_add, NQfrac_1 in AA1.
+      apply NQnlt_ge in AA1; apply AA1.
+      apply NQlt_add_lt_sub_r.
+      rewrite NQadd_0_l.
+      apply NQlt_pair; [ easy | pauto | flia Hr ].
+   --destruct H'3 as (j & Hbef & Hwhi & Haft).
 ...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
