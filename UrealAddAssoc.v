@@ -1201,7 +1201,7 @@ and H2 would be false
     rewrite A_all_18; [ | easy ].
     replace 2%NQ with (1 + 1)%NQ by easy.
     rewrite <- NQadd_sub_assoc.
-    rewrite NQfrac_add_nat_l. 2: {
+    assert (H4 : (0 ≤ 1 - 2 // rad ^ (n - i - 1))%NQ). {
       rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
         do 2 rewrite Nat.mul_1_l.
         remember (n - i - 1) as s eqn:Hs.
@@ -1213,6 +1213,15 @@ and H2 would be false
          replace 2 with (2 * 1) by flia.
          apply Nat.mul_le_mono; [ easy | now apply Nat_pow_ge_1 ].
       }
+      do 2 rewrite Nat.mul_1_l.
+      replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQle_pair; [ easy | pauto | ].
+      rewrite Nat.mul_0_l, Nat.mul_1_l; flia.
+    }
+    rewrite NQfrac_add_nat_l; [ | easy ].
+    rewrite NQfrac_small. 2: {
+      split; [ easy | ].
+      apply NQsub_lt.
 ...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
