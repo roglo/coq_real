@@ -1283,7 +1283,6 @@ and H2 would be false
         apply NQle_pair; [ easy | pauto | ].
         rewrite Nat.mul_1_l, Nat.mul_comm in H5.
         rewrite Nat.mul_1_r.
-        subst x.
 ...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
