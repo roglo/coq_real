@@ -1228,6 +1228,8 @@ and H2 would be false
     subst x.
     do 2 rewrite NQadd_sub_assoc.
     rewrite NQadd_comm.
+Search (_ + _ - _).
+    rewrite NQintg_add_nat_l.
 ...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
