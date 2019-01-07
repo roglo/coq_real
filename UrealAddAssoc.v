@@ -1227,8 +1227,12 @@ and H2 would be false
     }
     rewrite NQadd_comm, <- NQadd_sub_swap; symmetry.
     rewrite NQadd_comm, <- NQadd_sub_swap; symmetry.
-...
     do 2 rewrite <- NQadd_sub_assoc.
+    set (s := n - i - 1).
+...
+    destruct (NQle_lt_dec x (1 // rad ^ s)%NQ) as [H5| H5].
+   ++rewrite NQintg_small. 2: {
+       split.
 ...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
