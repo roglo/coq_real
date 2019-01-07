@@ -1176,7 +1176,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    specialize (all_fA_ge_1_ε_999 _ _ H3) as A3.
    specialize (A_ge_1_add_all_true_if v i Hv H3) as H'3.
    destruct H'3 as [H'3| [H'3| H'3]].
-  --replace (A i n (P v)) with (A i n v); [ easy | ].
+  --f_equal; f_equal; f_equal; f_equal.
     apply A_eq_compat.
     intros j Hj.
     replace j with (i + (j - i - 1) + 1) by flia Hj.
