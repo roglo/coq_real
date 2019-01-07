@@ -1172,7 +1172,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    f_equal; f_equal.
    rewrite Nat.add_comm.
    rewrite NQintg_P_M, Nat.add_0_r.
-(**)
    specialize (all_fA_ge_1_ε_999 _ _ H3) as A3.
    specialize (A_ge_1_add_all_true_if v i Hv H3) as H'3.
    destruct H'3 as [H'3| [H'3| H'3]].
@@ -1186,7 +1185,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
      then the two parts are equal (equal to 1) and it is ok. Otherwise,
      if NQfrac(A(u))=0.000...001, then the left hand part is 1 but the
      right hand part is 0. *)
-   --rewrite NQfrac_P_M.
+  --rewrite NQfrac_P_M.
     remember (NQfrac (A i n u)) as x eqn:Hx.
     rewrite A_all_9; [ | intros; apply A3 ].
     rewrite A_all_18; [ | easy ].
@@ -1297,48 +1296,14 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       apply NQlt_add_lt_sub_r.
       rewrite NQadd_0_l.
       apply NQlt_pair; [ easy | pauto | flia Hr ].
-   --destruct H'3 as (j & Hbef & Hwhi & Haft).
-...
-   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
-   rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
-   rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
-   do 2 rewrite NQintg_add_frac.
-   destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
-      as [AA3| AA3].
-  --destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
-      as [AA1| AA1]; [ easy | ].
-    exfalso.
-    move AA1 after AA2; move AA3 after AA2.
-    rewrite NQfrac_P_M in AA1.
-    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3 0) as H'3.
-    rewrite <- Hn, Nat.pow_1_r in H'3.
-    clear AA2.
-    specialize (all_fA_ge_1_ε_999 _ _ H1) as H''1.
-    specialize (all_fA_ge_1_ε_999 _ _ H2) as H''2.
-    specialize (all_fA_ge_1_ε_999 _ _ H3) as H''3.
-    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1) as H'''1.
-    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as H'''2.
-    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3) as H'''3.
-    assert (Aup : (NQfrac (A i n u) > 0)%NQ). {
-      apply NQle_sub_le_add_r in AA1.
-      eapply NQlt_le_trans; [ | apply AA1 ].
-      apply NQlt_add_lt_sub_l; rewrite NQadd_0_r.
-      apply A_M_upper_bound.
-    }
-...
-assert (H : ∀ k, (NQfrac (A i (min_n i k) u + A i (min_n i k) v) ≥ 1 - 1 // rad ^ S k)%NQ). {
-  intros.
-  specialize (H'''1 k).
-  specialize (H'''2 k).
-  specialize (H'''3 k).
-  rewrite A_additive in H'''1.
-  rewrite A_additive in H'''2.
-  rewrite NQfrac_add_cond in H'''1; [ | easy | easy ].
-  rewrite NQfrac_add_cond in H'''2; [ | easy | easy ].
-  rewrite NQfrac_P_M in H'''1.
-Search (A _ _ (P _)).
-...
-}
+  --destruct H'3 as (j & Hbef & Hwhi & Haft).
+    rewrite NQfrac_P_M.
+    remember (NQfrac (A i n u)) as x eqn:Hx.
+    rewrite A_all_9; [ | intros; apply A3 ].
+    rewrite (A_9_8_all_18 j); [ | easy | easy | easy ].
+    set (s := n - i - 1).
+    destruct (le_dec (i + j + 1) (n - 1)) as [H4| H4].
+   ++idtac.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
