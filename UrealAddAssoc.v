@@ -1219,18 +1219,13 @@ and H2 would be false
       rewrite Nat.mul_0_l, Nat.mul_1_l; flia.
     }
     rewrite NQfrac_add_nat_l; [ | easy ].
+    set (s := n - i - 1) in H4 |-*.
     rewrite NQfrac_small. 2: {
       split; [ easy | ].
       apply NQsub_lt.
       replace 0%NQ with (0 // 1)%NQ by easy.
       apply NQlt_pair; [ easy | pauto | cbn; pauto ].
     }
-(*
-    rewrite NQadd_comm, <- NQadd_sub_swap; symmetry.
-    rewrite NQadd_comm, <- NQadd_sub_swap; symmetry.
-    do 2 rewrite <- NQadd_sub_assoc.
-*)
-    set (s := n - i - 1) in H4 |-*.
     destruct (NQlt_le_dec x (1 // rad ^ s)%NQ) as [H5| H5].
    ++rewrite NQintg_small. 2: {
        split.
@@ -1240,8 +1235,46 @@ and H2 would be false
         apply NQsub_le_mono; [ apply NQle_refl | ].
         apply NQle_pair; [ pauto | pauto | ].
         rewrite Nat.mul_comm; apply Nat.mul_le_mono_l; pauto.
-       -rewrite NQadd_comm.
+       -rewrite NQadd_comm, <- NQsub_sub_distr.
+        apply NQsub_lt, NQlt_add_lt_sub_l.
+        now rewrite NQadd_0_r.
+     }
+     rewrite NQintg_small; [ easy | ]. {
+       split.
+       -replace 0%NQ with (0 + 0)%NQ by easy.
+        now subst x; apply NQadd_le_mono.
+       -rewrite NQadd_comm, <- NQsub_sub_distr.
+        apply NQsub_lt, NQlt_add_lt_sub_l.
+        rewrite NQadd_0_r.
+        eapply NQlt_trans; [ apply H5 | ].
+        apply NQlt_pair; [ pauto | pauto | ].
+        rewrite Nat.mul_comm.
+        apply Nat.mul_lt_mono_pos_l; [ | pauto ].
+        now apply Nat_pow_ge_1.
+     }
+   ++destruct (NQle_lt_dec (2 // rad ^ s) x) as [H6| H6].
+    **do 2 rewrite NQadd_sub_assoc.
+      rewrite NQadd_comm.
+      do 2 rewrite <- NQadd_sub_assoc.
+      rewrite NQintg_add_nat_l; [ | now apply NQle_add_le_sub_l ].
+      rewrite NQintg_add_nat_l; [ | now apply NQle_add_le_sub_l ].
+      rewrite NQintg_small. 2: {
+        split; [ now apply NQle_add_le_sub_l | ].
+        apply (NQlt_trans _ x); [ | subst x; apply NQfrac_lt_1 ].
+        apply NQsub_lt.
+        replace 0%NQ with (0 // 1)%NQ by easy.
+        apply NQlt_pair; [ easy | pauto | cbn; flia ].
+      }
+      rewrite NQintg_small; [ easy | ]. {
+        split; [ now apply NQle_add_le_sub_l | ].
+        apply (NQlt_trans _ x); [ | subst x; apply NQfrac_lt_1 ].
+        apply NQsub_lt.
+        replace 0%NQ with (0 // 1)%NQ by easy.
+        apply NQlt_pair; [ easy | pauto | cbn; flia ].
+      }
+    **idtac.
 ...
+
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.
    rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
