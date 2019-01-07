@@ -1222,6 +1222,12 @@ and H2 would be false
     rewrite NQfrac_small. 2: {
       split; [ easy | ].
       apply NQsub_lt.
+      replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQlt_pair; [ easy | pauto | cbn; pauto ].
+    }
+    subst x.
+    do 2 rewrite NQadd_sub_assoc.
+    rewrite NQadd_comm.
 ...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
    rewrite <- Hn, A_additive, Nat.pow_1_r in AA2.

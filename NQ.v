@@ -2388,6 +2388,21 @@ rewrite Nat.div_div; cycle 1. {
 -now rewrite Nat.mul_comm, <- Hc.
 Qed.
 
+Theorem NQintg_add_nat_l : ∀ a x, (0 ≤ x)%NQ →
+  NQintg (a // 1 + x)%NQ = a + NQintg x.
+Proof.
+intros * Hx.
+rewrite NQintg_add; [ | | easy ]. 2: {
+  replace 0%NQ with (0 // 1)%NQ by easy.
+  apply NQle_pair; [ easy | easy | cbn; flia ].
+}
+rewrite Nat.add_shuffle0; f_equal.
+rewrite NQintg_pair; [ | easy ].
+rewrite Nat.div_1_r.
+rewrite NQfrac_of_nat, NQadd_0_l.
+now rewrite NQintg_NQfrac, Nat.add_0_r.
+Qed.
+
 Theorem NQpow_pair_l : ∀ n a b, n ≠ 0 → b ≤ a →
   (n ^ a // n ^ b)%NQ = (n ^ (a - b) // 1)%NQ.
 Proof.
