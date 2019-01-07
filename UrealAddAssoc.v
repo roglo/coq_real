@@ -1227,6 +1227,7 @@ and H2 would be false
     }
     rewrite NQadd_comm, <- NQadd_sub_swap; symmetry.
     rewrite NQadd_comm, <- NQadd_sub_swap; symmetry.
+...
     do 2 rewrite <- NQadd_sub_assoc.
 ...
    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
