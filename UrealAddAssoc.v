@@ -1258,7 +1258,7 @@ destruct (NQlt_le_dec x (1 // rad ^ s)%NQ) as [H5| H5].
 Qed.
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
-  (∀ k, v (i + k + 1) ≤ 2 * (rad - 1))
+  (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
 Proof.
 intros * Hv.
@@ -1284,7 +1284,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite Nat.add_comm.
    rewrite NQintg_P_M, Nat.add_0_r.
    specialize (all_fA_ge_1_ε_999 _ _ H3) as A3.
-   specialize (A_ge_1_add_all_true_if v i Hv H3) as H'3.
+   assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+     intros; rewrite <- Nat.add_assoc; apply Hv.
+   }
+   specialize (A_ge_1_add_all_true_if v i H H3) as H'3; clear H.
    assert (H4 : (0 ≤ 1 - 2 // rad ^ (n - i - 1))%NQ). {
      rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
        do 2 rewrite Nat.mul_1_l.
@@ -1380,6 +1383,14 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    remember (B i n v (rad * j)) as x eqn:Hx.
    specialize (B_upper_bound v i 0 (rad * j)) as H3.
    assert (H : ∀ j, j ≥ i → v j ≤ (j + 1) * (rad - 1) ^ 2). {
+     intros k Hk.
+     replace k with (i + (k - i)) by flia Hk.
+     eapply le_trans; [ apply Hv | ].
+     replace ((rad - 1) ^ 2) with ((rad - 1) * (rad - 1)) by
+         now rewrite Nat.pow_2_r.
+     rewrite Nat.mul_assoc.
+     apply Nat.mul_le_mono_r.
+     destruct i.
 ...
    }
    specialize (H3 H); clear H.
