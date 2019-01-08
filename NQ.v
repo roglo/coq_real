@@ -1642,6 +1642,14 @@ rewrite NQmul_comm.
 apply NQmul_1_l.
 Qed.
 
+Theorem NQmul_pair_mono_r : ∀ a b c,
+  b ≠ 0 → c ≠ 0 → ((a * c) // (b * c) = a // b)%NQ.
+Proof.
+intros * Hb Hc.
+rewrite <- NQmul_pair; [ | easy | easy ].
+now rewrite NQpair_diag, NQmul_1_r.
+Qed.
+
 Theorem NQmul_0_l : ∀ a, (0 * a)%NQ = 0%NQ.
 Proof. easy. Qed.
 

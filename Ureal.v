@@ -977,9 +977,50 @@ Qed.
 
 Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
   (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
-  → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
+  → (B i (min_n i k) u l ≤
+      (2 * rad * (rad ^ l - 1)) // rad ^ (min_n i k - i + l))%NQ.
 Proof.
 intros * Hur.
+specialize radix_ge_2 as Hr.
+destruct l.
+-admit.
+-unfold B.
+ remember (min_n i k) as n eqn:Hn.
+ rewrite summation_shift; [ | flia ].
+ replace (n + S l - 1 - n) with l by flia.
+ eapply NQle_trans.
+ +apply summation_le_compat with
+    (g := λ j, ((2 * (rad - 1)) // rad ^ (n - i) * 1 // rad ^ j)%NQ).
+  intros j Hj.
+  assert (Hin : i + 2 ≤ n - 1). {
+    rewrite Hn; unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  }
+  replace (n + j - i) with (n - i + j) by flia Hin.
+  rewrite Nat.pow_add_r.
+  replace (u (n + j)) with (u (n + j) * 1) by flia.
+  rewrite <- NQmul_pair; [ | pauto | pauto ].
+  apply NQmul_le_mono_pos_r. {
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | pauto | cbn; flia ].
+  }
+  apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono_l, Hur.
+  flia Hin.
+ +rewrite <- summation_mul_distr_l.
+  rewrite NQpower_summation; [ | easy ].
+  rewrite NQmul_pair; [ | pauto | ]. 2: {
+    apply Nat.neq_mul_0; split; [ pauto | flia Hr ].
+  }
+  rewrite Nat.mul_shuffle0, Nat.mul_assoc.
+  rewrite <- NQmul_pair; [ | | flia Hr ]. 2: {
+    apply Nat.neq_mul_0; pauto.
+  }
+  rewrite NQpair_diag, NQmul_1_r; [ | flia Hr ].
+  replace (n - i + S l) with (n - i + l + 1) by flia.
+  rewrite Nat.pow_add_r, Nat.pow_1_r, Nat.mul_shuffle0.
+Search ((_ * _) // (_ * _))%NQ.
 ...
 
 Theorem B_upper_bound_for_mul {r : radix} : ∀ u i k l,
