@@ -1374,7 +1374,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
      rewrite Hn; unfold min_n.
      destruct rad; [ easy | cbn; flia ].
    }
-...
    rewrite NQintg_add; [ | easy | apply B_ge_0 ].
    do 2 rewrite <- Nat.add_assoc.
    rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
@@ -1383,6 +1382,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite Nat.add_assoc.
    remember (B i n v (rad * j)) as x eqn:Hx.
    specialize (B_upper_bound v i 0 (rad * j)) as H3.
+...
    assert (H : ∀ j, j ≥ i → v j ≤ (j + 1) * (rad - 1) ^ 2). {
      intros k Hk.
      replace k with (i + (k - i)) by flia Hk.

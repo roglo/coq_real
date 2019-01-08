@@ -764,10 +764,14 @@ Qed.
 Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
   n ≠ 0
   → i < n
-  → (∀ j, u (n + j) ≤ (n + j + 1) * (rad - 1) ^ 2)
+  → (∀ j, u (n + j) ≤ (n + j + 1) * (rad - 1) ^ 2 + 1)
   → (B i n u l ≤ (n * (rad - 1) + rad) // rad ^ (n - i - 1))%NQ.
 Proof.
 intros * Hn Hi Hur.
+(* ne marche plus parce que j'ai dû ajouter +1 dans Hur parce que sinon, ça
+   n'inclurait pas l'addition ! *)
+(* trouver une autre borne sup *)
+...
 specialize radix_ge_2 as Hr.
 unfold B.
 destruct (zerop l) as [Hl| Hl].
@@ -795,6 +799,7 @@ destruct (zerop l) as [Hl| Hl].
   apply Nat.mul_le_mono_r.
   rewrite Nat.mul_comm.
   replace k with (n + (k - n)) by flia Hk.
+...
   apply Hur.
  +replace (n + l - 1) with (n + (l - 1)) by flia Hl.
   rewrite <- summation_mul_distr_l.
