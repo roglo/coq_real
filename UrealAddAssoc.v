@@ -1362,6 +1362,36 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite Nat.add_assoc.
    rewrite Nat.add_comm.
    rewrite NQintg_P_M, Nat.add_0_l.
+   assert (H : min_n i j = min_n i 0 + rad * j). {
+     unfold min_n.
+     now rewrite <- Nat.mul_add_distr_l, Nat.add_0_r, Nat.add_shuffle0.
+   }
+   rewrite H, <- Hn; clear H.
+   rewrite <- ApB_A. 2: {
+     rewrite Hn; unfold min_n.
+     destruct rad; [ easy | cbn; flia ].
+   }
+   rewrite NQintg_add; [ | easy | apply B_ge_0 ].
+   do 2 rewrite <- Nat.add_assoc.
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+   f_equal; f_equal.
+   rewrite Nat.add_assoc.
+   remember (B i n v (rad * j)) as x eqn:Hx.
+   specialize (B_upper_bound v i 0 (rad * j)) as H3.
+   assert (H : ∀ j, j ≥ i → v j ≤ (j + 1) * (rad - 1) ^ 2). {
+...
+   }
+   specialize (H3 H); clear H.
+   rewrite <- Hn, <- Hx, Nat.pow_1_r in H3.
+   assert (H : (0 ≤ x < 1)%NQ). {
+...
+   }
+   rewrite NQintg_small; [ | easy ].
+   rewrite Nat.add_0_l.
+   rewrite (NQfrac_small x); [ | easy ].
+   subst x.
+...
    do 2 rewrite NQintg_add_frac.
    rewrite NQfrac_P_M.
    destruct (NQlt_le_dec (NQfrac (A i n u) + A i n (P v)) 1) as [H3| H3].
