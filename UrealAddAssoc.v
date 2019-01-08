@@ -1381,7 +1381,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    f_equal; f_equal.
    rewrite Nat.add_assoc.
    remember (B i n v (rad * j)) as x eqn:Hx.
-   specialize (B_upper_bound v i 0 (rad * j)) as H3.
+...
+   specialize (B_upper_bound_for_add v i 0 (rad * j)) as H3.
 ...
    assert (H : ∀ j, j ≥ i → v j ≤ (j + 1) * (rad - 1) ^ 2). {
      intros k Hk.

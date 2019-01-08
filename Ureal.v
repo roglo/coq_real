@@ -761,7 +761,7 @@ replace (S b) with (b + 1) by flia.
 easy.
 Qed.
 
-Theorem B_gen_upper_bound {r : radix} : ∀ u i n l,
+Theorem B_gen_upper_bound_for_mul {r : radix} : ∀ u i n l,
   n ≠ 0
   → i < n
   → (∀ j, u (n + j) ≤ (n + j + 1) * (rad - 1) ^ 2)
@@ -975,7 +975,14 @@ induction m; intros.
    apply Nat_pow_ge_1; flia.
 Qed.
 
-Theorem B_upper_bound {r : radix} : ∀ u i k l,
+Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
+  (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
+  → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
+Proof.
+intros * Hur.
+...
+
+Theorem B_upper_bound_for_mul {r : radix} : ∀ u i k l,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
 Proof.
@@ -983,7 +990,7 @@ intros * Hur.
 specialize radix_ge_2 as Hr.
 remember (min_n i k) as n eqn:Hn.
 eapply NQle_lt_trans.
--apply B_gen_upper_bound. {
+-apply B_gen_upper_bound_for_mul. {
    subst n; unfold min_n.
    apply Nat.neq_mul_0.
    split; [ easy | flia ].
@@ -1046,14 +1053,14 @@ rewrite NQsub_diag.
 apply B_ge_0.
 Qed.
 
-Theorem fApB_upper_bound {r : radix} : ∀ u i k l,
+Theorem fApB_upper_bound_for_mul {r : radix} : ∀ u i k l,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → (NQfrac (A i (min_n i k) u) + B i (min_n i k) u l <
       1 + 1 // rad ^ S k)%NQ.
 Proof.
 intros * Hur.
 apply NQadd_lt_mono; [ apply NQfrac_lt_1 | ].
-apply B_upper_bound, Hur.
+apply B_upper_bound_for_mul, Hur.
 Qed.
 
 Theorem ApB_lower_bound {r : radix} : ∀ u i k l n,
@@ -1077,13 +1084,13 @@ replace (NQintg (A i n u) + 1) with (NQintg (A i n u + 1)%NQ) in H1.
  now rewrite NQintg_NQfrac, Nat.add_0_r.
 Qed.
 
-Theorem ApB_upper_bound {r : radix} : ∀ u i k l n,
+Theorem ApB_upper_bound_for_mul {r : radix} : ∀ u i k l n,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → n = min_n i k
   → (A i n u + B i n u l < NQintg (A i n u + 1) // 1 + 1 // rad ^ S k)%NQ.
 Proof.
 intros * Hur Hn.
-specialize (fApB_upper_bound u i k l Hur) as H1.
+specialize (fApB_upper_bound_for_mul u i k l Hur) as H1.
 rewrite <- Hn in H1.
 apply (NQadd_lt_mono_l (NQintg (A i n u) // 1)) in H1.
 do 2 rewrite NQadd_assoc in H1.
@@ -1134,7 +1141,7 @@ rewrite Hn; unfold min_n.
 destruct rad; [ easy | cbn; flia ].
 Qed.
 
-Theorem A_upper_bound {r : radix} : ∀ u i,
+Theorem A_upper_bound_for_mul {r : radix} : ∀ u i,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → ∀ k l,
      (A i (min_n i k + l) u <
@@ -1144,7 +1151,7 @@ intros u i Hur k l.
 specialize radix_ge_2 as Hr.
 remember (min_n i k) as n eqn:Hn.
 move n before l.
-specialize (ApB_upper_bound u i k l n Hur Hn) as H1.
+specialize (ApB_upper_bound_for_mul u i k l n Hur Hn) as H1.
 rewrite ApB_A in H1; [ easy | ].
 rewrite Hn; unfold min_n.
 destruct rad; [ easy | cbn; flia ].
