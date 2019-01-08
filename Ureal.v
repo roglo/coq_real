@@ -975,6 +975,14 @@ induction m; intros.
    apply Nat_pow_ge_1; flia.
 Qed.
 
+Definition min_it_for_add k := 42.
+
+Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
+  (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
+  → (B i (min_it_for_add k) u l < 1 // rad ^ S k)%NQ.
+Proof.
+...
+
 Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
   (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
   → (B i (min_n i k) u l ≤
