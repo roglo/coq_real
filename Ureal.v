@@ -983,7 +983,8 @@ Proof.
 intros * Hur.
 specialize radix_ge_2 as Hr.
 destruct l.
--admit.
+-idtac.
+...
 -unfold B.
  remember (min_n i k) as n eqn:Hn.
  rewrite summation_shift; [ | flia ].
@@ -1020,7 +1021,9 @@ destruct l.
   rewrite NQpair_diag, NQmul_1_r; [ | flia Hr ].
   replace (n - i + S l) with (n - i + l + 1) by flia.
   rewrite Nat.pow_add_r, Nat.pow_1_r, Nat.mul_shuffle0.
-Search ((_ * _) // (_ * _))%NQ.
+  rewrite NQmul_pair_mono_r; [ | pauto | pauto ].
+  rewrite Nat.pow_add_r.
+  apply NQle_refl.
 ...
 
 Theorem B_upper_bound_for_mul {r : radix} : ∀ u i k l,
