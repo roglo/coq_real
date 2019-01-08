@@ -1358,10 +1358,12 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     subst x s.
     now eapply pre_Hugo_Herbelin_lemma.
   *destruct H3 as (j & Hj & Hjj).
+   apply A_ge_1_false_iff in Hjj.
    rewrite Nat.add_assoc.
+   rewrite Nat.add_comm.
    rewrite NQintg_P_M, Nat.add_0_l.
+   do 2 rewrite NQintg_add_frac.
    rewrite NQfrac_P_M.
-   symmetry; rewrite Nat.add_comm; symmetry.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
