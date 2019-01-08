@@ -1374,6 +1374,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
      rewrite Hn; unfold min_n.
      destruct rad; [ easy | cbn; flia ].
    }
+...
    rewrite NQintg_add; [ | easy | apply B_ge_0 ].
    do 2 rewrite <- Nat.add_assoc.
    rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
