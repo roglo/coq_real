@@ -1381,25 +1381,15 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    f_equal; f_equal.
    rewrite Nat.add_assoc.
    remember (B i n v (rad * j)) as x eqn:Hx.
-...
    specialize (B_upper_bound_for_add v i 0 (rad * j)) as H3.
-...
-   assert (H : ∀ j, j ≥ i → v j ≤ (j + 1) * (rad - 1) ^ 2). {
+   assert (H : ∀ j, j ≥ i → v j ≤ 2 * (rad - 1)). {
      intros k Hk.
      replace k with (i + (k - i)) by flia Hk.
-     eapply le_trans; [ apply Hv | ].
-     replace ((rad - 1) ^ 2) with ((rad - 1) * (rad - 1)) by
-         now rewrite Nat.pow_2_r.
-     rewrite Nat.mul_assoc.
-     apply Nat.mul_le_mono_r.
-     destruct i.
-...
+     apply Hv.
    }
    specialize (H3 H); clear H.
    rewrite <- Hn, <- Hx, Nat.pow_1_r in H3.
-   assert (H : (0 ≤ x < 1)%NQ). {
 ...
-   }
    rewrite NQintg_small; [ | easy ].
    rewrite Nat.add_0_l.
    rewrite (NQfrac_small x); [ | easy ].
