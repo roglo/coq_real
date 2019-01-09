@@ -1425,6 +1425,17 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ easy | exfalso ].
      clear H4.
+     assert (H : ∀ k (m := min_n i k), k = 0). {
+       intros.
+       specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 k) as A1.
+       specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 k) as A2.
+       rewrite A_additive in A1, A2.
+       fold m in A1, A2.
+...
+       rewrite NQfrac_add_cond in A1; [ | easy | easy ].
+       rewrite NQfrac_add_cond in A2; [ | easy | easy ].
+       -destruct (NQlt_le_dec (NQfrac (A i m u) + NQfrac (A i m (P v))) 1) as [H4| H4].
+        +destruct (NQlt_le_dec (NQfrac (A i m u) + NQfrac (A i m v)) 1) as [H5| H5].
 ...
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ exfalso | easy ].
