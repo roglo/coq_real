@@ -1399,31 +1399,37 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite NQintg_small; [ | easy ].
    rewrite (NQfrac_small x); [ clear H | easy ].
    rewrite Nat.add_0_l.
-destruct j.
-rewrite Nat.mul_0_r in Hx; unfold B in Hx.
-rewrite Nat.add_0_r in Hx.
-rewrite summation_empty in Hx. 2: {
-  apply Nat.sub_lt; [ | pauto ].
-  rewrite Hn; unfold min_n.
-  destruct rad; [ easy | cbn; flia ].
-}
-subst x.
-rewrite NQadd_0_r.
-rewrite NQintg_NQfrac, Nat.add_0_l.
-rewrite <- Hn in Hjj.
-clear Hj H3.
-rewrite Nat.pow_1_r in Hjj.
-specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as AA1.
-specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
-rewrite <- Hn, Nat.pow_1_r in AA1, AA2.
-rewrite A_additive in AA1, AA2.
-rewrite NQfrac_add_cond in AA1; [ | easy | easy ].
-rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
-do 2 rewrite NQintg_add_frac.
-destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1) as [H3| H3].
-destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1) as [H4| H4].
-easy.
-exfalso.
+   destruct j.
+  --rewrite Nat.mul_0_r in Hx; unfold B in Hx.
+    rewrite Nat.add_0_r in Hx.
+    rewrite summation_empty in Hx. 2: {
+      apply Nat.sub_lt; [ | pauto ].
+      rewrite Hn; unfold min_n.
+      destruct rad; [ easy | cbn; flia ].
+    }
+    subst x.
+    rewrite NQadd_0_r.
+    rewrite NQintg_NQfrac, Nat.add_0_l.
+    rewrite <- Hn in Hjj.
+    clear Hj H3.
+    rewrite Nat.pow_1_r in Hjj.
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as AA1.
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
+    rewrite <- Hn, Nat.pow_1_r in AA1, AA2.
+    rewrite A_additive in AA1, AA2.
+    rewrite NQfrac_add_cond in AA1; [ | easy | easy ].
+    rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
+    do 2 rewrite NQintg_add_frac.
+    destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
+      as [H3| H3].
+   ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
+       as [H4| H4]; [ easy | exfalso ].
+...
+   ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
+       as [H4| H4]; [ exfalso | easy ].
+     ...
+  -- ...
+ +destruct H2 as (j & Hj & Hjj).
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
