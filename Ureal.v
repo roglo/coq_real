@@ -980,9 +980,12 @@ Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
   → (B i (min_n i k) u l ≤ 1 - 1 // rad ^ S k)%NQ.
 Proof.
 Print B.
+(*
 ...
 (* mul *)
   → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
+*)
+Abort.
 
 Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
   (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
@@ -991,16 +994,16 @@ Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
 Proof.
 intros * Hur.
 specialize radix_ge_2 as Hr.
+remember (min_n i k) as n eqn:Hn.
 destruct l.
 -unfold B; rewrite Nat.add_0_r.
  rewrite summation_empty. 2: {
    apply Nat.sub_lt; [ | pauto ].
-   unfold min_n.
+   subst n; unfold min_n.
    destruct rad; [ easy | cbn; flia ].
  }
  now rewrite Nat.pow_0_r, Nat.add_0_r, Nat.sub_diag, Nat.mul_0_r.
 -unfold B.
- remember (min_n i k) as n eqn:Hn.
  rewrite summation_shift; [ | flia ].
  replace (n + S l - 1 - n) with l by flia.
  eapply NQle_trans.
