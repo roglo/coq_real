@@ -1389,19 +1389,16 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    }
    specialize (H3 H); clear H.
    rewrite <- Hn, <- Hx, Nat.pow_1_r in H3.
-...
+   assert (H : (0 ≤ x < 1)%NQ). {
+     split; [ subst x; apply B_ge_0 | ].
+     eapply NQle_lt_trans; [ apply H3 | ].
+     apply NQsub_lt.
+     replace 0%NQ with (0 // 1)%NQ by easy.
+     apply NQlt_pair; [ easy | easy | pauto ].
+   }
    rewrite NQintg_small; [ | easy ].
+   rewrite (NQfrac_small x); [ clear H | easy ].
    rewrite Nat.add_0_l.
-   rewrite (NQfrac_small x); [ | easy ].
-   subst x.
-...
-   do 2 rewrite NQintg_add_frac.
-   rewrite NQfrac_P_M.
-   destruct (NQlt_le_dec (NQfrac (A i n u) + A i n (P v)) 1) as [H3| H3].
-  --rewrite Nat.add_0_r.
-    destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
-      as [H4| H4].
-   ++rewrite Nat.add_0_r.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
