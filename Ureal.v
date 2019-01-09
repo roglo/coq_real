@@ -980,27 +980,22 @@ Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
   → (B i (min_n i k) u l ≤ 1 - 1 // rad ^ S k)%NQ.
 Proof.
 Print B.
-(*
 ...
 (* mul *)
   → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
 *)
-Abort.
 
-Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
+Theorem B_upper_bound_for_add {r : radix} : ∀ u i n l,
   (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
-  → (B i (min_n i k) u l ≤
-      (2 * rad * (rad ^ l - 1)) // rad ^ (min_n i k - i + l))%NQ.
+  → i + 1 ≤ n
+  → (B i n u l ≤ (2 * rad * (rad ^ l - 1)) // rad ^ (n - i + l))%NQ.
 Proof.
-intros * Hur.
+intros * Hur Hin.
 specialize radix_ge_2 as Hr.
-remember (min_n i k) as n eqn:Hn.
 destruct l.
 -unfold B; rewrite Nat.add_0_r.
  rewrite summation_empty. 2: {
-   apply Nat.sub_lt; [ | pauto ].
-   subst n; unfold min_n.
-   destruct rad; [ easy | cbn; flia ].
+   apply Nat.sub_lt; [ flia Hin | pauto ].
  }
  now rewrite Nat.pow_0_r, Nat.add_0_r, Nat.sub_diag, Nat.mul_0_r.
 -unfold B.
@@ -1010,10 +1005,6 @@ destruct l.
  +apply summation_le_compat with
     (g := λ j, ((2 * (rad - 1)) // rad ^ (n - i) * 1 // rad ^ j)%NQ).
   intros j Hj.
-  assert (Hin : i + 2 ≤ n - 1). {
-    rewrite Hn; unfold min_n.
-    destruct rad; [ easy | cbn; flia ].
-  }
   replace (n + j - i) with (n - i + j) by flia Hin.
   rewrite Nat.pow_add_r.
   replace (u (n + j)) with (u (n + j) * 1) by flia.
