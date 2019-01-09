@@ -1434,8 +1434,16 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
 ...
        rewrite NQfrac_add_cond in A1; [ | easy | easy ].
        rewrite NQfrac_add_cond in A2; [ | easy | easy ].
-       -destruct (NQlt_le_dec (NQfrac (A i m u) + NQfrac (A i m (P v))) 1) as [H4| H4].
-        +destruct (NQlt_le_dec (NQfrac (A i m u) + NQfrac (A i m v)) 1) as [H5| H5].
+       -destruct (NQlt_le_dec (NQfrac (A i m u) + NQfrac (A i m (P v))) 1)
+           as [H4| H4].
+        +destruct (NQlt_le_dec (NQfrac (A i m u) + NQfrac (A i m v)) 1)
+            as [H5| H5].
+         *idtac.
+          assert (H :
+             (- 1 // rad ^ S k < NQfrac (A i m (P v)) - NQfrac (A i m v) <
+              1 // rad ^ S k)%NQ). {
+...
+          }
 ...
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ exfalso | easy ].
