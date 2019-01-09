@@ -83,6 +83,7 @@ Notation "x < y" := (NQlt x y) : NQ_scope.
 Notation "x ≤ y" := (NQle x y) : NQ_scope.
 Notation "x > y" := (NQgt x y) : NQ_scope.
 Notation "x ≥ y" := (NQge x y) : NQ_scope.
+Notation "x < y < z" := (NQlt x y ∧ NQlt y z) : NQ_scope.
 Notation "x ≤ y < z" := (NQle x y ∧ NQlt y z) : NQ_scope.
 Notation "x < y ≤ z" := (NQlt x y ∧ NQle y z) : NQ_scope.
 
