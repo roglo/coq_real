@@ -975,17 +975,7 @@ induction m; intros.
    apply Nat_pow_ge_1; flia.
 Qed.
 
-Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
-  (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
-  → (B i (min_n i k) u l ≤ 1 - 1 // rad ^ S k)%NQ.
-Proof.
-Print B.
-...
-(* mul *)
-  → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
-*)
-
-Theorem B_upper_bound_for_add {r : radix} : ∀ u i n l,
+Theorem B_upper_bound_1_for_add {r : radix} : ∀ u i n l,
   (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
   → i + 1 ≤ n
   → (B i n u l ≤ (2 * rad * (rad ^ l - 1)) // rad ^ (n - i + l))%NQ.
@@ -1034,10 +1024,46 @@ destruct l.
   apply NQle_refl.
 Qed.
 
-(* faudrait une ub plus simple pour add, genre 1/rad^(k+1) comme
-   pour mul ci-dessous *)
-
-...
+Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
+  (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
+  → (B i (min_n i k) u l ≤ 1 - 1 // rad ^ S k)%NQ.
+Proof.
+intros * Hur.
+specialize radix_ge_2 as Hr.
+eapply NQle_trans.
+-apply B_upper_bound_1_for_add; [ easy | ].
+ unfold min_n.
+ destruct rad; [ easy | cbn; flia ].
+-rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+   do 2 rewrite Nat.mul_1_l.
+   now apply Nat_pow_ge_1.
+ }
+ do 2 rewrite Nat.mul_1_l.
+ apply NQle_pair; [ pauto | pauto | ].
+ rewrite Nat.mul_shuffle0.
+ apply (le_trans _ (rad ^ (min_n i k - i) * (rad ^ S k - 1) * (rad ^ l - 1))).
+ +apply Nat.mul_le_mono_r.
+  apply (le_trans _ (rad ^ (min_n i k - i))).
+  *apply (le_trans _ (rad ^ (k + 3))).
+  --apply (le_trans _ (rad * rad * rad ^ S k)).
+   ++now do 2 apply Nat.mul_le_mono_r.
+   ++rewrite <- Nat.mul_assoc, <- Nat.pow_succ_r; [ | flia ].
+     rewrite <- Nat.pow_succ_r; [ | flia ].
+     apply Nat.pow_le_mono_r; [ easy | flia ].
+  --apply Nat.pow_le_mono_r; [ easy | ].
+    unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  *apply Nat_mul_le_pos_r.
+   apply Nat.le_add_le_sub_r; cbn.
+   replace 2 with (2 * 1) by flia.
+   apply Nat.mul_le_mono; [ easy | ].
+   now apply Nat_pow_ge_1.
+ +rewrite Nat.mul_shuffle0.
+  apply Nat.mul_le_mono_r.
+  rewrite Nat.pow_add_r.
+  apply Nat.mul_le_mono_l.
+  apply Nat.le_sub_l.
+Qed.
 
 Theorem B_upper_bound_for_mul {r : radix} : ∀ u i k l,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
