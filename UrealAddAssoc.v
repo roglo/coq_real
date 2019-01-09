@@ -1399,6 +1399,20 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite NQintg_small; [ | easy ].
    rewrite (NQfrac_small x); [ clear H | easy ].
    rewrite Nat.add_0_l.
+destruct j.
+rewrite Nat.mul_0_r in Hx; unfold B in Hx.
+rewrite Nat.add_0_r in Hx.
+rewrite summation_empty in Hx. 2: {
+  apply Nat.sub_lt; [ | pauto ].
+  rewrite Hn; unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
+subst x.
+rewrite NQadd_0_r.
+rewrite NQintg_NQfrac, Nat.add_0_l.
+rewrite <- Hn in Hjj.
+clear Hj H3.
+rewrite Nat.pow_1_r in Hjj.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
