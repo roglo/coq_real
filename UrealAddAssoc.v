@@ -1258,10 +1258,11 @@ destruct (NQlt_le_dec x (1 // rad ^ s)%NQ) as [H5| H5].
 Qed.
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
-  (∀ k, v (i + k) ≤ 2 * (rad - 1))
+  (∀ k : nat, u (i + k) ≤ rad - 1)
+  → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
 Proof.
-intros * Hv.
+intros * Hu Hv.
 specialize radix_ge_2 as Hr.
 symmetry; rewrite Nat.add_comm.
 unfold carry.
