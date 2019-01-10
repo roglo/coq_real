@@ -1477,27 +1477,25 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ easy | exfalso ].
      clear H4.
-     specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H'1.
-     assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
-       intros k.
-       unfold "⊕".
-       replace (2 * (rad - 1)) with (rad - 1 + (rad - 1)) by flia.
-       apply Nat.add_le_mono.
-       -rewrite <- Nat.add_assoc; apply Hu.
-       -apply digit_le_pred_radix.
-     }
-     specialize (H'1 H H1); clear H.
-     destruct H'1 as [H'1| [H'1| H'1]].
-    **clear AA1 H1 H3.
-      specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as H'2.
-...
+     (* v<1-1/r u+v≥2-1/r u≥2-1/r-v>2-1/r-1+1/r u>1! *)
+     apply NQle_add_le_sub_r in AA2.
+     apply NQle_sub_le_add_r in AA2.
+     apply NQnlt_ge in AA2; apply AA2; clear AA2.
+     apply (NQlt_trans _ (1 + (1 - 1 // rad) - (1 - 1 // rad))%NQ).
+    **rewrite NQadd_sub.
+      apply NQfrac_lt_1.
+    **rewrite NQadd_sub.
+      rewrite <- NQadd_sub_assoc.
+      apply NQlt_sub_lt_add_l.
+      rewrite NQsub_diag.
+      apply NQlt_add_lt_sub_r.
+      now rewrite NQadd_0_l.
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ exfalso | easy ].
      ...
   -- ...
  +destruct H2 as (j & Hj & Hjj).
 ...
-*)
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, u (i + k) ≤ rad - 1)
