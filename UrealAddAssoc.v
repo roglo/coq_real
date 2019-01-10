@@ -1426,6 +1426,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
        as [H4| H4]; [ easy | exfalso ].
      clear H4.
      specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H'3.
+Admitted. (*
 ...
      assert (H : ∀ k (m := min_n i k), k = 0). {
        intros.
@@ -1497,16 +1498,23 @@ intros i.
 unfold ureal_normalize, fd2n; cbn.
 apply digit_eq_eq.
 do 2 rewrite fold_P.
-specialize (Hugo_Herbelin (d2n (ureal x)) (y ⊕ z)%F) as H1.
 ...
+specialize (Hugo_Herbelin (d2n (ureal x)) (y ⊕ z)%F) as H1.
+Theorem prop_carr_normalizes {r : radix} : ∀ u,
+  (∀ i, u i ≤ 2 * (rad - 1))
+  → ∀ i, prop_carr u i = normalize (prop_carr u) i.
+... (* en fait faux *)
 rewrite <- prop_carr_normalizes; cycle 1. {
   intros j.
-  apply (ureal_add_series_le_twice_pred x {| ureal := prop_carr (y ⊕ z) |} j).
+  apply (ureal_add_series_le_twice_pred x {| ureal := prop_carr (y ⊕ z)%F |} j).
 }
 rewrite <- prop_carr_normalizes; cycle 1. {
   intros j.
-  apply (ureal_add_series_le_twice_pred z {| ureal := prop_carr (y ⊕ x) |} j).
+  apply (ureal_add_series_le_twice_pred z {| ureal := prop_carr (y ⊕ x)%F |} j).
 }
+Print P.
+unfold P in H1 at 1 3.
+...
 do 2 rewrite Hugo_Herbelin.
 apply prop_carr_eq_compat.
 intros j.
