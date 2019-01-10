@@ -1425,6 +1425,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ easy | exfalso ].
      clear H4.
+     specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H'3.
+...
      assert (H : ∀ k (m := min_n i k), k = 0). {
        intros.
        specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 k) as A1.
@@ -1451,9 +1453,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
   -- ...
  +destruct H2 as (j & Hj & Hjj).
 ...
+*)
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
-  (∀ k : nat, v (i + k + 1) ≤ 2 * (rad - 1))
+  (∀ k : nat, v (i + k) ≤ 2 * (rad - 1))
   → P (u ⊕ P v) i = P (u ⊕ v) i.
 Proof.
 intros * Hv.
@@ -1474,116 +1477,16 @@ rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
 subst v'; rewrite Nat.add_comm; symmetry.
-...
-apply pre_Hugo_Herbelin.
+now apply pre_Hugo_Herbelin.
 Qed.
-...
-intros * Hv.
-specialize radix_ge_2 as Hr.
-unfold P, add_series.
-remember (prop_carr v) as pv eqn:Hpv; cbn.
-replace (λ i, u i + v i) with (u ⊕ v) by easy.
-replace (λ i, u i + d2n pv i) with (u ⊕ d2n pv) by easy.
-do 2 rewrite <- Nat.add_assoc.
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-f_equal; f_equal.
-rewrite Hpv at 1; cbn.
-(*
-...
-intros * Hv.
-specialize radix_ge_2 as Hr.
-unfold P, add_series; cbn.
-do 2 rewrite <- Nat.add_assoc.
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-f_equal; f_equal.
-*)
-rewrite Nat.add_mod_idemp_l; [ | easy ].
-rewrite <- Nat.add_assoc.
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-f_equal; f_equal.
-subst pv.
-replace (d2n (prop_carr v)) with (P v) by easy.
-(**)
-transitivity ((carry v i + carry (u ⊕ M (v ⊕ carry v)) i) mod rad). {
-  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-  f_equal; f_equal.
-}
-...
-unfold carry at 1 2 4.
-
-...
-rename i into j.
-Print carry.
-Search (fA_ge_1_ε (_ ⊕ _)%F).
-About A_ge_1_ureal_add_series_comm.
-unfold carry at 2.
-2: easy.
-...
-unfold carry at 1.
-destruct (LPO_fst (fA_ge_1_ε v j)) as [H1| H1].
--specialize (A_ge_1_add_all_true_if v j Hv H1) as H2.
- destruct H2 as [H2| [H2| H2]].
- +unfold NQintg.
-  rewrite Nat.div_small; cycle 1. {
-    rewrite A_all_9; [ | intros; apply H2 ].
-    remember (min_n j 0) as n eqn:Hn.
-    remember (n - j - 1) as s eqn:Hs.
-    move s before n.
-    rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
-      now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
-    }
-    do 2 rewrite Nat.mul_1_l.
-    rewrite NQnum_pair, NQden_pair.
-    rewrite Nat.max_r; [ | now apply Nat_pow_ge_1 ].
-    remember (Nat.gcd (rad ^ s - 1) (rad ^ s)) as g eqn:Hg.
-    assert (Hgz : g ≠ 0). {
-      rewrite Hg; intros H.
-      now apply Nat.gcd_eq_0_r, Nat.pow_nonzero in H.
-    }
-    rewrite Nat.max_r; cycle 1. {
-      apply (Nat.mul_le_mono_pos_l _ _ g); [ now apply Nat.neq_0_lt_0 | ].
-      rewrite Nat.mul_1_r.
-      rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
-      -rewrite Nat.mul_comm, Nat.div_mul; [ | easy ].
-       now rewrite Hg; apply Nat_gcd_le_r, Nat.pow_nonzero.
-      -rewrite Hg; apply Nat.gcd_divide_r.
-    }
-    apply (Nat.mul_lt_mono_pos_l g); [ flia Hgz | ].
-    rewrite <- Nat.divide_div_mul_exact; [ | easy | ]; cycle 1. {
-      rewrite Hg; apply Nat.gcd_divide_l.
-    }
-    rewrite <- Nat.divide_div_mul_exact; [ | easy | ]; cycle 1. {
-      rewrite Hg; apply Nat.gcd_divide_r.
-    }
-    rewrite Nat.mul_comm, Nat.div_mul; [ | easy ].
-    rewrite Nat.mul_comm, Nat.div_mul; [ | easy ].
-    apply Nat.sub_lt; [ | pauto ].
-    now apply Nat_pow_ge_1.
-  }
-  rewrite Nat.add_0_l.
-...
 
 Theorem truc {r : radix} : ∀ x u,
   ({| ureal := prop_carr (x ⊕ {| ureal := prop_carr u |}) |} =
    {| ureal := prop_carr (add_series (fd2n x) (d2n (prop_carr u))) |})%F.
 Proof. easy. Qed.
 
-(*
-Theorem pouet {r : radix} : ∀ x y z i,
-  add_series (λ j, dig (ureal x j)) (y ⊕ z) i =
-  add_series (λ j, dig (ureal z j)) (y ⊕ x) i.
-Proof.
-intros.
-unfold add_series, "⊕", fd2n.
-rewrite Nat.add_assoc, Nat.add_comm.
-do 2 rewrite Nat.add_assoc.
-now rewrite Nat.add_shuffle0.
-Qed.
-*)
+Theorem fold_P {r : radix} : ∀ x, d2n (prop_carr x) = P x.
+Proof. easy. Qed.
 
 Theorem ureal_add_assoc {r : radix} : ∀ x y z, (x + (y + z) = z + (y + x))%F.
 Proof.
@@ -1591,8 +1494,11 @@ intros.
 unfold "+"%F.
 do 2 rewrite truc.
 intros i.
-unfold ureal_normalize, fd2n; simpl.
+unfold ureal_normalize, fd2n; cbn.
 apply digit_eq_eq.
+do 2 rewrite fold_P.
+Check ureal_add_series_le_twice_pred.
+Check Hugo_Herbelin.
 ...
 rewrite <- prop_carr_normalizes; cycle 1. {
   intros j.

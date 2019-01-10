@@ -1202,6 +1202,7 @@ destruct Hall as [Hall| [Hall| Hall]].
 Qed.
 *)
 
+(* faux avec version actuelle de prop_carr
 Theorem prop_carr_normalizes {r : radix} : ∀ u,
   (∀ i, u i ≤ 2 * (rad - 1))
   → ∀ i, prop_carr u i = normalize (prop_carr u) i.
@@ -1216,7 +1217,6 @@ specialize (is_9_strict_after_all_9 (prop_carr u) _ H1) as H2.
 assert (H3 : ∀ k, d2n (prop_carr u) (i + 1 + k) = rad - 1). {
   now intros k; rewrite Nat.add_shuffle0.
 }
-Abort. (* à terminer
 ...
 now apply not_prop_carr_all_9 in H3.
 Qed.
