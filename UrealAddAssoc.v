@@ -1482,7 +1482,7 @@ Qed.
 
 Theorem truc {r : radix} : ∀ x u,
   ({| ureal := prop_carr (x ⊕ {| ureal := prop_carr u |}) |} =
-   {| ureal := prop_carr (add_series (fd2n x) (d2n (prop_carr u))) |})%F.
+   {| ureal := prop_carr (add_series (d2n (ureal x)) (d2n (prop_carr u))) |})%F.
 Proof. easy. Qed.
 
 Theorem fold_P {r : radix} : ∀ x, d2n (prop_carr x) = P x.
@@ -1497,8 +1497,6 @@ intros i.
 unfold ureal_normalize, fd2n; cbn.
 apply digit_eq_eq.
 do 2 rewrite fold_P.
-Check ureal_add_series_le_twice_pred.
-Check Hugo_Herbelin.
 ...
 rewrite <- prop_carr_normalizes; cycle 1. {
   intros j.
