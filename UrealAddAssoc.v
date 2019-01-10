@@ -1477,7 +1477,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ easy | exfalso ].
      clear H4.
-     specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H'3.
+     specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H'1.
      assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
        intros k.
        unfold "⊕".
@@ -1486,8 +1486,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
        -rewrite <- Nat.add_assoc; apply Hu.
        -apply digit_le_pred_radix.
      }
-     specialize (H'3 H H1); clear H.
-     destruct H'3 as [H'3| [H'3| H'3]].
+     specialize (H'1 H H1); clear H.
+     destruct H'1 as [H'1| [H'1| H'1]].
     **idtac.
 ...
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
