@@ -1489,6 +1489,58 @@ Proof. easy. Qed.
 Theorem fold_P {r : radix} : ∀ x, d2n (prop_carr x) = P x.
 Proof. easy. Qed.
 
+Theorem d2n_eq_compat {r : radix} : ∀ u v,
+  (∀ i, u i = v i)
+  → ∀ i, d2n u i = d2n v i.
+Proof.
+intros * Huv *.
+unfold d2n.
+f_equal.
+apply Huv.
+Qed.
+
+Theorem is_9_strict_after_eq_compat {r : radix} : ∀ u v,
+  (∀ i, u i = v i)
+  → ∀ i j, is_9_strict_after u i j = is_9_strict_after v i j.
+Proof.
+intros * Huv *.
+unfold is_9_strict_after.
+now rewrite (d2n_eq_compat u v).
+Qed.
+
+Theorem normalize_eq_compat {r : radix} : ∀ u v,
+  (∀ i, u i = v i)
+  → ∀ i, normalize u i = normalize v i.
+Proof.
+intros * Huv *.
+unfold normalize.
+destruct (LPO_fst (is_9_strict_after u i)) as [H1| H1].
+-destruct (LPO_fst (is_9_strict_after v i)) as [H2| H2].
+ +now rewrite (d2n_eq_compat u v).
+ +destruct H2 as (j & Hj & Hjj).
+  specialize (H1 j).
+  rewrite (is_9_strict_after_eq_compat u v) in H1; [ | easy ].
+  now rewrite H1 in Hjj.
+-destruct (LPO_fst (is_9_strict_after v i)) as [H2| H2].
+ +destruct H1 as (j & Hj & Hjj).
+  specialize (H2 j).
+  rewrite (is_9_strict_after_eq_compat u v) in Hjj; [ | easy ].
+  now rewrite Hjj in H2.
+ +apply Huv.
+Qed.
+
+Theorem pouet {r : radix} : ∀ x y z i,
+  add_series (λ j, dig (ureal x j)) (y ⊕ z)%F i =
+  add_series (λ j, dig (ureal z j)) (y ⊕ x)%F i.
+Proof.
+intros.
+unfold add_series, "⊕", fd2n.
+unfold "⊕"%F.
+rewrite Nat.add_assoc, Nat.add_comm.
+do 2 rewrite Nat.add_assoc.
+now rewrite Nat.add_shuffle0.
+Qed.
+
 Theorem ureal_add_assoc {r : radix} : ∀ x y z, (x + (y + z) = z + (y + x))%F.
 Proof.
 intros.
@@ -1498,32 +1550,21 @@ intros i.
 unfold ureal_normalize, fd2n; cbn.
 apply digit_eq_eq.
 do 2 rewrite fold_P.
-assert (H1 : ∀ i,
+assert (H1 : ∀ x z i,
   prop_carr (d2n (ureal x) ⊕ P (y ⊕ z)%F) i =
   prop_carr (d2n (ureal x) ⊕ (y ⊕ z)%F) i). {
-  intros j.
+  clear x z i.
+  intros x z i.
   apply digit_eq_eq.
   apply Hugo_Herbelin.
   intros k.
   apply ureal_add_series_le_twice_pred.
 }
-About normalize.
-Search normalize.
-...
-rewrite <- prop_carr_normalizes; cycle 1. {
-  intros j.
-  apply (ureal_add_series_le_twice_pred x {| ureal := prop_carr (y ⊕ z)%F |} j).
-}
-rewrite <- prop_carr_normalizes; cycle 1. {
-  intros j.
-  apply (ureal_add_series_le_twice_pred z {| ureal := prop_carr (y ⊕ x)%F |} j).
-}
-Print P.
-unfold P in H1 at 1 3.
-...
-do 2 rewrite Hugo_Herbelin.
-apply prop_carr_eq_compat.
+apply normalize_eq_compat.
 intros j.
+do 2 rewrite H1.
+apply prop_carr_eq_compat.
+clear j; intros j.
 apply pouet.
 Qed.
 
