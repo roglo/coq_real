@@ -1476,7 +1476,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       as [H3| H3].
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ easy | exfalso ].
-     clear H4.
      (* v<1-1/r u+v≥2-1/r u≥2-1/r-v>2-1/r-1+1/r u>1! *)
      apply NQle_add_le_sub_r in AA2.
      apply NQle_sub_le_add_r in AA2.
@@ -1492,7 +1491,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       now rewrite NQadd_0_l.
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ exfalso | easy ].
-     ...
+...
   -- ...
  +destruct H2 as (j & Hj & Hjj).
 ...
