@@ -1488,7 +1488,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
      }
      specialize (H'1 H H1); clear H.
      destruct H'1 as [H'1| [H'1| H'1]].
-    **idtac.
+    **clear AA1 H1 H3.
+      specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as H'2.
 ...
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ exfalso | easy ].
