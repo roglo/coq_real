@@ -1498,12 +1498,16 @@ intros i.
 unfold ureal_normalize, fd2n; cbn.
 apply digit_eq_eq.
 do 2 rewrite fold_P.
+specialize (Hugo_Herbelin (d2n (ureal x)) (y ⊕ z)%F i) as H1.
+assert (H : ∀ k, (y ⊕ z)%F (i + k) ≤ 2 * (rad - 1)). {
+  intros k.
+  apply ureal_add_series_le_twice_pred.
+}
+specialize (H1 H); clear H.
+unfold P at 1 3 in H1.
+apply digit_eq_eq in H1.
+Print normalize.
 ...
-specialize (Hugo_Herbelin (d2n (ureal x)) (y ⊕ z)%F) as H1.
-Theorem prop_carr_normalizes {r : radix} : ∀ u,
-  (∀ i, u i ≤ 2 * (rad - 1))
-  → ∀ i, prop_carr u i = normalize (prop_carr u) i.
-... (* en fait faux *)
 rewrite <- prop_carr_normalizes; cycle 1. {
   intros j.
   apply (ureal_add_series_le_twice_pred x {| ureal := prop_carr (y ⊕ z)%F |} j).
