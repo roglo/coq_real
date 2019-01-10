@@ -1497,6 +1497,7 @@ intros i.
 unfold ureal_normalize, fd2n; cbn.
 apply digit_eq_eq.
 do 2 rewrite fold_P.
+specialize (Hugo_Herbelin (d2n (ureal x)) (y ⊕ z)%F) as H1.
 ...
 rewrite <- prop_carr_normalizes; cycle 1. {
   intros j.
