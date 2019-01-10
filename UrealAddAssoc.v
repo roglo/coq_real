@@ -1426,7 +1426,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
        as [H4| H4]; [ easy | exfalso ].
      clear H4.
      specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H'3.
-Admitted. (*
 ...
      assert (H : ∀ k (m := min_n i k), k = 0). {
        intros.
@@ -1457,10 +1456,11 @@ Admitted. (*
 *)
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
-  (∀ k : nat, v (i + k) ≤ 2 * (rad - 1))
+  (∀ k : nat, u (i + k) ≤ rad - 1)
+  → (∀ k : nat, v (i + k) ≤ 2 * (rad - 1))
   → P (u ⊕ P v) i = P (u ⊕ v) i.
 Proof.
-intros * Hv.
+intros * Hu Hv.
 specialize radix_ge_2 as Hr.
 remember (P v) as v' eqn:Hv'; cbn.
 unfold P, add_series.
@@ -1529,7 +1529,7 @@ destruct (LPO_fst (is_9_strict_after u i)) as [H1| H1].
  +apply Huv.
 Qed.
 
-Theorem pouet {r : radix} : ∀ x y z i,
+Theorem add_series_assoc {r : radix} : ∀ x y z i,
   add_series (λ j, dig (ureal x j)) (y ⊕ z)%F i =
   add_series (λ j, dig (ureal z j)) (y ⊕ x)%F i.
 Proof.
@@ -1557,15 +1557,17 @@ assert (H1 : ∀ x z i,
   intros x z i.
   apply digit_eq_eq.
   apply Hugo_Herbelin.
-  intros k.
-  apply ureal_add_series_le_twice_pred.
+  -intros k.
+   apply digit_le_pred_radix.
+  -intros k.
+   apply ureal_add_series_le_twice_pred.
 }
 apply normalize_eq_compat.
 intros j.
 do 2 rewrite H1.
 apply prop_carr_eq_compat.
 clear j; intros j.
-apply pouet.
+apply add_series_assoc.
 Qed.
 
 ...
