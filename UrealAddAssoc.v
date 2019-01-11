@@ -1357,6 +1357,8 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
       apply Nat.lt_le_incl.
       now apply Nat.mod_upper_bound.
   --destruct H3 as (j & Hj & Hjj).
+    destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H4| H4].
+   ++idtac.
 ...
 A_ge_1_add_r_true_if:
   ∀ (r : radix) (u : nat → nat) (i j k : nat), fA_ge_1_ε u i (j + k) = true → fA_ge_1_ε u (i + j) k = true
