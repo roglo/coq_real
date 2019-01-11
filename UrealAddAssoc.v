@@ -1491,32 +1491,63 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       now rewrite NQadd_0_l.
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ exfalso | easy ].
-(*
-v<1-1/r
-u+p≥2-1/r
-u+v<1
-u+v≥1-1/r
+     (* v<1-1/r
+        u+p≥2-1/r
+        u+v<1
+        u+v≥1-1/r *)
+     remember (NQfrac (A i n u)) as au eqn:Hau.
+     remember (NQfrac (A i n v)) as av eqn:Hav.
+     remember (NQfrac (A i n (P v))) as ap eqn:Hap.
+     move au after av; move ap before av.
+     move Hau after Hav; move Hap before Hav.
+     (* 1-1/r-v≤u<1-v *)
+     assert (S1 : (1 - 1 // rad - av ≤ au < 1 - av)%NQ). {
+       split; [ | now apply NQlt_add_lt_sub_r ].
+       now apply NQle_sub_le_add_r.
+     }
+     (* 2-1/r-p≤u<1-v *)
+     assert (S2 : (2 - 1 // rad - ap ≤ au < 1 - av)%NQ). {
+       split; [ | now apply NQlt_add_lt_sub_r ].
+       apply NQle_sub_le_add_r.
+       replace 2%NQ with (1 + 1)%NQ by easy.
+       rewrite <- NQadd_sub_assoc.
+       now apply NQle_add_le_sub_r.
+     }
+     (* 2-1/r+v<1+p *)
+     assert (S3 : (2 - 1 // rad + av < 1 + ap)%NQ). {
+       apply NQlt_sub_lt_add_r.
+       rewrite NQadd_sub_swap.
+       apply NQlt_add_lt_sub_r.
+       eapply NQle_lt_trans; apply S2.
+     }
+     (* v+1-1/r<p<1 *)
+     assert (S4 : (av + 1 - 1 // rad < ap < 1)%NQ). {
+       split; [ | rewrite Hap; apply NQfrac_lt_1 ].
+       replace 2%NQ with (1 + 1)%NQ in S3 by easy.
+       rewrite <- NQadd_sub_assoc, <- NQadd_assoc in S3.
+       apply NQadd_lt_mono_l in S3.
+       rewrite NQadd_comm in S3.
+       now rewrite NQadd_sub_assoc in S3.
+     }
+     (* v<1/r *)
+     assert (S5 : (av < 1 // rad)%NQ). {
+...
+     (*
+     1-2/r<u<1
 
-1-1/r-v≤u<1-v
-2-1/r-p≤u<1-v
-2-1/r+v<1+p
-v+1-1/r<p<1
-v<1/r
-1-2/r<u<1
+     1-1/r<p<1
+     1-2/r<u<1
+     0≤v<1/r
 
-1-1/r<p<1
-1-2/r<u<1
-0≤v<1/r
+     p=0.95
+     u=0.95
+     v=0.04
+     no contradiction!
 
-p=0.95
-u=0.95
-v=0.04
-no contradiction!
-
-The contradiction is that v being small (v<1/r), it is not possible
-that p=P(v) be so big (p>1-1/r) since vi<2(r-1). I have to find the
-steps to prove that.
-*)
+     The contradiction is that v being small (v<1/r), it is not possible
+     that p=P(v) be so big (p>1-1/r) since vi<2(r-1). I have to find the
+     steps to prove that.
+     *)
 ...
   -- ...
  +destruct H2 as (j & Hj & Hjj).
