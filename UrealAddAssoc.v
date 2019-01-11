@@ -1303,6 +1303,34 @@ Theorem A_P_upper_bound {r : radix} : ∀ i n u,
   → (A i n (P u) ≤ NQfrac (A i n u) + 1 // rad)%NQ.
 Proof.
 intros * Hur.
+destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
+unfold A.
+rewrite <- H1.
+do 2 rewrite summation_only_one.
+replace (i + 1 - i) with 1 by flia.
+rewrite Nat.pow_1_r.
+destruct (lt_dec (u (i + 1)) rad) as [H2| H2].
+rewrite NQfrac_small.
+rewrite <- NQpair_add_l.
+apply NQle_pair; [ easy | easy | ].
+rewrite Nat.mul_comm.
+apply Nat.mul_le_mono_l.
+unfold P, d2n, prop_carr; cbn.
+unfold carry.
+destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H3| H3].
+remember (min_n (i + 1) 0) as m eqn:Hm.
+specialize (A_ge_1_add_all_true_if u i Hur) as H'3.
+About A_ge_1_add_all_true_if.
+...
+specialize (A_ge_1_add_all_true_if u (i + 1)) as H'3.
+assert (H : ∀ k, u (i + 1 + k + 1) ≤ 2 * (rad - 1)). {
+  intros k.
+  replace (i + 1 + k) with (i + (1 + k)) by flia.
+  apply Hur.
+}
+...
+A_ge_1_add_r_true_if:
+  ∀ (r : radix) (u : nat → nat) (i j k : nat), fA_ge_1_ε u i (j + k) = true → fA_ge_1_ε u (i + j) k = true
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
