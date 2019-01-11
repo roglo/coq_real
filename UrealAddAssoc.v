@@ -1303,32 +1303,60 @@ Theorem A_P_upper_bound {r : radix} : ∀ i n u,
   → (A i n (P u) ≤ NQfrac (A i n u) + 1 // rad)%NQ.
 Proof.
 intros * Hur.
+specialize radix_ge_2 as Hr.
 destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
-unfold A.
-rewrite <- H1.
-do 2 rewrite summation_only_one.
-replace (i + 1 - i) with 1 by flia.
-rewrite Nat.pow_1_r.
-destruct (lt_dec (u (i + 1)) rad) as [H2| H2].
-rewrite NQfrac_small.
-rewrite <- NQpair_add_l.
-apply NQle_pair; [ easy | easy | ].
-rewrite Nat.mul_comm.
-apply Nat.mul_le_mono_l.
-unfold P, d2n, prop_carr; cbn.
-unfold carry.
-destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H3| H3].
-remember (min_n (i + 1) 0) as m eqn:Hm.
-...
-specialize (A_ge_1_add_all_true_if u i Hur) as H'3.
-About A_ge_1_add_all_true_if.
-...
-specialize (A_ge_1_add_all_true_if u (i + 1)) as H'3.
-assert (H : ∀ k, u (i + 1 + k + 1) ≤ 2 * (rad - 1)). {
-  intros k.
-  replace (i + 1 + k) with (i + (1 + k)) by flia.
-  apply Hur.
-}
+-unfold A.
+ rewrite <- H1.
+ do 2 rewrite summation_only_one.
+ replace (i + 1 - i) with 1 by flia.
+ rewrite Nat.pow_1_r.
+ destruct (lt_dec (u (i + 1)) rad) as [H2| H2].
+ +rewrite NQfrac_small.
+  *rewrite <- NQpair_add_l.
+   apply NQle_pair; [ easy | easy | ].
+   rewrite Nat.mul_comm.
+   apply Nat.mul_le_mono_l.
+   unfold P, d2n, prop_carr; cbn.
+   unfold carry.
+   destruct (LPO_fst (fA_ge_1_ε u i)) as [H3| H3].
+  --assert (H : ∀ k, fA_ge_1_ε u (i + 1) k = true). {
+      intros k.
+      apply A_ge_1_add_r_true_if, H3.
+    }
+    destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H4| H4]. 2: {
+      destruct H4 as (j & Hj & Hjj).
+      now rewrite H in Hjj.
+    }
+    clear H.
+    remember (min_n (i + 1) 0) as m eqn:Hm.
+    specialize (A_ge_1_add_all_true_if u i Hur H3) as H'3.
+    destruct H'3 as [H'3| [H'3| H'3]].
+   ++replace (i + 1) with (i + 0 + 1) by pauto.
+     rewrite H'3.
+     rewrite Nat.sub_add; [ | easy ].
+     apply Nat.lt_le_incl.
+     now apply Nat.mod_upper_bound.
+   ++replace (i + 1) with (i + 0 + 1) by pauto.
+     rewrite H'3.
+     eapply Nat.le_trans.
+    **apply Nat.lt_le_incl.
+      now apply Nat.mod_upper_bound.
+    **destruct rad; [ easy | cbn; flia ].
+   ++destruct H'3 as (j & Hbef & Hwhi & Haft).
+     destruct j.
+    **rewrite Nat.add_0_r in Hwhi.
+      rewrite Hwhi.
+      replace (rad - 2 + 1) with (rad - 1) by flia Hr.
+      rewrite Nat.sub_1_r.
+      apply Nat.lt_le_pred.
+      now apply Nat.mod_upper_bound.
+    **specialize (Hbef 0 (Nat.lt_0_succ j)).
+      rewrite Nat.add_0_r in Hbef.
+      rewrite Hbef.
+      rewrite Nat.sub_add; [ | easy ].
+      apply Nat.lt_le_incl.
+      now apply Nat.mod_upper_bound.
+  --destruct H3 as (j & Hj & Hjj).
 ...
 A_ge_1_add_r_true_if:
   ∀ (r : radix) (u : nat → nat) (i j k : nat), fA_ge_1_ε u i (j + k) = true → fA_ge_1_ε u (i + j) k = true
