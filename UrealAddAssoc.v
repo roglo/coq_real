@@ -1492,21 +1492,21 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ exfalso | easy ].
 (*
-v<0.9
-u+p≥1.9
+v<1-1/r
+u+p≥2-1/r
 u+v<1
-u+v≥0.9
+u+v≥1-1/r
 
-0.9-v≤u<1-v
-1.9-p≤u<1-v
-1.9+v<1+p
-v+0.9<p<1
-v<0.1
-0.8≤u<1
+1-1/r-v≤u<1-v
+2-1/r-p≤u<1-v
+2-1/r+v<1+p
+v+1-1/r<p<1
+v<1/r
+1-2/r<u<1
 
-0.9<p<1
-0.9<u<1
-0<v<0.1
+1-1/r<p<1
+1-2/r<u<1
+0≤v<1/r
 
 p=0.95
 u=0.95
@@ -1514,7 +1514,8 @@ v=0.04
 no contradiction!
 
 The contradiction is that v being small (v<1/r), it is not possible
-that p=P(v) be so big (p>1-1/r) since vi<2(r-1).
+that p=P(v) be so big (p>1-1/r) since vi<2(r-1). I have to find the
+steps to prove that.
 *)
 ...
   -- ...
