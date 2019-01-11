@@ -1298,6 +1298,24 @@ destruct (le_dec (i + 1) (n - 1)) as [H1| H1].
  flia H1.
 Qed.
 
+Theorem carry_upper_bound_for_add {r : radix} : ∀ u i,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → carry u i ≤ 1.
+Proof.
+intros * Hur.
+unfold carry.
+destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1].
+-remember (min_n i 0) as n eqn:Hn.
+ specialize (A_upper_bound_for_add u i n) as H2.
+ assert (H : ∀ k, u (i + k + 1) ≤ 2 * (rad - 1)). {
+   intros k.
+   rewrite <- Nat.add_assoc.
+   apply Hur.
+ }
+ specialize (H2 H).
+About NQintg_interv.
+...
+
 Theorem A_P_upper_bound {r : radix} : ∀ i n u,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → (A i n (P u) ≤ NQfrac (A i n u) + 1 // rad)%NQ.
@@ -1311,12 +1329,35 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
  replace (i + 1 - i) with 1 by flia.
  rewrite Nat.pow_1_r.
  destruct (lt_dec (u (i + 1)) rad) as [H2| H2].
- +rewrite NQfrac_small.
-  *rewrite <- NQpair_add_l.
-   apply NQle_pair; [ easy | easy | ].
-   rewrite Nat.mul_comm.
-   apply Nat.mul_le_mono_l.
-   unfold P, d2n, prop_carr; cbn.
+ +rewrite NQfrac_small. 2: {
+    split.
+    -replace 0%NQ with (0 // 1)%NQ by easy.
+     apply NQle_pair; [ easy | easy | cbn; flia ].
+    -apply NQlt_pair; [ easy | easy | ].
+     now do 2 rewrite Nat.mul_1_r.
+  }
+  rewrite <- NQpair_add_l.
+  apply NQle_pair; [ easy | easy | ].
+  rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono_l.
+  unfold P, d2n, prop_carr; cbn.
+  destruct (le_dec (rad - 2) (u (i + 1))) as [H3| H3].
+  *replace (rad - 2) with (rad - 1 - 1) in H3 by flia.
+   apply Nat.le_sub_le_add_r in H3.
+   eapply le_trans; [ | apply H3 ].
+   rewrite Nat.sub_1_r.
+   apply Nat.lt_le_pred.
+   now apply Nat.mod_upper_bound.
+  *apply Nat.nle_gt in H3.
+   clear H2; rename H3 into H2.
+...
+rewrite Nat.mod_small.
+apply Nat.add_le_mono_l.
+apply carry_upper_bound_for_add.
+intros k.
+rewrite Nat.add_shuffle0.
+apply Hur.
+...
    unfold carry.
    remember (min_n (i + 1) 0) as m eqn:Hm.
    destruct (LPO_fst (fA_ge_1_ε u i)) as [H3| H3].
@@ -1358,6 +1399,8 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
       now apply Nat.mod_upper_bound.
   --destruct H3 as (j & Hj & Hjj).
     destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H4| H4].
+   ++idtac.
+...
    ++destruct j.
     **apply A_ge_1_false_iff in Hjj.
 ...
