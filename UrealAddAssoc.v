@@ -1320,7 +1320,6 @@ unfold carry.
 destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H3| H3].
 remember (min_n (i + 1) 0) as m eqn:Hm.
 ...
-remember (min_n (i + 1) 0) as m eqn:Hm.
 specialize (A_ge_1_add_all_true_if u i Hur) as H'3.
 About A_ge_1_add_all_true_if.
 ...
