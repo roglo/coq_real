@@ -1318,6 +1318,7 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
    apply Nat.mul_le_mono_l.
    unfold P, d2n, prop_carr; cbn.
    unfold carry.
+   remember (min_n (i + 1) 0) as m eqn:Hm.
    destruct (LPO_fst (fA_ge_1_ε u i)) as [H3| H3].
   --assert (H : ∀ k, fA_ge_1_ε u (i + 1) k = true). {
       intros k.
@@ -1328,7 +1329,6 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
       now rewrite H in Hjj.
     }
     clear H.
-    remember (min_n (i + 1) 0) as m eqn:Hm.
     specialize (A_ge_1_add_all_true_if u i Hur H3) as H'3.
     destruct H'3 as [H'3| [H'3| H'3]].
    ++replace (i + 1) with (i + 0 + 1) by pauto.
@@ -1358,7 +1358,8 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
       now apply Nat.mod_upper_bound.
   --destruct H3 as (j & Hj & Hjj).
     destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H4| H4].
-   ++idtac.
+   ++destruct j.
+    **apply A_ge_1_false_iff in Hjj.
 ...
 A_ge_1_add_r_true_if:
   ∀ (r : radix) (u : nat → nat) (i j k : nat), fA_ge_1_ε u i (j + k) = true → fA_ge_1_ε u (i + j) k = true
