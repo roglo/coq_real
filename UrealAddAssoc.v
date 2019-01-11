@@ -1512,6 +1512,9 @@ p=0.95
 u=0.95
 v=0.04
 no contradiction!
+
+The contradiction is that v being small (v<1/r), it is not possible
+that p=P(v) be so big (p>1-1/r) since vi<2(r-1).
 *)
 ...
   -- ...
