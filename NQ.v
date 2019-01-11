@@ -2400,6 +2400,23 @@ Qed.
 
 Theorem NQintg_mono : ∀ x y, (0 ≤ x ≤ y)%NQ → NQintg x ≤ NQintg y.
 Proof.
+intros * (Hx, Hxy).
+assert (Hy : (0 ≤ y)%NQ) by (eapply NQle_trans; [ apply Hx | apply Hxy ]).
+move Hy before Hx.
+specialize (proj2 (NQintg_interv _ _ Hx) eq_refl) as H1.
+specialize (proj2 (NQintg_interv _ _ Hy) eq_refl) as H2.
+setoid_rewrite <- Nat.mul_1_l.
+rewrite Nat.mul_comm.
+apply NQle_pair; [ easy | easy | ].
+eapply NQle_trans; [ apply H1 | ].
+...
+
+Search NQintg.
+NQintg_interv:
+  ∀ (n : nat) (x : NQ),
+    (0 ≤ x)%NQ → (n // 1 ≤ x < n // 1 + 1)%NQ ↔ n = NQintg x
+...
+
 intros * Hxy.
 unfold "≤"%NQ in Hxy.
 destruct x as [| x| x]; [ cbn; flia | | easy ].
