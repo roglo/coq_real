@@ -1298,6 +1298,13 @@ destruct (le_dec (i + 1) (n - 1)) as [H1| H1].
  flia H1.
 Qed.
 
+Theorem A_P_upper_bound {r : radix} : ∀ i n u,
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
+  → (A i n (P u) ≤ NQfrac (A i n u) + 1 // rad)%NQ.
+Proof.
+intros * Hur.
+...
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -1540,6 +1547,23 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
        apply NQlt_add_lt_sub_l.
        rewrite <- NQpair_sub_l; [ easy | pauto ].
      }
+...
+specialize (A_P_upper_bound i n v) as H5.
+assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+  intros.
+  rewrite <- Nat.add_assoc.
+  apply Hv.
+}
+specialize (H5 H); clear H.
+rewrite <- NQfrac_P_M, <- Hap, <- Hav in H5.
+apply NQnlt_ge in H5; apply H5; clear H5.
+eapply NQle_lt_trans; [ | apply S3 ].
+rewrite <- NQadd_sub_assoc.
+apply NQadd_le_mono_l.
+apply NQle_add_le_sub_r.
+rewrite <- NQpair_add_l.
+apply NQle_pair; [ easy | easy | ].
+now do 2 rewrite Nat.mul_1_r.
 ...
      (*
      1-1/r<p<1
