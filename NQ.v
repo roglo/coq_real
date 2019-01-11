@@ -2401,8 +2401,10 @@ Qed.
 Theorem NQintg_mono : ∀ x y, (0 ≤ x ≤ y)%NQ → NQintg x ≤ NQintg y.
 Proof.
 intros * Hxy.
-unfold NQintg.
-Search (_ / _ ≤ _).
+unfold "≤"%NQ in Hxy.
+destruct x as [| x| x]; [ cbn; flia | | easy ].
+destruct Hxy as (_, Hxy).
+destruct y as [| y| y]; [ easy | | easy ].
 ...
 
 Theorem NQintg_add_nat_l : ∀ a x, (0 ≤ x)%NQ →
