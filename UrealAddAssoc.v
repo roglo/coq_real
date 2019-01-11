@@ -1500,13 +1500,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
      remember (NQfrac (A i n (P v))) as ap eqn:Hap.
      move au after av; move ap before av.
      move Hau after Hav; move Hap before Hav.
-     (* 1-1/r-v≤u<1-v *)
-     assert (S1 : (1 - 1 // rad - av ≤ au < 1 - av)%NQ). {
-       split; [ | now apply NQlt_add_lt_sub_r ].
-       now apply NQle_sub_le_add_r.
-     }
      (* 2-1/r-p≤u<1-v *)
-     assert (S2 : (2 - 1 // rad - ap ≤ au < 1 - av)%NQ). {
+     assert (S1 : (2 - 1 // rad - ap ≤ au < 1 - av)%NQ). {
        split; [ | now apply NQlt_add_lt_sub_r ].
        apply NQle_sub_le_add_r.
        replace 2%NQ with (1 + 1)%NQ by easy.
@@ -1514,27 +1509,39 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
        now apply NQle_add_le_sub_r.
      }
      (* 2-1/r+v<1+p *)
-     assert (S3 : (2 - 1 // rad + av < 1 + ap)%NQ). {
+     assert (S2 : (2 - 1 // rad + av < 1 + ap)%NQ). {
        apply NQlt_sub_lt_add_r.
        rewrite NQadd_sub_swap.
        apply NQlt_add_lt_sub_r.
-       eapply NQle_lt_trans; apply S2.
+       eapply NQle_lt_trans; apply S1.
      }
      (* v+1-1/r<p<1 *)
-     assert (S4 : (av + 1 - 1 // rad < ap < 1)%NQ). {
+     assert (S3 : (av + 1 - 1 // rad < ap < 1)%NQ). {
        split; [ | rewrite Hap; apply NQfrac_lt_1 ].
-       replace 2%NQ with (1 + 1)%NQ in S3 by easy.
-       rewrite <- NQadd_sub_assoc, <- NQadd_assoc in S3.
-       apply NQadd_lt_mono_l in S3.
-       rewrite NQadd_comm in S3.
-       now rewrite NQadd_sub_assoc in S3.
+       replace 2%NQ with (1 + 1)%NQ in S2 by easy.
+       rewrite <- NQadd_sub_assoc, <- NQadd_assoc in S2.
+       apply NQadd_lt_mono_l in S2.
+       rewrite NQadd_comm in S2.
+       now rewrite NQadd_sub_assoc in S2.
      }
      (* v<1/r *)
-     assert (S5 : (av < 1 // rad)%NQ). {
+     assert (S4 : (av < 1 // rad)%NQ). {
+       apply (NQadd_lt_mono_r _ _ 1%NQ).
+       apply NQlt_sub_lt_add_l.
+       eapply NQlt_trans; apply S3.
+     }
+     (* 1-2/r<u<1 *)
+     assert (S5 : (1 - 2 // rad < au < 1)%NQ). {
+       split; [ | rewrite Hau; apply NQfrac_lt_1 ].
+       apply NQle_sub_le_add_r in AA2.
+       eapply NQlt_le_trans; [ | apply AA2 ].
+       rewrite <- NQsub_add_distr.
+       apply NQsub_lt_mono_l.
+       apply NQlt_add_lt_sub_l.
+       rewrite <- NQpair_sub_l; [ easy | pauto ].
+     }
 ...
      (*
-     1-2/r<u<1
-
      1-1/r<p<1
      1-2/r<u<1
      0≤v<1/r
