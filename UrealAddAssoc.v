@@ -1491,6 +1491,28 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       now rewrite NQadd_0_l.
    ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ exfalso | easy ].
+(*
+v<0.9
+u+p≥1.9
+u+v<1
+u+v≥0.9
+
+0.9-v≤u<1-v
+1.9-p≤u<1-v
+1.9+v<1+p
+v+0.9<p<1
+v<0.1
+0.8≤u<1
+
+0.9<p<1
+0.9<u<1
+0<v<0.1
+
+p=0.95
+u=0.95
+v=0.04
+no contradiction!
+*)
 ...
   -- ...
  +destruct H2 as (j & Hj & Hjj).
