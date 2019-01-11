@@ -1313,7 +1313,9 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1].
    apply Hur.
  }
  specialize (H2 H).
-About NQintg_interv.
+...
+apply NQintg_mono in H2.
+eapply le_trans; [ apply H2 | ].
 ...
 
 Theorem A_P_upper_bound {r : radix} : ∀ i n u,

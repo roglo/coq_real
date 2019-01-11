@@ -86,6 +86,7 @@ Notation "x ≥ y" := (NQge x y) : NQ_scope.
 Notation "x < y < z" := (NQlt x y ∧ NQlt y z) : NQ_scope.
 Notation "x ≤ y < z" := (NQle x y ∧ NQlt y z) : NQ_scope.
 Notation "x < y ≤ z" := (NQlt x y ∧ NQle y z) : NQ_scope.
+Notation "x ≤ y ≤ z" := (NQle x y ∧ NQle y z) : NQ_scope.
 
 Theorem NQeq_dec : ∀ x y : NQ, {x = y} + {x ≠ y}.
 Proof.
@@ -2396,6 +2397,13 @@ rewrite Nat.div_div; cycle 1. {
 -now intros H; subst c.
 -now rewrite Nat.mul_comm, <- Hc.
 Qed.
+
+Theorem NQintg_mono : ∀ x y, (0 ≤ x ≤ y)%NQ → NQintg x ≤ NQintg y.
+Proof.
+intros * Hxy.
+unfold NQintg.
+Search (_ / _ ≤ _).
+...
 
 Theorem NQintg_add_nat_l : ∀ a x, (0 ≤ x)%NQ →
   NQintg (a // 1 + x)%NQ = a + NQintg x.
