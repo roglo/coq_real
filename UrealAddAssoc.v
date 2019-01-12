@@ -1303,6 +1303,7 @@ Theorem carry_upper_bound_for_add {r : radix} : ∀ u i,
   → carry u i ≤ 1.
 Proof.
 intros * Hur.
+specialize radix_ge_2 as Hr.
 unfold carry.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1].
 -remember (min_n i 0) as n eqn:Hn.
@@ -1315,6 +1316,35 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1].
  specialize (H2 H).
  apply NQintg_mono in H2; [ | easy ].
  eapply le_trans; [ apply H2 | ].
+ rewrite NQmul_sub_distr_l.
+ replace (2 * 1)%NQ with (1 + 1)%NQ by easy.
+ rewrite <- NQadd_sub_assoc.
+ assert (H3 : (0 ≤ 1 - 2 * 1 // rad ^ (n - i - 1))%NQ). {
+   apply NQle_add_le_sub_l.
+   rewrite NQadd_0_l.
+   rewrite NQmul_pair; [ | easy | pauto ].
+   rewrite Nat.mul_1_r, Nat.mul_1_l.
+   apply NQle_pair; [ pauto | easy | ].
+   do 2 rewrite Nat.mul_1_r.
+   remember (n - i - 1) as s eqn:Hs.
+   destruct s.
+   -rewrite Hn in Hs.
+    unfold min_n in Hs.
+    destruct rad; [ easy | cbn in Hs; flia Hs ].
+   -cbn; replace 2 with (2 * 1) by flia.
+    apply Nat.mul_le_mono; [ easy | ].
+    now apply Nat_pow_ge_1.
+ }
+ rewrite NQintg_add_nat_l; [ | easy ].
+ rewrite NQintg_small; [ easy | ].
+ split; [ easy | ].
+ apply NQlt_sub_lt_add_r.
+ replace 1%NQ with (1 + 0 * 0)%NQ at 1 by easy.
+ apply NQadd_lt_mono_l.
+...
+Search (_ * _ < _ * _)%NQ.
+ now apply NQmul_lt_le_mono_pos.
+-idtac.
 ...
 
 Theorem A_P_upper_bound {r : radix} : ∀ i n u,

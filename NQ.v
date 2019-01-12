@@ -1661,6 +1661,16 @@ Proof. intros; now rewrite NQmul_comm. Qed.
 Theorem NQmul_opp_l : ∀ x y, (- x * y)%NQ = (- (x * y))%NQ.
 Proof. intros; now destruct x, y. Qed.
 
+Theorem NQmul_lt_le_mono_pos : ∀ x y z t,
+  (0 ≤ x)%NQ → (x < y)%NQ → (0 < z)%NQ → (z ≤ t)%NQ → (x * z < y * t)%NQ.
+Proof.
+intros * Hx Hxy Hz Hzt.
+eapply NQlt_le_trans.
+-apply NQmul_lt_mono_pos_r; [ easy | apply Hxy ].
+-apply NQmul_le_mono_pos_l; [ | easy ].
+ eapply NQle_lt_trans; [ apply Hx | apply Hxy ].
+Qed.
+
 Theorem NQadd_pair : ∀ a b c d,
   b ≠ 0 → d ≠ 0 → (a // b + c // d = (a * d + b * c) // (b * d))%NQ.
 Proof.
