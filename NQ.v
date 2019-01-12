@@ -2405,33 +2405,15 @@ assert (Hy : (0 ≤ y)%NQ) by (eapply NQle_trans; [ apply Hx | apply Hxy ]).
 move Hy before Hx.
 specialize (proj2 (NQintg_interv _ _ Hx) eq_refl) as H1.
 specialize (proj2 (NQintg_interv _ _ Hy) eq_refl) as H2.
+apply Nat.lt_succ_r.
+rewrite <- Nat.add_1_r.
 setoid_rewrite <- Nat.mul_1_l.
 rewrite Nat.mul_comm.
-apply NQle_pair; [ easy | easy | ].
-...
-eapply NQle_trans; [ apply H1 | ].
-...
-
-intros * Hxy.
-unfold "≤"%NQ in Hxy.
-destruct x as [| x| x]; [ cbn; flia | | easy ].
-destruct Hxy as (_, Hxy).
-destruct y as [| y| y]; [ easy | | easy ].
-unfold NQintg, NQnum, NQden.
-rewrite (GQnum_den x) in Hxy.
-rewrite (GQnum_den y) in Hxy.
-specialize (GQle_pair (GQnum x) (GQden x) (GQnum y) (GQden y)) as H1.
-specialize (H1 (GQnum_neq_0 x) (GQden_neq_0 x)).
-specialize (H1 (GQnum_neq_0 y) (GQden_neq_0 y)).
-apply H1 in Hxy; clear H1.
-...
-apply Nat.div_le_upper_bound; [ easy | ].
-apply (Nat.mul_le_mono_pos_r _ _ (GQden y)); [ now apply Nat.neq_0_lt_0 | ].
-eapply le_trans; [ apply Hxy | ].
-rewrite <- Nat.mul_assoc.
-apply Nat.mul_le_mono_l.
-(* faux *)
-...
+apply NQlt_pair; [ easy | easy | ].
+eapply NQle_lt_trans; [ apply H1 | ].
+eapply NQle_lt_trans; [ apply Hxy | ].
+now rewrite NQpair_add_l.
+Qed.
 
 Theorem NQintg_add_nat_l : ∀ a x, (0 ≤ x)%NQ →
   NQintg (a // 1 + x)%NQ = a + NQintg x.
