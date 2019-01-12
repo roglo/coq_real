@@ -2408,13 +2408,8 @@ specialize (proj2 (NQintg_interv _ _ Hy) eq_refl) as H2.
 setoid_rewrite <- Nat.mul_1_l.
 rewrite Nat.mul_comm.
 apply NQle_pair; [ easy | easy | ].
-eapply NQle_trans; [ apply H1 | ].
 ...
-
-Search NQintg.
-NQintg_interv:
-  ∀ (n : nat) (x : NQ),
-    (0 ≤ x)%NQ → (n // 1 ≤ x < n // 1 + 1)%NQ ↔ n = NQintg x
+eapply NQle_trans; [ apply H1 | ].
 ...
 
 intros * Hxy.
