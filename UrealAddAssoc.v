@@ -1341,14 +1341,20 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1].
  apply NQlt_sub_lt_add_r.
  replace 1%NQ with (1 + 0)%NQ at 1 by easy.
  apply NQadd_le_lt_mono; [ apply NQle_refl | ].
-...
- replace 0%NQ with (0 * 0)%NQ by easy.
- apply NQmul_lt_le_mono_pos; [ easy | easy | | ].
- apply NQle_pair; [ easy | pauto | ].
- do 2 rewrite Nat.mul_1_l.
-
-...
--idtac.
+ remember (1 // rad ^ (n - i - 1))%NQ as x eqn:Hx.
+ apply (NQlt_le_trans _ x).
+ +replace 0%NQ with (0 // 1)%NQ by easy.
+  subst x.
+  apply NQlt_pair; [ flia | pauto | pauto ].
+ +replace x with (1 * x)%NQ at 1 by apply NQmul_1_l.
+  subst x.
+  apply NQmul_le_mono_pos_r.
+  *replace 0%NQ with (0 // 1)%NQ by easy.
+   apply NQlt_pair; [ flia | pauto | ].
+   rewrite Nat.mul_0_l; flia.
+  *apply NQle_pair; flia.
+-destruct H1 as (j & Hj & Hjj).
+ apply A_ge_1_false_iff in Hjj.
 ...
 
 Theorem A_P_upper_bound {r : radix} : ∀ i n u,
