@@ -1374,6 +1374,22 @@ Theorem A_P_upper_bound {r : radix} : ∀ i n u,
 Proof.
 intros * Hur.
 specialize radix_ge_2 as Hr.
+...
+destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
+-unfold A.
+ rewrite <- H1.
+ do 2 rewrite summation_only_one.
+ replace (i + 1 - i) with 1 by flia.
+ rewrite Nat.pow_1_r.
+ rewrite NQfrac_pair.
+ rewrite <- NQpair_add_l.
+ apply NQle_pair; [ easy | easy | ].
+ rewrite Nat.mul_comm.
+ apply Nat.mul_le_mono_l.
+ unfold P, d2n, prop_carr; cbn.
+...
+intros * Hur.
+specialize radix_ge_2 as Hr.
 destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
 -unfold A.
  rewrite <- H1.
@@ -1418,6 +1434,22 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
      rewrite Nat.add_shuffle0.
      apply Hur.
  +apply Nat.nlt_ge in H2.
+  rewrite NQfrac_pair.
+  rewrite <- NQpair_add_l.
+  apply NQle_pair; [ easy | easy | ].
+  rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono_l.
+  unfold P, d2n, prop_carr; cbn.
+...
+  apply (NQle_trans _ (1 // rad)%NQ). 2: {
+    apply NQle_sub_le_add_r.
+    rewrite NQsub_diag.
+    apply NQfrac_ge_0.
+  }
+  apply NQle_pair; [ easy | easy | ].
+  rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono_l.
+  unfold P, d2n, prop_carr; cbn.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
