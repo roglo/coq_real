@@ -1339,10 +1339,14 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1].
  rewrite NQintg_small; [ easy | ].
  split; [ easy | ].
  apply NQlt_sub_lt_add_r.
- replace 1%NQ with (1 + 0 // 1 * 1)%NQ at 1 by easy.
- apply NQadd_lt_mono_l.
- apply NQmul_lt_le_mono_pos; [ easy | easy | easy | ].
+ replace 1%NQ with (1 + 0)%NQ at 1 by easy.
+ apply NQadd_le_lt_mono; [ apply NQle_refl | ].
+...
+ replace 0%NQ with (0 * 0)%NQ by easy.
+ apply NQmul_lt_le_mono_pos; [ easy | easy | | ].
  apply NQle_pair; [ easy | pauto | ].
+ do 2 rewrite Nat.mul_1_l.
+
 ...
 -idtac.
 ...

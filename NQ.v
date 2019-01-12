@@ -131,8 +131,6 @@ intros.
 destruct x as [| px| px]; [ easy | apply GQle_refl | apply GQle_refl ].
 Qed.
 
-Hint Resolve NQle_refl.
-
 Theorem NQle_antisymm : ∀ x y, (x ≤ y)%NQ → (y ≤ x)%NQ → x = y.
 Proof.
 intros * Hxy Hyx.
