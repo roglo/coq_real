@@ -1374,7 +1374,16 @@ Theorem A_P_upper_bound {r : radix} : ∀ i n u,
 Proof.
 intros * Hur.
 specialize radix_ge_2 as Hr.
+destruct (lt_dec (n - 1) (i + 1)) as [H1| H1]. {
+  unfold A.
+  rewrite summation_empty; [ | easy ].
+  now rewrite summation_empty.
+}
+apply Nat.nlt_ge in H1.
+
 ...
+intros * Hur.
+specialize radix_ge_2 as Hr.
 destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
 -unfold A.
  rewrite <- H1.
