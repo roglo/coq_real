@@ -1419,6 +1419,16 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
      rewrite Nat.add_shuffle0.
      apply Hur.
  +apply Nat.nlt_ge in H3.
+  specialize (carry_upper_bound_for_add u (i + 1)) as H4.
+  assert (H : ∀ k, u (i + 1 + k) ≤ 2 * (rad - 1)). {
+    intros k.
+    rewrite Nat.add_shuffle0.
+    apply Hur.
+  }
+  specialize (H4 H); clear H.
+  remember (carry u (i + 1)) as c eqn:Hc; symmetry in Hc.
+  destruct c; [ rewrite Nat.add_0_r; flia | ].
+  destruct c; [ clear H4 | flia H4 ].
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
