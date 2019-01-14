@@ -1429,6 +1429,20 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
   remember (carry u (i + 1)) as c eqn:Hc; symmetry in Hc.
   destruct c; [ rewrite Nat.add_0_r; flia | ].
   destruct c; [ clear H4 | flia H4 ].
+  rewrite Nat_mod_less_small. 2: {
+    split; [ flia H3 | ].
+    specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hur.
+    flia Hur Hr.
+  }
+  rewrite Nat.add_sub_swap; [ | easy ].
+  apply Nat.add_le_mono_r.
+  rewrite Nat_mod_less_small; [ easy | ].
+  split; [ easy | ].
+  specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hur.
+  flia Hur Hr.
+-idtac.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
