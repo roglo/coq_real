@@ -1452,6 +1452,12 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
   rewrite summation_empty; [ | flia H2 ].
   rewrite NQmul_0_l.
   do 2 rewrite NQadd_0_r.
+  replace (S (S i)) with (i + 2) by flia.
+  rewrite <- Nat.add_1_r.
+...
+  ============================
+  (P u (i + 1) // rad + P u (i + 2) // rad * 1 // rad
+   ≤ NQfrac (u (i + 1)%nat // rad + u (i + 2)%nat // rad * 1 // rad) + 1 // rad)%NQ
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
