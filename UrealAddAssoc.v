@@ -1442,7 +1442,16 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hur.
   flia Hur Hr.
--idtac.
+-assert (H : i + 1 < n - 1) by flia H1 H2.
+ clear H1 H2; rename H into H1.
+ destruct (eq_nat_dec (i + 1) (n - 2)) as [H2| H2].
+ +setoid_rewrite A_split_first; [ | flia H2 | flia H2 ].
+  setoid_rewrite A_split_first; [ | flia H2 | flia H2 ].
+  unfold A.
+  rewrite summation_empty; [ | flia H2 ].
+  rewrite summation_empty; [ | flia H2 ].
+  rewrite NQmul_0_l.
+  do 2 rewrite NQadd_0_r.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
