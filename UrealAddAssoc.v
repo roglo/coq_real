@@ -1380,13 +1380,9 @@ destruct (lt_dec (n - 1) (i + 1)) as [H1| H1]. {
   now rewrite summation_empty.
 }
 apply Nat.nlt_ge in H1.
-
-...
-intros * Hur.
-specialize radix_ge_2 as Hr.
-destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
+destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
 -unfold A.
- rewrite <- H1.
+ rewrite <- H2.
  do 2 rewrite summation_only_one.
  replace (i + 1 - i) with 1 by flia.
  rewrite Nat.pow_1_r.
@@ -1396,37 +1392,17 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
  rewrite Nat.mul_comm.
  apply Nat.mul_le_mono_l.
  unfold P, d2n, prop_carr; cbn.
-...
-intros * Hur.
-specialize radix_ge_2 as Hr.
-destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
--unfold A.
- rewrite <- H1.
- do 2 rewrite summation_only_one.
- replace (i + 1 - i) with 1 by flia.
- rewrite Nat.pow_1_r.
- destruct (lt_dec (u (i + 1)) rad) as [H2| H2].
- +rewrite NQfrac_small. 2: {
-    split.
-    -replace 0%NQ with (0 // 1)%NQ by easy.
-     apply NQle_pair; [ easy | easy | cbn; flia ].
-    -apply NQlt_pair; [ easy | easy | ].
-     now do 2 rewrite Nat.mul_1_r.
-  }
-  rewrite <- NQpair_add_l.
-  apply NQle_pair; [ easy | easy | ].
-  rewrite Nat.mul_comm.
-  apply Nat.mul_le_mono_l.
-  unfold P, d2n, prop_carr; cbn.
-  destruct (le_dec (rad - 2) (u (i + 1))) as [H3| H3].
-  *replace (rad - 2) with (rad - 1 - 1) in H3 by flia.
-   apply Nat.le_sub_le_add_r in H3.
-   eapply le_trans; [ | apply H3 ].
+ destruct (lt_dec (u (i + 1)) rad) as [H3| H3].
+ +replace (u (i + 1) mod rad) with (u (i + 1)) by now rewrite Nat.mod_small.
+  destruct (le_dec (rad - 2) (u (i + 1))) as [H4| H4].
+  *replace (rad - 2) with (rad - 1 - 1) in H4 by flia.
+   apply Nat.le_sub_le_add_r in H4.
+   eapply le_trans; [ | apply H4 ].
    rewrite Nat.sub_1_r.
    apply Nat.lt_le_pred.
    now apply Nat.mod_upper_bound.
-  *apply Nat.nle_gt in H3.
-   clear H2; rename H3 into H2.
+  *apply Nat.nle_gt in H4.
+   clear H3; rename H4 into H3.
    rewrite Nat.mod_small.
   --apply Nat.add_le_mono_l.
     apply carry_upper_bound_for_add.
@@ -1442,23 +1418,7 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
      intros k.
      rewrite Nat.add_shuffle0.
      apply Hur.
- +apply Nat.nlt_ge in H2.
-  rewrite NQfrac_pair.
-  rewrite <- NQpair_add_l.
-  apply NQle_pair; [ easy | easy | ].
-  rewrite Nat.mul_comm.
-  apply Nat.mul_le_mono_l.
-  unfold P, d2n, prop_carr; cbn.
-...
-  apply (NQle_trans _ (1 // rad)%NQ). 2: {
-    apply NQle_sub_le_add_r.
-    rewrite NQsub_diag.
-    apply NQfrac_ge_0.
-  }
-  apply NQle_pair; [ easy | easy | ].
-  rewrite Nat.mul_comm.
-  apply Nat.mul_le_mono_l.
-  unfold P, d2n, prop_carr; cbn.
+ +apply Nat.nlt_ge in H3.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
