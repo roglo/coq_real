@@ -2358,8 +2358,8 @@ Qed.
 
 Theorem NQfrac_add_cond : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
   NQfrac (x + y) =
-    if NQlt_le_dec (NQfrac x + NQfrac y) 1 then (NQfrac x + NQfrac y)%NQ
-    else (NQfrac x + NQfrac y - 1)%NQ.
+    (NQfrac x + NQfrac y -
+     if NQlt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1)%NQ.
 Proof.
 intros * Hxz Hyz.
 rewrite NQfrac_of_intg. 2: {
@@ -2369,7 +2369,7 @@ rewrite NQfrac_of_intg. 2: {
 rewrite NQintg_add; [ | easy | easy ].
 rewrite NQintg_add_frac.
 destruct (NQlt_le_dec (NQfrac x + NQfrac y)) as [H1| H1].
--rewrite Nat.add_0_r.
+-rewrite Nat.add_0_r, NQsub_0_r.
  rewrite NQpair_add_l, NQsub_add_distr.
  rewrite NQadd_sub_swap, <- NQadd_sub_assoc.
  now f_equal; symmetry; apply NQfrac_of_intg.
