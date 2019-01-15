@@ -1368,6 +1368,109 @@ intros j.
 now apply NQintg_A_le_1_for_add.
 Qed.
 
+Theorem A_frac_P {r : radix} : ∀ i n u,
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
+  → (A i n (P u) = NQfrac (A i n u)) ∨
+     (A i n (P u) = NQfrac (A i n u) + 1 // rad ^ (n - i - 1))%NQ.
+Proof.
+intros * Hur.
+specialize radix_ge_2 as Hr.
+destruct (lt_dec (n - 1) (i + 1)) as [H1| H1]. {
+  unfold A.
+  rewrite summation_empty; [ | easy ].
+  rewrite summation_empty; [ | easy ].
+  now left.
+}
+apply Nat.nlt_ge in H1.
+destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
+-replace (n - i - 1) with 1 by flia H2.
+ unfold A.
+ rewrite <- H2.
+ do 2 rewrite summation_only_one.
+ replace (i + 1 - i) with 1 by flia.
+ rewrite Nat.pow_1_r.
+ rewrite NQfrac_pair.
+ unfold P, d2n, prop_carr.
+ remember (1 // rad)%NQ as x eqn:Hx.
+ cbn; subst x.
+ specialize (carry_upper_bound_for_add u (i + 1)) as H3.
+ assert (H : ∀ k, u (i + 1 + k) ≤ 2 * (rad - 1)). {
+   intros; rewrite Nat.add_shuffle0; apply Hur.
+ }
+ specialize (H3 H); clear H.
+ remember (carry u (i + 1)) as x eqn:Hx.
+ symmetry in Hx.
+ destruct x; [ now left; rewrite Nat.add_0_r | ].
+ destruct x; [ | flia H3 ].
+...
+
+ destruct (lt_dec (u (i + 1)) rad) as [H3| H3].
+ +replace (u (i + 1) mod rad) with (u (i + 1)) by now rewrite Nat.mod_small.
+Search carry.
+  destruct (le_dec (rad - 2) (u (i + 1))) as [H4| H4].
+  *replace (rad - 2) with (rad - 1 - 1) in H4 by flia.
+   apply Nat.le_sub_le_add_r in H4.
+   eapply le_trans; [ | apply H4 ].
+   rewrite Nat.sub_1_r.
+   apply Nat.lt_le_pred.
+   now apply Nat.mod_upper_bound.
+  *apply Nat.nle_gt in H4.
+   clear H3; rename H4 into H3.
+   rewrite Nat.mod_small.
+  --apply Nat.add_le_mono_l.
+    apply carry_upper_bound_for_add.
+    intros k.
+    rewrite Nat.add_shuffle0.
+    apply Hur.
+  --apply (lt_le_trans _ (rad - 2 + carry u (i + 1))).
+   ++now apply Nat.add_lt_mono_r.
+   ++replace rad with (rad - 2 + 2) at 2 by now apply Nat.sub_add.
+     apply Nat.add_le_mono_l.
+     apply (le_trans _ 1); [ | flia ].
+     apply carry_upper_bound_for_add.
+     intros k.
+     rewrite Nat.add_shuffle0.
+     apply Hur.
+ +apply Nat.nlt_ge in H3.
+  specialize (carry_upper_bound_for_add u (i + 1)) as H4.
+  assert (H : ∀ k, u (i + 1 + k) ≤ 2 * (rad - 1)). {
+    intros k.
+    rewrite Nat.add_shuffle0.
+    apply Hur.
+  }
+  specialize (H4 H); clear H.
+  remember (carry u (i + 1)) as c eqn:Hc; symmetry in Hc.
+  destruct c; [ rewrite Nat.add_0_r; flia | ].
+  destruct c; [ clear H4 | flia H4 ].
+  rewrite Nat_mod_less_small. 2: {
+    split; [ flia H3 | ].
+    specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hur.
+    flia Hur Hr.
+  }
+  rewrite Nat.add_sub_swap; [ | easy ].
+  apply Nat.add_le_mono_r.
+  rewrite Nat_mod_less_small; [ easy | ].
+  split; [ easy | ].
+  specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hur.
+  flia Hur Hr.
+-assert (H : i + 1 < n - 1) by flia H1 H2.
+ clear H1 H2; rename H into H1.
+ destruct (eq_nat_dec (i + 1) (n - 2)) as [H2| H2].
+ +setoid_rewrite A_split_first; [ | flia H2 | flia H2 ].
+  setoid_rewrite A_split_first; [ | flia H2 | flia H2 ].
+  unfold A.
+  rewrite summation_empty; [ | flia H2 ].
+  rewrite summation_empty; [ | flia H2 ].
+  rewrite NQmul_0_l.
+  do 2 rewrite NQadd_0_r.
+  replace (S (S i)) with (i + 2) by flia.
+  rewrite <- Nat.add_1_r.
+  rewrite NQfrac_add_cond.
+...
+
+(* no more required if A_frac_P is proved! *)
 Theorem A_P_upper_bound {r : radix} : ∀ i n u,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → (A i n (P u) ≤ NQfrac (A i n u) + 1 // rad)%NQ.
