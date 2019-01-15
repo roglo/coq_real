@@ -1368,9 +1368,8 @@ intros j.
 now apply NQintg_A_le_1_for_add.
 Qed.
 
-Theorem A_P {r : radix} : ∀ i n u,
-  A i n (P u) =
-  NQfrac (A i n u + carry u (n - i - 1) // rad ^ (n - i - 1))%NQ.
+Theorem A_prop_carr {r : radix} : ∀ i n u,
+  A i n (P u) = NQfrac (A i n u + carry u (n - 1) // rad ^ (n - i - 1))%NQ.
 Proof.
 intros.
 specialize radix_ge_2 as Hr.
@@ -1385,6 +1384,18 @@ destruct (lt_dec (n - 1) (i + 1)) as [H1| H1]. {
   destruct (LPO_fst (fA_ge_1_ε u 0));  apply NQfrac_of_nat.
 }
 apply Nat.nlt_ge in H1.
+destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
+-replace (n - i - 1) with 1 by flia H2.
+ unfold A.
+ rewrite <- H2.
+ do 2 rewrite summation_only_one.
+ replace (i + 1 - i) with 1 by flia.
+ rewrite Nat.pow_1_r.
+ rewrite <- NQpair_add_l.
+ rewrite NQfrac_pair.
+ now unfold P, d2n, prop_carr; cbn.
+-assert (H : i + 1 < n - 1) by flia H1 H2.
+ clear H1 H2; rename H into H1.
 ...
 
 Theorem A_frac_P {r : radix} : ∀ i n u,
