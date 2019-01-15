@@ -1434,10 +1434,9 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
     rewrite Nat.add_sub_swap; [ easy | flia H5 H6 ].
 -assert (H : i + 1 < n - 1) by flia H1 H2.
  clear H1 H2; rename H into H1.
-...
  destruct (eq_nat_dec (i + 1) (n - 2)) as [H2| H2].
- +setoid_rewrite A_split_first; [ | flia H2 | flia H2 ].
-  setoid_rewrite A_split_first; [ | flia H2 | flia H2 ].
+ +setoid_rewrite A_split_first; [ | flia H2 | flia H2 | flia H2 | flia H2 ].
+  setoid_rewrite A_split_first; [ | flia H2 | flia H2 | flia H2 | flia H2 ].
   unfold A.
   rewrite summation_empty; [ | flia H2 ].
   rewrite summation_empty; [ | flia H2 ].
@@ -1446,6 +1445,12 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
   replace (S (S i)) with (i + 2) by flia.
   rewrite <- Nat.add_1_r.
   rewrite NQfrac_add_cond.
+  destruct
+    (NQlt_le_dec
+       (NQfrac (u (i + 1)%nat // rad) +
+        NQfrac (u (i + 2)%nat // rad * 1 // rad))%NQ
+       1) as [H3| H3].
+  *rewrite NQsub_0_r.
 ...
 
 (* no more required if A_frac_P is proved! *)
