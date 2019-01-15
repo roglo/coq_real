@@ -1404,6 +1404,9 @@ induction m; intros i.
  rewrite NQadd_comm; symmetry.
  rewrite A_split_first; [ | flia ].
  rewrite NQadd_comm.
+ remember (carry u (m + S i)) as c eqn:Hc.
+ remember (A (S i) (m + S i + 1) u) as a eqn:Ha.
+ rewrite NQadd_assoc.
 ...
 
  rewrite <- H2.
