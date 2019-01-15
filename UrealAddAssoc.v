@@ -1373,10 +1373,10 @@ Theorem A_prop_carr {r : radix} : ∀ i n u,
 Proof.
 intros.
 specialize radix_ge_2 as Hr.
-destruct (lt_dec (n - 1) (i + 1)) as [H1| H1]. {
+destruct (lt_dec n (i + 1)) as [H1| H1]. {
   unfold A.
-  rewrite summation_empty; [ | easy ].
-  rewrite summation_empty; [ | easy ].
+  rewrite summation_empty; [ | flia H1 ].
+  rewrite summation_empty; [ | flia H1 ].
   rewrite NQadd_0_l.
   replace (n - i - 1) with 0 by flia H1.
   rewrite Nat.pow_0_r.
@@ -1384,9 +1384,28 @@ destruct (lt_dec (n - 1) (i + 1)) as [H1| H1]. {
   destruct (LPO_fst (fA_ge_1_ε u 0));  apply NQfrac_of_nat.
 }
 apply Nat.nlt_ge in H1.
-destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
--replace (n - i - 1) with 1 by flia H2.
+remember (n - i - 1) as m eqn:Hm.
+replace (n - 1) with (m + i) by flia Hm H1.
+replace n with (m + i + 1) by flia Hm H1.
+clear n H1 Hm.
+revert i.
+induction m; intros i.
+-rewrite Nat.add_0_l.
  unfold A.
+ rewrite Nat.add_sub.
+ rewrite summation_empty; [ | flia ].
+ rewrite summation_empty; [ | flia ].
+ rewrite NQadd_0_l.
+ unfold carry; symmetry.
+ destruct (LPO_fst (fA_ge_1_ε u 0));  apply NQfrac_of_nat.
+-rewrite A_split_first; [ | flia ].
+ replace (S m + i) with (m + S i) by flia.
+ rewrite IHm.
+ rewrite NQadd_comm; symmetry.
+ rewrite A_split_first; [ | flia ].
+ rewrite NQadd_comm.
+...
+
  rewrite <- H2.
  do 2 rewrite summation_only_one.
  replace (i + 1 - i) with 1 by flia.
