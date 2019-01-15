@@ -1371,11 +1371,10 @@ Qed.
 Theorem A_frac_P {r : radix} : ∀ i n u,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → (A i n (P u) = NQfrac (A i n u)) ∨
-     (A i n (P u) = NQfrac (A i n u) + 1 // rad ^ (n - i - 1))%NQ.
+     (A i n (P u) = NQfrac (A i n u) + 1 // rad ^ (n - i - 1))%NQ ∨
+     (∀ j, i + 1 ≤ j ≤ n - 1 → u j = rad - 1).
 Proof.
 intros * Hur.
-(* contre exemple : u=9/9/9...9/9/18 P(u)=000...008 *)
-...
 specialize radix_ge_2 as Hr.
 destruct (lt_dec (n - 1) (i + 1)) as [H1| H1]. {
   unfold A.
@@ -1403,89 +1402,39 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
  remember (carry u (i + 1)) as x eqn:Hx.
  symmetry in Hx.
  destruct x; [ now left; rewrite Nat.add_0_r | ].
- destruct x; [ | flia H3 ].
- right.
+ destruct x; [ right | flia H3 ].
  destruct (eq_nat_dec (u (i + 1)) rad) as [H4| H4].
  +rewrite H4.
   rewrite Nat_mod_add_same_l; [ | easy ].
   rewrite Nat.mod_same; [ | easy ].
   rewrite Nat.mod_1_l; [ | easy ].
-  now rewrite NQadd_0_l.
+  now left; rewrite NQadd_0_l.
  +destruct (lt_dec (u (i + 1)) (rad - 1)) as [H5| H5].
   *rewrite Nat.mod_small; [ | flia H5 ].
    rewrite Nat.mod_small; [ | flia H5 ].
-   now rewrite <- NQpair_add_l.
+   now left; rewrite <- NQpair_add_l.
   *apply Nat.nlt_ge in H5.
    destruct (eq_nat_dec (u (i + 1)) (rad - 1)) as [H6| H6].
   --rewrite H6, Nat.sub_add; [ | easy ].
     rewrite Nat.mod_same; [ | easy ].
     rewrite Nat.mod_small; [ | flia Hr ].
-...
-   specialize (Hur 0); rewrite Nat.mul_sub_distr_l in Hur.
-   rewrite Nat.add_0_r in Hur.
-   rewrite Nat_mod_less_small. 2: {
-     split; [ flia H5 | flia Hur Hr ].
-   }
-   rewrite Nat_mod_less_small. 2: {
-     split; [ | flia Hur Hr ].
-     flia H
-   }
-   rewrite Nat_mod_less_small.
-...
-
- destruct (lt_dec (u (i + 1)) rad) as [H3| H3].
- +replace (u (i + 1) mod rad) with (u (i + 1)) by now rewrite Nat.mod_small.
-Search carry.
-  destruct (le_dec (rad - 2) (u (i + 1))) as [H4| H4].
-  *replace (rad - 2) with (rad - 1 - 1) in H4 by flia.
-   apply Nat.le_sub_le_add_r in H4.
-   eapply le_trans; [ | apply H4 ].
-   rewrite Nat.sub_1_r.
-   apply Nat.lt_le_pred.
-   now apply Nat.mod_upper_bound.
-  *apply Nat.nle_gt in H4.
-   clear H3; rename H4 into H3.
-   rewrite Nat.mod_small.
-  --apply Nat.add_le_mono_l.
-    apply carry_upper_bound_for_add.
-    intros k.
-    rewrite Nat.add_shuffle0.
-    apply Hur.
-  --apply (lt_le_trans _ (rad - 2 + carry u (i + 1))).
-   ++now apply Nat.add_lt_mono_r.
-   ++replace rad with (rad - 2 + 2) at 2 by now apply Nat.sub_add.
-     apply Nat.add_le_mono_l.
-     apply (le_trans _ 1); [ | flia ].
-     apply carry_upper_bound_for_add.
-     intros k.
-     rewrite Nat.add_shuffle0.
-     apply Hur.
- +apply Nat.nlt_ge in H3.
-  specialize (carry_upper_bound_for_add u (i + 1)) as H4.
-  assert (H : ∀ k, u (i + 1 + k) ≤ 2 * (rad - 1)). {
-    intros k.
-    rewrite Nat.add_shuffle0.
-    apply Hur.
-  }
-  specialize (H4 H); clear H.
-  remember (carry u (i + 1)) as c eqn:Hc; symmetry in Hc.
-  destruct c; [ rewrite Nat.add_0_r; flia | ].
-  destruct c; [ clear H4 | flia H4 ].
-  rewrite Nat_mod_less_small. 2: {
-    split; [ flia H3 | ].
-    specialize (Hur 0); rewrite Nat.add_0_r in Hur.
-    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hur.
-    flia Hur Hr.
-  }
-  rewrite Nat.add_sub_swap; [ | easy ].
-  apply Nat.add_le_mono_r.
-  rewrite Nat_mod_less_small; [ easy | ].
-  split; [ easy | ].
-  specialize (Hur 0); rewrite Nat.add_0_r in Hur.
-  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hur.
-  flia Hur Hr.
+    right; intros j Hj.
+    now replace j with (i + 1) by flia Hj.
+  --left.
+    specialize (Hur 0); rewrite Nat.mul_sub_distr_l in Hur.
+    rewrite Nat.add_0_r in Hur.
+    rewrite Nat_mod_less_small. 2: {
+      split; [ flia H5 | flia Hur Hr ].
+    }
+    rewrite Nat_mod_less_small. 2: {
+      split; [ | flia Hur Hr ].
+      flia H5 H6.
+    }
+    rewrite <- NQpair_add_l.
+    rewrite Nat.add_sub_swap; [ easy | flia H5 H6 ].
 -assert (H : i + 1 < n - 1) by flia H1 H2.
  clear H1 H2; rename H into H1.
+...
  destruct (eq_nat_dec (i + 1) (n - 2)) as [H2| H2].
  +setoid_rewrite A_split_first; [ | flia H2 | flia H2 ].
   setoid_rewrite A_split_first; [ | flia H2 | flia H2 ].
