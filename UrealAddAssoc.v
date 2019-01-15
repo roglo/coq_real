@@ -1374,6 +1374,8 @@ Theorem A_frac_P {r : radix} : ∀ i n u,
      (A i n (P u) = NQfrac (A i n u) + 1 // rad ^ (n - i - 1))%NQ.
 Proof.
 intros * Hur.
+(* contre exemple : u=9/9/9...9/9/18 P(u)=000...008 *)
+...
 specialize radix_ge_2 as Hr.
 destruct (lt_dec (n - 1) (i + 1)) as [H1| H1]. {
   unfold A.
@@ -1402,6 +1404,33 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
  symmetry in Hx.
  destruct x; [ now left; rewrite Nat.add_0_r | ].
  destruct x; [ | flia H3 ].
+ right.
+ destruct (eq_nat_dec (u (i + 1)) rad) as [H4| H4].
+ +rewrite H4.
+  rewrite Nat_mod_add_same_l; [ | easy ].
+  rewrite Nat.mod_same; [ | easy ].
+  rewrite Nat.mod_1_l; [ | easy ].
+  now rewrite NQadd_0_l.
+ +destruct (lt_dec (u (i + 1)) (rad - 1)) as [H5| H5].
+  *rewrite Nat.mod_small; [ | flia H5 ].
+   rewrite Nat.mod_small; [ | flia H5 ].
+   now rewrite <- NQpair_add_l.
+  *apply Nat.nlt_ge in H5.
+   destruct (eq_nat_dec (u (i + 1)) (rad - 1)) as [H6| H6].
+  --rewrite H6, Nat.sub_add; [ | easy ].
+    rewrite Nat.mod_same; [ | easy ].
+    rewrite Nat.mod_small; [ | flia Hr ].
+...
+   specialize (Hur 0); rewrite Nat.mul_sub_distr_l in Hur.
+   rewrite Nat.add_0_r in Hur.
+   rewrite Nat_mod_less_small. 2: {
+     split; [ flia H5 | flia Hur Hr ].
+   }
+   rewrite Nat_mod_less_small. 2: {
+     split; [ | flia Hur Hr ].
+     flia H
+   }
+   rewrite Nat_mod_less_small.
 ...
 
  destruct (lt_dec (u (i + 1)) rad) as [H3| H3].
