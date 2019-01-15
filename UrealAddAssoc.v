@@ -1397,6 +1397,19 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
 -assert (H : i + 1 < n - 1) by flia H1 H2.
  clear H1 H2; rename H into H1.
 ...
+ destruct (eq_nat_dec (i + 1) (n - 2)) as [H2| H2].
+ +setoid_rewrite A_split_first; [ | flia H2 | flia H2 ].
+  setoid_rewrite A_split_first; [ | flia H2 | flia H2 ].
+  unfold A.
+  rewrite summation_empty; [ | flia H2 ].
+  rewrite summation_empty; [ | flia H2 ].
+  rewrite NQmul_0_l.
+  do 2 rewrite NQadd_0_r.
+  replace (n - i - 1) with 2 by flia H2.
+  replace (S (S i)) with (i + 2) by flia.
+  rewrite <- Nat.add_1_r.
+  rewrite NQfrac_add_cond.
+...
 
 Theorem A_frac_P {r : radix} : ∀ i n u,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
