@@ -1382,6 +1382,15 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1].
     unfold min_n.
     destruct rad; [ easy | cbn; flia ].
   }
+Print min_n.
+...
+Search (A _ (min_n _ _)).
+Search min_n.
+...
+A_lower_bound_if_all_fA_ge_1_ε:
+  ∀ (r : radix) (u : nat → nat) (i : nat),
+    (∀ k : nat, fA_ge_1_ε u i k = true)
+    → ∀ k l : nat, (NQintg (A i (min_n i k) u + 1) // 1 - 1 // rad ^ S k ≤ A i (min_n i k + l) u)%NQ
 ...
 
 Theorem A_prop_carr {r : radix} : ∀ i n u,
