@@ -1857,6 +1857,20 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
        apply NQlt_add_lt_sub_l.
        rewrite <- NQpair_sub_l; [ easy | pauto ].
      }
+(*
+0.8<au<1     au=0.95
+0.9<ap<1     ap=0.95
+0.0≤av<0.1   av=0.04
+0.9≤au+av<1
+1.9≤au+ap<2
+
+minimize au
+au=0.8000001
+av=0.0999999 av=0.1999998
+maximize au
+au=0.9999999
+av=0.0000000 av=0.0000000
+*)
 ...
 specialize (A_P_upper_bound i n v) as H5.
 assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
