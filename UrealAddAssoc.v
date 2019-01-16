@@ -1376,18 +1376,12 @@ specialize radix_ge_2 as Hr.
 unfold carry.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1].
 -destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2].
- +idtac.
-...
-Search A.
-frac_ge_if_all_fA_ge_1_ε:
-  ∀ (r : radix) (u : nat → nat) (i : nat),
-    (∀ k : nat, fA_ge_1_ε u i k = true) ↔ (∀ k : nat, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ)
-...
- +rewrite A_split_first, <- Nat.add_1_r. 2: {
+ +specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1) as H3.
+  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as H4.
+  rewrite A_split_first, <- Nat.add_1_r. 2: {
     unfold min_n.
     destruct rad; [ easy | cbn; flia ].
   }
-
 ...
 
 Theorem A_prop_carr {r : radix} : ∀ i n u,
