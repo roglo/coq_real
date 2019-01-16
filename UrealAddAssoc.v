@@ -1368,6 +1368,28 @@ intros j.
 now apply NQintg_A_le_1_for_add.
 Qed.
 
+Theorem carry_of_succ {r : radix} : ∀ u i,
+  carry u i = (u (i + 1) + carry u (i + 1)) / rad.
+Proof.
+intros.
+specialize radix_ge_2 as Hr.
+unfold carry.
+destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1].
+-destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2].
+ +idtac.
+...
+Search A.
+frac_ge_if_all_fA_ge_1_ε:
+  ∀ (r : radix) (u : nat → nat) (i : nat),
+    (∀ k : nat, fA_ge_1_ε u i k = true) ↔ (∀ k : nat, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ)
+...
+ +rewrite A_split_first, <- Nat.add_1_r. 2: {
+    unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  }
+
+...
+
 Theorem A_prop_carr {r : radix} : ∀ i n u,
   A i n (P u) = NQfrac (A i n u + carry u (n - 1) // rad ^ (n - i - 1))%NQ.
 Proof.
@@ -1410,6 +1432,7 @@ induction m; intros i.
   now rewrite NQfrac_pair.
  +destruct m.
   *idtac.
+Search carry.
 ...
 -rewrite A_split_first; [ | flia ].
  replace (S m + i) with (m + S i) by flia.
