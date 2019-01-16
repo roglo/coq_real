@@ -1435,6 +1435,7 @@ induction m; intros i.
 ...
 *)
 
+(* pffff... c'est trop la merde...
 Theorem A_frac_P {r : radix} : ∀ i n u,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → (A i n (P u) = NQfrac (A i n u)) ∨
@@ -1519,8 +1520,9 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
        1) as [H3| H3].
   *rewrite NQsub_0_r.
 ...
+*)
 
-(* no more required if A_frac_P is proved! *)
+(* bof...
 Theorem A_P_upper_bound {r : radix} : ∀ i n u,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → (A i n (P u) ≤ NQfrac (A i n u) + 1 // rad)%NQ.
@@ -1609,6 +1611,7 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
   rewrite <- Nat.add_1_r.
   rewrite NQfrac_add_cond.
 ...
+*)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, u (i + k) ≤ rad - 1)
@@ -1786,7 +1789,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
     do 2 rewrite NQintg_add_frac.
     destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
       as [H3| H3].
-   ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
+   ++rewrite NQsub_0_r in AA1.
+     destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
        as [H4| H4]; [ easy | exfalso ].
      (* v<1-1/r u+v≥2-1/r u≥2-1/r-v>2-1/r-1+1/r u>1! *)
      apply NQle_add_le_sub_r in AA2.
@@ -1807,6 +1811,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
         u+p≥2-1/r
         u+v<1
         u+v≥1-1/r *)
+     rewrite NQsub_0_r in AA2.
      remember (NQfrac (A i n u)) as au eqn:Hau.
      remember (NQfrac (A i n v)) as av eqn:Hav.
      remember (NQfrac (A i n (P v))) as ap eqn:Hap.
