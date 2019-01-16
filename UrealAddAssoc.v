@@ -1423,8 +1423,15 @@ induction m; intros i.
     rewrite NQmul_pair; [ | pauto | easy ].
     rewrite Nat.mul_1_r; f_equal; cbn; flia.
   }
-  remember ((a + c // rad ^ m) * 1 // rad)%NQ as x eqn:Hx.
+  remember (a + c // rad ^ m)%NQ as x eqn:Hx.
   move x before a.
+  remember (x * 1 // rad)%NQ as y eqn:Hy.
+  rewrite <- (NQmul_pair_den_num _ 1); [ symmetry | easy ].
+  rewrite <- (NQmul_pair_den_num _ 1); [ symmetry | easy ].
+  subst y.
+  do 2 rewrite <- NQmul_add_distr_r.
+  unfold P, d2n, prop_carr.
+  remember (1 // rad)%NQ as y; cbn; subst y.
 ...
 
 Theorem A_frac_P {r : radix} : ∀ i n u,
