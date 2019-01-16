@@ -1368,6 +1368,8 @@ intros j.
 now apply NQintg_A_le_1_for_add.
 Qed.
 
+(* pffff... chais pas... est-ce vrai, d'abord ? si oui, ça vaudrait quand
+   même de voir à voir si ça se prouve
 Theorem carry_of_succ {r : radix} : ∀ u i,
   carry u i = (u (i + 1) + carry u (i + 1)) / rad.
 Proof.
@@ -1385,7 +1387,9 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1].
   rewrite <- (NQmul_pair_den_num _ 1); [ | easy ].
   rewrite <- NQmul_add_distr_r.
 ...
+*)
 
+(* chais pas
 Theorem A_prop_carr {r : radix} : ∀ i n u,
   A i n (P u) = NQfrac (A i n u + carry u (n - 1) // rad ^ (n - i - 1))%NQ.
 Proof.
@@ -1428,43 +1432,8 @@ induction m; intros i.
   now rewrite NQfrac_pair.
  +destruct m.
   *idtac.
-Search carry.
 ...
--rewrite A_split_first; [ | flia ].
- replace (S m + i) with (m + S i) by flia.
- rewrite IHm.
- rewrite NQadd_comm; symmetry.
- rewrite A_split_first; [ | flia ].
- rewrite NQadd_comm.
- remember (carry u (m + S i)) as c eqn:Hc.
- remember (A (S i) (m + S i + 1) u) as a eqn:Ha.
- move a before c.
- rewrite NQadd_assoc.
- destruct (NQlt_le_dec (a + c // rad ^ m)%NQ 1) as [H1| H1].
- +symmetry; rewrite NQfrac_small. 2: {
-    split; [ | easy ].
-    replace 0%NQ with (0 + 0 // 1)%NQ by easy.
-    apply NQadd_le_mono; [ now subst a | ].
-    apply NQle_pair; [ easy | pauto | cbn; flia ].
-  }
-  symmetry.
-  rewrite NQadd_add_swap.
-  replace (c // rad ^ S m + a * 1 // rad)%NQ with
-      ((a + c // rad ^ m) * (1 // rad))%NQ. 2: {
-    rewrite NQmul_add_distr_r, NQadd_comm; f_equal.
-    rewrite NQmul_pair; [ | pauto | easy ].
-    rewrite Nat.mul_1_r; f_equal; cbn; flia.
-  }
-  remember (a + c // rad ^ m)%NQ as x eqn:Hx.
-  move x before a.
-  remember (x * 1 // rad)%NQ as y eqn:Hy.
-  rewrite <- (NQmul_pair_den_num _ 1); [ symmetry | easy ].
-  rewrite <- (NQmul_pair_den_num _ 1); [ symmetry | easy ].
-  subst y.
-  do 2 rewrite <- NQmul_add_distr_r.
-  unfold P, d2n, prop_carr.
-  remember (1 // rad)%NQ as y; cbn; subst y.
-...
+*)
 
 Theorem A_frac_P {r : radix} : ∀ i n u,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
