@@ -1398,6 +1398,19 @@ induction m; intros i.
  rewrite NQadd_0_l.
  unfold carry; symmetry.
  destruct (LPO_fst (fA_ge_1_ε u 0));  apply NQfrac_of_nat.
+(**)
+-destruct m.
+ +unfold A.
+  rewrite Nat.add_sub, Nat.add_comm.
+  do 2 rewrite summation_only_one.
+  rewrite Nat.add_sub, Nat.pow_1_r.
+  unfold P, d2n, prop_carr; cbn.
+  rewrite <- NQpair_add_l.
+  remember (u (S i) + carry u (S i)) as x eqn:Hx.
+  now rewrite NQfrac_pair.
+ +destruct m.
+  *idtac.
+...
 -rewrite A_split_first; [ | flia ].
  replace (S m + i) with (m + S i) by flia.
  rewrite IHm.
