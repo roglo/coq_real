@@ -1406,31 +1406,25 @@ induction m; intros i.
  rewrite NQadd_comm.
  remember (carry u (m + S i)) as c eqn:Hc.
  remember (A (S i) (m + S i + 1) u) as a eqn:Ha.
+ move a before c.
  rewrite NQadd_assoc.
-...
-
- rewrite <- H2.
- do 2 rewrite summation_only_one.
- replace (i + 1 - i) with 1 by flia.
- rewrite Nat.pow_1_r.
- rewrite <- NQpair_add_l.
- rewrite NQfrac_pair.
- now unfold P, d2n, prop_carr; cbn.
--assert (H : i + 1 < n - 1) by flia H1 H2.
- clear H1 H2; rename H into H1.
-...
- destruct (eq_nat_dec (i + 1) (n - 2)) as [H2| H2].
- +setoid_rewrite A_split_first; [ | flia H2 | flia H2 ].
-  setoid_rewrite A_split_first; [ | flia H2 | flia H2 ].
-  unfold A.
-  rewrite summation_empty; [ | flia H2 ].
-  rewrite summation_empty; [ | flia H2 ].
-  rewrite NQmul_0_l.
-  do 2 rewrite NQadd_0_r.
-  replace (n - i - 1) with 2 by flia H2.
-  replace (S (S i)) with (i + 2) by flia.
-  rewrite <- Nat.add_1_r.
-  rewrite NQfrac_add_cond.
+ destruct (NQlt_le_dec (a + c // rad ^ m)%NQ 1) as [H1| H1].
+ +symmetry; rewrite NQfrac_small. 2: {
+    split; [ | easy ].
+    replace 0%NQ with (0 + 0 // 1)%NQ by easy.
+    apply NQadd_le_mono; [ now subst a | ].
+    apply NQle_pair; [ easy | pauto | cbn; flia ].
+  }
+  symmetry.
+  rewrite NQadd_add_swap.
+  replace (c // rad ^ S m + a * 1 // rad)%NQ with
+      ((a + c // rad ^ m) * (1 // rad))%NQ. 2: {
+    rewrite NQmul_add_distr_r, NQadd_comm; f_equal.
+    rewrite NQmul_pair; [ | pauto | easy ].
+    rewrite Nat.mul_1_r; f_equal; cbn; flia.
+  }
+  remember ((a + c // rad ^ m) * 1 // rad)%NQ as x eqn:Hx.
+  move x before a.
 ...
 
 Theorem A_frac_P {r : radix} : ∀ i n u,
