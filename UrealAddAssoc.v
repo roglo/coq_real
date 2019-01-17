@@ -1849,6 +1849,17 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
      specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1) as A1.
      specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as A2.
      move A2 before H2; move A1 before H2.
+     assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
+       intros.
+       unfold "⊕".
+       replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+       replace (i + k + 1) with (i + (k + 1)) by flia.
+       apply Nat.add_le_mono; [ apply Hu | apply digit_le_pred_radix ].
+     }
+     specialize (A_ge_1_add_all_true_if _ i H H1) as H'1; clear H.
+     destruct H'1 as [H'1| [H'1| H'1]].
+    **idtac.
+...
 (*
 0.9<au<1
 0.9<ap<1
@@ -1874,7 +1885,6 @@ base 2
 0.1≤au+av<1
 1.1≤au+ap<10
 *)
-...
   -- ...
  +destruct H2 as (j & Hj & Hjj).
 ...
