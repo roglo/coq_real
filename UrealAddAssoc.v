@@ -1858,7 +1858,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
      }
      specialize (A_ge_1_add_all_true_if _ i H H1) as H'1; clear H.
      destruct H'1 as [H'1| [H'1| H'1]].
-    **idtac.
+    **(* should be not possible, since au+ap≥1 *)
+      move H3 at bottom.
+      rewrite Hau, Hap in H3.
+      unfold A in H3.
 ...
 (*
 0.9<au<1
