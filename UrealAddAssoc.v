@@ -1881,6 +1881,9 @@ base 2
 0.1≤au+av<1
 1.1≤au+ap<10
 *)
+     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1) as A1.
+     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as A2.
+     move A2 before H2; move A1 before H2.
 ...
 specialize (A_P_upper_bound i n v) as H5.
 assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
