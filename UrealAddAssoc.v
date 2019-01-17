@@ -1756,16 +1756,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    rewrite NQintg_small; [ | easy ].
    rewrite (NQfrac_small x); [ clear H | easy ].
    rewrite Nat.add_0_l.
-(*
-   rewrite (NQfrac_small (A i n u)). 2: {
-     split; [ easy | ].
-     apply A_upper_bound_for_dig.
-     intros k Hk.
-     replace k with (i + (k - i)) by flia Hk.
-     apply Hu.
-   }
-   rewrite NQfrac_P_M.
-*)
    destruct j.
   --rewrite Nat.mul_0_r in Hx; unfold B in Hx.
     rewrite Nat.add_0_r in Hx.
