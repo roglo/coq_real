@@ -1938,7 +1938,26 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       do 2 rewrite Nat.mul_1_r.
       apply Nat.sub_lt; [ | pauto ].
       now apply Nat_pow_ge_1.
-    **idtac.
+    **assert (Hum : ∀ k, u (i + k + 1) = rad - 1). {
+        intros k.
+        specialize (H'1 k); unfold "⊕" in H'1.
+        apply Nat.le_antisymm.
+        -rewrite <- Nat.add_assoc; apply Hu.
+        -apply (Nat.add_le_mono_r _ _ (P v (i + k + 1))).
+         rewrite H'1.
+         replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+         apply Nat.add_le_mono_l.
+         apply digit_le_pred_radix.
+      }
+      assert (Hpm : ∀ k, P v (i + k + 1) = rad - 1). {
+        intros k.
+        specialize (H'1 k); unfold "⊕" in H'1.
+        apply (Nat.add_cancel_l _ _ (u (i + k + 1))).
+        rewrite H'1.
+        replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+        f_equal.
+        now rewrite Hum.
+      }
 ...
 (*
 0.9<au<1
