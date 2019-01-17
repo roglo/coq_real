@@ -1905,9 +1905,9 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
          apply Nat.sub_lt; [ | pauto ].
          now apply Nat_pow_ge_1.
       }
-      rewrite <- A_additive.
-....
+      rewrite NQadd_comm, <- A_additive.
       unfold A.
+...
       rewrite summation_eq_compat with
         (h := λ j, ((rad - 1) // rad ^ (j - i) + - u j // rad ^ (j - i))%NQ).
       2: {
