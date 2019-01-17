@@ -1907,28 +1907,38 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       }
       rewrite NQadd_comm, <- A_additive.
       unfold A.
-...
       rewrite summation_eq_compat with
-        (h := λ j, ((rad - 1) // rad ^ (j - i) + - u j // rad ^ (j - i))%NQ).
-      2: {
+          (h := λ j, ((rad - 1) // rad ^ (j - i))%NQ). 2: {
         intros j Hj.
-        rewrite NQadd_opp_r.
-        rewrite <- NQpair_sub_l. 2: {
-          replace j with (i + (j - i)) by flia Hj.
-          apply Hu.
-        }
-        f_equal.
-        apply (Nat.add_cancel_l _ _ (u j)).
-        replace j with (i + (j - i - 1) + 1) at 1 2 by flia Hj.
-        unfold "⊕" in H'1; rewrite H'1.
-        rewrite Nat.add_comm.
-        symmetry; apply Nat.sub_add.
-        replace j with (i + (j - i)) by flia Hj.
-        apply Hu.
+        replace j with (i + (j - i - 1) + 1) at 1 by flia Hj.
+        now rewrite H'1.
       }
-      rewrite summation_add_distr.
-      remember summation as f; remember 1%NQ as x; cbn; subst f x.
-Search (Σ (_ = _, _), - _)%NQ.
+      rewrite summation_eq_compat with
+          (h := λ j, ((rad - 1) // rad * 1 // rad ^ (j - i - 1))%NQ). 2: {
+        intros j Hj.
+        rewrite NQmul_pair; [ | easy | pauto ].
+        rewrite Nat.mul_1_r.
+        rewrite <- Nat.pow_succ_r'; f_equal; f_equal.
+        flia Hj.
+      }
+      rewrite <- summation_mul_distr_l.
+      rewrite summation_shift; [ | easy ].
+      rewrite summation_eq_compat with (h := λ j, (1 // rad ^ j)%NQ). 2: {
+        intros j Hj; f_equal; f_equal; flia.
+      }
+      rewrite NQpower_summation; [ | easy ].
+      remember (n - 1 - (i + 1)) as m eqn:Hm.
+      rewrite NQmul_pair; [ | easy | ]. 2: {
+        apply Nat.neq_mul_0.
+        split; [ pauto | flia Hr].
+      }
+      rewrite Nat.mul_comm, Nat.mul_assoc, <- Nat.pow_succ_r'.
+      rewrite NQmul_pair_mono_r; [ | pauto | flia Hr ].
+      apply NQlt_pair; [ pauto | easy | ].
+      do 2 rewrite Nat.mul_1_r.
+      apply Nat.sub_lt; [ | pauto ].
+      now apply Nat_pow_ge_1.
+    **idtac.
 ...
 (*
 0.9<au<1
