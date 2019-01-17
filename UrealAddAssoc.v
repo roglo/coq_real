@@ -1866,9 +1866,11 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
 minimize au
 au=0.9000001
 av=0.0000000 av=0.0999998
+ap=0.9999999
 maximize au
 au=0.9999999
-av=0.0000000 av=0.0000000
+av=0.0000000
+ap=0.9000001 ap=0.9999999
 *)
 ...
 specialize (A_P_upper_bound i n v) as H5.
