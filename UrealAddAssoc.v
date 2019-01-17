@@ -1885,38 +1885,6 @@ base 2
 1.1≤au+ap<10
 *)
 ...
-specialize (A_P_upper_bound i n v) as H5.
-assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
-  intros.
-  rewrite <- Nat.add_assoc.
-  apply Hv.
-}
-specialize (H5 H); clear H.
-rewrite <- NQfrac_P_M, <- Hap, <- Hav in H5.
-apply NQnlt_ge in H5; apply H5; clear H5.
-eapply NQle_lt_trans; [ | apply S3 ].
-rewrite <- NQadd_sub_assoc.
-apply NQadd_le_mono_l.
-apply NQle_add_le_sub_r.
-rewrite <- NQpair_add_l.
-apply NQle_pair; [ easy | easy | ].
-now do 2 rewrite Nat.mul_1_r.
-...
-     (*
-     1-1/r<p<1
-     1-2/r<u<1
-     0≤v<1/r
-
-     p=0.95
-     u=0.95
-     v=0.04
-     no contradiction!
-
-     The contradiction is that v being small (v<1/r), it is not possible
-     that p=P(v) be so big (p>1-1/r) since vi<2(r-1). I have to find the
-     steps to prove that.
-     *)
-...
   -- ...
  +destruct H2 as (j & Hj & Hjj).
 ...
