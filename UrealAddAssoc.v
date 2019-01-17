@@ -1847,26 +1847,25 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
        apply NQlt_sub_lt_add_l.
        eapply NQlt_trans; apply S3.
      }
-     (* 1-2/r<u<1 *)
-     assert (S5 : (1 - 2 // rad < au < 1)%NQ). {
+     (* 1-1/r<u<1 *)
+     assert (S5 : (1 - 1 // rad < au < 1)%NQ). {
        split; [ | rewrite Hau; apply NQfrac_lt_1 ].
-       apply NQle_sub_le_add_r in AA2.
-       eapply NQlt_le_trans; [ | apply AA2 ].
-       rewrite <- NQsub_add_distr.
-       apply NQsub_lt_mono_l.
-       apply NQlt_add_lt_sub_l.
-       rewrite <- NQpair_sub_l; [ easy | pauto ].
+       eapply NQle_lt_trans; [ apply AA1 | ].
+       rewrite NQadd_sub_swap, <- NQsub_sub_distr.
+       apply NQsub_lt.
+       apply NQlt_add_lt_sub_r.
+       now rewrite NQadd_0_l.
      }
 (*
-0.8<au<1     au=0.95
+0.9<au<1     au=0.95
 0.9<ap<1     ap=0.95
 0.0≤av<0.1   av=0.04
 0.9≤au+av<1
 1.9≤au+ap<2
 
 minimize au
-au=0.8000001
-av=0.0999999 av=0.1999998
+au=0.9000001
+av=0.0000000 av=0.0999998
 maximize au
 au=0.9999999
 av=0.0000000 av=0.0000000
