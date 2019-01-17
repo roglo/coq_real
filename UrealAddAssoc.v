@@ -1873,6 +1873,9 @@ av=0.0000000
 ap=0.9000001 ap=0.9999999
 
 av est vraiment trop petit pour être égal à ap à l'infini
+
+base 2
+0.5<au<1 : impossible
 *)
 ...
 specialize (A_P_upper_bound i n v) as H5.
