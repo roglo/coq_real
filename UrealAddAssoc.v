@@ -1857,9 +1857,9 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
        now rewrite NQadd_0_l.
      }
 (*
-0.9<au<1     au=0.95
-0.9<ap<1     ap=0.95
-0.0≤av<0.1   av=0.04
+0.9<au<1
+0.9<ap<1
+0.0≤av<0.1
 0.9≤au+av<1
 1.9≤au+ap<2
 
