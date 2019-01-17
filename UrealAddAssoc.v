@@ -812,12 +812,23 @@ Qed.
 
 Theorem all_fA_ge_1_ε_999 {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k, P u (i + k + 1) = rad - 1.
+  ↔ ∀ k, P u (i + k + 1) = rad - 1.
 Proof.
-intros * Hu *.
-apply fA_ge_1_ε_999.
-intros l.
-apply A_ge_1_add_r_true_if, Hu.
+intros.
+split.
+-intros Hu *.
+ apply fA_ge_1_ε_999.
+ intros l.
+ apply A_ge_1_add_r_true_if, Hu.
+-intros Hu *.
+...
+ apply A_ge_1_true_iff.
+...
+
+Search (fA_ge_1_ε _ _ _ = true).
+Check A_ge_1_add_r_true_if.
+About fA_ge_1_ε_999.
+,..
 Qed.
 
 (*
@@ -1958,6 +1969,21 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
         f_equal.
         now rewrite Hum.
       }
+      assert (H5 : ∀ k, fA_ge_1_ε (P v) i k = true). {
+Search (∀ _, fA_ge_1_ε _ _ _ = true).
+...
+all_fA_ge_1_ε_999:
+  ∀ (r : radix) (u : nat → nat) (i : nat),
+    (∀ k : nat, fA_ge_1_ε u i k = true) → ∀ k : nat, P u (i + k + 1) = rad - 1
+frac_ge_if_all_fA_ge_1_ε:
+  ∀ (r : radix) (u : nat → nat) (i : nat),
+    (∀ k : nat, fA_ge_1_ε u i k = true)
+    ↔ (∀ k : nat, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ)
+...
+unfold P, d2n, prop_carr in Hpm; cbn in Hpm.
+About A_ge_1_add_all_true_if.
+...
+      specialize (A_ge_1_add_all_true_if v i).
 ...
 (*
 0.9<au<1
