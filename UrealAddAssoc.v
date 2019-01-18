@@ -812,23 +812,12 @@ Qed.
 
 Theorem all_fA_ge_1_ε_999 {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
-  ↔ ∀ k, P u (i + k + 1) = rad - 1.
+  → ∀ k, P u (i + k + 1) = rad - 1.
 Proof.
-intros.
-split.
--intros Hu *.
- apply fA_ge_1_ε_999.
- intros l.
- apply A_ge_1_add_r_true_if, Hu.
--intros Hu *.
-...
- apply A_ge_1_true_iff.
-...
-
-Search (fA_ge_1_ε _ _ _ = true).
-Check A_ge_1_add_r_true_if.
-About fA_ge_1_ε_999.
-,..
+intros * Hu *.
+apply fA_ge_1_ε_999.
+intros l.
+apply A_ge_1_add_r_true_if, Hu.
 Qed.
 
 (*
@@ -1624,6 +1613,33 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
 ...
 *)
 
+Theorem all_9_fA_ge_1_ε {r : radix} : ∀ u i,
+  (∀ k, u (i + k + 1) = rad - 1)
+  → ∀ k, fA_ge_1_ε u i k = true.
+Proof.
+intros * Hur *.
+specialize radix_ge_2 as Hr.
+apply A_ge_1_true_iff.
+rewrite A_all_9; [ | intros j Hj; apply Hur ].
+rewrite NQfrac_small. 2: {
+  split.
+  -apply NQle_add_le_sub_l.
+   rewrite NQadd_0_l.
+   apply NQle_pair; [ pauto | easy | ].
+   do 2 rewrite Nat.mul_1_r.
+   now apply Nat_pow_ge_1.
+  -apply NQsub_lt.
+   replace 0%NQ with (0 // 1)%NQ by easy.
+   apply NQlt_pair; [ easy | pauto | flia ].
+}
+apply NQsub_le_mono; [ apply NQle_refl | ].
+apply NQle_pair; [ pauto | pauto | ].
+rewrite Nat.mul_1_l, Nat.mul_1_r.
+apply Nat.pow_le_mono_r; [ easy | ].
+unfold min_n.
+destruct rad; [ easy | cbn; flia ].
+Qed.
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -1969,21 +1985,9 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
         f_equal.
         now rewrite Hum.
       }
-      assert (H5 : ∀ k, fA_ge_1_ε (P v) i k = true). {
-Search (∀ _, fA_ge_1_ε _ _ _ = true).
 ...
-all_fA_ge_1_ε_999:
-  ∀ (r : radix) (u : nat → nat) (i : nat),
-    (∀ k : nat, fA_ge_1_ε u i k = true) → ∀ k : nat, P u (i + k + 1) = rad - 1
-frac_ge_if_all_fA_ge_1_ε:
-  ∀ (r : radix) (u : nat → nat) (i : nat),
-    (∀ k : nat, fA_ge_1_ε u i k = true)
-    ↔ (∀ k : nat, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ)
-...
-unfold P, d2n, prop_carr in Hpm; cbn in Hpm.
-About A_ge_1_add_all_true_if.
-...
-      specialize (A_ge_1_add_all_true_if v i).
+      specialize (all_9_fA_ge_1_ε _ _ Hpm) as H5.
+      specialize (A_ge_1_add_all_true_if) as H6.
 ...
 (*
 0.9<au<1
