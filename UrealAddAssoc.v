@@ -1859,10 +1859,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       }
       move Hv0 at top; subst av.
       symmetry in Hav.
-      clear Hjj S2 S4 AA2.
+      clear Hjj S2 S4 S5 AA2 H4.
       rewrite NQadd_0_l in S3.
       rewrite NQsub_0_r in S1.
-      rewrite NQadd_0_r in H4.
+      move Hav at bottom.
 ...
       rewrite Hav, A_num_den, NQfrac_pair in Hv0.
       replace 0%NQ with (0 // 1)%NQ in Hv0 by easy.
