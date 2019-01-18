@@ -1489,14 +1489,40 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
 
 Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, P u (i + k) = rad - 1)
+  → ∀ k,
+     u (i + k) = rad - 2 ∨ u (i + k) = rad - 1 ∨
+     u (i + k) = 2 * (rad - 1).
+Proof.
+intros * Hur Hpr k.
+specialize (Hpr k) as H1.
+unfold P, d2n, prop_carr in H1; cbn in H1.
+specialize (carry_upper_bound_for_add u (i + k)) as H2.
+assert (H : ∀ j, u (i + k + j) ≤ 2 * (rad - 1)). {
+  intros j; rewrite <- Nat.add_assoc; apply Hur.
+}
+specialize (H2 H); clear H.
+remember (carry u (i + k)) as c eqn:Hc.
+symmetry in Hc.
+destruct c.
+-right; left.
+ rewrite Nat.add_0_r in H1.
+ destruct (lt_dec (u (i + k)) rad) as [H3| H3].
+ +now rewrite Nat.mod_small in H1.
+ +exfalso; apply Nat.nlt_ge in H3.
+...
+
+Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k + 1) = rad - 1)
-  → ∀ k : nat, fA_ge_1_ε u i k = true.
+  → ∀ k, fA_ge_1_ε u i k = true.
 Proof.
 intros * Hur Hpr k.
 apply A_ge_1_true_iff.
 specialize (Hpr 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold P, d2n, prop_carr in H1; cbn in H1.
+...
 unfold carry in H1.
 destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2].
 -remember (min_n (i + 1) 0) as n eqn:Hn.
