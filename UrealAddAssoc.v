@@ -1857,6 +1857,12 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
         unfold den_A.
         now rewrite H4.
       }
+      move Hv0 at top; subst av.
+      symmetry in Hav.
+      clear Hjj S2 S4 AA2.
+      rewrite NQadd_0_l in S3.
+      rewrite NQsub_0_r in S1.
+      rewrite NQadd_0_r in H4.
 ...
       rewrite Hav, A_num_den, NQfrac_pair in Hv0.
       replace 0%NQ with (0 // 1)%NQ in Hv0 by easy.
