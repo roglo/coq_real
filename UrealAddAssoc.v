@@ -1173,19 +1173,13 @@ destruct (le_dec (i + 1) (n - 1)) as [H1| H1].
 Qed.
 
 Theorem NQintg_A_le_1_for_add {r : radix} : ∀ u i j,
-  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → NQintg (A i (min_n i j) u) ≤ 1.
 Proof.
 intros * Hur.
 specialize radix_ge_2 as Hr.
 remember (min_n i j) as n eqn:Hn.
-specialize (A_upper_bound_for_add u i n) as H2.
-assert (H : ∀ k, u (i + k + 1) ≤ 2 * (rad - 1)). {
-  intros k.
-  rewrite <- Nat.add_assoc.
-  apply Hur.
-}
-specialize (H2 H).
+specialize (A_upper_bound_for_add u i n Hur) as H2.
 apply NQintg_mono in H2; [ | easy ].
 eapply le_trans; [ apply H2 | ].
 rewrite NQmul_sub_distr_l.
@@ -1228,7 +1222,7 @@ apply (NQlt_le_trans _ x).
 Qed.
 
 Theorem carry_upper_bound_for_add {r : radix} : ∀ u i,
-  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → carry u i ≤ 1.
 Proof.
 intros * Hur.
@@ -1503,8 +1497,8 @@ specialize radix_ge_2 as Hr.
 specialize (Hpr k) as H1.
 unfold P, d2n, prop_carr in H1; cbn in H1.
 specialize (carry_upper_bound_for_add u (i + k)) as H2.
-assert (H : ∀ j, u (i + k + j) ≤ 2 * (rad - 1)). {
-  intros j; rewrite <- Nat.add_assoc; apply Hur.
+assert (H : ∀ j, u (i + k + j + 1) ≤ 2 * (rad - 1)). {
+  intros j; do 2 rewrite <- Nat.add_assoc; apply Hur.
 }
 specialize (H2 H); clear H.
 remember (carry u (i + k)) as c eqn:Hc.
@@ -1541,6 +1535,18 @@ destruct c; cbn.
   apply (le_lt_trans _ (2 * rad - 1)); [ flia H4 Hr | flia Hr ].
 Qed.
 
+Theorem all_P_9_999_9818_1818 {r : radix} : ∀ u i,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, P u (i + k) = rad - 1)
+  → (∀ k, u (i + k) = rad - 1) ∨
+     (∀ k, u (i + k) = 2 * (rad - 1)) ∨
+     (∃ j,
+       (∀ k, k < j → u (i + k) = rad - 1) ∧
+       u (i + j) = rad - 2 ∧
+       (∀ k, u (i + j + k + 1) = 2 * (rad - 1))).
+Proof.
+intros * Hur Hpr.
+specialize (all_P_9_all_8_9_18 _ _ Hur Hpr) as H1.
 ...
 
 Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
