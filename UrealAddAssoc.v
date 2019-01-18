@@ -2021,6 +2021,20 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       unfold P, d2n, prop_carr in Hpm; cbn in Hpm.
       unfold carry in Hpm.
       destruct (LPO_fst (fA_ge_1_ε v (i + 1))) as [H5| H5].
+    ---idtac.
+       specialize (proj1 (frac_ge_if_all_fA_ge_1_ε v _) H5 0) as H6.
+rewrite Hav in Hv0.
+rewrite A_split_first in Hv0; [ | easy ].
+Search (∀ _, fA_ge_1_ε _ _ _ = true).
+all_fA_ge_1_ε_999:
+  ∀ (r : radix) (u : nat → nat) (i : nat),
+    (∀ k : nat, fA_ge_1_ε u i k = true) → ∀ k : nat, P u (i + k + 1) = rad - 1
+frac_ge_if_all_fA_ge_1_ε:
+  ∀ (r : radix) (u : nat → nat) (i : nat),
+    (∀ k : nat, fA_ge_1_ε u i k = true) ↔ (∀ k : nat, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ)
+
+apply A_ge_1_true_iff in Hum.
+...
     ---rewrite Hav in Hv0.
        rewrite NQfrac_of_intg in Hv0; [ | pauto ].
 ...
