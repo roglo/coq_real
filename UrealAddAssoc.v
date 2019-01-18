@@ -1495,6 +1495,7 @@ Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
      u (i + k) = 2 * (rad - 1).
 Proof.
 intros * Hur Hpr k.
+specialize radix_ge_2 as Hr.
 specialize (Hpr k) as H1.
 unfold P, d2n, prop_carr in H1; cbn in H1.
 specialize (carry_upper_bound_for_add u (i + k)) as H2.
@@ -1510,6 +1511,40 @@ destruct c.
  destruct (lt_dec (u (i + k)) rad) as [H3| H3].
  +now rewrite Nat.mod_small in H1.
  +exfalso; apply Nat.nlt_ge in H3.
+  rewrite Nat_mod_less_small in H1. 2: {
+    split; [ easy | ].
+    eapply le_lt_trans; [ apply Hur | ].
+    rewrite Nat.mul_sub_distr_l.
+    apply Nat.sub_lt; [ flia Hr | flia ].
+  }
+  apply Nat.add_sub_eq_nz in H1; [ | flia Hr ].
+  specialize (Hur k) as H4.
+  apply Nat.nlt_ge in H4; apply H4; clear H4.
+  rewrite <- H1.
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+  cbn; rewrite Nat.add_0_r.
+  rewrite Nat.add_sub_assoc; [ | easy ].
+  apply Nat_sub_lt_mono_l.
+  split; [ flia | flia Hr ].
+-destruct c; [ clear H2 | flia H2 ].
+ destruct (lt_dec (u (i + k) + 1) rad) as [H3| H3].
+ +rewrite Nat.mod_small in H1; [ | easy ].
+  left; flia H1.
+ +right; right.
+  apply Nat.nlt_ge in H3.
+  rewrite Nat_mod_less_small in H1. 2: {
+    split; [ easy | ].
+    specialize (Hur k) as H4.
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
+    apply (le_lt_trans _ (2 * rad - 1)); [ flia H4 Hr | flia Hr ].
+  }
+  apply Nat.add_sub_eq_nz in H1; [ | flia Hr ].
+  cbn; rewrite Nat.add_0_r.
+  rewrite <- Nat.add_sub_swap; [ | easy ].
+  rewrite H1.
+  symmetry; apply Nat.add_sub.
+Qed.
+
 ...
 
 Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
