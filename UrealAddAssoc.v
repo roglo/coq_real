@@ -1487,6 +1487,25 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
 ...
 *)
 
+Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, P u (i + k + 1) = rad - 1)
+  → ∀ k : nat, fA_ge_1_ε u i k = true.
+Proof.
+intros * Hur Hpr k.
+apply A_ge_1_true_iff.
+specialize (Hpr 0) as H1.
+rewrite Nat.add_0_r in H1.
+unfold P, d2n, prop_carr in H1; cbn in H1.
+unfold carry in H1.
+destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2].
+-remember (min_n (i + 1) 0) as n eqn:Hn.
+ move n before i.
+Search prop_carr.
+(* perhaps another theorem stating that u is 999 or 18/18/18 or 9/9/8/18/18...
+   i.e. not passing through fA_ge_1_ε u i k = true *)
+...
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -1859,10 +1878,24 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       }
       move Hv0 at top; subst av.
       symmetry in Hav.
-      clear Hjj S2 S4 S5 AA2 H4.
+      clear Hjj S2 S4 S5 AA2 H4 H'1.
       rewrite NQadd_0_l in S3.
       rewrite NQsub_0_r in S1.
       move Hav at bottom.
+...
+specialize (all_P_9_all_fA_true v i Hv Hpm) as H4.
+Search ((∀ _, fA_ge_1_ε _ _ _ = true) → _).
+specialize (A_ge_1_add_all_true_if v i) as H6.
+assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+  intros k; rewrite <- Nat.add_assoc; apply Hv.
+}
+specialize (H6 H H4); clear H.
+...
+Search ((∀ _, fA_ge_1_ε _ _ _ = true) → _).
+Search ((∀ _, _ = rad - 1) → _).
+all_9_fA_ge_1_ε:
+  ∀ (r : radix) (u : nat → nat) (i : nat),
+    (∀ k : nat, u (i + k + 1) = rad - 1) → ∀ k : nat, fA_ge_1_ε u i k = true
 ...
       rewrite Hav, A_num_den, NQfrac_pair in Hv0.
       replace 0%NQ with (0 // 1)%NQ in Hv0 by easy.
