@@ -1491,8 +1491,12 @@ Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
   → ∀ k,
-     u (i + k) = rad - 1 ∨ u (i + k) = rad - 2 ∨
-     u (i + k) = 2 * (rad - 1).
+     if zerop (carry u (i + k)) then
+       u (i + k) = rad - 1
+     else if lt_dec (u (i + k)) (rad - 1) then
+       u (i + k) = rad - 2
+     else
+       u (i + k) = 2 * (rad - 1).
 Proof.
 intros * Hur Hpr k.
 specialize radix_ge_2 as Hr.
@@ -1505,12 +1509,11 @@ assert (H : ∀ j, u (i + k + j) ≤ 2 * (rad - 1)). {
 specialize (H2 H); clear H.
 remember (carry u (i + k)) as c eqn:Hc.
 symmetry in Hc.
-destruct c.
--left.
- rewrite Nat.add_0_r in H1.
- destruct (lt_dec (u (i + k)) rad) as [H3| H3].
+destruct c; cbn.
+-rewrite Nat.add_0_r in H1.
+ destruct (lt_dec (u (i + k)) rad) as [H4| H4].
  +now rewrite Nat.mod_small in H1.
- +exfalso; apply Nat.nlt_ge in H3.
+ +exfalso; apply Nat.nlt_ge in H4.
   rewrite Nat_mod_less_small in H1. 2: {
     split; [ easy | ].
     eapply le_lt_trans; [ apply Hur | ].
@@ -1518,31 +1521,24 @@ destruct c.
     apply Nat.sub_lt; [ flia Hr | flia ].
   }
   apply Nat.add_sub_eq_nz in H1; [ | flia Hr ].
-  specialize (Hur k) as H4.
-  apply Nat.nlt_ge in H4; apply H4; clear H4.
+  specialize (Hur k) as H5.
+  apply Nat.nlt_ge in H5; apply H5; clear H5.
   rewrite <- H1.
   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
   cbn; rewrite Nat.add_0_r.
   rewrite Nat.add_sub_assoc; [ | easy ].
   apply Nat_sub_lt_mono_l.
   split; [ flia | flia Hr ].
--destruct c; [ clear H2 | flia H2 ].
- destruct (lt_dec (u (i + k) + 1) rad) as [H3| H3].
- +rewrite Nat.mod_small in H1; [ | easy ].
-  right; left; flia H1.
- +right; right.
+-destruct c; [ | flia H2 ].
+ destruct (lt_dec (u (i + k)) (rad - 1)) as [H3| H3].
+ +rewrite Nat.mod_small in H1; [ flia H1 | flia H3 ].
+ +rewrite Nat.add_0_r.
   apply Nat.nlt_ge in H3.
-  rewrite Nat_mod_less_small in H1. 2: {
-    split; [ easy | ].
-    specialize (Hur k) as H4.
-    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
-    apply (le_lt_trans _ (2 * rad - 1)); [ flia H4 Hr | flia Hr ].
-  }
-  apply Nat.add_sub_eq_nz in H1; [ | flia Hr ].
-  cbn; rewrite Nat.add_0_r.
-  rewrite <- Nat.add_sub_swap; [ | easy ].
-  rewrite H1.
-  symmetry; apply Nat.add_sub.
+  rewrite Nat_mod_less_small in H1; [ flia H1 | ].
+  split; [ flia H3 | ].
+  specialize (Hur k) as H4.
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
+  apply (le_lt_trans _ (2 * rad - 1)); [ flia H4 Hr | flia Hr ].
 Qed.
 
 ...
