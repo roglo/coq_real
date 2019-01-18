@@ -810,7 +810,34 @@ apply (lt_le_trans _ ((xd + xd * (rad - 2)) * rad)).
  now apply Nat.sub_le_mono_l.
 Qed.
 
-Theorem all_fA_ge_1_ε_999 {r : radix} : ∀ u i,
+Theorem all_9_fA_ge_1_ε {r : radix} : ∀ u i,
+  (∀ k, u (i + k + 1) = rad - 1)
+  → ∀ k, fA_ge_1_ε u i k = true.
+Proof.
+intros * Hur *.
+specialize radix_ge_2 as Hr.
+apply A_ge_1_true_iff.
+rewrite A_all_9; [ | intros j Hj; apply Hur ].
+rewrite NQfrac_small. 2: {
+  split.
+  -apply NQle_add_le_sub_l.
+   rewrite NQadd_0_l.
+   apply NQle_pair; [ pauto | easy | ].
+   do 2 rewrite Nat.mul_1_r.
+   now apply Nat_pow_ge_1.
+  -apply NQsub_lt.
+   replace 0%NQ with (0 // 1)%NQ by easy.
+   apply NQlt_pair; [ easy | pauto | flia ].
+}
+apply NQsub_le_mono; [ apply NQle_refl | ].
+apply NQle_pair; [ pauto | pauto | ].
+rewrite Nat.mul_1_l, Nat.mul_1_r.
+apply Nat.pow_le_mono_r; [ easy | ].
+unfold min_n.
+destruct rad; [ easy | cbn; flia ].
+Qed.
+
+Theorem all_fA_ge_1_ε_P_999 {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, P u (i + k + 1) = rad - 1.
 Proof.
@@ -819,159 +846,6 @@ apply fA_ge_1_ε_999.
 intros l.
 apply A_ge_1_add_r_true_if, Hu.
 Qed.
-
-(*
-Theorem fA_ge_1_ε_999_P {r : radix} : ∀ u i,
-  (∀ k, fA_ge_1_ε u i k = true)
-  → P u i ≠ rad - 1
-  → P u i = u i mod rad.
-Proof.
-intros * Hu Hp.
-unfold P, d2n, prop_carr in Hp; cbn in Hp.
-unfold P, d2n, prop_carr; cbn.
-replace (u i) with (u i + 0) at 2 by flia.
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-f_equal; f_equal; rewrite Nat.mod_0_l; [ | easy ].
-unfold carry in Hp; unfold carry.
-destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. 2: {
-  destruct H1 as (j & Hj & H1).
-  now rewrite Hu in H1.
-}
-clear H1.
-remember (min_n i 0) as n eqn:Hn.
-move n before i.
-specialize (all_fA_ge_1_ε_999 _ _ Hu) as H1.
-unfold P, d2n, prop_carr in H1; cbn in H1.
-(* theorem false, counter example: u=3/9/9/2009/9/9... P(u)=5/9/9/9/9... *)
-Search (NQintg (A _ _ _)).
-Search ((rad - 1) ^ 2).
-...
-Theorem glop :
-  (∀ k, u (i + k) ≤ (i + k + 1) * (rad - 1) ^ 2)
-  → ...
-...
-*)
-
-(* it is false; moreover, it is too close to theorem Hugo_Herbelin
-   below; j'ai juste tourné en rond
-Theorem P_additive {r : radix} : ∀ u v i,
-  P (u ⊕ v) i = (P u i + P v i) mod rad.
-Proof.
-(*
-intros.
-destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
--destruct (LPO_fst (fA_ge_1_ε u i)) as [H2| H2].
- +destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
-  *rewrite fA_ge_1_ε_999_P; [ | easy ].
-   rewrite fA_ge_1_ε_999_P; [ | easy ].
-   rewrite fA_ge_1_ε_999_P; [ | easy ].
-   now rewrite <- Nat.add_mod.
-  *idtac.
-...
-*)
-intros.
-unfold P, prop_carr, d2n; cbn.
-unfold carry.
-rewrite Nat.add_mod_idemp_l; [ | easy ].
-rewrite Nat.add_mod_idemp_r; [ | easy ].
-rewrite Nat.add_shuffle0, Nat.add_assoc.
-rewrite <- Nat.add_assoc.
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-f_equal; f_equal.
-destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H1| H1].
--destruct (LPO_fst (fA_ge_1_ε u i)) as [H2| H2].
- +destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
-  *specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as H1'.
-   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as H2'.
-   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H3 0) as H3'.
-   rewrite Nat.pow_1_r in H1', H2', H3'.
-   rewrite A_additive in H1'.
-   remember (min_n i 0) as n eqn:Hn.
-   rewrite NQfrac_add in H1'; [ | pauto | pauto ].
-   rewrite A_additive.
-   rewrite NQintg_add; [ | pauto | pauto ].
-   symmetry; rewrite Nat.add_comm; symmetry.
-   remember (NQintg (A i n u) + NQintg (A i n v)) as x eqn:Hx.
-   replace x with (x + 0) at 2 by flia.
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   f_equal; f_equal; rewrite Nat.mod_0_l; [ | easy ].
-   clear x Hx.
-   (*exfalso*)
-   specialize (all_fA_ge_1_ε_999 _ _ H1) as H'1.
-   specialize (all_fA_ge_1_ε_999 _ _ H2) as H'2.
-   specialize (all_fA_ge_1_ε_999 _ _ H3) as H'3.
-(* P u i = 9, P v i = 9,
-   but P (u ⊕ v) i = 9 ≠ (9 + 9) mod 10
-   therefore the theorem is false
-   but perhaps there is another formulation for it *)
-...
-   unfold P, d2n, prop_carr in H'1, H'2, H'3.
-   cbn in H'1, H'2, H'3.
-   unfold carry in H'1, H'2, H'3.
-   assert (H''1 :
-     ∀ k,
-       (u (i + k + 1) + v (i + k + 1) +
-        NQintg
-          (A (i + k + 1) (min_n (i + k + 1) 0) u +
-           A (i + k + 1) (min_n (i + k + 1) 0) v)) mod rad =
-       rad - 1). {
-     intros; specialize (H'1 k).
-     destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + k + 1))) as [H| H].
-     -now rewrite A_additive in H'1.
-     -destruct H as (j & Hj & Hjj).
-      rewrite <- Nat.add_assoc in Hjj.
-      rewrite A_ge_1_add_r_true_if in Hjj; [ easy | apply H1 ].
-   }
-   move H''1 before H'1; clear H'1; rename H''1 into H'1.
-   assert (H''2 :
-     ∀ k,
-       (u (i + k + 1) +
-        NQintg (A (i + k + 1) (min_n (i + k + 1) 0) u)) mod rad = rad - 1). {
-     intros; specialize (H'2 k).
-     destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H| H]; [ easy | ].
-     destruct H as (j & Hj & Hjj).
-     rewrite <- Nat.add_assoc in Hjj.
-     rewrite A_ge_1_add_r_true_if in Hjj; [ easy | apply H2 ].
-   }
-   move H''2 before H'2; clear H'2; rename H''2 into H'2.
-   assert (H''3 :
-     ∀ k,
-       (v (i + k + 1) +
-        NQintg (A (i + k + 1) (min_n (i + k + 1) 0) v)) mod rad = rad - 1). {
-     intros; specialize (H'3 k).
-     destruct (LPO_fst (fA_ge_1_ε v (i + k + 1))) as [H| H]; [ easy | ].
-     destruct H as (j & Hj & Hjj).
-     rewrite <- Nat.add_assoc in Hjj.
-     rewrite A_ge_1_add_r_true_if in Hjj; [ easy | apply H3 ].
-   }
-   move H''3 before H'3; clear H'3; rename H''3 into H'3.
-Search (NQintg (_ + _)).
-assert (H : ∀ k,
-  (2 * rad - 2 + NQintg (NQfrac (A (i + k + 1) (min_n (i + k + 1) 0) u) + NQfrac (A (i + k + 1) (min_n (i + k + 1) 0) v))) mod rad = rad - 1). {
-  intros k.
-  specialize (H'1 k); specialize (H'2 k); specialize (H'3 k).
-  rewrite NQintg_add in H'1; [ | easy | easy ].
-  remember (A (i + k + 1) (min_n (i + k + 1) 0) u) as x eqn:Hx.
-  remember (A (i + k + 1) (min_n (i + k + 1) 0) v) as y eqn:Hy.
-  move y before x.
-  rewrite Nat.add_assoc in H'1.
-  rewrite Nat.add_shuffle1 in H'1.
-  rewrite <- Nat.add_assoc in H'1.
-  rewrite <- Nat.add_mod_idemp_l in H'1; [ | easy ].
-  rewrite H'2, Nat.add_comm, <- Nat.add_assoc in H'1.
-  rewrite <- Nat.add_mod_idemp_l in H'1; [ | easy ].
-  rewrite H'3 in H'1; rewrite <- H'1.
-  f_equal.
-  rewrite Nat.add_comm; symmetry.
-  rewrite Nat.add_comm; symmetry.
-  rewrite <- Nat.add_assoc; f_equal.
-  flia.
-}
-...
-*)
 
 Theorem M_upper_bound {r : radix} : ∀ u i, M u i < rad.
 Proof.
@@ -1155,7 +1029,7 @@ Theorem pre_Hugo_Herbelin_lemma {r : radix} : ∀ i n u v,
 Proof.
 intros * Hn H1 H3.
 specialize radix_ge_2 as Hr.
-specialize (all_fA_ge_1_ε_999 _ _ H3) as A3.
+specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
 assert (H4 : (0 ≤ 1 - 2 // rad ^ (n - i - 1))%NQ). {
   rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
     do 2 rewrite Nat.mul_1_l.
@@ -1613,33 +1487,6 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
 ...
 *)
 
-Theorem all_9_fA_ge_1_ε {r : radix} : ∀ u i,
-  (∀ k, u (i + k + 1) = rad - 1)
-  → ∀ k, fA_ge_1_ε u i k = true.
-Proof.
-intros * Hur *.
-specialize radix_ge_2 as Hr.
-apply A_ge_1_true_iff.
-rewrite A_all_9; [ | intros j Hj; apply Hur ].
-rewrite NQfrac_small. 2: {
-  split.
-  -apply NQle_add_le_sub_l.
-   rewrite NQadd_0_l.
-   apply NQle_pair; [ pauto | easy | ].
-   do 2 rewrite Nat.mul_1_r.
-   now apply Nat_pow_ge_1.
-  -apply NQsub_lt.
-   replace 0%NQ with (0 // 1)%NQ by easy.
-   apply NQlt_pair; [ easy | pauto | flia ].
-}
-apply NQsub_le_mono; [ apply NQle_refl | ].
-apply NQle_pair; [ pauto | pauto | ].
-rewrite Nat.mul_1_l, Nat.mul_1_r.
-apply Nat.pow_le_mono_r; [ easy | ].
-unfold min_n.
-destruct rad; [ easy | cbn; flia ].
-Qed.
-
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -1667,7 +1514,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    f_equal; f_equal.
    rewrite Nat.add_comm.
    rewrite NQintg_P_M, Nat.add_0_r.
-   specialize (all_fA_ge_1_ε_999 _ _ H3) as A3.
+   specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
    assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
      intros; rewrite <- Nat.add_assoc; apply Hv.
    }
@@ -1873,11 +1720,6 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
        apply NQlt_add_lt_sub_r.
        now rewrite NQadd_0_l.
      }
-(*
-     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1) as A1.
-     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as A2.
-     move A2 before H2; move A1 before H2.
-*)
      assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
        intros.
        unfold "⊕".
@@ -2021,28 +1863,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       rewrite Nat.mul_1_r, Nat.mul_0_r in Hv0.
       apply Nat.mod_divides in Hv0; [ | unfold den_A; pauto ].
       destruct Hv0 as (c, Hc).
-...
-      specialize (Hpm 0).
-      rewrite Nat.add_0_r in Hpm.
-      unfold P, d2n, prop_carr in Hpm; cbn in Hpm.
-      unfold carry in Hpm.
-      destruct (LPO_fst (fA_ge_1_ε v (i + 1))) as [H5| H5].
-    ---idtac.
-       specialize (proj1 (frac_ge_if_all_fA_ge_1_ε v _) H5 0) as H6.
-rewrite Hav in Hv0.
-rewrite A_split_first in Hv0; [ | easy ].
-Search (∀ _, fA_ge_1_ε _ _ _ = true).
-all_fA_ge_1_ε_999:
-  ∀ (r : radix) (u : nat → nat) (i : nat),
-    (∀ k : nat, fA_ge_1_ε u i k = true) → ∀ k : nat, P u (i + k + 1) = rad - 1
-frac_ge_if_all_fA_ge_1_ε:
-  ∀ (r : radix) (u : nat → nat) (i : nat),
-    (∀ k : nat, fA_ge_1_ε u i k = true) ↔ (∀ k : nat, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ)
-
-apply A_ge_1_true_iff in Hum.
-...
-    ---rewrite Hav in Hv0.
-       rewrite NQfrac_of_intg in Hv0; [ | pauto ].
+      specialize (all_9_fA_ge_1_ε _ _ Hpm) as H5.
 ...
 (*
 0.9<au<1
