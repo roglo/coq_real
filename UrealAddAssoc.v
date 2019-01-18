@@ -1487,13 +1487,13 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
 ...
 *)
 
-Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
+Theorem all_P_9_all_8_9_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
   → ∀ k,
      if zerop (carry u (i + k)) then
        u (i + k) = rad - 1
-     else if lt_dec (u (i + k)) (rad - 1) then
+     else if lt_dec (u (i + k) + 1) rad then
        u (i + k) = rad - 2
      else
        u (i + k) = 2 * (rad - 1).
@@ -1530,12 +1530,12 @@ destruct c; cbn.
   apply Nat_sub_lt_mono_l.
   split; [ flia | flia Hr ].
 -destruct c; [ | flia H2 ].
- destruct (lt_dec (u (i + k)) (rad - 1)) as [H3| H3].
- +rewrite Nat.mod_small in H1; [ flia H1 | flia H3 ].
+ destruct (lt_dec (u (i + k) + 1) rad) as [H3| H3].
+ +rewrite Nat.mod_small in H1; [ flia H1 | easy ].
  +rewrite Nat.add_0_r.
   apply Nat.nlt_ge in H3.
   rewrite Nat_mod_less_small in H1; [ flia H1 | ].
-  split; [ flia H3 | ].
+  split; [ easy | ].
   specialize (Hur k) as H4.
   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
   apply (le_lt_trans _ (2 * rad - 1)); [ flia H4 Hr | flia Hr ].
