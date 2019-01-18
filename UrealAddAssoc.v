@@ -2016,6 +2016,14 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
         now rewrite H4.
       }
 ...
+      specialize (Hpm 0).
+      rewrite Nat.add_0_r in Hpm.
+      unfold P, d2n, prop_carr in Hpm; cbn in Hpm.
+      unfold carry in Hpm.
+      destruct (LPO_fst (fA_ge_1_ε v (i + 1))) as [H5| H5].
+    ---rewrite Hav in Hv0.
+       rewrite NQfrac_of_intg in Hv0; [ | pauto ].
+...
 (*
 0.9<au<1
 0.9<ap<1
