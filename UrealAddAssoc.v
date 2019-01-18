@@ -2005,13 +2005,16 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
         apply NQlt_sub_lt_add_l in H4.
         rewrite NQadd_comm in H4.
         apply NQadd_lt_mono_r in H4.
-...
-      assert (Hvm : ∀ k, v (i + k + 1) = 0). {
-        intros k.
-
-...
-      specialize (all_9_fA_ge_1_ε _ _ Hpm) as H5.
-      specialize (A_ge_1_add_all_true_if) as H6.
+        rewrite Hav, A_num_den, NQfrac_pair in H4.
+        unfold den_A in H4.
+        apply NQlt_pair in H4; [ | pauto | pauto ].
+        rewrite Nat.mul_comm in H4.
+        apply Nat.mul_lt_mono_pos_l in H4; [ | apply Nat.neq_0_lt_0; pauto ].
+        apply Nat.lt_1_r in H4.
+        rewrite Hav, A_num_den, NQfrac_pair.
+        unfold den_A.
+        now rewrite H4.
+      }
 ...
 (*
 0.9<au<1
