@@ -1985,6 +1985,30 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
         f_equal.
         now rewrite Hum.
       }
+      assert (Hu9 : au = (1 - 1 // rad ^ (n - i - 1))%NQ). {
+        rewrite Hau.
+        rewrite A_all_9; [ | intros; apply Hum ].
+        rewrite NQfrac_small; [ easy | ].
+        split.
+        -apply NQle_add_le_sub_l.
+         rewrite NQadd_0_l.
+         apply NQle_pair; [ pauto | easy | ].
+         rewrite Nat.mul_1_l, Nat.mul_1_r.
+         now apply Nat_pow_ge_1.
+        -apply NQsub_lt.
+         replace 0%NQ with (0 // 1)%NQ by easy.
+         apply NQlt_pair; [ easy | pauto | flia ].
+      }
+      assert (Hv0 : av = 0%NQ). {
+        rewrite Hu9 in H4.
+        rewrite <- NQadd_sub_swap in H4.
+        apply NQlt_sub_lt_add_l in H4.
+        rewrite NQadd_comm in H4.
+        apply NQadd_lt_mono_r in H4.
+...
+      assert (Hvm : ∀ k, v (i + k + 1) = 0). {
+        intros k.
+
 ...
       specialize (all_9_fA_ge_1_ε _ _ Hpm) as H5.
       specialize (A_ge_1_add_all_true_if) as H6.
