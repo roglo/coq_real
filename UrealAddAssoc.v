@@ -1491,7 +1491,7 @@ Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
   → ∀ k,
-     u (i + k) = rad - 2 ∨ u (i + k) = rad - 1 ∨
+     u (i + k) = rad - 1 ∨ u (i + k) = rad - 2 ∨
      u (i + k) = 2 * (rad - 1).
 Proof.
 intros * Hur Hpr k.
@@ -1506,7 +1506,7 @@ specialize (H2 H); clear H.
 remember (carry u (i + k)) as c eqn:Hc.
 symmetry in Hc.
 destruct c.
--right; left.
+-left.
  rewrite Nat.add_0_r in H1.
  destruct (lt_dec (u (i + k)) rad) as [H3| H3].
  +now rewrite Nat.mod_small in H1.
@@ -1529,7 +1529,7 @@ destruct c.
 -destruct c; [ clear H2 | flia H2 ].
  destruct (lt_dec (u (i + k) + 1) rad) as [H3| H3].
  +rewrite Nat.mod_small in H1; [ | easy ].
-  left; flia H1.
+  right; left; flia H1.
  +right; right.
   apply Nat.nlt_ge in H3.
   rewrite Nat_mod_less_small in H1. 2: {
