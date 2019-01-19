@@ -1734,6 +1734,7 @@ Theorem all_P_9_999_9818_1818 {r : radix} : ∀ u i,
        (∀ k, u (i + j + k + 1) = 2 * (rad - 1))).
 Proof.
 intros * Hur Hpr.
+specialize radix_ge_2 as Hr.
 destruct (LPO_fst (is_num_9 u i)) as [H1| H1].
 -specialize (is_num_9_all_9 u i H1) as H2.
  now left.
@@ -1750,6 +1751,30 @@ destruct (LPO_fst (is_num_9 u i)) as [H1| H1].
    specialize (Hjj _ Hkj) as H4.
    now apply is_num_9_true_iff in H4.
   *intros k.
+   apply Nat.neq_0_lt_0 in H2.
+   unfold carry in H2.
+   destruct (LPO_fst (fA_ge_1_ε u (i + j))) as [H3| H3].
+  --assert (H : ∀ k, u (i + j + k + 1) ≤ 2 * (rad - 1)). {
+      intros l; do 2 rewrite <- Nat.add_assoc; apply Hur.
+    }
+    specialize (A_ge_1_add_all_true_if u (i + j) H H3) as H4; clear H.
+    destruct H4 as [H4| [H4| H4]]; [ | easy | ].
+   ++exfalso; apply H2; clear H2.
+     apply NQintg_small.
+     split; [ easy | ].
+     apply A_upper_bound_for_dig.
+     intros l Hl.
+     replace l with (i + j + (l - i - j - 1) + 1) by flia Hl.
+     now rewrite H4.
+   ++destruct H4 as (l & Hbef & Hwhi & Haft).
+     destruct l.
+    **rewrite Nat.add_0_r in Hwhi, Haft; clear Hbef.
+      exfalso; apply H2; clear H2.
+      apply NQintg_small.
+      split; [ easy | ].
+      rewrite A_split_first. 2: {
+        unfold min_n.
+        destruct rad; [ easy | cbn; flia ].
 ...
  destruct j.
  +clear Hjj.
