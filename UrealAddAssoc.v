@@ -1605,15 +1605,12 @@ Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
 Proof.
 intros * Hur Hpr k.
 apply A_ge_1_true_iff.
-specialize (Hpr 0) as H1.
-rewrite Nat.add_0_r in H1.
-unfold P, d2n, prop_carr in H1; cbn in H1.
+unfold P, d2n, prop_carr in Hpr; cbn in Hpr.
 ...
 unfold carry in H1.
 destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2].
 -remember (min_n (i + 1) 0) as n eqn:Hn.
  move n before i.
-Search prop_carr.
 (* perhaps another theorem stating that u is 999 or 18/18/18 or 9/9/8/18/18...
    i.e. not passing through fA_ge_1_ε u i k = true *)
 ...
