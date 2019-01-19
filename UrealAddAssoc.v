@@ -1594,9 +1594,23 @@ destruct (zerop (carry u (i + k))) as [H2| H2].
   apply NQle_pair; [ easy | easy | flia Hr ].
  +now apply NQmul_le_mono_nonneg.
 -right.
+ apply Nat.neq_0_lt_0 in H2.
  destruct (lt_dec (u (i + k) + 1) rad) as [H3| H3].
  +left; split; [ easy | ].
   unfold carry in H2; clear H3.
+  destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3].
+  *exists 0.
+   split; [ easy | ].
+   rewrite Nat.add_0_r.
+   apply Nat.nlt_ge; intros H4; apply H2; clear H2.
+   apply NQintg_small.
+   split; [ easy | ].
+   rewrite A_split_first. 2: {
+     unfold min_n.
+     destruct rad; [ easy | cbn; flia ].
+   }
+   rewrite <- Nat.add_1_r.
+...
   assert (Hn : ∃ n, NQintg (A (i + k) (min_n (i + k) n) u) > 0). {
     destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3].
     -now exists 0.
