@@ -1717,11 +1717,9 @@ Theorem all_P_9_all_989_818_1818 {r : radix} : ∀ u i,
      u (i + k) = 2 * (rad - 1) ∧
         u (i + k + 1) = 2 * (rad - 1).
 Proof.
+(* eq_all_prop_carr_9_cond4 *)
 intros * Hur Hpr k.
-Abort. (*
-specialize (all_P_9_all_989_8_18 u i Hur Hpr k) as H.
 ...
-*)
 
 Theorem all_P_9_999_9818_1818 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -1733,61 +1731,78 @@ Theorem all_P_9_999_9818_1818 {r : radix} : ∀ u i,
        u (i + j) = rad - 2 ∧
        (∀ k, u (i + j + k + 1) = 2 * (rad - 1))).
 Proof.
+(* eq_all_prop_carr_9 *)
 intros * Hur Hpr.
 specialize radix_ge_2 as Hr.
+specialize (all_P_9_all_989_818_1818 u i Hur Hpr) as HAF.
 destruct (LPO_fst (is_num_9 u i)) as [H1| H1].
 -specialize (is_num_9_all_9 u i H1) as H2.
  now left.
 -destruct H1 as (j & Hjj & Hj).
  apply is_num_9_false_iff in Hj.
- right.
- specialize (all_P_9_all_8_9_18 _ _ Hur Hpr j) as H1.
- destruct (zerop (carry u (i + j))) as [H2| H2]; [ easy | ].
- destruct (lt_dec (u (i + j) + 1) rad) as [H3| H3].
- +right; clear Hj H3.
-  exists j.
-  split; [ | split ]; [ | easy | ].
-  *intros k Hkj.
-   specialize (Hjj _ Hkj) as H4.
-   now apply is_num_9_true_iff in H4.
-  *intros k.
-   apply Nat.neq_0_lt_0 in H2.
-   unfold carry in H2.
-   destruct (LPO_fst (fA_ge_1_ε u (i + j))) as [H3| H3].
-  --assert (H : ∀ k, u (i + j + k + 1) ≤ 2 * (rad - 1)). {
-      intros l; do 2 rewrite <- Nat.add_assoc; apply Hur.
-    }
-    specialize (A_ge_1_add_all_true_if u (i + j) H H3) as H4; clear H.
-    destruct H4 as [H4| [H4| H4]]; [ | easy | ].
-   ++exfalso; apply H2; clear H2.
-     apply NQintg_small.
-     split; [ easy | ].
-     apply A_upper_bound_for_dig.
-     intros l Hl.
-     replace l with (i + j + (l - i - j - 1) + 1) by flia Hl.
-     now rewrite H4.
-   ++destruct H4 as (l & Hbef & Hwhi & Haft).
-     destruct l.
-    **rewrite Nat.add_0_r in Hwhi, Haft; clear Hbef.
-      exfalso; apply H2; clear H2.
-      apply NQintg_small.
-      split; [ easy | ].
-      rewrite A_split_first. 2: {
-        unfold min_n.
-        destruct rad; [ easy | cbn; flia ].
-      }
-      rewrite <- Nat.add_1_r.
-      rewrite Hwhi.
-...
  destruct j.
- +clear Hjj.
-  rewrite Nat.add_0_r in Hj.
-  right.
-  specialize (all_P_9_all_8_9_18 _ _ Hur Hpr 0) as H1.
-  rewrite Nat.add_0_r in H1.
-  destruct (zerop (carry u i)) as [H2| H2]; [ easy | ].
-  destruct (lt_dec (u i + 1) rad) as [H3| H3].
-  *right.
+ +specialize (HAF 0) as H1.
+  rewrite Nat.add_0_r in Hj, H1.
+  destruct H1 as [H1| [H1| H1]]; destruct H1 as (H1, H2).
+  *easy.
+  *right; right.
+   exists 0.
+   rewrite Nat.add_0_r.
+   split; [ now intros | ].
+   split; [ easy | ].
+   replace (i + 1 + 1) with (i + 2) in H2 by flia.
+   intros k.
+   induction k; [ now rewrite Nat.add_0_r | ].
+   specialize (HAF (k + 1)) as H3.
+   replace (i + (k + 1)) with (i + k + 1) in H3 by flia.
+   destruct H3 as [H3| [H3| H3]]; destruct H3 as (H3, H4).
+  --rewrite H3 in IHk; flia Hr IHk.
+  --rewrite H3 in IHk; flia Hr IHk.
+  --now replace (i + k + 1 + 1) with (i + S k + 1) in H4 by flia.
+  *right; left.
+   intros k.
+   induction k; [ now rewrite Nat.add_0_r | ].
+   specialize (HAF k) as H3.
+   destruct H3 as [H3| [H3| H3]]; destruct H3 as (H3, H4).
+  --rewrite H3 in IHk; flia Hr IHk.
+  --rewrite H3 in IHk; flia Hr IHk.
+  --now replace (i + k + 1) with (i + S k) in H4 by flia.
+ +specialize (Hjj j (Nat.lt_succ_diag_r j)) as H1.
+  apply is_num_9_true_iff in H1.
+  right; right.
+  exists (S j).
+  split.
+  *intros k Hk.
+   specialize (Hjj _ Hk).
+   now apply is_num_9_true_iff in Hjj.
+  *replace (i + S j) with (i + j + 1) in Hj |-* by flia.
+   specialize (HAF j) as H2.
+   destruct H2 as [H2| [H2| H2]]; destruct H2 as (H2, H3).
+  --(*replace (i + j + 1 + 1) with (i + j + 2) in H3 by flia.*)
+    destruct H3 as [H3| H3]; [ | easy ].
+    split; [ easy | ].
+    intros k.
+    induction k.
+   ++rewrite Nat.add_0_r.
+     replace (i + j + 1 + 1) with (i + j + 2) by flia.
+     specialize (HAF (j + 1)) as H4.
+     destruct H4 as [H4| [H4| H4]]; destruct H4 as (H4, H5).
+    **replace (i + (j + 1)) with (i + j + 1) in H4 by flia.
+      rewrite H3 in H4; flia Hr H4.
+    **now replace (i + (j + 1) + 1) with (i + j + 2) in H5 by flia.
+    **now replace (i + (j + 1) + 1) with (i + j + 2) in H5 by flia.
+   ++replace (i + j + 1 + k + 1) with (i + j + k + 2) in IHk by flia.
+     replace (i + j + 1 + S k + 1) with (i + j + k + 3) by flia.
+     specialize (HAF (j + k + 2)) as H4.
+     replace (i + (j + k + 2)) with (i + j + k + 2) in H4 by flia.
+     destruct H4 as [H4| [H4| H4]]; destruct H4 as (H4, H5).
+    **rewrite H4 in IHk; flia Hr IHk.
+    **rewrite H4 in IHk; flia Hr IHk.
+    **now replace (i + j + k + 2 + 1) with (i + j + k + 3) in H5 by flia.
+  --rewrite H1 in H2; flia Hr H2.
+  --rewrite H1 in H2; flia Hr H2.
+Qed.
+
 ...
 
 Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
