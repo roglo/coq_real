@@ -1547,6 +1547,24 @@ destruct c; cbn.
   apply (le_lt_trans _ (2 * rad - 1)); [ flia H4 Hr | flia Hr ].
 Qed.
 
+Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, P u (i + k) = rad - 1)
+  → ∀ k,
+     u (i + k) = rad - 1 ∧
+       (u (i + k + 1) = rad - 2 ∨ u (i + k + 1) = rad - 1) ∨
+     u (i + k) = rad - 2 ∧
+       (∃ n,
+           (∀ l, l < n → u (i + k + l + 1) = rad - 1) ∧
+           u (i + k + n + 1) = 2 * (rad - 1)) ∨
+     u (i + k) = 2 * (rad - 1) ∧
+       (∃ n,
+           (∀ l, l < n → u (i + k + l + 1) = rad - 1) ∧
+           u (i + k + n + 1) = 2 * (rad - 1)).
+Proof.
+intros * Hur Hn k.
+...
+
 Theorem all_P_9_all_989_818_1818 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
@@ -1558,7 +1576,8 @@ Theorem all_P_9_all_989_818_1818 {r : radix} : ∀ u i,
      u (i + k) = 2 * (rad - 1) ∧
         u (i + k + 1) = 2 * (rad - 1).
 Proof.
-intros * Hur Hpr.
+intros * Hur Hpr k.
+specialize (all_P_9_all_989_8_18 u i Hur Hpr k) as H.
 ...
 
 Theorem all_P_9_999_9818_1818 {r : radix} : ∀ u i,
