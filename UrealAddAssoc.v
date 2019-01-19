@@ -1599,6 +1599,7 @@ destruct (zerop (carry u (i + k))) as [H2| H2].
  +left; split; [ easy | ].
   unfold carry in H2; clear H3.
   destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3].
+...
   *exists 0.
    split; [ easy | ].
    rewrite Nat.add_0_r.
@@ -1610,6 +1611,7 @@ destruct (zerop (carry u (i + k))) as [H2| H2].
      destruct rad; [ easy | cbn; flia ].
    }
    rewrite <- Nat.add_1_r.
+   remember (min_n (i + k) 0) as n eqn:Hn.
 ...
   assert (Hn : ∃ n, NQintg (A (i + k) (min_n (i + k) n) u) > 0). {
     destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3].
