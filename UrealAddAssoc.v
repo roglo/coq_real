@@ -1775,6 +1775,9 @@ destruct (LPO_fst (is_num_9 u i)) as [H1| H1].
       rewrite A_split_first. 2: {
         unfold min_n.
         destruct rad; [ easy | cbn; flia ].
+      }
+      rewrite <- Nat.add_1_r.
+      rewrite Hwhi.
 ...
  destruct j.
  +clear Hjj.
