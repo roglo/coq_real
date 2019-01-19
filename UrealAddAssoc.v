@@ -1547,6 +1547,44 @@ destruct c; cbn.
   apply (le_lt_trans _ (2 * rad - 1)); [ flia H4 Hr | flia Hr ].
 Qed.
 
+(*
+Theorem all_P_9_all_frac_mod {r : radix} : ∀ u i,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, P u (i + k) = rad - 1)
+  → ∀ k, ∃ m,
+  let n := rad * (i + k + m + 3) in
+  let s := n - (i + k) - 1 in
+  (NQfrac (A (i + k) n u) < 1 - 1 // rad ^ S m)%NQ ∧
+  (u (i + k) + NQintg (A (i + k) n u)) mod rad = rad - 1.
+Proof.
+intros * Hur Hpr *.
+specialize (Hpr k) as Hpri.
+unfold P, prop_carr, d2n in Hpri; simpl in Hpri.
+unfold carry in Hpri.
+destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H2| H2]; simpl in Hpri.
+-exists 0.
+ rewrite Nat.add_0_r.
+ split.
+ +idtac.
+  specialize (H2 k) as H3.
+  apply A_ge_1_true_iff in H3.
+...
+ +unfold min_n in Hpri.
+  now rewrite Nat.add_0_r in Hpri.
+...
+ exfalso; revert Hn'.
+ unfold min_n in Hpri; rewrite Nat.add_0_r in Hpri.
+...
+ apply not_prop_carr_all_9_all_ge_1; [ | easy | easy ].
+ intros l.
+ replace (i + k + l + 1) with (i + (k + l) + 1) by flia.
+ apply Hur.
+-destruct H2 as (m & Hjm & Hm).
+ apply A_ge_1_false_iff in Hm.
+ exists m; easy.
+Qed.
+*)
+
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
@@ -1562,6 +1600,8 @@ Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
 Proof.
 intros * Hur Hpr k.
 specialize radix_ge_2 as Hr.
+Abort. (*
+...
 specialize (all_P_9_all_8_9_18 u i Hur Hpr k) as H1.
 destruct (zerop (carry u (i + k))) as [H2| H2].
 -left; split; [ easy | ].
@@ -1628,6 +1668,7 @@ Search NQintg.
 Search ((_ - _) // _)%NQ.
 Search (∀ _, fA_ge_1_ε _ _ _ = true).
 ...
+*)
 
 Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -1645,8 +1686,9 @@ Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
            u (i + k + n + 1) = 2 * (rad - 1)).
 Proof.
 intros * Hur Hn k.
+Abort. (*
 specialize (eq_all_prop_carr_9_cond2 u n Hur Hn k) as H.
-...
+*)
 
 Theorem all_P_9_all_989_818_1818 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -1660,8 +1702,10 @@ Theorem all_P_9_all_989_818_1818 {r : radix} : ∀ u i,
         u (i + k + 1) = 2 * (rad - 1).
 Proof.
 intros * Hur Hpr k.
+Abort. (*
 specialize (all_P_9_all_989_8_18 u i Hur Hpr k) as H.
 ...
+*)
 
 Theorem all_P_9_999_9818_1818 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -1674,6 +1718,8 @@ Theorem all_P_9_999_9818_1818 {r : radix} : ∀ u i,
        (∀ k, u (i + j + k + 1) = 2 * (rad - 1))).
 Proof.
 intros * Hur Hpr.
+specialize (all_P_9_all_8_9_18 _ _ Hur Hpr) as H1.
+...
 specialize (all_P_9_all_989_818_1818 _ _ Hur Hpr) as H1.
 destruct (LPO_fst (is_num_9 u i)) as [H2| H2].
 -specialize (is_num_9_all_9 u i H2) as H3.
