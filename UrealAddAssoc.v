@@ -1493,6 +1493,22 @@ specialize (Hm9 k); unfold is_num_9 in Hm9.
 now destruct (Nat.eq_dec (u (i + k)) (rad - 1)).
 Qed.
 
+Theorem is_num_9_true_iff {r : radix} : ∀ i j u,
+  is_num_9 u i j = true ↔ u (i + j) = rad - 1.
+Proof.
+intros.
+unfold is_num_9.
+now destruct (Nat.eq_dec (u (i + j)) (rad - 1)).
+Qed.
+
+Theorem is_num_9_false_iff {r : radix} : ∀ i j u,
+  is_num_9 u i j = false ↔ u (i + j) ≠ rad - 1.
+Proof.
+intros.
+unfold is_num_9.
+now destruct (Nat.eq_dec (u (i + j)) (rad - 1)).
+Qed.
+
 Theorem all_P_9_all_8_9_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
@@ -1718,13 +1734,32 @@ Theorem all_P_9_999_9818_1818 {r : radix} : ∀ u i,
        (∀ k, u (i + j + k + 1) = 2 * (rad - 1))).
 Proof.
 intros * Hur Hpr.
-specialize (all_P_9_all_8_9_18 _ _ Hur Hpr) as H1.
-...
-specialize (all_P_9_all_989_818_1818 _ _ Hur Hpr) as H1.
-destruct (LPO_fst (is_num_9 u i)) as [H2| H2].
--specialize (is_num_9_all_9 u i H2) as H3.
+destruct (LPO_fst (is_num_9 u i)) as [H1| H1].
+-specialize (is_num_9_all_9 u i H1) as H2.
  now left.
--idtac.
+-destruct H1 as (j & Hjj & Hj).
+ apply is_num_9_false_iff in Hj.
+ right.
+ specialize (all_P_9_all_8_9_18 _ _ Hur Hpr j) as H1.
+ destruct (zerop (carry u (i + j))) as [H2| H2]; [ easy | ].
+ destruct (lt_dec (u (i + j) + 1) rad) as [H3| H3].
+ +right; clear Hj H3.
+  exists j.
+  split; [ | split ]; [ | easy | ].
+  *intros k Hkj.
+   specialize (Hjj _ Hkj) as H4.
+   now apply is_num_9_true_iff in H4.
+  *intros k.
+...
+ destruct j.
+ +clear Hjj.
+  rewrite Nat.add_0_r in Hj.
+  right.
+  specialize (all_P_9_all_8_9_18 _ _ Hur Hpr 0) as H1.
+  rewrite Nat.add_0_r in H1.
+  destruct (zerop (carry u i)) as [H2| H2]; [ easy | ].
+  destruct (lt_dec (u i + 1) rad) as [H3| H3].
+  *right.
 ...
 
 Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
