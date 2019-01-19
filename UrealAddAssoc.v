@@ -1481,6 +1481,18 @@ destruct (eq_nat_dec (i + 1) (n - 1)) as [H2| H2].
 ...
 *)
 
+Definition is_num_9 {r : radix} u i j :=
+  if eq_nat_dec (u (i + j)) (rad - 1) then true else false.
+
+Theorem is_num_9_all_9 {r : radix} : ∀ u i,
+  (∀ j, is_num_9 u i j = true)
+  → (∀ k, u (i + k) = rad - 1).
+Proof.
+intros * Hm9 *.
+specialize (Hm9 k); unfold is_num_9 in Hm9.
+now destruct (Nat.eq_dec (u (i + k)) (rad - 1)).
+Qed.
+
 Theorem all_P_9_all_8_9_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
@@ -1547,7 +1559,7 @@ Theorem all_P_9_all_989_818_1818 {r : radix} : ∀ u i,
         u (i + k + 1) = 2 * (rad - 1).
 Proof.
 intros * Hur Hpr.
-Admitted.
+...
 
 Theorem all_P_9_999_9818_1818 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -1561,10 +1573,10 @@ Theorem all_P_9_999_9818_1818 {r : radix} : ∀ u i,
 Proof.
 intros * Hur Hpr.
 specialize (all_P_9_all_989_818_1818 _ _ Hur Hpr) as H1.
-destruct (LPO_fst (is_num_9_strict_after u i)) as [H2| H2].
--specialize (is_num_9_strict_after_all_9 u i H2) as H3.
-...
+destruct (LPO_fst (is_num_9 u i)) as [H2| H2].
+-specialize (is_num_9_all_9 u i H2) as H3.
  now left.
+-idtac.
 ...
 
 Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
