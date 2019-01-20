@@ -1662,7 +1662,9 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
  +apply NQle_pair; [ easy | easy | flia Hr ].
  +replace 0%NQ with (0 * 0)%NQ by easy.
   now apply NQmul_le_mono_nonneg.
--idtac.
+-destruct (lt_dec (u (i + j) + 1) rad) as [H3| H3].
+ +right; left; clear H3.
+  split; [ easy | ].
 ...
 
 Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
