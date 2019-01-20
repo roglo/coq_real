@@ -1637,16 +1637,17 @@ intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hi j.
 specialize (all_P_9_all_8_9_18 u i Hur Hi j) as H1.
+assert (Hc : ∃ n, carry u (i + j) = NQintg (A (i + j) (min_n (i + j) n) u)). {
+  unfold carry.
+  destruct (LPO_fst (fA_ge_1_ε u (i + j))) as [H3| H3].
+  -exists 0; easy.
+  -destruct H3 as (k & Hjk & Hk).
+   exists k; easy.
+}
+destruct Hc as (m & Hm).
 destruct (zerop (carry u (i + j))) as [H2| H2].
 -left; split; [ easy | ].
- unfold carry in H2.
- assert (H3 : ∃ n, NQintg (A (i + j) (min_n (i + j) n) u) = 0). {
-   destruct (LPO_fst (fA_ge_1_ε u (i + j))) as [H3| H3].
-   -exists 0; easy.
-   -destruct H3 as (k & Hjk & Hk).
-    exists k; easy.
- }
- destruct H3 as (m & Hm).
+ rewrite H2 in Hm; symmetry in Hm.
  remember (min_n (i + j) m) as n eqn:Hn.
  assert (Hin : i + j + 1 ≤ n - 1). {
    rewrite Hn; unfold min_n.
@@ -1666,7 +1667,6 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
  +right; left; clear H3.
   split; [ easy | ].
   apply Nat.neq_0_lt_0 in H2.
-  unfold carry in H2.
 ...
 
 Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
