@@ -1633,6 +1633,7 @@ Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
        (∃ n, (∀ l, l < n → u (i + k + l + 1) = rad - 1) ∧
        u (i + k + n + 1) ≥ rad).
 Proof.
+(* eq_all_prop_carr_9_cond2 *)
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hi j.
@@ -1667,6 +1668,7 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
  +right; left; clear H3.
   split; [ easy | ].
   apply Nat.neq_0_lt_0 in H2.
+  rewrite Hm in H2.
 ...
 
 Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
