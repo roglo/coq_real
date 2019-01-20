@@ -1667,7 +1667,15 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
 -destruct (lt_dec (u (i + j) + 1) rad) as [H3| H3].
  +right; left; clear H3.
   split; [ easy | ].
-  apply Nat.neq_0_lt_0 in H2.
+  assert (H3 : carry u (i + j) = 1). {
+    specialize (carry_upper_bound_for_add u (i + j)) as H3.
+    assert (H : ∀ k, u (i + j + k + 1) ≤ 2 * (rad - 1)). {
+      intros; do 2 rewrite <- Nat.add_assoc; apply Hur.
+    }
+    specialize (H3 H).
+    flia H2 H3.
+  }
+  clear H2; rename H3 into H2.
   rewrite Hm in H2.
 ...
 
