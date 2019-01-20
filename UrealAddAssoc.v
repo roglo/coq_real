@@ -1702,9 +1702,8 @@ Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
            u (i + k + n + 1) = 2 * (rad - 1)).
 Proof.
 intros * Hur Hn k.
-Abort. (*
-specialize (eq_all_prop_carr_9_cond2 u n Hur Hn k) as H.
-*)
+(* eq_all_prop_carr_9_cond3 *)
+...
 
 Theorem all_P_9_all_989_818_1818 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -1719,7 +1718,40 @@ Theorem all_P_9_all_989_818_1818 {r : radix} : ∀ u i,
 Proof.
 (* eq_all_prop_carr_9_cond4 *)
 intros * Hur Hpr k.
-...
+specialize radix_ge_2 as Hr.
+specialize (all_P_9_all_989_8_18 u i Hur Hpr k) as H.
+destruct H as [H| [H| H]]; [ now left | | ].
+-right; left.
+ destruct H as (Huk & n & Hln & Hn).
+ split; [ easy | ].
+ destruct n; [ now rewrite Nat.add_0_r in Hn | ].
+ specialize (Hln n (Nat.lt_succ_diag_r n)) as H1.
+ specialize (all_P_9_all_989_8_18 u i Hur Hpr (k + n + 1)) as H.
+ replace (i + (k + n + 1)) with (i + k + n + 1) in H by flia.
+ replace (i + k + n + 1 + 1) with (i + k + n + 2) in H by flia.
+ replace (i + k + S n + 1) with (i + k + n + 2) in Hn by flia.
+ destruct H as [H| [H| H]]; destruct H as (H2, H3).
+ +exfalso.
+  rewrite Hn in H3.
+  destruct H3 as [H3| H3]; flia Hr H3.
+ +rewrite H1 in H2; flia Hr H2.
+ +rewrite H1 in H2; flia Hr H2.
+-right; right.
+ destruct H as (Huk & n & Hln & Hn).
+ split; [ easy | ].
+ destruct n; [ now rewrite Nat.add_0_r in Hn | ].
+ specialize (Hln n (Nat.lt_succ_diag_r n)) as H1.
+ specialize (all_P_9_all_989_8_18 u i Hur Hpr (k + n + 1)) as H.
+ replace (i + (k + n + 1)) with (i + k + n + 1) in H by flia.
+ replace (i + k + n + 1 + 1) with (i + k + n + 2) in H by flia.
+ replace (i + k + S n + 1) with (i + k + n + 2) in Hn by flia.
+ destruct H as [H| [H| H]]; destruct H as (H2, H3).
+ +exfalso.
+  rewrite Hn in H3.
+  destruct H3 as [H3| H3]; flia Hr H3.
+ +rewrite H1 in H2; flia Hr H2.
+ +rewrite H1 in H2; flia Hr H2.
+Qed.
 
 Theorem all_P_9_999_9818_1818 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
