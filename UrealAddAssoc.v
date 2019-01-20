@@ -1582,12 +1582,12 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]; simpl in Huni.
  unfold min_n in Huni.
  remember (rad * (i + k + 0 + 3)) as m eqn:Hm.
  specialize (all_P_9_all_8_9_18 u i Hur Hi) as H2.
-...
--assert (Hn' : ∀ l, P u ((i + k) + l) = rad - 1). {
+ assert (Hn' : ∀ l, P u ((i + k) + l) = rad - 1). {
    intros j.
    replace ((i + k) + j) with (i + (k + j)) by flia.
    apply Hi.
  }
+...
  exfalso; revert Hn'.
  unfold min_n in Huni; rewrite Nat.add_0_r in Huni.
 ...
