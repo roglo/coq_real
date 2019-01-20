@@ -1582,6 +1582,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]; simpl in Huni.
  unfold min_n in Huni.
  remember (rad * (i + k + 0 + 3)) as m eqn:Hm.
  specialize (all_P_9_all_8_9_18 u i Hur Hi) as H2.
+Admitted. (* à voir...
 ...
 -assert (Hn' : ∀ l, P u ((i + k) + l) = rad - 1). {
    intros j.
@@ -1601,43 +1602,14 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]; simpl in Huni.
  exists m; easy.
 Qed.
 ...
-intros * Hur Hpr *.
-specialize (Hpr k) as Hpri.
-unfold P, prop_carr, d2n in Hpri; simpl in Hpri.
-unfold carry in Hpri.
-destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H2| H2]; simpl in Hpri.
--exists 0.
- rewrite Nat.add_0_r.
- split.
- +idtac.
-  specialize (H2 k) as H3.
-  apply A_ge_1_true_iff in H3.
-...
- +unfold min_n in Hpri.
-  now rewrite Nat.add_0_r in Hpri.
-...
- exfalso; revert Hn'.
- unfold min_n in Hpri; rewrite Nat.add_0_r in Hpri.
-...
- apply not_prop_carr_all_9_all_ge_1; [ | easy | easy ].
- intros l.
- replace (i + k + l + 1) with (i + (k + l) + 1) by flia.
- apply Hur.
--destruct H2 as (m & Hjm & Hm).
- apply A_ge_1_false_iff in Hm.
- exists m; easy.
-Qed.
 *)
 
-...
-
-Theorem eq_all_prop_carr_9_cond1 {r : radix} : ∀ u i n s j,
+Theorem eq_all_prop_carr_9_cond1 {r : radix} : ∀ u i n j,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
-  → s = n - i - 1
-  → j < s
-  → nA i n u mod rad ^ s < (rad ^ S j - 1) * rad ^ (s - S j)
-  → (u i + nA i n u / rad ^ s) mod rad = rad - 1
-  → if lt_dec (nA i n u) (rad ^ s) then
+  → j < n - i - 1
+  → (NQfrac (A i n u) < 1 - 1 // rad ^ S j)%NQ
+  → (u i + NQintg (A i n u)) mod rad = rad - 1
+  → if NQlt_le_dec (A i n u) 1 then
        u i = rad - 1 ∧ u (i + 1) ≠ 2 * (rad - 1)
      else if lt_dec (u i) (rad - 1) then
        u i = rad - 2 ∧ u (i + 1) ≥ rad - 1
@@ -1647,8 +1619,8 @@ Proof.
 (* eq_all_prop_carr_9_cond1 *)
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur Hs1 Hs1z Hj1 Hun1.
-...
+intros Hur Hs1z Hj1 Hun1.
+Admitted.
 
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -1667,29 +1639,34 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hi j.
-specialize ( all_P_9_all_frac_mod u i Hur Hi (j + 1)) as Hun1.
+specialize (all_P_9_all_frac_mod u i Hur Hi (j + 1)) as Hun1.
 destruct Hun1 as (m & Hm & Hun); simpl in Hun.
 rewrite Nat.add_assoc in Hm, Hun.
 remember (rad * (i + j + 1 + m + 3)) as n1 eqn:Hn1.
 (*
 remember (n1 - (i + j + 1) - 1) as s1 eqn:Hs1.
 move s1 before n1.
+*)
+(*
 replace (i + j + 2) with (i + j + 1 + 1) by flia.
 *)
 remember (i + j + 1) as k eqn:Hk.
-...
+specialize (eq_all_prop_carr_9_cond1 u k n1 m) as H1.
+(*
 specialize (eq_all_prop_carr_9_cond1 u k n1 s1 m) as H1.
+*)
 assert (H : ∀ j, u (k + j) ≤ 2 * (rad - 1)). {
   intros l; subst k.
-  replace (i + j + 1 + l) with (i + (j + l) + 1) by flia.
+  replace (i + j + 1 + l) with (i + (j + 1 + l)) by flia.
   apply Hur.
 }
-specialize (H1 H Hs1); clear H.
-assert (H : m < s1). {
-  rewrite Hs1, Hn1.
+specialize (H1 H); clear H.
+assert (H : m < n1 - k - 1). {
+  rewrite (*Hs1,*) Hn1.
   destruct rad; [ easy | simpl; flia ].
 }
 specialize (H1 H Hm Hun); clear H.
+...
 destruct (lt_dec (nA k n1 u) (rad ^ s1)) as [H2| H2]; [ now left | right ].
 apply Nat.nlt_ge in H2.
 rewrite Hs1 in H2.
