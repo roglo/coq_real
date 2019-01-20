@@ -1665,6 +1665,8 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
 -destruct (lt_dec (u (i + j) + 1) rad) as [H3| H3].
  +right; left; clear H3.
   split; [ easy | ].
+  apply Nat.neq_0_lt_0 in H2.
+  unfold carry in H2.
 ...
 
 Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
