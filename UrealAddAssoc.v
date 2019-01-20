@@ -1568,12 +1568,39 @@ Theorem all_P_9_all_frac_mod {r : radix} : ∀ u i,
   → (∀ k, P u (i + k) = rad - 1)
   → ∀ k, ∃ m,
   let n := rad * (i + k + m + 3) in
-  let s := n - (i + k) - 1 in
   (NQfrac (A (i + k) n u) < 1 - 1 // rad ^ S m)%NQ ∧
   (u (i + k) + NQintg (A (i + k) n u)) mod rad = rad - 1.
 Proof.
 (* eq_all_prop_carr_9_cond *)
-Admitted. (*
+intros * Hur Hi *.
+specialize (Hi k) as Huni.
+unfold P, prop_carr, d2n in Huni; simpl in Huni.
+unfold carry in Huni.
+destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]; simpl in Huni.
+-exists 0.
+ split; [ | easy ].
+ unfold min_n in Huni.
+ remember (rad * (i + k + 0 + 3)) as m eqn:Hm.
+ specialize (all_P_9_all_8_9_18 u i Hur Hi) as H2.
+...
+-assert (Hn' : ∀ l, P u ((i + k) + l) = rad - 1). {
+   intros j.
+   replace ((i + k) + j) with (i + (k + j)) by flia.
+   apply Hi.
+ }
+ exfalso; revert Hn'.
+ unfold min_n in Huni; rewrite Nat.add_0_r in Huni.
+...
+ apply not_prop_carr_all_9_all_ge_1; [ | easy | easy ].
+ intros l.
+ replace (i + k + l + 1) with (i + (k + l) + 1) by flia.
+ apply Hur.
+...
+-destruct H1 as (m & Hjm & Hm).
+ apply A_ge_1_false_iff in Hm.
+ exists m; easy.
+Qed.
+...
 intros * Hur Hpr *.
 specialize (Hpr k) as Hpri.
 unfold P, prop_carr, d2n in Hpri; simpl in Hpri.
