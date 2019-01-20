@@ -1563,7 +1563,6 @@ destruct c; cbn.
   apply (le_lt_trans _ (2 * rad - 1)); [ flia H4 Hr | flia Hr ].
 Qed.
 
-(*
 Theorem all_P_9_all_frac_mod {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
@@ -1573,6 +1572,8 @@ Theorem all_P_9_all_frac_mod {r : radix} : ∀ u i,
   (NQfrac (A (i + k) n u) < 1 - 1 // rad ^ S m)%NQ ∧
   (u (i + k) + NQintg (A (i + k) n u)) mod rad = rad - 1.
 Proof.
+(* eq_all_prop_carr_9_cond *)
+Admitted. (*
 intros * Hur Hpr *.
 specialize (Hpr k) as Hpri.
 unfold P, prop_carr, d2n in Hpri; simpl in Hpri.
@@ -1601,6 +1602,27 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H2| H2]; simpl in Hpri.
 Qed.
 *)
 
+...
+
+Theorem eq_all_prop_carr_9_cond1 {r : radix} : ∀ u i n s j,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → s = n - i - 1
+  → j < s
+  → nA i n u mod rad ^ s < (rad ^ S j - 1) * rad ^ (s - S j)
+  → (u i + nA i n u / rad ^ s) mod rad = rad - 1
+  → if lt_dec (nA i n u) (rad ^ s) then
+       u i = rad - 1 ∧ u (i + 1) ≠ 2 * (rad - 1)
+     else if lt_dec (u i) (rad - 1) then
+       u i = rad - 2 ∧ u (i + 1) ≥ rad - 1
+     else
+       u i = 2 * (rad - 1) ∧ u (i + 1) ≥ rad - 1.
+Proof.
+(* eq_all_prop_carr_9_cond1 *)
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hs1 Hs1z Hj1 Hun1.
+...
+
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
@@ -1615,8 +1637,49 @@ Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
        u (i + k + n + 1) ≥ rad).
 Proof.
 (* eq_all_prop_carr_9_cond2 *)
-intros * Hur Hpr k.
+intros *.
 specialize radix_ge_2 as Hr.
+intros Hur Hi j.
+specialize ( all_P_9_all_frac_mod u i Hur Hi (j + 1)) as Hun1.
+destruct Hun1 as (m & Hm & Hun); simpl in Hun.
+rewrite Nat.add_assoc in Hm, Hun.
+remember (rad * (i + j + 1 + m + 3)) as n1 eqn:Hn1.
+(*
+remember (n1 - (i + j + 1) - 1) as s1 eqn:Hs1.
+move s1 before n1.
+replace (i + j + 2) with (i + j + 1 + 1) by flia.
+*)
+remember (i + j + 1) as k eqn:Hk.
+...
+specialize (eq_all_prop_carr_9_cond1 u k n1 s1 m) as H1.
+assert (H : ∀ j, u (k + j) ≤ 2 * (rad - 1)). {
+  intros l; subst k.
+  replace (i + j + 1 + l) with (i + (j + l) + 1) by flia.
+  apply Hur.
+}
+specialize (H1 H Hs1); clear H.
+assert (H : m < s1). {
+  rewrite Hs1, Hn1.
+  destruct rad; [ easy | simpl; flia ].
+}
+specialize (H1 H Hm Hun); clear H.
+destruct (lt_dec (nA k n1 u) (rad ^ s1)) as [H2| H2]; [ now left | right ].
+apply Nat.nlt_ge in H2.
+rewrite Hs1 in H2.
+specialize (A_ge_rad_pow u k n1) as H3.
+assert (H : ∀ l, u (S k + l + 1) ≤ 2 * (rad - 1)). {
+  intros l; rewrite Hk.
+  replace (S (i + j + 1) + l) with (i + (j + l + 2)) by flia.
+  apply Hur.
+}
+specialize (H3 H H2); clear H.
+rewrite <- Hs1 in H2.
+destruct H3 as (j2 & Hj2 & Hkj2 & Hjr2).
+destruct (lt_dec (u k) (rad - 1)) as [H3| H3].
+-left; split; [ easy | now exists j2 ].
+-right; split; [ easy | now exists j2 ].
+Qed.
+
 ...
 
 Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
