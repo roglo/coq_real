@@ -1614,77 +1614,10 @@ Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
        (∃ n, (∀ l, l < n → u (i + k + l + 1) = rad - 1) ∧
        u (i + k + n + 1) ≥ rad).
 Proof.
+(* eq_all_prop_carr_9_cond2 *)
 intros * Hur Hpr k.
 specialize radix_ge_2 as Hr.
-Abort. (*
 ...
-specialize (all_P_9_all_8_9_18 u i Hur Hpr k) as H1.
-destruct (zerop (carry u (i + k))) as [H2| H2].
--left; split; [ easy | ].
- unfold carry in H2.
- assert (Hn : ∃ n, NQintg (A (i + k) (min_n (i + k) n) u) = 0). {
-   destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3].
-   -now exists 0.
-   -destruct H3 as (j & Hjj & Hj).
-    now exists j.
- }
- destruct Hn as (n & Hn).
- intros H4.
- rewrite A_split_first in Hn. 2: {
-   unfold min_n.
-   destruct rad; [ easy | cbn; flia ].
- }
- replace (S (i + k)) with (i + k + 1) in Hn by flia.
- rewrite H4 in Hn.
- rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hn.
- rewrite NQpair_sub_l in Hn; [ | flia Hr ].
- rewrite Nat.mul_comm in Hn.
- rewrite NQpair_mul_l, NQpair_diag in Hn; [ | easy ].
- replace (1 * 2)%NQ with (1 + 1)%NQ in Hn by easy.
- rewrite <- NQadd_sub_assoc in Hn.
- rewrite <- NQadd_assoc in Hn.
- rewrite NQintg_add_nat_l in Hn; [ easy | ].
- replace 0%NQ with (0 + 0 * 0)%NQ by easy.
- apply NQadd_le_mono.
- +apply NQle_add_le_sub_l; rewrite NQadd_0_l.
-  apply NQle_pair; [ easy | easy | flia Hr ].
- +now apply NQmul_le_mono_nonneg.
--right.
- apply Nat.neq_0_lt_0 in H2.
- destruct (lt_dec (u (i + k) + 1) rad) as [H3| H3].
- +left; split; [ easy | ].
-  unfold carry in H2; clear H3.
-  destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3].
-...
-  *exists 0.
-   split; [ easy | ].
-   rewrite Nat.add_0_r.
-   apply Nat.nlt_ge; intros H4; apply H2; clear H2.
-   apply NQintg_small.
-   split; [ easy | ].
-   rewrite A_split_first. 2: {
-     unfold min_n.
-     destruct rad; [ easy | cbn; flia ].
-   }
-   rewrite <- Nat.add_1_r.
-   remember (min_n (i + k) 0) as n eqn:Hn.
-...
-  assert (Hn : ∃ n, NQintg (A (i + k) (min_n (i + k) n) u) > 0). {
-    destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3].
-    -now exists 0.
-    -destruct H3 as (j & Hjj & Hj).
-     now exists j.
-  }
-  destruct Hn as (n & Hn).
-  exists n.
-  split.
-  *intros j Hj.
-Search NQintg.
-...
-Search ((_ - _) // _)%NQ.
-Search (∀ _, fA_ge_1_ε _ _ _ = true).
-...
-*)
 
 Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -1701,9 +1634,44 @@ Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
            (∀ l, l < n → u (i + k + l + 1) = rad - 1) ∧
            u (i + k + n + 1) = 2 * (rad - 1)).
 Proof.
-intros * Hur Hn k.
 (* eq_all_prop_carr_9_cond3 *)
-...
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hn k.
+rename i into n.
+specialize (all_P_9_all_9n18_8_18 u n Hur Hn k) as H.
+remember (n + k + 1) as i eqn:Hi.
+replace (n + k + 2) with (i + 1) by flia Hi.
+destruct H as [H| [H| H]]; destruct H as (H1, H2).
+-left; split; [ easy | ].
+ specialize (all_P_9_all_9n18_8_18 u n Hur Hn (k + 1)) as H.
+ replace (n + (k + 1)) with i in H by flia Hi.
+ destruct H as [H| [H| H]]; destruct H as (H3, H4).
+ +now right.
+ +now left.
+ +easy.
+-right; left; split; [ easy | ].
+ destruct H2 as (j2 & Hlj2 & Hj2).
+ exists j2.
+ split; [ easy | ].
+ specialize (all_P_9_all_9n18_8_18 u n Hur Hn (i + j2 - n)) as H.
+ replace (n + (i + j2 - n)) with (i + j2) in H by flia Hi.
+ replace (n + k + j2 + 1) with (i + j2) in Hj2 |-* by flia Hi.
+ destruct H as [H| [H| H]]; destruct H as (H3, H4).
+ +rewrite H3 in Hj2; flia Hr Hj2.
+ +rewrite H3 in Hj2; flia Hr Hj2.
+ +easy.
+-right; right; split; [ easy | ].
+ destruct H2 as (j2 & Hlj2 & Hj2).
+ exists j2.
+ specialize (all_P_9_all_9n18_8_18 u n Hur Hn (i + j2 - n)) as H.
+ replace (n + (i + j2 - n)) with (i + j2) in H by flia Hi.
+ replace (n + k + j2 + 1) with (i + j2) in Hj2 |-* by flia Hi.
+ destruct H as [H| [H| H]]; destruct H as (H3, H4).
+ +rewrite H3 in Hj2; flia Hr Hj2.
+ +rewrite H3 in Hj2; flia Hr Hj2.
+ +easy.
+Qed.
 
 Theorem all_P_9_all_989_818_1818 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
