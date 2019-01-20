@@ -460,6 +460,26 @@ destruct a; [ easy | ].
 now apply Nat.pow_nonzero.
 Qed.
 
+Theorem Nat_div_small_iff: ∀ a b : nat, b ≠ 0 → a < b ↔ a / b = 0.
+Proof.
+intros * Hb.
+split; [ apply Nat.div_small | ].
+intros Hab.
+destruct b; [ easy | clear Hb ].
+unfold "/" in Hab.
+specialize (Nat.divmod_spec a b 0 b (le_refl _)) as H1.
+remember (Nat.divmod a b 0 b) as d eqn:Hd.
+symmetry in Hd.
+destruct d as (d, m); cbn in Hab.
+subst d.
+rewrite Nat.mul_0_r, Nat.sub_diag in H1.
+do 2 rewrite Nat.add_0_r in H1.
+rewrite Nat.add_0_l in H1.
+rewrite (proj1 H1).
+apply -> Nat.succ_le_mono.
+apply Nat.le_sub_l.
+Qed.
+
 Definition bool_of_sumbool {A B : Prop} (P : sumbool A B) :=
   match P with
   | left _ _ => true

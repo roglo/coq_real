@@ -873,16 +873,14 @@ Theorem NQintg_A_M {r : radix} : ∀ i n u, NQintg (A i n (M u)) = 0.
 Proof.
 intros.
 apply NQintg_small.
-split; [ easy | ].
-apply A_M_upper_bound.
+split; [ easy | apply A_M_upper_bound ].
 Qed.
 
 Theorem NQintg_P_M {r : radix} : ∀ i n u, NQintg (A i n (P u)) = 0.
 Proof.
 intros.
 apply NQintg_small.
-split; [ easy | ].
-apply A_M_upper_bound.
+split; [ easy | apply A_M_upper_bound ].
 Qed.
 
 Theorem NQfrac_A_M {r : radix} : ∀ i n u, NQfrac (A i n (M u)) = A i n (M u).
@@ -1587,6 +1585,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]; simpl in Huni.
    replace ((i + k) + j) with (i + (k + j)) by flia.
    apply Hi.
  }
+Abort. (* à voir...
 ...
  exfalso; revert Hn'.
  unfold min_n in Huni; rewrite Nat.add_0_r in Huni.
@@ -1619,7 +1618,7 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hs1z Hj1 Hun1.
-...
+Abort. (* à voir *)
 
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -1634,10 +1633,38 @@ Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
        (∃ n, (∀ l, l < n → u (i + k + l + 1) = rad - 1) ∧
        u (i + k + n + 1) ≥ rad).
 Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hi j.
+specialize (all_P_9_all_8_9_18 u i Hur Hi j) as H1.
+destruct (zerop (carry u (i + j))) as [H2| H2].
+-left; split; [ easy | ].
+ unfold carry in H2.
+ destruct (LPO_fst (fA_ge_1_ε u (i + j))) as [H3| H3].
+ +remember (min_n (i + j) 0) as n eqn:Hn.
+  apply eq_NQintg_0 in H2; [ | easy ].
+  apply NQnle_gt in H2.
+  intros H4; apply H2; clear H2.
+  assert (Hin : i + j + 1 ≤ n - 1). {
+    rewrite Hn; unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  }
+  rewrite A_split_first; [ | easy ].
+  replace (S (i + j)) with (i + j + 1) by flia.
+  rewrite H4.
+  eapply NQle_trans; [ | apply NQle_add_r ].
+  *apply NQle_pair; [ easy | easy | flia Hr ].
+  *replace 0%NQ with (0 * 0)%NQ by easy.
+   now apply NQmul_le_mono_nonneg.
+ +destruct H3 as (k & Hjk & Hk).
+  remember (min_n (i + j) k) as n eqn:Hn.
+  apply eq_NQintg_0 in H2; [ | easy ].
+...
 (* eq_all_prop_carr_9_cond2 *)
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hi j.
+...
 specialize (all_P_9_all_frac_mod u i Hur Hi j) as Hun1.
 destruct Hun1 as (m & Hm & Hun); simpl in Hun.
 (*
@@ -2944,6 +2971,7 @@ rewrite nA_ureal_add_series, Nat.add_comm in H4.
      split; [ easy | rewrite Hs2; apply nA_ureal_add_series_lt ].
 ...
 *)
+...
 
 Theorem ureal_add_assoc {r : radix} : ∀ x y z,
   ureal_norm_eq (x + (y + z)) ((x + y) + z).

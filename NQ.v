@@ -2104,11 +2104,22 @@ unfold PQ.PQlt, PQ.nd in Hx2; cbn in Hx2.
 now rewrite Nat.mul_1_r, Nat.add_0_r in Hx2.
 Qed.
 
+Theorem eq_NQintg_0 : ∀ x, (0 ≤ x)%NQ → NQintg x = 0 → (x < 1)%NQ.
+Proof.
+intros * Hx1 Hx2.
+destruct x as [| x| x]; [ easy | | easy ].
+unfold NQintg in Hx2; cbn in Hx2; cbn.
+rewrite (GQnum_den x).
+apply GQlt_pair; [ easy | easy | easy | easy | ].
+do 2 rewrite Nat.mul_1_r.
+now apply Nat_div_small_iff.
+Qed.
+
 Theorem NQintg_NQfrac : ∀ x, NQintg (NQfrac x) = 0.
 Proof.
 intros.
 apply NQintg_small.
-split; [ apply NQfrac_ge_0 | apply NQfrac_lt_1 ].
+split; [ easy | apply NQfrac_lt_1 ].
 Qed.
 
 Theorem NQfrac_add_nat_l : ∀ a x, (0 ≤ x)%NQ →
