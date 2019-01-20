@@ -1620,6 +1620,24 @@ specialize radix_ge_2 as Hr.
 intros Hur Hs1z Hj1 Hun1.
 Abort. (* à voir *)
 
+Theorem all_P_9_all_8g9_9n18_18g9 {r : radix} : ∀ u i,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, P u (i + k) = rad - 1)
+  → ∀ k,
+     if zerop (carry u (i + k)) then
+       u (i + k) = rad - 1 ∧ u (i + k + 1) ≠ 2 * (rad - 1)
+     else if lt_dec (u (i + k) + 1) rad then
+       u (i + k) = rad - 2 ∧ u (i + k + 1) ≥ rad - 1
+     else
+       u (i + k) = 2 * (rad - 1) ∧ u (i + k + 1) ≥ rad - 1.
+Proof.
+intros * Hur Hpr k.
+specialize radix_ge_2 as Hr.
+specialize (all_P_9_all_8_9_18 u i Hur Hpr k) as H1.
+destruct (zerop (carry u (i + k))) as [H2| H2].
+-split; [ easy | ].
+...
+
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
