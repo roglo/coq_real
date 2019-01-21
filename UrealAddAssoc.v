@@ -1634,8 +1634,20 @@ Proof.
 intros * Hur Hpr k.
 specialize radix_ge_2 as Hr.
 specialize (all_P_9_all_8_9_18 u i Hur Hpr k) as H1.
+assert (Hc : ∃ n, carry u (i + k) = NQintg (A (i + k) (min_n (i + k) n) u)). {
+  unfold carry.
+  destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3].
+  -exists 0; easy.
+  -destruct H3 as (j & Hjj & Hj).
+   exists j; easy.
+}
+destruct Hc as (m & Hm).
 destruct (zerop (carry u (i + k))) as [H2| H2].
 -split; [ easy | ].
+ rewrite Hm in H2.
+ apply eq_NQintg_0 in H2; [ | easy ].
+ apply NQnle_gt in H2.
+ intros H3; apply H2; clear H2.
 ...
 
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
