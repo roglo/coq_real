@@ -1786,6 +1786,14 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
   clear H2; rename H3 into H2.
   rewrite Hm in H2.
   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi j) as H3.
+  destruct (zerop (carry u (i + j))) as [H4| H4].
+  *now rewrite H4, H2 in Hm.
+  *destruct (lt_dec (u (i + j) + 1) rad) as [H5| H5]; [ | flia H1 H5 Hr ].
+   destruct H3 as (_, H3).
+   clear H4 H5.
+...
+ +right; right; clear H3.
+  split; [ easy | ].
 ...
 
 Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
