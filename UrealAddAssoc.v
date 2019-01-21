@@ -1744,7 +1744,23 @@ destruct (zerop (carry u (i + 1))) as [H2| H2].
  rewrite (proj1 H1) in Hia.
  rewrite NQpair_sub_l in Hia; [ | easy ].
  rewrite NQpair_diag in Hia; [ | easy ].
+(*
  rewrite <- NQadd_sub_swap, <- NQadd_sub_assoc in Hia.
+*)
+ destruct (NQlt_le_dec (A (i + 1) n u) 1) as [H3| H3]. {
+   exfalso.
+...
+   rewrite NQintg_add in Hia.
+   rewrite NQintg_small in Hia.
+   rewrite NQintg_small in Hia.
+   rewrite Nat.add_0_l in Hia.
+   rewrite NQfrac_small in Hia.
+   rewrite NQfrac_small in Hia.
+...
+(* tourné en rond *)
+  Hia : NQintg ((1 - 1 // rad)%NQ + (A (i + 1) n u * 1 // rad)%NQ) = 1
+
+
 ...
  rewrite NQintg_add_nat_l in Hia. 2: {
    apply NQle_0_sub.
