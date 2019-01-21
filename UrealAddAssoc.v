@@ -1785,12 +1785,18 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
   }
   clear H2; rename H3 into H2.
   rewrite Hm in H2.
-  specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi j) as H3.
-  destruct (zerop (carry u (i + j))) as [H4| H4].
-  *now rewrite H4, H2 in Hm.
-  *destruct (lt_dec (u (i + j) + 1) rad) as [H5| H5]; [ | flia H1 H5 Hr ].
-   destruct H3 as (_, H3).
-   clear H4 H5.
+  specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi (j + 1)) as H3.
+  rewrite Nat.add_assoc in H3.
+  destruct (zerop (carry u (i + j + 1))) as [H4| H4].
+  *move H3 before H1.
+   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi (j + 2)) as H5.
+   rewrite Nat.add_assoc in H5.
+   destruct (zerop (carry u (i + j + 2))) as [H6| H6].
+  --move H5 before H3.
+    admit.
+  --destruct (lt_dec (u (i + j + 2) + 1) rad) as [H7| H7].
+   ++clear H7.
+     move H5 before H3.
 ...
  +right; right; clear H3.
   split; [ easy | ].
