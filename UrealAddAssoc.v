@@ -1642,12 +1642,20 @@ assert (Hc : ∃ n, carry u (i + k) = NQintg (A (i + k) (min_n (i + k) n) u)). {
    exists j; easy.
 }
 destruct Hc as (m & Hm).
+remember (min_n (i + k) m) as n eqn:Hn.
+assert (Hin : i + k + 1 ≤ n - 1). {
+  rewrite Hn; unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
 destruct (zerop (carry u (i + k))) as [H2| H2].
 -split; [ easy | ].
  rewrite Hm in H2.
  apply eq_NQintg_0 in H2; [ | easy ].
  apply NQnle_gt in H2.
  intros H3; apply H2; clear H2.
+ rewrite A_split_first; [ | easy ].
+ replace (S (i + k)) with (i + k + 1) by flia.
+ rewrite H3.
 ...
 
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
