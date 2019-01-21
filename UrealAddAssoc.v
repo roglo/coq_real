@@ -1793,7 +1793,7 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
    rewrite Nat.add_assoc in H5.
    destruct (zerop (carry u (i + j + 2))) as [H6| H6].
   --move H5 before H3.
-    admit.
+...
   --destruct (lt_dec (u (i + j + 2) + 1) rad) as [H7| H7].
    ++clear H7.
      move H5 before H3.
