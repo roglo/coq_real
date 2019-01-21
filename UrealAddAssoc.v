@@ -1785,6 +1785,11 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
   }
   clear H2; rename H3 into H2.
   rewrite Hm in H2.
+...
+  H2 : NQintg (A (i + j) (min_n (i + j) m) u) = 1
+  ============================
+  ∃ n : nat, (∀ l : nat, l < n → u (i + j + l + 1) = rad - 1) ∧ u (i + j + n + 1) ≥ rad
+...
   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi (j + 1)) as H3.
   rewrite Nat.add_assoc in H3.
   replace (i + j + 1 + 1) with (i + j + 2) in H3 by flia.
@@ -1796,6 +1801,12 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
    destruct (zerop (carry u (i + j + 2))) as [H6| H6].
   --move H5 before H3.
     destruct H3 as (H3, _).
+(**)
+    remember (min_n (i + j) m) as n1 eqn:Hn1.
+    rewrite A_split_first in H2.
+    replace (S (i + j)) with (i + j + 1) in H2 by flia.
+    rewrite H3 in H2.
+...
     specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi (j + 3)) as H7.
     rewrite Nat.add_assoc in H7.
     replace (i + j + 3 + 1) with (i + j + 4) in H7 by flia.
