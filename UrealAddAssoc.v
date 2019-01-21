@@ -1619,6 +1619,43 @@ intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hs1z Hj1 Hun1.
 Abort. (* à voir *)
+Theorem A_upper_bound_for_add_1st_lt_9 {r : radix} : ∀ u i k n,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → i + k + 1 ≤ n - 1
+  → u (i + k + 1) < rad - 1
+  → (A (i + k) n u < 1)%NQ.
+Proof.
+intros * Hur Hin H3.
+ specialize radix_ge_2 as Hr.
+  rewrite A_split_first; [ | easy ].
+  replace (S (i + k)) with (i + k + 1) by flia.
+  assert (H2 : u (i + k + 1) ≤ rad - 2) by flia Hr H3.
+  eapply NQle_lt_trans.
+  *apply NQadd_le_mono_r.
+   apply NQle_pair; [ easy | easy | ].
+   rewrite Nat.mul_comm.
+   apply Nat.mul_le_mono_pos_l; [ easy | apply H2 ].
+  *rewrite NQpair_sub_l; [ | easy ].
+   rewrite NQpair_diag; [ | easy ].
+   rewrite <- NQsub_sub_distr.
+   apply NQsub_lt, NQlt_add_lt_sub_r.
+   rewrite NQadd_0_l.
+   replace (2 // rad)%NQ with (2 * (1 // rad))%NQ. 2: {
+     now rewrite <- NQpair_mul_r.
+   }
+   apply NQmul_lt_mono_pos_r.
+  --replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | easy | flia ].
+  --eapply NQle_lt_trans.
+   ++apply A_upper_bound_for_add.
+     intros l; do 3 rewrite <- Nat.add_assoc; apply Hur.
+   ++rewrite NQmul_sub_distr_l, NQmul_1_r.
+     apply NQsub_lt.
+     remember (n - (i + k + 1) - 1) as l eqn:Hl.
+     replace 0%NQ with (0 * 1 // rad ^ l)%NQ by easy.
+     apply NQmul_lt_le_mono_pos; [ easy | easy | easy | ].
+     apply NQle_refl.
+Qed.
 
 Theorem all_P_9_all_8g9_9n18_18g9 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -1674,46 +1711,22 @@ destruct (zerop (carry u (i + k))) as [H2| H2].
    flia H2 H3.
  }
  clear H2; rename H3 into H2.
- destruct (lt_dec (u (i + k) + 1) rad) as [H3| H3].
- +clear H3.
-  split; [ easy | ].
-  rewrite Hm in H2.
-  apply Nat.nlt_ge.
-  apply Nat.nlt_ge in H2.
-  intros H3; apply H2; clear H2.
-  apply Nat.lt_1_r.
-  apply NQintg_small.
-  split; [ easy | ].
-  rewrite A_split_first; [ | easy ].
-  replace (S (i + k)) with (i + k + 1) by flia.
-  assert (H2 : u (i + k + 1) ≤ rad - 2) by flia Hr H3.
-  eapply NQle_lt_trans.
-  *apply NQadd_le_mono_r.
-   apply NQle_pair; [ easy | easy | ].
-   rewrite Nat.mul_comm.
-   apply Nat.mul_le_mono_pos_l; [ easy | apply H2 ].
-  *rewrite NQpair_sub_l; [ | easy ].
-   rewrite NQpair_diag; [ | easy ].
-   rewrite <- NQsub_sub_distr.
-   apply NQsub_lt, NQlt_add_lt_sub_r.
-   rewrite NQadd_0_l.
-   replace (2 // rad)%NQ with (2 * (1 // rad))%NQ. 2: {
-     now rewrite <- NQpair_mul_r.
-   }
-   apply NQmul_lt_mono_pos_r.
-  --replace 0%NQ with (0 // 1)%NQ by easy.
-    apply NQlt_pair; [ easy | easy | flia ].
-  --eapply NQle_lt_trans.
-   ++apply A_upper_bound_for_add.
-     intros l; do 3 rewrite <- Nat.add_assoc; apply Hur.
-   ++rewrite NQmul_sub_distr_l, NQmul_1_r.
-     apply NQsub_lt.
-     remember (n - (i + k + 1) - 1) as l eqn:Hl.
-     replace 0%NQ with (0 * 1 // rad ^ l)%NQ by easy.
-     apply NQmul_lt_le_mono_pos; [ easy | easy | easy | ].
-     apply NQle_refl.
+ rewrite Hm in H2.
+ apply Nat.nlt_ge in H2.
+ destruct (lt_dec (u (i + k) + 1) rad) as [H3| H3]; clear H3.
  +split; [ easy | ].
-...
+  apply Nat.nlt_ge.
+  intros H3; apply H2; clear H2.
+  apply Nat.lt_1_r, NQintg_small.
+  split; [ easy | ].
+  now apply A_upper_bound_for_add_1st_lt_9.
+ +split; [ easy | ].
+  apply Nat.nlt_ge.
+  intros H3; apply H2; clear H2.
+  apply Nat.lt_1_r, NQintg_small.
+  split; [ easy | ].
+  now apply A_upper_bound_for_add_1st_lt_9.
+Qed.
 
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -1772,6 +1785,7 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
   }
   clear H2; rename H3 into H2.
   rewrite Hm in H2.
+  specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi j) as H3.
 ...
 
 Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
