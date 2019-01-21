@@ -1678,28 +1678,41 @@ destruct (zerop (carry u (i + k))) as [H2| H2].
  +clear H3.
   split; [ easy | ].
   rewrite Hm in H2.
-  rewrite A_split_first in H2; [ | easy ].
-  replace (S (i + k)) with (i + k + 1) in H2 by flia.
   apply Nat.nlt_ge.
   apply Nat.nlt_ge in H2.
   intros H3; apply H2; clear H2.
-...
-  apply Nat.nlt_ge.
-  intros H3; apply H2; clear H2.
+  apply Nat.lt_1_r.
   apply NQintg_small.
   split; [ easy | ].
   rewrite A_split_first; [ | easy ].
   replace (S (i + k)) with (i + k + 1) by flia.
-  eapply NQlt_le_trans.
-  *apply NQadd_lt_mono_r.
-   apply NQlt_pair with (d := rad) (c := rad - 1); [ easy | easy | ].
+  assert (H2 : u (i + k + 1) ≤ rad - 2) by flia Hr H3.
+  eapply NQle_lt_trans.
+  *apply NQadd_le_mono_r.
+   apply NQle_pair; [ easy | easy | ].
    rewrite Nat.mul_comm.
-   now apply Nat.mul_lt_mono_pos_l.
+   apply Nat.mul_le_mono_pos_l; [ easy | apply H2 ].
   *rewrite NQpair_sub_l; [ | easy ].
    rewrite NQpair_diag; [ | easy ].
    rewrite <- NQsub_sub_distr.
-   apply NQle_sub_l.
-
+   apply NQsub_lt, NQlt_add_lt_sub_r.
+   rewrite NQadd_0_l.
+   replace (2 // rad)%NQ with (2 * (1 // rad))%NQ. 2: {
+     now rewrite <- NQpair_mul_r.
+   }
+   apply NQmul_lt_mono_pos_r.
+  --replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | easy | flia ].
+  --eapply NQle_lt_trans.
+   ++apply A_upper_bound_for_add.
+     intros l; do 3 rewrite <- Nat.add_assoc; apply Hur.
+   ++rewrite NQmul_sub_distr_l, NQmul_1_r.
+     apply NQsub_lt.
+     remember (n - (i + k + 1) - 1) as l eqn:Hl.
+     replace 0%NQ with (0 * 1 // rad ^ l)%NQ by easy.
+     apply NQmul_lt_le_mono_pos; [ easy | easy | easy | ].
+     apply NQle_refl.
+ +split; [ easy | ].
 ...
 
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
