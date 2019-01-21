@@ -1728,13 +1728,33 @@ destruct (zerop (carry u (i + k))) as [H2| H2].
   now apply A_upper_bound_for_add_1st_lt_9.
 Qed.
 
-Theorem exists_9ge10 {r : radix} : ∀ u i m,
+Theorem exists_9ge10 {r : radix} : ∀ u i n,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
-  → NQintg (A i m u) = 1
-  → ∃ n, (∀ l, l < n → u (i + l + 1) = rad - 1) ∧ u (i + n + 1) ≥ rad.
+  → i + 1 ≤ n - 1
+  → NQintg (A i n u) = 1
+  → ∃ m, (∀ l, l < m → u (i + l + 1) = rad - 1) ∧ u (i + m + 1) ≥ rad.
 Proof.
-intros * Hur Hi H2.
+intros * Hur Hpu Hin Hia.
+rewrite A_split_first in Hia; [ | easy ].
+replace (S i) with (i + 1) in Hia by flia.
+specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu 1) as H1.
+destruct (zerop (carry u (i + 1))) as [H2| H2].
+-replace (i + 1 + 1) with (i + 2) in H1 by flia.
+ rewrite (proj1 H1) in Hia.
+ assert (H : NQintg (A (i + 1) n u) = 1). {
+   rewrite NQpair_sub_l in Hia; [ | easy ].
+   rewrite NQpair_diag in Hia; [ | easy ].
+   rewrite <- NQadd_sub_swap, <- NQadd_sub_assoc in Hia.
+   rewrite NQintg_add_nat_l in Hia. 2: {
+     admit.
+   }
+   replace 1 with (1 + 0) in Hia at 5 by easy.
+   apply Nat.add_cancel_l in Hia.
+   replace (1 // rad)%NQ with (1 * 1 // rad)%NQ in Hia at 2. 2: {
+     apply NQmul_1_l.
+   }
+   rewrite <- NQmul_sub_distr_r in Hia.
 ...
 
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
