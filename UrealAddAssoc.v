@@ -1728,6 +1728,15 @@ destruct (zerop (carry u (i + k))) as [H2| H2].
   now apply A_upper_bound_for_add_1st_lt_9.
 Qed.
 
+Theorem exists_9ge10 {r : radix} : ∀ u i m,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, P u (i + k) = rad - 1)
+  → NQintg (A i m u) = 1
+  → ∃ n, (∀ l, l < n → u (i + l + 1) = rad - 1) ∧ u (i + n + 1) ≥ rad.
+Proof.
+intros * Hur Hi H2.
+...
+
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
@@ -1786,9 +1795,7 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
   clear H2; rename H3 into H2.
   rewrite Hm in H2.
 ...
-  H2 : NQintg (A (i + j) (min_n (i + j) m) u) = 1
-  ============================
-  ∃ n : nat, (∀ l : nat, l < n → u (i + j + l + 1) = rad - 1) ∧ u (i + j + n + 1) ≥ rad
+eapply exists_9ge10; [ | | apply H2 ].
 ...
   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi (j + 1)) as H3.
   rewrite Nat.add_assoc in H3.
@@ -1813,7 +1820,7 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
     destruct (zerop (carry u (i + j + 3))) as [H8| H8].
    ++move H7 before H5.
      destruct H5 as (H5, _).
-     admit.
+...
    ++destruct (lt_dec (u (i + j + 3) + 1) rad) as [H9| H9].
     **clear H9.
       move H7 before H5.
