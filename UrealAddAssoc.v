@@ -1742,12 +1742,21 @@ specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu 1) as H1.
 destruct (zerop (carry u (i + 1))) as [H2| H2].
 -replace (i + 1 + 1) with (i + 2) in H1 by flia.
  rewrite (proj1 H1) in Hia.
+ rewrite NQpair_sub_l in Hia; [ | easy ].
+ rewrite NQpair_diag in Hia; [ | easy ].
+ rewrite <- NQadd_sub_swap, <- NQadd_sub_assoc in Hia.
+...
+ rewrite NQintg_add_nat_l in Hia. 2: {
+   apply NQle_0_sub.
+
+ }
+...
  assert (H : NQintg (A (i + 1) n u) = 1). {
    rewrite NQpair_sub_l in Hia; [ | easy ].
    rewrite NQpair_diag in Hia; [ | easy ].
    rewrite <- NQadd_sub_swap, <- NQadd_sub_assoc in Hia.
    rewrite NQintg_add_nat_l in Hia. 2: {
-     admit.
+...
    }
    replace 1 with (1 + 0) in Hia at 5 by easy.
    apply Nat.add_cancel_l in Hia.
@@ -1755,6 +1764,12 @@ destruct (zerop (carry u (i + 1))) as [H2| H2].
      apply NQmul_1_l.
    }
    rewrite <- NQmul_sub_distr_r in Hia.
+   apply eq_NQintg_0 in Hia. 2: {
+...
+   }
+   assert (H : (A (i + 1) n u < 1 + 1 // rad)%NQ). {
+...
+   }
 ...
 
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
