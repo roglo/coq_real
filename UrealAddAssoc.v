@@ -1656,6 +1656,47 @@ destruct (zerop (carry u (i + k))) as [H2| H2].
  rewrite A_split_first; [ | easy ].
  replace (S (i + k)) with (i + k + 1) by flia.
  rewrite H3.
+ replace (2 * (rad - 1)) with (rad + (rad - 2)) by flia Hr.
+ rewrite NQpair_add_l, (NQpair_diag rad); [ | easy ].
+ rewrite <- NQadd_assoc.
+ apply NQle_add_r.
+ replace 0%NQ with (0 // 1 + 0 * 1 // rad)%NQ by easy.
+ apply NQadd_le_mono.
+ +apply NQle_pair; [ easy | easy | flia Hr ].
+ +apply NQmul_le_mono_nonneg; [ easy | easy | easy | ].
+  apply NQle_refl.
+-assert (H3 : carry u (i + k) = 1). {
+   specialize (carry_upper_bound_for_add u (i + k)) as H3.
+   assert (H : ∀ l, u (i + k + l + 1) ≤ 2 * (rad - 1)). {
+     intros; do 2 rewrite <- Nat.add_assoc; apply Hur.
+   }
+   specialize (H3 H).
+   flia H2 H3.
+ }
+ clear H2; rename H3 into H2.
+ destruct (lt_dec (u (i + k) + 1) rad) as [H3| H3].
+ +clear H3.
+  split; [ easy | ].
+  rewrite Hm in H2.
+  rewrite A_split_first in H2; [ | easy ].
+  replace (S (i + k)) with (i + k + 1) in H2 by flia.
+...
+  apply Nat.nlt_ge.
+  intros H3; apply H2; clear H2.
+  apply NQintg_small.
+  split; [ easy | ].
+  rewrite A_split_first; [ | easy ].
+  replace (S (i + k)) with (i + k + 1) by flia.
+  eapply NQlt_le_trans.
+  *apply NQadd_lt_mono_r.
+   apply NQlt_pair with (d := rad) (c := rad - 1); [ easy | easy | ].
+   rewrite Nat.mul_comm.
+   now apply Nat.mul_lt_mono_pos_l.
+  *rewrite NQpair_sub_l; [ | easy ].
+   rewrite NQpair_diag; [ | easy ].
+   rewrite <- NQsub_sub_distr.
+   apply NQle_sub_l.
+
 ...
 
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
