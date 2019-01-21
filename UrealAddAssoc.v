@@ -1787,12 +1787,55 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
   rewrite Hm in H2.
   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi (j + 1)) as H3.
   rewrite Nat.add_assoc in H3.
+  replace (i + j + 1 + 1) with (i + j + 2) in H3 by flia.
   destruct (zerop (carry u (i + j + 1))) as [H4| H4].
   *move H3 before H1.
    specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi (j + 2)) as H5.
    rewrite Nat.add_assoc in H5.
+   replace (i + j + 2 + 1) with (i + j + 3) in H5 by flia.
    destruct (zerop (carry u (i + j + 2))) as [H6| H6].
   --move H5 before H3.
+    destruct H3 as (H3, _).
+    specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi (j + 3)) as H7.
+    rewrite Nat.add_assoc in H7.
+    replace (i + j + 3 + 1) with (i + j + 4) in H7 by flia.
+    destruct (zerop (carry u (i + j + 3))) as [H8| H8].
+   ++move H7 before H5.
+     destruct H5 as (H5, _).
+     admit.
+   ++destruct (lt_dec (u (i + j + 3) + 1) rad) as [H9| H9].
+    **clear H9.
+      move H7 before H5.
+      destruct H5 as (H5, _).
+      assert (H9 : carry u (i + j + 3) = 1). {
+        specialize (carry_upper_bound_for_add u (i + j + 3)) as H9.
+        assert (H : ∀ k, u (i + j + 3 + k + 1) ≤ 2 * (rad - 1)). {
+          intros; do 3 rewrite <- Nat.add_assoc; apply Hur.
+        }
+        specialize (H9 H).
+        flia H8 H9.
+      }
+      clear H8; rename H9 into H8.
+      assert
+        (Hc :
+         ∃ n,
+         carry u (i + j + 3) =
+         NQintg (A (i + j + 3) (min_n (i + j + 3) n) u)). {
+        unfold carry.
+        destruct (LPO_fst (fA_ge_1_ε u (i + j + 3))) as [H9| H9].
+        -exists 0; easy.
+        -destruct H9 as (k & Hjk & Hk).
+         exists k; easy.
+      }
+      destruct Hc as (m1 & Hm1).
+      move m1 before m.
+...
+      specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi (j + 4)) as H9.
+      rewrite Nat.add_assoc in H9.
+      replace (i + j + 4 + 1) with (i + j + 5) in H9 by flia.
+      destruct (zerop (carry u (i + j + 4))) as [H10| H10].
+    ---move H9 before H7.
+       destruct H7 as (H7, _).
 ...
   --destruct (lt_dec (u (i + j + 2) + 1) rad) as [H7| H7].
    ++clear H7.
