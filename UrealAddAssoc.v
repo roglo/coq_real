@@ -1665,7 +1665,7 @@ destruct (zerop (carry u (i + k))) as [H2| H2].
  +apply NQle_pair; [ easy | easy | flia Hr ].
  +apply NQmul_le_mono_nonneg; [ easy | easy | easy | ].
   apply NQle_refl.
--assert (H3 : carry u (i + k) = 1). {
+-assert (H3 : carry u (i + k) ≥ 1). {
    specialize (carry_upper_bound_for_add u (i + k)) as H3.
    assert (H : ∀ l, u (i + k + l + 1) ≤ 2 * (rad - 1)). {
      intros; do 2 rewrite <- Nat.add_assoc; apply Hur.
@@ -1680,6 +1680,9 @@ destruct (zerop (carry u (i + k))) as [H2| H2].
   rewrite Hm in H2.
   rewrite A_split_first in H2; [ | easy ].
   replace (S (i + k)) with (i + k + 1) in H2 by flia.
+  apply Nat.nlt_ge.
+  apply Nat.nlt_ge in H2.
+  intros H3; apply H2; clear H2.
 ...
   apply Nat.nlt_ge.
   intros H3; apply H2; clear H2.
