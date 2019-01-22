@@ -1750,7 +1750,6 @@ destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu j) as H1.
   destruct (zerop (carry u (i + j))) as [H2| H2].
   *exfalso.
-   (* u(i+j+1) must therefore be = to r-2 *)
    specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu (j + 1)) as H3.
    replace (i + (j + 1)) with (i + j + 1) in H3 by flia.
    destruct (zerop (carry u (i + j + 1))) as [H4| H4]; [ easy | ].
