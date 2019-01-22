@@ -1737,6 +1737,71 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hpu Hia.
+specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu 1) as H1.
+destruct (zerop (carry u (i + 1))) as [H2| H2]; cycle 1. {
+  destruct (lt_dec (u (i + 1) + 1) rad) as [H3| H3]. 2: {
+    clear H3; exists 0; rewrite Nat.add_0_r.
+    split; [ easy | ].
+    rewrite (proj1 H1); flia Hr.
+  }
+  clear H3.
+  destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+    unfold A in Hia.
+    now rewrite summation_empty in Hia.
+  }
+  apply Nat.nlt_ge in Hin.
+  rewrite NQintg_small in Hia; [ easy | ].
+  split; [ easy | ].
+  rewrite A_split_first; [ | easy ].
+  replace (S i) with (i + 1) by flia.
+  rewrite (proj1 H1).
+  rewrite NQpair_sub_l; [ | easy ].
+  rewrite NQpair_diag; [ | easy ].
+  rewrite <- NQsub_sub_distr.
+  apply NQsub_lt.
+  apply NQlt_0_sub.
+  replace (2 // rad)%NQ with (2 * 1 // rad)%NQ. 2: {
+    rewrite NQmul_pair; [ | easy | easy ].
+    now rewrite Nat.mul_1_r, Nat.mul_1_l.
+  }
+  apply NQmul_lt_mono_pos_r.
+  -replace 0%NQ with (0 // 1)%NQ by easy.
+   apply NQlt_pair; [ easy | easy | cbn; flia ].
+  -eapply NQle_lt_trans.
+   +apply A_upper_bound_for_add.
+    intros k; do 2 rewrite <- Nat.add_assoc; apply Hur.
+   +rewrite NQmul_sub_distr_l, NQmul_1_r.
+    apply NQsub_lt.
+    replace 0%NQ with (2 * 0)%NQ by easy.
+    apply NQmul_lt_mono_pos_l; [ easy | ].
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | pauto | flia ].
+}
+...
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hpu Hia.
+remember (n - i - 1) as s eqn:Hs.
+revert i n Hur Hpu Hia Hs.
+induction s; intros.
+-unfold A in Hia.
+ rewrite summation_empty in Hia; [ easy | flia Hs ].
+-destruct n; [ flia Hs | ].
+ assert (H : s = n - i - 1) by flia Hs.
+ clear Hs; rename H into Hs.
+ apply (IHs _ n); [ easy | easy | | easy ].
+ destruct (lt_dec (S n - 1) (i + 1)) as [Hin| Hin]. {
+   unfold A in Hia.
+   now rewrite summation_empty in Hia.
+ }
+ apply Nat.nlt_ge in Hin.
+ specialize (all_P_9_all_8g9_9n18_18g9 u (S i)) as H1.
+...
+ specialize (all_P_9_all_8g9_9n18_18g9 u (S i) Hur Hpu (S n)) as H1.
+...
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hpu Hia.
 destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
   unfold A in Hia.
   now rewrite summation_empty in Hia.
