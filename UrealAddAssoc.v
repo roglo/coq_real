@@ -1820,6 +1820,37 @@ assert (H : NQintg (A (i + 1) n u) = 1). {
    +now apply NQintg_mono in H3.
 }
 move H before Hia; clear Hia; rename H into Hia.
+enough
+  (H : ∃ m,
+    (∀ l : nat, l < m → u ((i + 1) + l + 1) = rad - 1) ∧
+    u ((i + 1) + m + 1) ≥ rad). {
+  destruct H as (m & Hm).
+  exists (m + 1).
+  replace (i + (m + 1) + 1) with (i + 1 + m + 1) by flia.
+  split; [ | easy ].
+  intros l Hl.
+  destruct l; [ now rewrite Nat.add_0_r | ].
+  replace (i + S l + 1) with (i + 1 + l + 1) by flia.
+  apply Hm; flia Hl.
+}
+clear H1 H2 Hin.
+assert (H : ∀ k, u (i + 1 + k) ≤ 2 * (rad - 1)). {
+  intros; rewrite <- Nat.add_assoc; apply Hur.
+}
+move H before Hur; clear Hur; rename H into Hur.
+assert (H : ∀ k, P u (i + 1 + k) = rad - 1). {
+  intros; rewrite <- Nat.add_assoc; apply Hpu.
+}
+move H before Hpu; clear Hpu; rename H into Hpu.
+remember (i + 1) as j; clear i Heqj; rename j into i.
+(* coinduction ? *)
+...
+Theorem exists_9ge10 {r : radix} : ∀ u i n,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, P u (i + k) = rad - 1)
+  → NQintg (A i n u) = 1
+  → ∃ m, (∀ l, l < m → u (i + l + 1) = rad - 1) ∧ u (i + m + 1) ≥ rad.
+Proof.
 ...
 intros *.
 specialize radix_ge_2 as Hr.
