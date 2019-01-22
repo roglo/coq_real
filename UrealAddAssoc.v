@@ -1793,6 +1793,25 @@ destruct (zerop (carry u (i + 1))) as [H2| H2].
     remember (j + 1) as jj eqn:Hjj.
     subst j; rename jj into j; rename Hjj into Hj; cbn in Hj.
 ...
+    enough (H : ∃ m, (∀ l : nat, l < m → u (i + j + l) = rad - 1) ∧ u (i + j + m) ≥ rad). {
+      destruct H as (m, Hm).
+      exists (j + m - 1).
+      replace (i + (j + m - 1) + 1) with (i + j + m) by flia Hj.
+      split; [ | easy ].
+      intros l Hl.
+      destruct l; [ now rewrite <- Nat.add_assoc | ].
+      destruct l; [ now rewrite <- Nat.add_assoc | ].
+      destruct l; [ now rewrite <- Nat.add_assoc | ].
+      destruct l; [ now rewrite <- Nat.add_assoc | ].
+      subst j; cbn in Hl.
+      do 4 apply Nat.succ_lt_mono in Hl.
+      specialize (proj1 Hm l Hl) as H.
+      rewrite <- H; f_equal; flia.
+    }
+    replace (i + 4 + 1) with (i + j) in H8 by flia Hj.
+    remember (i + j) as ij eqn:Hij.
+    destruct H8 as (_, H8).
+...
  +destruct (lt_dec (u (i + 2) + 1) rad) as [H6| H6].
   *clear H6; move H5 before H2.
    destruct H1 as (H1, _).
