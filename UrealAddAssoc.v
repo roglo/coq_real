@@ -1776,6 +1776,7 @@ destruct (zerop (carry u (i + 1))) as [H2| H2].
   admit.
  +destruct (lt_dec (u (i + 2) + 1) rad) as [H6| H6].
   *clear H6; move H5 before H2.
+   destruct H1 as (H1, _).
 Search (carry _ _ ≠ 0).
 Search (carry _ _ > 0).
 ...
