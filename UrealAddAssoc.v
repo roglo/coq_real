@@ -1731,13 +1731,17 @@ Qed.
 Theorem exists_9ge10 {r : radix} : ∀ u i n,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
-  → i + 1 ≤ n - 1
   → NQintg (A i n u) = 1
   → ∃ m, (∀ l, l < m → u (i + l + 1) = rad - 1) ∧ u (i + m + 1) ≥ rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur Hpu Hin Hia.
+intros Hur Hpu Hia.
+destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+  unfold A in Hia.
+  now rewrite summation_empty in Hia.
+}
+apply Nat.nlt_ge in Hin.
 rewrite A_split_first in Hia; [ | easy ].
 replace (S i) with (i + 1) in Hia by flia.
 specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu 1) as H1.
