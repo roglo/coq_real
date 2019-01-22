@@ -1782,21 +1782,44 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
   now rewrite summation_empty in Hia.
 }
 apply Nat.nlt_ge in Hin.
-...
 assert (H : NQintg (A (i + 1) n u) = 1). {
   rewrite A_split_first in Hia; [ | easy ].
   rewrite <- Nat.add_1_r in Hia.
   rewrite (proj1 H1) in Hia.
   rewrite NQpair_sub_l in Hia; [ | easy ].
   rewrite NQpair_diag in Hia; [ | easy ].
-  rewrite <- NQadd_sub_swap, <- NQadd_sub_assoc in Hia.
-  rewrite NQintg_add_nat_l in Hia. 2: {
-    apply NQle_0_sub.
-    replace (1 // rad)%NQ with (1 * (1 // rad))%NQ at 1 by apply NQmul_1_l.
-    apply NQmul_le_mono_pos_r.
-    -replace 0%NQ with (0 // 1)%NQ by easy.
+  destruct (NQlt_le_dec (A (i + 1) n u) 1) as [H3| H3].
+  -rewrite <- NQsub_sub_distr in Hia.
+   rewrite NQintg_small in Hia; [ easy | ].
+   split.
+   +apply NQle_0_sub.
+    replace (1 // rad)%NQ with (1 * 1 // rad)%NQ at 1 by apply NQmul_1_l.
+    rewrite <- NQmul_sub_distr_r.
+    replace 1%NQ with (1 * 1)%NQ at 2 by easy.
+    apply NQmul_le_mono_nonneg.
+    *now apply NQle_0_sub, NQlt_le_incl.
+    *now apply NQle_sub_l.
+    *replace 0%NQ with (0 // 1)%NQ by easy.
+     apply NQle_pair; [ easy | easy | flia ].
+    *apply NQle_pair; [ easy | easy | flia Hr ].
+   +apply NQsub_lt, NQlt_0_sub.
+    replace (1 // rad)%NQ with (1 * 1 // rad)%NQ at 2 by apply NQmul_1_l.
+    apply NQmul_lt_mono_pos_r; [ | easy ].
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | easy | flia ].
+  -rewrite <- NQadd_sub_swap, <- NQadd_sub_assoc in Hia.
+   rewrite NQintg_add_nat_l in Hia. 2: {
+     apply NQle_0_sub.
+     replace (1 // rad)%NQ with (1 * (1 // rad))%NQ at 1 by apply NQmul_1_l.
+     apply NQmul_le_mono_pos_r; [ | easy ].
+     replace 0%NQ with (0 // 1)%NQ by easy.
      apply NQlt_pair; [ easy | easy | cbn; flia ].
-    -idtac.
+   }
+   apply eq_nA_div_1.
+   +intros k; do 2 rewrite <- Nat.add_assoc; apply Hur.
+   +now apply NQintg_mono in H3.
+}
+move H before Hia; clear Hia; rename H into Hia.
 ...
 intros *.
 specialize radix_ge_2 as Hr.
