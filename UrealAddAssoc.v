@@ -1737,6 +1737,30 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hpu Hia.
+destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
+-destruct H1 as (j & Hjj & Hj).
+ apply is_num_9_false_iff in Hj.
+ exists j.
+ split.
+ +intros l Hl.
+  specialize (Hjj _ Hl).
+  apply is_num_9_true_iff in Hjj.
+  now rewrite Nat.add_shuffle0.
+ +rewrite Nat.add_shuffle0 in Hj.
+  specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu j) as H1.
+  destruct (zerop (carry u (i + j))) as [H2| H2].
+  *exfalso.
+   (* u(i+j+1) must therefore be = to r-2 *)
+   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu (j + 1)) as H3.
+   replace (i + (j + 1)) with (i + j + 1) in H3 by flia.
+   destruct (zerop (carry u (i + j + 1))) as [H4| H4]; [ easy | ].
+   destruct (lt_dec (u (i + j + 1) + 1) rad) as [H5| H5]; [ | easy ].
+   destruct H1 as (H1, _).
+   clear Hj H5.
+...
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hpu Hia.
 specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu 1) as H1.
 destruct (zerop (carry u (i + 1))) as [H2| H2]; cycle 1. {
   destruct (lt_dec (u (i + 1) + 1) rad) as [H3| H3]. 2: {
