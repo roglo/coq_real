@@ -1777,14 +1777,15 @@ destruct (zerop (carry u (i + 1))) as [H2| H2].
  destruct (zerop (carry u (i + 2))) as [H5| H5].
  +move H5 before H2.
   destruct H1 as (H1, _).
-  specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu 3) as H6.
-  replace (i + 3 + 1) with (i + 4) in H6 by flia.
-  destruct (zerop (carry u (i + 3))) as [H7| H7].
+  remember 3 as j eqn:Hj.
+  specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu j) as H6.
+  destruct (zerop (carry u (i + j))) as [H7| H7].
   *move H7 before H5.
    destruct H4 as (H4, _).
-   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu 4) as H8.
-   replace (i + 4 + 1) with (i + 5) in H8 by flia.
-   destruct (zerop (carry u (i + 4))) as [H9| H9].
+   subst j.
+   remember 4 as j eqn:Hj.
+   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu j) as H8.
+   destruct (zerop (carry u (i + j))) as [H9| H9].
   --move H9 before H7.
     destruct H6 as (H6, _).
 ...
