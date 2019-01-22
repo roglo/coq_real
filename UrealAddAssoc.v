@@ -1742,58 +1742,26 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
   now rewrite summation_empty in Hia.
 }
 apply Nat.nlt_ge in Hin.
-rewrite A_split_first in Hia; [ | easy ].
-replace (S i) with (i + 1) in Hia by flia.
-specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu 1) as H1.
-destruct (zerop (carry u (i + 1))) as [H2| H2].
--replace (i + 1 + 1) with (i + 2) in H1 by flia.
- rewrite (proj1 H1) in Hia.
- rewrite NQpair_sub_l in Hia; [ | easy ].
- rewrite NQpair_diag in Hia; [ | easy ].
- destruct (NQlt_le_dec (A (i + 1) n u) 1) as [H3| H3]. {
-   exfalso.
-   rewrite NQintg_small in Hia; [ easy | ].
-   split.
-   -rewrite <- NQadd_sub_swap.
-    apply NQle_0_sub.
-    eapply NQle_trans; [ | apply NQle_add_r ].
-    +apply NQle_pair; [ easy | easy | flia Hr ].
-    +replace 0%NQ with (0 * 1 // rad)%NQ by easy.
-     apply NQmul_le_mono_pos_r.
-     *replace 0%NQ with (0 // 1)%NQ by easy.
-      apply NQlt_pair; [ easy | easy | pauto ].
-     *apply A_ge_0.
-   -rewrite <- NQsub_sub_distr.
-    apply NQsub_lt, NQlt_0_sub.
-    replace (1 // rad)%NQ with (1 * 1 // rad)%NQ at 2 by apply NQmul_1_l.
-    apply NQmul_lt_mono_pos_r; [ | easy ].
-    replace 0%NQ with (0 // 1)%NQ by easy.
-    apply NQlt_pair; [ easy | easy | pauto ].
- }
- clear Hia.
- move H3 before Hin.
- remember 2 as j eqn:Hj in |-*.
- rewrite <- Hj in H1 at 1.
+remember 1 as j eqn:Hj in |-*.
+(**)
+specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu j) as H1.
+destruct (zerop (carry u (i + j))) as [H2| H2].
+-remember (j + 1) as jj eqn:Hjj.
+ subst j; rename jj into j; rename Hjj into Hj; cbn in Hj.
 (**)
  specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu j) as H4.
  destruct (zerop (carry u (i + j))) as [H5| H5].
- +move H5 before H2.
-  destruct H1 as (H1, _).
-  remember (j + 1) as jj eqn:Hjj.
+ +remember (j + 1) as jj eqn:Hjj.
   subst j; rename jj into j; rename Hjj into Hj; cbn in Hj.
 (**)
   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu j) as H6.
   destruct (zerop (carry u (i + j))) as [H7| H7].
-  *move H7 before H5.
-   destruct H4 as (H4, _).
-   remember (j + 1) as jj eqn:Hjj.
+  *remember (j + 1) as jj eqn:Hjj.
    subst j; rename jj into j; rename Hjj into Hj; cbn in Hj.
 (**)
    specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu j) as H8.
    destruct (zerop (carry u (i + j))) as [H9| H9].
-  --move H9 before H7.
-    destruct H6 as (H6, _).
-    remember (j + 1) as jj eqn:Hjj.
+  --remember (j + 1) as jj eqn:Hjj.
     subst j; rename jj into j; rename Hjj into Hj; cbn in Hj.
 ...
     enough (H : ∃ m, (∀ l : nat, l < m → u (i + j + l) = rad - 1) ∧ u (i + j + m) ≥ rad). {
