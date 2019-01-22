@@ -1778,16 +1778,20 @@ destruct (zerop (carry u (i + 1))) as [H2| H2].
  +move H5 before H2.
   destruct H1 as (H1, _).
   remember 3 as j eqn:Hj.
+(**)
   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu j) as H6.
   destruct (zerop (carry u (i + j))) as [H7| H7].
   *move H7 before H5.
    destruct H4 as (H4, _).
-   subst j.
-   remember 4 as j eqn:Hj.
+   remember (j + 1) as jj eqn:Hjj.
+   subst j; rename jj into j; rename Hjj into Hj; cbn in Hj.
+(**)
    specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu j) as H8.
    destruct (zerop (carry u (i + j))) as [H9| H9].
   --move H9 before H7.
     destruct H6 as (H6, _).
+    remember (j + 1) as jj eqn:Hjj.
+    subst j; rename jj into j; rename Hjj into Hj; cbn in Hj.
 ...
  +destruct (lt_dec (u (i + 2) + 1) rad) as [H6| H6].
   *clear H6; move H5 before H2.
