@@ -1772,12 +1772,15 @@ destruct (zerop (carry u (i + 1))) as [H2| H2].
  }
  clear Hia.
  move H3 before Hin.
- specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu 2) as H4.
- replace (i + 2 + 1) with (i + 3) in H4 by flia.
- destruct (zerop (carry u (i + 2))) as [H5| H5].
+ remember 2 as j eqn:Hj in |-*.
+ rewrite <- Hj in H1 at 1.
+(**)
+ specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu j) as H4.
+ destruct (zerop (carry u (i + j))) as [H5| H5].
  +move H5 before H2.
   destruct H1 as (H1, _).
-  remember 3 as j eqn:Hj.
+  remember (j + 1) as jj eqn:Hjj.
+  subst j; rename jj into j; rename Hjj into Hj; cbn in Hj.
 (**)
   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu j) as H6.
   destruct (zerop (carry u (i + j))) as [H7| H7].
