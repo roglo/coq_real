@@ -1777,6 +1777,26 @@ destruct (zerop (carry u (i + 1))) as [H2| H2]; cycle 1. {
     replace 0%NQ with (0 // 1)%NQ by easy.
     apply NQlt_pair; [ easy | pauto | flia ].
 }
+destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+  unfold A in Hia.
+  now rewrite summation_empty in Hia.
+}
+apply Nat.nlt_ge in Hin.
+...
+assert (H : NQintg (A (i + 1) n u) = 1). {
+  rewrite A_split_first in Hia; [ | easy ].
+  rewrite <- Nat.add_1_r in Hia.
+  rewrite (proj1 H1) in Hia.
+  rewrite NQpair_sub_l in Hia; [ | easy ].
+  rewrite NQpair_diag in Hia; [ | easy ].
+  rewrite <- NQadd_sub_swap, <- NQadd_sub_assoc in Hia.
+  rewrite NQintg_add_nat_l in Hia. 2: {
+    apply NQle_0_sub.
+    replace (1 // rad)%NQ with (1 * (1 // rad))%NQ at 1 by apply NQmul_1_l.
+    apply NQmul_le_mono_pos_r.
+    -replace 0%NQ with (0 // 1)%NQ by easy.
+     apply NQlt_pair; [ easy | easy | cbn; flia ].
+    -idtac.
 ...
 intros *.
 specialize radix_ge_2 as Hr.
