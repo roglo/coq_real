@@ -1735,7 +1735,9 @@ Theorem exists_9ge10 {r : radix} : ∀ u i n,
   → NQintg (A i n u) = 1
   → ∃ m, (∀ l, l < m → u (i + l + 1) = rad - 1) ∧ u (i + m + 1) ≥ rad.
 Proof.
-intros * Hur Hpu Hin Hia.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hpu Hin Hia.
 rewrite A_split_first in Hia; [ | easy ].
 replace (S i) with (i + 1) in Hia by flia.
 specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu 1) as H1.
@@ -1744,48 +1746,46 @@ destruct (zerop (carry u (i + 1))) as [H2| H2].
  rewrite (proj1 H1) in Hia.
  rewrite NQpair_sub_l in Hia; [ | easy ].
  rewrite NQpair_diag in Hia; [ | easy ].
-(*
- rewrite <- NQadd_sub_swap, <- NQadd_sub_assoc in Hia.
-*)
  destruct (NQlt_le_dec (A (i + 1) n u) 1) as [H3| H3]. {
    exfalso.
-...
-   rewrite NQintg_add in Hia.
-   rewrite NQintg_small in Hia.
-   rewrite NQintg_small in Hia.
-   rewrite Nat.add_0_l in Hia.
-   rewrite NQfrac_small in Hia.
-   rewrite NQfrac_small in Hia.
-...
-(* tourné en rond *)
-  Hia : NQintg ((1 - 1 // rad)%NQ + (A (i + 1) n u * 1 // rad)%NQ) = 1
-
-
-...
- rewrite NQintg_add_nat_l in Hia. 2: {
-   apply NQle_0_sub.
-
+   rewrite NQintg_small in Hia; [ easy | ].
+   split.
+   -rewrite <- NQadd_sub_swap.
+    apply NQle_0_sub.
+    eapply NQle_trans; [ | apply NQle_add_r ].
+    +apply NQle_pair; [ easy | easy | flia Hr ].
+    +replace 0%NQ with (0 * 1 // rad)%NQ by easy.
+     apply NQmul_le_mono_pos_r.
+     *replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQlt_pair; [ easy | easy | pauto ].
+     *apply A_ge_0.
+   -rewrite <- NQsub_sub_distr.
+    apply NQsub_lt, NQlt_0_sub.
+    replace (1 // rad)%NQ with (1 * 1 // rad)%NQ at 2 by apply NQmul_1_l.
+    apply NQmul_lt_mono_pos_r; [ | easy ].
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | easy | pauto ].
  }
+ clear Hia.
+ move H3 before Hin.
+ specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu 2) as H4.
+ replace (i + 2 + 1) with (i + 3) in H4 by flia.
+ destruct (zerop (carry u (i + 2))) as [H5| H5].
+ +move H5 before H2.
+  destruct H1 as (H1, _).
+  admit.
+ +destruct (lt_dec (u (i + 2) + 1) rad) as [H6| H6].
+  *clear H6; move H5 before H2.
+Search (carry _ _ ≠ 0).
+Search (carry _ _ > 0).
 ...
- assert (H : NQintg (A (i + 1) n u) = 1). {
-   rewrite NQpair_sub_l in Hia; [ | easy ].
-   rewrite NQpair_diag in Hia; [ | easy ].
-   rewrite <- NQadd_sub_swap, <- NQadd_sub_assoc in Hia.
-   rewrite NQintg_add_nat_l in Hia. 2: {
-...
-   }
-   replace 1 with (1 + 0) in Hia at 5 by easy.
-   apply Nat.add_cancel_l in Hia.
-   replace (1 // rad)%NQ with (1 * 1 // rad)%NQ in Hia at 2. 2: {
-     apply NQmul_1_l.
-   }
-   rewrite <- NQmul_sub_distr_r in Hia.
-   apply eq_NQintg_0 in Hia. 2: {
-...
-   }
-   assert (H : (A (i + 1) n u < 1 + 1 // rad)%NQ). {
-...
-   }
+ destruct (lt_dec (n - 1) (i + 1 + 1)) as [H4| H4]. {
+   unfold A in H3.
+   now rewrite summation_empty in H3.
+ }
+ apply Nat.nlt_ge in H4.
+ rewrite A_split_first in H3; [ | easy ].
+ replace (S (i + 1)) with (i + 2) in H3 by easy.
 ...
 
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
