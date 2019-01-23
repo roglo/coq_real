@@ -1747,7 +1747,6 @@ destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
   apply is_num_9_true_iff in Hjj.
   now rewrite Nat.add_shuffle0.
  +rewrite Nat.add_shuffle0 in Hj.
-(**)
   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu (j + 1)) as H1.
   replace (i + (j + 1)) with (i + j + 1) in H1 by flia.
   destruct (zerop (carry u (i + j + 1))) as [H2| H2]; [ easy | ].
@@ -1914,25 +1913,28 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
  +apply NQle_pair; [ easy | easy | flia Hr ].
  +replace 0%NQ with (0 * 0)%NQ by easy.
   now apply NQmul_le_mono_nonneg.
--destruct (lt_dec (u (i + j) + 1) rad) as [H3| H3].
+-assert (H3 : carry u (i + j) = 1). {
+   specialize (carry_upper_bound_for_add u (i + j)) as H3.
+   assert (H : ∀ k, u (i + j + k + 1) ≤ 2 * (rad - 1)). {
+     intros; do 2 rewrite <- Nat.add_assoc; apply Hur.
+   }
+   specialize (H3 H).
+   flia H2 H3.
+ }
+ clear H2; rename H3 into H2.
+ rewrite Hm in H2.
+ destruct (lt_dec (u (i + j) + 1) rad) as [H3| H3].
  +right; left; clear H3.
   split; [ easy | ].
-  assert (H3 : carry u (i + j) = 1). {
-    specialize (carry_upper_bound_for_add u (i + j)) as H3.
-    assert (H : ∀ k, u (i + j + k + 1) ≤ 2 * (rad - 1)). {
-      intros; do 2 rewrite <- Nat.add_assoc; apply Hur.
-    }
-    specialize (H3 H).
-    flia H2 H3.
-  }
-  clear H2; rename H3 into H2.
-  rewrite Hm in H2.
   eapply exists_9ge10; [ | | apply H2 ].
   *intros k; rewrite <- Nat.add_assoc; apply Hur.
   *intros k; rewrite <- Nat.add_assoc; apply Hi.
  +right; right; clear H3.
   split; [ easy | ].
-...
+  eapply exists_9ge10; [ | | apply H2 ].
+  *intros k; rewrite <- Nat.add_assoc; apply Hur.
+  *intros k; rewrite <- Nat.add_assoc; apply Hi.
+Qed.
 
 Theorem all_P_9_all_989_8_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -2118,23 +2120,78 @@ destruct (LPO_fst (is_num_9 u i)) as [H1| H1].
   --rewrite H1 in H2; flia Hr H2.
 Qed.
 
-...
-
 Theorem all_P_9_all_fA_true {r : radix} : ∀ u i,
-  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, P u (i + k + 1) = rad - 1)
   → ∀ k, fA_ge_1_ε u i k = true.
 Proof.
-intros * Hur Hpr k.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hpr k.
 apply A_ge_1_true_iff.
-unfold P, d2n, prop_carr in Hpr; cbn in Hpr.
-...
-unfold carry in H1.
-destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2].
--remember (min_n (i + 1) 0) as n eqn:Hn.
- move n before i.
-(* perhaps another theorem stating that u is 999 or 18/18/18 or 9/9/8/18/18...
-   i.e. not passing through fA_ge_1_ε u i k = true *)
+specialize (all_P_9_999_9818_1818 u (i + 1))  as H1.
+assert (H : ∀ k, u (i + 1 + k) ≤ 2 * (rad - 1)). {
+  intros; rewrite Nat.add_shuffle0; apply Hur.
+}
+specialize (H1 H); clear H.
+assert (H : ∀ k, P u (i + 1 + k) = rad - 1). {
+  intros; rewrite Nat.add_shuffle0; apply Hpr.
+}
+specialize (H1 H); clear H.
+destruct H1 as [H1| [H1| H1]].
+-rewrite A_all_9 by (intros j Hj; rewrite Nat.add_shuffle0; apply H1).
+ rewrite NQfrac_small. 2: {
+   split.
+   -apply NQle_0_sub.
+    apply NQle_pair; [ pauto | easy | ].
+    now apply Nat.mul_le_mono_r, Nat_pow_ge_1.
+   -apply NQsub_lt.
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | pauto | flia ].
+ }
+ apply NQsub_le_mono; [ apply NQle_refl | ].
+ apply NQle_pair; [ pauto | pauto | ].
+ rewrite Nat.mul_1_l, Nat.mul_1_r.
+ apply Nat.pow_le_mono_r; [ easy | ].
+ unfold min_n.
+ destruct rad; [ easy | cbn; flia ].
+-rewrite A_all_18 by (intros j; rewrite Nat.add_shuffle0; apply H1).
+ replace 2%NQ with (1 + 1)%NQ by easy.
+ rewrite <- NQadd_sub_assoc.
+ remember (min_n i k - i - 1) as s eqn:Hs.
+ assert (H2 : 2 ≤ rad ^ s). {
+   destruct s.
+   +unfold min_n in Hs.
+    destruct rad; [ easy | cbn in Hs; flia Hs ].
+   +cbn.
+    replace 2 with (2 * 1) by easy.
+    apply Nat.mul_le_mono_nonneg; [ flia | easy | flia | ].
+    now apply Nat_pow_ge_1.
+ }
+ rewrite NQfrac_add_nat_l.
+ +rewrite NQfrac_small. 2: {
+    split.
+    -apply NQle_0_sub.
+     apply NQle_pair; [ pauto | easy | ].
+     now apply Nat.mul_le_mono_r.
+    -apply NQsub_lt.
+     replace 0%NQ with (0 // 1)%NQ by easy.
+     apply NQlt_pair; [ easy | pauto | flia ].
+  }
+  apply NQsub_le_mono; [ apply NQle_refl | ].
+  apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat.mul_1_r.
+  apply (le_trans _ (rad ^ S (S k))).
+  *rewrite (Nat.pow_succ_r' _ (S k)).
+   now apply Nat.mul_le_mono.
+  *apply Nat.pow_le_mono_r; [ easy | ].
+   rewrite Hs.
+   unfold min_n.
+   destruct rad; [ easy | cbn; flia ].
+ +apply NQle_0_sub.
+  apply NQle_pair; [ pauto | easy | ].
+  now apply Nat.mul_le_mono_r.
+-idtac.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
