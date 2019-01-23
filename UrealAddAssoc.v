@@ -2622,41 +2622,12 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       }
       specialize (H4 H Hpm); clear H.
       move H4 before H2.
-      specialize (A_ge_1_add_all_true_if v i) as H5.
-      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
-        intros; rewrite <- Nat.add_assoc; apply Hv.
-      }
-      specialize (H5 H H4); clear H.
-      destruct H5 as [H5| [H5| H5]].
-    ---rewrite A_all_9 in Hav by (intros; apply H5).
-       rewrite NQfrac_small in Hav. 2: {
-         split.
-         -apply NQle_0_sub.
-          apply NQle_pair; [ pauto | easy | ].
-          do 2 rewrite Nat.mul_1_r.
-          now apply Nat_pow_ge_1.
-         -apply NQsub_lt.
-          replace 0%NQ with (0 // 1)%NQ by easy.
-          apply NQlt_pair; [ easy | pauto | flia ].
-       }
-       symmetry in Hav.
-       apply NQadd_move_r in Hav.
-       rewrite NQadd_0_l in Hav.
-       apply NQeq_pair in Hav; [ | pauto | easy ].
-       do 2 rewrite Nat.mul_1_r in Hav.
-       remember (n - i - 1) as s eqn:Hs.
-       destruct s.
-     ***rewrite Hn in Hs.
-        unfold min_n in Hs.
-        destruct rad; [ easy | cbn in Hs; flia Hs ].
-     ***cbn in Hav.
-        specialize (Nat_pow_ge_1 rad s radix_gt_0) as H6.
-        apply Nat.nlt_ge in H6; apply H6.
-        rewrite Hav.
-        replace (rad ^ s) with (1 * rad ^ s) at 1 by flia.
-        apply Nat.mul_lt_mono_pos_r; [ | easy ].
-        apply Nat.neq_0_lt_0; pauto.
-    ---rewrite A_all_18 in Hav by apply H5.
+      specialize (proj1 (frac_ge_if_all_fA_ge_1_ε v i) H4 0) as H5.
+      rewrite <- Hn, Hav, Nat.pow_1_r in H5.
+      apply NQnlt_ge in H5; apply H5; clear H5.
+      apply NQlt_0_sub.
+      apply NQlt_pair; [ easy | easy | flia Hr ].
+    **destruct H'1 as (j & Hbef & Hwhi & Haft).
 ...
 (*
 0.9<au<1
@@ -2683,8 +2654,6 @@ base 2
 0.1≤au+av<1
 1.1≤au+ap<10
 *)
-  -- ...
- +destruct H2 as (j & Hj & Hjj).
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
