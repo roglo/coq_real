@@ -1747,6 +1747,21 @@ destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
   apply is_num_9_true_iff in Hjj.
   now rewrite Nat.add_shuffle0.
  +rewrite Nat.add_shuffle0 in Hj.
+(**)
+  specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu (j + 1)) as H1.
+  replace (i + (j + 1)) with (i + j + 1) in H1 by flia.
+  destruct (zerop (carry u (i + j + 1))) as [H2| H2]; [ easy | ].
+  destruct (lt_dec (u (i + j + 1) + 1) rad) as [H3| H3]. 2: {
+    rewrite (proj1 H1); flia Hr.
+  }
+  exfalso.
+  clear Hj H3.
+  (* devrait être contradictoire avec Hia car j'ai 99998 et même avec
+     la retenue 1, ça ne donnera que 99999 et ça ne débordera point *)
+...
+  destruct H1 as (H1, _).
+  clear Hj H5.
+...
   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hpu j) as H1.
   destruct (zerop (carry u (i + j))) as [H2| H2].
   *exfalso.
