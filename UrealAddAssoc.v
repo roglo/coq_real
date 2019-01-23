@@ -2240,394 +2240,417 @@ destruct H1 as [H1| [H1| H1]].
   apply Hj.
 Qed.
 
-Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
-  (∀ k : nat, u (i + k) ≤ rad - 1)
+Theorem pre_Hugo_Herbelin_111 {r : radix} : ∀ u v i n,
+  (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
-  → carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
+  → n = min_n i 0
+  → (∀ k, fA_ge_1_ε (u ⊕ P v) i k = true)
+  → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
+  → (∀ k, fA_ge_1_ε v i k = true)
+  → (NQintg (A i n v) + NQintg (A i n (u ⊕ P v))) mod rad =
+     NQintg (A i n (u ⊕ v)) mod rad.
 Proof.
-intros * Hu Hv.
+intros *.
 specialize radix_ge_2 as Hr.
-symmetry; rewrite Nat.add_comm.
-unfold carry.
-remember (min_n i 0) as n eqn:Hn.
-destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
--destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
- +rewrite Nat.add_comm.
-  do 2 rewrite A_additive.
-  rewrite NQintg_add; [ symmetry | easy | easy ].
-  rewrite NQintg_add; [ symmetry | easy | easy ].
-  do 3 rewrite <- Nat.add_assoc.
-  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-  f_equal; f_equal.
-  destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
-  *rewrite Nat.add_assoc, Nat.add_comm.
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   f_equal; f_equal.
-   rewrite Nat.add_comm.
-   rewrite NQintg_P_M, Nat.add_0_r.
-   specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
-   assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
-     intros; rewrite <- Nat.add_assoc; apply Hv.
-   }
-   specialize (A_ge_1_add_all_true_if v i H H3) as H'3; clear H.
-   assert (H4 : (0 ≤ 1 - 2 // rad ^ (n - i - 1))%NQ). {
-     rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
-       do 2 rewrite Nat.mul_1_l.
-       remember (n - i - 1) as s eqn:Hs.
-       destruct s.
-       -rewrite Hn in Hs; unfold min_n in Hs.
-        rewrite Nat.add_0_r, Nat.mul_add_distr_l in Hs.
-        destruct rad; [ easy | cbn in Hs; flia Hs ].
-       -cbn.
-        replace 2 with (2 * 1) by flia.
-        apply Nat.mul_le_mono; [ easy | now apply Nat_pow_ge_1 ].
-     }
-     do 2 rewrite Nat.mul_1_l.
-     replace 0%NQ with (0 // 1)%NQ by easy.
-     apply NQle_pair; [ easy | pauto | ].
-     rewrite Nat.mul_0_l, Nat.mul_1_l; flia.
-   }
-   destruct H'3 as [H'3| [H'3| H'3]].
-  --f_equal; f_equal; f_equal; f_equal.
-    apply A_eq_compat.
-    intros j Hj.
-    replace j with (i + (j - i - 1) + 1) by flia Hj.
-    now rewrite A3, H'3.
-  (* Here, NQfrac(A(P v))=0.999...999 and NQfrac(A(v))=0.999...998 with
+intros Hu Hv Hn H1 H2 H3.
+rewrite Nat.add_comm.
+do 2 rewrite A_additive.
+rewrite NQintg_add; [ symmetry | easy | easy ].
+rewrite NQintg_add; [ symmetry | easy | easy ].
+do 3 rewrite <- Nat.add_assoc.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal.
+rewrite Nat.add_assoc, Nat.add_comm.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal.
+rewrite Nat.add_comm.
+rewrite NQintg_P_M, Nat.add_0_r.
+specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
+assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+  intros; rewrite <- Nat.add_assoc; apply Hv.
+}
+specialize (A_ge_1_add_all_true_if v i H H3) as H'3; clear H.
+assert (H4 : (0 ≤ 1 - 2 // rad ^ (n - i - 1))%NQ). {
+  rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+    do 2 rewrite Nat.mul_1_l.
+    remember (n - i - 1) as s eqn:Hs.
+    destruct s.
+    -rewrite Hn in Hs; unfold min_n in Hs.
+     rewrite Nat.add_0_r, Nat.mul_add_distr_l in Hs.
+     destruct rad; [ easy | cbn in Hs; flia Hs ].
+    -cbn.
+     replace 2 with (2 * 1) by flia.
+     apply Nat.mul_le_mono; [ easy | now apply Nat_pow_ge_1 ].
+  }
+  do 2 rewrite Nat.mul_1_l.
+  replace 0%NQ with (0 // 1)%NQ by easy.
+  apply NQle_pair; [ easy | pauto | ].
+  rewrite Nat.mul_0_l, Nat.mul_1_l; flia.
+}
+destruct H'3 as [H'3| [H'3| H'3]].
+-f_equal; f_equal; f_equal; f_equal.
+ apply A_eq_compat.
+ intros j Hj.
+ replace j with (i + (j - i - 1) + 1) by flia Hj.
+ now rewrite A3, H'3.
+(* Here, NQfrac(A(P v))=0.999...999 and NQfrac(A(v))=0.999...998 with
      therefore a difference of 0.000...001. If NQfrac(A(u))≠0.000...001,
      then the two parts are equal (equal to 1) and it is ok. Otherwise,
      if NQfrac(A(u))=0.000...001, then the left hand part is 1 but the
      right hand part is 0. *)
-  --rewrite NQfrac_P_M.
-    remember (NQfrac (A i n u)) as x eqn:Hx.
-    rewrite A_all_9; [ | intros; apply A3 ].
-    rewrite A_all_18; [ | easy ].
-    replace 2%NQ with (1 + 1)%NQ by easy.
-    rewrite <- NQadd_sub_assoc.
-    rewrite NQfrac_add_nat_l; [ | easy ].
-    set (s := n - i - 1) in H4 |-*.
-    rewrite NQfrac_small. 2: {
-      split; [ easy | ].
-      apply NQsub_lt.
-      replace 0%NQ with (0 // 1)%NQ by easy.
-      apply NQlt_pair; [ easy | pauto | cbn; pauto ].
-    }
-    f_equal.
-    subst s x.
-    now eapply pre_Hugo_Herbelin_lemma.
-  --destruct H'3 as (j & Hbef & Hwhi & Haft).
-    rewrite NQfrac_P_M.
-    remember (NQfrac (A i n u)) as x eqn:Hx.
-    rewrite A_all_9; [ | intros; apply A3 ].
-    rewrite (A_9_8_all_18 j); [ | easy | easy | easy ].
-    destruct (le_dec (i + j + 1) (n - 1)) as [H5| H5]. 2: {
-      rewrite NQfrac_small; [ easy | ].
-      split.
-      -apply NQle_add_le_sub_l.
-       rewrite NQadd_0_l.
-       apply NQle_pair; [ pauto | easy | ].
-       do 2 rewrite Nat.mul_1_r.
-       now apply Nat_pow_ge_1.
-      -apply NQsub_lt.
-       replace 0%NQ with (0 // 1)%NQ by easy.
-       apply NQlt_pair; [ easy | pauto | flia ].
-    }
-    set (s := n - i - 1) in H4 |-*.
-    rewrite NQfrac_small. 2: {
-      split; [ easy | ].
-      apply NQsub_lt.
-      replace 0%NQ with (0 // 1)%NQ by easy.
-      apply NQlt_pair; [ easy | pauto | flia ].
-    }
-    f_equal.
-    subst x s.
-    now eapply pre_Hugo_Herbelin_lemma.
-  *destruct H3 as (j & Hj & Hjj).
-   apply A_ge_1_false_iff in Hjj.
-   rewrite Nat.add_assoc.
-   rewrite Nat.add_comm.
-   rewrite NQintg_P_M, Nat.add_0_l.
-   assert (H : min_n i j = min_n i 0 + rad * j). {
-     unfold min_n.
-     now rewrite <- Nat.mul_add_distr_l, Nat.add_0_r, Nat.add_shuffle0.
-   }
-   rewrite H, <- Hn; clear H.
-   rewrite <- ApB_A. 2: {
-     rewrite Hn; unfold min_n.
-     destruct rad; [ easy | cbn; flia ].
-   }
-   rewrite NQintg_add; [ | easy | apply B_ge_0 ].
-   do 2 rewrite <- Nat.add_assoc.
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-   f_equal; f_equal.
-   rewrite Nat.add_assoc.
-   remember (B i n v (rad * j)) as x eqn:Hx.
-   specialize (B_upper_bound_for_add v i 0 (rad * j)) as H3.
-   assert (H : ∀ j, j ≥ i → v j ≤ 2 * (rad - 1)). {
-     intros k Hk.
-     replace k with (i + (k - i)) by flia Hk.
-     apply Hv.
-   }
-   specialize (H3 H); clear H.
-   rewrite <- Hn, <- Hx, Nat.pow_1_r in H3.
-   assert (H : (0 ≤ x < 1)%NQ). {
-     split; [ subst x; apply B_ge_0 | ].
-     eapply NQle_lt_trans; [ apply H3 | ].
-     apply NQsub_lt.
-     replace 0%NQ with (0 // 1)%NQ by easy.
-     apply NQlt_pair; [ easy | easy | pauto ].
-   }
-   rewrite NQintg_small; [ | easy ].
-   rewrite (NQfrac_small x); [ clear H | easy ].
-   rewrite Nat.add_0_l.
-   destruct j.
-  --rewrite Nat.mul_0_r in Hx; unfold B in Hx.
-    rewrite Nat.add_0_r in Hx.
-    rewrite summation_empty in Hx. 2: {
-      apply Nat.sub_lt; [ | pauto ].
-      rewrite Hn; unfold min_n.
-      destruct rad; [ easy | cbn; flia ].
-    }
-    subst x.
-    rewrite NQadd_0_r.
-    rewrite NQintg_NQfrac, Nat.add_0_l.
-    rewrite <- Hn in Hjj.
-    clear Hj H3.
-    rewrite Nat.pow_1_r in Hjj.
-    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as AA1.
-    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
-    rewrite <- Hn, Nat.pow_1_r in AA1, AA2.
-    rewrite A_additive in AA1, AA2.
-    rewrite NQfrac_add_cond in AA1; [ | easy | easy ].
-    rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
-    do 2 rewrite NQintg_add_frac.
-    destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
-      as [H3| H3].
-   ++rewrite NQsub_0_r in AA1.
-     destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
-       as [H4| H4]; [ easy | exfalso ].
-     (* v<1-1/r u+v≥2-1/r u≥2-1/r-v>2-1/r-1+1/r u>1! *)
-     apply NQle_add_le_sub_r in AA2.
-     apply NQle_sub_le_add_r in AA2.
-     apply NQnlt_ge in AA2; apply AA2; clear AA2.
-     apply (NQlt_trans _ (1 + (1 - 1 // rad) - (1 - 1 // rad))%NQ).
-    **rewrite NQadd_sub.
-      apply NQfrac_lt_1.
-    **rewrite NQadd_sub.
-      rewrite <- NQadd_sub_assoc.
-      apply NQlt_sub_lt_add_l.
-      rewrite NQsub_diag.
-      apply NQlt_add_lt_sub_r.
-      now rewrite NQadd_0_l.
-   ++destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
-       as [H4| H4]; [ exfalso | easy ].
-     (* v<1-1/r
+-rewrite NQfrac_P_M.
+ remember (NQfrac (A i n u)) as x eqn:Hx.
+ rewrite A_all_9; [ | intros; apply A3 ].
+ rewrite A_all_18; [ | easy ].
+ replace 2%NQ with (1 + 1)%NQ by easy.
+ rewrite <- NQadd_sub_assoc.
+ rewrite NQfrac_add_nat_l; [ | easy ].
+ set (s := n - i - 1) in H4 |-*.
+ rewrite NQfrac_small. 2: {
+   split; [ easy | ].
+   apply NQsub_lt.
+   replace 0%NQ with (0 // 1)%NQ by easy.
+   apply NQlt_pair; [ easy | pauto | cbn; pauto ].
+ }
+ f_equal.
+ subst s x.
+ now eapply pre_Hugo_Herbelin_lemma.
+-destruct H'3 as (j & Hbef & Hwhi & Haft).
+ rewrite NQfrac_P_M.
+ remember (NQfrac (A i n u)) as x eqn:Hx.
+ rewrite A_all_9; [ | intros; apply A3 ].
+ rewrite (A_9_8_all_18 j); [ | easy | easy | easy ].
+ destruct (le_dec (i + j + 1) (n - 1)) as [H5| H5]. 2: {
+   rewrite NQfrac_small; [ easy | ].
+   split.
+   -apply NQle_add_le_sub_l.
+    rewrite NQadd_0_l.
+    apply NQle_pair; [ pauto | easy | ].
+    do 2 rewrite Nat.mul_1_r.
+    now apply Nat_pow_ge_1.
+   -apply NQsub_lt.
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | pauto | flia ].
+ }
+ set (s := n - i - 1) in H4 |-*.
+ rewrite NQfrac_small. 2: {
+   split; [ easy | ].
+   apply NQsub_lt.
+   replace 0%NQ with (0 // 1)%NQ by easy.
+   apply NQlt_pair; [ easy | pauto | flia ].
+ }
+ f_equal.
+ subst x s.
+ now eapply pre_Hugo_Herbelin_lemma.
+Qed.
+
+Theorem pre_Hugo_Herbelin_112 {r : radix} : ∀ u v i n j,
+  (∀ k, u (i + k) ≤ rad - 1)
+  → (∀ k, v (i + k) ≤ 2 * (rad - 1))
+  → n = min_n i 0
+  → (∀ k, fA_ge_1_ε (u ⊕ P v) i k = true)
+  → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
+  → (∀ k, k < j → fA_ge_1_ε v i k = true)
+  → fA_ge_1_ε v i j = false
+  → (NQintg (A i (min_n i j) v) + NQintg (A i n (u ⊕ P v))) mod rad =
+     NQintg (A i n (u ⊕ v)) mod rad.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hu Hv Hn H1 H2 Hj Hjj.
+rewrite Nat.add_comm.
+do 2 rewrite A_additive.
+rewrite NQintg_add; [ symmetry | easy | easy ].
+rewrite NQintg_add; [ symmetry | easy | easy ].
+do 3 rewrite <- Nat.add_assoc.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal.
+apply A_ge_1_false_iff in Hjj.
+rewrite Nat.add_assoc.
+rewrite Nat.add_comm.
+rewrite NQintg_P_M, Nat.add_0_l.
+assert (H : min_n i j = min_n i 0 + rad * j). {
+  unfold min_n.
+  now rewrite <- Nat.mul_add_distr_l, Nat.add_0_r, Nat.add_shuffle0.
+}
+rewrite H, <- Hn; clear H.
+rewrite <- ApB_A. 2: {
+  rewrite Hn; unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
+rewrite NQintg_add; [ | easy | apply B_ge_0 ].
+do 2 rewrite <- Nat.add_assoc.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+f_equal; f_equal.
+rewrite Nat.add_assoc.
+remember (B i n v (rad * j)) as x eqn:Hx.
+specialize (B_upper_bound_for_add v i 0 (rad * j)) as H3.
+assert (H : ∀ j, j ≥ i → v j ≤ 2 * (rad - 1)). {
+  intros k Hk.
+  replace k with (i + (k - i)) by flia Hk.
+  apply Hv.
+}
+specialize (H3 H); clear H.
+rewrite <- Hn, <- Hx, Nat.pow_1_r in H3.
+assert (H : (0 ≤ x < 1)%NQ). {
+  split; [ subst x; apply B_ge_0 | ].
+  eapply NQle_lt_trans; [ apply H3 | ].
+  apply NQsub_lt.
+  replace 0%NQ with (0 // 1)%NQ by easy.
+  apply NQlt_pair; [ easy | easy | pauto ].
+}
+rewrite NQintg_small; [ | easy ].
+rewrite (NQfrac_small x); [ clear H | easy ].
+rewrite Nat.add_0_l.
+destruct j.
+-rewrite Nat.mul_0_r in Hx; unfold B in Hx.
+ rewrite Nat.add_0_r in Hx.
+ rewrite summation_empty in Hx. 2: {
+   apply Nat.sub_lt; [ | pauto ].
+   rewrite Hn; unfold min_n.
+   destruct rad; [ easy | cbn; flia ].
+ }
+ subst x.
+ rewrite NQadd_0_r.
+ rewrite NQintg_NQfrac, Nat.add_0_l.
+ rewrite <- Hn in Hjj.
+ clear Hj H3.
+ rewrite Nat.pow_1_r in Hjj.
+ specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as AA1.
+ specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
+ rewrite <- Hn, Nat.pow_1_r in AA1, AA2.
+ rewrite A_additive in AA1, AA2.
+ rewrite NQfrac_add_cond in AA1; [ | easy | easy ].
+ rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
+ do 2 rewrite NQintg_add_frac.
+ destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
+   as [H3| H3].
+ +rewrite NQsub_0_r in AA1.
+  destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
+    as [H4| H4]; [ easy | exfalso ].
+  (* v<1-1/r u+v≥2-1/r u≥2-1/r-v>2-1/r-1+1/r u>1! *)
+  apply NQle_add_le_sub_r in AA2.
+  apply NQle_sub_le_add_r in AA2.
+  apply NQnlt_ge in AA2; apply AA2; clear AA2.
+  apply (NQlt_trans _ (1 + (1 - 1 // rad) - (1 - 1 // rad))%NQ).
+  *rewrite NQadd_sub.
+   apply NQfrac_lt_1.
+  *rewrite NQadd_sub.
+   rewrite <- NQadd_sub_assoc.
+   apply NQlt_sub_lt_add_l.
+   rewrite NQsub_diag.
+   apply NQlt_add_lt_sub_r.
+   now rewrite NQadd_0_l.
+ +destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
+     as [H4| H4]; [ exfalso | easy ].
+  (* v<1-1/r
         u+p≥2-1/r
         u+v<1
         u+v≥1-1/r *)
-     rewrite NQsub_0_r in AA2.
-     remember (NQfrac (A i n u)) as au eqn:Hau.
-     remember (NQfrac (A i n v)) as av eqn:Hav.
-     remember (NQfrac (A i n (P v))) as ap eqn:Hap.
-     move au after av; move ap before av.
-     move Hau after Hav; move Hap before Hav.
-     (* 2-1/r-p≤u<1-v *)
-     assert (S1 : (2 - 1 // rad - ap ≤ au < 1 - av)%NQ). {
-       split; [ | now apply NQlt_add_lt_sub_r ].
-       apply NQle_sub_le_add_r.
-       replace 2%NQ with (1 + 1)%NQ by easy.
-       rewrite <- NQadd_sub_assoc.
-       now apply NQle_add_le_sub_r.
-     }
-     (* 2-1/r+v<1+p *)
-     assert (S2 : (2 - 1 // rad + av < 1 + ap)%NQ). {
-       apply NQlt_sub_lt_add_r.
-       rewrite NQadd_sub_swap.
-       apply NQlt_add_lt_sub_r.
-       eapply NQle_lt_trans; apply S1.
-     }
-     (* v+1-1/r<p<1 *)
-     assert (S3 : (av + 1 - 1 // rad < ap < 1)%NQ). {
-       split; [ | rewrite Hap; apply NQfrac_lt_1 ].
-       replace 2%NQ with (1 + 1)%NQ in S2 by easy.
-       rewrite <- NQadd_sub_assoc, <- NQadd_assoc in S2.
-       apply NQadd_lt_mono_l in S2.
-       rewrite NQadd_comm in S2.
-       now rewrite NQadd_sub_assoc in S2.
-     }
-     (* v<1/r *)
-     assert (S4 : (av < 1 // rad)%NQ). {
-       apply (NQadd_lt_mono_r _ _ 1%NQ).
-       apply NQlt_sub_lt_add_l.
-       eapply NQlt_trans; apply S3.
-     }
-     (* 1-1/r<u<1 *)
-     assert (S5 : (1 - 1 // rad < au < 1)%NQ). {
-       split; [ | rewrite Hau; apply NQfrac_lt_1 ].
-       eapply NQle_lt_trans; [ apply AA1 | ].
-       rewrite NQadd_sub_swap, <- NQsub_sub_distr.
-       apply NQsub_lt.
-       apply NQlt_add_lt_sub_r.
-       now rewrite NQadd_0_l.
-     }
-     assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
-       intros.
-       unfold "⊕".
-       replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
-       replace (i + k + 1) with (i + (k + 1)) by flia.
-       apply Nat.add_le_mono; [ apply Hu | apply digit_le_pred_radix ].
-     }
-     specialize (A_ge_1_add_all_true_if _ i H H1) as H'1; clear H.
-     assert (Hin : i + 1 ≤ n - 1). {
-       rewrite Hn; unfold min_n.
-       destruct rad; [ easy | cbn; flia ].
-     }
-     destruct H'1 as [H'1| [H'1| H'1]].
-    **(* should be not possible, since au+ap≥1 *)
-      apply NQnlt_ge in H3; apply H3; clear H3.
-      rewrite Hau, Hap.
-      rewrite NQfrac_P_M, NQadd_comm.
-      rewrite NQfrac_small. 2: {
-        split; [ easy | ].
-        unfold A.
-        rewrite summation_shift; [ | easy ].
-        eapply (NQle_lt_trans).
-        -apply summation_le_compat
-           with (g := λ j, ((rad - 1) // rad * 1 // rad ^ j)%NQ).
-         intros j Hj.
-         replace (i + 1 + j - i) with (S j) by flia.
-         rewrite Nat.pow_succ_r'.
-         replace (u (i + 1 + j)) with (u (i + 1 + j) * 1) by flia.
-         rewrite <- NQmul_pair; [ | easy | pauto ].
-         apply NQmul_le_mono_pos_r.
-         +replace 0%NQ with (0 // 1)%NQ by easy.
-          apply NQlt_pair; [ easy | pauto | flia ].
-         +apply NQle_pair; [ pauto | pauto | ].
-          rewrite Nat.mul_comm.
-          apply Nat.mul_le_mono_l.
-          rewrite <- Nat.add_assoc.
-          apply Hu.
-        -rewrite <- summation_mul_distr_l.
-         rewrite NQpower_summation; [ | easy ].
-         rewrite NQmul_pair; [ | easy | ]. 2: {
-           apply Nat.neq_mul_0.
-           split; [ pauto | flia Hr ].
-         }
-         rewrite Nat.mul_comm, Nat.mul_assoc.
-         rewrite NQmul_pair_mono_r; [ |  | flia Hr ]. 2: {
-           apply Nat.neq_mul_0; pauto.
-         }
-         remember (n - 1 - (i + 1)) as m eqn:Hm.
-         rewrite <- Nat.pow_succ_r'.
-         apply NQlt_pair; [ pauto | easy | ].
-         do 2 rewrite Nat.mul_1_r.
-         apply Nat.sub_lt; [ | pauto ].
-         now apply Nat_pow_ge_1.
-      }
-      rewrite NQadd_comm, <- A_additive.
+  rewrite NQsub_0_r in AA2.
+  remember (NQfrac (A i n u)) as au eqn:Hau.
+  remember (NQfrac (A i n v)) as av eqn:Hav.
+  remember (NQfrac (A i n (P v))) as ap eqn:Hap.
+  move au after av; move ap before av.
+  move Hau after Hav; move Hap before Hav.
+  (* 2-1/r-p≤u<1-v *)
+  assert (S1 : (2 - 1 // rad - ap ≤ au < 1 - av)%NQ). {
+    split; [ | now apply NQlt_add_lt_sub_r ].
+    apply NQle_sub_le_add_r.
+    replace 2%NQ with (1 + 1)%NQ by easy.
+    rewrite <- NQadd_sub_assoc.
+    now apply NQle_add_le_sub_r.
+  }
+  (* 2-1/r+v<1+p *)
+  assert (S2 : (2 - 1 // rad + av < 1 + ap)%NQ). {
+    apply NQlt_sub_lt_add_r.
+    rewrite NQadd_sub_swap.
+    apply NQlt_add_lt_sub_r.
+    eapply NQle_lt_trans; apply S1.
+  }
+  (* v+1-1/r<p<1 *)
+  assert (S3 : (av + 1 - 1 // rad < ap < 1)%NQ). {
+    split; [ | rewrite Hap; apply NQfrac_lt_1 ].
+    replace 2%NQ with (1 + 1)%NQ in S2 by easy.
+    rewrite <- NQadd_sub_assoc, <- NQadd_assoc in S2.
+    apply NQadd_lt_mono_l in S2.
+    rewrite NQadd_comm in S2.
+    now rewrite NQadd_sub_assoc in S2.
+  }
+  (* v<1/r *)
+  assert (S4 : (av < 1 // rad)%NQ). {
+    apply (NQadd_lt_mono_r _ _ 1%NQ).
+    apply NQlt_sub_lt_add_l.
+    eapply NQlt_trans; apply S3.
+  }
+  (* 1-1/r<u<1 *)
+  assert (S5 : (1 - 1 // rad < au < 1)%NQ). {
+    split; [ | rewrite Hau; apply NQfrac_lt_1 ].
+    eapply NQle_lt_trans; [ apply AA1 | ].
+    rewrite NQadd_sub_swap, <- NQsub_sub_distr.
+    apply NQsub_lt.
+    apply NQlt_add_lt_sub_r.
+    now rewrite NQadd_0_l.
+  }
+  assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
+    intros.
+    unfold "⊕".
+    replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+    replace (i + k + 1) with (i + (k + 1)) by flia.
+    apply Nat.add_le_mono; [ apply Hu | apply digit_le_pred_radix ].
+  }
+  specialize (A_ge_1_add_all_true_if _ i H H1) as H'1; clear H.
+  assert (Hin : i + 1 ≤ n - 1). {
+    rewrite Hn; unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  }
+  destruct H'1 as [H'1| [H'1| H'1]].
+  *(* should be not possible, since au+ap≥1 *)
+    apply NQnlt_ge in H3; apply H3; clear H3.
+    rewrite Hau, Hap.
+    rewrite NQfrac_P_M, NQadd_comm.
+    rewrite NQfrac_small. 2: {
+      split; [ easy | ].
       unfold A.
-      rewrite summation_eq_compat with
-          (h := λ j, ((rad - 1) // rad ^ (j - i))%NQ). 2: {
-        intros j Hj.
-        replace j with (i + (j - i - 1) + 1) at 1 by flia Hj.
-        now rewrite H'1.
-      }
-      rewrite summation_eq_compat with
-          (h := λ j, ((rad - 1) // rad * 1 // rad ^ (j - i - 1))%NQ). 2: {
-        intros j Hj.
-        rewrite NQmul_pair; [ | easy | pauto ].
-        rewrite Nat.mul_1_r.
-        rewrite <- Nat.pow_succ_r'; f_equal; f_equal.
-        flia Hj.
-      }
-      rewrite <- summation_mul_distr_l.
       rewrite summation_shift; [ | easy ].
-      rewrite summation_eq_compat with (h := λ j, (1 // rad ^ j)%NQ). 2: {
-        intros j Hj; f_equal; f_equal; flia.
-      }
-      rewrite NQpower_summation; [ | easy ].
-      remember (n - 1 - (i + 1)) as m eqn:Hm.
-      rewrite NQmul_pair; [ | easy | ]. 2: {
-        apply Nat.neq_mul_0.
-        split; [ pauto | flia Hr].
-      }
-      rewrite Nat.mul_comm, Nat.mul_assoc, <- Nat.pow_succ_r'.
-      rewrite NQmul_pair_mono_r; [ | pauto | flia Hr ].
-      apply NQlt_pair; [ pauto | easy | ].
-      do 2 rewrite Nat.mul_1_r.
-      apply Nat.sub_lt; [ | pauto ].
+      eapply (NQle_lt_trans).
+      -apply summation_le_compat
+         with (g := λ j, ((rad - 1) // rad * 1 // rad ^ j)%NQ).
+       intros j Hj.
+       replace (i + 1 + j - i) with (S j) by flia.
+       rewrite Nat.pow_succ_r'.
+       replace (u (i + 1 + j)) with (u (i + 1 + j) * 1) by flia.
+       rewrite <- NQmul_pair; [ | easy | pauto ].
+       apply NQmul_le_mono_pos_r.
+       +replace 0%NQ with (0 // 1)%NQ by easy.
+        apply NQlt_pair; [ easy | pauto | flia ].
+       +apply NQle_pair; [ pauto | pauto | ].
+        rewrite Nat.mul_comm.
+        apply Nat.mul_le_mono_l.
+        rewrite <- Nat.add_assoc.
+        apply Hu.
+      -rewrite <- summation_mul_distr_l.
+       rewrite NQpower_summation; [ | easy ].
+       rewrite NQmul_pair; [ | easy | ]. 2: {
+         apply Nat.neq_mul_0.
+         split; [ pauto | flia Hr ].
+       }
+       rewrite Nat.mul_comm, Nat.mul_assoc.
+       rewrite NQmul_pair_mono_r; [ |  | flia Hr ]. 2: {
+         apply Nat.neq_mul_0; pauto.
+       }
+       remember (n - 1 - (i + 1)) as m eqn:Hm.
+       rewrite <- Nat.pow_succ_r'.
+       apply NQlt_pair; [ pauto | easy | ].
+       do 2 rewrite Nat.mul_1_r.
+       apply Nat.sub_lt; [ | pauto ].
+       now apply Nat_pow_ge_1.
+    }
+    rewrite NQadd_comm, <- A_additive.
+    unfold A.
+    rewrite summation_eq_compat with
+        (h := λ j, ((rad - 1) // rad ^ (j - i))%NQ). 2: {
+      intros j Hj.
+      replace j with (i + (j - i - 1) + 1) at 1 by flia Hj.
+      now rewrite H'1.
+    }
+    rewrite summation_eq_compat with
+        (h := λ j, ((rad - 1) // rad * 1 // rad ^ (j - i - 1))%NQ). 2: {
+      intros j Hj.
+      rewrite NQmul_pair; [ | easy | pauto ].
+      rewrite Nat.mul_1_r.
+      rewrite <- Nat.pow_succ_r'; f_equal; f_equal.
+      flia Hj.
+    }
+    rewrite <- summation_mul_distr_l.
+    rewrite summation_shift; [ | easy ].
+    rewrite summation_eq_compat with (h := λ j, (1 // rad ^ j)%NQ). 2: {
+      intros j Hj; f_equal; f_equal; flia.
+    }
+    rewrite NQpower_summation; [ | easy ].
+    remember (n - 1 - (i + 1)) as m eqn:Hm.
+    rewrite NQmul_pair; [ | easy | ]. 2: {
+      apply Nat.neq_mul_0.
+      split; [ pauto | flia Hr].
+    }
+    rewrite Nat.mul_comm, Nat.mul_assoc, <- Nat.pow_succ_r'.
+    rewrite NQmul_pair_mono_r; [ | pauto | flia Hr ].
+    apply NQlt_pair; [ pauto | easy | ].
+    do 2 rewrite Nat.mul_1_r.
+    apply Nat.sub_lt; [ | pauto ].
+    now apply Nat_pow_ge_1.
+  *assert (Hum : ∀ k, u (i + k + 1) = rad - 1). {
+     intros k.
+     specialize (H'1 k); unfold "⊕" in H'1.
+     apply Nat.le_antisymm.
+     -rewrite <- Nat.add_assoc; apply Hu.
+     -apply (Nat.add_le_mono_r _ _ (P v (i + k + 1))).
+      rewrite H'1.
+      replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+      apply Nat.add_le_mono_l.
+      apply digit_le_pred_radix.
+   }
+   assert (Hpm : ∀ k, P v (i + k + 1) = rad - 1). {
+     intros k.
+     specialize (H'1 k); unfold "⊕" in H'1.
+     apply (Nat.add_cancel_l _ _ (u (i + k + 1))).
+     rewrite H'1.
+     replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+     f_equal.
+     now rewrite Hum.
+   }
+   assert (Hu9 : au = (1 - 1 // rad ^ (n - i - 1))%NQ). {
+     rewrite Hau.
+     rewrite A_all_9; [ | intros; apply Hum ].
+     rewrite NQfrac_small; [ easy | ].
+     split.
+     -apply NQle_add_le_sub_l.
+      rewrite NQadd_0_l.
+      apply NQle_pair; [ pauto | easy | ].
+      rewrite Nat.mul_1_l, Nat.mul_1_r.
       now apply Nat_pow_ge_1.
-    **assert (Hum : ∀ k, u (i + k + 1) = rad - 1). {
-        intros k.
-        specialize (H'1 k); unfold "⊕" in H'1.
-        apply Nat.le_antisymm.
-        -rewrite <- Nat.add_assoc; apply Hu.
-        -apply (Nat.add_le_mono_r _ _ (P v (i + k + 1))).
-         rewrite H'1.
-         replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
-         apply Nat.add_le_mono_l.
-         apply digit_le_pred_radix.
-      }
-      assert (Hpm : ∀ k, P v (i + k + 1) = rad - 1). {
-        intros k.
-        specialize (H'1 k); unfold "⊕" in H'1.
-        apply (Nat.add_cancel_l _ _ (u (i + k + 1))).
-        rewrite H'1.
-        replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
-        f_equal.
-        now rewrite Hum.
-      }
-      assert (Hu9 : au = (1 - 1 // rad ^ (n - i - 1))%NQ). {
-        rewrite Hau.
-        rewrite A_all_9; [ | intros; apply Hum ].
-        rewrite NQfrac_small; [ easy | ].
-        split.
-        -apply NQle_add_le_sub_l.
-         rewrite NQadd_0_l.
-         apply NQle_pair; [ pauto | easy | ].
-         rewrite Nat.mul_1_l, Nat.mul_1_r.
-         now apply Nat_pow_ge_1.
-        -apply NQsub_lt.
-         replace 0%NQ with (0 // 1)%NQ by easy.
-         apply NQlt_pair; [ easy | pauto | flia ].
-      }
-      assert (Hv0 : av = 0%NQ). {
-        rewrite Hu9 in H4.
-        rewrite <- NQadd_sub_swap in H4.
-        apply NQlt_sub_lt_add_l in H4.
-        rewrite NQadd_comm in H4.
-        apply NQadd_lt_mono_r in H4.
-        rewrite Hav, A_num_den, NQfrac_pair in H4.
-        unfold den_A in H4.
-        apply NQlt_pair in H4; [ | pauto | pauto ].
-        rewrite Nat.mul_comm in H4.
-        apply Nat.mul_lt_mono_pos_l in H4; [ | apply Nat.neq_0_lt_0; pauto ].
-        apply Nat.lt_1_r in H4.
-        rewrite Hav, A_num_den, NQfrac_pair.
-        unfold den_A.
-        now rewrite H4.
-      }
-      move Hv0 at top; subst av.
-      symmetry in Hav.
-      clear Hjj S2 S4 S5 AA2 H4 H'1.
-      rewrite NQadd_0_l in S3.
-      rewrite NQsub_0_r in S1.
-      move Hav at bottom.
-      specialize (all_P_9_all_fA_true v i) as H4.
-      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
-        intros; rewrite <- Nat.add_assoc; apply Hv.
-      }
-      specialize (H4 H Hpm); clear H.
-      move H4 before H2.
-      specialize (proj1 (frac_ge_if_all_fA_ge_1_ε v i) H4 0) as H5.
-      rewrite <- Hn, Hav, Nat.pow_1_r in H5.
-      apply NQnlt_ge in H5; apply H5; clear H5.
-      apply NQlt_0_sub.
-      apply NQlt_pair; [ easy | easy | flia Hr ].
-    **destruct H'1 as (j & Hbef & Hwhi & Haft).
+     -apply NQsub_lt.
+      replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQlt_pair; [ easy | pauto | flia ].
+   }
+   assert (Hv0 : av = 0%NQ). {
+     rewrite Hu9 in H4.
+     rewrite <- NQadd_sub_swap in H4.
+     apply NQlt_sub_lt_add_l in H4.
+     rewrite NQadd_comm in H4.
+     apply NQadd_lt_mono_r in H4.
+     rewrite Hav, A_num_den, NQfrac_pair in H4.
+     unfold den_A in H4.
+     apply NQlt_pair in H4; [ | pauto | pauto ].
+     rewrite Nat.mul_comm in H4.
+     apply Nat.mul_lt_mono_pos_l in H4; [ | apply Nat.neq_0_lt_0; pauto ].
+     apply Nat.lt_1_r in H4.
+     rewrite Hav, A_num_den, NQfrac_pair.
+     unfold den_A.
+     now rewrite H4.
+   }
+   move Hv0 at top; subst av.
+   symmetry in Hav.
+   clear Hjj S2 S4 S5 AA2 H4 H'1.
+   rewrite NQadd_0_l in S3.
+   rewrite NQsub_0_r in S1.
+   move Hav at bottom.
+   specialize (all_P_9_all_fA_true v i) as H4.
+   assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+     intros; rewrite <- Nat.add_assoc; apply Hv.
+   }
+   specialize (H4 H Hpm); clear H.
+   move H4 before H2.
+   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε v i) H4 0) as H5.
+   rewrite <- Hn, Hav, Nat.pow_1_r in H5.
+   apply NQnlt_ge in H5; apply H5; clear H5.
+   apply NQlt_0_sub.
+   apply NQlt_pair; [ easy | easy | flia Hr ].
+  *destruct H'1 as (j & Hbef & Hwhi & Haft).
 ...
 (*
 0.9<au<1
@@ -2654,6 +2677,26 @@ base 2
 0.1≤au+av<1
 1.1≤au+ap<10
 *)
+...
+
+Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
+  (∀ k, u (i + k) ≤ rad - 1)
+  → (∀ k, v (i + k) ≤ 2 * (rad - 1))
+  → carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
+Proof.
+intros * Hu Hv.
+specialize radix_ge_2 as Hr.
+symmetry; rewrite Nat.add_comm.
+unfold carry.
+remember (min_n i 0) as n eqn:Hn.
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
+-destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H2| H2].
+ +destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
+  *now apply pre_Hugo_Herbelin_111.
+  *destruct H3 as (j & Hj & Hjj).
+...
+   now apply pre_Hugo_Herbelin_112.
+ +idtac.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
