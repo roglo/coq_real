@@ -2191,8 +2191,54 @@ destruct H1 as [H1| [H1| H1]].
  +apply NQle_0_sub.
   apply NQle_pair; [ pauto | easy | ].
   now apply Nat.mul_le_mono_r.
--idtac.
-...
+-destruct H1 as (j & Hjj & Hj).
+ rewrite Nat.add_shuffle0 in Hj.
+ remember (min_n i k - i - 1) as s eqn:Hs.
+ assert (H2 : 2 ≤ rad ^ s). {
+   destruct s.
+   +unfold min_n in Hs.
+    destruct rad; [ easy | cbn in Hs; flia Hs ].
+   +cbn.
+    replace 2 with (2 * 1) by easy.
+    apply Nat.mul_le_mono_nonneg; [ flia | easy | flia | ].
+    now apply Nat_pow_ge_1.
+ }
+ rewrite (A_9_8_all_18 j); [ | | easy | ].
+ +rewrite <- Hs.
+  rewrite NQfrac_small. 2: {
+    split.
+    -apply NQle_0_sub.
+     apply NQle_pair; [ pauto | easy | ].
+     do 2 rewrite Nat.mul_1_r.
+     apply (le_trans _ 2); [ | easy ].
+     destruct (le_dec (i + j + 1) (min_n i k - 1)); [ easy | pauto ].
+    -apply NQsub_lt.
+     replace 0%NQ with (0 // 1)%NQ by easy.
+     apply NQlt_pair; [ easy | pauto | ].
+     cbn; rewrite Nat.add_0_r.
+     destruct (le_dec (i + j + 1) (min_n i k - 1)); pauto.
+  }
+  apply NQsub_le_mono; [ apply NQle_refl | ].
+  apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat.mul_1_r.
+  destruct (le_dec (i + j + 1) (min_n i k - 1)) as [H1| H1].
+  *apply (le_trans _ (rad ^ S (S k))).
+  --rewrite (Nat.pow_succ_r' _ (S k)).
+    now apply Nat.mul_le_mono.
+  --apply Nat.pow_le_mono_r; [ easy | ].
+    rewrite Hs.
+    unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  *rewrite Nat.mul_1_l.
+   apply Nat.pow_le_mono_r; [ easy | ].
+   rewrite Hs; unfold min_n.
+   destruct rad; [ easy | cbn; flia ].
+ +intros l Hl.
+  now rewrite Nat.add_shuffle0; apply Hjj.
+ +intros l.
+  replace (i + j + l + 2) with (i + j + 1 + l + 1) by flia.
+  apply Hj.
+Qed.
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, u (i + k) ≤ rad - 1)
@@ -2570,28 +2616,47 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
       rewrite NQadd_0_l in S3.
       rewrite NQsub_0_r in S1.
       move Hav at bottom.
-...
-specialize (all_P_9_all_fA_true v i Hv Hpm) as H4.
-Search ((∀ _, fA_ge_1_ε _ _ _ = true) → _).
-specialize (A_ge_1_add_all_true_if v i) as H6.
-assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
-  intros k; rewrite <- Nat.add_assoc; apply Hv.
-}
-specialize (H6 H H4); clear H.
-...
-Search ((∀ _, fA_ge_1_ε _ _ _ = true) → _).
-Search ((∀ _, _ = rad - 1) → _).
-all_9_fA_ge_1_ε:
-  ∀ (r : radix) (u : nat → nat) (i : nat),
-    (∀ k : nat, u (i + k + 1) = rad - 1) → ∀ k : nat, fA_ge_1_ε u i k = true
-...
-      rewrite Hav, A_num_den, NQfrac_pair in Hv0.
-      replace 0%NQ with (0 // 1)%NQ in Hv0 by easy.
-      apply NQeq_pair in Hv0; [ | unfold den_A; pauto | easy ].
-      rewrite Nat.mul_1_r, Nat.mul_0_r in Hv0.
-      apply Nat.mod_divides in Hv0; [ | unfold den_A; pauto ].
-      destruct Hv0 as (c, Hc).
-      specialize (all_9_fA_ge_1_ε _ _ Hpm) as H5.
+      specialize (all_P_9_all_fA_true v i) as H4.
+      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+        intros; rewrite <- Nat.add_assoc; apply Hv.
+      }
+      specialize (H4 H Hpm); clear H.
+      move H4 before H2.
+      specialize (A_ge_1_add_all_true_if v i) as H5.
+      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+        intros; rewrite <- Nat.add_assoc; apply Hv.
+      }
+      specialize (H5 H H4); clear H.
+      destruct H5 as [H5| [H5| H5]].
+    ---rewrite A_all_9 in Hav by (intros; apply H5).
+       rewrite NQfrac_small in Hav. 2: {
+         split.
+         -apply NQle_0_sub.
+          apply NQle_pair; [ pauto | easy | ].
+          do 2 rewrite Nat.mul_1_r.
+          now apply Nat_pow_ge_1.
+         -apply NQsub_lt.
+          replace 0%NQ with (0 // 1)%NQ by easy.
+          apply NQlt_pair; [ easy | pauto | flia ].
+       }
+       symmetry in Hav.
+       apply NQadd_move_r in Hav.
+       rewrite NQadd_0_l in Hav.
+       apply NQeq_pair in Hav; [ | pauto | easy ].
+       do 2 rewrite Nat.mul_1_r in Hav.
+       remember (n - i - 1) as s eqn:Hs.
+       destruct s.
+     ***rewrite Hn in Hs.
+        unfold min_n in Hs.
+        destruct rad; [ easy | cbn in Hs; flia Hs ].
+     ***cbn in Hav.
+        specialize (Nat_pow_ge_1 rad s radix_gt_0) as H6.
+        apply Nat.nlt_ge in H6; apply H6.
+        rewrite Hav.
+        replace (rad ^ s) with (1 * rad ^ s) at 1 by flia.
+        apply Nat.mul_lt_mono_pos_r; [ | easy ].
+        apply Nat.neq_0_lt_0; pauto.
+    ---rewrite A_all_18 in Hav by apply H5.
 ...
 (*
 0.9<au<1
