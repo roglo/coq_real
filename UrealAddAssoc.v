@@ -1758,6 +1758,52 @@ destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
   clear Hj H3.
   (* devrait être contradictoire avec Hia car j'ai 99998 et même avec
      la retenue 1, ça ne donnera que 99999 et ça ne débordera point *)
+  destruct j.
+  *rewrite Nat.add_0_r in H1, H2.
+   clear Hjj.
+   destruct (lt_dec (n - 1) (i + 1)) as [H3| H3]. {
+     unfold A in Hia.
+     now rewrite summation_empty in Hia.
+   }
+   apply Nat.nlt_ge in H3.
+   rewrite A_split_first in Hia; [ | easy ].
+   rewrite <- Nat.add_1_r in Hia.
+   rewrite (proj1 H1) in Hia.
+   rewrite NQpair_sub_l in Hia; [ | easy ].
+   rewrite NQpair_diag in Hia; [ | easy ].
+   rewrite <- NQsub_sub_distr in Hia.
+   rewrite NQintg_small in Hia; [ easy | ].
+   split.
+  --apply NQle_0_sub.
+    replace (2 // rad)%NQ with (2 * 1 // rad)%NQ. 2: {
+      now rewrite <- NQpair_mul_r.
+    }
+    rewrite <- NQmul_sub_distr_r.
+    replace 1%NQ with (rad // 1 * 1 // rad)%NQ. 2: {
+      rewrite <- NQpair_mul_r, Nat.mul_1_r.
+      now apply NQpair_diag.
+    }
+    apply NQmul_le_mono_nonneg_r.
+   ++replace 0%NQ with (0 // 1)%NQ by easy.
+     apply NQle_pair; [ easy | easy | flia ].
+   ++eapply NQle_trans; [ now apply NQle_sub_l | ].
+     apply NQle_pair; [ easy | easy | flia Hr ].
+  --apply NQsub_lt, NQlt_0_sub.
+    replace (2 // rad)%NQ with (2 * 1 // rad)%NQ. 2: {
+      now rewrite <- NQpair_mul_r.
+    }
+    apply NQmul_lt_mono_pos_r.
+   **replace 0%NQ with (0 // 1)%NQ by easy.
+     apply NQlt_pair; [ easy | easy | pauto ].
+   **eapply NQle_lt_trans.
+   ---apply A_upper_bound_for_add.
+      intros k; do 2 rewrite <- Nat.add_assoc; apply Hur.
+   ---replace 2%NQ with (2 * 1)%NQ at 2 by easy.
+      apply NQmul_lt_mono_pos_l; [ easy | ].
+      apply NQsub_lt.
+      replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQlt_pair; [ easy | pauto | flia ].
+  *idtac.
 ...
   destruct H1 as (H1, _).
   clear Hj H5.
