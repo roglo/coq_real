@@ -1758,9 +1758,9 @@ destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
   clear Hj H3.
   (* devrait être contradictoire avec Hia car j'ai 99998 et même avec
      la retenue 1, ça ne donnera que 99999 et ça ne débordera point *)
-  destruct j.
+  revert i Hur Hpu Hjj H1 H2 Hia.
+  induction j; intros.
   *rewrite Nat.add_0_r in H1, H2.
-   clear Hjj.
    destruct (lt_dec (n - 1) (i + 1)) as [H3| H3]. {
      unfold A in Hia.
      now rewrite summation_empty in Hia.
@@ -1803,8 +1803,72 @@ destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
       apply NQsub_lt.
       replace 0%NQ with (0 // 1)%NQ by easy.
       apply NQlt_pair; [ easy | pauto | flia ].
-  *idtac.
-...
+  *specialize (IHj (i + 1)) as H3.
+   assert (H : ∀ k, u (i + 1 + k) ≤ 2 * (rad - 1)). {
+     intros; rewrite <- Nat.add_assoc; apply Hur.
+   }
+   specialize (H3 H); clear H.
+   assert (H : ∀ k, P u (i + 1 + k) = rad - 1). {
+     intros; rewrite <- Nat.add_assoc; apply Hpu.
+   }
+   specialize (H3 H); clear H.
+   assert (H : ∀ k : nat, k < j → is_num_9 u (i + 1 + 1) k = true). {
+     intros k Hk.
+     assert (H : S k < S j) by flia Hk.
+     specialize (Hjj _ H).
+     apply is_num_9_true_iff in Hjj.
+     apply is_num_9_true_iff.
+     now rewrite <- Nat.add_assoc.
+   }
+   specialize (H3 H); clear H.
+   replace (i + 1 + j) with (i + S j) in H3 by flia.
+   specialize (H3 H1 H2); apply H3; clear H3.
+   destruct (lt_dec (n - 1) (i + 1)) as [H3| H3]. {
+     unfold A in Hia.
+     now rewrite summation_empty in Hia.
+   }
+   apply Nat.nlt_ge in H3.
+   rewrite A_split_first in Hia; [ | easy ].
+   specialize (Hjj 0 (Nat.lt_0_succ j)) as H4.
+   apply is_num_9_true_iff in H4.
+   rewrite <- Nat.add_1_r in Hia.
+   rewrite Nat.add_0_r in H4.
+   rewrite H4 in Hia.
+   rewrite NQpair_sub_l in Hia; [ | easy ].
+   rewrite NQpair_diag in Hia; [ | easy ].
+   destruct (NQlt_le_dec (A (i + 1) n u) 1) as [H5| H5].
+  --exfalso.
+    rewrite NQintg_small in Hia; [ easy | ].
+    split.
+   ++rewrite <- NQadd_sub_swap.
+     apply NQle_0_sub.
+     apply (NQle_trans _ 1).
+    **apply NQle_pair; [ easy | easy | flia Hr ].
+    **apply NQle_add_r.
+      replace 0%NQ with (0 * 1 // rad)%NQ by easy.
+      apply NQmul_le_mono_nonneg_r; [ | easy ].
+      replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQle_pair; [ easy | easy | flia Hr ].
+   ++rewrite <- NQsub_sub_distr.
+     apply NQsub_lt.
+     apply NQlt_0_sub.
+     replace (1 // rad)%NQ with (1 * 1 // rad)%NQ at 2 by apply NQmul_1_l.
+     apply NQmul_lt_mono_pos_r; [ | easy ].
+     replace 0%NQ with (0 // 1)%NQ by easy.
+     apply NQlt_pair; [ easy | easy | flia Hr ].
+  --apply eq_nA_div_1.
+   ++intros; do 2 rewrite <- Nat.add_assoc; apply Hur.
+   ++now apply NQintg_mono in H5.
+-exfalso.
+ specialize (is_num_9_all_9 _ _ H1) as H2.
+ (* contradictoire entre Hia et H2 *)
+ rewrite NQintg_small in Hia; [ easy | ].
+ split; [ easy | ].
+ apply A_upper_bound_for_dig.
+ intros k Hk.
+ replace k with (i + 1 + (k - i - 1)) by flia Hk.
+ now rewrite H2.
+Qed.
 
 Theorem all_P_9_all_9n18_8_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -1863,71 +1927,9 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
   }
   clear H2; rename H3 into H2.
   rewrite Hm in H2.
-...
-eapply exists_9ge10; [ | | apply H2 ].
-...
-  specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi (j + 1)) as H3.
-  rewrite Nat.add_assoc in H3.
-  replace (i + j + 1 + 1) with (i + j + 2) in H3 by flia.
-  destruct (zerop (carry u (i + j + 1))) as [H4| H4].
-  *move H3 before H1.
-   specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi (j + 2)) as H5.
-   rewrite Nat.add_assoc in H5.
-   replace (i + j + 2 + 1) with (i + j + 3) in H5 by flia.
-   destruct (zerop (carry u (i + j + 2))) as [H6| H6].
-  --move H5 before H3.
-    destruct H3 as (H3, _).
-(**)
-    remember (min_n (i + j) m) as n1 eqn:Hn1.
-    rewrite A_split_first in H2.
-    replace (S (i + j)) with (i + j + 1) in H2 by flia.
-    rewrite H3 in H2.
-...
-    specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi (j + 3)) as H7.
-    rewrite Nat.add_assoc in H7.
-    replace (i + j + 3 + 1) with (i + j + 4) in H7 by flia.
-    destruct (zerop (carry u (i + j + 3))) as [H8| H8].
-   ++move H7 before H5.
-     destruct H5 as (H5, _).
-...
-   ++destruct (lt_dec (u (i + j + 3) + 1) rad) as [H9| H9].
-    **clear H9.
-      move H7 before H5.
-      destruct H5 as (H5, _).
-      assert (H9 : carry u (i + j + 3) = 1). {
-        specialize (carry_upper_bound_for_add u (i + j + 3)) as H9.
-        assert (H : ∀ k, u (i + j + 3 + k + 1) ≤ 2 * (rad - 1)). {
-          intros; do 3 rewrite <- Nat.add_assoc; apply Hur.
-        }
-        specialize (H9 H).
-        flia H8 H9.
-      }
-      clear H8; rename H9 into H8.
-      assert
-        (Hc :
-         ∃ n,
-         carry u (i + j + 3) =
-         NQintg (A (i + j + 3) (min_n (i + j + 3) n) u)). {
-        unfold carry.
-        destruct (LPO_fst (fA_ge_1_ε u (i + j + 3))) as [H9| H9].
-        -exists 0; easy.
-        -destruct H9 as (k & Hjk & Hk).
-         exists k; easy.
-      }
-      destruct Hc as (m1 & Hm1).
-      move m1 before m.
-...
-      specialize (all_P_9_all_8g9_9n18_18g9 u i Hur Hi (j + 4)) as H9.
-      rewrite Nat.add_assoc in H9.
-      replace (i + j + 4 + 1) with (i + j + 5) in H9 by flia.
-      destruct (zerop (carry u (i + j + 4))) as [H10| H10].
-    ---move H9 before H7.
-       destruct H7 as (H7, _).
-...
-  --destruct (lt_dec (u (i + j + 2) + 1) rad) as [H7| H7].
-   ++clear H7.
-     move H5 before H3.
-...
+  eapply exists_9ge10; [ | | apply H2 ].
+  *intros k; rewrite <- Nat.add_assoc; apply Hur.
+  *intros k; rewrite <- Nat.add_assoc; apply Hi.
  +right; right; clear H3.
   split; [ easy | ].
 ...
