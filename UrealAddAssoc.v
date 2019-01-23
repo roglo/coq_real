@@ -2651,6 +2651,26 @@ destruct j.
    apply NQlt_0_sub.
    apply NQlt_pair; [ easy | easy | flia Hr ].
   *destruct H'1 as (j & Hbef & Hwhi & Haft).
+   assert (Hum : ∀ k, u (i + j + k + 2) = rad - 1). {
+     intros k.
+     specialize (Haft k); unfold "⊕" in Haft.
+     apply Nat.le_antisymm.
+     -do 2 rewrite <- Nat.add_assoc; apply Hu.
+     -apply (Nat.add_le_mono_r _ _ (P v (i + j + k + 2))).
+      rewrite Haft.
+      replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+      apply Nat.add_le_mono_l.
+      apply digit_le_pred_radix.
+   }
+   assert (Hpm : ∀ k, P v (i + j + k + 2) = rad - 1). {
+     intros k.
+     specialize (Haft k); unfold "⊕" in Haft.
+     apply (Nat.add_cancel_l _ _ (u (i + j + k + 2))).
+     rewrite Haft.
+     replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+     f_equal.
+     now rewrite Hum.
+   }
 ...
 (*
 0.9<au<1
