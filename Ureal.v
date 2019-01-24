@@ -1027,7 +1027,63 @@ Proof.
 intros * Hur.
 specialize radix_ge_2 as Hr.
 unfold B.
-Print min_n.
+destruct i.
+-destruct l.
+ +rewrite summation_empty; [ easy | ].
+  rewrite Nat.add_0_r.
+  apply Nat.sub_lt; [ | pauto ].
+  unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+ +rewrite <- Nat.add_sub_assoc; [ | flia ].
+  replace (S l - 1) with l by flia.
+  eapply NQle_lt_trans.
+  *apply summation_le_compat with
+     (g := λ i, ((2 * rad - 1) // rad ^ i)%NQ).
+   intros i Hi.
+   rewrite Nat.sub_0_r.
+   apply NQle_pair; [ pauto | pauto | ].
+...
+  rewrite summation_shift; [ | flia ].
+  rewrite Nat.add_comm, Nat.add_sub.
+  remember (min_n 0 k) as n eqn:Hn.
+  rewrite summation_eq_compat with
+    (h := λ i, (1 // rad ^ n * (u (n + i)%nat) // rad ^ i)%NQ). 2: {
+    intros i Hi.
+    rewrite Nat.sub_0_r.
+    rewrite Nat.pow_add_r.
+    replace (u (n + i)) with (1 * u (n + i)) at 1 by flia.
+    rewrite <- NQmul_pair; [ easy | pauto | pauto ].
+  }
+  rewrite <- summation_mul_distr_l.
+  remember 1 as x; remember S as s; remember summation as f; cbn; subst x s f.
+
+...
+
+ rewrite summation_shift.
+...
+
+destruct k.
+unfold min_n.
+rewrite Nat.add_0_l.
+destruct l.
+rewrite summation_empty; [ easy | ].
+rewrite Nat.add_0_r.
+apply Nat.sub_lt; [ | pauto ].
+cbn.
+destruct rad; [ easy | cbn; flia ].
+rewrite <- Nat.add_sub_assoc; [ | flia ].
+replace (S l - 1) with l by flia.
+rewrite Nat.pow_1_r.
+rewrite summation_shift; [ | flia ].
+rewrite Nat.add_comm, Nat.add_sub.
+
+...
+
+cbn.
+destruct rad as [| rr]; [ easy | ].
+destruct rr; [ flia Hr  | ].
+cbn.
+
 ...
 destruct i.
 -unfold B.
