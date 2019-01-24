@@ -2671,9 +2671,53 @@ destruct j.
      f_equal.
      now rewrite Hum.
    }
-   destruct (le_dec (n - 1) (i + j + 1)) as [H5| H5].
+   destruct (le_dec (n - 1) (i + j)) as [H5| H5].
   --apply NQnlt_ge in H3; apply H3; clear H3.
     rewrite Hau, Hap.
+    rewrite NQfrac_small. 2: {
+      split; [ easy | ].
+      set (w := λ _ : nat, rad - 1).
+      apply (NQle_lt_trans _ (A i n w)).
+      -unfold A.
+       apply summation_le_compat.
+       intros k Hk.
+       apply NQle_pair; [ pauto | pauto | ].
+       rewrite Nat.mul_comm.
+       apply Nat.mul_le_mono_l.
+       subst w; cbn.
+       apply (le_trans _ (u k + P v k)); [ flia | ].
+       replace k with (i + (k - i - 1) + 1) by flia Hk.
+       unfold "⊕" in Hbef; rewrite Hbef; [ easy | flia H5 Hk ].
+      -subst w; rewrite A_all_9; [ | easy ].
+       apply NQsub_lt.
+       replace 0%NQ with (0 // 1)%NQ by easy.
+       apply NQlt_pair; [ easy | pauto | flia ].
+    }
+    rewrite NQfrac_small. 2: {
+      split; [ easy | ].
+      set (w := λ _ : nat, rad - 1).
+      apply (NQle_lt_trans _ (A i n w)).
+      -unfold A.
+       apply summation_le_compat.
+       intros k Hk.
+       apply NQle_pair; [ pauto | pauto | ].
+       rewrite Nat.mul_comm.
+       apply Nat.mul_le_mono_l.
+       subst w; remember P as f; cbn; subst f.
+       apply (le_trans _ (u k + P v k)); [ flia | ].
+       replace k with (i + (k - i - 1) + 1) by flia Hk.
+       unfold "⊕" in Hbef; rewrite Hbef; [ easy | flia H5 Hk ].
+      -subst w; rewrite A_all_9; [ | easy ].
+       apply NQsub_lt.
+       replace 0%NQ with (0 // 1)%NQ by easy.
+       apply NQlt_pair; [ easy | pauto | flia ].
+    }
+    rewrite <- A_additive.
+    rewrite A_all_9; [ | intros k Hk; apply Hbef; flia Hk H5 ].
+    apply NQsub_lt.
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | pauto | flia ].
+  --apply Nat.nle_gt in H5.
 ...
    specialize (all_P_9_999_9818_1818 v (i + j + 2)) as H5.
 ...
