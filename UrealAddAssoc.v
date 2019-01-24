@@ -2378,8 +2378,8 @@ destruct H'1 as [H'1| [H'1| H'1]].
  }
  rewrite Nat.add_0_l.
  f_equal.
+ apply A_ge_1_false_iff in Hjj.
 ...
-
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hn H1 H2 Hj Hjj.
