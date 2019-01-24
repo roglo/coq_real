@@ -2671,6 +2671,11 @@ destruct j.
      f_equal.
      now rewrite Hum.
    }
+   destruct (le_dec (n - 1) (i + j + 1)) as [H5| H5].
+  --apply NQnlt_ge in H3; apply H3; clear H3.
+    rewrite Hau, Hap.
+...
+   specialize (all_P_9_999_9818_1818 v (i + j + 2)) as H5.
 ...
 (*
 0.9<au<1
