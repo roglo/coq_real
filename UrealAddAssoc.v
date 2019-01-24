@@ -2637,7 +2637,6 @@ destruct j.
    destruct (le_dec (i + j + 1) (n - 1)); flia.
 -destruct j.
  +rewrite Nat.mul_1_r in Hx.
-  unfold B in Hx.
   specialize (Hj 0 Nat.lt_0_1) as H4.
   apply A_ge_1_true_iff in H4.
   rewrite <- Hn, Nat.pow_1_r in H4.
