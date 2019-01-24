@@ -2360,6 +2360,29 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hn H1 H2 Hj Hjj.
+assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
+  intros.
+  unfold "⊕".
+  replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+  replace (i + k + 1) with (i + (k + 1)) by flia.
+  apply Nat.add_le_mono; [ apply Hu | apply digit_le_pred_radix ].
+}
+specialize (A_ge_1_add_all_true_if _ i H H1) as H'1; clear H.
+rewrite Nat.add_comm.
+destruct H'1 as [H'1| [H'1| H'1]].
+-rewrite A_all_9 by (intros k Hk; apply H'1).
+ rewrite NQintg_small. 2: {
+   split.
+   -apply NQle_0_sub. admit.
+   -apply NQsub_lt. admit.
+ }
+ rewrite Nat.add_0_l.
+ f_equal.
+...
+
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hu Hv Hn H1 H2 Hj Hjj.
 rewrite Nat.add_comm.
 do 2 rewrite A_additive.
 rewrite NQintg_add; [ symmetry | easy | easy ].
@@ -2426,6 +2449,16 @@ destruct j.
  rewrite NQfrac_add_cond in AA1; [ | easy | easy ].
  rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
  do 2 rewrite NQintg_add_frac.
+(*
+ assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
+   intros.
+   unfold "⊕".
+   replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+   replace (i + k + 1) with (i + (k + 1)) by flia.
+   apply Nat.add_le_mono; [ apply Hu | apply digit_le_pred_radix ].
+ }
+ specialize (A_ge_1_add_all_true_if _ i H H1) as H'1; clear H.
+*)
  destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
    as [H3| H3].
  +rewrite NQsub_0_r in AA1.
@@ -2655,6 +2688,8 @@ destruct j.
   }
   rewrite Nat.add_0_l.
 (**)
+...
+
   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as AA1.
   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
   rewrite <- Hn, Nat.pow_1_r in AA1, AA2.
@@ -2668,6 +2703,7 @@ destruct j.
    destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
      as [H4| H4]; [ easy | exfalso ].
    apply <- NQle_add_le_sub_r in AA2.
+   (* 1-1/r<v 1-1/r≤u+p<1 2-1/r≤u+v *)
 ...
    apply NQle_sub_le_add_r in AA2.
    apply NQnlt_ge in AA2; apply AA2; clear AA2.
