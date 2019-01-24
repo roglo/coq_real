@@ -2636,7 +2636,12 @@ destruct j.
    replace 0%NQ with (0 // 1)%NQ by easy.
    apply NQlt_pair; [ easy | pauto | ].
    destruct (le_dec (i + j + 1) (n - 1)); flia.
--idtac.
+-destruct j.
+ +rewrite Nat.mul_1_r in Hx.
+  unfold B in Hx.
+  specialize (Hj 0 Nat.lt_0_1) as H4.
+  apply A_ge_1_true_iff in H4.
+  rewrite <- Hn, Nat.pow_1_r in H4.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
