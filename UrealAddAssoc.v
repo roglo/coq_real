@@ -2405,33 +2405,6 @@ assert (H : (0 ≤ x < 1)%NQ). {
 rewrite NQintg_small; [ | easy ].
 rewrite (NQfrac_small x); [ clear H | easy ].
 rewrite Nat.add_0_l.
-(*
-destruct (NQlt_le_dec (NQfrac (A i n v) + x) 1) as [H4| H4].
--destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
-   exfalso; apply Nat.nle_gt in Hin; apply Hin.
-   rewrite Hn; unfold min_n.
-   destruct rad; [ easy | cbn; flia ].
- }
- apply Nat.nlt_ge in Hin.
- rewrite NQintg_small. 2: {
-   split; [ | easy ].
-   replace 0%NQ with (0 + 0 * 0)%NQ by easy.
-   apply NQadd_le_mono; [ easy | ].
-   rewrite Hx.
-   rewrite B_of_A; [ | flia Hin ].
-   now apply NQmul_le_mono_nonneg.
- }
- rewrite Nat.add_0_l.
-*)
-(*
- specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as AA1.
- specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
- rewrite <- Hn, Nat.pow_1_r in AA1, AA2.
- rewrite A_additive in AA1, AA2.
- rewrite NQfrac_add_cond in AA1; [ | easy | easy ].
- rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
-*)
-(**)
 destruct j.
 -rewrite Nat.mul_0_r in Hx; unfold B in Hx.
  rewrite Nat.add_0_r in Hx.
@@ -2662,11 +2635,25 @@ destruct j.
    replace 0%NQ with (0 // 1)%NQ by easy.
    apply NQlt_pair; [ easy | pauto | ].
    destruct (le_dec (i + j + 1) (n - 1)); flia.
--destruct j.
- +rewrite Nat.mul_1_r in Hx.
-  specialize (Hj 0 Nat.lt_0_1) as H4.
-  apply A_ge_1_true_iff in H4.
-  rewrite <- Hn, Nat.pow_1_r in H4.
+-specialize (Hj _ (Nat.lt_0_succ _)) as H3.
+ apply A_ge_1_true_iff in H3.
+ rewrite <- Hn, Nat.pow_1_r in H3.
+ destruct (NQlt_le_dec (NQfrac (A i n v) + x) 1) as [Ha1| Ha1].
+ +destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+    exfalso; apply Nat.nle_gt in Hin; apply Hin.
+    rewrite Hn; unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  }
+  apply Nat.nlt_ge in Hin.
+  rewrite NQintg_small. 2: {
+    split; [ | easy ].
+    replace 0%NQ with (0 + 0 * 0)%NQ by easy.
+    apply NQadd_le_mono; [ easy | ].
+    rewrite Hx.
+    rewrite B_of_A; [ | flia Hin ].
+    now apply NQmul_le_mono_nonneg.
+  }
+  rewrite Nat.add_0_l.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
