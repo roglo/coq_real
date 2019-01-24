@@ -2388,23 +2388,50 @@ rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
 rewrite Nat.add_assoc.
 remember (B i n v (rad * j)) as x eqn:Hx.
-specialize (B_upper_bound_for_add v i 0 (rad * j)) as H3.
+specialize (B_upper_bound_for_add v i 0 (rad * j)) as Hb.
 assert (H : ∀ j, j ≥ i → v j ≤ 2 * (rad - 1)). {
   intros k Hk.
   replace k with (i + (k - i)) by flia Hk.
   apply Hv.
 }
-specialize (H3 H); clear H.
-rewrite <- Hn, <- Hx, Nat.pow_1_r in H3.
+specialize (Hb H); clear H.
+rewrite <- Hn, <- Hx, Nat.pow_1_r in Hb.
 assert (H : (0 ≤ x < 1)%NQ). {
   split; [ subst x; apply B_ge_0 | ].
-  eapply NQlt_trans; [ apply H3 | ].
+  eapply NQlt_trans; [ apply Hb | ].
   apply NQlt_pair; [ easy | easy | ].
   now do 2 rewrite Nat.mul_1_r.
 }
 rewrite NQintg_small; [ | easy ].
 rewrite (NQfrac_small x); [ clear H | easy ].
 rewrite Nat.add_0_l.
+(*
+destruct (NQlt_le_dec (NQfrac (A i n v) + x) 1) as [H4| H4].
+-destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+   exfalso; apply Nat.nle_gt in Hin; apply Hin.
+   rewrite Hn; unfold min_n.
+   destruct rad; [ easy | cbn; flia ].
+ }
+ apply Nat.nlt_ge in Hin.
+ rewrite NQintg_small. 2: {
+   split; [ | easy ].
+   replace 0%NQ with (0 + 0 * 0)%NQ by easy.
+   apply NQadd_le_mono; [ easy | ].
+   rewrite Hx.
+   rewrite B_of_A; [ | flia Hin ].
+   now apply NQmul_le_mono_nonneg.
+ }
+ rewrite Nat.add_0_l.
+*)
+(*
+ specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as AA1.
+ specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
+ rewrite <- Hn, Nat.pow_1_r in AA1, AA2.
+ rewrite A_additive in AA1, AA2.
+ rewrite NQfrac_add_cond in AA1; [ | easy | easy ].
+ rewrite NQfrac_add_cond in AA2; [ | easy | easy ].
+*)
+(**)
 destruct j.
 -rewrite Nat.mul_0_r in Hx; unfold B in Hx.
  rewrite Nat.add_0_r in Hx.
@@ -2417,7 +2444,7 @@ destruct j.
  rewrite NQadd_0_r.
  rewrite NQintg_NQfrac, Nat.add_0_l.
  rewrite <- Hn in Hjj.
- clear Hj H3.
+ clear Hj Hb.
  rewrite Nat.pow_1_r in Hjj.
  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as AA1.
  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2 0) as AA2.
