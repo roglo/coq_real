@@ -2695,6 +2695,16 @@ destruct j.
   }
   rewrite Nat.add_0_l.
   f_equal.
+  specialize (Hj j (Nat.lt_succ_diag_r _)) as Hj1.
+  apply A_ge_1_true_iff in Hj1.
+  move Hj1 before Hjj.
+  do 2 rewrite NQintg_add_frac.
+  destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n (P v))) 1)
+    as [H3| H3].
+  *destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
+      as [H4| H4]; [ easy | exfalso ].
+   destruct H'1 as [H'1| [H'1| H'1]].
+  --idtac.
 (**)
 ...
 
