@@ -2398,10 +2398,9 @@ specialize (H3 H); clear H.
 rewrite <- Hn, <- Hx, Nat.pow_1_r in H3.
 assert (H : (0 ≤ x < 1)%NQ). {
   split; [ subst x; apply B_ge_0 | ].
-  eapply NQle_lt_trans; [ apply H3 | ].
-  apply NQsub_lt.
-  replace 0%NQ with (0 // 1)%NQ by easy.
-  apply NQlt_pair; [ easy | easy | pauto ].
+  eapply NQlt_trans; [ apply H3 | ].
+  apply NQlt_pair; [ easy | easy | ].
+  now do 2 rewrite Nat.mul_1_r.
 }
 rewrite NQintg_small; [ | easy ].
 rewrite (NQfrac_small x); [ clear H | easy ].

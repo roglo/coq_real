@@ -1020,198 +1020,106 @@ eapply NQle_lt_trans.
  destruct rad; [ easy | cbn; flia ].
 Qed.
 
-Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
-  (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
-  → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
+Theorem B_upper_bound_for_add_at_0 {r : radix} : ∀ u k l,
+  (∀ j, u j ≤ 2 * (rad - 1))
+  → (B 0 (min_n 0 k) u l < 1 // rad ^ S k)%NQ.
 Proof.
-intros * Hur.
+intros *.
 specialize radix_ge_2 as Hr.
+intros Hur.
 unfold B.
-destruct i.
--destruct l.
- +rewrite summation_empty; [ easy | ].
-  rewrite Nat.add_0_r.
-  apply Nat.sub_lt; [ | pauto ].
-  unfold min_n.
-  destruct rad; [ easy | cbn; flia ].
- +rewrite <- Nat.add_sub_assoc; [ | flia ].
-  replace (S l - 1) with l by flia.
-  eapply NQle_lt_trans.
-  *apply summation_le_compat with
-     (g := λ i, ((2 * rad - 1) // rad ^ i)%NQ).
-   intros i Hi.
-   rewrite Nat.sub_0_r.
-   apply NQle_pair; [ pauto | pauto | ].
-...
+destruct l.
+-rewrite summation_empty; [ easy | ].
+ rewrite Nat.add_0_r.
+ apply Nat.sub_lt; [ | pauto ].
+ unfold min_n.
+ destruct rad; [ easy | cbn; flia ].
+-rewrite <- Nat.add_sub_assoc; [ | flia ].
+ replace (S l - 1) with l by flia.
+ eapply NQle_lt_trans.
+ +apply summation_le_compat with
+     (g := λ i, ((2 * (rad - 1)) // 1 * 1 // rad ^ i)%NQ).
+  intros i Hi.
+  rewrite Nat.sub_0_r.
+  rewrite <- NQpair_mul_r, Nat.mul_1_r.
+  apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono_l, Hur; flia.
+ +rewrite <- summation_mul_distr_l.
   rewrite summation_shift; [ | flia ].
   rewrite Nat.add_comm, Nat.add_sub.
   remember (min_n 0 k) as n eqn:Hn.
   rewrite summation_eq_compat with
-    (h := λ i, (1 // rad ^ n * (u (n + i)%nat) // rad ^ i)%NQ). 2: {
+      (h := λ i, (1 // rad ^ n * 1 // rad ^ i)%NQ). 2: {
     intros i Hi.
-    rewrite Nat.sub_0_r.
     rewrite Nat.pow_add_r.
-    replace (u (n + i)) with (1 * u (n + i)) at 1 by flia.
-    rewrite <- NQmul_pair; [ easy | pauto | pauto ].
+    rewrite NQmul_pair; [ easy | pauto | pauto ].
   }
-  rewrite <- summation_mul_distr_l.
-  remember 1 as x; remember S as s; remember summation as f; cbn; subst x s f.
-
-...
-
- rewrite summation_shift.
-...
-
-destruct k.
-unfold min_n.
-rewrite Nat.add_0_l.
-destruct l.
-rewrite summation_empty; [ easy | ].
-rewrite Nat.add_0_r.
-apply Nat.sub_lt; [ | pauto ].
-cbn.
-destruct rad; [ easy | cbn; flia ].
-rewrite <- Nat.add_sub_assoc; [ | flia ].
-replace (S l - 1) with l by flia.
-rewrite Nat.pow_1_r.
-rewrite summation_shift; [ | flia ].
-rewrite Nat.add_comm, Nat.add_sub.
-
-...
-
-cbn.
-destruct rad as [| rr]; [ easy | ].
-destruct rr; [ flia Hr  | ].
-cbn.
-
-...
-destruct i.
--unfold B.
-...
-apply B_upper_bound_for_mul.
-intros j Hj.
-specialize (Hur _ Hj) as H1.
-apply (le_trans _ (2 * (rad - 1))); [ easy | ].
-destruct j; [ flia Hi Hj | ].
-apply (le_trans _ (2 * (rad - 1) ^ 2)).
--apply Nat.mul_le_mono_l.
- rewrite <- Nat.pow_1_r at 1.
- apply Nat.pow_le_mono_r; [ flia Hr | pauto ].
--apply Nat.mul_le_mono_r; flia.
-Qed.
-
-Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
-  i > 0
-  → (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
-  → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
-Proof.
-intros * Hi Hur.
-specialize radix_ge_2 as Hr.
-apply B_upper_bound_for_mul.
-intros j Hj.
-specialize (Hur _ Hj) as H1.
-apply (le_trans _ (2 * (rad - 1))); [ easy | ].
-destruct j; [ flia Hi Hj | ].
-apply (le_trans _ (2 * (rad - 1) ^ 2)).
--apply Nat.mul_le_mono_l.
- rewrite <- Nat.pow_1_r at 1.
- apply Nat.pow_le_mono_r; [ flia Hr | pauto ].
--apply Nat.mul_le_mono_r; flia.
-Qed.
-
-...
-
-(*
-Theorem B_upper_bound_1_for_add {r : radix} : ∀ u i n l,
-  (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
-  → i + 1 ≤ n
-  → (B i n u l ≤ (2 * rad * (rad ^ l - 1)) // rad ^ (n - i + l))%NQ.
-Proof.
-intros * Hur Hin.
-specialize radix_ge_2 as Hr.
-destruct l.
--unfold B; rewrite Nat.add_0_r.
- rewrite summation_empty. 2: {
-   apply Nat.sub_lt; [ flia Hin | pauto ].
- }
- now rewrite Nat.pow_0_r, Nat.add_0_r, Nat.sub_diag, Nat.mul_0_r.
--unfold B.
- rewrite summation_shift; [ | flia ].
- replace (n + S l - 1 - n) with l by flia.
- eapply NQle_trans.
- +apply summation_le_compat with
-    (g := λ j, ((2 * (rad - 1)) // rad ^ (n - i) * 1 // rad ^ j)%NQ).
-  intros j Hj.
-  replace (n + j - i) with (n - i + j) by flia Hin.
-  rewrite Nat.pow_add_r.
-  replace (u (n + j)) with (u (n + j) * 1) by flia.
-  rewrite <- NQmul_pair; [ | pauto | pauto ].
-  apply NQmul_le_mono_pos_r. {
-    replace 0%NQ with (0 // 1)%NQ by easy.
-    apply NQlt_pair; [ easy | pauto | cbn; flia ].
-  }
-  apply NQle_pair; [ pauto | pauto | ].
-  rewrite Nat.mul_comm.
-  apply Nat.mul_le_mono_l, Hur.
-  flia Hin.
- +rewrite <- summation_mul_distr_l.
+  rewrite <- summation_mul_distr_l, NQmul_assoc.
   rewrite NQpower_summation; [ | easy ].
+  rewrite NQmul_pair; [ | easy | pauto ].
+  rewrite Nat.mul_1_r, Nat.mul_1_l.
   rewrite NQmul_pair; [ | pauto | ]. 2: {
-    apply Nat.neq_mul_0; split; [ pauto | flia Hr ].
+    apply Nat.neq_mul_0.
+    split; [ pauto | flia Hr ].
   }
   rewrite Nat.mul_shuffle0, Nat.mul_assoc.
   rewrite <- NQmul_pair; [ | | flia Hr ]. 2: {
     apply Nat.neq_mul_0; pauto.
   }
-  rewrite NQpair_diag, NQmul_1_r; [ | flia Hr ].
-  replace (n - i + S l) with (n - i + l + 1) by flia.
-  rewrite Nat.pow_add_r, Nat.pow_1_r, Nat.mul_shuffle0.
-  rewrite NQmul_pair_mono_r; [ | pauto | pauto ].
-  rewrite Nat.pow_add_r.
-  apply NQle_refl.
+  rewrite NQpair_diag; [ | flia Hr ].
+  rewrite NQmul_1_r.
+  apply (NQlt_trans _ (2 // rad ^ (n - 1))).
+  *apply NQlt_pair; [ | pauto | ]. {
+     apply Nat.neq_mul_0; pauto.
+   }
+   rewrite <- Nat.mul_assoc, Nat.mul_comm.
+   apply Nat.mul_lt_mono_pos_r; [ pauto | ].
+   rewrite Nat.mul_comm.
+   replace n with (n - 1 + 1) at 2. 2: {
+     rewrite Nat.sub_add; [ easy | ].
+     rewrite Hn; unfold min_n.
+     destruct rad; [ easy | cbn; flia ].
+   }
+   rewrite Nat.pow_add_r, <- Nat.mul_assoc.
+   apply Nat.mul_lt_mono_pos_l; [ apply Nat.neq_0_lt_0; pauto | ].
+   rewrite <- Nat.pow_add_r.
+   apply Nat.sub_lt; [ | pauto ].
+   now apply Nat_pow_ge_1.
+  *apply NQlt_pair; [ pauto | pauto | ].
+   rewrite Nat.mul_1_r.
+   subst n; unfold min_n.
+   rewrite Nat.add_0_l.
+   apply (le_lt_trans _ (rad ^ (k + 2))).
+  --replace (k + 2) with (1 + S k) by flia.
+    rewrite Nat.pow_add_r, Nat.pow_1_r.
+    apply Nat.mul_le_mono_pos_r; [ | easy ].
+    apply Nat.neq_0_lt_0; pauto.
+  --apply Nat.pow_lt_mono_r; [ easy | ].
+    destruct rad as [| rr]; [ easy | cbn ].
+    destruct rr; [ flia Hr | cbn; flia ].
 Qed.
 
 Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
   (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
-  → (B i (min_n i k) u l ≤ 1 - 1 // rad ^ S k)%NQ.
+  → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ.
 Proof.
 intros * Hur.
 specialize radix_ge_2 as Hr.
-eapply NQle_trans.
--apply B_upper_bound_1_for_add; [ easy | ].
- unfold min_n.
- destruct rad; [ easy | cbn; flia ].
--rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
-   do 2 rewrite Nat.mul_1_l.
-   now apply Nat_pow_ge_1.
- }
- do 2 rewrite Nat.mul_1_l.
- apply NQle_pair; [ pauto | pauto | ].
- rewrite Nat.mul_shuffle0.
- apply (le_trans _ (rad ^ (min_n i k - i) * (rad ^ S k - 1) * (rad ^ l - 1))).
- +apply Nat.mul_le_mono_r.
-  apply (le_trans _ (rad ^ (min_n i k - i))).
-  *apply (le_trans _ (rad ^ (k + 3))).
-  --apply (le_trans _ (rad * rad * rad ^ S k)).
-   ++now do 2 apply Nat.mul_le_mono_r.
-   ++rewrite <- Nat.mul_assoc, <- Nat.pow_succ_r; [ | flia ].
-     rewrite <- Nat.pow_succ_r; [ | flia ].
-     apply Nat.pow_le_mono_r; [ easy | flia ].
-  --apply Nat.pow_le_mono_r; [ easy | ].
-    unfold min_n.
-    destruct rad; [ easy | cbn; flia ].
-  *apply Nat_mul_le_pos_r.
-   apply Nat.le_add_le_sub_r; cbn.
-   replace 2 with (2 * 1) by flia.
-   apply Nat.mul_le_mono; [ easy | ].
-   now apply Nat_pow_ge_1.
- +rewrite Nat.mul_shuffle0.
-  apply Nat.mul_le_mono_r.
-  rewrite Nat.pow_add_r.
-  apply Nat.mul_le_mono_l.
-  apply Nat.le_sub_l.
+destruct i.
+-apply B_upper_bound_for_add_at_0.
+ intros j; apply Hur; flia.
+-apply B_upper_bound_for_mul.
+ intros j Hj.
+ specialize (Hur _ Hj) as H1.
+ apply (le_trans _ (2 * (rad - 1))); [ easy | ].
+ destruct j; [ flia Hj | ].
+ apply (le_trans _ (2 * (rad - 1) ^ 2)).
+ +apply Nat.mul_le_mono_l.
+  rewrite <- Nat.pow_1_r at 1.
+  apply Nat.pow_le_mono_r; [ flia Hr | pauto ].
+  +apply Nat.mul_le_mono_r; flia.
 Qed.
-*)
 
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
