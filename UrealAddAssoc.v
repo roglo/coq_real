@@ -2660,7 +2660,10 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
   *destruct H3 as (j & Hj & Hjj).
 ...
    now apply pre_Hugo_Herbelin_112.
- +idtac.
+ +destruct H2 as (j & Hjj & Hj).
+  apply A_ge_1_false_iff in Hj.
+  destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
+  *idtac.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
