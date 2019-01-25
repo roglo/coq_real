@@ -2514,6 +2514,7 @@ Theorem P_999_start {r : radix} : ∀ u i m,
 Proof.
 intros * Hur Hpu.
 Check all_P_9_999_9818_1818.
+specialize radix_ge_2 as Hr.
 specialize (Hpu 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold P, d2n, prop_carr in H1; cbn in H1.
@@ -2525,11 +2526,28 @@ specialize (H2 H); clear H.
 specialize (H2 0) as H3.
 rewrite Nat.add_0_r in H3.
 remember (carry u i) as c eqn:Hc.
+destruct (zerop m) as [Hm| Hm]. {
+  subst m; right; cbn.
+  specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+  now apply Nat.le_0_r in Hur.
+}
+destruct (eq_nat_dec m 1) as [Hm1| Hm1]. {
+  subst m; right; rewrite Nat.mul_1_l.
+  destruct c.
+  -rewrite Nat.add_0_r in H1.
+   rewrite Nat.mod_small in H1; [ easy | ]. {
+     specialize (Hur 0); rewrite Nat.add_0_r, Nat.mul_1_l in Hur.
+     flia Hur Hr.
+   }
+  -destruct c; [ | flia H3 ].
+   symmetry in Hc; unfold carry in Hc.
+...
 induction c.
 -rewrite Nat.add_0_r in H1.
  destruct (eq_nat_dec (u i) (m * (rad - 1))) as [| H4]; [ now right | left ].
  specialize (Nat.div_mod (u i) rad radix_ne_0) as H5.
  rewrite H1 in H5; rewrite H5.
+ exists 42, 1.
 ...
  exists (u i / rad + 1), 1.
 ...
