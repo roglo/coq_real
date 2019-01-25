@@ -2454,100 +2454,29 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
 Qed.
 
 (* generalizes NQintg_A_le_1_for_add *)
-Theorem NQintg_A_lt_for_adds {r : radix} : ∀ u i j m,
+Theorem NQintg_A_le_for_adds {r : radix} : ∀ u i j m,
   (∀ k, u (i + k + 1) ≤ m * (rad - 1))
   → NQintg (A i (min_n i j) u) ≤ m.
 Proof.
 intros * Hmr.
-Check NQintg_A_le_1_for_add.
 specialize radix_ge_2 as Hr.
 remember (min_n i j) as n eqn:Hn.
 specialize (A_upper_bound_for_adds u i n m Hmr) as H2.
-apply NQintg_mono in H2; [ | easy ].
-eapply le_trans; [ apply H2 | ].
 remember (n - i - 1) as s eqn:Hs.
-move s before n.
-rewrite NQmul_sub_distr_l.
-rewrite NQmul_1_r.
-destruct m; [ easy | ].
-rewrite <- Nat.add_1_r.
-rewrite NQpair_add_l.
-rewrite <- NQadd_sub_assoc.
-remember ((m // 1 + 1) * 1 // rad ^ s)%NQ as x.
-rewrite NQintg_add_nat_l.
--apply Nat.add_le_mono_l.
- destruct (NQle_lt_dec x 1) as [H3| H3].
- +rewrite NQintg_small; [ pauto | ].
-  split; [ now apply NQle_0_sub | ].
-  apply NQsub_lt; rewrite Heqx.
-  replace 0%NQ with (0 // 1 * 1 // rad ^ s)%NQ by easy.
-  apply NQmul_lt_le_mono_pos; [ easy | | easy | ].
-  *rewrite NQadd_pair; [ | easy | easy ].
-   do 2 rewrite Nat.mul_1_r.
-   apply NQlt_pair; [ easy | easy | flia ].
-  *apply NQle_pair; [ pauto | pauto | flia ].
- +idtac.
-(* c'est faux dans mon modèle actuel car si x est grand,
-   1-x est négatif et NQintg(1-x) redonne un nombre positif;
-   modèle à changer donc, ou trouver une autre solution *)
-...
-  replace 1 with (NQintg 1) at 3 by easy.
-  apply NQintg_mono.
-  *apply NQle_0_sub.
-...
- destruct x as [| x| x]; [ pauto | | ].
- +Search (NQintg (NQpos _)).
- +unfold NQintg; cbn.
-  unfold "<"%NQ in Hx2; cbn in Hx2.
-unfold "<"%GQ in Hx2; cbn in Hx2.
-unfold PQ.PQlt, PQ.nd in Hx2; cbn in Hx2.
-now rewrite Nat.mul_1_r, Nat.add_0_r in Hx2.
-
-
-About NQintg_small.
-Search (NQintg (_ - _)).
-...
-(m // 1 + 1) * 1 // rad ^ s ≥ 0
-...
-...
-replace (2 * 1)%NQ with (1 + 1)%NQ by easy.
-rewrite <- NQadd_sub_assoc.
-assert (H3 : (0 ≤ 1 - 2 * 1 // rad ^ (n - i - 1))%NQ). {
-  apply NQle_add_le_sub_l.
-  rewrite NQadd_0_l.
-  rewrite NQmul_pair; [ | easy | pauto ].
-  rewrite Nat.mul_1_r, Nat.mul_1_l.
-  apply NQle_pair; [ pauto | easy | ].
-  do 2 rewrite Nat.mul_1_r.
-  remember (n - i - 1) as s eqn:Hs.
-  destruct s.
-  -rewrite Hn in Hs.
-   unfold min_n in Hs.
-   destruct rad; [ easy | cbn in Hs; flia Hs ].
-  -cbn; replace 2 with (2 * 1) by flia.
-   apply Nat.mul_le_mono; [ easy | ].
-   now apply Nat_pow_ge_1.
+rewrite NQmul_sub_distr_l in H2.
+rewrite NQmul_1_r in H2.
+rewrite NQmul_pair in H2; [ | easy | pauto ].
+rewrite Nat.mul_1_r, Nat.mul_1_l in H2.
+replace m with (NQintg (m // 1)). 2: {
+  rewrite NQintg_pair; [ | easy ].
+  now rewrite Nat.div_1_r.
 }
-rewrite NQintg_add_nat_l; [ | easy ].
-rewrite NQintg_small; [ easy | ].
-split; [ easy | ].
-apply NQlt_sub_lt_add_r.
-replace 1%NQ with (1 + 0)%NQ at 1 by easy.
-apply NQadd_le_lt_mono; [ apply NQle_refl | ].
-remember (1 // rad ^ (n - i - 1))%NQ as x eqn:Hx.
-apply (NQlt_le_trans _ x).
-+replace 0%NQ with (0 // 1)%NQ by easy.
- subst x.
- apply NQlt_pair; [ flia | pauto | pauto ].
-+replace x with (1 * x)%NQ at 1 by apply NQmul_1_l.
- subst x.
- apply NQmul_le_mono_pos_r.
- *replace 0%NQ with (0 // 1)%NQ by easy.
-  apply NQlt_pair; [ flia | pauto | ].
-  rewrite Nat.mul_0_l; flia.
- *apply NQle_pair; flia.
+apply NQintg_mono; [ easy | ].
+eapply NQle_trans; [ apply H2 | ].
+apply NQle_sub_l.
+replace 0%NQ with (0 // 1)%NQ by easy.
+apply NQle_pair; [ easy | pauto | flia ].
 Qed.
-...
 
 (* generalizes carry_upper_bound_for_add *)
 Theorem carry_upper_bound_for_adds {r : radix} : ∀ u i m,
@@ -2558,50 +2487,16 @@ intros * Hur *.
 specialize radix_ge_2 as Hr.
 unfold carry.
 destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1].
-Check NQintg_A_le_1_for_add.
-...
-
-enough (∀ k, NQintg (A i (min_n (i + k) j) u) ≤ m). {
-  destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]; [ apply H | ].
-  destruct H1 as (j & Hj & Hjj); apply H.
-}
-intros j.
-now apply NQintg_A_le_1_for_add.
+-apply NQintg_A_le_for_adds.
+ intros j.
+ replace (i + k + j + 1) with (i + (k + j) + 1) by flia.
+ apply Hur.
+-destruct H1 as (j & Hj & Hjj).
+ apply NQintg_A_le_for_adds.
+ intros l.
+ replace (i + k + l + 1) with (i + (k + l) + 1) by flia.
+ apply Hur.
 Qed.
-...
-
-intros * Hur *.
-enough (∀ j, NQintg (A i (min_n i j) u) ≤ 1). {
-  destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]; [ apply H | ].
-  destruct H1 as (j & Hj & Hjj); apply H.
-}
-intros j.
-now apply NQintg_A_le_1_for_add.
-
-
-intros * Hur *.
-Check carry_upper_bound_for_add.
-rename k into l.
-unfold carry.
-destruct (LPO_fst (fA_ge_1_ε u (i + l))) as [H1| H1].
--Search (NQintg _ ≤ NQintg _).
- remember (min_n (i + l) 0) as n eqn:Hn.
- set (v := λ _ : nat, m * (rad - 1)).
- apply (le_trans _ (NQintg (A (i + l) n v))).
- +apply NQintg_mono; [ easy | ].
-  apply summation_le_compat.
-  intros k Hk.
-  apply NQle_pair; [ pauto | pauto | ].
-  rewrite Nat.mul_comm.
-  apply Nat.mul_le_mono_l; unfold v.
-  replace k with (i + (k - i)) by flia Hk.
-  apply Hur.
- +unfold A, v.
-
-Check A_all_9.
-...
-  rewrite summation_all
-...
 
 (* Says that if P(u) ends with an infinity of 9s, and u is
    - limited by 18, then u_i is 8, 9 or 18,
@@ -2622,6 +2517,9 @@ Check all_P_9_999_9818_1818.
 specialize (Hpu 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold P, d2n, prop_carr in H1; cbn in H1.
+specialize (carry_upper_bound_for_adds u i m) as H2.
+assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+  intros.
 ...
 
 Theorem pre_Hugo_Herbelin_112 {r : radix} : ∀ u v i n j,
