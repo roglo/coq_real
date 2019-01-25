@@ -2541,20 +2541,78 @@ destruct (eq_nat_dec m 1) as [Hm1| Hm1]. {
    }
   -destruct c; [ | flia H3 ].
    symmetry in Hc; unfold carry in Hc.
-...
-induction c.
+   assert (∃ k, NQintg (A i (min_n i k) u) = 1). {
+     destruct (LPO_fst (fA_ge_1_ε u i)) as [H| H].
+     -exists 0; easy.
+     -destruct H as (k & H).
+      exists k; easy.
+   }
+   destruct H as (k & Hk).
+   rewrite NQintg_small in Hk; [ easy | ]. {
+     split; [ easy | ].
+     unfold A.
+     eapply NQle_lt_trans.
+     -apply summation_le_compat with
+          (g := λ j, ((rad - 1) // 1 * 1 // rad ^ (j - i))%NQ).
+      intros j Hj.
+      rewrite NQmul_pair; [ | easy | pauto ].
+      rewrite Nat.mul_1_r, Nat.mul_1_l.
+      apply NQle_pair; [ pauto | pauto | ].
+      rewrite Nat.mul_comm.
+      apply Nat.mul_le_mono_l.
+      specialize (Hur (j - i)).
+      replace (i + (j - i)) with j in Hur by flia Hj.
+      now rewrite Nat.mul_1_l in Hur.
+     -rewrite <- summation_mul_distr_l.
+      rewrite summation_shift. 2: {
+        unfold min_n.
+        destruct rad; [ easy | cbn; flia ].
+      }
+      rewrite summation_eq_compat with
+          (h := λ j, (1 // rad * 1 // rad ^ j)%NQ). 2: {
+        intros j Hj.
+        replace (i + 1 + j - i) with (1 + j) by flia.
+        rewrite NQmul_pair; [ easy | easy | pauto ].
+      }
+      rewrite <- summation_mul_distr_l, NQmul_assoc.
+      rewrite NQpower_summation; [ | easy ].
+      remember (min_n i k - 1 - (i + 1)) as s eqn:Hs.
+      rewrite NQmul_pair; [ | easy | easy ].
+      rewrite Nat.mul_1_r, Nat.mul_1_l.
+      rewrite NQmul_pair; [ | easy | ]. 2: {
+        apply Nat.neq_mul_0.
+        split; [ pauto | flia Hr ].
+      }
+      rewrite Nat.mul_comm, Nat.mul_assoc.
+      rewrite NQmul_pair_mono_r; [ | | flia Hr ]. 2: {
+        apply Nat.neq_mul_0.
+        split; [ easy | pauto ].
+      }
+      rewrite <- Nat.pow_succ_r'.
+      apply NQlt_pair; [ pauto | easy | ].
+      do 2 rewrite Nat.mul_1_r.
+      apply Nat.sub_lt; [ | easy ].
+      now apply Nat_pow_ge_1.
+   }
+}
+assert (H : 1 < m) by flia Hm Hm1.
+clear Hm Hm1; rename H into Hm.
+revert i m Hur Hpu Hc H1 H2 H3 Hm.
+induction c; intros.
 -rewrite Nat.add_0_r in H1.
  destruct (eq_nat_dec (u i) (m * (rad - 1))) as [| H4]; [ now right | left ].
  specialize (Nat.div_mod (u i) rad radix_ne_0) as H5.
  rewrite H1 in H5; rewrite H5.
- exists 42, 1.
-...
  exists (u i / rad + 1), 1.
-...
  split; [ | split ].
  +split; [ flia | ].
-...
- rewrite H5.
+  specialize (Hur 0) as H6.
+  rewrite Nat.add_0_r in H6.
+  admit.
+ +easy.
+ +rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+  now rewrite Nat.mul_comm, <- Nat.add_sub_assoc.
+-idtac.
 ...
 
 Theorem pre_Hugo_Herbelin_112 {r : radix} : ∀ u v i n j,
