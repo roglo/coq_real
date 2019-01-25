@@ -2404,6 +2404,55 @@ replace (1 + (s - 1)) with s by flia Hs Hin.
 now rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
 Qed.
 
+(* generalizes A_upper_bound_for_add *)
+Theorem A_upper_bound_for_adds {r : radix} (rg := nat_ord_ring) : ∀ u i n m,
+  (∀ k, u (i + k + 1) ≤ m * (rad - 1))
+  → (A i n u ≤ (m // 1 - m // rad ^ (n - i - 1)))%NQ.
+Proof.
+intros * Hur.
+specialize radix_ge_2 as Hr.
+...
+destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
+-unfold A.
+ rewrite summation_empty; [ | easy ].
+ remember (rad ^ (n - i - 1)) as s eqn:Hs.
+ change (0 ≤ 2 * (1 - 1 // s))%NQ.
+ rewrite <- (NQmul_0_r 2%NQ).
+ apply NQmul_le_mono_nonneg_l; [ easy | ].
+ apply (NQadd_le_r _ _ (1 // s)).
+ rewrite NQadd_0_l, NQsub_add.
+ destruct s. {
+   symmetry in Hs.
+   now apply Nat.pow_nonzero in Hs.
+ }
+ apply NQle_pair; [ easy | easy | ].
+ apply Nat.mul_le_mono_nonneg_r; [ apply Nat.le_0_1 | flia ].
+-apply Nat.nlt_ge in Hin.
+ remember (n - i - 1) as s eqn:Hs.
+ destruct s; [ flia Hin Hs | ].
+ rewrite NQpower_summation_inv; [ | flia Hr ].
+ unfold A.
+ rewrite summation_shift; [ | easy ].
+ replace (n - 1 - (i + 1)) with s by flia Hs.
+ do 2 rewrite summation_mul_distr_l.
+ apply summation_le_compat.
+ intros j Hj.
+ replace (i + 1 + j - i) with (S j) by flia.
+ apply (NQle_trans _ ((2 * (rad - 1)) // (rad ^ S j))).
+ +apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat.mul_comm, Nat.add_shuffle0.
+  apply Nat.mul_le_mono_l, Hur.
+ +rewrite NQmul_assoc.
+  rewrite NQsub_pair_pos; [ | easy | easy | now apply Nat.mul_le_mono_l].
+  do 2 rewrite Nat.mul_1_l.
+  rewrite NQmul_pair; [ | easy | easy ].
+  rewrite Nat.mul_1_l.
+  rewrite NQmul_pair; [ | easy | pauto ].
+  rewrite Nat.mul_1_r.
+  apply NQle_refl.
+Qed.
+...
+
 (* generalizes NQintg_A_le_1_for_add *)
 Theorem NQintg_A_le_for_adds {r : radix} : ∀ u i j m,
   (∀ k, u (i + k + 1) ≤ m * (rad - 1))
@@ -2413,6 +2462,12 @@ intros * Hmr.
 Check NQintg_A_le_1_for_add.
 specialize radix_ge_2 as Hr.
 remember (min_n i j) as n eqn:Hn.
+About A_upper_bound_for_add.
+...
+Check A_upper_bound_for_add_3.
+Check A_upper_bound_for_add_4.
+Check A_upper_bound_for_add_5.
+Search (∀ _, _ ≤ _ * (rad - 1)).
 ...
 specialize (A_upper_bound_for_add u i n Hmr) as H2.
 apply NQintg_mono in H2; [ | easy ].
