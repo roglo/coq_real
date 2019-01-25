@@ -2608,7 +2608,17 @@ induction c; intros.
  +split; [ flia | ].
   specialize (Hur 0) as H6.
   rewrite Nat.add_0_r in H6.
-  admit.
+  assert (H7 : u i < m * (rad - 1)) by flia H4 H6.
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H7.
+  apply (Nat.mul_lt_mono_pos_r rad); [ easy | ].
+...
+  apply (Nat.div_lt_mono _ _ rad) in H6; [ | easy ].
+  apply (le_lt_trans _ ((m * rad - m) / rad + 1)).
+  *now apply Nat.add_le_mono_r.
+  *replace m with (m * 1) at 2 by flia.
+   rewrite <- Nat.mul_sub_distr_l.
+...
+  apply Nat.lt_sub_lt_add_l
  +easy.
  +rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
   now rewrite Nat.mul_comm, <- Nat.add_sub_assoc.
