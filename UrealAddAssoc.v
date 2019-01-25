@@ -2473,9 +2473,9 @@ destruct m; [ easy | ].
 rewrite <- Nat.add_1_r.
 rewrite NQpair_add_l.
 rewrite <- NQadd_sub_assoc.
+remember ((m // 1 + 1) * 1 // rad ^ s)%NQ as x.
 rewrite NQintg_add_nat_l.
 -apply Nat.add_le_mono_l.
- remember ((m // 1 + 1) * 1 // rad ^ s)%NQ as x.
  destruct (NQle_lt_dec x 1) as [H3| H3].
  +rewrite NQintg_small; [ pauto | ].
   split; [ now apply NQle_0_sub | ].
@@ -2487,8 +2487,11 @@ rewrite NQintg_add_nat_l.
    apply NQlt_pair; [ easy | easy | flia ].
   *apply NQle_pair; [ pauto | pauto | flia ].
  +idtac.
+(* c'est faux dans mon modèle actuel car si x est grand,
+   1-x est négatif et NQintg(1-x) redonne un nombre positif;
+   modèle à changer donc, ou trouver une autre solution *)
 ...
-replace 1 with (NQintg 1) by easy.
+  replace 1 with (NQintg 1) at 3 by easy.
   apply NQintg_mono.
   *apply NQle_0_sub.
 ...
