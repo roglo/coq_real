@@ -2346,6 +2346,125 @@ destruct H'3 as [H'3| [H'3| H'3]].
  now eapply pre_Hugo_Herbelin_lemma.
 Qed.
 
+(* generalizes A_all_9 and A_all_18 *)
+Theorem glop {r : radix} : ∀ u i m n,
+  (∀ k : nat, i + k + 1 < n → u (i + k + 1) = m * (rad - 1))
+  → A i n u = (m // 1 - m // rad ^ (n - i - 1))%NQ.
+Proof.
+intros * Hmr.
+specialize radix_ge_2 as Hr.
+Check A_all_9.
+Check A_all_18.
+unfold A.
+destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin]; cycle 1. {
+  replace (n - i - 1) with 0 by flia Hin.
+  rewrite Nat.pow_0_r, NQsub_diag.
+  now rewrite summation_empty; [ | flia Hin ].
+}
+rewrite summation_shift; [ | easy ].
+rewrite summation_eq_compat with
+    (h := λ j, ((m * (rad - 1)) // rad ^ (j + 1))%NQ). 2: {
+  intros j Hj.
+  replace (i + 1 + j - i) with (j + 1) by flia.
+  rewrite Nat.add_shuffle0, Hmr; [ easy | flia Hin Hj ].
+}
+rewrite summation_eq_compat with
+    (h := λ j, ((m * (rad - 1)) // rad * 1 // rad ^ j)%NQ). 2: {
+  intros j Hj.
+  rewrite NQmul_pair; [ | easy | pauto ].
+  rewrite Nat.mul_1_r; f_equal.
+  now rewrite Nat.add_comm.
+}
+rewrite <- summation_mul_distr_l.
+...
+remember NQ_of_pair as f; simpl; subst f.
+rewrite NQpower_summation; [ | flia Hr ].
+replace (n - 1 - (i + 1)) with (n - i - 1 - 1) by flia Hin.
+remember (n - i - 1) as s eqn:Hs.
+replace (S (s - 1)) with s by flia Hs Hin.
+rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
+  rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono_l.
+  apply lt_le_trans with (m := 2); [ apply Nat.lt_0_2 | ].
+  destruct s; [ flia Hs Hin | ].
+  cbn; replace 2 with (2 * 1) by easy.
+  apply Nat.mul_le_mono; [ easy | ].
+  apply Nat.neq_0_lt_0; pauto.
+}
+do 2 rewrite Nat.mul_1_l.
+rewrite NQmul_pair; [ | easy | ].
+...
+rewrite NQmul_pair; [ | easy | easy ].
+rewrite Nat.mul_1_l.
+rewrite NQmul_pair; [ | easy | ]; cycle 1. {
+  intros H; apply Nat.eq_mul_0 in H.
+  destruct H as [H| H]; [ | flia Hr H ].
+  now apply Nat.pow_nonzero in H.
+}
+rewrite Nat.mul_shuffle0, Nat.mul_assoc.
+rewrite <- NQmul_pair; [ | | flia Hr ]; cycle 1. {
+  intros H; apply Nat.eq_mul_0 in H.
+  destruct H as [H| H]; [ flia Hr H | ].
+  now apply Nat.pow_nonzero in H.
+}
+rewrite NQpair_diag; [ | flia Hr ].
+rewrite NQmul_1_r.
+replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+rewrite <- Nat.pow_add_r.
+replace (1 + (s - 1)) with s by flia Hs Hin.
+now rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+Qed.
+...
+
+(* generalizes carry_upper_bound_for_add *)
+Theorem P_999_carry_upper_bound {r : radix} : ∀ u i m,
+  (∀ k, u (i + k) ≤ m * (rad - 1))
+  → ∀ k, carry u (i + k) ≤ m.
+Proof.
+intros * Hur *.
+Check carry_upper_bound_for_add.
+rename k into l.
+unfold carry.
+destruct (LPO_fst (fA_ge_1_ε u (i + l))) as [H1| H1].
+-Search (NQintg _ ≤ NQintg _).
+ remember (min_n (i + l) 0) as n eqn:Hn.
+ set (v := λ _ : nat, j * (rad - 1)).
+ apply (le_trans _ (NQintg (A (i + l) n v))).
+ +apply NQintg_mono; [ easy | ].
+  apply summation_le_compat.
+  intros k Hk.
+  apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono_l; unfold v.
+  replace k with (i + (k - i)) by flia Hk.
+  apply Hur.
+ +unfold A, v.
+Check A_all_9.
+...
+  rewrite summation_all
+...
+
+(* Says that if P(u) ends with an infinity of 9s, and u is
+   - limited by 18, then u_i is 8, 9 or 18,
+   - limited by 27, then u is 7, 8, 9, 17, 18, 19 or 27,
+   - and so on.
+   This just gives the start u_i of the sequence; the following
+   values (u_(i+1), u_(i+2), etc.) are given by an automat
+   decribed later.
+   Generalizes all_P_9_999_9818_1818 (at least for u_i). *)
+Theorem P_999_start {r : radix} : ∀ u i m,
+  (∀ k, u (i + k) ≤ m * (rad - 1))
+  → (∀ k, P u (i + k) = rad - 1)
+  → (∃ j k, 1 ≤ j < m ∧ 1 ≤ k < m ∧ u i = j * rad - k)
+     ∨ u i = m * (rad - 1).
+Proof.
+intros * Hur Hpu.
+Check all_P_9_999_9818_1818.
+specialize (Hpu 0) as H1.
+rewrite Nat.add_0_r in H1.
+unfold P, d2n, prop_carr in H1; cbn in H1.
+...
+
 Theorem pre_Hugo_Herbelin_112 {r : radix} : ∀ u v i n j,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
