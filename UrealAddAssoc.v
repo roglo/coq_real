@@ -2519,7 +2519,24 @@ rewrite Nat.add_0_r in H1.
 unfold P, d2n, prop_carr in H1; cbn in H1.
 specialize (carry_upper_bound_for_adds u i m) as H2.
 assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
-  intros.
+  intros; rewrite <- Nat.add_assoc; apply Hur.
+}
+specialize (H2 H); clear H.
+specialize (H2 0) as H3.
+rewrite Nat.add_0_r in H3.
+remember (carry u i) as c eqn:Hc.
+induction c.
+-rewrite Nat.add_0_r in H1.
+ destruct (eq_nat_dec (u i) (m * (rad - 1))) as [| H4]; [ now right | left ].
+ specialize (Nat.div_mod (u i) rad radix_ne_0) as H5.
+ rewrite H1 in H5; rewrite H5.
+...
+ exists (u i / rad + 1), 1.
+...
+ split; [ | split ].
+ +split; [ flia | ].
+...
+ rewrite H5.
 ...
 
 Theorem pre_Hugo_Herbelin_112 {r : radix} : ∀ u v i n j,
