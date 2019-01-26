@@ -2662,6 +2662,9 @@ induction c; intros.
    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r, Nat.sub_add; [ | flia Hr ].
    cbn; rewrite Nat.mul_comm; cbn; flia Hr.
   *assert (H6 : 2 < m) by flia Hm H4; clear Hm H4.
+   exists ((u i + 1) / rad + 1), 2.
+   split; [ | split ]; [ | flia H6 | ].
+  --split; [ flia | ].
 ...
 
 Theorem pre_Hugo_Herbelin_112 {r : radix} : ∀ u v i n j,
