@@ -2668,6 +2668,14 @@ induction c; intros.
     specialize (Hur 0) as H4; rewrite Nat.add_0_r in H4.
     assert (H7 : u i < m * (rad - 1)) by flia H3 H4; clear H3 H4.
     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H7.
+    apply (Nat.add_lt_mono_r _ _ 1) in H7.
+...
+  --apply (Nat.add_cancel_r _ _ 1).
+    rewrite Nat.mul_comm, Nat.mul_add_distr_l, Nat.mul_1_r.
+    rewrite <- Nat.add_sub_assoc; [ | easy ].
+    rewrite <- Nat.add_assoc.
+    now replace (rad - 2 + 1) with (rad - 1) by flia Hr.
+ +idtac.
 ...
 
 Theorem pre_Hugo_Herbelin_112 {r : radix} : ∀ u v i n j,
