@@ -2669,6 +2669,11 @@ induction c; intros.
     assert (H7 : u i < m * (rad - 1)) by flia H3 H4; clear H3 H4.
     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H7.
     apply (Nat.add_lt_mono_r _ _ 1) in H7.
+    remember ((u i + 1) / rad) as d eqn:Hd.
+    symmetry in Hd.
+    destruct d; [ flia H6 | ].
+    destruct d; [ flia H6 | ].
+    destruct d.
 ...
   --apply (Nat.add_cancel_r _ _ 1).
     rewrite Nat.mul_comm, Nat.mul_add_distr_l, Nat.mul_1_r.
