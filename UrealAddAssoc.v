@@ -2636,51 +2636,32 @@ induction c; intros.
   rewrite H1 in H5.
   destruct (eq_nat_dec m 2) as [H4| H4].
   *exists 1, 2; subst m; clear Hm.
-   split; [ flia | split ]; [ flia | ].
-   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
    rewrite Nat.mul_1_l.
-   apply (Nat.add_cancel_r _ _ 1).
-   replace (rad - 2 + 1) with (rad - 1) by flia Hr.
-   rewrite H5.
-   assert (H4 : u i < 2 * (rad - 1)) by flia Hur H3.
-   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
-   enough (u i + 1 < rad). {
-     rewrite Nat.div_small; [ | easy ].
-     now rewrite Nat.mul_0_r.
+   split; [ flia | split ]; [ flia | ].
+   assert (H4 : (u i + 2) mod rad = 0). {
+     apply Nat.mod_divides; [ easy | ].
+     exists ((u i + 1) / rad + 1).
+     replace (u i + 2) with (u i + 1 + 1) by flia.
+     rewrite H5.
+     rewrite <- Nat.add_assoc, Nat.sub_add; [ | easy ].
+     replace rad with (rad * 1) at 3 by flia.
+     rewrite <- Nat.mul_add_distr_l; f_equal; f_equal.
+     symmetry; rewrite Nat.add_comm, Nat.mul_comm.
+     rewrite Nat.div_add; [ | easy ].
+     rewrite Nat.div_small; [ easy | flia Hr ].
    }
-...
-  *exfalso; clear Hm; subst m; apply H3; clear H3.
-   apply Nat.le_antisymm.
-  --now specialize (Hur 0); rewrite Nat.add_0_r in Hur.
-  --apply (Nat.add_le_mono_r _ _ 1).
-    rewrite H5.
-    replace (2 * (rad - 1) + 1) with (rad + (rad - 1)) by flia Hr.
-    apply Nat.add_le_mono_r.
-    destruct (lt_dec (u i + 1) rad) as [H3| H3].
-   ++exfalso.
-     rewrite Nat.mod_small in H1; [ | easy ].
-
-...
-   apply (Nat.add_cancel_r _ _ 1).
-   rewrite H5.
-...
-  exists ((u i + 1) / rad + 1), 2.
-  split; [ | split ].
-...
-  *subst m; clear Hm.
-...
-   specialize (Hur 0) as H3.
-   rewrite Nat.add_0_r in H3.
-...
-    exfalso; clear Hm; subst m.
-    apply Nat.nlt_ge in H3; apply H3; clear H3.
-    apply (Nat.add_lt_mono_r _ _ 1); rewrite H5.
-    replace (2 * (rad - 1)) with (rad - 1 + (rad - 1)) by flia.
-    rewrite <- Nat.add_assoc, Nat.add_comm.
-    apply Nat.add_lt_mono_r.
-    rewrite Nat.sub_add; [ | easy ].
-    replace rad with (rad * 1) at 1 by flia.
-    apply Nat.mul_lt_mono_pos_l; [ easy | ].
+   apply Nat.mod_divides in H4; [ | easy ].
+   destruct H4 as (d & Hd).
+   destruct d; [ flia Hd | ].
+   destruct d; [ flia Hd Hr | ].
+   destruct d; [ flia H3 Hd | ].
+   specialize (Hur 0) as H4; rewrite Nat.add_0_r in H4.
+   apply (Nat.add_le_mono_r _ _ 2) in H4.
+   rewrite Hd in H4.
+   exfalso; apply Nat.nlt_ge in H4; apply H4; clear H4.
+   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r, Nat.sub_add; [ | flia Hr ].
+   cbn; rewrite Nat.mul_comm; cbn; flia Hr.
+  *assert (H6 : 2 < m) by flia Hm H4; clear Hm H4.
 ...
 
 Theorem pre_Hugo_Herbelin_112 {r : radix} : ∀ u v i n j,
