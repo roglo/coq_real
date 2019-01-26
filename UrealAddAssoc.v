@@ -2509,7 +2509,7 @@ Qed.
 Theorem P_999_start {r : radix} : ∀ u i m,
   (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
-  → (∃ j k, 1 ≤ j < m ∧ 1 ≤ k < m ∧ u i = j * rad - k)
+  → (∃ j k, 1 ≤ j < m ∧ 1 ≤ k ≤ m ∧ u i = j * rad - k)
      ∨ u i = m * (rad - 1).
 Proof.
 intros * Hur Hpu.
@@ -2625,18 +2625,52 @@ induction c; intros.
   rewrite Nat.mul_comm.
   apply Nat.sub_lt; [ | flia Hm ].
   destruct rad; [ easy | cbn; flia ].
- +easy.
+ +flia Hm.
  +rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
   now rewrite Nat.mul_comm, <- Nat.add_sub_assoc.
 -destruct c.
- +clear IHc H3; left.
+ +clear IHc H3.
+  destruct (eq_nat_dec (u i) (m * (rad - 1))) as [H3| H3]; [ now right | ].
+  left.
   specialize (Nat.div_mod (u i + 1) rad radix_ne_0) as H5.
   rewrite H1 in H5.
+  destruct (eq_nat_dec m 2) as [H4| H4].
+  *exists 1, 2; subst m; clear Hm.
+   split; [ flia | split ]; [ flia | ].
+   rewrite Nat.mul_1_l.
+   specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+   apply (Nat.add_cancel_r _ _ 1).
+   replace (rad - 2 + 1) with (rad - 1) by flia Hr.
+   rewrite H5.
+   enough (u i + 1 < rad). {
+     rewrite Nat.div_small; [ | easy ].
+     now rewrite Nat.mul_0_r.
+   }
+...
+  *exfalso; clear Hm; subst m; apply H3; clear H3.
+   apply Nat.le_antisymm.
+  --now specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+  --apply (Nat.add_le_mono_r _ _ 1).
+    rewrite H5.
+    replace (2 * (rad - 1) + 1) with (rad + (rad - 1)) by flia Hr.
+    apply Nat.add_le_mono_r.
+    destruct (lt_dec (u i + 1) rad) as [H3| H3].
+   ++exfalso.
+     rewrite Nat.mod_small in H1; [ | easy ].
+
+...
+   apply (Nat.add_cancel_r _ _ 1).
+   rewrite H5.
+...
   exists ((u i + 1) / rad + 1), 2.
-  destruct (eq_nat_dec m 2) as [H3| H3]. {
+  split; [ | split ].
+...
+  *subst m; clear Hm.
+...
+   specialize (Hur 0) as H3.
+   rewrite Nat.add_0_r in H3.
+...
     exfalso; clear Hm; subst m.
-    specialize (Hur 0) as H3.
-    rewrite Nat.add_0_r in H3.
     apply Nat.nlt_ge in H3; apply H3; clear H3.
     apply (Nat.add_lt_mono_r _ _ 1); rewrite H5.
     replace (2 * (rad - 1)) with (rad - 1 + (rad - 1)) by flia.
