@@ -2628,7 +2628,23 @@ induction c; intros.
  +easy.
  +rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
   now rewrite Nat.mul_comm, <- Nat.add_sub_assoc.
--idtac.
+-destruct c.
+ +clear IHc H3; left.
+  specialize (Nat.div_mod (u i + 1) rad radix_ne_0) as H5.
+  rewrite H1 in H5.
+  exists ((u i + 1) / rad + 1), 2.
+  destruct (eq_nat_dec m 2) as [H3| H3]. {
+    exfalso; clear Hm; subst m.
+    specialize (Hur 0) as H3.
+    rewrite Nat.add_0_r in H3.
+    apply Nat.nlt_ge in H3; apply H3; clear H3.
+    apply (Nat.add_lt_mono_r _ _ 1); rewrite H5.
+    replace (2 * (rad - 1)) with (rad - 1 + (rad - 1)) by flia.
+    rewrite <- Nat.add_assoc, Nat.add_comm.
+    apply Nat.add_lt_mono_r.
+    rewrite Nat.sub_add; [ | easy ].
+    replace rad with (rad * 1) at 1 by flia.
+    apply Nat.mul_lt_mono_pos_l; [ easy | ].
 ...
 
 Theorem pre_Hugo_Herbelin_112 {r : radix} : ∀ u v i n j,
