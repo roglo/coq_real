@@ -2601,24 +2601,30 @@ revert i m Hur Hpu Hc H1 H2 H3 Hm.
 induction c; intros.
 -rewrite Nat.add_0_r in H1.
  destruct (eq_nat_dec (u i) (m * (rad - 1))) as [| H4]; [ now right | left ].
- specialize (Nat.div_mod (u i) rad radix_ne_0) as H5.
- rewrite H1 in H5; rewrite H5.
  exists (u i / rad + 1), 1.
+ specialize (Nat.div_mod (u i) rad radix_ne_0) as H5.
+ rewrite H1 in H5.
  split; [ | split ].
  +split; [ flia | ].
+  apply (Nat.mul_lt_mono_pos_l rad); [ easy | ].
+  rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
+  rewrite Nat.add_sub_assoc in H5; [ | easy ].
+  apply (Nat.add_cancel_r _ _ 1) in H5.
+  rewrite Nat.sub_add in H5; [ | flia Hr ].
+  rewrite <- H5.
   specialize (Hur 0) as H6.
   rewrite Nat.add_0_r in H6.
-  assert (H7 : u i < m * (rad - 1)) by flia H4 H6.
-  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H7.
-  apply (Nat.mul_lt_mono_pos_r rad); [ easy | ].
-...
-  apply (Nat.div_lt_mono _ _ rad) in H6; [ | easy ].
-  apply (le_lt_trans _ ((m * rad - m) / rad + 1)).
-  *now apply Nat.add_le_mono_r.
-  *replace m with (m * 1) at 2 by flia.
-   rewrite <- Nat.mul_sub_distr_l.
-...
-  apply Nat.lt_sub_lt_add_l
+  apply (Nat.add_le_mono_r _ _ 1) in H6.
+  eapply le_lt_trans; [ apply H6 | ].
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+  rewrite <- Nat_sub_sub_distr. 2: {
+    split; [ flia Hm | ].
+    replace m with (m * 1) at 1 by flia.
+    now apply Nat.mul_le_mono_l.
+  }
+  rewrite Nat.mul_comm.
+  apply Nat.sub_lt; [ | flia Hm ].
+  destruct rad; [ easy | cbn; flia ].
  +easy.
  +rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
   now rewrite Nat.mul_comm, <- Nat.add_sub_assoc.
