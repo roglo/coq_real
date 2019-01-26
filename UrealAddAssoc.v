@@ -2637,11 +2637,13 @@ induction c; intros.
   destruct (eq_nat_dec m 2) as [H4| H4].
   *exists 1, 2; subst m; clear Hm.
    split; [ flia | split ]; [ flia | ].
-   rewrite Nat.mul_1_l.
    specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+   rewrite Nat.mul_1_l.
    apply (Nat.add_cancel_r _ _ 1).
    replace (rad - 2 + 1) with (rad - 1) by flia Hr.
    rewrite H5.
+   assert (H4 : u i < 2 * (rad - 1)) by flia Hur H3.
+   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
    enough (u i + 1 < rad). {
      rewrite Nat.div_small; [ | easy ].
      now rewrite Nat.mul_0_r.
