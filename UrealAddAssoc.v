@@ -2632,8 +2632,23 @@ induction c; intros.
  +clear IHc H3.
   destruct (eq_nat_dec (u i) (m * (rad - 1))) as [H3| H3]; [ now right | ].
   left.
-  specialize (Nat.div_mod (u i + 1) rad radix_ne_0) as H5.
-  rewrite H1 in H5.
+(**)
+  assert (H4 : u i mod rad = rad - 2). {
+    specialize (Nat.div_mod (u i + 1) rad radix_ne_0) as H5.
+    rewrite H1 in H5.
+    apply Nat.add_sub_eq_r in H5.
+    rewrite <- H5.
+    rewrite <- Nat.add_sub_assoc; [ | flia Hr ].
+    rewrite Nat.add_comm, Nat.mul_comm.
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.mod_small; [ flia | flia Hr ].
+  }
+  specialize (Nat.div_mod (u i) rad radix_ne_0) as H5.
+  rewrite H4 in H5.
+  exists (u i / rad), (rad - 2).
+...
+  assert (H4 : u i = rad * ((u i + 1) / rad) + (rad - 2)) by flia Hr H5.
+...
   destruct (eq_nat_dec m 2) as [H4| H4].
   *exists 1, 2; subst m; clear Hm.
    rewrite Nat.mul_1_l.
@@ -2662,17 +2677,24 @@ induction c; intros.
    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r, Nat.sub_add; [ | flia Hr ].
    cbn; rewrite Nat.mul_comm; cbn; flia Hr.
   *assert (H6 : 2 < m) by flia Hm H4; clear Hm H4.
+...
    exists ((u i + 1) / rad + 1), 2.
    split; [ | split ]; [ | flia H6 | ].
   --split; [ flia | ].
     specialize (Hur 0) as H4; rewrite Nat.add_0_r in H4.
     assert (H7 : u i < m * (rad - 1)) by flia H3 H4; clear H3 H4.
+...
     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H7.
     apply (Nat.add_lt_mono_r _ _ 1) in H7.
     remember ((u i + 1) / rad) as d eqn:Hd.
     symmetry in Hd.
     destruct d; [ flia H6 | ].
     destruct d; [ flia H6 | ].
+    rewrite H5 in H7.
+...
+    destruct (eq_nat_dec m 3) as [H3| H3]; [ | ].
+   ++subst m; exfalso; clear H6.
+...
     destruct d.
    ++destruct (eq_nat_dec m 3) as [H3| H3]; [ | flia H6 H3 ].
      subst m; flia H5 H7.
