@@ -2674,6 +2674,9 @@ induction c; intros.
     destruct d; [ flia H6 | ].
     destruct d; [ flia H6 | ].
     destruct d.
+   ++destruct (eq_nat_dec m 3) as [H3| H3]; [ | flia H6 H3 ].
+     subst m; flia H5 H7.
+   ++idtac.
 ...
   --apply (Nat.add_cancel_r _ _ 1).
     rewrite Nat.mul_comm, Nat.mul_add_distr_l, Nat.mul_1_r.
