@@ -2632,7 +2632,6 @@ induction c; intros.
  +clear IHc H3.
   destruct (eq_nat_dec (u i) (m * (rad - 1))) as [H3| H3]; [ now right | ].
   left.
-(**)
   assert (H4 : u i mod rad = rad - 2). {
     specialize (Nat.div_mod (u i + 1) rad radix_ne_0) as H5.
     rewrite H1 in H5.
@@ -2645,66 +2644,36 @@ induction c; intros.
   }
   specialize (Nat.div_mod (u i) rad radix_ne_0) as H5.
   rewrite H4 in H5.
-  exists (u i / rad), (rad - 2).
-...
-  assert (H4 : u i = rad * ((u i + 1) / rad) + (rad - 2)) by flia Hr H5.
-...
-  destruct (eq_nat_dec m 2) as [H4| H4].
-  *exists 1, 2; subst m; clear Hm.
-   rewrite Nat.mul_1_l.
-   split; [ flia | split ]; [ flia | ].
-   assert (H4 : (u i + 2) mod rad = 0). {
-     apply Nat.mod_divides; [ easy | ].
-     exists ((u i + 1) / rad + 1).
-     replace (u i + 2) with (u i + 1 + 1) by flia.
-     rewrite H5.
-     rewrite <- Nat.add_assoc, Nat.sub_add; [ | easy ].
-     replace rad with (rad * 1) at 3 by flia.
-     rewrite <- Nat.mul_add_distr_l; f_equal; f_equal.
-     symmetry; rewrite Nat.add_comm, Nat.mul_comm.
-     rewrite Nat.div_add; [ | easy ].
-     rewrite Nat.div_small; [ easy | flia Hr ].
-   }
-   apply Nat.mod_divides in H4; [ | easy ].
-   destruct H4 as (d & Hd).
-   destruct d; [ flia Hd | ].
-   destruct d; [ flia Hd Hr | ].
-   destruct d; [ flia H3 Hd | ].
-   specialize (Hur 0) as H4; rewrite Nat.add_0_r in H4.
-   apply (Nat.add_le_mono_r _ _ 2) in H4.
-   rewrite Hd in H4.
-   exfalso; apply Nat.nlt_ge in H4; apply H4; clear H4.
-   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r, Nat.sub_add; [ | flia Hr ].
-   cbn; rewrite Nat.mul_comm; cbn; flia Hr.
-  *assert (H6 : 2 < m) by flia Hm H4; clear Hm H4.
-...
-   exists ((u i + 1) / rad + 1), 2.
-   split; [ | split ]; [ | flia H6 | ].
-  --split; [ flia | ].
-    specialize (Hur 0) as H4; rewrite Nat.add_0_r in H4.
-    assert (H7 : u i < m * (rad - 1)) by flia H3 H4; clear H3 H4.
-...
-    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H7.
-    apply (Nat.add_lt_mono_r _ _ 1) in H7.
-    remember ((u i + 1) / rad) as d eqn:Hd.
-    symmetry in Hd.
-    destruct d; [ flia H6 | ].
-    destruct d; [ flia H6 | ].
-    rewrite H5 in H7.
-...
-    destruct (eq_nat_dec m 3) as [H3| H3]; [ | ].
-   ++subst m; exfalso; clear H6.
-...
-    destruct d.
-   ++destruct (eq_nat_dec m 3) as [H3| H3]; [ | flia H6 H3 ].
-     subst m; flia H5 H7.
-   ++idtac.
-...
-  --apply (Nat.add_cancel_r _ _ 1).
-    rewrite Nat.mul_comm, Nat.mul_add_distr_l, Nat.mul_1_r.
-    rewrite <- Nat.add_sub_assoc; [ | easy ].
-    rewrite <- Nat.add_assoc.
-    now replace (rad - 2 + 1) with (rad - 1) by flia Hr.
+  exists (u i / rad + 1), 2.
+  split; [ | split ]; [ | pauto | ]. {
+    split; [ flia | ].
+    apply (Nat.mul_lt_mono_pos_l rad); [ easy | ].
+    rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
+    generalize H5; intros H6.
+    symmetry in H5.
+    apply Nat.add_sub_eq_r in H5.
+    rewrite <- H5.
+    rewrite <- Nat.add_sub_swap.
+    -rewrite Nat_sub_sub_distr. 2: {
+       split; [ easy | flia ].
+     }
+     rewrite Nat.add_sub.
+     specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H3, Hur.
+     apply (lt_le_trans _ (m * rad - m + 2)).
+     +apply Nat.add_lt_mono_r; flia Hur H3.
+     +rewrite <- Nat_sub_sub_distr. 2: {
+        split; [ easy | rewrite Nat.mul_comm ].
+        destruct rad; [ easy | cbn; flia ].
+      }
+      rewrite Nat.mul_comm.
+      apply Nat.le_sub_l.
+    -rewrite H6; flia.
+  }
+  rewrite H5 at 1.
+  rewrite Nat.add_sub_assoc; [ | easy ].
+  f_equal.
+  now rewrite Nat.mul_add_distr_r, Nat.mul_1_l, Nat.mul_comm.
  +idtac.
 ...
 
