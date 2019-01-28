@@ -2461,6 +2461,10 @@ Proof.
 intros * Hmr.
 specialize radix_ge_2 as Hr.
 remember (min_n i j) as n eqn:Hn.
+...
+intros * Hmr.
+specialize radix_ge_2 as Hr.
+remember (min_n i j) as n eqn:Hn.
 specialize (A_upper_bound_for_adds u i n m Hmr) as H2.
 remember (n - i - 1) as s eqn:Hs.
 rewrite NQmul_sub_distr_l in H2.
