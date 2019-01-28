@@ -1178,7 +1178,7 @@ intros * Hur.
 specialize radix_ge_2 as Hr.
 remember (min_n i j) as n eqn:Hn.
 specialize (A_upper_bound_for_add u i n Hur) as H2.
-apply NQintg_mono in H2; [ | easy ].
+apply NQintg_le_mono in H2; [ | easy ].
 eapply le_trans; [ apply H2 | ].
 rewrite NQmul_sub_distr_l.
 replace (2 * 1)%NQ with (1 + 1)%NQ by easy.
@@ -1857,7 +1857,7 @@ destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
      apply NQlt_pair; [ easy | easy | flia Hr ].
   --apply eq_nA_div_1.
    ++intros; do 2 rewrite <- Nat.add_assoc; apply Hur.
-   ++now apply NQintg_mono in H5.
+   ++now apply NQintg_le_mono in H5.
 -exfalso.
  specialize (is_num_9_all_9 _ _ H1) as H2.
  (* contradictoire entre Hia et H2 *)
@@ -2456,7 +2456,7 @@ Qed.
 (* generalizes NQintg_A_le_1_for_add *)
 Theorem NQintg_A_le_for_adds {r : radix} : ∀ u i j m,
   (∀ k, u (i + k + 1) ≤ m * (rad - 1))
-  → NQintg (A i (min_n i j) u) ≤ m.
+  → NQintg (A i (min_n i j) u) < m.
 Proof.
 intros * Hmr.
 specialize radix_ge_2 as Hr.
@@ -2471,7 +2471,8 @@ replace m with (NQintg (m // 1)). 2: {
   rewrite NQintg_pair; [ | easy ].
   now rewrite Nat.div_1_r.
 }
-apply NQintg_mono; [ easy | ].
+...
+apply NQintg_le_mono; [ easy | ].
 eapply NQle_trans; [ apply H2 | ].
 apply NQle_sub_l.
 replace 0%NQ with (0 // 1)%NQ by easy.
@@ -2481,12 +2482,13 @@ Qed.
 (* generalizes carry_upper_bound_for_add *)
 Theorem carry_upper_bound_for_adds {r : radix} : ∀ u i m,
   (∀ k, u (i + k + 1) ≤ m * (rad - 1))
-  → ∀ k, carry u (i + k) ≤ m.
+  → ∀ k, carry u (i + k) < m.
 Proof.
 intros * Hur *.
 specialize radix_ge_2 as Hr.
 unfold carry.
 destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1].
+...
 -apply NQintg_A_le_for_adds.
  intros j.
  replace (i + k + j + 1) with (i + (k + j) + 1) by flia.
@@ -2526,7 +2528,15 @@ specialize (H3 H); clear H.
 specialize (H3 0) as H4.
 rewrite Nat.add_0_r in H4.
 specialize (Nat.div_mod (u i) rad radix_ne_0) as H5.
-(* à réétudier: il faut différencier m≤r et m>r *)
+destruct (le_dec m rad) as [Hmr| Hmr].
+-destruct (eq_nat_dec (carry u i) rad) as [H6| H6].
+ +assert (H : m = rad) by flia H4 H6 Hmr.
+  subst m; clear H4 Hmr.
+  rewrite H6, Nat_mod_add_same_r in H2; [ | easy ].
+  rewrite H2 in H5.
+  exists (u i / rad + 1), 1.
+  split; [ | split ].
+  *split; [ flia | ].
 ...
 intros * Hur Hpu.
 Check all_P_9_999_9818_1818.

@@ -2419,7 +2419,7 @@ rewrite Nat.div_div; cycle 1. {
 -now rewrite Nat.mul_comm, <- Hc.
 Qed.
 
-Theorem NQintg_mono : ∀ x y, (0 ≤ x)%NQ → (x ≤ y)%NQ → NQintg x ≤ NQintg y.
+Theorem NQintg_le_mono : ∀ x y, (0 ≤ x)%NQ → (x ≤ y)%NQ → NQintg x ≤ NQintg y.
 Proof.
 intros * Hx Hxy.
 assert (Hy : (0 ≤ y)%NQ) by (eapply NQle_trans; [ apply Hx | apply Hxy ]).
