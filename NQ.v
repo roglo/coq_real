@@ -2494,7 +2494,7 @@ Qed.
 
 Theorem NQintg_sub_nat_l_le : ∀ n x,
   (0 < x ≤ n // 1)%NQ
-  → NQintg (n // 1 - x)%NQ ≤ n - 1.
+  → NQintg (n // 1 - x)%NQ < n.
 Proof.
 intros * Hx.
 unfold NQsub, NQadd.
@@ -2516,7 +2516,7 @@ destruct n.
   now apply GQnlt_ge in Hx2.
  +clear Hx.
   cbn in Hs.
-  assert (s = S n // 1)%GQ.
+  apply -> Nat.succ_le_mono.
 ...
 Search (NQintg (NQpos _)).
 
