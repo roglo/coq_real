@@ -2461,15 +2461,14 @@ Proof.
 intros * Hmr.
 specialize radix_ge_2 as Hr.
 remember (min_n i j) as n eqn:Hn.
-specialize (A_upper_bound_for_adds u i n m Hmr) as H2.
-rewrite (NQintg_frac (A i n u)) in H2; [ | easy ].
-Check NQintg_interv.
-Search (NQintg _ ≤ _).
-...
-
 destruct (zerop m) as [Hm| Hm]. {
   admit.
 }
+specialize (A_upper_bound_for_adds u i n m Hmr) as H2.
+rewrite NQmul_sub_distr_l, NQmul_1_r in H2.
+....
+rewrite (NQintg_frac (A i n u)) in H2; [ | easy ].
+...
 enough (H : (NQintg (A i n u) // 1 ≤ (m - 1) // 1)%NQ). {
   apply NQle_pair in H; [ | easy | easy ].
   now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
