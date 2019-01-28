@@ -2466,6 +2466,11 @@ destruct (zerop m) as [Hm| Hm]. {
 }
 specialize (A_upper_bound_for_adds u i n m Hmr) as H2.
 rewrite NQmul_sub_distr_l, NQmul_1_r in H2.
+apply NQintg_le_mono in H2; [ | easy ].
+eapply le_trans; [ apply H2 | ].
+apply NQintg_sub_nat_l_le.
+...
+rewrite NQintg_add.
 ....
 rewrite (NQintg_frac (A i n u)) in H2; [ | easy ].
 ...

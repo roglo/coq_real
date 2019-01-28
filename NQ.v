@@ -2492,6 +2492,40 @@ replace 0%NQ with (0 + 0)%NQ by easy.
 now apply NQadd_le_mono.
 Qed.
 
+Theorem NQintg_sub_nat_l_le : ∀ n x,
+  (0 < x ≤ n // 1)%NQ
+  → NQintg (n // 1 - x)%NQ ≤ n - 1.
+Proof.
+intros * Hx.
+unfold NQsub, NQadd.
+destruct n.
+-cbn in Hx; cbn.
+ destruct Hx as (Hx1, Hx2).
+ now destruct x.
+-replace (S n - 1) with n by flia.
+ remember (S n // 1)%NQ as s eqn:Hs.
+ destruct s as [| s| s]; [ easy | | easy ].
+ unfold NQadd_pos_l.
+ destruct x as [| x| x]; [ easy | | easy ].
+ cbn.
+ remember (GQcompare s x) as c eqn:Hc.
+ symmetry in Hc.
+ destruct c; GQcompare_iff; [ cbn; flia | | ].
+ +destruct Hx as (Hx1, Hx2).
+  cbn in Hx2.
+  now apply GQnlt_ge in Hx2.
+ +clear Hx.
+  cbn in Hs.
+  assert (s = S n // 1)%GQ.
+...
+Search (NQintg (NQpos _)).
+
+cbn.
+Search (NQintg (NQneg _)).
+cbn.
+Check NQpos.
+......
+
 Require Import Summation.
 
 Definition NQ_ord_ring_def :=
