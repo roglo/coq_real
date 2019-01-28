@@ -2463,6 +2463,8 @@ specialize radix_ge_2 as Hr.
 remember (min_n i j) as n eqn:Hn.
 specialize (A_upper_bound_for_adds u i n m Hmr) as H2.
 rewrite (NQintg_frac (A i n u)) in H2; [ | easy ].
+Check NQintg_interv.
+Search (NQintg _ ≤ _).
 ...
 
 destruct (zerop m) as [Hm| Hm]. {
