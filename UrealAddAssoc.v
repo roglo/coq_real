@@ -2456,11 +2456,40 @@ Qed.
 (* generalizes NQintg_A_le_1_for_add *)
 Theorem NQintg_A_le_for_adds {r : radix} : ∀ u i j m,
   (∀ k, u (i + k + 1) ≤ m * (rad - 1))
-  → NQintg (A i (min_n i j) u) < m.
+  → NQintg (A i (min_n i j) u) ≤ m - 1.
 Proof.
 intros * Hmr.
 specialize radix_ge_2 as Hr.
 remember (min_n i j) as n eqn:Hn.
+specialize (A_upper_bound_for_adds u i n m Hmr) as H2.
+rewrite (NQintg_frac (A i n u)) in H2; [ | easy ].
+...
+
+destruct (zerop m) as [Hm| Hm]. {
+  admit.
+}
+enough (H : (NQintg (A i n u) // 1 ≤ (m - 1) // 1)%NQ). {
+  apply NQle_pair in H; [ | easy | easy ].
+  now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
+}
+apply (NQadd_le_mono_r _ _ (NQfrac (A i n u))).
+eapply NQle_trans; [ apply H2 | ].
+rewrite NQmul_sub_distr_l, NQmul_1_r.
+rewrite NQpair_sub_l; [ | easy ].
+apply NQle_sub_le_add_l.
+rewrite NQadd_assoc.
+rewrite NQadd_sub_assoc.
+rewrite <- NQadd_sub_swap.
+apply NQle_add_le_sub_r.
+rewrite NQadd_add_swap.
+apply NQadd_le_mono_r.
+...
+
+
+eapply NQle_trans; [ | apply H2 ].
+rewrite <- NQadd_assoc.
+apply NQlt_sub_lt_add_l.
+rewrite NQsub_diag.
 ...
 intros * Hmr.
 specialize radix_ge_2 as Hr.
