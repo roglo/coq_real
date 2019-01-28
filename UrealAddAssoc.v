@@ -2515,7 +2515,18 @@ Proof.
 intros * Hur Hpu.
 specialize radix_ge_2 as Hr.
 destruct (eq_nat_dec (u i) (m * (rad - 1))) as [H1| H1]; [ now right | left ].
-
+specialize (Hpu 0) as H2.
+rewrite Nat.add_0_r in H2.
+unfold P, d2n, prop_carr in H2; cbn in H2.
+specialize (carry_upper_bound_for_adds u i m) as H3.
+assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+  intros; rewrite <- Nat.add_assoc; apply Hur.
+}
+specialize (H3 H); clear H.
+specialize (H3 0) as H4.
+rewrite Nat.add_0_r in H4.
+specialize (Nat.div_mod (u i) rad radix_ne_0) as H5.
+(* à réétudier: il faut différencier m≤r et m>r *)
 ...
 intros * Hur Hpu.
 Check all_P_9_999_9818_1818.
