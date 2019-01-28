@@ -2513,6 +2513,11 @@ Theorem P_999_start {r : radix} : ∀ u i m,
      ∨ u i = m * (rad - 1).
 Proof.
 intros * Hur Hpu.
+specialize radix_ge_2 as Hr.
+destruct (eq_nat_dec (u i) (m * (rad - 1))) as [H1| H1]; [ now right | left ].
+
+...
+intros * Hur Hpu.
 Check all_P_9_999_9818_1818.
 specialize radix_ge_2 as Hr.
 specialize (Hpu 0) as H1.
