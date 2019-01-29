@@ -2492,10 +2492,118 @@ replace 0%NQ with (0 + 0)%NQ by easy.
 now apply NQadd_le_mono.
 Qed.
 
+Theorem Nat_mul_sub_div_le : ∀ a b c,
+  b ≠ 0
+  → c ≤ a * b
+  → (a * b - c) / b ≤ a.
+Proof.
+intros * Hb Hc.
+remember (a * b - c) as d eqn:Hd.
+assert (H1 : a = (c + d) / b). {
+  rewrite Hd.
+  rewrite Nat.add_sub_assoc; [ | easy ].
+  rewrite Nat.add_comm, Nat.add_sub.
+  now rewrite Nat.div_mul.
+}
+Admitted. (*
+Search (_ / _ < _ / _).
+...
+specialize (Nat.div_mod (a * b - c) b Hb) as H1.
+...
+symmetry; apply Nat.add_sub_eq_l; symmetry.
+rewrite H1.
+Search (_ → _ - _ = _).
+Search (_ → _ = _ - _).
+Check Nat_div_add_same_l.
+Check Nat.div_add.
+...
+destruct b; [ easy | clear Hb ].
+assert (H1 : c + d = a * S b) by flia Hc Hd.
+assert (H2 : a = (c + d) / S b) by now rewrite H1, Nat.div_mul.
+rewrite H2.
+Search ((_ + _) / _).
+apply (Nat.add_cancel_l _ _ (c / S b)).
+rewrite <- Nat_add_div_l.
+...
+Search ((_ + _ * _) / _).
+Print Nat.div_add.
+Print Nat.Private_NZDiv.div_add.
+...
+replace (a * S b) with (a * S b - c + c).
+replace c with (a * S b + (c - a * S b)) at 1.
+rewrite Nat.sub_add_distr, Nat.sub_diag.
+...
+specialize (Nat.div_mod c (S b) (Nat.neq_succ_0 b)) as H1.
+...
+specialize (Nat.div_mod (a * S b - c) (S b) (Nat.neq_succ_0 b)) as H1.
+rewrite H1.
+...
+unfold "/" at 1.
+specialize (Nat.divmod_spec (a * S b - c) b 0 b (le_refl _)) as H1.
+remember (Nat.divmod (a * S b - c) b 0 b) as dm eqn:Hdm.
+symmetry in Hdm.
+destruct dm as (d, m); unfold fst.
+destruct H1 as (H1, H2).
+rewrite Nat.mul_0_r, Nat.sub_diag, Nat.add_0_r, Nat.add_0_r in H1.
+apply (Nat.mul_cancel_l _ _ (S b)); [ easy | ].
+apply (Nat.add_cancel_r _ _ (b - m)).
+rewrite <- H1.
+rewrite Nat.mul_sub_distr_l.
+...
+specialize (Nat.div_mod c (S b) (Nat.neq_succ_0 b)) as H1.
+remember (a * S b) as x.
+rewrite H1; subst x.
+rewrite Nat.sub_add_distr.
+...
+*)
+
 Theorem NQintg_sub_nat_l_le : ∀ n x,
   (0 < x ≤ n // 1)%NQ
   → NQintg (n // 1 - x)%NQ < n.
 Proof.
+intros * (Hx, Hxn).
+rewrite (NQnum_den x); [ | now apply NQlt_le_incl ].
+rewrite (NQnum_den x) in Hxn; [ | now apply NQlt_le_incl ].
+rewrite NQsub_pair_pos; [ | easy | easy | ]. 2: {
+  apply NQle_pair in Hxn; [ | easy | easy ].
+  rewrite Nat.mul_1_r in Hxn.
+  now rewrite Nat.mul_1_l, Nat.mul_comm.
+}
+do 2 rewrite Nat.mul_1_l.
+rewrite NQintg_pair; [ | easy ].
+rewrite NQle_pair in Hxn; [ | easy | easy ].
+rewrite Nat.mul_1_r in Hxn.
+remember (NQnum x) as xn eqn:Hn.
+remember (NQden x) as xd eqn:Hd.
+move xd before xn.
+assert (H1 : (n * xd - xn) / xd ≤ n). {
+  apply Nat_mul_sub_div_le; [ now rewrite Hd | now rewrite Nat.mul_comm ].
+}
+apply Nat_le_neq_lt; [ easy | ].
+intros H2.
+...
+Search ((_ + _) / _).
+  ============================
+  (n * xd - xn) / xd < n
+...
+rewrite Nat_div_sub_l.
+apply Nat.sub_lt.
+...
+specialize (Nat.div_mod (n * xd - xn) (NQden x) (NQden_neq_0 _)) as H1.
+rewrite <- Hd in H1.
+rewrite H1.
+rewrite Nat.mul_comm.
+rewrite Nat.add_comm.
+rewrite Nat.div_add; [ | now subst xd ].
+rewrite (Nat.mul_lt_mono_pos_r (NQden x)); [ | now apply Nat.neq_0_lt_0 ].
+rewrite Nat.mul_comm in Hxn.
+eapply lt_le_trans; [ | apply Hxn ].
+Search ((_ - _) / _).
+
+Search (_ * _ < _ * _).
+Nat.mul_lt_mono_pos_r: ∀ p n m : nat, 0 < p → n < m ↔ n * p < m * p
+...
+
 intros * Hx.
 unfold NQsub, NQadd.
 destruct n.
@@ -2517,13 +2625,7 @@ destruct n.
  +clear Hx.
   cbn in Hs.
   apply -> Nat.succ_le_mono.
-...
-Search (NQintg (NQpos _)).
-
-cbn.
-Search (NQintg (NQneg _)).
-cbn.
-Check NQpos.
+  unfold ">"%GQ in Hc.
 ......
 
 Require Import Summation.
