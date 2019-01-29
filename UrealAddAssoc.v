@@ -2564,19 +2564,50 @@ split; [ | split ]; [ | flia H4 | easy ].
 split; [ flia | ].
 ...
 assert (H6 : carry u i ≤ m - 1) by flia H4 Hm.
-assert (H7 : u i ≤ m * (rad - 1) - m). {
+assert (H7 : u i ≤ m * (rad - 1) - rad). {
   specialize (Hur 0) as H7; rewrite Nat.add_0_r in H7.
-  flia H1 H7.
-}
+  assert (H8 : u i < m * (rad - 1)) by flia H1 H7.
+  clear H1 H7.
+  rewrite H5 in H8.
+  rewrite Nat.mul_add_distr_r, Nat.mul_1_l in H8.
+  rewrite Nat.sub_add_distr in H8.
+  rewrite Nat.add_sub_swap in H8.
+  destruct m; [ easy | ].
+cbn in H8.
+rewrite <- Nat.add_sub_assoc in H8; [ | easy ].
+rewrite Nat.add_comm in H8.
+apply Nat.add_lt_mono_l in H8.
 ...
-apply (le_lt_trans _ ((m * (rad - 1) - 1 + m - 1) / rad + 1)).
+}
+apply (le_lt_trans _ ((m * (rad - 1) - rad + m - 1) / rad + 1)).
 2: {
   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
   rewrite Nat_sub_sub_swap.
+...
+}
+specialize (Nat_mul_sub_div_le m rad 2) as H8.
+assert (H : 2 ≤ m * rad). {
+  destruct m; [ easy | cbn; flia Hr ].
+}
+specialize (H8 H); clear H.
+apply Nat.add_le_mono_r.
+apply Nat.div_le_mono; [ easy | ].
+rewrite <- Nat.add_sub_assoc; [ | flia Hm ].
+flia H6 H7.
+...
+
   rewrite Nat.sub_add. 2: {
     destruct m; [ easy | ].
     destruct rad as [| rr]; [ easy | ].
     rewrite Nat.mul_comm; cbn.
+    destruct rr; [ flia Hr | ].
+rewrite Nat.mul_comm.
+cbn.
+destruct m.
+cbn.
+cbn in H7.
+
+
     destruct rr; [ flia Hr | cbn; flia ].
   }
   replace (m * rad - 1 - 1) with (m * rad - 2) by flia.
