@@ -2494,23 +2494,24 @@ Qed.
 
 (* generalizes carry_upper_bound_for_add *)
 Theorem carry_upper_bound_for_adds {r : radix} : ∀ u i m,
-  (∀ k, u (i + k + 1) ≤ m * (rad - 1))
+  m ≠ 0
+  → (∀ k, u (i + k + 1) ≤ m * (rad - 1))
   → ∀ k, carry u (i + k) < m.
 Proof.
-intros * Hur *.
+intros * Hm Hur *.
 specialize radix_ge_2 as Hr.
 unfold carry.
-destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1].
-...
--apply NQintg_A_le_for_adds.
- intros j.
- replace (i + k + j + 1) with (i + (k + j) + 1) by flia.
- apply Hur.
--destruct H1 as (j & Hj & Hjj).
- apply NQintg_A_le_for_adds.
- intros l.
- replace (i + k + l + 1) with (i + (k + l) + 1) by flia.
- apply Hur.
+enough (∀ l, NQintg (A (i + k) (min_n (i + k) l) u) < m). {
+  destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [| (j & Hj)]; apply H.
+}
+intros l.
+destruct m; [ easy | ].
+apply -> Nat.succ_le_mono.
+replace m with (S m - 1) by flia.
+apply NQintg_A_le_for_adds.
+intros j.
+replace (i + k + j + 1) with (i + (k + j) + 1) by flia.
+apply Hur.
 Qed.
 
 (* Says that if P(u) ends with an infinity of 9s, and u is
@@ -2537,6 +2538,7 @@ specialize (carry_upper_bound_for_adds u i m) as H3.
 assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
   intros; rewrite <- Nat.add_assoc; apply Hur.
 }
+...
 specialize (H3 H); clear H.
 specialize (H3 0) as H4.
 rewrite Nat.add_0_r in H4.
