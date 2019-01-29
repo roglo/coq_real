@@ -2462,60 +2462,34 @@ intros * Hmr.
 specialize radix_ge_2 as Hr.
 remember (min_n i j) as n eqn:Hn.
 destruct (zerop m) as [Hm| Hm]. {
-  admit.
+  subst m.
+  unfold A.
+  rewrite all_0_summation_0; [ easy | ].
+  intros k Hk.
+  specialize (Hmr (k - i - 1)).
+  replace (i + (k - i - 1) + 1) with k in Hmr by flia Hk.
+  now apply Nat.le_0_r in Hmr; rewrite Hmr.
 }
 specialize (A_upper_bound_for_adds u i n m Hmr) as H2.
 rewrite NQmul_sub_distr_l, NQmul_1_r in H2.
 apply NQintg_le_mono in H2; [ | easy ].
 eapply le_trans; [ apply H2 | ].
-apply NQintg_sub_nat_l_le.
-...
-rewrite NQintg_add.
-....
-rewrite (NQintg_frac (A i n u)) in H2; [ | easy ].
-...
-enough (H : (NQintg (A i n u) // 1 ≤ (m - 1) // 1)%NQ). {
-  apply NQle_pair in H; [ | easy | easy ].
-  now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
-}
-apply (NQadd_le_mono_r _ _ (NQfrac (A i n u))).
-eapply NQle_trans; [ apply H2 | ].
-rewrite NQmul_sub_distr_l, NQmul_1_r.
-rewrite NQpair_sub_l; [ | easy ].
-apply NQle_sub_le_add_l.
-rewrite NQadd_assoc.
-rewrite NQadd_sub_assoc.
-rewrite <- NQadd_sub_swap.
-apply NQle_add_le_sub_r.
-rewrite NQadd_add_swap.
-apply NQadd_le_mono_r.
-...
-
-
-eapply NQle_trans; [ | apply H2 ].
-rewrite <- NQadd_assoc.
-apply NQlt_sub_lt_add_l.
-rewrite NQsub_diag.
-...
-intros * Hmr.
-specialize radix_ge_2 as Hr.
-remember (min_n i j) as n eqn:Hn.
-specialize (A_upper_bound_for_adds u i n m Hmr) as H2.
-remember (n - i - 1) as s eqn:Hs.
-rewrite NQmul_sub_distr_l in H2.
-rewrite NQmul_1_r in H2.
-rewrite NQmul_pair in H2; [ | easy | pauto ].
-rewrite Nat.mul_1_r, Nat.mul_1_l in H2.
-replace m with (NQintg (m // 1)). 2: {
-  rewrite NQintg_pair; [ | easy ].
-  now rewrite Nat.div_1_r.
-}
-...
-apply NQintg_le_mono; [ easy | ].
-eapply NQle_trans; [ apply H2 | ].
-apply NQle_sub_l.
-replace 0%NQ with (0 // 1)%NQ by easy.
-apply NQle_pair; [ easy | pauto | flia ].
+rewrite (Nat.sub_1_r m).
+apply Nat.lt_le_pred.
+apply NQintg_sub_nat_l_lt.
+split.
+-rewrite NQmul_comm.
+ replace 0%NQ with (0 * m // 1)%NQ by easy.
+ apply NQmul_lt_le_mono_pos; [ easy | easy | | apply NQle_refl ].
+ replace 0%NQ with (0 // 1)%NQ by easy.
+ apply NQlt_pair; [ easy | easy | now rewrite Nat.mul_1_l ].
+-replace (m // 1)%NQ with (m // 1 * 1)%NQ at 2 by apply NQmul_1_r.
+ apply NQmul_le_mono_pos_l. 2: {
+   apply NQle_pair; [ pauto | easy | ].
+   now do 2 rewrite Nat.mul_1_r; apply Nat_pow_ge_1.
+ }
+ replace 0%NQ with (0 // 1)%NQ by easy.
+ apply NQlt_pair; [ easy | easy | now rewrite Nat.mul_1_l ].
 Qed.
 
 (* generalizes carry_upper_bound_for_add *)
