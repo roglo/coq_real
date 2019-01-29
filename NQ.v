@@ -2557,7 +2557,7 @@ rewrite Nat.sub_add_distr.
 ...
 *)
 
-Theorem NQintg_sub_nat_l_le : ∀ n x,
+Theorem NQintg_sub_nat_l_lt : ∀ n x,
   (0 < x ≤ n // 1)%NQ
   → NQintg (n // 1 - x)%NQ < n.
 Proof.
@@ -2580,52 +2580,29 @@ assert (H1 : (n * xd - xn) / xd ≤ n). {
   apply Nat_mul_sub_div_le; [ now rewrite Hd | now rewrite Nat.mul_comm ].
 }
 apply Nat_le_neq_lt; [ easy | ].
-intros H2.
-...
-Search ((_ + _) / _).
-  ============================
-  (n * xd - xn) / xd < n
-...
-rewrite Nat_div_sub_l.
-apply Nat.sub_lt.
-...
-specialize (Nat.div_mod (n * xd - xn) (NQden x) (NQden_neq_0 _)) as H1.
-rewrite <- Hd in H1.
-rewrite H1.
-rewrite Nat.mul_comm.
-rewrite Nat.add_comm.
-rewrite Nat.div_add; [ | now subst xd ].
-rewrite (Nat.mul_lt_mono_pos_r (NQden x)); [ | now apply Nat.neq_0_lt_0 ].
-rewrite Nat.mul_comm in Hxn.
-eapply lt_le_trans; [ | apply Hxn ].
-Search ((_ - _) / _).
-
-Search (_ * _ < _ * _).
-Nat.mul_lt_mono_pos_r: ∀ p n m : nat, 0 < p → n < m ↔ n * p < m * p
-...
-
-intros * Hx.
-unfold NQsub, NQadd.
+intros H2; clear H1.
+destruct x as [| x| x]; [ easy | clear Hx | easy ].
 destruct n.
--cbn in Hx; cbn.
- destruct Hx as (Hx1, Hx2).
- now destruct x.
--replace (S n - 1) with n by flia.
- remember (S n // 1)%NQ as s eqn:Hs.
- destruct s as [| s| s]; [ easy | | easy ].
- unfold NQadd_pos_l.
- destruct x as [| x| x]; [ easy | | easy ].
- cbn.
- remember (GQcompare s x) as c eqn:Hc.
- symmetry in Hc.
- destruct c; GQcompare_iff; [ cbn; flia | | ].
- +destruct Hx as (Hx1, Hx2).
-  cbn in Hx2.
-  now apply GQnlt_ge in Hx2.
- +clear Hx.
-  cbn in Hs.
-  apply -> Nat.succ_le_mono.
-  unfold ">"%GQ in Hc.
+-rewrite Nat.mul_0_r in Hxn.
+ apply Nat.le_0_r in Hxn.
+ rewrite Hn in Hxn; cbn in Hxn.
+ now apply GQnum_neq_0 in Hxn.
+-destruct n.
+ +rewrite Nat.mul_1_r in Hxn.
+  rewrite Nat.mul_1_l in H2.
+  assert (H1 : xd ≠ 0) by now rewrite Hd.
+  assert (H3 : xn ≠ 0) by (rewrite Hn; apply GQnum_neq_0).
+  specialize (Nat.div_mod (xd - xn) xd H1) as H4.
+  rewrite H2, Nat.mul_1_r in H4.
+  apply Nat.add_sub_eq_nz in H4. 2: {
+    intros H.
+    now apply Nat.eq_add_0 in H.
+  }
+  rewrite Nat.add_comm, <- Nat.add_assoc in H4.
+  apply Nat.add_sub_eq_l in H4.
+  symmetry in H4; rewrite Nat.sub_diag in H4.
+  now apply Nat.eq_add_0 in H4.
+ +idtac.
 ......
 
 Require Import Summation.
