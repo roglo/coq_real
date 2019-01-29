@@ -480,6 +480,27 @@ apply -> Nat.succ_le_mono.
 apply Nat.le_sub_l.
 Qed.
 
+Theorem Nat_mul_sub_div_le : ∀ a b c,
+  c ≤ a * b
+  → (a * b - c) / b ≤ a.
+Proof.
+intros * Hc.
+destruct (zerop b) as [Hb| Hb]. {
+  subst b; cbn; apply Nat.le_0_l.
+}
+apply Nat.neq_0_lt_0 in Hb.
+remember (a * b - c) as d eqn:Hd.
+assert (H1 : a = (c + d) / b). {
+  rewrite Hd.
+  rewrite Nat.add_sub_assoc; [ | easy ].
+  rewrite Nat.add_comm, Nat.add_sub.
+  now rewrite Nat.div_mul.
+}
+rewrite H1.
+apply Nat.div_le_mono; [ easy | ].
+apply Nat_le_add_l.
+Qed.
+
 Definition bool_of_sumbool {A B : Prop} (P : sumbool A B) :=
   match P with
   | left _ _ => true

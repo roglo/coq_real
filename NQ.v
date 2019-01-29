@@ -2492,71 +2492,6 @@ replace 0%NQ with (0 + 0)%NQ by easy.
 now apply NQadd_le_mono.
 Qed.
 
-Theorem Nat_mul_sub_div_le : ∀ a b c,
-  b ≠ 0
-  → c ≤ a * b
-  → (a * b - c) / b ≤ a.
-Proof.
-intros * Hb Hc.
-remember (a * b - c) as d eqn:Hd.
-assert (H1 : a = (c + d) / b). {
-  rewrite Hd.
-  rewrite Nat.add_sub_assoc; [ | easy ].
-  rewrite Nat.add_comm, Nat.add_sub.
-  now rewrite Nat.div_mul.
-}
-Admitted. (*
-Search (_ / _ < _ / _).
-...
-specialize (Nat.div_mod (a * b - c) b Hb) as H1.
-...
-symmetry; apply Nat.add_sub_eq_l; symmetry.
-rewrite H1.
-Search (_ → _ - _ = _).
-Search (_ → _ = _ - _).
-Check Nat_div_add_same_l.
-Check Nat.div_add.
-...
-destruct b; [ easy | clear Hb ].
-assert (H1 : c + d = a * S b) by flia Hc Hd.
-assert (H2 : a = (c + d) / S b) by now rewrite H1, Nat.div_mul.
-rewrite H2.
-Search ((_ + _) / _).
-apply (Nat.add_cancel_l _ _ (c / S b)).
-rewrite <- Nat_add_div_l.
-...
-Search ((_ + _ * _) / _).
-Print Nat.div_add.
-Print Nat.Private_NZDiv.div_add.
-...
-replace (a * S b) with (a * S b - c + c).
-replace c with (a * S b + (c - a * S b)) at 1.
-rewrite Nat.sub_add_distr, Nat.sub_diag.
-...
-specialize (Nat.div_mod c (S b) (Nat.neq_succ_0 b)) as H1.
-...
-specialize (Nat.div_mod (a * S b - c) (S b) (Nat.neq_succ_0 b)) as H1.
-rewrite H1.
-...
-unfold "/" at 1.
-specialize (Nat.divmod_spec (a * S b - c) b 0 b (le_refl _)) as H1.
-remember (Nat.divmod (a * S b - c) b 0 b) as dm eqn:Hdm.
-symmetry in Hdm.
-destruct dm as (d, m); unfold fst.
-destruct H1 as (H1, H2).
-rewrite Nat.mul_0_r, Nat.sub_diag, Nat.add_0_r, Nat.add_0_r in H1.
-apply (Nat.mul_cancel_l _ _ (S b)); [ easy | ].
-apply (Nat.add_cancel_r _ _ (b - m)).
-rewrite <- H1.
-rewrite Nat.mul_sub_distr_l.
-...
-specialize (Nat.div_mod c (S b) (Nat.neq_succ_0 b)) as H1.
-remember (a * S b) as x.
-rewrite H1; subst x.
-rewrite Nat.sub_add_distr.
-...
-*)
-
 Theorem NQintg_sub_nat_l_lt : ∀ n x,
   (0 < x ≤ n // 1)%NQ
   → NQintg (n // 1 - x)%NQ < n.
@@ -2577,33 +2512,31 @@ remember (NQnum x) as xn eqn:Hn.
 remember (NQden x) as xd eqn:Hd.
 move xd before xn.
 assert (H1 : (n * xd - xn) / xd ≤ n). {
-  apply Nat_mul_sub_div_le; [ now rewrite Hd | now rewrite Nat.mul_comm ].
+  now apply Nat_mul_sub_div_le; rewrite Nat.mul_comm.
 }
 apply Nat_le_neq_lt; [ easy | ].
 intros H2; clear H1.
 destruct x as [| x| x]; [ easy | clear Hx | easy ].
-destruct n.
--rewrite Nat.mul_0_r in Hxn.
- apply Nat.le_0_r in Hxn.
- rewrite Hn in Hxn; cbn in Hxn.
- now apply GQnum_neq_0 in Hxn.
--destruct n.
- +rewrite Nat.mul_1_r in Hxn.
-  rewrite Nat.mul_1_l in H2.
-  assert (H1 : xd ≠ 0) by now rewrite Hd.
-  assert (H3 : xn ≠ 0) by (rewrite Hn; apply GQnum_neq_0).
-  specialize (Nat.div_mod (xd - xn) xd H1) as H4.
-  rewrite H2, Nat.mul_1_r in H4.
-  apply Nat.add_sub_eq_nz in H4. 2: {
-    intros H.
-    now apply Nat.eq_add_0 in H.
-  }
-  rewrite Nat.add_comm, <- Nat.add_assoc in H4.
-  apply Nat.add_sub_eq_l in H4.
-  symmetry in H4; rewrite Nat.sub_diag in H4.
-  now apply Nat.eq_add_0 in H4.
- +idtac.
-......
+assert (H1 : xd ≠ 0) by now rewrite Hd.
+assert (H3 : xn ≠ 0) by (rewrite Hn; apply GQnum_neq_0).
+specialize (Nat.div_mod (n * xd - xn) xd H1) as H4.
+rewrite H2 in H4.
+apply Nat.add_sub_eq_nz in H4. 2: {
+  intros H.
+  apply Nat.eq_add_0 in H.
+  destruct H as (H5, H6).
+  apply Nat.eq_mul_0 in H5.
+  destruct H5 as [H5| H5]; [ easy | ].
+  subst n.
+  rewrite Nat.mul_0_r in Hxn.
+  now apply Nat.le_0_r in Hxn.
+}
+rewrite Nat.add_comm, <- Nat.add_assoc in H4.
+apply Nat.add_sub_eq_l in H4.
+rewrite Nat.mul_comm in H4.
+symmetry in H4; rewrite Nat.sub_diag in H4.
+now apply Nat.eq_add_0 in H4.
+Qed.
 
 Require Import Summation.
 
