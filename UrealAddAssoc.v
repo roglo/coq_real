@@ -2585,10 +2585,12 @@ destruct (le_dec m rad) as [Hmr| Hmr].
     +apply Nat.add_le_mono_r.
      rewrite Nat.mul_comm.
      now apply Nat.mul_div_le.
-    +apply (le_trans _ (m * (rad - 1) - 1 + rad)).
-     *apply Nat.add_le_mono_r; flia H8.
+    +apply (le_trans _ ((m - 1) * (rad - 1) + rad)).
+     *apply Nat.add_le_mono_r.
+...
      *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
       rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+     *idtac.
 
 Search (_ * (_ / _ ) ≤ _).
 
