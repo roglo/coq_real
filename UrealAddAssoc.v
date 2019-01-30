@@ -2562,6 +2562,7 @@ rewrite <- Nat.mul_add_distr_r in H5.
 exists ((u i + carry u i) / rad + 1), (carry u i + 1).
 split; [ | split ]; [ | flia H4 | easy ].
 split; [ flia | ].
+destruct (le_dec m rad) as [Hmr| Hmr].
 ...
 assert (H6 : carry u i ≤ m - 1) by flia H4 Hm.
 assert (H7 : u i ≤ m * (rad - 1) - rad). {
