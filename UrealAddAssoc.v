@@ -2572,6 +2572,27 @@ destruct (le_dec m rad) as [Hmr| Hmr].
  split; [ flia | ].
  specialize (Hur 0) as H7; rewrite Nat.add_0_r in H7.
  assert (H8 : u i < m * (rad - 1)) by flia H1 H7.
+ assert (H9 : (u i + carry u i) / rad = u i / rad). {
+   specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H9.
+   rewrite H2 in H9.
+   rewrite Nat.add_sub_assoc in H9; [ | easy ].
+   apply (Nat.add_cancel_r _ _ (carry u i + 1)) in H6.
+   rewrite Nat.sub_add in H6.
+   -rewrite Nat.add_assoc in H6.
+    rewrite H9 in H6.
+    rewrite Nat.sub_add in H6; [ | flia Hr ].
+    replace rad with (rad * 1) in H6 at 3 by flia.
+    rewrite <- Nat.mul_add_distr_l in H6.
+    rewrite Nat.mul_comm in H6.
+    apply Nat.mul_cancel_r in H6; [ | easy ].
+    now apply Nat.add_cancel_r in H6.
+   -apply (le_trans _ m); [ flia H4 | ].
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+    flia Hmr.
+ }
+ specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H10.
+ rewrite H2, H9 in H10.
+...
  assert (H9 : u i < (m - 1) * rad). {
    rewrite H6.
 assert (u i / rad + 1 ≤ m - 1). {
