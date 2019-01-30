@@ -2572,6 +2572,10 @@ destruct (le_dec m rad) as [Hmr| Hmr].
  split; [ flia | ].
  specialize (Hur 0) as H7; rewrite Nat.add_0_r in H7.
  assert (H8 : u i < m * (rad - 1)) by flia H1 H7.
+ assert (H9 : u i < (m - 1) * rad). {
+...
+ }
+...
  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H8.
  apply (Nat.add_lt_mono_r _ _ m) in H8.
  rewrite Nat.sub_add in H8. 2: {
