@@ -2574,7 +2574,20 @@ destruct (le_dec m rad) as [Hmr| Hmr].
  assert (H8 : u i < m * (rad - 1)) by flia H1 H7.
  assert (H9 : u i < (m - 1) * rad). {
    rewrite H6.
+assert (u i / rad + 1 ≤ m - 1). {
+apply (Nat.mul_le_mono_pos_r _ _ rad); [ easy | ].
+apply (Nat.add_cancel_r _ _ (carry u i + 1)) in H6.
+rewrite Nat.sub_add in H6.
+rewrite <- H6.
 ...
+Search (_ - _ ≤ _ - _).
+
+apply (Nat.sub_le_mono_pos_r (carry u i + 1)).
+
+
+
+   apply (le_lt_trans _ ((m - 2) * rad)
+
    eapply lt_le_trans.
    -apply Nat.sub_lt; [ | flia ].
     apply (le_trans _ m); [ flia H4 | ].
