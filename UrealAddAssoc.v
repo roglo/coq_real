@@ -2549,7 +2549,6 @@ assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
 specialize (H3 H); clear H.
 specialize (H3 0) as H4.
 rewrite Nat.add_0_r in H4.
-(**)
 destruct (le_dec m rad) as [Hmr| Hmr].
 -assert (H5 : u i mod rad = rad - 1 - carry u i). {
    specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
@@ -2570,6 +2569,7 @@ destruct (le_dec m rad) as [Hmr| Hmr].
  exists (u i / rad + 1), (carry u i + 1).
  split; [ | split ]; [ flia | flia H4 | easy ].
 -apply Nat.nle_gt in Hmr.
+ specialize (Nat.div_mod (u i) rad radix_ne_0) as H6.
 ...
 
 Theorem P_999_start {r : radix} : ∀ u i m,
