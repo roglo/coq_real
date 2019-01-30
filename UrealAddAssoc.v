@@ -2579,6 +2579,17 @@ apply (Nat.mul_le_mono_pos_r _ _ rad); [ easy | ].
 apply (Nat.add_cancel_r _ _ (carry u i + 1)) in H6.
 rewrite Nat.sub_add in H6.
 rewrite <- H6.
+ specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H9.
+rewrite H2 in H9.
+rewrite Nat.add_sub_assoc in H9; [ | easy ].
+rewrite Nat.add_assoc in H6.
+rewrite H9 in H6.
+rewrite Nat.sub_add in H6; [ | flia Hr ].
+replace rad with (rad * 1) in H6 at 3 by flia.
+rewrite <- Nat.mul_add_distr_l in H6.
+rewrite Nat.mul_comm in H6.
+apply Nat.mul_cancel_r in H6; [ | easy ].
+apply Nat.add_cancel_r in H6.
 ...
 Search (_ - _ ≤ _ - _).
 
