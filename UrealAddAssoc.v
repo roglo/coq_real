@@ -2525,6 +2525,56 @@ Qed.
 Theorem P_999_start {r : radix} : ∀ u i m,
   (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
+  → (∃ j k, 1 ≤ j ∧ 1 ≤ k ≤ m ∧ u i = j * rad - k)
+     ∨ u i = m * (rad - 1).
+Proof.
+intros * Hur Hpu.
+specialize radix_ge_2 as Hr.
+destruct (eq_nat_dec (u i) (m * (rad - 1))) as [H1| H1]; [ now right | left ].
+destruct (zerop m) as [Hm| Hm]. {
+  exfalso.
+  subst m; rewrite Nat.mul_0_l in Hur.
+  rewrite Nat.mul_0_l in H1.
+  specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+  now apply Nat.le_0_r in Hur.
+}
+apply Nat.neq_0_lt_0 in Hm.
+specialize (Hpu 0) as H2.
+rewrite Nat.add_0_r in H2.
+unfold P, d2n, prop_carr in H2; cbn in H2.
+specialize (carry_upper_bound_for_adds u i m Hm) as H3.
+assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+  intros; rewrite <- Nat.add_assoc; apply Hur.
+}
+specialize (H3 H); clear H.
+specialize (H3 0) as H4.
+rewrite Nat.add_0_r in H4.
+(**)
+destruct (le_dec m rad) as [Hmr| Hmr].
+-assert (H5 : u i mod rad = rad - 1 - carry u i). {
+   specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
+   rewrite H2 in H5.
+   apply Nat.add_sub_eq_r in H5.
+   rewrite <- Nat.add_sub_assoc in H5 by flia H4 Hmr.
+   rewrite <- H5, Nat.add_comm, Nat.mul_comm.
+   rewrite Nat.mod_add; [ | easy ].
+   apply Nat.mod_small.
+   flia H4 Hmr.
+ }
+ specialize (Nat.div_mod (u i) rad radix_ne_0) as H6.
+ rewrite H5 in H6.
+ rewrite Nat_sub_sub_swap, <- Nat.sub_add_distr in H6.
+ rewrite Nat.add_sub_assoc in H6; [ | flia H4 Hmr ].
+ replace rad with (rad * 1) in H6 at 3 by flia.
+ rewrite <- Nat.mul_add_distr_l, Nat.mul_comm in H6.
+ exists (u i / rad + 1), (carry u i + 1).
+ split; [ | split ]; [ flia | flia H4 | easy ].
+-apply Nat.nle_gt in Hmr.
+...
+
+Theorem P_999_start {r : radix} : ∀ u i m,
+  (∀ k, u (i + k) ≤ m * (rad - 1))
+  → (∀ k, P u (i + k) = rad - 1)
   → (∃ j k, 1 ≤ j < m ∧ 1 ≤ k ≤ m ∧ u i = j * rad - k)
      ∨ u i = m * (rad - 1).
 Proof.
