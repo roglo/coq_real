@@ -2572,12 +2572,36 @@ destruct (le_dec m rad) as [Hmr| Hmr].
  split; [ flia | ].
  specialize (Hur 0) as H7; rewrite Nat.add_0_r in H7.
  assert (H8 : u i < m * (rad - 1)) by flia H1 H7.
+(**)
+ assert (H9 : u i ≤ (m - 1) * (rad - 1)). {
+...
+ }
+ rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H9.
+ apply (Nat.add_le_mono_r _ _ (m - 1)) in H9.
+ rewrite Nat.sub_add in H9. 2: {
+   replace (m - 1) with ((m - 1) * 1) at 1 by flia.
+   now apply Nat.mul_le_mono_l.
+ }
+ rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in H9.
+ apply (Nat.add_le_mono_r _ _ rad) in H9.
+ rewrite Nat.sub_add in H9. 2: {
+   replace rad with (1 * rad) at 1 by flia.
+   apply Nat.mul_le_mono_r; flia Hm.
+ }
+ apply (Nat.mul_lt_mono_pos_r rad); [ easy | ].
+ eapply lt_le_trans; [ | apply H9 ].
+ rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+ apply Nat.add_lt_mono_r.
+Search (_ * (_ / _)).
+Check Nat.mul_div_le.
+...
  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H8.
  apply (Nat.add_lt_mono_r _ _ m) in H8.
  rewrite Nat.sub_add in H8. 2: {
    replace m with (m * 1) at 1 by flia.
    now apply Nat.mul_le_mono_l.
  }
+...
  apply (Nat.mul_lt_mono_pos_r rad); [ easy | ].
  eapply le_lt_trans; [ | apply H8 ].
 ...
