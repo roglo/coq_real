@@ -2597,6 +2597,8 @@ destruct (le_dec m rad) as [Hmr| Hmr].
    rewrite Nat.add_sub_assoc; [ | easy ].
    rewrite Nat.sub_add; [ easy | flia Hr ].
  }
+ apply (Nat.mul_lt_mono_pos_r rad); [ easy | ].
+ rewrite <- H11.
 ...
  assert (H9 : u i < (m - 1) * rad). {
    rewrite H6.
