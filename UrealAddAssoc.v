@@ -2632,8 +2632,9 @@ destruct (le_dec m rad) as [Hmr| Hmr].
   --split.
    ++apply (le_trans _ m); [ flia H4 | easy ].
    ++destruct m; [ easy | cbn; flia ].
--exists (u i / rad + 1), (carry u i + 1).
- apply Nat.nle_gt in Hmr.
+-apply Nat.nle_gt in Hmr.
+...
+ exists (u i / rad + 1), (carry u i + 1).
  assert (H5 : u i mod rad = rad - 1 - carry u i). {
    specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
    rewrite H2 in H5.
