@@ -2599,6 +2599,11 @@ destruct (le_dec m rad) as [Hmr| Hmr].
  }
  apply (Nat.mul_lt_mono_pos_r rad); [ easy | ].
  rewrite <- H11.
+ destruct (le_dec (rad * (m - 1)) (u i)) as [H12| H12].
+ +exfalso.
+  move H8 before H12.
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H8.
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H12.
 ...
  assert (H9 : u i < (m - 1) * rad). {
    rewrite H6.
