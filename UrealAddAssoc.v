@@ -2633,23 +2633,90 @@ destruct (le_dec m rad) as [Hmr| Hmr].
    ++apply (le_trans _ m); [ flia H4 | easy ].
    ++destruct m; [ easy | cbn; flia ].
 -apply Nat.nle_gt in Hmr.
-...
- exists (u i / rad + 1), (carry u i + 1).
- assert (H5 : u i mod rad = rad - 1 - carry u i). {
-   specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
-   rewrite H2 in H5.
-   apply Nat.add_sub_eq_r in H5.
-   destruct (le_dec (carry u i) (rad - 1)) as [Hcr| Hcr].
-   -rewrite <- Nat.add_sub_assoc in H5; [ | easy ].
+ destruct (le_dec (carry u i) (rad - 1)) as [Hcr| Hcr].
+ +exists (u i / rad + 1), (carry u i + 1).
+  assert (H5 : u i mod rad = rad - 1 - carry u i). {
+    specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
+    rewrite H2 in H5.
+    apply Nat.add_sub_eq_r in H5.
+    rewrite <- Nat.add_sub_assoc in H5; [ | easy ].
     rewrite <- H5, Nat.add_comm, Nat.mul_comm.
     rewrite Nat.mod_add; [ | easy ].
     apply Nat.mod_small; flia Hr.
-   -apply Nat.nle_gt in Hcr.
-    replace (rad - 1 - carry u i) with 0. 2: {
-      symmetry.
-      apply (proj2 (Nat.sub_0_le (rad - 1) (carry u i))).
-      now apply Nat.lt_le_incl.
-    }
+  }
+  specialize (Nat.div_mod (u i) rad radix_ne_0) as H6.
+  rewrite H5 in H6.
+  rewrite Nat_sub_sub_swap, <- Nat.sub_add_distr in H6.
+  rewrite Nat.add_sub_assoc in H6; [ | flia Hr Hcr ].
+  replace rad with (rad * 1) in H6 at 3 by flia.
+  rewrite <- Nat.mul_add_distr_l, Nat.mul_comm in H6.
+  split; [ | split ]; [ | flia H4 | easy ].
+  split; [ flia | ].
+  specialize (Hur 0) as H7; rewrite Nat.add_0_r in H7.
+  assert (H8 : u i < m * (rad - 1)) by flia H1 H7.
+  assert (H9 : (u i + carry u i) / rad = u i / rad). {
+    specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H9.
+    rewrite H2 in H9.
+    rewrite Nat.add_sub_assoc in H9; [ | easy ].
+    apply (Nat.add_cancel_r _ _ (carry u i + 1)) in H6.
+    rewrite Nat.sub_add in H6.
+    -rewrite Nat.add_assoc in H6.
+     rewrite H9 in H6.
+     rewrite Nat.sub_add in H6; [ | flia Hr ].
+     replace rad with (rad * 1) in H6 at 3 by flia.
+     rewrite <- Nat.mul_add_distr_l in H6.
+     rewrite Nat.mul_comm in H6.
+     apply Nat.mul_cancel_r in H6; [ | easy ].
+     now apply Nat.add_cancel_r in H6.
+    -apply (le_trans _ m); [ flia H4 | ].
+     rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+...
+     flia Hmr.
+ }
+ specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H10.
+ rewrite H2, H9 in H10.
+ assert (H11 : u i + carry u i + 1 = (u i / rad + 1) * rad). {
+   rewrite H10, Nat.mul_comm, Nat.mul_add_distr_r, Nat.mul_1_l.
+   rewrite Nat.add_sub_assoc; [ | easy ].
+   rewrite Nat.sub_add; [ easy | flia Hr ].
+ }
+ apply (Nat.mul_lt_mono_pos_r rad); [ easy | ].
+ rewrite <- H11.
+ destruct (le_dec (rad * (m - 1)) (u i)) as [H12| H12].
+ +exfalso.
+  move H8 before H12.
+  assert (H13 : (u i - rad * (m - 1) + carry u i) mod rad = rad - 1). {
+    rewrite <- (Nat.mod_add _ (m - 1)); [ | easy ].
+    rewrite Nat.add_shuffle0.
+    rewrite Nat.mul_comm, Nat.sub_add; [ easy | now rewrite Nat.mul_comm ].
+  }
+  specialize (Nat.div_mod (u i - rad * (m - 1) + carry u i) rad radix_ne_0)
+    as H14.
+  rewrite H13 in H14.
+  apply Nat.nle_gt in H8; apply H8; clear H8.
+  rewrite <- Nat.add_sub_swap in H14; [ | easy ].
+  apply (Nat.add_cancel_r _ _ (rad * (m - 1))) in H14.
+  rewrite Nat.sub_add in H14; [ | flia H12 ].
+  apply (Nat.add_le_mono_r _ _ (carry u i)).
+  rewrite H14.
+  rewrite <- Nat.add_assoc.
+  eapply le_trans; [ | apply Nat_le_add_l ].
+  apply (le_trans _ (m * (rad - 1) + (m - 1))).
+  *apply Nat.add_le_mono_l; flia H4.
+  *do 2 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   flia Hmr Hm.
+ +apply Nat.nle_gt in H12.
+  clear -Hmr H4 H12.
+  apply (lt_le_trans _ (rad * (m - 1) + carry u i + 1)).
+  *now do 2 apply Nat.add_lt_mono_r.
+  *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   rewrite Nat.mul_comm, <- Nat.add_assoc.
+   rewrite <- Nat_sub_sub_distr.
+  --apply Nat.le_sub_l.
+  --split.
+   ++apply (le_trans _ m); [ flia H4 | easy ].
+   ++destruct m; [ easy | cbn; flia ].
+-apply Nat.nle_gt in Hmr.
 ...
  }
 ...
