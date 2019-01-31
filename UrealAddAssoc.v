@@ -2622,6 +2622,7 @@ destruct (le_dec m rad) as [Hmr| Hmr].
   *do 2 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
    flia Hmr Hm.
  +apply Nat.nle_gt in H12.
+  clear -Hmr H4 H12.
   apply (lt_le_trans _ (rad * (m - 1) + carry u i + 1)).
   *now do 2 apply Nat.add_lt_mono_r.
   *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
