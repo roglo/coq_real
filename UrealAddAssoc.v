@@ -2602,6 +2602,19 @@ destruct (le_dec m rad) as [Hmr| Hmr].
  destruct (le_dec (rad * (m - 1)) (u i)) as [H12| H12].
  +exfalso.
   move H8 before H12.
+(*
+  assert (H13 : (u i - rad * (m - 1) + carry u i) mod rad = rad - 1). {
+    rewrite <- (Nat.mod_add _ (m - 1)); [ | easy ].
+    rewrite Nat.add_shuffle0.
+    rewrite Nat.mul_comm, Nat.sub_add; [ easy | now rewrite Nat.mul_comm ].
+  }
+  specialize (Nat.div_mod (u i - rad * (m - 1) + carry u i) rad radix_ne_0)
+    as H14.
+  rewrite H13 in H14.
+*)
+  apply Nat.nle_gt in H8; apply H8; clear H8.
+...
+
   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H8.
   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H12.
 ...
