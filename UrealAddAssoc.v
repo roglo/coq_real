@@ -2617,8 +2617,6 @@ destruct (le_dec m rad) as [Hmr| Hmr].
  rewrite <- Nat.mul_add_distr_l, Nat.mul_comm in H6.
  split; [ | split ]; [ | flia H4 | easy ].
  split; [ flia | ].
- specialize (Hur 0) as H7; rewrite Nat.add_0_r in H7.
- assert (H8 : u i < m * (rad - 1)) by flia H1 H7.
  assert (H9 : (u i + carry u i) / rad = u i / rad). {
    specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H9.
    rewrite H2 in H9.
