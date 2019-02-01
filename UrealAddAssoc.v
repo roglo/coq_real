@@ -2670,9 +2670,7 @@ destruct (le_dec m rad) as [Hmr| Hmr].
  +apply Nat.nle_gt in Hcr.
   specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
   rewrite H2 in H5.
-...
   apply Nat.add_sub_eq_r in H5.
-...
   destruct (lt_dec (carry u i) (rad * ((u i + carry u i) / rad) + (rad - 1)))
     as [H6| H6]. 2: {
     apply Nat.nlt_ge in H6.
@@ -2684,7 +2682,38 @@ destruct (le_dec m rad) as [Hmr| Hmr].
   rewrite <- Nat_sub_sub_assoc in H5. 2: {
     split; [ flia Hcr | now apply Nat.lt_le_incl ].
   }
-
+  rewrite Nat.mul_comm in H5.
+(**)
+...
+  remember (carry u i - (rad - 1)) as x eqn:Hx.
+  exists ((u i + carry u i) / rad - x / rad), (x mod rad).
+  split; [ | split ]. {
+    split.
+    -apply (Nat.add_le_mono_r _ _ (x / rad)).
+     rewrite Nat.sub_add.
+     +rewrite <- Nat.div_add_l; [ | easy ].
+      rewrite Nat.mul_1_l.
+      apply Nat.div_le_mono; [ easy | ].
+      rewrite Hx.
+      flia Hcr Hx H5 H6.
+     +apply Nat.div_le_mono; [ easy | flia Hx ].
+    -apply (Nat.add_lt_mono_r _ _ (x / rad)).
+     rewrite Nat.sub_add.
+     *rewrite Hx.
+...
+    -rewrite Nat.mul_sub_distr_r.
+     rewrite <- Nat.sub_add_distr.
+     rewrite (Nat.mul_comm (x / rad)).
+     now rewrite <- Nat.div_mod.
+...
+  exists ((u i + carry u i) / rad), (carry u i - (rad - 1)).
+  split; [ | split ]; [ | split | easy ]; [ split | flia Hcr | flia H4 ].
+  *apply (le_trans _ (carry u i / rad)). 2: {
+     apply Nat.div_le_mono; [ easy | flia ].
+   }
+   replace (carry u i) with (rad + (carry u i - rad)) by flia Hcr.
+   rewrite Nat_div_add_same_l; [ flia | easy ].
+  *idtac.
 ...
 
 Theorem pre_Hugo_Herbelin_112 {r : radix} : ∀ u v i n j,
