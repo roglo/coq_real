@@ -2668,6 +2668,21 @@ destruct (le_dec m rad) as [Hmr| Hmr].
    split; [ flia Hcr Hmr | ].
    destruct rad; [ easy | rewrite Nat.mul_comm; cbn; flia ].
  +apply Nat.nle_gt in Hcr.
+  specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
+  rewrite H2 in H5.
+  apply Nat.add_sub_eq_r in H5.
+  destruct (lt_dec (carry u i) (rad * ((u i + carry u i) / rad) + (rad - 1)))
+    as [H6| H6]. 2: {
+    apply Nat.nlt_ge in H6.
+    rewrite (proj2 (Nat.sub_0_le _ _)) in H5; [ | easy ].
+    exists 1, rad.
+    split; [ | split ]; [ flia Hmr Hr | flia Hmr Hr | ].
+    now rewrite Nat.mul_1_l, Nat.sub_diag.
+  }
+  rewrite <- Nat_sub_sub_assoc in H5. 2: {
+    split; [ flia Hcr | now apply Nat.lt_le_incl ].
+  }
+
 ...
 
 Theorem pre_Hugo_Herbelin_112 {r : radix} : ∀ u v i n j,
