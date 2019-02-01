@@ -2654,8 +2654,20 @@ destruct (le_dec m rad) as [Hmr| Hmr].
   split; [ flia | ].
   specialize (Hur 0) as H7; rewrite Nat.add_0_r in H7.
   assert (H8 : u i < m * (rad - 1)) by flia H1 H7.
-...
- }
+  apply (Nat.mul_lt_mono_pos_r rad); [ easy | ].
+  apply (Nat.add_cancel_r _ _ (carry u i + 1)) in H6.
+  rewrite Nat.sub_add in H6. 2: {
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+    flia Hr Hcr.
+  }
+  rewrite <- H6.
+  apply (lt_le_trans _ (m * (rad - 1) + (carry u i + 1))).
+  *now apply Nat.add_lt_mono_r.
+  *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   rewrite <- Nat_sub_sub_distr; [ apply Nat.le_sub_l | ].
+   split; [ flia Hcr Hmr | ].
+   destruct rad; [ easy | rewrite Nat.mul_comm; cbn; flia ].
+ +apply Nat.nle_gt in Hcr.
 ...
 
 Theorem pre_Hugo_Herbelin_112 {r : radix} : ∀ u v i n j,
