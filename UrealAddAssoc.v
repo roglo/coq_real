@@ -2670,7 +2670,9 @@ destruct (le_dec m rad) as [Hmr| Hmr].
  +apply Nat.nle_gt in Hcr.
   specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
   rewrite H2 in H5.
+...
   apply Nat.add_sub_eq_r in H5.
+...
   destruct (lt_dec (carry u i) (rad * ((u i + carry u i) / rad) + (rad - 1)))
     as [H6| H6]. 2: {
     apply Nat.nlt_ge in H6.
