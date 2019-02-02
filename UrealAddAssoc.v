@@ -2782,8 +2782,6 @@ replace (1 + (s - 1)) with s by flia Hs Hin.
 now rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
 Qed.
 
-...
-
 Theorem pre_Hugo_Herbelin_112 {r : radix} : ∀ u v i n j,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -3142,8 +3140,32 @@ destruct j.
   *destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (A i n v)) 1)
       as [H4| H4]; [ easy | exfalso ].
    destruct H'1 as [H'1| [H'1| H'1]].
-  --idtac.
-(**)
+  --specialize (P_999_start (u ⊕ v) (i + 1) 3) as H'2.
+    assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
+      intros.
+      unfold "⊕".
+      replace (3 * (rad - 1)) with ((rad - 1) + 2 * (rad - 1)) by flia.
+      replace (i + 1 + k) with (i + (k + 1)) by flia.
+      apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+    }
+    specialize (H'2 H); clear H.
+    assert (H : ∀ k : nat, P (u ⊕ v) (i + 1 + k) = rad - 1). {
+      intros.
+      specialize (all_fA_ge_1_ε_P_999 _ i H2 k) as H.
+      now rewrite Nat.add_shuffle0.
+    }
+    specialize (H'2 H); clear H.
+    destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H5| H5].
+   ++clear H'2.
+     (* je pense que H5 devrait contredire Ha1 *)
+...
+(* suite *)
+   ++destruct (le_dec 3 rad) as [H6| H6].
+    **remember ((u ⊕ v) (i + 1) / rad + 1) as j2 eqn:Hj2.
+      remember (carry (u ⊕ v) (i + 1) + 1) as k2 eqn:Hk2.
+      move j2 before j; move k2 before j2.
+      destruct H'2 as (Huvj & Huvk & Huv).
+      (* à analyser, mais chuis pas sûr que ça aide *)
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
