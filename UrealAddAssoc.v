@@ -3158,7 +3158,7 @@ destruct j.
     destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H5| H5].
    ++clear H'2.
      (* je pense que H5 devrait contredire Ha1 *)
-...
+admit.
 (* suite *)
    ++destruct (le_dec 3 rad) as [H6| H6].
     **remember ((u ⊕ v) (i + 1) / rad + 1) as j2 eqn:Hj2.
@@ -3166,6 +3166,10 @@ destruct j.
       move j2 before j; move k2 before j2.
       destruct H'2 as (Huvj & Huvk & Huv).
       (* à analyser, mais chuis pas sûr que ça aide *)
+...
+(* suite *)
+    **assert (Hrr : rad = 2) by flia Hr H6; clear H6.
+      (* in binary *)
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
