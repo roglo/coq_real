@@ -2527,7 +2527,7 @@ Theorem P_999_start {r : radix} : ∀ u i m,
   → (∀ k, P u (i + k) = rad - 1)
   → (let j :=
         if le_dec m rad then u i / rad + 1
-        else if le_dec (carry u i) (rad - 1) then u i / rad + 1
+        else if lt_dec (carry u i) rad then u i / rad + 1
         else if
           le_dec (rad * ((u i + carry u i) / rad) + (rad - 1)) (carry u i)
         then 1
@@ -2662,13 +2662,13 @@ destruct (le_dec m rad) as [Hmr| Hmr].
   *apply (le_trans _ m); [ flia H4 | easy ].
   *destruct m; [ easy | cbn; flia ].
 -apply Nat.nle_gt in Hmr.
- destruct (le_dec (carry u i) (rad - 1)) as [Hcr| Hcr].
+ destruct (lt_dec (carry u i) rad) as [Hcr| Hcr].
  +exists (carry u i + 1).
   assert (H5 : u i mod rad = rad - 1 - carry u i). {
     specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
     rewrite H2 in H5.
     apply Nat.add_sub_eq_r in H5.
-    rewrite <- Nat.add_sub_assoc in H5; [ | easy ].
+    rewrite <- Nat.add_sub_assoc in H5; [ | flia Hcr ].
     rewrite <- H5, Nat.add_comm, Nat.mul_comm.
     rewrite Nat.mod_add; [ | easy ].
     apply Nat.mod_small; flia Hr.
@@ -2696,7 +2696,7 @@ destruct (le_dec m rad) as [Hmr| Hmr].
    rewrite <- Nat_sub_sub_distr; [ apply Nat.le_sub_l | ].
    split; [ flia Hcr Hmr | ].
    destruct rad; [ easy | rewrite Nat.mul_comm; cbn; flia ].
- +apply Nat.nle_gt in Hcr.
+ +apply Nat.nlt_ge in Hcr.
   specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
   rewrite H2 in H5.
   apply Nat.add_sub_eq_r in H5.
@@ -2729,7 +2729,7 @@ destruct (le_dec m rad) as [Hmr| Hmr].
     rewrite Nat.sub_add; [ easy | ].
     replace m with (m * 1) at 1 by flia.
     now apply Nat.mul_le_mono_l.
-  *split; [ flia Hcr | flia H4 ].
+  *split; [ flia Hcr Hr | flia H4 ].
 Qed.
 
 ...
