@@ -3166,6 +3166,7 @@ admit.
       move j2 before j; move k2 before j2.
       destruct H'2 as (Huvj & Huvk & Huv).
       (* à analyser, mais chuis pas sûr que ça aide *)
+      (* (u ⊕ v) (i + 1) vaut 7, 8, 9, 17, 18 ou 19 *)
 ...
 (* suite *)
     **assert (Hrr : rad = 2) by flia Hr H6; clear H6.
