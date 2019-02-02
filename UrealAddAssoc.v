@@ -2529,11 +2529,19 @@ Theorem P_999_start {r : radix} : ∀ u i m,
         if le_dec m rad then u i / rad + 1
         else if lt_dec (carry u i) rad then u i / rad + 1
         else if
-          le_dec (rad * ((u i + carry u i) / rad) + (rad - 1)) (carry u i)
+          ge_dec (carry u i) (rad * ((u i + carry u i) / rad) + (rad - 1))
         then 1
         else (u i + carry u i) / rad
      in
-    ∃ k, 1 ≤ j < m ∧ 1 ≤ k ≤ m ∧ u i = j * rad - k)
+     let k :=
+        if le_dec m rad then carry u i + 1
+        else if lt_dec (carry u i) rad then carry u i + 1
+        else if
+          ge_dec (carry u i) (rad * ((u i + carry u i) / rad) + (rad - 1))
+        then rad
+        else carry u i - (rad - 1)
+     in
+     1 ≤ j < m ∧ 1 ≤ k ≤ m ∧ u i = j * rad - k)
      ∨ u i = m * (rad - 1).
 Proof.
 intros * Hur Hpu.
@@ -2606,8 +2614,7 @@ assert (H12 : u i < rad * (m - 1)). {
    rewrite <- Nat.add_sub_assoc; [ flia | flia Hr ].
 }
 destruct (le_dec m rad) as [Hmr| Hmr].
--exists (carry u i + 1).
- assert (H5 : u i mod rad = rad - 1 - carry u i). {
+-assert (H5 : u i mod rad = rad - 1 - carry u i). {
    specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
    rewrite H2 in H5.
    apply Nat.add_sub_eq_r in H5.
@@ -2663,8 +2670,7 @@ destruct (le_dec m rad) as [Hmr| Hmr].
   *destruct m; [ easy | cbn; flia ].
 -apply Nat.nle_gt in Hmr.
  destruct (lt_dec (carry u i) rad) as [Hcr| Hcr].
- +exists (carry u i + 1).
-  assert (H5 : u i mod rad = rad - 1 - carry u i). {
+ +assert (H5 : u i mod rad = rad - 1 - carry u i). {
     specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
     rewrite H2 in H5.
     apply Nat.add_sub_eq_r in H5.
@@ -2700,10 +2706,9 @@ destruct (le_dec m rad) as [Hmr| Hmr].
   specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
   rewrite H2 in H5.
   apply Nat.add_sub_eq_r in H5.
-  destruct (le_dec (rad * ((u i + carry u i) / rad) + (rad - 1)) (carry u i))
+  destruct (ge_dec (carry u i) (rad * ((u i + carry u i) / rad) + (rad - 1)))
     as [H6| H6]. {
     rewrite (proj2 (Nat.sub_0_le _ _)) in H5; [ | easy ].
-    exists rad.
     split; [ | split ]; [ flia Hmr Hr | flia Hmr Hr | ].
     now rewrite Nat.mul_1_l, Nat.sub_diag.
   }
@@ -2712,7 +2717,6 @@ destruct (le_dec m rad) as [Hmr| Hmr].
     split; [ flia Hcr | now apply Nat.lt_le_incl ].
   }
   rewrite Nat.mul_comm in H5.
-  exists (carry u i - (rad - 1)).
   split; [ | split ]; [ split | | easy ].
   *apply Nat.neq_0_lt_0.
    intros H.
