@@ -2521,28 +2521,30 @@ Qed.
    This just gives the start u_i of the sequence; the following
    values (u_(i+1), u_(i+2), etc.) are given by an automat
    decribed later.
-   Generalizes all_P_9_999_9818_1818 (at least for u_i). *)
+   Generalizes all_P_9_all_8_9_18 *)
 Theorem P_999_start {r : radix} : ∀ u i m,
   (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
-  → (let j :=
+  → if eq_nat_dec (u i) (m * (rad - 1)) then True
+    else
+      let j :=
         if le_dec m rad then u i / rad + 1
         else if lt_dec (carry u i) rad then u i / rad + 1
         else if zerop (u i) then 1
         else (u i + carry u i) / rad
-     in
-     let k :=
+      in
+      let k :=
         if le_dec m rad then carry u i + 1
         else if lt_dec (carry u i) rad then carry u i + 1
         else if zerop (u i) then rad
         else carry u i - (rad - 1)
-     in
-     1 ≤ j < m ∧ 1 ≤ k ≤ m ∧ u i = j * rad - k)
-     ∨ u i = m * (rad - 1).
+      in
+      1 ≤ j < m ∧ 1 ≤ k ≤ m ∧ u i = j * rad - k.
 Proof.
 intros * Hur Hpu.
 specialize radix_ge_2 as Hr.
-destruct (eq_nat_dec (u i) (m * (rad - 1))) as [H1| H1]; [ now right | left ].
+Check all_P_9_all_8_9_18.
+destruct (eq_nat_dec (u i) (m * (rad - 1))) as [H1| H1]; [ easy | ].
 destruct (zerop m) as [Hm| Hm]. {
   exfalso.
   subst m; rewrite Nat.mul_0_l in Hur.
@@ -2729,6 +2731,54 @@ destruct (le_dec m rad) as [Hmr| Hmr].
   *split; [ flia Hcr Hr | flia H4 ].
 Qed.
 
+Theorem all_P_9_all_8_9_18' {r : radix} : ∀ u i,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, P u (i + k) = rad - 1)
+  → ∀ k,
+     if zerop (carry u (i + k)) then
+       u (i + k) = rad - 1
+     else if lt_dec (u (i + k) + 1) rad then
+       u (i + k) = rad - 2
+     else
+       u (i + k) = 2 * (rad - 1).
+Proof.
+intros * Hur Hpr k.
+specialize radix_ge_2 as Hr.
+specialize (P_999_start u (i + k) 2) as H1.
+assert (H : ∀ n, u (i + k + n) ≤ 2 * (rad - 1)). {
+  intros n; rewrite <- Nat.add_assoc; apply Hur.
+}
+specialize (H1 H); clear H.
+assert (H : ∀ n, P u (i + k + n) = rad - 1). {
+  intros n; rewrite <- Nat.add_assoc; apply Hpr.
+}
+specialize (H1 H); clear H.
+destruct (le_dec 2 rad) as [H2| H2]; [ clear H2 | flia Hr H2 ].
+destruct (eq_nat_dec (u (i + k)) (2 * (rad - 1))) as [H2| H2].
+-clear H1.
+ destruct (zerop (carry u (i + k))) as [H3| H3].
+ +unfold carry in H3.
+  destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H4| H4].
+  *idtac.
+Search (∀ _, fA_ge_1_ε _ _ = true).
+...
+ +destruct (lt_dec (u (i + k) + 1) rad) as [H4| H4]; [ | easy ].
+  rewrite H2 in H4.
+  apply Nat.nle_gt in H4.
+  exfalso; apply H4; clear H4.
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+  flia Hr.
+-destruct H1 as ((H4 & H5) & H6 & H7).
+ destruct (zerop (carry u (i + k))) as [H3| H3].
+ +rewrite H3 in H7.
+  cbn in H7.
+  replace (u (i + k) / rad) with 0 in H7 by flia H5.
+  now rewrite Nat.mul_1_l in H7.
+ +replace (carry u (i + k)) with 1 in H7 by flia H6 H3.
+  replace (u (i + k) / rad) with 0 in H7 by flia H5.
+  cbn in H7; rewrite Nat.add_0_r in H7.
+  destruct (lt_dec (u (i + k) + 1) rad) as [H1| H1]; [ easy | ].
+  flia H7 H1.
 ...
 
 Theorem P_999_start {r : radix} : ∀ u i m,
