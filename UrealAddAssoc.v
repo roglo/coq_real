@@ -2757,11 +2757,12 @@ destruct (le_dec 2 rad) as [H2| H2]; [ clear H2 | flia Hr H2 ].
 destruct (eq_nat_dec (u (i + k)) (2 * (rad - 1))) as [H2| H2].
 -clear H1.
  destruct (zerop (carry u (i + k))) as [H3| H3].
- +unfold carry in H3.
-  destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H4| H4].
-  *idtac.
-Search (∀ _, fA_ge_1_ε _ _ = true).
-...
+ +specialize (Hpr k) as H1.
+  unfold P, d2n, prop_carr in H1; cbn in H1.
+  rewrite H3, H2, Nat.add_0_r in H1.
+  replace (2 * (rad - 1)) with (rad + (rad - 2)) in H1 by flia Hr.
+  rewrite Nat_mod_add_same_l in H1; [ | easy ].
+  rewrite Nat.mod_small in H1; [ flia Hr H1 | flia Hr ].
  +destruct (lt_dec (u (i + k) + 1) rad) as [H4| H4]; [ | easy ].
   rewrite H2 in H4.
   apply Nat.nle_gt in H4.
@@ -2779,6 +2780,8 @@ Search (∀ _, fA_ge_1_ε _ _ = true).
   cbn in H7; rewrite Nat.add_0_r in H7.
   destruct (lt_dec (u (i + k) + 1) rad) as [H1| H1]; [ easy | ].
   flia H7 H1.
+Qed.
+
 ...
 
 Theorem P_999_start {r : radix} : ∀ u i m,
