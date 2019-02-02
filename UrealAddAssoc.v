@@ -2528,17 +2528,13 @@ Theorem P_999_start {r : radix} : ∀ u i m,
   → (let j :=
         if le_dec m rad then u i / rad + 1
         else if lt_dec (carry u i) rad then u i / rad + 1
-        else if
-          ge_dec (carry u i) (rad * ((u i + carry u i) / rad) + (rad - 1))
-        then 1
+        else if zerop (u i) then 1
         else (u i + carry u i) / rad
      in
      let k :=
         if le_dec m rad then carry u i + 1
         else if lt_dec (carry u i) rad then carry u i + 1
-        else if
-          ge_dec (carry u i) (rad * ((u i + carry u i) / rad) + (rad - 1))
-        then rad
+        else if zerop (u i) then rad
         else carry u i - (rad - 1)
      in
      1 ≤ j < m ∧ 1 ≤ k ≤ m ∧ u i = j * rad - k)
@@ -2706,22 +2702,19 @@ destruct (le_dec m rad) as [Hmr| Hmr].
   specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
   rewrite H2 in H5.
   apply Nat.add_sub_eq_r in H5.
-  destruct (ge_dec (carry u i) (rad * ((u i + carry u i) / rad) + (rad - 1)))
-    as [H6| H6]. {
-    rewrite (proj2 (Nat.sub_0_le _ _)) in H5; [ | easy ].
+(**)
+  destruct (zerop (u i)) as [H6| H6]. {
     split; [ | split ]; [ flia Hmr Hr | flia Hmr Hr | ].
     now rewrite Nat.mul_1_l, Nat.sub_diag.
   }
-  apply Nat.nle_gt in H6.
   rewrite <- Nat_sub_sub_assoc in H5. 2: {
-    split; [ flia Hcr | now apply Nat.lt_le_incl ].
+    split; [ flia Hcr | flia H5 H6 ].
   }
   rewrite Nat.mul_comm in H5.
   split; [ | split ]; [ split | | easy ].
   *apply Nat.neq_0_lt_0.
    intros H.
-   rewrite H, Nat.mul_0_r, Nat.add_0_l in H6.
-   flia Hcr H6.
+   now rewrite <- H5, H in H6.
   *apply (Nat.mul_lt_mono_pos_r rad); [ easy | ].
    rewrite Nat.mul_comm.
    eapply Nat.le_lt_trans; [ now apply Nat.mul_div_le | ].
