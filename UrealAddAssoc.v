@@ -3182,6 +3182,14 @@ admit.
           split; [ easy | ].
           rewrite A_split_first; [ | easy ].
           replace (S i) with (i + 1) by flia.
+          replace (u (i + 1)) with (u (i + 1) * 1) by flia.
+          rewrite NQpair_mul_r, <- NQmul_add_distr_r.
+          apply (NQmul_lt_mono_pos_r (rad // 1)%NQ).
+          -replace 0%NQ with (0 // 1)%NQ by easy.
+           apply NQlt_pair; [ easy | easy | cbn; flia Hr ].
+          -rewrite <- NQmul_assoc.
+           rewrite NQmul_pair_den_num; [ | easy ].
+           rewrite NQmul_1_r, NQmul_1_l.
 ...
 (* suite *)
     **assert (Hrr : rad = 2) by flia Hr H6; clear H6.
