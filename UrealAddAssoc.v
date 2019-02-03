@@ -3167,6 +3167,12 @@ admit.
       destruct H'2 as (Huvj & Huvk & Huv).
       (* à analyser, mais chuis pas sûr que ça aide *)
       (* (u ⊕ v) (i + 1) vaut 7, 8, 9, 17, 18 ou 19 *)
+      destruct j2; [ easy | ]; destruct j2.
+    ---clear Huvj.
+       destruct k2; [ easy | ]; destruct k2.
+     +++clear Huvk.
+        (* 9 *)
+
 ...
 (* suite *)
     **assert (Hrr : rad = 2) by flia Hr H6; clear H6.
