@@ -3165,14 +3165,18 @@ admit.
       remember (carry (u ⊕ v) (i + 1) + 1) as k2 eqn:Hk2.
       move j2 before j; move k2 before j2.
       destruct H'2 as (Huvj & Huvk & Huv).
-      (* à analyser, mais chuis pas sûr que ça aide *)
+      symmetry in Hj2, Hk2.
       (* (u ⊕ v) (i + 1) vaut 7, 8, 9, 17, 18 ou 19 *)
       destruct j2; [ easy | ]; destruct j2.
     ---clear Huvj.
+       apply Nat.add_sub_eq_r in Hj2; symmetry in Hj2.
+       rewrite Nat.sub_diag in Hj2.
        destruct k2; [ easy | ]; destruct k2.
-     +++clear Huvk.
+     +++clear Huvk Hj2.
         (* 9 *)
-
+        rewrite Nat.mul_1_l in Huv.
+        apply Nat.add_sub_eq_r in Hk2; symmetry in Hk2.
+        rewrite Nat.sub_diag in Hk2.
 ...
 (* suite *)
     **assert (Hrr : rad = 2) by flia Hr H6; clear H6.
