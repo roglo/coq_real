@@ -3177,6 +3177,11 @@ admit.
         rewrite Nat.mul_1_l in Huv.
         apply Nat.add_sub_eq_r in Hk2; symmetry in Hk2.
         rewrite Nat.sub_diag in Hk2.
+        apply NQnlt_ge in H4; apply H4; clear H4.
+        rewrite NQfrac_small. 2: {
+          split; [ easy | ].
+          rewrite A_split_first; [ | easy ].
+          replace (S i) with (i + 1) by flia.
 ...
 (* suite *)
     **assert (Hrr : rad = 2) by flia Hr H6; clear H6.
