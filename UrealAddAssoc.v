@@ -3185,6 +3185,7 @@ admit.
           replace k with (i + (k - i)) by flia Hk.
           apply Hu.
         }
+...
         destruct (eq_nat_dec (v (i + 1)) (rad - 1)) as [Hvr| Hvr]. 2: {
           rewrite NQfrac_small. 2: {
             split; [ easy | ].
