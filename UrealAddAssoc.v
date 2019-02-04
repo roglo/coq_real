@@ -3253,6 +3253,29 @@ Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
 Proof.
+(*
+pas mal, ça, faudrait que je le réessaie...
+intros * Hu Hv.
+specialize radix_ge_2 as Hr.
+symmetry; rewrite Nat.add_comm.
+unfold carry.
+remember (min_n i 0) as n eqn:Hn.
+destruct (LPO_fst (fA_ge_1_ε v i)) as [H1| H1].
+-specialize (P_999_start v (i + 1) 2) as H'1.
+ assert (H : ∀ k, v (i + 1 + k) ≤ 2 * (rad - 1)). {
+   intros k; rewrite <- Nat.add_assoc; apply Hv.
+ }
+ specialize (H'1 H); clear H.
+ assert (H : ∀ k, P v (i + 1 + k) = rad - 1). {
+   intros k.
+   rewrite Nat.add_shuffle0.
+   now apply all_fA_ge_1_ε_P_999.
+ }
+ specialize (H'1 H); clear H.
+ destruct (Nat.eq_dec (v (i + 1)) (2 * (rad - 1))) as [H2| H2].
+ +clear H'1.
+...
+*)
 intros * Hu Hv.
 specialize radix_ge_2 as Hr.
 symmetry; rewrite Nat.add_comm.
