@@ -3215,13 +3215,20 @@ admit.
           -rewrite <- NQmul_assoc.
            rewrite NQmul_pair_den_num; [ | easy ].
            rewrite NQmul_1_r, NQmul_1_l.
-(* si v(i+1)=rad-1, c'est la merde ; s'il est inférieur, c'est bon
-   car A v < 2 *)
+           eapply NQle_lt_trans.
+           +apply NQadd_le_mono_l.
+            apply A_upper_bound_for_add.
+            intros k; do 2 rewrite <- Nat.add_assoc; apply Hv.
+           +remember (n - (i + 1) - 1) as s eqn:Hs.
+            destruct (eq_nat_dec (v (i + 1)) (rad - 1)) as [Hvr| Hvr].
+            *rewrite Hvr.
 ...
-A_upper_bound_for_add:
-  ∀ (r : radix) (rg : ord_ring := nat_ord_ring) (u : nat → nat) (i n : nat),
-    (∀ k : nat, u (i + k + 1) ≤ 2 * (rad - 1))
-    → (A i n u ≤ 2 * (1 - 1 // rad ^ (n - i - 1)))%NQ
+            *apply (NQle_lt_trans _ ((rad - 2) // 1 + 2 * (1 - 1 // rad ^ s))%NQ).
+            --apply NQadd_le_mono_r.
+...
+            --rewrite NQmul_sub_distr_l, NQmul_1_r.
+...
+        }
 ...
            apply (NQlt_le_trans _ ((rad - 1) // 1 + 1)%NQ).
            +apply NQadd_le_lt_mono.
