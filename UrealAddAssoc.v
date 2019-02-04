@@ -3203,32 +3203,33 @@ admit.
             rewrite Nat.sub_add; [ | easy ].
             apply NQle_refl.
         }
-        rewrite NQfrac_small. 2: {
-          split; [ easy | ].
-          rewrite A_split_first; [ | easy ].
-          replace (S i) with (i + 1) by flia.
-          replace (v (i + 1)) with (v (i + 1) * 1) by flia.
-          rewrite NQpair_mul_r, <- NQmul_add_distr_r.
-          apply (NQmul_lt_mono_pos_r (rad // 1)%NQ).
-          -replace 0%NQ with (0 // 1)%NQ by easy.
-           apply NQlt_pair; [ easy | easy | cbn; flia Hr ].
-          -rewrite <- NQmul_assoc.
-           rewrite NQmul_pair_den_num; [ | easy ].
-           rewrite NQmul_1_r, NQmul_1_l.
-           eapply NQle_lt_trans.
-           +apply NQadd_le_mono_l.
-            apply A_upper_bound_for_add.
-            intros k; do 2 rewrite <- Nat.add_assoc; apply Hv.
-           +remember (n - (i + 1) - 1) as s eqn:Hs.
-            destruct (eq_nat_dec (v (i + 1)) (rad - 1)) as [Hvr| Hvr].
-            *rewrite Hvr.
-...
-            *apply (NQle_lt_trans _ ((rad - 2) // 1 + 2 * (1 - 1 // rad ^ s))%NQ).
-            --apply NQadd_le_mono_r.
-...
-            --rewrite NQmul_sub_distr_l, NQmul_1_r.
-...
-        }
+        destruct (eq_nat_dec (v (i + 1)) (rad - 1)) as [Hvr| Hvr]. 2: {
+          rewrite NQfrac_small. 2: {
+            split; [ easy | ].
+            rewrite A_split_first; [ | easy ].
+            replace (S i) with (i + 1) by flia.
+            replace (v (i + 1)) with (v (i + 1) * 1) by flia.
+            rewrite NQpair_mul_r, <- NQmul_add_distr_r.
+            apply (NQmul_lt_mono_pos_r (rad // 1)%NQ).
+            -replace 0%NQ with (0 // 1)%NQ by easy.
+             apply NQlt_pair; [ easy | easy | cbn; flia Hr ].
+            -rewrite <- NQmul_assoc.
+             rewrite NQmul_pair_den_num; [ | easy ].
+             rewrite NQmul_1_r, NQmul_1_l.
+             eapply NQle_lt_trans.
+             +apply NQadd_le_mono_l.
+              apply A_upper_bound_for_add.
+              intros k; do 2 rewrite <- Nat.add_assoc; apply Hv.
+             +remember (n - (i + 1) - 1) as s eqn:Hs.
+              apply (NQle_lt_trans _ ((rad - 2) // 1 + 2 * (1 - 1 // rad ^ s))%NQ).
+              *apply NQadd_le_mono_r.
+               admit. (* ok *)
+              *rewrite NQmul_sub_distr_l, NQmul_1_r.
+               admit. (* ok *)
+          }
+          (* mouais... ne vaudrait-il pas mieux traiter NQfrac(A i n u) (et v)
+             directement plutôt que de passer par NQfrac_small qui oblige, me
+             semble-t-il, à faire deux fois le même truc ? *)
 ...
            apply (NQlt_le_trans _ ((rad - 1) // 1 + 1)%NQ).
            +apply NQadd_le_lt_mono.
