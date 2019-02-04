@@ -3311,6 +3311,18 @@ assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
   intros k; rewrite <- Nat.add_assoc; apply Hv.
 }
 specialize (H1 H); specialize (H2 H); clear H.
+do 2 rewrite NQintg_add_frac.
+rewrite (NQfrac_small (A i nup u)). 2: {
+  split; [ easy | ].
+  apply A_upper_bound_for_dig.
+  intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
+}
+rewrite (NQfrac_small (A i nuv u)). 2: {
+  split; [ easy | ].
+  apply A_upper_bound_for_dig.
+  intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
+}
+rewrite NQfrac_P_M.
 ...
 remember (min_n i 0) as n eqn:Hn.
 destruct (LPO_fst (fA_ge_1_ε v i)) as [H1| H1].
