@@ -3180,28 +3180,10 @@ admit.
         apply NQnlt_ge in H4; apply H4; clear H4.
         rewrite NQfrac_small. 2: {
           split; [ easy | ].
-          rewrite A_split_first; [ | easy ].
-          replace (S i) with (i + 1) by flia.
-          replace (u (i + 1)) with (u (i + 1) * 1) by flia.
-          rewrite NQpair_mul_r, <- NQmul_add_distr_r.
-          apply (NQmul_lt_mono_pos_r (rad // 1)%NQ).
-          -replace 0%NQ with (0 // 1)%NQ by easy.
-           apply NQlt_pair; [ easy | easy | cbn; flia Hr ].
-          -rewrite <- NQmul_assoc.
-           rewrite NQmul_pair_den_num; [ | easy ].
-           rewrite NQmul_1_r, NQmul_1_l.
-           apply (NQlt_le_trans _ ((rad - 1) // 1 + 1)%NQ).
-           +apply NQadd_le_lt_mono.
-            *rewrite <- Huv; unfold "⊕".
-             apply NQle_pair; [ easy | easy | flia ].
-            *apply A_upper_bound_for_dig.
-             intros k Hk.
-             replace k with (i + (k - i)) by flia Hk.
-             apply Hu.
-           +rewrite NQadd_pair; [ | easy | easy ].
-            do 2 rewrite Nat.mul_1_r.
-            rewrite Nat.sub_add; [ | easy ].
-            apply NQle_refl.
+          apply A_upper_bound_for_dig.
+          intros k Hk.
+          replace k with (i + (k - i)) by flia Hk.
+          apply Hu.
         }
         destruct (eq_nat_dec (v (i + 1)) (rad - 1)) as [Hvr| Hvr]. 2: {
           rewrite NQfrac_small. 2: {
