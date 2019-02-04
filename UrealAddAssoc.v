@@ -3250,6 +3250,16 @@ Abort. (*
 ...
 *)
 
+Theorem NQintg_A_for_dig {r : radix} : ∀ i n u,
+  (∀ k, i + 1 ≤ k ≤ n - 1 → u k ≤ rad - 1)
+  → NQintg (A i n u) = 0.
+Proof.
+intros * Hur.
+apply NQintg_small.
+split; [ easy | ].
+now apply A_upper_bound_for_dig.
+Qed.
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -3286,6 +3296,21 @@ rewrite NQintg_add; [ symmetry | easy | easy ].
 do 2 rewrite Nat.add_assoc.
 remember (NQintg (A i nv v) + NQintg (A i nup u)) as x eqn:Hx.
 rewrite Nat.add_comm in Hx; subst x.
+rewrite NQintg_P_M, Nat.add_0_r.
+rewrite (NQintg_A_for_dig _ _ u), Nat.add_0_l. 2: {
+  intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
+}
+rewrite (NQintg_A_for_dig _ _ u), Nat.add_0_l. 2: {
+  intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
+}
+specialize (NQintg_A_le_1_for_add v i kv) as H1.
+rewrite <- Hnv in H1.
+specialize (NQintg_A_le_1_for_add v i kuv) as H2.
+rewrite <- Hnuv in H2.
+assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+  intros k; rewrite <- Nat.add_assoc; apply Hv.
+}
+specialize (H1 H); specialize (H2 H); clear H.
 ...
 remember (min_n i 0) as n eqn:Hn.
 destruct (LPO_fst (fA_ge_1_ε v i)) as [H1| H1].
