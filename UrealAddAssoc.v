@@ -3202,6 +3202,7 @@ Print min_n.
 (* j'ai des doutes : est-ce que ça sert vraiment d'avoir fait appel
    à P_999_start ? ça complique le nombre de cas et ça ne permet pas
    vraiment de simplifier les preuves *)
+Abort. (*
 ...
         destruct (eq_nat_dec (v (i + 1)) (rad - 1)) as [Hvr| Hvr]. 2: {
           rewrite NQfrac_small. 2: {
@@ -3247,18 +3248,40 @@ Print min_n.
     **assert (Hrr : rad = 2) by flia Hr H6; clear H6.
       (* in binary *)
 ...
+*)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
 Proof.
-(*
-pas mal, ça, faudrait que je le réessaie...
+(**)
 intros * Hu Hv.
 specialize radix_ge_2 as Hr.
 symmetry; rewrite Nat.add_comm.
 unfold carry.
+remember
+  (match LPO_fst (fA_ge_1_ε v i) with
+   | inl _ => 0
+   | inr (exist _ k _) => k
+   end) as kv eqn:Hkv.
+remember
+  (match LPO_fst (fA_ge_1_ε (u ⊕ P v) i) with
+   | inl _ => 0
+   | inr (exist _ k _) => k
+   end) as kup eqn:Hkup.
+remember
+  (match LPO_fst (fA_ge_1_ε (u ⊕ v) i) with
+   | inl _ => 0
+   | inr (exist _ k _) => k
+   end) as kuv eqn:Hkuv.
+move kuv before kv; move kup before kv.
+remember (min_n i kv) as nv eqn:Hnv.
+remember (min_n i kup) as nup eqn:Hnup.
+remember (min_n i kuv) as nuv eqn:Hnuv.
+move nuv before kuv; move nup before kuv; move nv before kuv.
+do 2 rewrite A_additive.
+...
 remember (min_n i 0) as n eqn:Hn.
 destruct (LPO_fst (fA_ge_1_ε v i)) as [H1| H1].
 -specialize (P_999_start v (i + 1) 2) as H'1.
@@ -3275,7 +3298,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H1| H1].
  destruct (Nat.eq_dec (v (i + 1)) (2 * (rad - 1))) as [H2| H2].
  +clear H'1.
 ...
-*)
+(**)
 intros * Hu Hv.
 specialize radix_ge_2 as Hr.
 symmetry; rewrite Nat.add_comm.
