@@ -3195,6 +3195,13 @@ admit.
          replace (S i) with (i + 1) by flia.
          unfold "⊕" in Huv; rewrite Huv.
          rewrite <- NQadd_assoc, <- NQmul_add_distr_r.
+unfold carry in Hk2.
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1))) as [H7| H7].
+Search (min_n (_ + _)).
+Print min_n.
+(* j'ai des doutes : est-ce que ça sert vraiment d'avoir fait appel
+   à P_999_start ? ça complique le nombre de cas et ça ne permet pas
+   vraiment de simplifier les preuves *)
 ...
         destruct (eq_nat_dec (v (i + 1)) (rad - 1)) as [Hvr| Hvr]. 2: {
           rewrite NQfrac_small. 2: {
