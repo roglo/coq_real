@@ -3284,6 +3284,8 @@ do 2 rewrite A_additive.
 rewrite NQintg_add; [ symmetry | easy | easy ].
 rewrite NQintg_add; [ symmetry | easy | easy ].
 do 2 rewrite Nat.add_assoc.
+remember (NQintg (A i nv v) + NQintg (A i nup u)) as x eqn:Hx.
+rewrite Nat.add_comm in Hx; subst x.
 ...
 remember (min_n i 0) as n eqn:Hn.
 destruct (LPO_fst (fA_ge_1_ε v i)) as [H1| H1].
