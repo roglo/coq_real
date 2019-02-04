@@ -3281,6 +3281,9 @@ remember (min_n i kup) as nup eqn:Hnup.
 remember (min_n i kuv) as nuv eqn:Hnuv.
 move nuv before kuv; move nup before kuv; move nv before kuv.
 do 2 rewrite A_additive.
+rewrite NQintg_add; [ symmetry | easy | easy ].
+rewrite NQintg_add; [ symmetry | easy | easy ].
+do 2 rewrite Nat.add_assoc.
 ...
 remember (min_n i 0) as n eqn:Hn.
 destruct (LPO_fst (fA_ge_1_ε v i)) as [H1| H1].
