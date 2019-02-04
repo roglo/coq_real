@@ -3185,6 +3185,16 @@ admit.
           replace k with (i + (k - i)) by flia Hk.
           apply Hu.
         }
+        destruct (NQlt_le_dec (A i n v) 1) as [Hv1| Hv1].
+      ***rewrite NQfrac_small; [ | easy ].
+         rewrite A_split_first; [ rewrite NQadd_comm | easy ].
+         rewrite A_split_first; [ rewrite NQadd_comm | easy ].
+         rewrite NQadd_assoc, NQadd_add_swap, NQadd_comm.
+         do 2 rewrite NQadd_assoc.
+         rewrite <- NQpair_add_l, Nat.add_comm.
+         replace (S i) with (i + 1) by flia.
+         unfold "⊕" in Huv; rewrite Huv.
+         rewrite <- NQadd_assoc, <- NQmul_add_distr_r.
 ...
         destruct (eq_nat_dec (v (i + 1)) (rad - 1)) as [Hvr| Hvr]. 2: {
           rewrite NQfrac_small. 2: {
