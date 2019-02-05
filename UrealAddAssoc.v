@@ -3272,18 +3272,6 @@ specialize radix_ge_2 as Hr.
 intros Hur Hut n l.
 revert n.
 induction l; intros; [ now rewrite Nat.add_0_r | ].
-...
-
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hur Hut l.
-...
-replace (min_n i k) with (min_n i 0 + rad * k). 2: {
-  unfold min_n.
-  rewrite Nat.add_0_r.
-  do 3 rewrite Nat.mul_add_distr_l.
-  apply Nat.add_shuffle0.
-}
 rewrite <- ApB_A. 2: {
   unfold min_n.
   destruct rad; [ easy | cbn; flia ].
@@ -3291,20 +3279,22 @@ rewrite <- ApB_A. 2: {
 rewrite NQintg_add; [ | easy | apply B_ge_0 ].
 rewrite <- Nat.add_0_r, <- Nat.add_assoc.
 apply Nat.add_cancel_l, Nat.eq_add_0.
-assert (HB : (0 ≤ B i (min_n i 0) u (rad * k) < 1)%NQ). {
+assert (HB : (0 ≤ B i (min_n i n) u (S l) < 1)%NQ). {
   split; [ apply B_ge_0 | ].
   eapply NQlt_le_trans.
   -apply B_upper_bound_for_add.
    intros j Hj.
    replace j with (i + (j - i)) by flia Hj.
    apply Hur.
-  -apply NQle_pair; [ pauto | easy | cbn; flia Hr ].
+  -apply NQle_pair; [ pauto | easy | ].
+   do 2 rewrite Nat.mul_1_r.
+   now apply Nat_pow_ge_1.
 }
 split; [ now apply NQintg_small | ].
 rewrite NQintg_add_frac.
 destruct
   (NQlt_le_dec
-     (NQfrac (A i (min_n i 0) u) + NQfrac (B i (min_n i 0) u (rad * k))) 1)
+     (NQfrac (A i (min_n i n) u) + NQfrac (B i (min_n i n) u (S l))) 1)
   as [H1| H1]; [ easy | exfalso ].
 apply NQnlt_ge in H1; apply H1; clear H1.
 rewrite (NQfrac_small (B _ _ _ _)); [ | easy ].
