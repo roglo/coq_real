@@ -3323,8 +3323,8 @@ rewrite (NQfrac_small (A i nuv u)). 2: {
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
 }
 rewrite NQfrac_P_M.
-(* est-ce que NQintg (A i nv v) = NQintg (A i nuv v) ? *)
 ...
+(* est-ce que NQintg (A i nv v) = NQintg (A i nuv v) ? *)
 assert (NQintg (A i nv v) = NQintg (A i nuv v)). {
   subst.
   destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
@@ -3353,6 +3353,18 @@ assert (NQintg (A i nv v) = NQintg (A i nuv v)). {
    rewrite NQintg_add_frac.
    destruct (NQlt_le_dec (NQfrac (A i n v) + NQfrac (B i n v (rad * j))) 1)
      as [H4| H4]; [ now rewrite Nat.add_0_r | exfalso ].
+   rewrite (NQfrac_small (B _ _ _ _)) in H4. 2: {
+     split; [ apply B_ge_0 | ].
+     rewrite Hn.
+     eapply NQlt_trans.
+     -apply B_upper_bound_for_add.
+      intros k Hk.
+      replace k with (i + (k - i)) by flia Hk; apply Hv.
+     -apply NQlt_pair; [ pauto | easy | cbn; flia Hr ].
+   }
+   apply A_ge_1_false_iff in Hj.
+   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε v i) H3 0) as H5.
+   rewrite <- Hn, Nat.pow_1_r in H5.
 ...
 remember (min_n i 0) as n eqn:Hn.
 destruct (LPO_fst (fA_ge_1_ε v i)) as [H1| H1].
