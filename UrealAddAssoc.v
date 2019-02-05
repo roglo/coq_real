@@ -2725,7 +2725,7 @@ destruct H'3 as [H'3| [H'3| H'3]].
 Qed.
 
 (* generalizes A_all_9 and A_all_18 *)
-Theorem glop {r : radix} : ∀ u i m n,
+Theorem A_all_nth_pred_rad {r : radix} : ∀ u i m n,
   (∀ k : nat, i + k + 1 < n → u (i + k + 1) = m * (rad - 1))
   → A i n u = (m // 1 - m // rad ^ (n - i - 1))%NQ.
 Proof.
@@ -3158,7 +3158,8 @@ destruct j.
     destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H5| H5].
    ++clear H'2.
      (* je pense que H5 devrait contredire Ha1 *)
-admit.
+Abort. (*
+...
 (* suite *)
    ++destruct (le_dec 3 rad) as [H6| H6].
     **remember ((u ⊕ v) (i + 1) / rad + 1) as j2 eqn:Hj2.
@@ -3224,9 +3225,9 @@ Abort. (*
              +remember (n - (i + 1) - 1) as s eqn:Hs.
               apply (NQle_lt_trans _ ((rad - 2) // 1 + 2 * (1 - 1 // rad ^ s))%NQ).
               *apply NQadd_le_mono_r.
-               admit. (* ok *)
+... (* ok *)
               *rewrite NQmul_sub_distr_l, NQmul_1_r.
-               admit. (* ok *)
+... (* ok *)
           }
           (* mouais... ne vaudrait-il pas mieux traiter NQfrac(A i n u) (et v)
              directement plutôt que de passer par NQfrac_small qui oblige, me
@@ -3249,6 +3250,7 @@ Abort. (*
       (* in binary *)
 ...
 *)
+*)
 
 Theorem NQintg_A_for_dig {r : radix} : ∀ i n u,
   (∀ k, i + 1 ≤ k ≤ n - 1 → u k ≤ rad - 1)
@@ -3259,6 +3261,13 @@ apply NQintg_small.
 split; [ easy | ].
 now apply A_upper_bound_for_dig.
 Qed.
+
+Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
+  (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k, NQintg (A i (min_n i k) u) = NQintg (A i (min_n i 0) u).
+Proof.
+intros * Hur k.
+...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
@@ -3337,7 +3346,8 @@ destruct na.
    destruct (LPO_fst (fA_ge_1_ε v i)) as [H2| H2].
   --subst kv.
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε v i) H2) as H5.
-Print carry.
+...
+    specialize (all_fA_ge_1_ε_NQintg_A i v H2) as H6.
 ...
 (* est-ce que NQintg (A i nv v) = NQintg (A i nuv v) ? *)
 assert (NQintg (A i nv v) = NQintg (A i nuv v)). {
