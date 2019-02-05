@@ -3334,9 +3334,12 @@ destruct na.
  +rewrite Nat.add_0_r.
   destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H4| H4].
   *rewrite Nat.mod_0_l; [ | easy ].
+   destruct (LPO_fst (fA_ge_1_ε v i)) as [H2| H2].
+  --subst kv.
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε v i) H2) as H5.
+Print carry.
 ...
 (* est-ce que NQintg (A i nv v) = NQintg (A i nuv v) ? *)
-...
 assert (NQintg (A i nv v) = NQintg (A i nuv v)). {
   subst.
   destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
