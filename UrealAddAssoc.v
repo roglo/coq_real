@@ -3324,6 +3324,7 @@ rewrite (NQfrac_small (A i nuv u)). 2: {
 }
 rewrite NQfrac_P_M.
 (* est-ce que NQintg (A i nv v) = NQintg (A i nuv v) ? *)
+...
 assert (NQintg (A i nv v) = NQintg (A i nuv v)). {
   subst.
   destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
