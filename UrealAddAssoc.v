@@ -3283,29 +3283,37 @@ rewrite <- ApB_A. 2: {
 rewrite NQintg_add; [ | easy | apply B_ge_0 ].
 rewrite <- Nat.add_0_r, <- Nat.add_assoc.
 apply Nat.add_cancel_l, Nat.eq_add_0.
-split.
--apply NQintg_small.
- split; [ apply B_ge_0 | ].
- eapply NQlt_le_trans.
- +apply B_upper_bound_for_add.
-  intros j Hj.
-  replace j with (i + (j - i)) by flia Hj.
-  apply Hur.
- +apply NQle_pair; [ pauto | easy | cbn; flia Hr ].
--rewrite NQintg_add_frac.
- destruct
-   (NQlt_le_dec
-      (NQfrac (A i (min_n i 0) u) + NQfrac (B i (min_n i 0) u (rad * k))) 1)
-   as [H1| H1]; [ easy | exfalso ].
- apply NQnlt_ge in H1; apply H1; clear H1.
+assert (HB : (0 ≤ B i (min_n i 0) u (rad * k) < 1)%NQ). {
+  split; [ apply B_ge_0 | ].
+  eapply NQlt_le_trans.
+  -apply B_upper_bound_for_add.
+   intros j Hj.
+   replace j with (i + (j - i)) by flia Hj.
+   apply Hur.
+  -apply NQle_pair; [ pauto | easy | cbn; flia Hr ].
+}
+split; [ now apply NQintg_small | ].
+rewrite NQintg_add_frac.
+destruct
+  (NQlt_le_dec
+     (NQfrac (A i (min_n i 0) u) + NQfrac (B i (min_n i 0) u (rad * k))) 1)
+  as [H1| H1]; [ easy | exfalso ].
+apply NQnlt_ge in H1; apply H1; clear H1.
+rewrite (NQfrac_small (B _ _ _ _)); [ | easy ].
 Search (NQfrac (A _ _ _)).
 ...
-Search B.
+fApB_upper_bound_for_mul:
+  ∀ (r : radix) (u : nat → nat) (i k l : nat),
+    (∀ j : nat, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
+    → (NQfrac (A i (min_n i k) u) + B i (min_n i k) u l < 1 + 1 // rad ^ S k)%NQ
+fApB_lower_bound:
+  ∀ (r : radix) (u : nat → nat) (i k l : nat),
+    (∀ k0 : nat, fA_ge_1_ε u i k0 = true)
+    → (1 - 1 // rad ^ S k ≤ NQfrac (A i (min_n i k) u) + B i (min_n i k) u l)%NQ
 B_upper_bound_for_add:
   ∀ (r : radix) (u : nat → nat) (i k l : nat),
     (∀ j : nat, j ≥ i → u j ≤ 2 * (rad - 1))
     → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ
-Search (NQintg (B _ _ _ _)).
 ...
 Search (∀ _, fA_ge_1_ε _ _ _ = true).
 ...
