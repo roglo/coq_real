@@ -3265,11 +3265,19 @@ Qed.
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k, NQintg (A i (min_n i k) u) = NQintg (A i (min_n i 0) u).
+  → ∀ n l, NQintg (A i (min_n i n + l) u) = NQintg (A i (min_n i n) u).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur Hut k.
+intros Hur Hut n l.
+revert n.
+induction l; intros; [ now rewrite Nat.add_0_r | ].
+...
+
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hut l.
+...
 replace (min_n i k) with (min_n i 0 + rad * k). 2: {
   unfold min_n.
   rewrite Nat.add_0_r.
@@ -3317,6 +3325,23 @@ B_upper_bound_for_add:
 ...
 Search (∀ _, fA_ge_1_ε _ _ _ = true).
 ...
+
+Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ i u,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k, NQintg (A i (min_n i k) u) = NQintg (A i (min_n i 0) u).
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hut k.
+replace (min_n i k) with (min_n i 0 + rad * k). 2: {
+  unfold min_n.
+  rewrite Nat.add_0_r.
+  do 3 rewrite Nat.mul_add_distr_l.
+  apply Nat.add_shuffle0.
+}
+now apply all_fA_ge_1_ε_NQintg_A.
+Qed.
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
