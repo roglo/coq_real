@@ -3323,6 +3323,18 @@ rewrite (NQfrac_small (A i nuv u)). 2: {
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
 }
 rewrite NQfrac_P_M.
+remember (NQintg (A i nuv v)) as na eqn:Hna.
+symmetry in Hna.
+destruct na.
+-clear H2; rewrite Nat.add_0_l.
+ rewrite NQfrac_small. 2: {
+   split; [ easy | now apply eq_NQintg_0 ].
+ }
+ destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1) as [H3| H3].
+ +rewrite Nat.add_0_r.
+  destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H4| H4].
+  *rewrite Nat.mod_0_l; [ | easy ].
+...
 (* est-ce que NQintg (A i nv v) = NQintg (A i nuv v) ? *)
 ...
 assert (NQintg (A i nv v) = NQintg (A i nuv v)). {
