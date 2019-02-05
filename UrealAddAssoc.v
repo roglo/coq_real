@@ -3332,6 +3332,11 @@ rewrite (NQfrac_small (A i nuv u)). 2: {
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
 }
 rewrite NQfrac_P_M.
+....
+rewrite Hnv, Hnuv at 1.
+rewrite all_fA_ge_1_ε_NQintg_A; symmetry.
+rewrite all_fA_ge_1_ε_NQintg_A; symmetry.
+...
 remember (NQintg (A i nuv v)) as na eqn:Hna.
 symmetry in Hna.
 destruct na.
