@@ -3266,7 +3266,27 @@ Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, NQintg (A i (min_n i k) u) = NQintg (A i (min_n i 0) u).
 Proof.
-intros * Hur k.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur k.
+replace (min_n i k) with (min_n i 0 + rad * k). 2: {
+  unfold min_n.
+  rewrite Nat.add_0_r.
+  do 3 rewrite Nat.mul_add_distr_l.
+  apply Nat.add_shuffle0.
+}
+rewrite <- ApB_A. 2: {
+  unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
+rewrite NQintg_add; [ | easy | apply B_ge_0 ].
+rewrite <- Nat.add_0_r, <- Nat.add_assoc.
+apply Nat.add_cancel_l.
+apply Nat.eq_add_0.
+split.
+Search (NQintg (B _ _ _ _)).
+...
+Search (∀ _, fA_ge_1_ε _ _ _ = true).
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
