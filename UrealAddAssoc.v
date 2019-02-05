@@ -3324,6 +3324,16 @@ rewrite (NQfrac_small (A i nuv u)). 2: {
 }
 rewrite NQfrac_P_M.
 (* est-ce que NQintg (A i nv v) = NQintg (A i nuv v) ? *)
+assert (NQintg (A i nv v) = NQintg (A i nuv v)). {
+  subst.
+  destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
+  -destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H4| H4]; [ easy | ].
+   destruct H4 as (j & Hjj & Hj).
+   move j before i; move H2 before H1.
+   remember (min_n i 0) as n eqn:Hn.
+   replace (min_n i j) with (n + rad * j) in *. 2: {
+     rewrite Hn; unfold min_n; flia.
+   }
 ...
 remember (min_n i 0) as n eqn:Hn.
 destruct (LPO_fst (fA_ge_1_ε v i)) as [H1| H1].
