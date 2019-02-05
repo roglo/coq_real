@@ -3334,6 +3334,24 @@ assert (NQintg (A i nv v) = NQintg (A i nuv v)). {
    replace (min_n i j) with (n + rad * j) in *. 2: {
      rewrite Hn; unfold min_n; flia.
    }
+   rewrite <- ApB_A. 2: {
+     rewrite Hn; unfold min_n.
+     destruct rad; [ easy | cbn; flia ].
+   }
+   rewrite NQintg_add; [ | easy | apply B_ge_0 ].
+   rewrite (NQintg_small (B i n v _)). 2: {
+     split; [ apply B_ge_0 | ].
+     rewrite Hn.
+     eapply NQlt_trans.
+     -apply B_upper_bound_for_add.
+      intros k Hk.
+      replace k with (i + (k - i)) by flia Hk; apply Hv.
+     -apply NQlt_pair; [ pauto | easy | cbn; flia Hr ].
+   }
+   rewrite Nat.add_0_r.
+   rewrite NQintg_add_frac.
+   destruct (NQlt_le_dec (NQfrac (A i n v) + NQfrac (B i n v (rad * j))) 1)
+     as [H4| H4]; [ now rewrite Nat.add_0_r | exfalso ].
 ...
 remember (min_n i 0) as n eqn:Hn.
 destruct (LPO_fst (fA_ge_1_ε v i)) as [H1| H1].
