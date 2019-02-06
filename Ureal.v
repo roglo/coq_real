@@ -1150,6 +1150,17 @@ rewrite NQsub_diag.
 apply B_ge_0.
 Qed.
 
+Theorem fApB_upper_bound_for_add {r : radix} : ∀ u i,
+  (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
+  → ∀ k l,
+      (NQfrac (A i (min_n i k) u) + B i (min_n i k) u l <
+      1 + 1 // rad ^ S k)%NQ.
+Proof.
+intros * Hur *.
+apply NQadd_lt_mono; [ apply NQfrac_lt_1 | ].
+apply B_upper_bound_for_add, Hur.
+Qed.
+
 Theorem fApB_upper_bound_for_mul {r : radix} : ∀ u i k l,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → (NQfrac (A i (min_n i k) u) + B i (min_n i k) u l <

@@ -3270,6 +3270,11 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hut k l.
+specialize (fApB_upper_bound_for_add u i) as H1.
+assert (H : ∀ j, j ≥ i → u j ≤ 2 * (rad - 1)). {
+  intros j Hj; replace j with (i + (j - i)) by flia Hj; apply Hur.
+}
+specialize (H1 H); clear H.
 induction l.
 -unfold B; rewrite Nat.add_0_r.
  rewrite summation_empty. 2: {
@@ -3283,13 +3288,14 @@ induction l.
  destruct l.
  +unfold B; rewrite Nat.add_sub, summation_only_one.
   clear IHl. (* because became trivial *)
-  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) Hut) as H1.
+  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) Hut) as H2.
+  specialize (H2 k) as H3; rewrite <- Hn in H3.
   (* ouais, chais pas bien... *)
 ...
-fApB_upper_bound_for_mul:
-  ∀ (r : radix) (u : nat → nat) (i k l : nat),
-    (∀ j : nat, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
-    → (NQfrac (A i (min_n i k) u) + B i (min_n i k) u l < 1 + 1 // rad ^ S k)%NQ
+fApB_upper_bound_for_add
+     : ∀ (u : nat → nat) (i k l : nat),
+         (∀ j : nat, j ≥ i → u j ≤ 2 * (rad - 1))
+         → (NQfrac (A i (min_n i k) u) + B i (min_n i k) u l < 1 + 1 // rad ^ S k)%NQ
 fApB_lower_bound:
   ∀ (r : radix) (u : nat → nat) (i k l : nat),
     (∀ k0 : nat, fA_ge_1_ε u i k0 = true)
