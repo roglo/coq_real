@@ -3277,8 +3277,8 @@ assert (H : ∀ j, j ≥ i → u j ≤ 2 * (rad - 1)). {
 specialize (H1 H k).
 specialize (B_upper_bound_for_add u i k l H) as H2; clear H.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) Hut) as H3.
+...
 remember (NQfrac (A i (min_n i k) u)) as x eqn:Hx.
-Abort. (*
 ...
 induction l.
 -unfold B; rewrite Nat.add_0_r.
@@ -3347,12 +3347,10 @@ destruct
      (NQfrac (A i (min_n i k) u) + NQfrac (B i (min_n i k) u l)) 1)
   as [H1| H1]; [ easy | exfalso ].
 apply NQnlt_ge in H1; apply H1; clear H1.
-rewrite (NQfrac_small (B _ _ _ _)); [ | easy ].
-Abort. (*
+rewrite (NQfrac_small (B _ _ _ _)); [ clear HB | easy ].
 ...
 now apply all_fA_ge_1_ε_NQfrac_A_B.
 ...
-*)
 
 Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ i u,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
