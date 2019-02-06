@@ -3262,43 +3262,24 @@ split; [ easy | ].
 now apply A_upper_bound_for_dig.
 Qed.
 
-Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
+Theorem all_fA_ge_1_ε_NQfrac_A_B {r : radix} : ∀ i u,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ n l, NQintg (A i (min_n i n + l) u) = NQintg (A i (min_n i n) u).
+  → ∀ k l, (NQfrac (A i (min_n i k) u) + B i (min_n i k) u l < 1)%NQ.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur Hut n l.
-revert n.
-induction l; intros; [ now rewrite Nat.add_0_r | ].
-rewrite <- ApB_A. 2: {
-  unfold min_n.
-  destruct rad; [ easy | cbn; flia ].
-}
-rewrite NQintg_add; [ | easy | apply B_ge_0 ].
-rewrite <- Nat.add_0_r, <- Nat.add_assoc.
-apply Nat.add_cancel_l, Nat.eq_add_0.
-assert (HB : (0 ≤ B i (min_n i n) u (S l) < 1)%NQ). {
-  split; [ apply B_ge_0 | ].
-  eapply NQlt_le_trans.
-  -apply B_upper_bound_for_add.
-   intros j Hj.
-   replace j with (i + (j - i)) by flia Hj.
-   apply Hur.
-  -apply NQle_pair; [ pauto | easy | ].
-   do 2 rewrite Nat.mul_1_r.
-   now apply Nat_pow_ge_1.
-}
-split; [ now apply NQintg_small | ].
-rewrite NQintg_add_frac.
-destruct
-  (NQlt_le_dec
-     (NQfrac (A i (min_n i n) u) + NQfrac (B i (min_n i n) u (S l))) 1)
-  as [H1| H1]; [ easy | exfalso ].
-apply NQnlt_ge in H1; apply H1; clear H1.
-rewrite (NQfrac_small (B _ _ _ _)); [ | easy ].
-Search (NQfrac (A _ _ _)).
+intros Hur Hut k l.
+induction l.
+-unfold B; rewrite Nat.add_0_r.
+ rewrite summation_empty. 2: {
+   apply Nat.sub_lt; [ | pauto ].
+   unfold min_n.
+   destruct rad; [ easy | cbn; flia ].
+ }
+ rewrite NQadd_0_r.
+ apply NQfrac_lt_1.
+-remember (min_n i k) as n eqn:Hn.
 ...
 fApB_upper_bound_for_mul:
   ∀ (r : radix) (u : nat → nat) (i k l : nat),
@@ -3314,6 +3295,44 @@ B_upper_bound_for_add:
     → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ
 ...
 Search (∀ _, fA_ge_1_ε _ _ _ = true).
+...
+
+Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ n l, NQintg (A i (min_n i n + l) u) = NQintg (A i (min_n i n) u).
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hut n l.
+rewrite <- ApB_A. 2: {
+  unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
+rewrite NQintg_add; [ | easy | apply B_ge_0 ].
+rewrite <- Nat.add_0_r, <- Nat.add_assoc.
+apply Nat.add_cancel_l, Nat.eq_add_0.
+assert (HB : (0 ≤ B i (min_n i n) u l < 1)%NQ). {
+  split; [ apply B_ge_0 | ].
+  eapply NQlt_le_trans.
+  -apply B_upper_bound_for_add.
+   intros j Hj.
+   replace j with (i + (j - i)) by flia Hj.
+   apply Hur.
+  -apply NQle_pair; [ pauto | easy | ].
+   do 2 rewrite Nat.mul_1_r.
+   now apply Nat_pow_ge_1.
+}
+split; [ now apply NQintg_small | ].
+rewrite NQintg_add_frac.
+destruct
+  (NQlt_le_dec
+     (NQfrac (A i (min_n i n) u) + NQfrac (B i (min_n i n) u l)) 1)
+  as [H1| H1]; [ easy | exfalso ].
+apply NQnlt_ge in H1; apply H1; clear H1.
+rewrite (NQfrac_small (B _ _ _ _)); [ | easy ].
+...
+now apply all_fA_ge_1_ε_NQfrac_A_B.
 ...
 
 Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ i u,
