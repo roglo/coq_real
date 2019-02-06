@@ -3348,9 +3348,11 @@ destruct
   as [H1| H1]; [ easy | exfalso ].
 apply NQnlt_ge in H1; apply H1; clear H1.
 rewrite (NQfrac_small (B _ _ _ _)); [ | easy ].
+Abort. (*
 ...
 now apply all_fA_ge_1_ε_NQfrac_A_B.
 ...
+*)
 
 Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ i u,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -3366,6 +3368,7 @@ replace (min_n i k) with (min_n i 0 + rad * k). 2: {
   do 3 rewrite Nat.mul_add_distr_l.
   apply Nat.add_shuffle0.
 }
+...
 now apply all_fA_ge_1_ε_NQintg_A.
 Qed.
 
