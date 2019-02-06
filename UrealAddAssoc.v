@@ -3280,6 +3280,11 @@ induction l.
  rewrite NQadd_0_r.
  apply NQfrac_lt_1.
 -remember (min_n i k) as n eqn:Hn.
+ destruct l.
+ +unfold B; rewrite Nat.add_sub, summation_only_one.
+  clear IHl. (* because became trivial *)
+  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) Hut) as H1.
+  (* ouais, chais pas bien... *)
 ...
 fApB_upper_bound_for_mul:
   ∀ (r : radix) (u : nat → nat) (i k l : nat),

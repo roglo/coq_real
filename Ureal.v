@@ -1406,6 +1406,21 @@ f_equal; f_equal.
 destruct i; flia.
 Qed.
 
+Theorem B_split_last {r : radix} : ∀ i n u l,
+  1 < l
+  → B i n u l =
+     (B i n u (l - 1) + u (n + l - 1)%nat // rad ^ (n + l - i - 1))%NQ.
+Proof.
+intros * Hl.
+unfold B.
+replace (n + l - 1) with (S (n + (l - 1) - 1)) at 1 by flia Hl.
+rewrite summation_split_last; [ | flia ].
+cbn; f_equal.
+replace (S (n + (l - 1) - 1)) with (n + l - 1) by flia Hl.
+f_equal; f_equal.
+destruct i; [ flia | flia Hl ].
+Qed.
+
 Theorem A_dig_seq_ub {r : radix} : ∀ u n i,
   (∀ j, i < j < n → u j < rad)
   → i + 1 ≤ n - 1
