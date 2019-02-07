@@ -3315,6 +3315,39 @@ Search (∀ _, fA_ge_1_ε _ _ _ = true).
 ...
 *)
 
+Theorem B_lt_1 {r : radix} : ∀ i n u,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → i + 1 < n - 1
+  → (B i n u 1 < 1)%NQ.
+Proof.
+intros * Hur Hin.
+specialize radix_ge_2 as Hr.
+rewrite B_of_A; [ | flia Hin ].
+unfold A.
+rewrite Nat.add_sub, Nat.sub_add; [ | flia Hin ].
+rewrite summation_only_one.
+replace (n - (n - 1)) with 1 by flia Hin.
+rewrite Nat.pow_1_r.
+rewrite NQmul_pair; [ | pauto | pauto ].
+rewrite Nat.mul_1_r, <- Nat.pow_succ_r'.
+replace (S (n - i - 1)) with (n - i) by flia Hin.
+apply NQlt_pair; [ pauto | easy | ].
+do 2 rewrite Nat.mul_1_r.
+replace n with (i + (n - i)) at 1 by flia Hin.
+eapply le_lt_trans; [ apply Hur | ].
+remember (n - i) as m eqn:Hm.
+destruct m; [ flia Hin Hm | ].
+destruct m; [ flia Hin Hm | ].
+destruct m; [ flia Hin Hm | ].
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+apply (lt_le_trans _ (2 * rad)).
+-apply Nat.sub_lt; [ flia Hr | pauto ].
+-apply (le_trans _ (rad * S (S (S m)))).
+ +rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono_l; flia.
+ +apply Nat.lt_le_incl, Nat_mul_lt_pow; [ easy | flia ].
+Qed.
+
 Theorem NQintg_A_slow_incr {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
@@ -3338,57 +3371,32 @@ replace x with (x + 0) in Hlt at 1 by easy; subst x.
 rewrite <- Nat.add_assoc in Hlt.
 apply Nat.add_lt_mono_l in Hlt.
 rewrite <- Nat.add_assoc; f_equal.
-assert (HB : (B i n u 1 < 1)%NQ). {
-  rewrite B_of_A; [ | flia Hin ].
-  unfold A.
-  rewrite Nat.add_sub, Nat.sub_add; [ | flia Hin ].
-  rewrite summation_only_one.
-  replace (n - (n - 1)) with 1 by flia Hin.
-  rewrite Nat.pow_1_r.
-  rewrite NQmul_pair; [ | pauto | pauto ].
-  rewrite Nat.mul_1_r, <- Nat.pow_succ_r'.
-  replace (S (n - i - 1)) with (n - i) by flia Hin.
-  apply NQlt_pair; [ pauto | easy | ].
-  do 2 rewrite Nat.mul_1_r.
-  replace n with (i + (n - i)) at 1 by flia Hin.
-  eapply le_lt_trans; [ apply Hur | ].
-  remember (n - i) as m eqn:Hm.
-  destruct m; [ flia Hin Hm | ].
-  destruct m; [ flia Hin Hm | ].
-  destruct m; [ flia Hin Hm | ].
-  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-  apply (lt_le_trans _ (2 * rad)).
-  -apply Nat.sub_lt; [ flia Hr | pauto ].
-  -apply (le_trans _ (rad * S (S (S m)))).
-   +rewrite Nat.mul_comm.
-    apply Nat.mul_le_mono_l; flia.
-   +apply Nat.lt_le_incl, Nat_mul_lt_pow; [ easy | flia ].
-}
 destruct (zerop (NQintg (NQfrac (A i n u) + NQfrac (B i n u 1)))) as [H1| H1].
 -rewrite H1, Nat.add_0_r in Hlt.
  rewrite NQintg_small in Hlt; [ easy | ].
- split; [ apply B_ge_0 | easy ].
+ split; [ apply B_ge_0 | ].
+ now apply B_lt_1.
 -rewrite NQintg_add_frac in H1.
  destruct (NQlt_le_dec (NQfrac (A i n u) + NQfrac (B i n u 1)) 1)
    as [| H2]; [ easy | clear H1 ].
  rewrite (NQfrac_small (B _ _ _ _)) in H2. 2: {
-   split; [ apply B_ge_0 | easy ].
+   split; [ apply B_ge_0 | now apply B_lt_1 ].
  }
  rewrite (NQintg_small (B _ _ _ _)) in Hlt. 2: {
-   split; [ apply B_ge_0 | easy ].
+   split; [ apply B_ge_0 | now apply B_lt_1 ].
  }
  rewrite Nat.add_0_l in Hlt.
  rewrite (NQintg_small (B _ _ _ _)). 2: {
-   split; [ apply B_ge_0 | easy ].
+   split; [ apply B_ge_0 | now apply B_lt_1 ].
  }
  rewrite Nat.add_0_l.
  rewrite NQintg_add_frac in Hlt.
  rewrite NQintg_add_frac.
  rewrite (NQfrac_small (B _ _ _ _)) in Hlt. 2: {
-   split; [ apply B_ge_0 | easy ].
+   split; [ apply B_ge_0 | now apply B_lt_1 ].
  }
  rewrite (NQfrac_small (B _ _ _ _)). 2: {
-   split; [ apply B_ge_0 | easy ].
+   split; [ apply B_ge_0 | now apply B_lt_1 ].
  }
  now destruct (NQlt_le_dec (NQfrac (A i n u) + B i n u 1) 1).
 Qed.
@@ -3401,12 +3409,13 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hut k l.
+assert (Hin : i + 1 ≤ min_n i k). {
+  unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
 symmetry; apply Nat.le_antisymm. {
   apply NQintg_le_mono; [ easy | ].
-  rewrite <- ApB_A. 2: {
-    unfold min_n.
-    destruct rad; [ easy | cbn; flia ].
-  }
+  rewrite <- ApB_A; [ | easy ].
   apply NQle_add_r, B_ge_0.
 }
 apply Nat.nlt_ge; intros H1.
@@ -3420,8 +3429,25 @@ intros H2.
 specialize (NQintg_A_slow_incr u i Hur Hut k (n + l)) as H3.
 assert (H : min_n i k ≤ n + l) by (rewrite Hn; flia).
 specialize (H3 H H2); clear H H1 H2 IHl.
-(* dans ce cas-là, "A i (_ + 1) u" doit tomber pile sur un entier, car sinon,
-   s'il le dépassait ... (euh... quoi déjà ?) *)
+rewrite <- ApB_A in H3; [ | flia Hin ].
+rewrite NQintg_add in H3; [ | easy | apply B_ge_0 ].
+rewrite (NQintg_small (B _ _ _ _)) in H3. 2: {
+  split; [ apply B_ge_0 | ].
+  apply B_lt_1; [ easy | ].
+  rewrite Hn; unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
+rewrite Nat.add_0_r in H3.
+apply Nat.add_cancel_l in H3.
+rewrite NQintg_add_frac in H3.
+rewrite (NQfrac_small (B _ _ _ _)) in H3. 2: {
+  split; [ apply B_ge_0 | ].
+  apply B_lt_1; [ easy | ].
+  rewrite Hn; unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
+destruct (NQlt_le_dec (NQfrac (A i (n + l) u) + B i (n + l) u 1) 1)
+  as [H1| H1]; [ easy | clear H3 ].
 ...
 intros *.
 specialize radix_ge_2 as Hr.
