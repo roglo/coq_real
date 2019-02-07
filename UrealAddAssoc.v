@@ -3277,6 +3277,7 @@ assert (H : ∀ j, j ≥ i → u j ≤ 2 * (rad - 1)). {
 specialize (H1 H k).
 specialize (B_upper_bound_for_add u i k l H) as H2; clear H.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) Hut) as H3.
+Abort. (*
 ...
 remember (NQfrac (A i (min_n i k) u)) as x eqn:Hx.
 ...
@@ -3314,11 +3315,46 @@ Search (∀ _, fA_ge_1_ε _ _ _ = true).
 ...
 *)
 
+Theorem NQintg_A_slow_incr {r : radix} : ∀ u i,
+  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k n, min_n i k ≤ n
+  → NQintg (A i n u) < NQintg (A i (n + 1) u)
+  → NQintg (A i n u) + 1 = NQintg (A i (n + 1) u).
+Proof.
+...
+
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, NQintg (A i (min_n i k + l) u) = NQintg (A i (min_n i k) u).
 Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hut k l.
+symmetry; apply Nat.le_antisymm. {
+  apply NQintg_le_mono; [ easy | ].
+  rewrite <- ApB_A. 2: {
+    unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  }
+  apply NQle_add_r, B_ge_0.
+}
+apply Nat.nlt_ge; intros H1.
+induction l; [ rewrite Nat.add_0_r in H1; flia H1 | ].
+apply IHl.
+eapply Nat.lt_le_trans; [ apply H1 | ].
+remember (min_n i k) as n eqn:Hn.
+replace (n + S l) with (n + l + 1) by flia.
+apply Nat.nlt_ge.
+intros H2.
+specialize (NQintg_A_slow_incr u i Hur Hut k (n + l)) as H3.
+assert (H : min_n i k ≤ n + l) by (rewrite Hn; flia).
+specialize (H3 H H2); clear H H1 H2 IHl.
+(* c'est pas tout à fait juste, ça. Il se peut que H3 arrive si
+   A i (n + l + 1) u tombe pile sur un entier (l'entier suivant)
+   et que toutes les valeurs de u après n + l + 2 sont nulles. *)
+...
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hut k l.
