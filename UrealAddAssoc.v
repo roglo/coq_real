@@ -3448,6 +3448,14 @@ rewrite (NQfrac_small (B _ _ _ _)) in H3. 2: {
 }
 destruct (NQlt_le_dec (NQfrac (A i (n + l) u) + B i (n + l) u 1) 1)
   as [H1| H1]; [ easy | clear H3 ].
+rewrite NQfrac_of_intg in H1; [ | easy ].
+rewrite <- NQadd_sub_swap in H1.
+apply NQle_add_le_sub_r in H1.
+remember (A i (n + l) u) as x eqn:Hx.
+specialize (NQintg_interv (NQintg x) x) as H2.
+assert (H : (0 ≤ x)%NQ) by now rewrite Hx.
+specialize (H2 H); clear H.
+specialize (proj2 H2 eq_refl) as H3; clear H2.
 ...
 intros *.
 specialize radix_ge_2 as Hr.
