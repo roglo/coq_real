@@ -3351,8 +3351,8 @@ intros H2.
 specialize (NQintg_A_slow_incr u i Hur Hut k (n + l)) as H3.
 assert (H : min_n i k ≤ n + l) by (rewrite Hn; flia).
 specialize (H3 H H2); clear H H1 H2 IHl.
-(* dans ce cas-là, "A i (_ + 1) u" tombe pile sur un entier, car sinon
-   ... (euh... quoi déjà ?) *)
+(* dans ce cas-là, "A i (_ + 1) u" doit tomber pile sur un entier, car sinon,
+   s'il le dépassait ... (euh... quoi déjà ?) *)
 ...
 intros *.
 specialize radix_ge_2 as Hr.
