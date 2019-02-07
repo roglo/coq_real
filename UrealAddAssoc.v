@@ -3322,7 +3322,7 @@ Theorem NQintg_A_slow_incr {r : radix} : ∀ u i,
   → NQintg (A i n u) < NQintg (A i (n + 1) u)
   → NQintg (A i n u) + 1 = NQintg (A i (n + 1) u).
 Proof.
-Abort.
+Admitted.
 
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -3348,13 +3348,11 @@ remember (min_n i k) as n eqn:Hn.
 replace (n + S l) with (n + l + 1) by flia.
 apply Nat.nlt_ge.
 intros H2.
-...
 specialize (NQintg_A_slow_incr u i Hur Hut k (n + l)) as H3.
 assert (H : min_n i k ≤ n + l) by (rewrite Hn; flia).
 specialize (H3 H H2); clear H H1 H2 IHl.
-(* c'est pas tout à fait juste, ça. Il se peut que H3 arrive si
-   A i (n + l + 1) u tombe pile sur un entier (l'entier suivant)
-   et que toutes les valeurs de u après n + l + 2 sont nulles. *)
+(* dans ce cas-là, "A i (_ + 1) u" tombe pile sur un entier, car sinon
+   ... (euh... quoi déjà ?) *)
 ...
 intros *.
 specialize radix_ge_2 as Hr.
