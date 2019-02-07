@@ -3325,6 +3325,8 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hut k n Hn Hlt.
+(* mouais, en fait, ça c'est faux parce que y a encore le conflit avec le k
+   et le rad^k *)
 ...
 
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
