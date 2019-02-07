@@ -3320,9 +3320,12 @@ Theorem NQintg_A_slow_incr {r : radix} : ∀ u i,
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k n, min_n i k ≤ n
   → NQintg (A i n u) < NQintg (A i (n + 1) u)
-  → NQintg (A i n u) + 1 = NQintg (A i (n + 1) u).
+  → NQintg (A i (n + 1) u) = NQintg (A i n u) + 1.
 Proof.
-Admitted.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hut k n Hn Hlt.
+...
 
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
