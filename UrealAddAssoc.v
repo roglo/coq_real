@@ -3452,6 +3452,8 @@ rewrite NQfrac_of_intg in H1; [ | easy ].
 rewrite <- NQadd_sub_swap in H1.
 apply NQle_add_le_sub_r in H1.
 (**)
+rewrite ApB_A in H1; [ | flia Hin ].
+...
 remember (A i (n + l) u) as x eqn:Hx.
 specialize (NQintg_interv (NQintg x) x) as H2.
 assert (H : (0 ≤ x)%NQ) by now rewrite Hx.
@@ -3462,8 +3464,6 @@ unfold B in H1.
 rewrite Nat.add_sub in H1.
 rewrite summation_only_one in H1.
 remember (n + l) as m eqn:Hm.
-...
-rewrite ApB_A in H1; [ | flia Hin ].
 ...
 intros *.
 specialize radix_ge_2 as Hr.
