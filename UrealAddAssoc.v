@@ -3450,7 +3450,14 @@ apply NQadd_cancel_r in H3.
 unfold B in H3.
 rewrite Nat.add_sub in H3.
 rewrite summation_only_one in H3.
+specialize (frac_ge_if_all_fA_ge_1_ε u) as H1.
 ...
+frac_ge_if_all_fA_ge_1_ε:
+  ∀ (r : radix) (u : nat → nat) (i : nat),
+    (∀ k : nat, fA_ge_1_ε u i k = true)
+    ↔ (∀ k : nat, (NQfrac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%NQ)
+...
+Search (∀ _, fA_ge_1_ε _ _ _ = true).
 rewrite <- NQfrac_of_intg in H3.
 ...
 rewrite <- ApB_A in H3; [ | flia Hin ].
