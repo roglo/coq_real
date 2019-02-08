@@ -3458,9 +3458,6 @@ assert (H : (0 ≤ x)%NQ) by now rewrite Hx.
 specialize (H2 H); clear H.
 specialize (proj2 H2 eq_refl) as H3; clear H2.
 subst x.
-(**)
-specialize (B_upper_bound_for_add u) as H2.
-...
 unfold B in H1.
 rewrite Nat.add_sub in H1.
 rewrite summation_only_one in H1.
