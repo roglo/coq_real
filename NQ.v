@@ -2538,6 +2538,13 @@ symmetry in H4; rewrite Nat.sub_diag in H4.
 now apply Nat.eq_add_0 in H4.
 Qed.
 
+Theorem NQeq_of_eq_nat : ∀ a b, a = b → (a // 1 = b // 1)%NQ.
+Proof.
+intros * Hab.
+apply NQeq_pair; [ easy | easy | ].
+now rewrite Nat.mul_1_l, Nat.mul_1_r.
+Qed.
+
 Require Import Summation.
 
 Definition NQ_ord_ring_def :=

@@ -2731,8 +2731,6 @@ Theorem A_all_nth_pred_rad {r : radix} : ∀ u i m n,
 Proof.
 intros * Hmr.
 specialize radix_ge_2 as Hr.
-Check A_all_9.
-Check A_all_18.
 unfold A.
 destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin]; cycle 1. {
   replace (n - i - 1) with 0 by flia Hin.
@@ -3429,6 +3427,31 @@ intros H2.
 specialize (NQintg_A_slow_incr u i Hur Hut k (n + l)) as H3.
 assert (H : min_n i k ≤ n + l) by (rewrite Hn; flia).
 specialize (H3 H H2); clear H H1 H2 IHl.
+symmetry in H3.
+rewrite Nat.add_comm in H3.
+rewrite <- NQintg_add_nat_l in H3; [ | easy ].
+symmetry in H3.
+apply NQeq_of_eq_nat in H3.
+rewrite NQintg_of_frac in H3; [ | easy ].
+rewrite NQintg_of_frac in H3. 2: {
+  apply (NQle_trans _ (A i (n + l) u)); [ easy | ].
+  now apply NQle_add_l.
+}
+rewrite NQfrac_add_nat_l in H3; [ | easy ].
+apply NQadd_move_l in H3.
+rewrite NQadd_sub_assoc in H3; symmetry in H3.
+apply NQadd_move_l in H3.
+remember (A i (n + l + 1) u) as x eqn:Hx.
+rewrite Hx in H3 at 1.
+rewrite <- ApB_A in Hx; [ | flia Hin ].
+rewrite NQadd_comm in Hx; subst x.
+do 2 rewrite NQadd_assoc in H3.
+apply NQadd_cancel_r in H3.
+unfold B in H3.
+rewrite Nat.add_sub in H3.
+rewrite summation_only_one in H3.
+...
+rewrite <- NQfrac_of_intg in H3.
 ...
 rewrite <- ApB_A in H3; [ | flia Hin ].
 rewrite NQintg_add in H3; [ | easy | apply B_ge_0 ].
@@ -3455,7 +3478,6 @@ apply NQle_add_le_sub_r in H1.
 (**)
 rewrite ApB_A in H1; [ | flia Hin ].
 (**)
-...
 remember (A i (n + l) u) as x eqn:Hx.
 specialize (NQintg_interv (NQintg x) x) as H2.
 assert (H : (0 ≤ x)%NQ) by now rewrite Hx.
