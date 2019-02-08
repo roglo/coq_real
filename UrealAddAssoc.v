@@ -3429,6 +3429,7 @@ intros H2.
 specialize (NQintg_A_slow_incr u i Hur Hut k (n + l)) as H3.
 assert (H : min_n i k ≤ n + l) by (rewrite Hn; flia).
 specialize (H3 H H2); clear H H1 H2 IHl.
+...
 rewrite <- ApB_A in H3; [ | flia Hin ].
 rewrite NQintg_add in H3; [ | easy | apply B_ge_0 ].
 rewrite (NQintg_small (B _ _ _ _)) in H3. 2: {
@@ -3453,6 +3454,7 @@ rewrite <- NQadd_sub_swap in H1.
 apply NQle_add_le_sub_r in H1.
 (**)
 rewrite ApB_A in H1; [ | flia Hin ].
+(**)
 ...
 remember (A i (n + l) u) as x eqn:Hx.
 specialize (NQintg_interv (NQintg x) x) as H2.
