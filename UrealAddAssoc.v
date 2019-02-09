@@ -3491,6 +3491,15 @@ split; intros H1 k.
   *idtac.
    (* devrait pas être possible parce que B i n u rad < 1 // rad ^ (k + 2)
       ce qui contradirait NQfrac (A ... ) < 1 et H5. *)
+   (* ah non *)
+...
+   specialize (B_upper_bound_for_add u i k rad) as H7.
+   assert (H : ∀ j, j ≥ i → u j ≤ 2 * (rad - 1)). {
+     intros j Hj; replace j with (i + (j - i)) by flia Hj; apply Hur.
+   }
+   specialize (H7 H); clear H.
+   rewrite <- Hn in H7.
+   apply NQnlt_ge in H5; apply H5; clear H5.
 ...
   move H2 at bottom.
 ...
