@@ -3425,6 +3425,11 @@ erewrite <- (all_0_summation_0 (λ _, 0%Rg)).
 -easy.
 Qed.
 
+Theorem NQfrac_less_small {r : radix} : ∀ x,
+  (1 ≤ x < 2)%NQ → NQfrac x = (x - 1)%NQ.
+Proof.
+...
+
 (* tentative... *)
 (* généralise frac_ge_if_all_fA_ge_1_ε *)
 Theorem frac_ge_if_all_fA_ge_1_ε' {r : radix} : ∀ u i,
@@ -3491,8 +3496,6 @@ split; intros H1 k.
   *idtac.
    (* devrait pas être possible parce que B i n u rad < 1 // rad ^ (k + 2)
       ce qui contradirait NQfrac (A ... ) < 1 et H5. *)
-   (* ah non *)
-...
    specialize (B_upper_bound_for_add u i k rad) as H7.
    assert (H : ∀ j, j ≥ i → u j ≤ 2 * (rad - 1)). {
      intros j Hj; replace j with (i + (j - i)) by flia Hj; apply Hur.
@@ -3500,23 +3503,40 @@ split; intros H1 k.
    specialize (H7 H); clear H.
    rewrite <- Hn in H7.
    apply NQnlt_ge in H5; apply H5; clear H5.
-...
-  move H2 at bottom.
-...
-  rewrite NQfrac_add_cond in H2; [ | easy | apply B_ge_0 ].
-  rewrite NQfrac_add_cond in H5; [ | easy | apply B_ge_0 ].
-  rewrite NQfrac_idemp in H2; [ | easy ].
-  rewrite NQfrac_idemp in H5; [ | easy ].
-  rewrite (NQfrac_small (B _ _ _ _)) in H2; [ | easy ].
-  rewrite (NQfrac_small (B _ _ _ _)) in H5; [ | easy ].
-...
-  destruct (NQlt_le_dec (NQfrac (A i n u) + B i n u rad) 1) as [H6| H6].
-  *rewrite NQfrac_small in H5. 2: {
-     split; [ | easy ].
-     replace 0%NQ with (0 + 0)%NQ by easy.
-     apply NQadd_le_mono; [ easy | apply HB ].
+   assert (H8 : (NQfrac (A i n u) + B i n u rad < 1 + 1 // rad ^ S k)%NQ). {
+     eapply NQlt_trans; [ apply NQadd_lt_mono_l, H7 | ].
+     apply NQadd_lt_mono_r, NQfrac_lt_1.
    }
-   apply NQnlt_ge in H5.
+...
+   rewrite NQfrac_less_small. 2: {
+     split; [ easy | ].
+     eapply NQlt_le_trans; [ apply H8 | ].
+...
+   }
+   apply NQlt_sub_lt_add_l.
+   eapply NQlt_le_trans; [ apply H8 | ].
+   apply NQadd_le_mono_l.
+   apply NQle_add_le_sub_r.
+   rewrite NQadd_pair; [ | pauto | pauto ].
+   rewrite Nat.mul_1_l, Nat.mul_1_r.
+   rewrite <- Nat.pow_add_r.
+   replace (S (k + 1)) with (S k + 1) by flia.
+   replace (rad ^ S k) with (rad ^ S k * 1) by flia.
+   rewrite Nat.pow_add_r, Nat.pow_1_r.
+   rewrite <- Nat.mul_add_distr_l.
+   apply NQle_pair; [ pauto | easy | ].
+   do 2 rewrite Nat.mul_1_r.
+   rewrite <- Nat.add_assoc.
+   rewrite Nat.pow_add_r.
+   apply Nat.mul_le_mono_l.
+   replace (1 + S k) with (2 + k) by flia.
+   clear - Hr.
+   induction k.
+  --rewrite Nat.add_0_r.
+    destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | cbn; flia ].
+  --eapply Nat.le_trans; [ apply IHk | ].
+    apply Nat.pow_le_mono_r; [ easy | flia ].
 ...
 
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
