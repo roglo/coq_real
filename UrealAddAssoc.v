@@ -3412,12 +3412,13 @@ Qed.
 Theorem frac_ge_if_all_fA_ge_1_ε' {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
-  ↔ (∀ k l, (NQfrac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%NQ).
+  ↔ (∀ k l, l ≤ rad
+      → (NQfrac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%NQ).
 Proof.
 intros u i Hur.
 specialize radix_ge_2 as Hr.
 split; intros H1 k.
--intros l.
+-intros l Hlr.
  remember (min_n i k) as n eqn:Hn.
  assert (Hin : i + 1 ≤ n). {
    rewrite Hn; unfold min_n.
@@ -3430,7 +3431,7 @@ split; intros H1 k.
  rewrite <- ApB_A in H2; [ | easy ].
  rewrite NQfrac_add in H2; [ | easy | apply B_ge_0 ].
  assert (HB : ∀ l, (0 ≤ B i n u l < 1)%NQ). {
-   clear l H2; intros l.
+   clear l H2 Hlr; intros l.
    rewrite Hn.
    split; [ apply B_ge_0 | ].
    eapply NQlt_le_trans.
@@ -3469,7 +3470,7 @@ split; intros H1 k.
    eapply NQle_lt_trans; [ | apply H6 ].
    apply NQadd_le_mono_l.
    (* ok, c'est bon *)
-   admit.
+...
   *idtac.
    (* devrait pas être possible parce que B i n u rad < 1 // rad ^ (k + 2)
       ce qui contradirait NQfrac (A ... ) < 1 et H5. *)
