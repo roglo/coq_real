@@ -3411,6 +3411,7 @@ intros u i; split; intros H1 k.
  destruct
    (NQlt_le_dec (NQfrac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%NQ)
    as [H3| H3]; [ easy | clear H2 ].
+ apply NQnlt_ge; intros H2.
 ...
 -apply NQnlt_ge in H.
  unfold fA_ge_1_ε.
