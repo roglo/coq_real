@@ -3569,8 +3569,6 @@ split.
  apply H2.
 Qed.
 
-...
-
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
@@ -3622,7 +3620,8 @@ apply NQadd_cancel_r in H3.
 unfold B in H3.
 rewrite Nat.add_sub in H3.
 rewrite summation_only_one in H3.
-specialize (frac_ge_if_all_fA_ge_1_ε u) as H1.
+specialize (proj1 (frac_ge_if_all_fA_ge_1_ε' u i Hur) Hut k) as H1.
+rewrite <- Hn in H1.
 ...
 frac_ge_if_all_fA_ge_1_ε:
   ∀ (r : radix) (u : nat → nat) (i : nat),
