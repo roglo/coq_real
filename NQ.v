@@ -2039,6 +2039,70 @@ destruct dx; [ now apply GQden_neq_0 in Hdx | ].
 now rewrite (GQnum_den px), Hnx, Hdx.
 Qed.
 
+Theorem NQfrac_less_small : ∀ x, (1 ≤ x < 2)%NQ → NQfrac x = (x - 1)%NQ.
+Proof.
+intros * Hx.
+destruct x as [| px| px]; [ easy | | easy ].
+cbn in Hx; destruct Hx as (H1, H2).
+rewrite (GQnum_den px) in H1, H2.
+apply GQpair_le_nat_l in H1; [ | easy | easy | easy ].
+rewrite Nat.mul_1_l in H1.
+apply GQpair_lt_nat_r in H2; [ | easy | easy | easy ].
+rewrite Nat.mul_comm in H2.
+unfold NQfrac; cbn.
+rewrite Nat_mod_less_small; [ | easy ].
+unfold "//"%NQ.
+remember (GQnum px) as nx eqn:Hnx.
+remember (GQden px) as dx eqn:Hdx.
+symmetry in Hnx, Hdx.
+move dx before nx.
+rewrite (GQnum_den px), Hnx, Hdx.
+remember (nx - dx) as x eqn:Hx.
+symmetry in Hx.
+destruct x.
+-replace nx with dx by flia H1 Hx.
+ rewrite GQpair_diag; [ | now intros H; rewrite H, Nat.mul_0_r in H2 ].
+ remember (GQcompare 1 (1 // 1)) as c eqn:Hc.
+ symmetry in Hc.
+ destruct c; GQcompare_iff; [ easy | | ].
+ +replace 1%GQ with (1 // 1)%GQ in Hc by now apply GQeq_eq.
+  apply GQnle_gt in Hc.
+  exfalso; apply Hc; apply GQle_refl.
+ +replace 1%GQ with (1 // 1)%GQ in Hc by now apply GQeq_eq.
+  apply GQnle_gt in Hc.
+  exfalso; apply Hc; apply GQle_refl.
+-remember (GQcompare (nx // dx) (1 // 1)) as c eqn:Hc.
+ symmetry in Hc.
+ destruct c; GQcompare_iff.
+ +exfalso.
+  apply GQeq_pair in Hc; [ | | | easy | easy ].
+  *now do 2 rewrite Nat.mul_1_r in Hc; rewrite Hc, Nat.sub_diag in Hx.
+  *now intros H3; rewrite H3 in Hx.
+  *now intros H3; rewrite H3, Nat.mul_0_r in H2.
+ +exfalso.
+  apply GQnle_gt in Hc; apply Hc; clear Hc.
+  apply GQle_pair; [ easy | easy | | | ].
+  *now intros H3; rewrite H3 in Hx.
+  *now intros H3; rewrite H3, Nat.mul_0_r in H2.
+  *now do 2 rewrite Nat.mul_1_l.
+ +f_equal.
+  rewrite GQsub_pair; [ | | | easy | easy | ].
+  *now do 2 rewrite Nat.mul_1_r; rewrite Hx.
+  *now intros H3; rewrite H3 in Hx.
+  *now intros H3; rewrite H3, Nat.mul_0_r in H2.
+  *do 2 rewrite Nat.mul_1_r.
+   unfold GQgt in Hc.
+   specialize (GQlt_pair 1 1 nx dx) as H3.
+   assert (H : 1 ≠ 0) by easy.
+   specialize (H3 H H); clear H.
+   assert (H : nx ≠ 0) by now intros H; rewrite H in Hx.
+   specialize (H3 H); clear H.
+   assert (H : dx ≠ 0) by now intros H; rewrite H, Nat.mul_0_r in H2.
+   specialize (H3 H); clear H.
+   specialize (proj1 H3 Hc) as H4.
+   now do 2 rewrite Nat.mul_1_l in H4.
+Qed.
+
 Theorem NQintg_0 : NQintg 0 = 0.
 Proof. easy. Qed.
 

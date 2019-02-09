@@ -3425,11 +3425,6 @@ erewrite <- (all_0_summation_0 (λ _, 0%Rg)).
 -easy.
 Qed.
 
-Theorem NQfrac_less_small {r : radix} : ∀ x,
-  (1 ≤ x < 2)%NQ → NQfrac x = (x - 1)%NQ.
-Proof.
-...
-
 (* tentative... *)
 (* généralise frac_ge_if_all_fA_ge_1_ε *)
 Theorem frac_ge_if_all_fA_ge_1_ε' {r : radix} : ∀ u i,
