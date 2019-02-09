@@ -3399,6 +3399,25 @@ destruct (zerop (NQintg (NQfrac (A i n u) + NQfrac (B i n u 1)))) as [H1| H1].
  now destruct (NQlt_le_dec (NQfrac (A i n u) + B i n u 1) 1).
 Qed.
 
+(* tentative... *)
+Theorem frac_ge_if_all_fA_ge_1_ε' {r : radix} : ∀ u i,
+  (∀ k, fA_ge_1_ε u i k = true)
+  ↔ (∀ k l, (NQfrac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%NQ).
+Proof.
+intros u i; split; intros H1 k.
+-intros l.
+ specialize (H1 k) as H2.
+ unfold fA_ge_1_ε in H2.
+ destruct
+   (NQlt_le_dec (NQfrac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%NQ)
+   as [H3| H3]; [ easy | clear H2 ].
+...
+-apply NQnlt_ge in H.
+ unfold fA_ge_1_ε.
+ now destruct
+     (NQlt_le_dec (NQfrac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%NQ).
+...
+
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
