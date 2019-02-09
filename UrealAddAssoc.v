@@ -3408,7 +3408,25 @@ rewrite <- Nat.mul_add_distr_l.
 f_equal; flia.
 Qed.
 
+Theorem B_le_mono_r {r : radix} : ∀ i n u l,
+  l ≤ rad
+  → (B i n u l ≤ B i n u rad)%NQ.
+Proof.
+intros * Hlr.
+unfold B at 2.
+rewrite (summation_split _ _ (n + l - 1)); [ | flia Hlr ].
+unfold B.
+apply NQle_add_r.
+erewrite <- (all_0_summation_0 (λ _, 0%Rg)).
+-apply summation_le_compat.
+ intros j Hj.
+ replace 0%Rg with (0 // 1)%NQ by easy.
+ apply NQle_pair; [ easy | pauto | cbn; flia ].
+-easy.
+Qed.
+
 (* tentative... *)
+(* généralise frac_ge_if_all_fA_ge_1_ε *)
 Theorem frac_ge_if_all_fA_ge_1_ε' {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
@@ -3469,12 +3487,10 @@ split; intros H1 k.
    apply NQnlt_ge in H4; apply H4; clear H4.
    eapply NQle_lt_trans; [ | apply H6 ].
    apply NQadd_le_mono_l.
-   (* ok, c'est bon *)
-...
+   now apply B_le_mono_r.
   *idtac.
    (* devrait pas être possible parce que B i n u rad < 1 // rad ^ (k + 2)
       ce qui contradirait NQfrac (A ... ) < 1 et H5. *)
-   admit.
 ...
   move H2 at bottom.
 ...
