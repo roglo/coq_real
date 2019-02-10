@@ -3664,6 +3664,20 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       destruct (NQlt_le_dec (NQfrac (A i nuv u) + A i nuv v) 1) as [H4| H4].
     ---now rewrite NQadd_0_l; apply NQle_sub_l.
     ---exfalso.
+       destruct j.
+     +++rewrite <- Hnv in Hnuv; subst nuv.
+        rewrite HAu, NQfrac_0, NQadd_0_l in H4.
+        apply NQnlt_ge in H4; apply H4; clear H4.
+        now apply eq_NQintg_0 in Hm.
+     +++specialize (Hjj 0 (Nat.lt_0_succ j)) as H5.
+        apply A_ge_1_true_iff in H5.
+        rewrite A_additive in H5.
+        rewrite <- Hnv in H5.
+        rewrite NQfrac_add_cond in H5; [ | easy | easy ].
+...
+     +++specialize (Hjj j (Nat.lt_succ_diag_r j)) as H5.
+        apply A_ge_1_true_iff in H5.
+        rewrite A_additive in H5.
 ...
      specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
 assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
