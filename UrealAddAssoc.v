@@ -3646,6 +3646,10 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     **subst kup.
       rewrite <- Hnv in Hnup; subst nup.
       rewrite NQintg_add_frac.
+      rewrite (NQfrac_small (A i nuv v)). 2: {
+        split; [ easy | now apply eq_NQintg_0 in Hm ].
+      }
+...
       rewrite (NQfrac_small (A i nuv u)). 2: {
         split; [ easy | ].
         apply eq_NQintg_0; [ easy | ].
@@ -3668,9 +3672,6 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
          +rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | pauto ].
           rewrite NQmul_1_r, NQmul_1_l.
 ...
-     }
-     rewrite (NQfrac_small (A i nuv v)). 2: {
-       split; [ easy | now apply eq_NQintg_0 in Hm ].
      }
 
 ...
