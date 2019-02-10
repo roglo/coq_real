@@ -3592,6 +3592,15 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1) as [H4| H4].
   *destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H5| H5]; [ easy | ].
    exfalso.
+   specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
+   rewrite (A_all_9 (P v)) in H4; [ | intros; apply A3 ].
+   rewrite NQadd_comm, <- NQadd_sub_swap, <- NQadd_sub_assoc in H4.
+   replace 1%NQ with (1 + 0)%NQ in H4 at 2 by easy.
+   apply NQadd_lt_mono_l in H4.
+   apply NQlt_sub_lt_add_r in H4.
+   rewrite NQadd_0_l in H4.
+   (* H4 should imply A i nup u = 0: how to prove it? *)
+...
    destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
   --subst kuv.
     rewrite <- Hnv in Hnuv; subst nuv; clear H1.
@@ -3599,6 +3608,13 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    ++subst kup.
      rewrite <- Hnv in Hnup; subst nup.
+     apply NQnlt_ge in H5; apply H5; clear H5.
+...
+     specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
+assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+  intros; rewrite <- Nat.add_assoc; apply Hv.
+}
+specialize (A_ge_1_add_all_true_if v i H H3) as H'3; clear H.
 ...
 intros * Hu Hv.
 specialize radix_ge_2 as Hr.
