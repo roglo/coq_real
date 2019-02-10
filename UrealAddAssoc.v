@@ -3604,6 +3604,20 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     apply eq_NQintg_0 in Hm; [ | easy ].
     (* H4 should imply A i nup u = 0 and then A i nv u = 0:
        how to prove them? *)
+    apply NQnlt_ge in H5; apply H5; clear H5.
+    apply (NQle_lt_trans _ (A i nup u + A i nv v)).
+   ++apply NQadd_le_mono_r.
+     rewrite (A_split nv _ _ nup). 2: {
+       rewrite Hnv, Hnup; unfold min_n.
+       split.
+       -destruct rad; [ easy | cbn; flia ].
+       -apply Nat.mul_le_mono_l; flia.
+     }
+     replace (A i nv u) with (A i nv u + 0)%NQ at 1 by apply NQadd_0_r.
+     apply NQadd_le_mono_l.
+     replace 0%NQ with (0 * 0)%NQ by easy.
+     now apply NQmul_le_mono_nonneg.
+   ++idtac.
 ...
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    ++subst kup.
