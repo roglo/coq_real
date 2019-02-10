@@ -3581,10 +3581,24 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
  f_equal; f_equal; f_equal.
  subst kv.
- destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1) as [H4| H4].
- *destruct (NQlt_le_dec (A i nuv u + NQfrac (A i nuv v)) 1) as [H5| H5].
- --easy.
- --exfalso.
+ remember (NQintg (A i nuv v)) as m eqn:Hm.
+ symmetry in Hm.
+ destruct m.
+ +clear H2.
+  rewrite NQfrac_small. 2: {
+    split; [ easy | ].
+    now apply eq_NQintg_0 in Hm.
+  }
+  destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1) as [H4| H4].
+  *destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H5| H5]; [ easy | ].
+   exfalso.
+   destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
+  --subst kuv.
+    rewrite <- Hnv in Hnuv; subst nuv; clear H1.
+    apply eq_NQintg_0 in Hm; [ | easy ].
+    destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
+   ++subst kup.
+     rewrite <- Hnv in Hnup; subst nup.
 ...
 intros * Hu Hv.
 specialize radix_ge_2 as Hr.
