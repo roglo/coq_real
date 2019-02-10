@@ -3649,31 +3649,21 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       rewrite (NQfrac_small (A i nuv v)). 2: {
         split; [ easy | now apply eq_NQintg_0 in Hm ].
       }
-...
-      rewrite (NQfrac_small (A i nuv u)). 2: {
+      rewrite (NQintg_small (A i nuv u)). 2: {
         split; [ easy | ].
-        apply eq_NQintg_0; [ easy | ].
-        rewrite (A_split nv). 2: {
-          rewrite Hnv, Hnuv; unfold min_n.
-          split.
-          -destruct rad; [ easy | cbn; flia ].
-          -apply Nat.mul_le_mono_l; flia.
-        }
-        rewrite HAu, NQadd_0_l.
-        apply NQintg_small.
-        split.
-        -replace 0%NQ with (0 * 0)%NQ by easy.
-         now apply NQmul_le_mono_nonneg.
-        -apply (NQmul_lt_mono_pos_r (rad ^ (nv - i - 1) // 1)%NQ).
-         +replace 0%NQ with (0 // 1)%NQ by easy.
-          apply NQlt_pair; [ easy | easy | ].
-          rewrite Nat.mul_1_l.
-          now apply Nat_pow_ge_1.
-         +rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | pauto ].
-          rewrite NQmul_1_r, NQmul_1_l.
-...
-     }
-
+        apply A_upper_bound_for_dig.
+        intros k Hk; replace k with (i + (k - i)) by flia Hk.
+        apply Hu.
+      }
+      rewrite Nat.add_0_l.
+      rewrite A_additive in Hj.
+      rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
+      rewrite (NQfrac_small (A i nuv v)) in Hj. 2: {
+        split; [ easy | now apply eq_NQintg_0 in Hm ].
+      }
+      destruct (NQlt_le_dec (NQfrac (A i nuv u) + A i nuv v) 1) as [H4| H4].
+    ---now rewrite NQadd_0_l; apply NQle_sub_l.
+    ---exfalso.
 ...
      specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
 assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
