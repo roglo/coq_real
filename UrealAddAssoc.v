@@ -3450,7 +3450,7 @@ apply NQadd_cancel_r in H3.
 unfold B in H3.
 rewrite Nat.add_sub in H3.
 rewrite summation_only_one in H3.
-specialize (proj1 (frac_ge_if_all_fA_ge_1_ε' u i Hur) Hut k) as H1.
+specialize (proj1 (frac_ge_if_all_fA_ge_1_ε_for_add u i Hur) Hut k) as H1.
 rewrite <- Hn in H1.
 ...
 frac_ge_if_all_fA_ge_1_ε:
