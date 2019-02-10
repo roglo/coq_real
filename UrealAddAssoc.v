@@ -3644,23 +3644,23 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      rewrite Hm, Nat.add_0_r.
      destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
     **subst kup.
-     rewrite <- Hnv in Hnup; subst nup.
-     rewrite NQintg_add_frac.
-     rewrite (NQfrac_small (A i nuv u)). 2: {
-       split; [ easy | ].
-       apply eq_NQintg_0; [ easy | ].
-       rewrite (A_split nv). 2: {
-         rewrite Hnv, Hnuv; unfold min_n.
-         split.
-         -destruct rad; [ easy | cbn; flia ].
-         -apply Nat.mul_le_mono_l; flia.
-       }
-       rewrite HAu, NQadd_0_l.
-       apply NQintg_small.
-       split.
-       -replace 0%NQ with (0 * 0)%NQ by easy.
-        now apply NQmul_le_mono_nonneg.
-       -idtac.
+      rewrite <- Hnv in Hnup; subst nup.
+      rewrite NQintg_add_frac.
+      rewrite (NQfrac_small (A i nuv u)). 2: {
+        split; [ easy | ].
+        apply eq_NQintg_0; [ easy | ].
+        rewrite (A_split nv). 2: {
+          rewrite Hnv, Hnuv; unfold min_n.
+          split.
+          -destruct rad; [ easy | cbn; flia ].
+          -apply Nat.mul_le_mono_l; flia.
+        }
+        rewrite HAu, NQadd_0_l.
+        apply NQintg_small.
+        split.
+        -replace 0%NQ with (0 * 0)%NQ by easy.
+         now apply NQmul_le_mono_nonneg.
+        -idtac.
 ...
      }
      rewrite (NQfrac_small (A i nuv v)). 2: {
