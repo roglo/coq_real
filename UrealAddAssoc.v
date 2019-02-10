@@ -3646,9 +3646,27 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     **subst kup.
      rewrite <- Hnv in Hnup; subst nup.
      rewrite NQintg_add_frac.
-     rewrite (NQfrac_small (A i nuv v)). 2: {
+     rewrite (NQfrac_small (A i nuv u)). 2: {
        split; [ easy | ].
-Check A_upper_bound_for_add.
+       apply eq_NQintg_0; [ easy | ].
+       rewrite (A_split nv). 2: {
+         rewrite Hnv, Hnuv; unfold min_n.
+         split.
+         -destruct rad; [ easy | cbn; flia ].
+         -apply Nat.mul_le_mono_l; flia.
+       }
+       rewrite HAu, NQadd_0_l.
+       apply NQintg_small.
+       split.
+       -replace 0%NQ with (0 * 0)%NQ by easy.
+        now apply NQmul_le_mono_nonneg.
+       -idtac.
+...
+     }
+     rewrite (NQfrac_small (A i nuv v)). 2: {
+       split; [ easy | now apply eq_NQintg_0 in Hm ].
+     }
+
 ...
      specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
 assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
