@@ -3602,8 +3602,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   --subst kuv.
     rewrite <- Hnv in Hnuv; subst nuv; clear H1.
     apply eq_NQintg_0 in Hm; [ | easy ].
-    (* H4 should imply A i nup u = 0 and then A i nv u = 0:
-       how to prove them? *)
+    (* H4 implies A i nup u = 0 and then A i nv u = 0 *)
     apply NQnlt_ge in H5; apply H5; clear H5.
     apply (NQle_lt_trans _ (A i nup u + A i nv v)).
    ++apply NQadd_le_mono_r.
@@ -3617,7 +3616,10 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      apply NQadd_le_mono_l.
      replace 0%NQ with (0 * 0)%NQ by easy.
      now apply NQmul_le_mono_nonneg.
-   ++idtac.
+   ++eapply NQle_lt_trans; [ | apply Hm ].
+     replace (A i nv v) with (0 + A i nv v)%NQ at 2 by easy.
+     apply NQadd_le_mono_r.
+     enough (H : A i nup u = 0%NQ) by (rewrite H; apply NQle_refl).
 ...
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    ++subst kup.
