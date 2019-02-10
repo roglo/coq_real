@@ -3598,11 +3598,21 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    replace 1%NQ with (1 + 0)%NQ in H4 at 2 by easy.
    apply NQadd_lt_mono_l, NQlt_sub_lt_add_r in H4.
    rewrite NQadd_0_l in H4.
+   assert (HAu : A i nup u = 0%NQ). {
+     rewrite A_num_den in H4.
+     rewrite A_num_den.
+     unfold den_A in H4.
+     apply NQlt_pair in H4; [ | pauto | pauto ].
+     rewrite Nat.mul_comm in H4.
+     apply Nat.mul_lt_mono_pos_l in H4; [ | now apply Nat_pow_ge_1 ].
+     rewrite Nat.lt_1_r in H4.
+     now rewrite H4.
+   }
+   clear H4.
    destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
   --subst kuv.
     rewrite <- Hnv in Hnuv; subst nuv; clear H1.
     apply eq_NQintg_0 in Hm; [ | easy ].
-    (* H4 implies A i nup u = 0 and then A i nv u = 0 *)
     apply NQnlt_ge in H5; apply H5; clear H5.
     apply (NQle_lt_trans _ (A i nup u + A i nv v)).
    ++apply NQadd_le_mono_r.
@@ -3616,15 +3626,29 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      apply NQadd_le_mono_l.
      replace 0%NQ with (0 * 0)%NQ by easy.
      now apply NQmul_le_mono_nonneg.
-   ++eapply NQle_lt_trans; [ | apply Hm ].
-     replace (A i nv v) with (0 + A i nv v)%NQ at 2 by easy.
-     apply NQadd_le_mono_r.
-     enough (H : A i nup u = 0%NQ) by (rewrite H; apply NQle_refl).
-...
-    destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
-   ++subst kup.
+   ++now rewrite HAu, NQadd_0_l.
+  --destruct H6 as (j & Hjj & Hj).
+    subst kuv.
+    apply A_ge_1_false_iff in Hj.
+    rewrite <- Hnuv in Hj.
+    rewrite <- A_additive in H5.
+    move Hj at bottom; move H5 at bottom.
+    rewrite NQintg_frac in H5; [ | easy ].
+    apply NQnlt_ge in H5; apply H5; clear H5.
+    remember (A i nuv (u ⊕ v)) as x eqn:Hx.
+    apply (NQlt_le_trans _ (NQintg x // 1 + (1 - 1 // rad ^ S j))%NQ).
+   ++now apply NQadd_lt_mono_l.
+   ++subst x.
+     rewrite A_additive.
+     rewrite NQintg_add; [ | easy | easy ].
+     rewrite Hm, Nat.add_0_r.
+     destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
+    **subst kup.
      rewrite <- Hnv in Hnup; subst nup.
-     apply NQnlt_ge in H5; apply H5; clear H5.
+     rewrite NQintg_add_frac.
+     rewrite (NQfrac_small (A i nuv v)). 2: {
+       split; [ easy | ].
+Check A_upper_bound_for_add.
 ...
      specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
 assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
