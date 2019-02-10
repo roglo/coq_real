@@ -3596,15 +3596,15 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    rewrite (A_all_9 (P v)) in H4; [ | intros; apply A3 ].
    rewrite NQadd_comm, <- NQadd_sub_swap, <- NQadd_sub_assoc in H4.
    replace 1%NQ with (1 + 0)%NQ in H4 at 2 by easy.
-   apply NQadd_lt_mono_l in H4.
-   apply NQlt_sub_lt_add_r in H4.
+   apply NQadd_lt_mono_l, NQlt_sub_lt_add_r in H4.
    rewrite NQadd_0_l in H4.
-   (* H4 should imply A i nup u = 0: how to prove it? *)
-...
    destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
   --subst kuv.
     rewrite <- Hnv in Hnuv; subst nuv; clear H1.
     apply eq_NQintg_0 in Hm; [ | easy ].
+    (* H4 should imply A i nup u = 0 and then A i nv u = 0:
+       how to prove them? *)
+...
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H1| H1].
    ++subst kup.
      rewrite <- Hnv in Hnup; subst nup.
