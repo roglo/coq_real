@@ -3660,7 +3660,13 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
         split.
         -replace 0%NQ with (0 * 0)%NQ by easy.
          now apply NQmul_le_mono_nonneg.
-        -idtac.
+        -apply (NQmul_lt_mono_pos_r (rad ^ (nv - i - 1) // 1)%NQ).
+         +replace 0%NQ with (0 // 1)%NQ by easy.
+          apply NQlt_pair; [ easy | easy | ].
+          rewrite Nat.mul_1_l.
+          now apply Nat_pow_ge_1.
+         +rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | pauto ].
+          rewrite NQmul_1_r, NQmul_1_l.
 ...
      }
      rewrite (NQfrac_small (A i nuv v)). 2: {
