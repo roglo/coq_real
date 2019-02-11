@@ -1831,6 +1831,33 @@ destruct (le_dec m rad) as [Hmr| Hmr].
   *split; [ flia Hcr Hr | flia H4 ].
 Qed.
 
+Theorem P_999_after_mod_is_9 {r : radix} : ∀ u i m,
+  (∀ k, u (i + k) ≤ m * (rad - 1))
+  → (∀ k, P u (i + k) = rad - 1)
+  → u i mod rad = rad - 1
+  → ∃ k, 1 ≤ k ≤ m ∧ u (i + 1) = rad - k.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hpu Hum.
+specialize (P_999_start u i m Hur Hpu) as H1.
+destruct (Nat.eq_dec (u i) (m * (rad - 1))) as [H2| H2].
+-clear H1.
+ rewrite H2 in Hum.
+ rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hum.
+ destruct m.
+ +cbn in Hum.
+  rewrite Nat.mod_0_l in Hum; [ flia Hr Hum | easy ].
+ +replace (S m * rad - S m) with (rad - 1 + m * (rad - 1)) in Hum. 2: {
+    cbn.
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+    rewrite Nat.add_sub_assoc.
+    -rewrite <- Nat.add_sub_swap; [ flia | easy ].
+    -rewrite Nat.mul_comm.
+     destruct rad; [ easy | cbn; flia ].
+  }
+...
+
 (* special case of P_999_start whem m=2 *)
 Theorem all_P_9_all_8_9_18 {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
@@ -3886,6 +3913,9 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
               rewrite Nat.add_0_r in Haft.
 (* bon, y faut peut-être voir ce qui se passe en i+2, i+3, etc.
    faut faire le théorème P_999_follow, la suite de P_999_start *)
+(* bon, après un (u⊕v)(i+1) qui vaut 9, on devrait avoir forcément
+   (à démontrer dans P_999_follow) un 7, un 8 ou un 9. Mais ce serait
+   contradictoire avec Haft *)
 ...
          }
          destruct (Nat.eq_dec j1 2) as [Hj12| Hj12]. {
