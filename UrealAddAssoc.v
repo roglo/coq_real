@@ -3670,6 +3670,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H4| H4].
     ---now rewrite NQadd_0_l; apply NQle_sub_l.
     ---exfalso.
+...
        destruct j.
      +++rewrite <- Hnv in Hnuv; subst nuv.
         rewrite HAu, NQadd_0_l in H4.
