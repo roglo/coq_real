@@ -3856,6 +3856,43 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
        destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H8| H8].
      +++clear H7.
         (* therefore v(i+1)=2(r-1), then contradiction with Hbef or Hwhi *)
+        assert (H : v (i + 1) = 2 * (rad - 1)). {
+          unfold "⊕" in H8.
+          specialize (Hu 1) as H9.
+          specialize (Hv 1) as H10.
+          flia H8 H9 H10.
+        }
+        destruct j; [ rewrite Nat.add_0_r, H in Hwhi; flia Hwhi Hr | ].
+        specialize (Hbef 0 (Nat.lt_0_succ j)).
+        rewrite Nat.add_0_r in Hbef.
+        rewrite H in Hbef; flia Hbef Hr.
+     +++destruct (le_dec 3 rad) as [H9| H9].
+      ***remember ((u ⊕ v) (i + 1) / rad + 1) as j1 eqn:Hj1.
+         remember (carry (u ⊕ v) (i + 1) + 1) as k1 eqn:Hk1.
+         move k1 before j1; symmetry in Hj1, Hk1.
+         destruct H7 as (Ij1 & Ik1 & H7).
+         unfold "⊕" in H7.
+         destruct (Nat.eq_dec j1 1) as [Hj11| Hj11]. {
+           move Hj11 at top; subst j1; clear Ij1.
+           rewrite Nat.mul_1_l in H7.
+           destruct (Nat.eq_dec k1 1) as [Hk11| Hk11]. {
+             move Hk11 at top; subst k1; clear Ik1.
+             move H7 at bottom.
+             destruct j.
+             -rewrite Nat.add_0_r in Hwhi.
+              rewrite Hwhi in H7.
+              assert (H10 : u (i + 1) = 1) by flia H7 Hr.
+              clear Hbef H4 H7 Hj1; move Hwhi at bottom.
+              rewrite Nat.add_0_r in Haft.
+(* bon, y faut peut-être voir ce qui se passe en i+2, i+3, etc.
+   faut faire le théorème P_999_follow, la suite de P_999_start *)
+...
+         }
+         destruct (Nat.eq_dec j1 2) as [Hj12| Hj12]. {
+           ...
+         }
+         flia Ij1 Hj11 Hj12.
+
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
