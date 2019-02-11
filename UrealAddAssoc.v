@@ -3670,6 +3670,14 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H4| H4].
     ---now rewrite NQadd_0_l; apply NQle_sub_l.
     ---exfalso.
+(**)
+specialize (all_fA_ge_1_ε_P_999 _ _ H2) as A2.
+move A3 at bottom.
+assert (H : ∀ k, P u (i + k + 1) = rad - 1). {
+  intros k.
+  specialize (A2 k).
+  specialize (A3 k).
+Search P.
 ...
        destruct j.
      +++rewrite <- Hnv in Hnuv; subst nuv.
