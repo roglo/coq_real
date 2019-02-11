@@ -3772,10 +3772,42 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1) as [H4| H4].
   *destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H5| H5]; [ easy | ].
    exfalso; subst nv nup nuv.
-   apply NQnlt_ge in H5; apply H5.
+   apply NQnlt_ge in H5; apply H5; clear H5.
    now apply (pre_Hugo_Herbelin_111' u v i kup kuv).
   *destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H5| H5]; [ | easy ].
    exfalso.
+   apply NQnlt_ge in H4; apply H4; clear H4.
+   destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
+  --subst kup; rewrite <- Hnv in Hnup; subst nup.
+    eapply NQle_lt_trans; [ | apply H5 ].
+    rewrite Hnv, Hnuv.
+    assert (Hin : i + 1 ≤ min_n i 0). {
+      unfold min_n; destruct rad; [ easy | cbn; flia ].
+    }
+    replace kuv with (0 + kuv) at 1 by easy.
+    rewrite min_n_add.
+    rewrite <- ApB_A; [ | easy ].
+    rewrite <- NQadd_assoc.
+    apply NQadd_le_mono_l.
+    rewrite <- Hnv, <- Hnuv, NQadd_comm.
+    specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
+...
+    rewrite (A_all_9 (P v)); [ | intros; apply A3 ].
+...
+    apply NQadd_le_mono.
+   ++replace kuv with (0 + kuv) by easy.
+     rewrite min_n_add.
+     rewrite <- ApB_A; [ | easy ].
+     apply NQle_add_r, B_ge_0.
+   ++idtac.
+...
+   assert (H : ∀ n, NQintg (A i n u) = 0). {
+     intros n; apply NQintg_A_for_dig; intros k Hk.
+     replace k with (i + (k - i)) by flia Hk; apply Hu.
+   }
+...
+   specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
+   rewrite (A_all_9 (P v)); [ | intros; apply A3 ].
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
