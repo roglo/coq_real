@@ -3532,10 +3532,10 @@ Theorem pre_Hugo_Herbelin_111' {r : radix} : ∀ u v i kup kuv,
           end
   → NQintg (A i (min_n i kuv) v) = 0
   → (A i (min_n i kup) u + A i (min_n i kup) (P v) < 1)%NQ
-  → (1 ≤ A i (min_n i kuv) u + A i (min_n i kuv) v)%NQ
-  → False.
+  → (A i (min_n i kuv) u + A i (min_n i kuv) v < 1)%NQ.
 Proof.
-intros * Hu H3 Hkup Hkuv Hm H4 H5.
+intros * Hu H3 Hkup Hkuv Hm H4.
+apply NQnle_gt; intros H5.
 specialize radix_ge_2 as Hr.
 remember (min_n i 0) as nv eqn:Hnv.
 remember (min_n i kup) as nup eqn:Hnup.
@@ -3764,6 +3764,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1) as [H4| H4].
   *destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H5| H5]; [ easy | ].
    exfalso; subst nv nup nuv.
+   apply NQnlt_ge in H5; apply H5.
    now apply (pre_Hugo_Herbelin_111' u v i kup kuv).
   *idtac.
 ...
