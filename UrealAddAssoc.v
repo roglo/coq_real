@@ -3640,44 +3640,61 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    ++now apply NQadd_lt_mono_l.
    ++subst x.
      rewrite A_additive.
+     rewrite A_additive in Hj.
      rewrite NQintg_add; [ | easy | easy ].
      rewrite Hm, Nat.add_0_r.
+     rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
+     assert (HA : ∀ n, (0 ≤ A i n u < 1)%NQ). {
+       intros n.
+       split; [ easy | ].
+       apply A_upper_bound_for_dig.
+       intros k Hk; replace k with (i + (k - i)) by flia Hk.
+       apply Hu.
+     }
+     rewrite (NQintg_small (A i nuv u)); [ | easy ].
+     rewrite (NQfrac_small (A i nuv u)); [ | easy ].
+     rewrite (NQfrac_small (A i nuv u)) in Hj; [ | easy ].
+     rewrite Nat.add_0_l.
      destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
     **subst kup.
       rewrite <- Hnv in Hnup; subst nup.
+      rewrite <- (NQfrac_small (A i nuv u)); [ | easy ].
       rewrite NQintg_add_frac.
+      rewrite (NQfrac_small (A i nuv u)); [ | easy ].
       rewrite (NQfrac_small (A i nuv v)). 2: {
         split; [ easy | now apply eq_NQintg_0 in Hm ].
       }
-      rewrite (NQintg_small (A i nuv u)). 2: {
-        split; [ easy | ].
-        apply A_upper_bound_for_dig.
-        intros k Hk; replace k with (i + (k - i)) by flia Hk.
-        apply Hu.
-      }
-      rewrite Nat.add_0_l.
-      rewrite A_additive in Hj.
-      rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
       rewrite (NQfrac_small (A i nuv v)) in Hj. 2: {
         split; [ easy | now apply eq_NQintg_0 in Hm ].
       }
-      destruct (NQlt_le_dec (NQfrac (A i nuv u) + A i nuv v) 1) as [H4| H4].
+      destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H4| H4].
     ---now rewrite NQadd_0_l; apply NQle_sub_l.
     ---exfalso.
        destruct j.
      +++rewrite <- Hnv in Hnuv; subst nuv.
-        rewrite HAu, NQfrac_0, NQadd_0_l in H4.
+        rewrite HAu, NQadd_0_l in H4.
         apply NQnlt_ge in H4; apply H4; clear H4.
         now apply eq_NQintg_0 in Hm.
+     +++specialize (Hjj j (Nat.lt_succ_diag_r j)) as H5.
+        apply A_ge_1_true_iff in H5.
+        rewrite A_additive in H5.
+        rewrite NQfrac_add_cond in H5; [ | easy | easy ].
+        remember (min_n i j) as m eqn:Hmm.
+        move m before j.
+        move Hmm before Hnuv.
+        rewrite (NQfrac_small (A i m u)) in H5; [ | easy ].
+        rewrite Hnuv in Hj.
+        replace (S j) with (j + 1) in Hj by flia.
+        rewrite min_n_add, Nat.mul_1_r in Hj.
+        do 2 rewrite <- ApB_A in Hj.
+        rewrite <- Hmm in Hj.
+        move Hj at bottom.
+...
      +++specialize (Hjj 0 (Nat.lt_0_succ j)) as H5.
         apply A_ge_1_true_iff in H5.
         rewrite A_additive in H5.
         rewrite <- Hnv in H5.
         rewrite NQfrac_add_cond in H5; [ | easy | easy ].
-...
-     +++specialize (Hjj j (Nat.lt_succ_diag_r j)) as H5.
-        apply A_ge_1_true_iff in H5.
-        rewrite A_additive in H5.
 ...
      specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
 assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
