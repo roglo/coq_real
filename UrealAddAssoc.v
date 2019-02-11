@@ -3519,6 +3519,34 @@ apply Nat.lt_le_pred.
 now apply Nat.mod_upper_bound.
 Qed.
 
+Theorem fA_ge_1_ε_all_true_add_le_999_999 {r : radix} : ∀ u v i,
+  (∀ k, u (i + k) ≤ rad - 1)
+  → (∀ k, v (i + k + 1) = rad - 1)
+  → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
+  → (∀ k : nat, u (i + k + 1) = 0) ∨ (∀ k : nat, u (i + k + 1) = rad - 1).
+Proof.
+intros * Hu A3 H2.
+specialize radix_ge_2 as Hr.
+specialize (A_ge_1_add_all_true_if (u ⊕ v) i) as H5.
+assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 2 * (rad - 1)). {
+  intros k; unfold "⊕"; rewrite <- Nat.add_assoc at 1.
+  replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+  apply Nat.add_le_mono; [ apply Hu | ].
+  now rewrite A3.
+}
+specialize (H5 H H2); clear H.
+destruct H5 as [H5| [H5| H5]].
+-left; intros k.
+ specialize (H5 k); unfold "⊕" in H5.
+ rewrite A3 in H5; flia H5.
+-right; intros k.
+ specialize (H5 k); unfold "⊕" in H5.
+ rewrite A3 in H5; flia H5.
+-exfalso.
+ destruct H5 as (l & _ & H5 & _); unfold "⊕" in H5.
+ rewrite A3 in H5; flia H5 Hr.
+Qed.
+
 Theorem pre_Hugo_Herbelin_111' {r : radix} : ∀ u v i kup kuv,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, fA_ge_1_ε v i k = true)
@@ -3618,27 +3646,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
    destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H4| H4].
    --now rewrite NQadd_0_l; apply NQle_sub_l.
    --exfalso.
-     assert
-       (H5 : (∀ k, u (i + k + 1) = 0) ∨ (∀ k, u (i + k + 1) = rad - 1)). {
-       intros.
-       specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H5.
-       assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
-         intros k; unfold "⊕"; rewrite <- Nat.add_assoc.
-         replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
-         apply Nat.add_le_mono; [ apply Hu | apply P_le ].
-       }
-       specialize (H5 H H2); clear H.
-       destruct H5 as [H5| [H5| H5]].
-       -left; intros k.
-        specialize (H5 k); unfold "⊕" in H5.
-        rewrite A3 in H5; flia H5.
-       -right; intros k.
-        specialize (H5 k); unfold "⊕" in H5.
-        rewrite A3 in H5; flia H5.
-       -exfalso.
-        destruct H5 as (l & _ & H5 & _); unfold "⊕" in H5.
-        rewrite A3 in H5; flia H5 Hr.
-     }
+     specialize (fA_ge_1_ε_all_true_add_le_999_999 u (P v) i Hu A3 H2) as H5.
      destruct H5 as [H5| H5].
      ++unfold A in H4 at 1.
        rewrite all_0_summation_0 in H4. 2: {
