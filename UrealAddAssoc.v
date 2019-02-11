@@ -3855,6 +3855,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
        specialize (H7 H); clear H.
        destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H8| H8].
      +++clear H7.
+        (* therefore v(i+1)=2(r-1), then contradiction with Hbef or Hwhi *)
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
