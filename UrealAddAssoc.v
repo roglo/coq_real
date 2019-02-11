@@ -3791,6 +3791,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     apply NQadd_le_mono_l.
     rewrite <- Hnv, <- Hnuv, NQadd_comm.
     specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
+(* Hm et A3 : soit v = 999... soit v = 999...8/18/18... *)
 ...
     rewrite (A_all_9 (P v)); [ | intros; apply A3 ].
 ...
