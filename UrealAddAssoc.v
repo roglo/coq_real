@@ -3840,9 +3840,21 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       rewrite min_n_add; flia.
     **apply Nat.nlt_ge in H4.
       destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
-    ---specialize (A_ge_1_add_all_true_if (u ⊕ v) i) as H7.
-(* ah mais oui mais non... u+v ça va jusqu'à 27, faut que j'utilise
-   mon tout beau théorème général, avec sept cas *)
+    ---specialize (P_999_start (u ⊕ v) (i + 1) 3) as H7.
+       assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
+         intros k; unfold "⊕".
+         replace (3 * (rad - 1)) with ((rad - 1) + 2 * (rad - 1)) by flia.
+         rewrite <- Nat.add_assoc.
+         apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+       }
+       specialize (H7 H); clear H.
+       assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
+         intros k; rewrite Nat.add_shuffle0.
+         now apply all_fA_ge_1_ε_P_999.
+       }
+       specialize (H7 H); clear H.
+       destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H8| H8].
+     +++clear H7.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
