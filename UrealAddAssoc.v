@@ -1844,10 +1844,46 @@ specialize (P_999_start u i m Hur Hpu) as H1.
 destruct (Nat.eq_dec (u i) (m * (rad - 1))) as [H2| H2].
 -clear H1.
  rewrite H2 in Hum.
+ assert (H1 : ∃ j, m = j * rad + 1). {
+(* euh... j'ai des doutes, chais pas si c'est vrai, ça *)
+...
+Theorem glop : ∀ a b r, a mod b = r → ∃ q, a = b * q + r.
+...
+apply glop in Hum.
+destruct Hum as (q, Hq).
+...
+
+   specialize (Nat.div_mod (m * (rad - 1)) rad radix_ne_0) as H1.
+   rewrite Hum in H1.
+   unfold modulo in Hum.
+   destruct rad as [| rr]; [ easy | ].
+   replace (S rr - 1) with rr in Hum by flia.
+   specialize (Nat.divmod_spec (m * rr) rr 0 rr (le_refl _)) as H3.
+   rewrite Nat.mul_0_r, Nat.add_0_r, Nat.sub_diag, Nat.add_0_r in H3.
+   remember (NPeano.Nat.divmod (m * rr) rr 0 rr) as x eqn:Hx.
+   symmetry in Hx.
+   destruct x as (x, y).
+   destruct H3 as (H3, H4).
+   cbn in Hum.
+   assert (Hy : y = 0) by flia Hum Hr.
+   subst y; clear Hum H4.
+   rewrite Nat.sub_0_r in H3.
+   exists x.
+   cbn in H3.
+...
+   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H1.
+   apply (Nat.add_cancel_r _ _ m) in H1.
+   rewrite Nat.sub_add in H1. 2: {
+     rewrite Nat.mul_comm.
+     destruct rad; [ easy | cbn; flia ].
+   }
+...
  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hum.
  destruct m.
  +cbn in Hum.
   rewrite Nat.mod_0_l in Hum; [ flia Hr Hum | easy ].
+ +idtac.
+...
  +replace (S m * rad - S m) with (rad - 1 + m * (rad - 1)) in Hum. 2: {
     cbn.
     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
