@@ -3721,7 +3721,9 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
         apply Nat.pow_gt_1; [ easy | ].
         rewrite Hnv; unfold min_n.
         destruct rad; [ easy | cbn; flia ].
-    **idtac.
+    **destruct H2 as (j2 & Hjj2 & Hj2); subst kup.
+      apply A_ge_1_false_iff in Hj2.
+      rewrite <- Hnup in Hj2.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
