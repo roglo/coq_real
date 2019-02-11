@@ -3766,7 +3766,8 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    exfalso; subst nv nup nuv.
    apply NQnlt_ge in H5; apply H5.
    now apply (pre_Hugo_Herbelin_111' u v i kup kuv).
-  *idtac.
+  *destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H5| H5]; [ | easy ].
+   exfalso.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
