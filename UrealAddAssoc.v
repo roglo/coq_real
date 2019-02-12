@@ -1961,6 +1961,26 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
   *apply Nat.nlt_ge in H4.
    destruct (zerop (rad - 1)) as [H5| H5]; [ flia H5 Hr | clear H5 ].
    destruct H1 as (H1 & H6 & H7).
+   remember (carry u (i + j)) as c eqn:Hc.
+   symmetry in H7.
+   apply Nat.add_sub_eq_nz in H7; [ | flia Hr ].
+   rewrite Nat.sub_add in H7; [ | flia H4 ].
+   assert (Hcr : c mod rad = 0) by now rewrite H7; apply Nat.mod_mul.
+   subst c.
+   unfold carry in H4.
+Search (NQintg (A _ _ _)).
+...
+   specialize (P_999_start u (i + j + 1) m) as H5.
+   assert (H : ∀ k, u (i + j + 1 + k) ≤ m * (rad - 1)). {
+     intros k; do 2 rewrite <- Nat.add_assoc; apply Hur.
+   }
+   specialize (H5 H); clear H.
+   assert (H : ∀ k, P u (i + j + 1 + k) = rad - 1). {
+     intros k; do 2 rewrite <- Nat.add_assoc; apply Hpu.
+   }
+   specialize (H5 H); clear H.
+   destruct (Nat.eq_dec (u (i + j + 1)) (m * (rad - 1))) as [H6| H6].
+  --clear H5.
 ...
 
 (* special case of P_999_start whem m=2 *)
