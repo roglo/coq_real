@@ -1871,6 +1871,23 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
    -rewrite Nat.mod_small in Hum; [ | flia H1 Hr ].
     flia Hum Hr.
  }
+ specialize (Hpu (j + 1)) as H3.
+ rewrite Nat.add_assoc in H3.
+ unfold P, d2n, prop_carr in H3; cbn in H3.
+ specialize (carry_upper_bound_for_adds u i m) as H4.
+ assert (H : m ≠ 0). {
+   intros H5; subst m; cbn in Hum.
+   rewrite Nat.mod_0_l in Hum; [ flia Hum Hr | easy ].
+ }
+ specialize (H4 H); clear H.
+ assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+   intros; rewrite <- Nat.add_assoc; apply Hur.
+ }
+ specialize (H4 H); clear H.
+ remember (carry u (i + j + 1)) as c eqn:Hc.
+ specialize (Nat.div_mod (u (i + j + 1) + c) rad radix_ne_0) as H5.
+ rewrite H3 in H5.
+ (* mouais, chais pas, ces H4 et H5 ne servent peut-être à rien *)
 ...
 
 (* special case of P_999_start whem m=2 *)
