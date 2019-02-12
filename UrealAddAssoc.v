@@ -1930,6 +1930,37 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
   *rewrite Nat_sub_sub_distr; [ | flia Hur1 ].
    now rewrite Nat.sub_diag.
  +apply Nat.nle_gt in H3.
+  destruct (lt_dec (carry u (i + j)) rad) as [H4| H4].
+  *destruct H1 as (H1 & H5 & Hc).
+   rewrite Nat.mul_1_l in Hc.
+   assert (Hcu : carry u (i + j) = 0) by flia Hr Hc.
+   clear Hc H1 H4 H5.
+   assert (Hur1 : u (i + j + 1) < rad). {
+     apply Nat.nle_gt; intros Hur1.
+     unfold carry in Hcu.
+     apply eq_NQintg_0 in Hcu; [ | easy ].
+     apply NQnle_gt in Hcu; apply Hcu; clear Hcu.
+     rewrite A_split_first.
+     -rewrite <- (Nat.add_1_r (i + j)).
+      eapply NQle_trans. 2: {
+        apply NQle_add_r.
+        replace 0%NQ with (0 * 1 // rad)%NQ by easy.
+        now apply NQmul_le_mono_pos_r.
+      }
+      apply NQle_pair; [ easy | easy | ].
+      now do 2 rewrite Nat.mul_1_l.
+     -unfold min_n.
+      destruct rad; [ easy | cbn; flia ].
+   }
+   assert (Hur2 : u (i + j + 1) ≥ rad - m) by flia H3.
+   exists (rad - u (i + j + 1)).
+   split.
+  --split; [ flia Hur1 | flia Hur2 ].
+  --rewrite Nat_sub_sub_distr; [ | flia Hur1 ].
+    now rewrite Nat.sub_diag.
+  *apply Nat.nlt_ge in H4.
+   destruct (zerop (rad - 1)) as [H5| H5]; [ flia H5 Hr | clear H5 ].
+   destruct H1 as (H1 & H6 & H7).
 ...
 
 (* special case of P_999_start whem m=2 *)
