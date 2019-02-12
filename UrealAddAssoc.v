@@ -1937,6 +1937,7 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
  rewrite H3 in H5.
  (* mouais, chais pas, ces H4 et H5 ne servent peut-être à rien *)
 ...
+*)
 
 (* special case of P_999_start whem m=2 *)
 Theorem all_P_9_all_8_9_18 {r : radix} : ∀ u i,
