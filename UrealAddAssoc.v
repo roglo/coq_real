@@ -1834,25 +1834,28 @@ Qed.
 Theorem P_999_after_mod_is_9 {r : radix} : ∀ u i m,
   (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
-  → u i mod rad = rad - 1
-  → ∃ k, 1 ≤ k ≤ m ∧ u (i + 1) = rad - k.
+  → ∀ j, u (i + j) mod rad = rad - 1
+  → ∃ k, 1 ≤ k ≤ m ∧ u (i + j + 1) = rad - k.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur Hpu Hum.
-specialize (P_999_start u i m Hur Hpu) as H1.
-destruct (Nat.eq_dec (u i) (m * (rad - 1))) as [H2| H2].
+intros Hur Hpu * Hum.
+specialize (P_999_start u (i + j) m) as H1.
+assert (H : ∀ k, u (i + j + k) ≤ m * (rad - 1)). {
+  intros k; rewrite <- Nat.add_assoc; apply Hur.
+}
+specialize (H1 H); clear H.
+assert (H : ∀ k, P u (i + j + k) = rad - 1). {
+  intros k; rewrite <- Nat.add_assoc; apply Hpu.
+}
+specialize (H1 H); clear H.
+destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
 -clear H1.
  rewrite H2 in Hum.
- assert (H1 : ∃ j, m = j * rad + 1). {
-(* euh... j'ai des doutes, chais pas si c'est vrai, ça *)
+ specialize (Nat.div_mod (m * (rad - 1)) rad radix_ne_0) as H1.
+ rewrite Hum in H1.
+ (* trouver les conditions pour m et rad pour H1 *)
 ...
-Theorem glop : ∀ a b r, a mod b = r → ∃ q, a = b * q + r.
-...
-apply glop in Hum.
-destruct Hum as (q, Hq).
-...
-
    specialize (Nat.div_mod (m * (rad - 1)) rad radix_ne_0) as H1.
    rewrite Hum in H1.
    unfold modulo in Hum.
