@@ -1901,82 +1901,36 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
     -unfold min_n.
      destruct rad; [ easy | cbn; flia ].
   }
-...
-  specialize (P_999_start u (i + j + 1) m) as H4.
-  assert (H : ∀ k, u (i + j + 1 + k) ≤ m * (rad - 1)). {
-    intros k; do 2 rewrite <- Nat.add_assoc; apply Hur.
+  assert (Hur2 : u (i + j + 1) ≥ rad - m). {
+    specialize (P_999_start u (i + j + 1) m) as H1.
+    assert (H : ∀ k, u (i + j + 1 + k) ≤ m * (rad - 1)). {
+      intros k; do 2 rewrite <- Nat.add_assoc; apply Hur.
+    }
+    specialize (H1 H); clear H.
+    assert (H : ∀ k, P u (i + j + 1 + k) = rad - 1). {
+      intros k; do 2 rewrite <- Nat.add_assoc; apply Hpu.
+    }
+    specialize (H1 H); clear H.
+    destruct (Nat.eq_dec (u (i + j + 1)) (m * (rad - 1))) as [H4| H4].
+    -clear H1.
+     rewrite H4, Nat.mul_sub_distr_l, Nat.mul_1_r.
+     apply Nat.sub_le_mono_r.
+     destruct m; [ easy | cbn; flia ].
+    -destruct (le_dec m rad) as [H5| H5]; [ clear H5 | easy ].
+     destruct H1 as (H1 & H5 & H6).
+     rewrite H6.
+     eapply Nat.le_trans; [ | now apply Nat.sub_le_mono_l with (m := m) ].
+     apply Nat.sub_le_mono_r.
+     rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+     apply Nat_le_add_l.
   }
-  specialize (H4 H); clear H.
-  assert (H : ∀ k, P u (i + j + 1 + k) = rad - 1). {
-    intros k; do 2 rewrite <- Nat.add_assoc; apply Hpu.
-  }
-  specialize (H4 H); clear H.
-  destruct (Nat.eq_dec (u (i + j + 1)) (m * (rad - 1))) as [H5 | H5].
-  *clear H4.
+  exists (rad - u (i + j + 1)).
+  split.
+  *split; [ flia Hur1 | flia Hur2 ].
+  *rewrite Nat_sub_sub_distr; [ | flia Hur1 ].
+   now rewrite Nat.sub_diag.
+ +apply Nat.nle_gt in H3.
 ...
-   exists 1; split; [ | easy ].
-   split; [ easy | flia Hm ].
-  *idtac.
- destruct (le_dec 1 rad) as [H5| H5]; [ clear H5 | flia H5 Hr ].
-...
-
- +clear H3.
-  destruct (lt_dec m rad) as [H3| H3].
-  *rewrite Nat.mod_small in H1; [ | easy ].
-   subst m; rewrite Nat.mul_1_l in H4.
-   exists 1; easy.
-  *apply Nat.nlt_ge in H3.
-(* mmmm... ça chie, ça ; peut-être le théorème lui-même *)
-...
-   specialize (Nat.div_mod m rad radix_ne_0) as H5.
-   rewrite H1 in H5.
-...
-  specialize (Nat.div_mod m rad radix_ne_0) as H3.
-  rewrite H3, H1 in H4.
-  rewrite Nat.mul_add_distr_r, Nat.mul_1_l in H4.
-  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
-...
-  replace m with (1 + (m - 1)) in H4. 2: {
-...
-  }
-  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
-  rewrite Nat.mul_add_distr_r, Nat.mul_1_l in H4.
-...
-  specialize (Nat.div_mod m rad radix_ne_0) as H3.
-...
-  rewrite H3, H1 in H4.
-  rewrite Nat.mul_add_distr_r, Nat.mul_1_l in H4.
-...
-  destruct (lt_dec m rad) as [H3| H3].
-  *rewrite Nat.mod_small in H1; [ | easy ].
-   subst m; rewrite Nat.mul_1_l in H4.
-   exists 1; easy.
-  *apply Nat.nlt_ge in H3.
-...
-  specialize (Nat.div_mod m rad radix_ne_0) as H3.
-  rewrite H1 in H3.
-  rewrite H3 in H4.
-...
- specialize (Hpu (j + 1)) as H3.
- rewrite Nat.add_assoc in H3.
- unfold P, d2n, prop_carr in H3; cbn in H3.
-...
- specialize (carry_upper_bound_for_adds u i m) as H4.
- assert (H : m ≠ 0). {
-   intros H5; subst m; cbn in Hum.
-   rewrite Nat.mod_0_l in Hum; [ flia Hum Hr | easy ].
- }
- specialize (H4 H); clear H.
- assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
-   intros; rewrite <- Nat.add_assoc; apply Hur.
- }
- specialize (H4 H); clear H.
- remember (carry u (i + j + 1)) as c eqn:Hc.
- specialize (Nat.div_mod (u (i + j + 1) + c) rad radix_ne_0) as H5.
- rewrite H3 in H5.
- (* mouais, chais pas, ces H4 et H5 ne servent peut-être à rien *)
-...
-*)
 
 (* special case of P_999_start whem m=2 *)
 Theorem all_P_9_all_8_9_18 {r : radix} : ∀ u i,
