@@ -1852,9 +1852,58 @@ specialize (H1 H); clear H.
 destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
 -clear H1.
  rewrite H2 in Hum.
+ assert (H1 : m = m / rad * rad + 1). {
+...
+ assert (H1 : m = (m / rad - 1) * rad + 1). {
+...
+ assert (H1 : ∃ j, m = j * rad + 1). {
+   exists (m / rad - 1).
+...
+   specialize (Nat.div_mod (m * (rad - 1)) rad radix_ne_0) as H1.
+   rewrite Hum in H1.
+   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H1.
+   apply (Nat.add_cancel_r _ _ m) in H1.
+   rewrite Nat.sub_add in H1. 2: {
+     rewrite Nat.mul_comm.
+     destruct rad; [ easy | cbn; flia ].
+   }
+   rewrite Nat.add_sub_assoc in H1; [ | easy ].
+   rewrite <- Nat.add_sub_swap in H1; [ | flia Hr ].
+   apply (Nat.add_cancel_r _ _ 1) in H1.
+   rewrite Nat.sub_add in H1; [ | flia Hr ].
+symmetry in H1.
+rewrite <- Nat.add_assoc, Nat.add_comm in H1.
+apply Nat.add_sub_eq_r in H1.
+rewrite Nat.add_sub_swap in H1. 2: {
+  rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono_r, Nat_mul_sub_div_le.
+  rewrite Nat.mul_comm.
+  destruct rad; [ easy | cbn; flia ].
+}
+rewrite Nat.mul_comm, <- Nat.mul_sub_distr_l in H1.
+exists (m / rad - 1).
+exists (m - (rad * m - m) / rad - 1).
+   exists ((m - 1) / rad).
+...
+(jr+1)(r-1) = jr(r-1)+(r-1)
+m=jr+1
+jr=m-1
+j=(m-1)/r
+...
+
  specialize (Nat.div_mod (m * (rad - 1)) rad radix_ne_0) as H1.
  rewrite Hum in H1.
  (* trouver les conditions pour m et rad pour H1 (ou Hum) *)
+ rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H1.
+ apply (Nat.add_cancel_r _ _ m) in H1.
+ rewrite Nat.sub_add in H1. 2: {
+   rewrite Nat.mul_comm.
+   destruct rad; [ easy | cbn; flia ].
+ }
+ rewrite Nat.add_sub_assoc in H1; [ | easy ].
+ rewrite <- Nat.add_sub_swap in H1; [ | flia Hr ].
+ apply (Nat.add_cancel_r _ _ 1) in H1.
+ rewrite Nat.sub_add in H1; [ | flia Hr ].
 ...
    specialize (Nat.div_mod (m * (rad - 1)) rad radix_ne_0) as H1.
    rewrite Hum in H1.
