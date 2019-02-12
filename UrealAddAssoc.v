@@ -1967,8 +1967,7 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
    rewrite Nat.sub_add in H7; [ | flia H4 ].
    assert (Hcr : c mod rad = 0) by now rewrite H7; apply Nat.mod_mul.
    subst c.
-   unfold carry in H4.
-Search (NQintg (A _ _ _)).
+   (* carry est un multiple non nul de rad *)
 ...
    specialize (P_999_start u (i + j + 1) m) as H5.
    assert (H : ∀ k, u (i + j + 1 + k) ≤ m * (rad - 1)). {
