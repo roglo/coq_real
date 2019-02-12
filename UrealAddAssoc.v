@@ -1854,7 +1854,7 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
  rewrite H2 in Hum.
  specialize (Nat.div_mod (m * (rad - 1)) rad radix_ne_0) as H1.
  rewrite Hum in H1.
- (* trouver les conditions pour m et rad pour H1 *)
+ (* trouver les conditions pour m et rad pour H1 (ou Hum) *)
 ...
    specialize (Nat.div_mod (m * (rad - 1)) rad radix_ne_0) as H1.
    rewrite Hum in H1.
