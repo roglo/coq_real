@@ -4001,17 +4001,17 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
               rewrite Haft in H10.
               flia Hr H10.
              -destruct j.
-              +specialize (Hbef 0 (Nat.lt_0_1)) as H11.
-               rewrite Nat.add_0_r in H11.
-               assert (H12 : u (i + 1) = 0) by flia H7 H11; clear H7.
-               move Hwhi at bottom.
-...
-              rewrite Hwhi in H10.
-              assert (H : u (i + 1 + 1) ≤ 1). {
-                remember (u (i + 1 + 1)) as x eqn:Hx.
-                destruct x; [ pauto | ].
-                destruct x; [ easy | flia H10 ].
-              }
+              +specialize (Hbef 0 (Nat.lt_0_1)).
+               rewrite Nat.add_0_r in Hbef.
+               assert (Hu1 : u (i + 1) = 0) by flia H7 Hbef; clear H7.
+               move Hbef at bottom; rename Hbef into Hv1.
+               assert (Hu2 : u (i + 1 + 1) ≤ 1). {
+                 remember (u (i + 1 + 1)) as x eqn:Hx.
+                 destruct x; [ pauto | ].
+                 destruct x; [ easy | flia Hwhi H10 ].
+               }
+               move Hwhi at bottom; rename Hwhi into Hv2.
+               clear H10 Hj1 H8.
 ...
          }
          destruct (Nat.eq_dec j1 2) as [Hj12| Hj12]. {
