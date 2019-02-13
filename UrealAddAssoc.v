@@ -1992,6 +1992,8 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
    specialize (H1 H); clear H.
    specialize (H1 j) as H2; clear H3 H6.
    move Hc before H2.
+   rewrite Hc in H2.
+...
    unfold carry in Hc, H2.
    destruct (LPO_fst (fA_ge_1_ε u (i + j))) as [H5| H5].
   --remember (min_n (i + j) 0) as n eqn:Hn; move n before c.
