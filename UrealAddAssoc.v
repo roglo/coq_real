@@ -1971,21 +1971,17 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
    clear H2.
    apply Nat.mod_divides in Hcr; [ | easy ].
    destruct Hcr as (c, Hc).
-   clear H7.
+   clear H7 H1.
    rewrite Hc in H4.
    replace rad with (rad * 1) in H4 at 1 by flia.
    apply Nat.mul_le_mono_pos_l in H4; [ | easy ].
    destruct c; [ easy | clear H4 ].
-   rewrite Hc, Nat.mul_comm in H6, H1.
+   rewrite Hc, Nat.mul_comm in H6.
    cbn in H6.
    destruct H6 as (_, H6).
    rewrite Nat_sub_sub_distr in H6; [ | flia Hr ].
    rewrite Nat.add_sub_swap in H6; [ | easy ].
    rewrite Nat.sub_diag, Nat.add_0_l in H6.
-   rewrite Nat.div_add in H1; [ | easy ].
-   rewrite Nat.div_small in H1; [ | flia Hr ].
-   rewrite Nat.add_0_l in H1.
-   destruct H1 as (_, H1).
 ...
 (*
    unfold carry in Hcr.
