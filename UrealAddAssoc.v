@@ -3977,36 +3977,30 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
            destruct (Nat.eq_dec k1 1) as [Hk11| Hk11]. {
              move Hk11 at top; subst k1; clear Ik1.
              move H7 at bottom.
+             specialize (P_999_after_mod_is_9 (u ⊕ v) (i + 1) 3 H9) as H10.
+             assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
+               intros; unfold "⊕".
+               replace 3 with (1 + 2) by easy.
+               rewrite <- Nat.add_assoc.
+               rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+               now apply Nat.add_le_mono.
+             }
+             specialize (H10 H); clear H.
+             assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
+               intros.
+               rewrite Nat.add_shuffle0.
+               now apply all_fA_ge_1_ε_P_999.
+             }
+             specialize (H10 H 0); clear H.
+             rewrite Nat.add_0_r in H10.
+             specialize (H10 H7).
+             unfold "⊕" in H10.
+...
              destruct j.
-             -rewrite Nat.add_0_r in Hwhi.
-              rewrite Hwhi in H7.
-              assert (H10 : u (i + 1) = 1) by flia H7 Hr.
-              clear Hbef H4 H7 Hj1; move Hwhi at bottom.
-              rewrite Nat.add_0_r in Haft.
-              specialize (P_999_after_mod_is_9 (u ⊕ v) (i + 1) 3 H9) as H4.
-              assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
-                intros; unfold "⊕".
-                replace 3 with (1 + 2) by easy.
-                rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-                rewrite <- Nat.add_assoc.
-                now apply Nat.add_le_mono.
-              }
-              specialize (H4 H); clear H.
-              assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
-                intros.
-                rewrite Nat.add_shuffle0.
-                now apply all_fA_ge_1_ε_P_999.
-              }
-              specialize (H4 H 0); clear H.
-              rewrite Nat.add_0_r in H4.
-              assert (H : (u ⊕ v) (i + 1) = rad - 1). {
-                unfold "⊕"; rewrite H10, Hwhi; flia Hr.
-              }
-              specialize (H4 H); clear H.
-              unfold "⊕" in H4.
-              replace (i + 1 + 1) with (i + 0 + 2) in H4 by flia.
-              rewrite Haft in H4.
-              flia Hr H4.
+             -rewrite Nat.add_0_r in Haft.
+              replace (i + 1 + 1) with (i + 0 + 2) in H10 by flia.
+              rewrite Haft in H10.
+              flia Hr H10.
              -idtac.
 ...
          }
