@@ -1836,12 +1836,14 @@ Theorem P_999_after_mod_is_9 {r : radix} : ∀ u i m,
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
   → ∀ j, u (i + j) = rad - 1
-  → let k := rad - u (i + j + 1) in
-     1 ≤ k ≤ m ∧ u (i + j + 1) = rad - k.
+  → rad - m ≤ u (i + j + 1) < rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hpu * Hum.
+enough
+  (H : let k := rad - u (i + j + 1) in
+       1 ≤ k ≤ m ∧ u (i + j + 1) = rad - k) by flia H.
 specialize (P_999_start u (i + j) m) as H1.
 assert (H : ∀ k, u (i + j + k) ≤ m * (rad - 1)). {
   intros k; rewrite <- Nat.add_assoc; apply Hur.
@@ -1927,8 +1929,6 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
   rewrite Nat_sub_sub_distr; [ now rewrite Nat.sub_diag | ].
   split; [ flia H3 Hmr | easy ].
 Qed.
-
-...
 
 (* special case of P_999_start whem m=2 *)
 Theorem all_P_9_all_8_9_18 {r : radix} : ∀ u i,
@@ -3983,6 +3983,10 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
               assert (H10 : u (i + 1) = 1) by flia H7 Hr.
               clear Hbef H4 H7 Hj1; move Hwhi at bottom.
               rewrite Nat.add_0_r in Haft.
+Check P_999_after_mod_is_9.
+(* ça devrait le faire, à la louche... *)
+(* commentaire ci-dessous à supprimer *)
+...
 (* bon, y faut peut-être voir ce qui se passe en i+2, i+3, etc.
    faut faire le théorème P_999_follow, la suite de P_999_start *)
 (* bon, après un (u⊕v)(i+1) qui vaut 9, on devrait avoir forcément
