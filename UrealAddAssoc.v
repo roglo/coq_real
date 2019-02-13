@@ -3983,15 +3983,31 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
               assert (H10 : u (i + 1) = 1) by flia H7 Hr.
               clear Hbef H4 H7 Hj1; move Hwhi at bottom.
               rewrite Nat.add_0_r in Haft.
-Check P_999_after_mod_is_9.
-(* ça devrait le faire, à la louche... *)
-(* commentaire ci-dessous à supprimer *)
-...
-(* bon, y faut peut-être voir ce qui se passe en i+2, i+3, etc.
-   faut faire le théorème P_999_follow, la suite de P_999_start *)
-(* bon, après un (u⊕v)(i+1) qui vaut 9, on devrait avoir forcément
-   (à démontrer dans P_999_follow) un 7, un 8 ou un 9. Mais ce serait
-   contradictoire avec Haft *)
+              specialize (P_999_after_mod_is_9 (u ⊕ v) (i + 1) 3 H9) as H4.
+              assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
+                intros; unfold "⊕".
+                replace 3 with (1 + 2) by easy.
+                rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+                rewrite <- Nat.add_assoc.
+                now apply Nat.add_le_mono.
+              }
+              specialize (H4 H); clear H.
+              assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
+                intros.
+                rewrite Nat.add_shuffle0.
+                now apply all_fA_ge_1_ε_P_999.
+              }
+              specialize (H4 H 0); clear H.
+              rewrite Nat.add_0_r in H4.
+              assert (H : (u ⊕ v) (i + 1) = rad - 1). {
+                unfold "⊕"; rewrite H10, Hwhi; flia Hr.
+              }
+              specialize (H4 H); clear H.
+              unfold "⊕" in H4.
+              replace (i + 1 + 1) with (i + 0 + 2) in H4 by flia.
+              rewrite Haft in H4.
+              flia Hr H4.
+             -idtac.
 ...
          }
          destruct (Nat.eq_dec j1 2) as [Hj12| Hj12]. {
