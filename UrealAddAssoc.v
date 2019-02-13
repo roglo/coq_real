@@ -1836,8 +1836,7 @@ Theorem P_999_after_mod_is_9 {r : radix} : ∀ u i m,
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
   → ∀ j, u (i + j) = rad - 1
-  → let k := if Nat.eq_dec m 1 then 1 else rad - u (i + j + 1) in
-     1 ≤ k ≤ m ∧ u (i + j + 1) = rad - k.
+  → u (i + j + 1) < rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -1860,7 +1859,6 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
    cbn in Hum; flia Hum Hr.
  }
  subst m; clear H2; rewrite Nat.mul_1_l in Hur.
- split; [ easy | cbn ].
  specialize (Hpu (j + 1)) as H1.
  rewrite Nat.add_assoc in H1.
  unfold P, d2n, prop_carr in H1; cbn in H1.
@@ -1874,7 +1872,7 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
  rewrite Nat.add_assoc in H2.
  apply Nat.lt_1_r in H2.
  rewrite H2, Nat.add_0_r in H1.
- rewrite Nat.mod_small in H1; [ easy | ].
+ rewrite Nat.mod_small in H1; [ rewrite H1; flia Hr | ].
  specialize (Hur (j + 1)) as H3.
  rewrite Nat.add_assoc in H3.
  flia H3 Hr.
@@ -1887,44 +1885,21 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
  destruct (Nat.eq_dec m 1) as [H4| H4]; [ flia Hm H4 | clear H4 ].
  assert (Hcu : carry u (i + j) = 0) by flia Hr H1.
  clear Hc H1.
- assert (Hur1 : u (i + j + 1) < rad). {
-   apply Nat.nle_gt; intros Hur1.
-   unfold carry in Hcu.
-   apply eq_NQintg_0 in Hcu; [ | easy ].
-   apply NQnle_gt in Hcu; apply Hcu; clear Hcu.
-   rewrite A_split_first.
-   -rewrite <- (Nat.add_1_r (i + j)).
-    eapply NQle_trans. 2: {
-      apply NQle_add_r.
-      replace 0%NQ with (0 * 1 // rad)%NQ by easy.
-      now apply NQmul_le_mono_pos_r.
-    }
-    apply NQle_pair; [ easy | easy | ].
-    now do 2 rewrite Nat.mul_1_l.
-   -unfold min_n.
-    destruct rad; [ easy | cbn; flia ].
- }
- split; [ | flia Hur1 ].
- split; [ flia Hur1 | ].
- specialize (P_999_start u (i + j + 1) m) as H1.
- assert (H : ∀ k, u (i + j + 1 + k) ≤ m * (rad - 1)). {
-   intros k; do 2 rewrite <- Nat.add_assoc; apply Hur.
- }
- specialize (H1 H); clear H.
- assert (H : ∀ k, P u (i + j + 1 + k) = rad - 1). {
-   intros k; do 2 rewrite <- Nat.add_assoc; apply Hpu.
- }
- specialize (H1 H); clear H.
- destruct (Nat.eq_dec (u (i + j + 1)) (m * (rad - 1))) as [H4| H4].
- +clear H1.
-  rewrite H4, Nat.mul_sub_distr_l, Nat.mul_1_r.
-  destruct m; [ easy | cbn; flia ].
- +destruct (le_dec m rad) as [H3| H3]; [ clear H3 | easy ].
-  rewrite Nat.div_small in H1; [ | easy ].
-  rewrite Nat.add_0_l in H1.
-  destruct H1 as (H1 & H3 & H5); rewrite H5, Nat.mul_1_l.
-  rewrite Nat_sub_sub_distr; [ now rewrite Nat.sub_diag | ].
-  split; [ flia H3 Hmr | easy ].
+ unfold carry in Hcu.
+ apply Nat.nle_gt; intros H1.
+ apply eq_NQintg_0 in Hcu; [ | easy ].
+ apply NQnle_gt in Hcu; apply Hcu; clear Hcu.
+ rewrite A_split_first.
+ +rewrite <- (Nat.add_1_r (i + j)).
+  eapply NQle_trans. 2: {
+    apply NQle_add_r.
+    replace 0%NQ with (0 * 1 // rad)%NQ by easy.
+    now apply NQmul_le_mono_pos_r.
+  }
+  apply NQle_pair; [ easy | easy | ].
+  now do 2 rewrite Nat.mul_1_l.
+ +unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
 Qed.
 
 ...
