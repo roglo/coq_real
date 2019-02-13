@@ -1836,7 +1836,7 @@ Theorem P_999_after_mod_is_9 {r : radix} : ∀ u i m,
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
   → ∀ j, u (i + j) = rad - 1
-  → u (i + j + 1) < rad.
+  → rad - m ≤ u (i + j + 1) < rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -1886,20 +1886,37 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
  assert (Hcu : carry u (i + j) = 0) by flia Hr H1.
  clear Hc H1.
  unfold carry in Hcu.
- apply Nat.nle_gt; intros H1.
- apply eq_NQintg_0 in Hcu; [ | easy ].
- apply NQnle_gt in Hcu; apply Hcu; clear Hcu.
- rewrite A_split_first.
- +rewrite <- (Nat.add_1_r (i + j)).
-  eapply NQle_trans. 2: {
-    apply NQle_add_r.
-    replace 0%NQ with (0 * 1 // rad)%NQ by easy.
-    now apply NQmul_le_mono_pos_r.
-  }
-  apply NQle_pair; [ easy | easy | ].
-  now do 2 rewrite Nat.mul_1_l.
- +unfold min_n.
-  destruct rad; [ easy | cbn; flia ].
+ split.
+ +apply Nat.nlt_ge; intros H1.
+  apply eq_NQintg_0 in Hcu; [ | easy ].
+  apply NQnle_gt in Hcu; apply Hcu; clear Hcu.
+  rewrite A_split_first.
+  *rewrite <- (Nat.add_1_r (i + j)).
+   eapply NQle_trans. 2: {
+     apply NQle_add_r.
+     replace 0%NQ with (0 * 1 // rad)%NQ by easy.
+     now apply NQmul_le_mono_pos_r.
+   }
+   apply NQle_pair; [ easy | easy | ].
+   do 2 rewrite Nat.mul_1_l.
+...
+  *unfold min_n.
+   destruct rad; [ easy | cbn; flia ].
+...
+ +apply Nat.nle_gt; intros H1.
+  apply eq_NQintg_0 in Hcu; [ | easy ].
+  apply NQnle_gt in Hcu; apply Hcu; clear Hcu.
+  rewrite A_split_first.
+  *rewrite <- (Nat.add_1_r (i + j)).
+   eapply NQle_trans. 2: {
+     apply NQle_add_r.
+     replace 0%NQ with (0 * 1 // rad)%NQ by easy.
+     now apply NQmul_le_mono_pos_r.
+   }
+   apply NQle_pair; [ easy | easy | ].
+   now do 2 rewrite Nat.mul_1_l.
+  *unfold min_n.
+   destruct rad; [ easy | cbn; flia ].
 Qed.
 
 ...
