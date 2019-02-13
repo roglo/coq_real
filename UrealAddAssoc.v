@@ -1970,7 +1970,7 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
    (* carry est un multiple non nul de rad *)
    clear H2.
    apply Nat.mod_divides in Hcr; [ | easy ].
-   destruct Hcr as (c, Hc).
+   destruct Hcr as (c, Hc); move c before j.
    clear H7 H1.
    rewrite Hc in H4.
    replace rad with (rad * 1) in H4 at 1 by flia.
@@ -1982,13 +1982,20 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
    rewrite Nat_sub_sub_distr in H6; [ | flia Hr ].
    rewrite Nat.add_sub_swap in H6; [ | easy ].
    rewrite Nat.sub_diag, Nat.add_0_l in H6.
-...
-(*
-   unfold carry in Hcr.
+   move Hc at bottom.
+   specialize (carry_upper_bound_for_adds u i m) as H1.
+   assert (H : m ≠ 0) by flia H3.
+   specialize (H1 H); clear H.
+   assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+     intros; rewrite <- Nat.add_assoc; apply Hur.
+   }
+   specialize (H1 H); clear H.
+   specialize (H1 j) as H2; clear H3 H6.
+   move Hc before H2.
+   unfold carry in Hc, H2.
    destruct (LPO_fst (fA_ge_1_ε u (i + j))) as [H5| H5].
-  --remember (min_n (i + j) 0) as n eqn:Hn.
+  --remember (min_n (i + j) 0) as n eqn:Hn; move n before c.
 ...
-*)
 (*
    specialize (P_999_start u (i + j + 1) m) as H5.
    assert (H : ∀ k, u (i + j + 1 + k) ≤ m * (rad - 1)). {
