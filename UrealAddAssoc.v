@@ -3995,13 +3995,23 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
              rewrite Nat.add_0_r in H10.
              specialize (H10 H7).
              unfold "⊕" in H10.
-...
              destruct j.
              -rewrite Nat.add_0_r in Haft.
               replace (i + 1 + 1) with (i + 0 + 2) in H10 by flia.
               rewrite Haft in H10.
               flia Hr H10.
-             -idtac.
+             -destruct j.
+              +specialize (Hbef 0 (Nat.lt_0_1)) as H11.
+               rewrite Nat.add_0_r in H11.
+               assert (H12 : u (i + 1) = 0) by flia H7 H11; clear H7.
+               move Hwhi at bottom.
+...
+              rewrite Hwhi in H10.
+              assert (H : u (i + 1 + 1) ≤ 1). {
+                remember (u (i + 1 + 1)) as x eqn:Hx.
+                destruct x; [ pauto | ].
+                destruct x; [ easy | flia H10 ].
+              }
 ...
          }
          destruct (Nat.eq_dec j1 2) as [Hj12| Hj12]. {
