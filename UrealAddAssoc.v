@@ -1975,20 +1975,17 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
   --remember (min_n (i + j) 0) as n eqn:Hn; move n before j.
     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u _) H1 0) as H3.
     rewrite <- Hn, Nat.pow_1_r in H3.
-...
-(*
-   specialize (P_999_start u (i + j + 1) m) as H5.
-   assert (H : ∀ k, u (i + j + 1 + k) ≤ m * (rad - 1)). {
-     intros k; do 2 rewrite <- Nat.add_assoc; apply Hur.
-   }
-   specialize (H5 H); clear H.
-   assert (H : ∀ k, P u (i + j + 1 + k) = rad - 1). {
-     intros k; do 2 rewrite <- Nat.add_assoc; apply Hpu.
-   }
-   specialize (H5 H); clear H.
-   destruct (Nat.eq_dec (u (i + j + 1)) (m * (rad - 1))) as [H8| H8].
-  --clear H5.
-*)
+    specialize (P_999_start u (i + j + 1) (rad + 1)) as H2.
+    assert (H : ∀ k, u (i + j + 1 + k) ≤ (rad + 1) * (rad - 1)). {
+      intros k; do 2 rewrite <- Nat.add_assoc; apply Hur.
+    }
+    specialize (H2 H); clear H.
+    assert (H : ∀ k, P u (i + j + 1 + k) = rad - 1). {
+      intros k; do 2 rewrite <- Nat.add_assoc; apply Hpu.
+    }
+    specialize (H2 H); clear H.
+    destruct (Nat.eq_dec (u (i + j + 1)) ((rad + 1) * (rad - 1))) as [H8| H8].
+   ++clear H2.
 ...
 
 (* special case of P_999_start whem m=2 *)
