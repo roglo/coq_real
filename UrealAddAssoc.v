@@ -1995,6 +1995,8 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
    unfold carry in Hc, H2.
    destruct (LPO_fst (fA_ge_1_ε u (i + j))) as [H5| H5].
   --remember (min_n (i + j) 0) as n eqn:Hn; move n before c.
+    specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u _) H5 0) as H3.
+    rewrite <- Hn, Nat.pow_1_r in H3.
 ...
 (*
    specialize (P_999_start u (i + j + 1) m) as H5.
