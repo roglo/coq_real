@@ -3930,6 +3930,16 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       move H5 at bottom.
       destruct (le_dec (i + j + 1) (nv - 1)) as [H1| H1]; [ | easy ].
 ...
+      destruct (NQeq_dec (A i nv u) 0) as [H7| H7].
+    ---rewrite H7.
+       replace 0%NQ with (0 // 1)%NQ by easy.
+       apply NQlt_pair; [ easy | pauto | flia ].
+    ---apply NQnle_gt; intros H8; apply H7; clear H7.
+...
+Theorem eq_A_0 {r : radix} : ∀ i n u, A i n u = 0%NQ ↔ (A i n u < 1 // rad ^ (n - i - 1))%NQ.
+apply eq_A_0.
+rewrite <- Hs.
+...
       assert (Hau : A i nv u = 0%NQ). {
         rewrite (A_9_8_all_18 j v) in H5; [ | easy | easy | easy ].
         apply NQlt_add_lt_sub_r in H5.
