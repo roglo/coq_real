@@ -3939,7 +3939,16 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       rewrite min_n_add; flia.
     **apply Nat.nlt_ge in H4.
       destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
-    ---specialize (P_999_start (u ⊕ v) (i + 1) 3) as H7.
+    ---subst kuv; rewrite <- Hnv in Hnuv; subst nuv.
+       rewrite Nat.mul_0_r.
+       unfold B; rewrite Nat.add_0_r.
+       rewrite summation_empty. 2: {
+         apply Nat.sub_lt; [ | pauto ].
+         rewrite Hnv; unfold min_n.
+         destruct rad; [ easy | cbn; flia ].
+       }
+       rewrite NQadd_0_r.
+       specialize (P_999_start (u ⊕ v) (i + 1) 3) as H7.
        assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
          intros k; unfold "⊕".
          replace (3 * (rad - 1)) with ((rad - 1) + 2 * (rad - 1)) by flia.
