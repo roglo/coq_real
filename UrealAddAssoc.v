@@ -4021,6 +4021,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
                }
                move Hwhi at bottom; rename Hwhi into Hv2.
                clear H10 Hj1 H8.
+               replace (i + 1 + 1) with (i + 2) in Hu2, Hv2 by flia.
                assert (H7 : carry (u ⊕ v) (i + 1) = 0) by flia Hk1.
                clear Hk1.
 ...
