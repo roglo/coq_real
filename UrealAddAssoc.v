@@ -3877,11 +3877,6 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    apply NQnlt_ge in H4; apply H4; clear H4.
    destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
   --subst kup; rewrite <- Hnv in Hnup; subst nup.
-(* mmm... je pense que la transitivité ci dessous a tout fichu en l'air *)
-(* mais chuis pas sûr
-    eapply NQle_lt_trans; [ | apply H5 ].
-    rewrite Hnv, Hnuv.
-*)
     assert (Hin : i + 1 ≤ nv). {
       rewrite Hnv; unfold min_n; destruct rad; [ easy | cbn; flia ].
     }
@@ -3891,22 +3886,64 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     rewrite <- ApB_A in H5; [ | easy ].
     rewrite <- ApB_A in H5; [ | easy ].
     rewrite NQadd_add_swap, NQadd_assoc in H5.
+    destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
+   ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
+     rewrite Nat.mul_0_r in H5; unfold B in H5.
+     rewrite summation_empty in H5; [ | flia Hin ].
+     rewrite summation_empty in H5; [ | flia Hin ].
+     do 2 rewrite NQadd_0_r in H5.
+     specialize (A_ge_1_add_all_true_if v i) as H4.
 ...
-    rewrite <- NQadd_assoc.
-    apply NQadd_le_mono_l.
-    rewrite <- Hnv, <- Hnuv, NQadd_comm.
+     assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+       intros k; rewrite <- Nat.add_assoc; apply Hv.
+     }
+     specialize (H4 H H3); clear H.
+     specialize (all_fA_ge_1_ε_P_999 _ _ H3) as Hpa.
+     destruct H4 as [Hva| [Hva| Hva]].
+    **rewrite (A_all_9 (P v)); [ | easy ].
+      now rewrite (A_all_9 v) in H5.
+    **eapply NQle_lt_trans; [ | apply H5 ].
+      apply NQadd_le_mono_l.
+      rewrite A_all_9; [ | easy ].
+      rewrite A_all_18; [ | easy ].
+      remember (nv - i - 1) as s eqn:Hs.
+      rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+        apply Nat.mul_le_mono_l.
+        now apply Nat_pow_ge_1.
+      }
+      rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+        rewrite Nat.mul_comm.
+        apply Nat.mul_le_mono_l.
+        now apply Nat_pow_ge_1.
+      }
+      do 3 rewrite Nat.mul_1_l.
+      apply NQle_pair; [ pauto | pauto | ].
+      rewrite Nat.mul_comm.
+      apply Nat.mul_le_mono_l; flia.
+    **idtac.
+...
+      replace 2%NQ with (1 + 1)%NQ by easy.
+      rewrite <- NQadd_sub_assoc.
+      apply NQadd_le_mono_l.
+      rewrite NQadd_sub_swap.
+      rewrite <- NQsub_sub_distr.
+      apply NQadd_le_mono; [ apply NQle_refl | ].
+     apply NQle_pair; [ pauto | easy | ].
+     do 2 rewrite Nat.mul_1_r.
+     remember (nuv - i - 1) as p eqn:Hp.
+     destruct p. {
+...
     specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
-    (* Hm et A3 : soit v = 999... soit v = 999...8/18/18... *)
-    (* si 999... c'est bon
-       si 999...8/18/18... c'est plus compliqué, faut voir avec kuv *)
     specialize (A_ge_1_add_all_true_if v i) as H4.
     assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
       intros k; rewrite <- Nat.add_assoc; apply Hv.
     }
     specialize (H4 H H3); clear H.
     destruct H4 as [H4| [H4| H4]].
-   ++rewrite A_all_9; [ | easy ].
-     rewrite A_all_9; [ | easy ].
+   ++idtac.
+...
+   ++rewrite (A_all_9 (P v)); [ | easy ].
+     rewrite (A_all_9 v) in H5; [ | easy ].
      eapply NQle_trans; [ | apply NQle_add_r, B_ge_0 ].
      apply NQsub_le_mono; [ apply NQle_refl | ].
      apply NQle_pair; [ pauto | pauto | ].
