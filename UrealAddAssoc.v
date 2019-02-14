@@ -3796,7 +3796,7 @@ Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
 Proof.
 intros * Hu Hv.
 specialize radix_ge_2 as Hr.
-symmetry; rewrite Nat.add_comm.
+symmetry; rewrite Nat.add_comm; symmetry.
 unfold carry.
 remember
   (match LPO_fst (fA_ge_1_ε v i) with
@@ -3877,6 +3877,8 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    apply NQnlt_ge in H4; apply H4; clear H4.
    destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
   --subst kup; rewrite <- Hnv in Hnup; subst nup.
+...
+(* mmm... je pense que la transitivité ci dessous a tout fichu en l'air *)
     eapply NQle_lt_trans; [ | apply H5 ].
     rewrite Hnv, Hnuv.
     assert (Hin : i + 1 ≤ min_n i 0). {
