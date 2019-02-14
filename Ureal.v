@@ -2698,7 +2698,6 @@ assert (Hur2 : ∀ k, u (i + k + 2) ≤ 2 * (rad - 1)). {
 }
 specialize (A_ge_1_add_first_ge u i Hur2 Hu) as H1.
 destruct (lt_dec (u (i + 1)) rad) as [H2| H2].
-...
 -left.
  destruct (lt_dec (u (i + 1)) (rad - 1)) as [H3| H3].
  +left; flia H1 H3.
