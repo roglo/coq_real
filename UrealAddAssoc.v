@@ -3920,6 +3920,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       rewrite Nat.mul_comm.
       apply Nat.mul_le_mono_l; flia.
     **destruct Hva as (j & Hbef & Hwhi & Haft).
+...
       assert (Hau : A i nv u = 0%NQ). {
         rewrite (A_9_8_all_18 j v) in H5; [ | easy | easy | easy ].
         apply NQlt_add_lt_sub_r in H5.
