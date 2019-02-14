@@ -3893,7 +3893,6 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      rewrite summation_empty in H5; [ | flia Hin ].
      do 2 rewrite NQadd_0_r in H5.
      specialize (A_ge_1_add_all_true_if v i) as H4.
-...
      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
        intros k; rewrite <- Nat.add_assoc; apply Hv.
      }
@@ -3920,7 +3919,23 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       apply NQle_pair; [ pauto | pauto | ].
       rewrite Nat.mul_comm.
       apply Nat.mul_le_mono_l; flia.
-    **idtac.
+    **destruct Hva as (j & Hbef & Hwhi & Haft).
+      assert (Hau : A i nv u = 0%NQ). {
+        rewrite (A_9_8_all_18 j v) in H5; [ | easy | easy | easy ].
+        apply NQlt_add_lt_sub_r in H5.
+        rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H5.
+        rewrite A_num_den in H5.
+        unfold den_A in H5.
+        apply NQlt_pair in H5; [ | pauto | pauto ].
+        rewrite Nat.mul_comm in H5.
+        apply Nat.mul_lt_mono_pos_l in H5; [ | apply Nat.neq_0_lt_0; pauto ].
+        rewrite A_num_den.
+        destruct (le_dec (i + j + 1) (nv - 1)) as [H1| H1].
+        -remember (num_A i nv u) as x eqn:Hx.
+         destruct x; [ easy | ].
+         destruct x; [ | flia H5 ].
+         symmetry in Hx; unfold num_A in Hx.
+(* hou là, chais pas *)
 ...
       replace 2%NQ with (1 + 1)%NQ by easy.
       rewrite <- NQadd_sub_assoc.
