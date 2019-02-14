@@ -3793,6 +3793,25 @@ Theorem A_lt_le_pred {r : radix} : ∀ i n u x,
   (A i n u < x)%NQ → (A i n u ≤ x - 1 // rad ^ (n - i - 1))%NQ.
 Proof.
 intros * Ha.
+remember (n - i - 1) as s eqn:Hs.
+destruct (NQlt_le_dec x 0) as [H1| H1]. {
+  admit.
+}
+destruct (NQlt_le_dec x (1 // rad ^ s)) as [H2| H2]. {
+  rewrite (NQnum_den x); [ | easy ].
+  rewrite (NQnum_den x) in H2; [ | easy ].
+  rewrite NQsub_pair_neg; [ | easy | pauto | ]. 2: {
+    rewrite Nat.mul_1_r.
+    apply NQlt_pair in H2; [ | easy | pauto ].
+    now rewrite Nat.mul_1_r in H2.
+  }
+  rewrite Nat.mul_1_r.
+  apply NQlt_pair in H2; [ | easy | pauto ].
+  rewrite Nat.mul_1_r in H2.
+...
+rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+  rewrite Nat.mul_1_r.
+  rewrite (NQnum_den x) in Ha; [ | easy ].
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
