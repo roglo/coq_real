@@ -3789,6 +3789,12 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
    destruct rad; [ easy | cbn; flia ].
 Qed.
 
+Theorem A_lt_le_pred {r : radix} : ∀ i n u x,
+  (A i n u < x)%NQ → (A i n u ≤ x - 1 // rad ^ (n - i - 1))%NQ.
+Proof.
+intros * Ha.
+...
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -3929,6 +3935,15 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       remember (nv - i - 1) as s eqn:Hs.
       move H5 at bottom.
       destruct (le_dec (i + j + 1) (nv - 1)) as [H1| H1]; [ | easy ].
+      apply NQnle_gt; intros H7.
+      apply NQle_antisymm in H7.
+2: {
+  clear H7.
+...
+apply A_lt_le_pred in H5.
+rewrite <- Hs in H5.
+rewrite <- NQpair_sub_l in H5; [ easy | pauto ].
+}
 ...
       destruct (NQeq_dec (A i nv u) 0) as [H7| H7].
     ---rewrite H7.
