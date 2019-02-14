@@ -4023,8 +4023,6 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
                clear H10 Hj1 H8.
                assert (H7 : carry (u ⊕ v) (i + 1) = 0) by flia Hk1.
                clear Hk1.
-               specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as H1.
-               specialize (H1 0); rewrite Nat.pow_1_r in H1.
 ...
          }
          destruct (Nat.eq_dec j1 2) as [Hj12| Hj12]. {
