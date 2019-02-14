@@ -3794,7 +3794,6 @@ Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → carry (u ⊕ v) i mod rad = (carry (u ⊕ P v) i + carry v i) mod rad.
 Proof.
-(**)
 intros * Hu Hv.
 specialize radix_ge_2 as Hr.
 symmetry; rewrite Nat.add_comm.
@@ -4024,6 +4023,13 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
                replace (i + 1 + 1) with (i + 2) in Hu2, Hv2 by flia.
                assert (H7 : carry (u ⊕ v) (i + 1) = 0) by flia Hk1.
                clear Hk1.
+               rename Hu2 into Hu2le.
+               remember (u (i + 2)) as u2 eqn:Hu2.
+               move u2 before nv.
+               symmetry in Hu2.
+               move Hu2le before H9.
+               destruct u2; [ clear Hu2le | ].
+               *idtac.
 ...
          }
          destruct (Nat.eq_dec j1 2) as [Hj12| Hj12]. {
