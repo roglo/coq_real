@@ -3940,7 +3940,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     **apply Nat.nlt_ge in H4.
       destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
     ---subst kuv; rewrite <- Hnv in Hnuv; subst nuv.
-       rewrite Nat.mul_0_r.
+       rewrite Nat.mul_0_r; clear H1.
        unfold B; rewrite Nat.add_0_r.
        rewrite summation_empty. 2: {
          apply Nat.sub_lt; [ | pauto ].
@@ -4021,6 +4021,8 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
                }
                move Hwhi at bottom; rename Hwhi into Hv2.
                clear H10 Hj1 H8.
+               assert (H7 : carry (u ⊕ v) (i + 1) = 0) by flia Hk1.
+               clear Hk1.
 ...
          }
          destruct (Nat.eq_dec j1 2) as [Hj12| Hj12]. {
