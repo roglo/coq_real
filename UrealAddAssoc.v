@@ -3877,8 +3877,18 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    apply NQnlt_ge in H4; apply H4; clear H4.
    destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
   --subst kup; rewrite <- Hnv in Hnup; subst nup.
+(**)
+rewrite Hnuv in H5.
+replace kuv with (0 + kuv) in H5 by easy.
+rewrite min_n_add, <- Hnv in H5.
+assert (Hin : i + 1 ≤ nv). {
+  rewrite Hnv; unfold min_n; destruct rad; [ easy | cbn; flia ].
+}
+rewrite <- ApB_A in H5; [ | easy ].
+rewrite <- ApB_A in H5; [ | easy ].
 ...
 (* mmm... je pense que la transitivité ci dessous a tout fichu en l'air *)
+(* mais chuis pas sûr *)
     eapply NQle_lt_trans; [ | apply H5 ].
     rewrite Hnv, Hnuv.
     assert (Hin : i + 1 ≤ min_n i 0). {
