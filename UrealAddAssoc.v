@@ -3902,14 +3902,14 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     assert (Hin : i + 1 ≤ nv). {
       rewrite Hnv; unfold min_n; destruct rad; [ easy | cbn; flia ].
     }
-    rewrite Hnuv in H5.
-    replace kuv with (0 + kuv) in H5 by easy.
-    rewrite min_n_add, <- Hnv in H5.
-    rewrite <- ApB_A in H5; [ | easy ].
-    rewrite <- ApB_A in H5; [ | easy ].
-    rewrite NQadd_add_swap, NQadd_assoc in H5.
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
-   ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
+   ++rewrite Hnuv in H5.
+     replace kuv with (0 + kuv) in H5 by easy.
+     rewrite min_n_add, <- Hnv in H5.
+     rewrite <- ApB_A in H5; [ | easy ].
+     rewrite <- ApB_A in H5; [ | easy ].
+     rewrite NQadd_add_swap, NQadd_assoc in H5.
+     subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
      rewrite Nat.mul_0_r in H5; unfold B in H5.
      rewrite summation_empty in H5; [ | flia Hin ].
      rewrite summation_empty in H5; [ | flia Hin ].
@@ -4028,6 +4028,22 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
        flia Hkwhi Hr.
    ++destruct H6 as (j & Hjj & Hj).
      subst kuv.
+     apply A_ge_1_false_iff in Hj.
+     rewrite <- Hnuv in Hj.
+     rewrite A_additive in Hj.
+     rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
+     rewrite NQfrac_small in Hj. 2: {
+       split; [ easy | ].
+       apply A_upper_bound_for_dig; intros k Hk.
+       replace k with (i + (k - i)) by flia Hk; apply Hu.
+     }
+     rewrite NQfrac_small in Hj. 2: {
+       split; [ easy | now apply eq_NQintg_0 in Hm ].
+     }
+     apply NQnle_gt in H5.
+     destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H4| H4]; [ | easy ].
+     rewrite NQsub_0_r in Hj.
+     clear H4 H5.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
