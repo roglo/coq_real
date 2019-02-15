@@ -3957,6 +3957,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
         apply A_lt_le_pred in H5.
         now rewrite <- Hs in H5.
       }
+      clear H5.
 ...
     specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
     specialize (A_ge_1_add_all_true_if v i) as H4.
