@@ -3959,11 +3959,25 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       }
       clear H5.
       assert (H4 : (∀ k, i + 1 ≤ k ≤ nv - 2 → u k = 0) ∧ u (nv - 1) = 1). {
-        destruct (le_dec (i + 1) (nv - 1)) as [H4| H4].
-        -rewrite A_split_last in H7; [ | easy ].
-         rewrite <- Hs in H7.
-Check A_lower_bound_if_all_fA_ge_1_ε.
-Check A_lt_le_pred.
+        rewrite A_num_den in H7.
+        unfold den_A in H7.
+        rewrite <- Hs in H7.
+        apply NQeq_pair in H7; [ | pauto | pauto ].
+        rewrite Nat.mul_comm in H7.
+        apply Nat.mul_cancel_l in H7; [ | pauto ].
+        unfold num_A in H7.
+        destruct (lt_dec (nv - 1) (i + 1)) as [H4| H4]. {
+          now rewrite summation_empty in H7.
+        }
+        apply Nat.nlt_ge in H4.
+        replace (nv - 1) with (S (nv - 2)) in H7 by flia H4.
+        rewrite summation_split_last in H7; [ | flia H4 ].
+        replace (S (nv - 2)) with (nv - 1) in H7 by flia H4.
+        replace (nv - (nv - 1) - 1) with 0 in H7 by flia.
+        rewrite Nat.pow_0_r, Nat.mul_1_r in H7.
+        apply Nat.eq_add_1 in H7.
+        destruct H7 as [(H7, H8)| (H7, H8)]. {
+          exfalso.
 ...
       specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H4.
       assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
