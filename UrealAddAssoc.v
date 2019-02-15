@@ -3811,7 +3811,7 @@ apply Nat.lt_le_pred in Ha.
 now rewrite <- Nat.sub_1_r in Ha.
 Qed.
 
-Theorem pre_Hugo_Herbelin_2 {r : radix} : ∀ u v i,
+Theorem pre_Hugo_Herbelin_21 {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε v i k = true)
@@ -3942,7 +3942,7 @@ destruct H4 as [Hva| [Hva| Hva]].
   flia Hkwhi Hr.
 Qed.
 
-Theorem pre_Hugo_Herbelin_3 {r : radix} : ∀ u v i j,
+Theorem pre_Hugo_Herbelin_22 {r : radix} : ∀ u v i j,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε v i k = true)
@@ -4231,12 +4231,14 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
    ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
      subst nv.
-     now apply pre_Hugo_Herbelin_2.
+     now apply pre_Hugo_Herbelin_21.
    ++destruct H6 as (j & Hjj & Hj).
      subst kuv nv nuv.
-     now apply (pre_Hugo_Herbelin_3 _ _ _ j).
+     now apply (pre_Hugo_Herbelin_22 _ _ _ j).
   --destruct H2 as (j & Hjj & Hj).
     subst kup.
+    destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
+   ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
