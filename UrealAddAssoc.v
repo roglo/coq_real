@@ -3795,7 +3795,9 @@ Proof.
 intros * Ha.
 remember (n - i - 1) as s eqn:Hs.
 destruct (NQlt_le_dec x 0) as [H1| H1]. {
-  admit.
+  exfalso; apply NQnle_gt in Ha; apply Ha; clear Ha.
+  apply (NQle_trans _ 0); [ | easy ].
+  now apply NQlt_le_incl.
 }
 destruct (NQlt_le_dec x (1 // rad ^ s)) as [H2| H2]. {
   rewrite (NQnum_den x); [ | easy ].
@@ -3808,6 +3810,8 @@ destruct (NQlt_le_dec x (1 // rad ^ s)) as [H2| H2]. {
   rewrite Nat.mul_1_r.
   apply NQlt_pair in H2; [ | easy | pauto ].
   rewrite Nat.mul_1_r in H2.
+...
+}
 ...
 rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
   rewrite Nat.mul_1_r.
