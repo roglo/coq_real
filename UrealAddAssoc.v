@@ -3978,6 +3978,22 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
         apply Nat.eq_add_1 in H7.
         destruct H7 as [(H7, H8)| (H7, H8)]. {
           exfalso.
+          rewrite summation_eq_compat with
+            (h := λ j, u j * rad ^ (nv - j - 2) * rad) in H7. 2: {
+            intros k Hk.
+            rewrite <- Nat.mul_assoc; f_equal.
+            rewrite Nat.mul_comm, <- Nat.pow_succ_r'; f_equal.
+            flia Hk.
+          }
+          rewrite <- summation_mul_distr_r in H7.
+          rewrite Nat.mul_comm in H7.
+          apply Nat.eq_mul_1 in H7.
+          flia Hr H7.
+        }
+        split; [ | easy ].
+        intros k Hk.
+...
+        apply (eq_nat_summation_0 (i + 1) (nv - 2)); [ | easy ].
 ...
       specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H4.
       assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
