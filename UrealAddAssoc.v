@@ -3962,6 +3962,8 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
         destruct (le_dec (i + 1) (nv - 1)) as [H4| H4].
         -rewrite A_split_last in H7; [ | easy ].
          rewrite <- Hs in H7.
+Check A_lower_bound_if_all_fA_ge_1_ε.
+Check A_lt_le_pred.
 ...
       specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H4.
       assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
