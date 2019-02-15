@@ -3992,9 +3992,13 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
         }
         split; [ | easy ].
         intros k Hk.
-...
-        apply (eq_nat_summation_0 (i + 1) (nv - 2)); [ | easy ].
-...
+        specialize (eq_nat_summation_0 _ _ _ H7 _ Hk) as H9.
+        cbn in H9.
+        apply Nat.eq_mul_0 in H9.
+        destruct H9 as [| H9]; [ easy | ].
+        now apply Nat.pow_nonzero in H9.
+      }
+      destruct H4 as (Huz & Hu1).
       specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H4.
       assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
         intros k; unfold "⊕".
@@ -4004,8 +4008,26 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
         now rewrite Hpa.
       }
       specialize (H4 H H2); clear H.
+      unfold "⊕" in H4.
       destruct H4 as [H4| [H4| H4]].
-    ---idtac.
+    ---specialize (H4 (nv - 2 - i)).
+       rewrite Hpa in H4.
+       replace (i + (nv - 2 - i) + 1) with (nv - 1) in H4 by flia H1.
+       rewrite Hu1 in H4.
+       flia H4.
+    ---specialize (H4 0).
+       rewrite Huz in H4. 2: {
+         rewrite Nat.add_0_r.
+         split; [ easy | ].
+         rewrite Hnv; unfold min_n.
+         destruct rad; [ easy | cbn; flia ].
+       }
+       rewrite Hpa in H4; flia Hr H4.
+    ---destruct H4 as (k & Hkbef & Hkwhi & Hkaft).
+       rewrite Hpa in Hkwhi.
+       flia Hkwhi Hr.
+   ++destruct H6 as (j & Hjj & Hj).
+     subst kuv.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
