@@ -3789,6 +3789,27 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
    destruct rad; [ easy | cbn; flia ].
 Qed.
 
+Theorem A_lt_le_pred {r : radix} : ∀ i n u m,
+  (A i n u < m // rad ^ (n - i - 1))%NQ
+  → (A i n u ≤ (m - 1) // rad ^ (n - i - 1))%NQ.
+Proof.
+intros * Ha.
+remember (n - i - 1) as s eqn:Hs.
+destruct (zerop m) as [H1| H1]. {
+  subst m.
+  now exfalso; apply NQnle_gt in Ha; apply Ha.
+}
+...
+rewrite (NQnum_den (A _ _ _)) in Ha; [ | easy ].
+rewrite (NQnum_den (A _ _ _)); [ | easy ].
+apply NQlt_pair in Ha; [ | easy | pauto ].
+apply NQle_pair; [ easy | pauto | ].
+apply Nat.lt_le_pred in Ha.
+...
+eapply le_trans; [ apply Ha | ].
+rewrite <- Nat.sub_1_r, Nat.mul_sub_distr_l, Nat.mul_1_r.
+...
+
 Theorem A_lt_le_pred {r : radix} : ∀ i n u x,
   (A i n u < x)%NQ → (A i n u ≤ x - 1 // rad ^ (n - i - 1))%NQ.
 Proof.
