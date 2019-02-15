@@ -4098,6 +4098,31 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       apply Nat.mul_le_mono; [ easy | ].
       now apply Nat_pow_ge_1.
     **destruct Hva as (k & Hbef & Hwhi & Haft).
+      rewrite (A_all_9 (P v)); [ | easy ].
+      rewrite (A_9_8_all_18 k v) in H5; [ | easy | easy | easy ].
+      remember (nv - i - 1) as s eqn:Hs.
+      apply NQlt_add_lt_sub_r in H5.
+      apply NQlt_add_lt_sub_r.
+      rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l.
+      move H5 at bottom.
+      do 3 rewrite <- NQadd_assoc in H5.
+      rewrite NQadd_comm in H5.
+      rewrite <- NQadd_sub_swap in H5.
+      rewrite NQadd_comm in H5.
+      rewrite NQadd_sub_assoc in H5.
+      apply NQlt_sub_lt_add_r in H5.
+      rewrite NQadd_comm in H5.
+      do 3 rewrite <- NQadd_assoc in H5.
+      apply NQadd_lt_mono_l in H5.
+      do 2 rewrite NQadd_assoc in H5.
+      rewrite NQadd_comm in H5.
+      destruct (le_dec (i + k + 1) (nv - 1)) as [H4| H4]. 2: {
+        eapply NQle_lt_trans; [ | apply H5 ].
+        apply NQle_add_r.
+        replace 0%NQ with (0 + 0 + 0)%NQ by easy.
+        apply NQadd_le_mono; [ | easy ].
+        apply NQadd_le_mono; apply B_ge_0.
+      }
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
