@@ -4235,11 +4235,19 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     subst kup.
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
    ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
-...
+     clear Hm.
      apply A_ge_1_false_iff in Hj.
      rewrite <- Hnup in Hj.
      rewrite A_additive in Hj.
-     rewrite NQfrac
+     rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
+     rewrite NQfrac_P_M in Hj.
+     rewrite NQfrac_small in Hj. 2: {
+       split; [ easy | ].
+       apply A_upper_bound_for_dig; intros k Hk.
+       replace k with (i + (k - i)) by flia Hk; apply Hu.
+     }
+     destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1)
+       as [H1| H1]; [ easy | ].
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
