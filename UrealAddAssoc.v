@@ -4233,10 +4233,16 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      now apply (pre_Hugo_Herbelin_22 _ _ _ j).
   --destruct H2 as (j & Hjj & Hj).
     subst kup.
+    rename H3 into Hvt.
+    specialize (all_fA_ge_1_ε_P_999 v i Hvt) as H2.
+    enough (H : A i nup u = 0%NQ). {
+      rewrite H, NQadd_0_l.
+      rewrite A_all_9; [ | intros k Hk; apply H2 ].
+      now apply NQsub_lt.
+    }
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
    ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
      clear Hm.
-     rename H3 into Hvt.
 ...
 (* est-ce utile ? *)
      apply A_ge_1_false_iff in Hj.
@@ -4271,7 +4277,6 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      destruct (NQlt_le_dec (A i nv u + A i nv v) 1) as [H1| H1]; [ | easy ].
      clear H5; rewrite NQsub_0_r in A6.
 (* chais pas non plus *)
-     specialize (all_fA_ge_1_ε_P_999 v i Hvt) as H2.
      specialize (A_ge_1_add_all_true_if v i) as H4.
      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
        intros k; rewrite <- Nat.add_assoc; apply Hv.
