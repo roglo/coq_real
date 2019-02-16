@@ -4297,11 +4297,29 @@ clear Hj. (*
       }
       rewrite H5, NQadd_0_l.
 rewrite B_of_A.
-specialize (A_lt_le_pred (nv - 1) (nv + rad * j)) as H2.
-(* ah ouais, ça le fait peut-être, ça *)
-...
-Search (B _ _ _ _ < _)%NQ.
+specialize (A_lt_le_pred (nv - 1) (nv + rad * j) u 2) as H2.
+rewrite Hnup.
+replace j with (0 + j) at 2 by easy.
+rewrite min_n_add, <- Hnv.
+apply (NQmul_lt_mono_pos_r (rad ^ (nv - i - 1) // 1)%NQ).
+replace 0%NQ with (0 // 1)%NQ by easy.
+apply NQlt_pair; [ easy | easy | ].
+rewrite Nat.mul_comm.
+apply Nat.mul_lt_mono_pos_l; [ pauto | now apply Nat_pow_ge_1 ].
+rewrite <- NQmul_assoc.
+rewrite NQmul_pair; [ | pauto | easy ].
+rewrite Nat.mul_1_l, Nat.mul_1_r, NQpair_diag; [ | pauto ].
+rewrite NQmul_1_r.
+rewrite NQmul_pair; [ | pauto | easy ].
+rewrite Nat.mul_1_l, Nat.mul_1_r.
+rewrite NQpow_pair_r; [ | easy | ].
+rewrite Nat_sub_sub_swap.
+replace (nv + rad * j - i - (nv - i - 1)) with (nv + rad * j - (nv - 1)).
+replace (2 - 1) with 1 in H2 by easy.
+....
+apply H2.
 rewrite Hnv.
+Search (B _ _ _ _ < _)%NQ.
 Search (B _ _ _ _).
 ...
 eapply NQlt_le_trans; [ apply B_upper_bound_for_add | ].
