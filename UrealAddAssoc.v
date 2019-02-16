@@ -3816,14 +3816,12 @@ Theorem pre_Hugo_Herbelin_21 {r : radix} : ∀ u v i,
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε v i k = true)
   → (∀ k, fA_ge_1_ε (u ⊕ P v) i k = true)
-  → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
-  → NQintg (A i (min_n i 0) v) = 0
   → (A i (min_n i 0) u + A i (min_n i 0) v < 1)%NQ
   → (A i (min_n i 0) u + A i (min_n i 0) (P v) < 1)%NQ.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hu Hv H3 H2 H6 Hm H5.
+intros Hu Hv Hvt Hupt Huv1.
 assert (Hin : i + 1 ≤ min_n i 0). {
   unfold min_n; destruct rad; [ easy | cbn; flia ].
 }
@@ -3832,12 +3830,12 @@ specialize (A_ge_1_add_all_true_if v i) as H4.
 assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
   intros k; rewrite <- Nat.add_assoc; apply Hv.
 }
-specialize (H4 H H3); clear H.
-specialize (all_fA_ge_1_ε_P_999 _ _ H3) as Hpa.
+specialize (H4 H Hvt); clear H.
+specialize (all_fA_ge_1_ε_P_999 _ _ Hvt) as Hpa.
 destruct H4 as [Hva| [Hva| Hva]].
 -rewrite (A_all_9 (P v)); [ | easy ].
- now rewrite (A_all_9 v) in H5.
--eapply NQle_lt_trans; [ | apply H5 ].
+ now rewrite (A_all_9 v) in Huv1.
+-eapply NQle_lt_trans; [ | apply Huv1 ].
  apply NQadd_le_mono_l.
  rewrite A_all_9; [ | easy ].
  rewrite A_all_18; [ | easy ].
@@ -3856,22 +3854,22 @@ destruct H4 as [Hva| [Hva| Hva]].
  rewrite Nat.mul_comm.
  apply Nat.mul_le_mono_l; flia.
 -destruct Hva as (j & Hbef & Hwhi & Haft).
- rewrite (A_9_8_all_18 j v) in H5; [ | easy | easy | easy ].
+ rewrite (A_9_8_all_18 j v) in Huv1; [ | easy | easy | easy ].
  rewrite (A_all_9 (P v)); [ | easy ].
- apply NQlt_add_lt_sub_r in H5.
- rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H5.
+ apply NQlt_add_lt_sub_r in Huv1.
+ rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in Huv1.
  apply NQlt_add_lt_sub_r.
  rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l.
  remember (nv - i - 1) as s eqn:Hs.
- move H5 at bottom.
+ move Huv1 at bottom.
  destruct (le_dec (i + j + 1) (nv - 1)) as [H1| H1]; [ | easy ].
  apply NQnle_gt; intros H7.
  apply NQle_antisymm in H7. 2: {
-   rewrite Hs in H5.
-   apply A_lt_le_pred in H5.
-   now rewrite <- Hs in H5.
+   rewrite Hs in Huv1.
+   apply A_lt_le_pred in Huv1.
+   now rewrite <- Hs in Huv1.
  }
- clear H5.
+ clear Huv1.
  assert (H4 : (∀ k, i + 1 ≤ k ≤ nv - 2 → u k = 0) ∧ u (nv - 1) = 1). {
    rewrite A_num_den in H7.
    unfold den_A in H7.
@@ -3921,7 +3919,7 @@ destruct H4 as [Hva| [Hva| Hva]].
    apply Nat.add_le_mono; [ easy | ].
    now rewrite Hpa.
  }
- specialize (H4 H H2); clear H.
+ specialize (H4 H Hupt); clear H.
  unfold "⊕" in H4.
  destruct H4 as [H4| [H4| H4]].
  +specialize (H4 (nv - 2 - i)).
@@ -4220,8 +4218,9 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   }
   destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1) as [H4| H4].
   *destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H5| H5]; [ easy | ].
-   exfalso; subst nv nup nuv.
+   exfalso.
    apply NQnlt_ge in H5; apply H5; clear H5.
+   subst nv nup nuv.
    now apply (pre_Hugo_Herbelin_1 u v i kup kuv).
   *destruct (NQlt_le_dec (A i nuv u + A i nuv v) 1) as [H5| H5]; [ | easy ].
    exfalso.
@@ -4239,6 +4238,11 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     subst kup.
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
    ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
+...
+     apply A_ge_1_false_iff in Hj.
+     rewrite <- Hnup in Hj.
+     rewrite A_additive in Hj.
+     rewrite NQfrac
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
