@@ -4235,6 +4235,22 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     subst kup.
     rename H3 into Hvt.
     specialize (all_fA_ge_1_ε_P_999 v i Hvt) as H2.
+(* est-ce utile ? *)
+(**)
+    apply A_ge_1_false_iff in Hj.
+    rewrite <- Hnup in Hj.
+    rewrite A_additive in Hj.
+    rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
+    rewrite NQfrac_P_M in Hj.
+    rewrite NQfrac_small in Hj. 2: {
+      split; [ easy | ].
+      apply A_upper_bound_for_dig; intros k Hk.
+      replace k with (i + (k - i)) by flia Hk; apply Hu.
+    }
+    destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1)
+      as [H3| H3]; [ easy | clear H3 ].
+(**)
+(* était-ce utile ? chais pas *)
     enough (H : A i nup u = 0%NQ). {
       rewrite H, NQadd_0_l.
       rewrite A_all_9; [ | intros k Hk; apply H2 ].
@@ -4243,22 +4259,8 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
    ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
      clear Hm.
-...
-(* est-ce utile ? *)
-     apply A_ge_1_false_iff in Hj.
-     rewrite <- Hnup in Hj.
-     rewrite A_additive in Hj.
-     rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
-     rewrite NQfrac_P_M in Hj.
-     rewrite NQfrac_small in Hj. 2: {
-       split; [ easy | ].
-       apply A_upper_bound_for_dig; intros k Hk.
-       replace k with (i + (k - i)) by flia Hk; apply Hu.
-     }
-     destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1)
-       as [H1| H1]; [ easy | clear H1 ].
-(* était-ce utile ? chais pas *)
 (* et cui-là, c'est utile ou pas ? *)
+(**)
      specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H6 0) as A6.
      rewrite <- Hnv in A6.
      rewrite A_additive, Nat.pow_1_r in A6.
@@ -4275,7 +4277,10 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      }
      apply NQnle_gt in H5.
      destruct (NQlt_le_dec (A i nv u + A i nv v) 1) as [H1| H1]; [ | easy ].
-     clear H5; rewrite NQsub_0_r in A6.
+     clear H1; apply NQnle_gt in H5.
+     rewrite NQsub_0_r in A6.
+     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H6) as A7.
+(**)
 (* chais pas non plus *)
      specialize (A_ge_1_add_all_true_if v i) as H4.
      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
@@ -4283,25 +4288,74 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      }
      specialize (H4 H Hvt); clear H.
      destruct H4 as [H4| [H4| H4]].
-    **rewrite (A_all_9 v) in H1; [ | intros k Hk; apply H4 ].
-      rewrite (A_all_9 (P v)); [ | intros k Hk; apply H2 ].
-      rewrite NQadd_comm in H1.
-      apply NQlt_add_lt_sub_l in H1.
-      rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H1.
-      apply A_lt_le_pred in H1.
-      rewrite Nat.sub_diag in H1.
-      apply NQle_antisymm in H1; [ | easy ].
-      symmetry in H1; remember A as x; cbn in H1; subst x.
-      apply NQlt_add_lt_sub_r.
-      rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l.
-      rewrite Hnup at 1.
+    **rewrite (A_all_9 v) in H5; [ | intros k Hk; apply H4 ].
+      rewrite NQadd_comm in H5.
+      apply NQlt_add_lt_sub_l in H5.
+      rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H5.
+      apply A_lt_le_pred in H5.
+      rewrite Nat.sub_diag in H5.
+      apply NQle_antisymm in H5; [ | easy ].
+      symmetry in H5; remember A as x; cbn in H5; subst x.
+specialize (A7 j) as H7.
+rewrite <- Hnup in H7.
+rewrite A_additive in H7.
+rewrite NQfrac_add_cond in H7; [ | easy | easy ].
+rewrite (NQfrac_small (A _ _ v)) in H7. 2: {
+  split; [ easy | ].
+  rewrite A_all_9; [ | intros; apply H4 ].
+  now apply NQsub_lt.
+}
+rewrite NQfrac_small in H7. 2: {
+  split; [ easy | ].
+  apply A_upper_bound_for_dig; intros k Hk.
+  replace k with (i + (k - i)) by flia Hk.
+  apply Hu.
+}
+destruct (NQlt_le_dec (A i nup u + A i nup v) 1) as [H1| H1].
+---
+rewrite NQsub_0_r in H7.
+rewrite (A_all_9 v) in H1; [ | intros; apply H4 ].
+rewrite NQadd_comm in H1.
+apply NQlt_add_lt_sub_l in H1.
+rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H1.
+apply A_lt_le_pred in H1.
+rewrite Nat.sub_diag in H1.
+now apply NQle_antisymm in H1.
+---
+idtac.
+(* peut-être que H7 peut le faire, faut voir *)
+...
+Search (∀ _, fA_ge_1_ε _ _ _ = true).
+
+(* contre-exemple, si ça se trouve : à voir *)
+...
+      rewrite Hnup.
       replace j with (0 + j) by easy.
       rewrite min_n_add, <- Hnv.
       rewrite <- ApB_A. 2: {
         rewrite Hnv; unfold min_n.
         destruct rad; [ easy | cbn; flia ].
       }
-      rewrite H1, NQadd_0_l.
+      rewrite H5, NQadd_0_l.
+      destruct j.
+    ---unfold B.
+       rewrite summation_empty; [ easy | ].
+       rewrite Nat.mul_0_r, Nat.add_0_r.
+       apply Nat.sub_lt; [ | pauto ].
+       rewrite Hnv; unfold min_n.
+       destruct rad; [ easy | cbn; flia ].
+    ---idtac.
+       specialize (Hjj j (Nat.lt_succ_diag_r j)) as H1.
+       apply A_ge_1_true_iff in H1.
+       replace j with (0 + j) in H1 at 1 by easy.
+       rewrite min_n_add, <- Hnv in H1.
+       rewrite A_additive in H1.
+       move Hj at bottom.
+       rewrite Hnup in Hj.
+       replace (S j) with (0 + S j) in Hj at 1 2 by easy.
+       rewrite min_n_add, <- Hnv in Hj.
+...
+
 (*
 Search (B _ _ _ _ < _)%NQ.
 Check A_upper_bound_for_dig.
