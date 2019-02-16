@@ -4237,6 +4237,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
      clear Hm.
      rename H3 into Hvt.
+...
 (* est-ce utile ? *)
      apply A_ge_1_false_iff in Hj.
      rewrite <- Hnup in Hj.
