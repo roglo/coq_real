@@ -4237,6 +4237,20 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
      clear Hm.
      rename H3 into Hvt.
+(* est-ce utile ? *)
+     apply A_ge_1_false_iff in Hj.
+     rewrite <- Hnup in Hj.
+     rewrite A_additive in Hj.
+     rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
+     rewrite NQfrac_P_M in Hj.
+     rewrite NQfrac_small in Hj. 2: {
+       split; [ easy | ].
+       apply A_upper_bound_for_dig; intros k Hk.
+       replace k with (i + (k - i)) by flia Hk; apply Hu.
+     }
+     destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1)
+       as [H1| H1]; [ easy | clear H1 ].
+(* était-ce utile ? chais pas *)
      specialize (all_fA_ge_1_ε_P_999 v i Hvt) as H1.
      specialize (A_ge_1_add_all_true_if v i) as H4.
      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
