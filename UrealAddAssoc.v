@@ -4291,8 +4291,14 @@ clear Hj. (*
       rewrite Hnup at 1.
       replace j with (0 + j) by easy.
       rewrite min_n_add, <- Hnv.
-      rewrite <- ApB_A.
+      rewrite <- ApB_A. 2: {
+        rewrite Hnv; unfold min_n.
+        destruct rad; [ easy | cbn; flia ].
+      }
       rewrite H5, NQadd_0_l.
+rewrite B_of_A.
+specialize (A_lt_le_pred (nv - 1) (nv + rad * j)) as H2.
+(* ah ouais, ça le fait peut-être, ça *)
 ...
 Search (B _ _ _ _ < _)%NQ.
 rewrite Hnv.
