@@ -4251,22 +4251,41 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1)
        as [H1| H1]; [ easy | clear H1 ].
 (* était-ce utile ? chais pas *)
-     specialize (all_fA_ge_1_ε_P_999 v i Hvt) as H1.
+(* et cui-là, c'est utile ou pas ? *)
+     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H6 0) as A6.
+     rewrite <- Hnv in A6.
+     rewrite A_additive, Nat.pow_1_r in A6.
+     rewrite NQfrac_add_cond in A6; [ | easy | easy ].
+     rewrite NQfrac_small in A6. 2: {
+       split; [ easy | ].
+       apply A_upper_bound_for_dig; intros k Hk.
+       replace k with (i + (k - i)) by flia Hk; apply Hu.
+     }
+     rewrite NQfrac_small in A6. 2: {
+       split; [ easy | ].
+       eapply NQle_lt_trans; [ | apply H5 ].
+       now apply NQle_add_l.
+     }
+     apply NQnle_gt in H5.
+     destruct (NQlt_le_dec (A i nv u + A i nv v) 1) as [H1| H1]; [ | easy ].
+     clear H5; rewrite NQsub_0_r in A6.
+(* chais pas non plus *)
+     specialize (all_fA_ge_1_ε_P_999 v i Hvt) as H2.
      specialize (A_ge_1_add_all_true_if v i) as H4.
      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
        intros k; rewrite <- Nat.add_assoc; apply Hv.
      }
      specialize (H4 H Hvt); clear H.
      destruct H4 as [H4| [H4| H4]].
-    **rewrite (A_all_9 v) in H5; [ | intros k Hk; apply H4 ].
-      rewrite (A_all_9 (P v)); [ | intros k Hk; apply H1 ].
-      rewrite NQadd_comm in H5.
-      apply NQlt_add_lt_sub_l in H5.
-      rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H5.
-      apply A_lt_le_pred in H5.
-      rewrite Nat.sub_diag in H5.
-      apply NQle_antisymm in H5; [ | easy ].
-      symmetry in H5; remember A as x; cbn in H5; subst x.
+    **rewrite (A_all_9 v) in H1; [ | intros k Hk; apply H4 ].
+      rewrite (A_all_9 (P v)); [ | intros k Hk; apply H2 ].
+      rewrite NQadd_comm in H1.
+      apply NQlt_add_lt_sub_l in H1.
+      rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H1.
+      apply A_lt_le_pred in H1.
+      rewrite Nat.sub_diag in H1.
+      apply NQle_antisymm in H1; [ | easy ].
+      symmetry in H1; remember A as x; cbn in H1; subst x.
       apply NQlt_add_lt_sub_r.
       rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l.
       rewrite Hnup at 1.
@@ -4276,8 +4295,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
         rewrite Hnv; unfold min_n.
         destruct rad; [ easy | cbn; flia ].
       }
-      rewrite H5, NQadd_0_l.
-...
+      rewrite H1, NQadd_0_l.
 (*
 Search (B _ _ _ _ < _)%NQ.
 Check A_upper_bound_for_dig.
@@ -4292,7 +4310,7 @@ rewrite B_of_A.
 specialize (A_upper_bound_for_dig u (n - 1) (n + l)) as H1.
 *)
 rewrite B_of_A.
-specialize (A_lt_le_pred (nv - 1) (nv + rad * j) u 2) as H2.
+specialize (A_lt_le_pred (nv - 1) (nv + rad * j) u 2) as H3.
 rewrite Hnup.
 replace j with (0 + j) at 2 by easy.
 rewrite min_n_add, <- Hnv.
