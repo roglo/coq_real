@@ -4236,6 +4236,8 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
    ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
      clear Hm.
+     rename H3 into Hvt.
+clear Hj. (*
      apply A_ge_1_false_iff in Hj.
      rewrite <- Hnup in Hj.
      rewrite A_additive in Hj.
@@ -4247,7 +4249,63 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
        replace k with (i + (k - i)) by flia Hk; apply Hu.
      }
      destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1)
-       as [H1| H1]; [ easy | ].
+       as [H1| H1]; [ easy | clear H1 ].
+*)
+(*
+     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H6 0) as A6.
+     rewrite <- Hnv in A6.
+     rewrite A_additive, Nat.pow_1_r in A6.
+     rewrite NQfrac_add_cond in A6; [ | easy | easy ].
+     rewrite NQfrac_small in A6. 2: {
+       split; [ easy | ].
+       apply A_upper_bound_for_dig; intros k Hk.
+       replace k with (i + (k - i)) by flia Hk; apply Hu.
+     }
+     rewrite NQfrac_small in A6. 2: {
+       split; [ easy | ].
+       eapply NQle_lt_trans; [ | apply H5 ].
+       now apply NQle_add_l.
+     }
+     apply NQnle_gt in H5.
+     destruct (NQlt_le_dec (A i nv u + A i nv v) 1) as [H1| H1]; [ | easy ].
+     clear H5; rewrite NQsub_0_r in A6.
+*)
+     specialize (all_fA_ge_1_ε_P_999 v i Hvt) as H1.
+     specialize (A_ge_1_add_all_true_if v i) as H4.
+     assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+       intros k; rewrite <- Nat.add_assoc; apply Hv.
+     }
+     specialize (H4 H Hvt); clear H.
+     destruct H4 as [H4| [H4| H4]].
+    **rewrite (A_all_9 v) in H5; [ | intros k Hk; apply H4 ].
+      rewrite (A_all_9 (P v)); [ | intros k Hk; apply H1 ].
+      rewrite NQadd_comm in H5.
+      apply NQlt_add_lt_sub_l in H5.
+      rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H5.
+      apply A_lt_le_pred in H5.
+      rewrite Nat.sub_diag in H5.
+      apply NQle_antisymm in H5; [ | easy ].
+      symmetry in H5; remember A as x; cbn in H5; subst x.
+      apply NQlt_add_lt_sub_r.
+      rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l.
+      rewrite Hnup at 1.
+      replace j with (0 + j) by easy.
+      rewrite min_n_add, <- Hnv.
+      rewrite <- ApB_A.
+      rewrite H5, NQadd_0_l.
+...
+Search (B _ _ _ _ < _)%NQ.
+rewrite Hnv.
+Search (B _ _ _ _).
+...
+eapply NQlt_le_trans; [ apply B_upper_bound_for_add | ].
+...
+      rewrite B_of_A.
+...
+A_lt_le_pred :
+∀ (r : radix) (i n : nat) (u : nat → nat) (m : nat),
+  (A i n u < m // rad ^ (n - i - 1))%NQ
+  → (A i n u ≤ (m - 1) // rad ^ (n - i - 1))%NQ
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
