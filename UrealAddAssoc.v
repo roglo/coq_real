@@ -4237,39 +4237,6 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
      clear Hm.
      rename H3 into Hvt.
-clear Hj. (*
-     apply A_ge_1_false_iff in Hj.
-     rewrite <- Hnup in Hj.
-     rewrite A_additive in Hj.
-     rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
-     rewrite NQfrac_P_M in Hj.
-     rewrite NQfrac_small in Hj. 2: {
-       split; [ easy | ].
-       apply A_upper_bound_for_dig; intros k Hk.
-       replace k with (i + (k - i)) by flia Hk; apply Hu.
-     }
-     destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1)
-       as [H1| H1]; [ easy | clear H1 ].
-*)
-(*
-     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H6 0) as A6.
-     rewrite <- Hnv in A6.
-     rewrite A_additive, Nat.pow_1_r in A6.
-     rewrite NQfrac_add_cond in A6; [ | easy | easy ].
-     rewrite NQfrac_small in A6. 2: {
-       split; [ easy | ].
-       apply A_upper_bound_for_dig; intros k Hk.
-       replace k with (i + (k - i)) by flia Hk; apply Hu.
-     }
-     rewrite NQfrac_small in A6. 2: {
-       split; [ easy | ].
-       eapply NQle_lt_trans; [ | apply H5 ].
-       now apply NQle_add_l.
-     }
-     apply NQnle_gt in H5.
-     destruct (NQlt_le_dec (A i nv u + A i nv v) 1) as [H1| H1]; [ | easy ].
-     clear H5; rewrite NQsub_0_r in A6.
-*)
      specialize (all_fA_ge_1_ε_P_999 v i Hvt) as H1.
      specialize (A_ge_1_add_all_true_if v i) as H4.
      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
@@ -4296,6 +4263,7 @@ clear Hj. (*
         destruct rad; [ easy | cbn; flia ].
       }
       rewrite H5, NQadd_0_l.
+...
 (*
 Search (B _ _ _ _ < _)%NQ.
 Check A_upper_bound_for_dig.
@@ -4309,7 +4277,6 @@ intros * Hur l.
 rewrite B_of_A.
 specialize (A_upper_bound_for_dig u (n - 1) (n + l)) as H1.
 *)
-...
 rewrite B_of_A.
 specialize (A_lt_le_pred (nv - 1) (nv + rad * j) u 2) as H2.
 rewrite Hnup.
