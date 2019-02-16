@@ -4296,6 +4296,20 @@ clear Hj. (*
         destruct rad; [ easy | cbn; flia ].
       }
       rewrite H5, NQadd_0_l.
+(*
+Search (B _ _ _ _ < _)%NQ.
+Check A_upper_bound_for_dig.
+*)
+(*
+Theorem B_upper_bound_for_dig {r : radix} : ∀ u i n,
+  (∀ k, i + 1 ≤ k ≤ n - 1 → u k ≤ rad - 1)
+  → ∀ l, (B i n u l < 1 // rad ^ (n - i - 1))%NQ.
+Proof.
+intros * Hur l.
+rewrite B_of_A.
+specialize (A_upper_bound_for_dig u (n - 1) (n + l)) as H1.
+*)
+...
 rewrite B_of_A.
 specialize (A_lt_le_pred (nv - 1) (nv + rad * j) u 2) as H2.
 rewrite Hnup.
