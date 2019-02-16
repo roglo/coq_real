@@ -4323,12 +4323,10 @@ rewrite Nat.sub_diag in H1.
 now apply NQle_antisymm in H1.
 ---
 idtac.
-assert (H : ∀ k nuk, nuk = min_n i k →
-  (A i nuk u + A i nuk v -
-   (if NQlt_le_dec (A i nuk u + A i nuk v) 1 then 0 else 1)
-   ≥ 1 - 1 // rad ^ S k)%NQ). {
-  intros * Hnuk.
-  move Hnuk before Hnup; move k before j; move nuk before j.
+assert (H : ∀ k,
+  (A i (min_n i k) u + A i (min_n i k) v ≥ 1 - 1 // rad ^ S k)%NQ). {
+  intros.
+(*
   destruct (NQlt_le_dec (A i nuk u + A i nuk v) 1) as [H3| H3].
   -rewrite NQsub_0_r.
    rewrite (A_all_9 v) in H3; [ | intros; apply H4 ].
@@ -4347,8 +4345,8 @@ assert (H : ∀ k nuk, nuk = min_n i k →
    rewrite Hnuk; unfold min_n.
    destruct rad; [ easy | cbn; flia ].
   -
+*)
 specialize (A7 k) as H8.
-rewrite <- Hnuk in H8.
 rewrite A_additive in H8.
 rewrite NQfrac_add_cond in H8; [ | easy | easy ].
 rewrite (NQfrac_small (A _ _ v)) in H8. 2: {
@@ -4362,11 +4360,12 @@ rewrite NQfrac_small in H8. 2: {
   replace p with (i + (p - i)) by flia Hp.
   apply Hu.
 }
-apply NQnlt_ge in H3.
-destruct (NQlt_le_dec (A i nuk u + A i nuk v) 1) as [H9| H9]; [ easy | ].
-now apply NQnlt_ge in H3; clear H9.
+remember (min_n i k) as nuk.
+destruct (NQlt_le_dec (A i nuk u + A i nuk v) 1) as [H9| H9]; [ | ].
+now rewrite NQsub_0_r in H8.
+eapply NQle_trans; [ | apply H9 ].
+now apply NQle_sub_l.
 }
-(* ptet qu'il faut enlever le (if NQlt_dec ...) du H *)
 ...
 Search (∀ _, fA_ge_1_ε _ _ _ = true).
 
