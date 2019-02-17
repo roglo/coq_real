@@ -4324,9 +4324,9 @@ now apply NQle_antisymm in H1.
 ---
 move H4 after H2.
 assert (H3 : ∀ k,
-  (1 - 1 // rad ^ (min_n i k - i - 1) +
+  (1 + 1 // rad ^ S k +
    (if NQeq_dec (A i (min_n i k) u) 0 then 0 else A i (min_n i k) u - 1)
-     ≥ 1 - 1 // rad ^ S k)%NQ). {
+     ≥ 1 + 1 // rad ^ (min_n i k - i - 1))%NQ). {
   intros.
 specialize (A7 k) as H8.
 rewrite A_additive in H8.
@@ -4342,16 +4342,26 @@ rewrite NQfrac_small in H8. 2: {
   replace p with (i + (p - i)) by flia Hp.
   apply Hu.
 }
+rewrite <- NQadd_assoc.
+apply NQadd_le_mono_l.
 destruct (NQeq_dec (A i (min_n i k) u) 0) as [H10| H10].
 -rewrite NQadd_0_r.
-apply NQsub_le_mono; [ apply NQle_refl | ].
 apply NQle_pair; [ pauto | pauto | ].
 rewrite Nat.mul_1_l, Nat.mul_1_r.
 apply Nat.pow_le_mono_r; [ easy | ].
 unfold min_n; destruct rad; [ easy | cbn; flia ].
 -rewrite NQadd_sub_assoc, NQadd_comm.
 rewrite (A_all_9 v) in H8 at 1; [ | intros; apply H4 ].
-destruct (NQlt_le_dec (A i (min_n i k) u + A i (min_n i k) v) 1) as [H9| H9]; [ exfalso | easy ].
+rewrite NQadd_sub_swap, NQadd_sub_assoc in H8.
+apply NQle_add_le_sub_r in H8.
+rewrite NQadd_sub_assoc, NQadd_sub_swap in H8.
+apply NQadd_le_mono_r in H8.
+apply -> NQle_sub_le_add_r in H8.
+eapply NQle_trans; [ apply H8 | ].
+rewrite NQadd_sub_swap.
+apply NQadd_le_mono_r.
+apply NQsub_le_mono; [ apply NQle_refl | ].
+destruct (NQlt_le_dec (A i (min_n i k) u + A i (min_n i k) v) 1) as [H9| H9]; [ exfalso | apply NQle_refl ].
 rewrite NQsub_0_r in H8.
 apply H10; clear H10.
 rewrite (A_all_9 v) in H9; [ | intros; apply H4 ].
