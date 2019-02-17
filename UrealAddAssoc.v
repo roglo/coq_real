@@ -4324,9 +4324,9 @@ now apply NQle_antisymm in H1.
 ---
 move H4 after H2.
 assert (H3 : ∀ k,
-  (1 // rad ^ S k +
-   (if NQeq_dec (A i (min_n i k) u) 0 then 0 else A i (min_n i k) u - 1)
-     ≥ 1 // rad ^ (min_n i k - i - 1))%NQ). {
+  (1 // rad ^ (min_n i k - i - 1) ≤
+   1 // rad ^ S k +
+   (if NQeq_dec (A i (min_n i k) u) 0 then 0 else A i (min_n i k) u - 1))%NQ). {
   intros.
 specialize (A7 k) as H8.
 rewrite A_additive in H8.
