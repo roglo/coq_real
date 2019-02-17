@@ -4324,8 +4324,9 @@ now apply NQle_antisymm in H1.
 ---
 idtac.
 assert (H3 : ∀ k,
-  (A i (min_n i k) u + A i (min_n i k) v  -
-   (if NQeq_dec (A i (min_n i k) u) 0 then 0 else 1) ≥ 1 - 1 // rad ^ S k)%NQ). {
+  (A i (min_n i k) v +
+   (if NQeq_dec (A i (min_n i k) u) 0 then 0 else A i (min_n i k) u - 1)
+     ≥ 1 - 1 // rad ^ S k)%NQ). {
   intros.
 specialize (A7 k) as H8.
 rewrite A_additive in H8.
@@ -4341,8 +4342,15 @@ rewrite NQfrac_small in H8. 2: {
   replace p with (i + (p - i)) by flia Hp.
   apply Hu.
 }
-destruct (NQlt_le_dec (A i (min_n i k) u + A i (min_n i k) v) 1) as [H9| H9].
-destruct (NQeq_dec (A i (min_n i k) u) 0) as [H10| H10]; [ easy | exfalso ].
+destruct (NQeq_dec (A i (min_n i k) u) 0) as [H10| H10].
+rewrite NQadd_0_r, A_all_9; [ | intros; apply H4 ].
+apply NQsub_le_mono; [ apply NQle_refl | ].
+apply NQle_pair; [ pauto | pauto | ].
+rewrite Nat.mul_1_l, Nat.mul_1_r.
+apply Nat.pow_le_mono_r; [ easy | ].
+unfold min_n; destruct rad; [ easy | cbn; flia ].
+rewrite NQadd_sub_assoc, NQadd_comm.
+destruct (NQlt_le_dec (A i (min_n i k) u + A i (min_n i k) v) 1) as [H9| H9]; [ exfalso | easy ].
 rewrite NQsub_0_r in H8.
 apply H10; clear H10.
 rewrite (A_all_9 v) in H9; [ | intros; apply H4 ].
@@ -4351,11 +4359,6 @@ rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H9.
 apply A_lt_le_pred in H9.
 rewrite Nat.sub_diag in H9.
 now apply NQle_antisymm in H9.
-destruct (NQeq_dec (A i (min_n i k) u) 0) as [H10| H10]; [ exfalso | easy ].
-rewrite H10, NQadd_0_l in H9.
-apply NQnlt_ge in H9; apply H9; clear H9.
-rewrite A_all_9; [ | intros; apply H4 ].
-now apply NQsub_lt.
 }
 ...
 Search (∀ _, fA_ge_1_ε _ _ _ = true).
