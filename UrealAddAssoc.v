@@ -4324,9 +4324,9 @@ now apply NQle_antisymm in H1.
 ---
 move H4 after H2.
 assert (H3 : ∀ k,
-  (1 + 1 // rad ^ S k +
+  (1 // rad ^ S k +
    (if NQeq_dec (A i (min_n i k) u) 0 then 0 else A i (min_n i k) u - 1)
-     ≥ 1 + 1 // rad ^ (min_n i k - i - 1))%NQ). {
+     ≥ 1 // rad ^ (min_n i k - i - 1))%NQ). {
   intros.
 specialize (A7 k) as H8.
 rewrite A_additive in H8.
@@ -4342,8 +4342,6 @@ rewrite NQfrac_small in H8. 2: {
   replace p with (i + (p - i)) by flia Hp.
   apply Hu.
 }
-rewrite <- NQadd_assoc.
-apply NQadd_le_mono_l.
 destruct (NQeq_dec (A i (min_n i k) u) 0) as [H10| H10].
 -rewrite NQadd_0_r.
 apply NQle_pair; [ pauto | pauto | ].
