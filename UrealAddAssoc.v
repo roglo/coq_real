@@ -4369,11 +4369,13 @@ apply A_lt_le_pred in H9.
 rewrite Nat.sub_diag in H9.
 now apply NQle_antisymm in H9.
 }
-...
-Search (∀ _, fA_ge_1_ε _ _ _ = true).
-...
+exfalso; apply NQnlt_ge in H7; apply H7; clear H7.
+apply NQlt_sub_lt_add_r.
+rewrite (A_all_9 v); [ | intros; apply H4 ].
+apply NQlt_add_lt_sub_r.
+rewrite NQsub_sub_distr, NQadd_sub.
       rewrite Hnup.
-      replace j with (0 + j) by easy.
+      replace j with (0 + j) at 1 by easy.
       rewrite min_n_add, <- Hnv.
       rewrite <- ApB_A. 2: {
         rewrite Hnv; unfold min_n.
@@ -4381,13 +4383,24 @@ Search (∀ _, fA_ge_1_ε _ _ _ = true).
       }
       rewrite H5, NQadd_0_l.
       destruct j.
-    ---unfold B.
-       rewrite summation_empty; [ easy | ].
+    +++unfold B.
        rewrite Nat.mul_0_r, Nat.add_0_r.
-       apply Nat.sub_lt; [ | pauto ].
-       rewrite Hnv; unfold min_n.
-       destruct rad; [ easy | cbn; flia ].
-    ---idtac.
+       rewrite summation_empty. 2: {
+         apply Nat.sub_lt; [ | pauto ].
+         rewrite Hnv; unfold min_n.
+         destruct rad; [ easy | cbn; flia ].
+       }
+       rewrite <- NQadd_sub_swap.
+       apply NQlt_add_lt_sub_r.
+       rewrite NQadd_0_l, Nat.pow_1_r.
+       apply (NQlt_le_trans _ 1).
+     ***apply NQlt_pair; [ easy | easy | cbn; flia Hr ].
+     ***now apply NQle_add_r.
+    +++idtac.
+Check B_upper_bound_for_add.
+...
+Check B_upper_bound_for_dig. (* à faire *)
+...
        specialize (Hjj j (Nat.lt_succ_diag_r j)) as H1.
        apply A_ge_1_true_iff in H1.
        replace j with (0 + j) in H1 at 1 by easy.
