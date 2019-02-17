@@ -4322,9 +4322,9 @@ apply A_lt_le_pred in H1.
 rewrite Nat.sub_diag in H1.
 now apply NQle_antisymm in H1.
 ---
-idtac.
+move H4 after H2.
 assert (H3 : ∀ k,
-  (A i (min_n i k) v +
+  (1 - 1 // rad ^ (min_n i k - i - 1) +
    (if NQeq_dec (A i (min_n i k) u) 0 then 0 else A i (min_n i k) u - 1)
      ≥ 1 - 1 // rad ^ S k)%NQ). {
   intros.
@@ -4343,13 +4343,14 @@ rewrite NQfrac_small in H8. 2: {
   apply Hu.
 }
 destruct (NQeq_dec (A i (min_n i k) u) 0) as [H10| H10].
-rewrite NQadd_0_r, A_all_9; [ | intros; apply H4 ].
+-rewrite NQadd_0_r.
 apply NQsub_le_mono; [ apply NQle_refl | ].
 apply NQle_pair; [ pauto | pauto | ].
 rewrite Nat.mul_1_l, Nat.mul_1_r.
 apply Nat.pow_le_mono_r; [ easy | ].
 unfold min_n; destruct rad; [ easy | cbn; flia ].
-rewrite NQadd_sub_assoc, NQadd_comm.
+-rewrite NQadd_sub_assoc, NQadd_comm.
+rewrite (A_all_9 v) in H8 at 1; [ | intros; apply H4 ].
 destruct (NQlt_le_dec (A i (min_n i k) u + A i (min_n i k) v) 1) as [H9| H9]; [ exfalso | easy ].
 rewrite NQsub_0_r in H8.
 apply H10; clear H10.
