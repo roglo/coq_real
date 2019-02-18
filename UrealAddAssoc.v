@@ -4335,6 +4335,40 @@ destruct H4 as [H4| [H4| H4]].
      now apply NQle_antisymm in H8.
    ++idtac.
 (**)
+(* voir A7 (conséquence de H6) *)
+specialize (A7 k) as H9.
+rewrite A_additive in H9.
+rewrite (A_9_8_all_18 k v) in H9; [ | easy | easy | easy ].
+remember (min_n i k) as nik eqn:Hnik.
+move nik before nup; move Hnik before Hnup.
+destruct (le_dec (i + k + 1) (nik - 1)) as [H10| H10]. 2: {
+exfalso; apply H10.
+rewrite Hnik; unfold min_n.
+destruct rad; [ easy | cbn; flia ].
+}
+rewrite NQfrac_add_cond in H9.
+rewrite NQfrac_small in H9. 2: {
+  split; [ easy | ].
+  apply A_upper_bound_for_dig; intros p Hp.
+  replace p with (i + (p - i)) by flia Hp.
+  apply Hu.
+}
+remember (nik - i - 1) as s eqn:Hs.
+rewrite NQfrac_small in H9. 2: {
+  split; [ | now apply NQsub_lt ].
+  apply NQle_add_le_sub_r.
+  rewrite NQadd_0_r.
+  apply NQle_pair; [ pauto | easy | ].
+  apply Nat.mul_le_mono_r.
+  destruct s.
+  -rewrite Hnik in Hs; unfold min_n in Hs.
+   destruct rad; [ easy | cbn in Hs; flia Hs ].
+  -cbn.
+   replace 2 with (2 * 1) by easy.
+   apply Nat.mul_le_mono; [ easy | ].
+   now apply Nat_pow_ge_1.
+}
+destruct (NQlt_le_dec (A i nik u + (1 - 2 // rad ^ s))%NQ 1) as [H11| H11].
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
