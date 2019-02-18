@@ -4259,29 +4259,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
    ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
      clear Hm.
-(* et cui-là, c'est utile ou pas ? *)
-(**)
-     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H6 0) as A6.
-     rewrite <- Hnv in A6.
-     rewrite A_additive, Nat.pow_1_r in A6.
-     rewrite NQfrac_add_cond in A6; [ | easy | easy ].
-     rewrite NQfrac_small in A6. 2: {
-       split; [ easy | ].
-       apply A_upper_bound_for_dig; intros k Hk.
-       replace k with (i + (k - i)) by flia Hk; apply Hu.
-     }
-     rewrite NQfrac_small in A6. 2: {
-       split; [ easy | ].
-       eapply NQle_lt_trans; [ | apply H5 ].
-       now apply NQle_add_l.
-     }
-     apply NQnle_gt in H5.
-     destruct (NQlt_le_dec (A i nv u + A i nv v) 1) as [H1| H1]; [ | easy ].
-     clear H1; apply NQnle_gt in H5.
-     rewrite NQsub_0_r in A6.
      specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H6) as A7.
-(**)
-(* chais pas non plus *)
      specialize (A_ge_1_add_all_true_if v i) as H4.
      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
        intros k; rewrite <- Nat.add_assoc; apply Hv.
