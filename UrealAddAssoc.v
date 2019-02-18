@@ -4182,8 +4182,7 @@ destruct H4 as [H4| [H4| H4]].
    apply Hu.
  }
  destruct (NQlt_le_dec (A i nup u + A i nup v) 1) as [H1| H1].
- +rewrite NQsub_0_r in H7.
-  rewrite (A_all_9 v) in H1; [ | intros; apply H4 ].
+ +rewrite (A_all_9 v) in H1; [ | intros; apply H4 ].
   rewrite NQadd_comm in H1.
   apply NQlt_add_lt_sub_l in H1.
   rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H1.
@@ -4305,15 +4304,13 @@ destruct H4 as [H4| [H4| H4]].
    rewrite NQadd_comm in H3.
    apply NQlt_add_lt_sub_l in H3.
    rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H3.
-   apply A_lt_le_pred in H3.
    destruct (le_dec (i + k + 1) (nup - 1)) as [H4| H4].
   --replace (2 - 1) with 1 in H3 by easy.
     rewrite Hnup in H3 at 1.
     replace j with (0 + j) in H3 at 1 by easy.
     rewrite min_n_add, <- Hnv in H3.
     rewrite <- ApB_A in H3; [ | flia H1 ].
-...
-(* est-ce vraiment utile ?
+(* est-ce vraiment utile ? *)
     apply A_ge_1_false_iff in Hj.
     rewrite <- Hnup in Hj.
     rewrite A_additive in Hj.
@@ -4337,8 +4334,7 @@ destruct H4 as [H4| [H4| H4]].
      rewrite Nat.sub_diag in H8.
      now apply NQle_antisymm in H8.
    ++idtac.
-*)
-    idtac.
+(**)
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
