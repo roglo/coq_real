@@ -4382,9 +4382,18 @@ rewrite NQsub_sub_distr, NQadd_sub.
         destruct rad; [ easy | cbn; flia ].
       }
       rewrite H5, NQadd_0_l.
-eapply NQlt_trans.
+eapply NQlt_le_trans.
 rewrite Hnv.
-apply B_upper_bound_for_add.
+apply B_upper_bound_for_add. {
+intros p Hp.
+replace p with (i + (p - i)) by flia Hp.
+eapply le_trans; [ apply Hu | ].
+flia Hr.
+}
+rewrite Nat.pow_1_r.
+rewrite <- NQadd_sub_swap.
+apply NQle_add_le_sub_l.
+eapply NQle_trans; [ | now apply NQle_add_r ].
 ...
       destruct j.
     +++unfold B.
