@@ -4394,85 +4394,23 @@ rewrite Nat.pow_1_r.
 rewrite <- NQadd_sub_swap.
 apply NQle_add_le_sub_l.
 eapply NQle_trans; [ | now apply NQle_add_r ].
-...
-      destruct j.
-    +++unfold B.
-       rewrite Nat.mul_0_r, Nat.add_0_r.
-       rewrite summation_empty. 2: {
-         apply Nat.sub_lt; [ | pauto ].
-         rewrite Hnv; unfold min_n.
-         destruct rad; [ easy | cbn; flia ].
-       }
-       rewrite <- NQadd_sub_swap.
-       apply NQlt_add_lt_sub_r.
-       rewrite NQadd_0_l, Nat.pow_1_r.
-       apply (NQlt_le_trans _ 1).
-     ***apply NQlt_pair; [ easy | easy | cbn; flia Hr ].
-     ***now apply NQle_add_r.
-    +++idtac.
-Check B_upper_bound_for_add.
-eapply NQlt_trans.
-rewrite Hnv.
-apply B_upper_bound_for_add.
-...
-       specialize (Hjj j (Nat.lt_succ_diag_r j)) as H1.
-       apply A_ge_1_true_iff in H1.
-       replace j with (0 + j) in H1 at 1 by easy.
-       rewrite min_n_add, <- Hnv in H1.
-       rewrite A_additive in H1.
-       move Hj at bottom.
-       rewrite Hnup in Hj.
-       replace (S j) with (0 + S j) in Hj at 1 2 by easy.
-       rewrite min_n_add, <- Hnv in Hj.
-...
-
-(*
-Search (B _ _ _ _ < _)%NQ.
-Check A_upper_bound_for_dig.
-*)
-(*
-Theorem B_upper_bound_for_dig {r : radix} : ∀ u i n,
-  (∀ k, i + 1 ≤ k ≤ n - 1 → u k ≤ rad - 1)
-  → ∀ l, (B i n u l < 1 // rad ^ (n - i - 1))%NQ.
-Proof.
-intros * Hur l.
-rewrite B_of_A.
-specialize (A_upper_bound_for_dig u (n - 1) (n + l)) as H1.
-*)
-rewrite B_of_A.
-specialize (A_lt_le_pred (nv - 1) (nv + rad * j) u 2) as H3.
-rewrite Hnup.
-replace j with (0 + j) at 2 by easy.
-rewrite min_n_add, <- Hnv.
-apply (NQmul_lt_mono_pos_r (rad ^ (nv - i - 1) // 1)%NQ).
-replace 0%NQ with (0 // 1)%NQ by easy.
-apply NQlt_pair; [ easy | easy | ].
-rewrite Nat.mul_comm.
-apply Nat.mul_lt_mono_pos_l; [ pauto | now apply Nat_pow_ge_1 ].
-rewrite <- NQmul_assoc.
-rewrite NQmul_pair; [ | pauto | easy ].
-rewrite Nat.mul_1_l, Nat.mul_1_r, NQpair_diag; [ | pauto ].
-rewrite NQmul_1_r.
-rewrite NQmul_pair; [ | pauto | easy ].
+rewrite NQadd_pair; [ | easy | pauto ].
 rewrite Nat.mul_1_l, Nat.mul_1_r.
-rewrite NQpow_pair_r; [ | easy | ].
-rewrite Nat_sub_sub_swap.
-replace (nv + rad * j - i - (nv - i - 1)) with (nv + rad * j - (nv - 1)).
-replace (2 - 1) with 1 in H2 by easy.
-....
-apply H2.
-rewrite Hnv.
-Search (B _ _ _ _ < _)%NQ.
-Search (B _ _ _ _).
-...
-eapply NQlt_le_trans; [ apply B_upper_bound_for_add | ].
-...
-      rewrite B_of_A.
-...
-A_lt_le_pred :
-∀ (r : radix) (i n : nat) (u : nat → nat) (m : nat),
-  (A i n u < m // rad ^ (n - i - 1))%NQ
-  → (A i n u ≤ (m - 1) // rad ^ (n - i - 1))%NQ
+apply NQle_pair; [ | easy | ].
+apply Nat.neq_mul_0.
+split; [ easy | pauto ].
+apply Nat.mul_le_mono_r.
+rewrite Nat.pow_succ_r' at 1.
+replace rad with (rad * 1) at 3 by flia.
+rewrite <- Nat.mul_add_distr_l.
+apply Nat.mul_le_mono_l.
+cbn; rewrite Nat.mul_comm.
+destruct j; [ cbn; flia Hr | ].
+eapply le_trans; [ | apply Nat.add_le_mul ].
+now apply Nat.add_le_mono_l.
+now apply Nat.pow_gt_1.
+easy.
+**idtac.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
