@@ -4382,6 +4382,10 @@ rewrite NQsub_sub_distr, NQadd_sub.
         destruct rad; [ easy | cbn; flia ].
       }
       rewrite H5, NQadd_0_l.
+eapply NQlt_trans.
+rewrite Hnv.
+apply B_upper_bound_for_add.
+...
       destruct j.
     +++unfold B.
        rewrite Nat.mul_0_r, Nat.add_0_r.
@@ -4398,8 +4402,9 @@ rewrite NQsub_sub_distr, NQadd_sub.
      ***now apply NQle_add_r.
     +++idtac.
 Check B_upper_bound_for_add.
-...
-Check B_upper_bound_for_dig. (* à faire *)
+eapply NQlt_trans.
+rewrite Hnv.
+apply B_upper_bound_for_add.
 ...
        specialize (Hjj j (Nat.lt_succ_diag_r j)) as H1.
        apply A_ge_1_true_iff in H1.
