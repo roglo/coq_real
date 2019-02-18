@@ -4249,6 +4249,41 @@ destruct H4 as [H4| [H4| H4]].
   apply Nat.mul_le_mono; [ easy | ].
   now apply Nat_pow_ge_1.
 -destruct H4 as (k & Hbef & Hwhi & Haft).
+ rewrite (A_9_8_all_18 k v) in H5; [ | easy | easy | easy ].
+ destruct (le_dec (i + k + 1) (nv - 1)) as [H1| H1].
+ +rewrite NQadd_sub_assoc in H5.
+  apply NQlt_sub_lt_add_l in H5.
+  apply NQadd_lt_mono_r in H5.
+  apply A_lt_le_pred in H5.
+  replace (2 - 1) with 1 in H5 by easy.
+  specialize (A7 j) as H7.
+  rewrite <- Hnup in H7.
+  rewrite A_additive in H7.
+  rewrite NQfrac_add_cond in H7; [ | easy | easy ].
+  rewrite (NQfrac_small (A _ _ v)) in H7. 2: {
+    split; [ easy | ].
+    rewrite (A_9_8_all_18 k); [ | easy | easy | easy ].
+    apply NQsub_lt.
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | pauto | ].
+    rewrite Nat.mul_0_l, Nat.mul_1_l.
+    destruct (le_dec (i + k + 1) (nup - 1)); pauto.
+  }
+  rewrite NQfrac_small in H7. 2: {
+    split; [ easy | ].
+    apply A_upper_bound_for_dig; intros p Hp.
+    replace p with (i + (p - i)) by flia Hp.
+    apply Hu.
+  }
+  destruct (NQlt_le_dec (A i nup u + A i nup v) 1) as [H3| H3].
+  *rewrite NQsub_0_r in H7.
+   rewrite (A_9_8_all_18 k v) in H3; [ | easy | easy | easy ].
+   rewrite NQadd_comm in H3.
+   apply NQlt_add_lt_sub_l in H3.
+   rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H3.
+   apply A_lt_le_pred in H3.
+...
+   rewrite Nat.sub_diag in H3.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
