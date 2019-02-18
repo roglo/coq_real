@@ -4325,7 +4325,9 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
          eapply le_trans; [ | apply Nat.add_le_mul ]; [ | | easy ].
        ***now apply Nat.add_le_mono_l.
        ***now apply Nat.pow_gt_1.
-    **idtac.
+    **apply NQnle_gt in H5.
+      exfalso; apply H5; clear H5.
+      rewrite (A_all_18 v); [ | intros; apply H4 ].
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
