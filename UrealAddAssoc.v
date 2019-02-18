@@ -4368,7 +4368,18 @@ rewrite NQfrac_small in H9. 2: {
    apply Nat.mul_le_mono; [ easy | ].
    now apply Nat_pow_ge_1.
 }
+move k before j.
 destruct (NQlt_le_dec (A i nik u + (1 - 2 // rad ^ s))%NQ 1) as [H11| H11].
+exfalso; apply NQnle_gt in H11; apply H11; clear H11.
+rewrite NQadd_comm.
+apply NQle_sub_le_add_l.
+rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l.
+rewrite Hnik.
+replace k with (0 + k) by easy.
+rewrite min_n_add, <- Hnv.
+rewrite <- ApB_A.
+...
+apply (NQle_trans _ (1 // rad ^ (nv - i - 1))).
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
