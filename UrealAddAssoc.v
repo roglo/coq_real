@@ -4235,22 +4235,6 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     subst kup.
     rename H3 into Hvt.
     specialize (all_fA_ge_1_ε_P_999 v i Hvt) as H2.
-(* est-ce utile ? *)
-(**)
-    apply A_ge_1_false_iff in Hj.
-    rewrite <- Hnup in Hj.
-    rewrite A_additive in Hj.
-    rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
-    rewrite NQfrac_P_M in Hj.
-    rewrite NQfrac_small in Hj. 2: {
-      split; [ easy | ].
-      apply A_upper_bound_for_dig; intros k Hk.
-      replace k with (i + (k - i)) by flia Hk; apply Hu.
-    }
-    destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1)
-      as [H3| H3]; [ easy | clear H3 ].
-(**)
-(* était-ce utile ? chais pas *)
     enough (H : A i nup u = 0%NQ). {
       rewrite H, NQadd_0_l.
       rewrite A_all_9; [ | intros k Hk; apply H2 ].
