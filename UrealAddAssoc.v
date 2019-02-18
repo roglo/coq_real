@@ -4282,8 +4282,8 @@ destruct H4 as [H4| [H4| H4]].
    apply NQlt_add_lt_sub_l in H3.
    rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H3.
    apply A_lt_le_pred in H3.
-...
-   rewrite Nat.sub_diag in H3.
+   destruct (le_dec (i + k + 1) (nup - 1)) as [H4| H4].
+  --replace (2 - 1) with 1 in H3 by easy.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
