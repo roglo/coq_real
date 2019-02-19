@@ -4334,8 +4334,8 @@ destruct H4 as [H4| [H4| H4]].
      rewrite Nat.sub_diag in H8.
      now apply NQle_antisymm in H8.
    ++idtac.
+...
 (**)
-(* voir A7 (conséquence de H6) *)
 specialize (A7 k) as H9.
 rewrite A_additive in H9.
 rewrite (A_9_8_all_18 k v) in H9; [ | easy | easy | easy ].
