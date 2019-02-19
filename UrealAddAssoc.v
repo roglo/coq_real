@@ -4248,6 +4248,16 @@ destruct H4 as [H4| [H4| H4]].
   apply Nat.mul_le_mono; [ easy | ].
   now apply Nat_pow_ge_1.
 -destruct H4 as (k & Hbef & Hwhi & Haft).
+(**)
+destruct j.
+destruct k.
+rewrite <- Hnv in Hnup; subst nup.
+clear Hjj Hbef.
+rewrite Nat.add_0_r in Hwhi, Haft.
+apply A_ge_1_false_iff in Hj.
+rewrite <- Hnv, Nat.pow_1_r in Hj.
+...
+(**)
 (*
  apply A_ge_1_false_iff in Hj.
  rewrite <- Hnup in Hj.
@@ -4280,7 +4290,6 @@ destruct H4 as [H4| [H4| H4]].
   apply NQadd_lt_mono_r in H5.
   apply A_lt_le_pred in H5.
   replace (2 - 1) with 1 in H5 by easy.
-...
   specialize (A7 j) as H7.
   rewrite <- Hnup in H7.
   rewrite A_additive in H7.
