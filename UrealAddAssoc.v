@@ -4528,7 +4528,54 @@ rewrite min_n_add, <- Hnv, Nat.mul_1_r in H7.
             rewrite Nat.sub_diag in H'.
             now apply NQle_antisymm in H'.
         ****flia H1 H4.
-       ++++idtac.
+       ++++rewrite (A_9_8_all_18 0 v) in H9; [ | easy | | ];
+             try now rewrite Nat.add_0_r.
+           rewrite <- NQadd_sub_assoc in H9.
+           rewrite NQsub_sub_swap, NQsub_diag, NQsub_0_l in H9.
+           rewrite NQadd_opp_r, Nat.add_0_r in H9.
+           remember (nv + rad - i - 1) as s1 eqn:Hs1.
+           move s1 before s; move Hs1 before Hs.
+           destruct (le_dec (i + 1) (nv + rad - 1)) as [H4| H4].
+        ****exfalso; apply NQnlt_ge in H9; apply H9; clear H9.
+            apply NQlt_sub_lt_add_r.
+            rewrite <- NQadd_sub_swap.
+            apply NQlt_add_lt_sub_r.
+            rewrite <- ApB_A; [ | flia H1 ].
+            apply
+              (NQle_lt_trans _
+                 (1 // rad ^ s + B i nv u rad + 1 // rad ^ 2)%NQ).
+        -----do 2 rewrite <- NQadd_assoc.
+             apply NQadd_le_mono; [ easy | apply NQle_refl ].
+        -----specialize (B_upper_bound_for_add u i 0 rad) as H9.
+             assert (H : ∀ j, j ≥ i → u j ≤ 2 * (rad - 1)). {
+               intros p Hp.
+               replace p with (i + (p - i)) by flia Hp.
+               eapply le_trans; [ apply Hu | flia Hr ].
+             }
+             specialize (H9 H); clear H.
+             rewrite <- Hnv, Nat.pow_1_r in H9.
+             rewrite NQadd_add_swap.
+             apply
+               (NQle_lt_trans _ (1 // rad ^ s + 1 // rad ^ 2 + 1 // rad)%NQ).
+         +++++apply NQadd_le_mono; [ apply NQle_refl | now apply NQlt_le_incl ].
+         +++++idtac.
+...
+        ****flia H1 H4.
+      ----rewrite <- Hs in H11.
+          exfalso; apply NQnlt_ge in H11; apply H11; clear H11.
+          rewrite NQadd_comm.
+          apply NQlt_add_lt_sub_l.
+          rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l.
+          eapply NQle_lt_trans; [ apply H5 | ].
+          apply NQlt_pair; [ pauto | pauto | ].
+          rewrite Nat.mul_1_l.
+          replace (rad ^ s * 2) with (rad ^ s + rad ^ s) by flia.
+          apply Nat.lt_sub_lt_add_l.
+          rewrite Nat.sub_diag.
+          apply Nat.neq_0_lt_0; pauto.
+      ***flia H1 H10.
+     +++idtac.
+        (* pffff... quel bordel *)
 ...
     **assert (H9 : (A i nv u < 2 // rad ^ (nup - i - 1))%NQ). {
        eapply NQle_lt_trans; [ | apply H3 ].
