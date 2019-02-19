@@ -4333,7 +4333,11 @@ destruct H4 as [H4| [H4| H4]].
      apply A_lt_le_pred in H8.
      rewrite Nat.sub_diag in H8.
      now apply NQle_antisymm in H8.
-   ++idtac.
+   ++assert (H9 : (A i nv u < 2 // rad ^ (nup - i - 1))%NQ). {
+       eapply NQle_lt_trans; [ | apply H3 ].
+       apply NQle_add_r, B_ge_0.
+     }
+(* donc A i nv u = 0 *)
 ...
 (**)
 specialize (A7 k) as H9.
