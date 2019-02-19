@@ -4333,7 +4333,11 @@ destruct H4 as [H4| [H4| H4]].
      apply A_lt_le_pred in H8.
      rewrite Nat.sub_diag in H8.
      now apply NQle_antisymm in H8.
-   ++assert (H9 : (A i nv u < 2 // rad ^ (nup - i - 1))%NQ). {
+   ++destruct j.
+    **rewrite <- Hnv in Hnup; subst nup.
+      clear Hjj H4 H3.
+...
+    **assert (H9 : (A i nv u < 2 // rad ^ (nup - i - 1))%NQ). {
        eapply NQle_lt_trans; [ | apply H3 ].
        apply NQle_add_r, B_ge_0.
      }
@@ -4341,6 +4345,18 @@ destruct H4 as [H4| [H4| H4]].
        eapply NQlt_le_trans; [ apply H9 | ].
        apply NQle_pair; [ pauto | pauto | ].
        rewrite Nat.mul_1_r.
+       remember (nup - i - 1) as s eqn:Hs.
+       destruct s.
+       -rewrite Hnup in Hs; unfold min_n in Hs.
+        destruct rad; [ easy | cbn in Hs; flia Hs ].
+       -rewrite Nat.pow_succ_r'.
+        apply Nat.mul_le_mono; [ easy | ].
+        apply Nat.pow_le_mono_r; [ easy | ].
+        replace s with (nup - i - 2) by flia Hs.
+        setoid_rewrite Nat_sub_sub_swap.
+        apply Nat.sub_le_mono_r.
+        rewrite Hnup, Hnv; unfold min_n.
+        destruct j.
 ...
 (**)
 specialize (A7 k) as H9.
