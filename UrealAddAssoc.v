@@ -4248,6 +4248,7 @@ destruct H4 as [H4| [H4| H4]].
   apply Nat.mul_le_mono; [ easy | ].
   now apply Nat_pow_ge_1.
 -destruct H4 as (k & Hbef & Hwhi & Haft).
+...
 (*
  apply A_ge_1_false_iff in Hj.
  rewrite <- Hnup in Hj.
@@ -4411,6 +4412,7 @@ destruct (NQlt_le_dec (A i nv u + (1 - 2 // rad ^ (nv - i - 1)))%NQ 1) as [H11| 
 rewrite NQsub_0_r in H9.
 (* bizarre, je trouve rien ; c'est peut-être un contre-exemple ? *)
 (* pas l'air, pourtant *)
+clear H9 H10 H11.
 ...
     **assert (H9 : (A i nv u < 2 // rad ^ (nup - i - 1))%NQ). {
        eapply NQle_lt_trans; [ | apply H3 ].
