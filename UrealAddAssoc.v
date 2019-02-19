@@ -4336,6 +4336,7 @@ destruct H4 as [H4| [H4| H4]].
    ++destruct j.
     **rewrite <- Hnv in Hnup; subst nup.
       clear Hjj H4 H3.
+      rewrite NQsub_0_r in H7.
 ...
     **assert (H9 : (A i nv u < 2 // rad ^ (nup - i - 1))%NQ). {
        eapply NQle_lt_trans; [ | apply H3 ].
