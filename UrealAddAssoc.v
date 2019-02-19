@@ -4373,6 +4373,8 @@ destruct (NQlt_le_dec (A i nik u + (1 - 2 // rad ^ s))%NQ 1) as [H11| H11].
 rewrite NQadd_comm in H11.
 apply NQlt_add_lt_sub_l in H11.
 rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H11.
+destruct (NQeq_dec (A i nup u) 0) as [H12| H12]; [ easy | exfalso ].
+assert (H13 : A i nup u = (1 // rad ^ (nv - i - 1))%NQ). {
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
