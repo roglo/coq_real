@@ -4337,7 +4337,7 @@ destruct H4 as [H4| [H4| H4]].
        eapply NQle_lt_trans; [ | apply H3 ].
        apply NQle_add_r, B_ge_0.
      }
-(* donc A i nv u = 0 *)
+(* donc, par H9, A i nv u = 0 *)
 ...
 (**)
 specialize (A7 k) as H9.
