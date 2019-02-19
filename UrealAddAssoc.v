@@ -4337,7 +4337,10 @@ destruct H4 as [H4| [H4| H4]].
        eapply NQle_lt_trans; [ | apply H3 ].
        apply NQle_add_r, B_ge_0.
      }
-(* donc, par H9, A i nv u = 0 *)
+     assert (H10 : (A i nv u < 1 // rad ^ (nv - i - 1))%NQ). {
+       eapply NQlt_le_trans; [ apply H9 | ].
+       apply NQle_pair; [ pauto | pauto | ].
+       rewrite Nat.mul_1_r.
 ...
 (**)
 specialize (A7 k) as H9.
