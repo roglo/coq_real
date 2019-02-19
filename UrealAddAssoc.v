@@ -4253,9 +4253,42 @@ destruct j.
 destruct k.
 rewrite <- Hnv in Hnup; subst nup.
 clear Hjj Hbef.
-rewrite Nat.add_0_r in Hwhi, Haft.
 apply A_ge_1_false_iff in Hj.
 rewrite <- Hnv, Nat.pow_1_r in Hj.
+specialize (A7 1) as H7.
+replace 1 with (0 + 1) in H7 at 1 by easy.
+rewrite min_n_add, <- Hnv, Nat.mul_1_r in H7.
+  rewrite A_additive in H7.
+  rewrite NQfrac_add_cond in H7; [ | easy | easy ].
+  rewrite (NQfrac_small (A _ _ v)) in H7. 2: {
+    split; [ easy | ].
+    rewrite (A_9_8_all_18 0); [ | easy | easy | easy ].
+    apply NQsub_lt.
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQlt_pair; [ easy | pauto | ].
+    rewrite Nat.mul_0_l, Nat.mul_1_l.
+    destruct (le_dec (i + 0 + 1) (nv + rad - 1)); pauto.
+  }
+  rewrite NQfrac_small in H7. 2: {
+    split; [ easy | ].
+    apply A_upper_bound_for_dig; intros p Hp.
+    replace p with (i + (p - i)) by flia Hp.
+    apply Hu.
+  }
+  destruct (NQlt_le_dec (A i (nv + rad) u + A i (nv + rad) v) 1) as [H3| H3].
+  *rewrite (A_9_8_all_18 0 v) in H3; [ | easy | easy | easy ].
+   rewrite NQadd_comm in H3.
+   apply NQlt_add_lt_sub_l in H3.
+   rewrite Nat.add_0_r in H3.
+   destruct (le_dec (i + 1) (nv + rad - 1)) as [H8| H8].
+   rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H3.
+   apply A_lt_le_pred in H3.
+   replace (2 - 1) with 1 in H3 by easy.
+   move H3 at bottom.
+   rewrite <- ApB_A in H3. 2: {
+     rewrite Hnv; unfold min_n; destruct rad; [ easy | cbn; flia ].
+   }
+(* H3 devrait le faire *)
 ...
 (**)
 (*
