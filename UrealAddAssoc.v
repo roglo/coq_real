@@ -4259,9 +4259,53 @@ destruct H4 as [H4| [H4| H4]].
    replace p with (i + (p - i)) by flia Hp.
    apply Hu.
  }
- destruct (lt_dec (nup - i - 2) k) as [Hnk| Hnk].
-...
  rewrite (A_9_8_all_18 k v) in H7; [ | easy | easy | easy ].
+ remember (nup - i - 1) as s eqn:Hs.
+ destruct (le_dec (i + k + 1) (nup - 1)) as [Hnk| Hnk].
+ +rewrite (NQfrac_small) in H7. 2: {
+    split; [ | now apply NQsub_lt ].
+    apply NQle_add_le_sub_r; rewrite NQadd_0_r.
+    apply NQle_pair; [ pauto | easy | ].
+    apply Nat.mul_le_mono_r.
+    rewrite Hnup in Hs; unfold min_n in Hs.
+    destruct s.
+    -destruct rad; [ easy | cbn in Hs; flia Hs ].
+    -cbn; replace 2 with (2 * 1) by easy.
+     apply Nat.mul_le_mono; [ easy | ].
+     now apply Nat_pow_ge_1.
+  }
+  destruct (NQlt_le_dec (A i nup u + (1 - 2 // rad ^ s))%NQ 1) as [Ha1| Ha1].
+  *clear H7.
+   rewrite NQadd_comm in Ha1.
+   apply NQlt_add_lt_sub_l in Ha1.
+   rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in Ha1.
+   rewrite Hs in Ha1.
+   apply A_lt_le_pred in Ha1.
+   rewrite Nat.sub_succ, Nat.sub_0_r in Ha1.
+   rewrite <- Hs in Ha1.
+   destruct (NQeq_dec (A i nup u) 0) as [Ha0| Ha0]; [ easy | exfalso ].
+   assert (Ha : A i nup u = (1 // rad ^ s)%NQ). {
+...
+ rewrite (NQfrac_small) in H7. 2: {
+   split.
+   -destruct (le_dec (i + k + 1) (nup - 1)) as [Hnk| Hnk].
+    +apply NQle_add_le_sub_r; rewrite NQadd_0_r.
+     apply NQle_pair; [ pauto | easy | ].
+     apply Nat.mul_le_mono_r.
+     remember (nup - i - 1) as s eqn:Hs.
+     rewrite Hnup in Hs; unfold min_n in Hs.
+     destruct s.
+     *destruct rad; [ easy | cbn in Hs; flia Hs ].
+     *cbn; replace 2 with (2 * 1) by easy.
+      apply Nat.mul_le_mono; [ easy | ].
+      now apply Nat_pow_ge_1.
+    +apply NQle_add_le_sub_r; rewrite NQadd_0_r.
+     apply NQle_pair; [ pauto | easy | ].
+     apply Nat.mul_le_mono_r.
+     now apply Nat_pow_ge_1.
+   -apply NQsub_lt.
+    now destruct (le_dec (i + k + 1) (nup - 1)).
+ }
 ...
  rewrite (NQfrac_small (A _ _ v)) in H7. 2: {
    split; [ easy | ].
