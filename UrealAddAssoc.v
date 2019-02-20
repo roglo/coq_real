@@ -4285,6 +4285,17 @@ destruct H4 as [H4| [H4| H4]].
    rewrite <- Hs in Ha1.
    destruct (NQeq_dec (A i nup u) 0) as [Ha0| Ha0]; [ easy | exfalso ].
    assert (Ha : A i nup u = (1 // rad ^ s)%NQ). {
+     rewrite A_num_den in Ha1, Ha0 |-*; unfold den_A in Ha1, Ha0 |-*.
+     rewrite <- Hs in Ha1, Ha0 |-*; f_equal.
+     apply NQle_pair in Ha1; [ | pauto | pauto ].
+     rewrite Nat.mul_comm in Ha1.
+     apply Nat.mul_le_mono_pos_l in Ha1; [ | apply Nat.neq_0_lt_0; pauto ].
+     apply Nat.le_antisymm; [ easy | ].
+     apply Nat.nlt_ge; intros H; apply Ha0; clear Ha0.
+     apply Nat.lt_1_r in H.
+     now rewrite H.
+   }
+   clear Ha0 Ha1.
 ...
  rewrite (NQfrac_small) in H7. 2: {
    split.
