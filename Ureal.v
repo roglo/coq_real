@@ -1131,8 +1131,12 @@ destruct i.
  eapply le_trans; [ apply H1 | ].
  apply (le_trans _ (rad ^ 2 * (rad - 1))).
  +now apply Nat.mul_le_mono_r.
- +idtac.
+ +rewrite (Nat.pow_2_r (rad - 1)).
+  rewrite Nat.mul_assoc.
+  apply Nat.mul_le_mono_r.
 (* ah oui mais non *)
+(* bon, faut réfléchir : soit changer l'hypothèse Hm, soit ne pas
+   utiliser B_upper_bound_for_mul qui est tout de même marteau-pilon *)
 ...
 
 Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
