@@ -4341,6 +4341,24 @@ destruct H4 as [H4| [H4| H4]].
        apply Nat.mul_le_mono; [ easy | ].
        now apply Nat_pow_ge_1.
     }
+    rewrite (A_9_8_all_18 k v) in H7; [ | easy | easy | easy ].
+    destruct (le_dec (i + k + 1) (nup - 1)) as [H| H]; [ | flia Hnk H ].
+    clear H; rewrite <- Hs in H7.
+    rewrite NQadd_sub_assoc in H7.
+    replace (1 // rad ^ s + 1)%NQ with (1 + 1 // rad ^ s)%NQ in H7
+      by apply NQadd_comm.
+    rewrite (NQadd_sub_swap 1%NQ) in H7.
+    rewrite <- NQsub_sub_distr in H7.
+    rewrite <- NQpair_sub_l in H7; [ | pauto ].
+    replace (2 - 1) with 1 in H7 by easy.
+    destruct (NQlt_le_dec (1 - 1 // rad ^ s + B i nup (u ⊕ v) rad)%NQ 1)
+      as [Hrb| Hrb].
+   ++apply NQnle_gt in Hrb; apply Hrb; clear Hrb.
+     rewrite <- NQadd_sub_swap.
+     apply NQle_add_le_sub_r.
+     rewrite NQadd_comm.
+     apply NQadd_le_mono_l.
+(* mmm... faut voir... *)
 ...
  rewrite (NQfrac_small (A _ _ v)) in H7. 2: {
    split; [ easy | ].
