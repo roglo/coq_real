@@ -4320,8 +4320,11 @@ destruct H4 as [H4| [H4| H4]].
      apply NQsub_lt.
      destruct (le_dec (i + k + 1) (nup - 1)) as [H| H]; [ easy | flia H Hnk ].
    }
-...
-   destruct (1 // rad ^ s + A i nup v - (if NQlt_le_dec (1 // rad ^ s + A i nup v) 1 then 0 else 1) +
+   destruct (NQlt_le_dec (1 // rad ^ s + A i nup v)%NQ 1) as [H11| H12].
+  --rewrite NQsub_0_r in H7.
+    rewrite NQfrac_small in H7. 2: {
+      split; [ apply B_ge_0 | ].
+About B_upper_bound_for_add.
 ...
  rewrite (NQfrac_small) in H7. 2: {
    split.
