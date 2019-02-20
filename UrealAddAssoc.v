@@ -4320,7 +4320,7 @@ destruct H4 as [H4| [H4| H4]].
      apply NQsub_lt.
      destruct (le_dec (i + k + 1) (nup - 1)) as [H| H]; [ easy | flia H Hnk ].
    }
-   destruct (NQlt_le_dec (1 // rad ^ s + A i nup v)%NQ 1) as [H11| H12].
+   destruct (NQlt_le_dec (1 // rad ^ s + A i nup v)%NQ 1) as [H11| H11].
   --rewrite NQsub_0_r in H7.
     rewrite NQfrac_small in H7. 2: {
       split; [ apply B_ge_0 | ].
@@ -4389,7 +4389,44 @@ destruct H4 as [H4| [H4| H4]].
       intros p Hp.
       replace 0%NQ with (0 // 1)%NQ by easy.
       apply NQle_pair; [ easy | pauto | cbn; flia ].
-   ++idtac.
+   ++apply NQnlt_ge in H7; apply H7; clear H7.
+     rewrite NQadd_sub_swap, NQsub_sub_swap.
+     rewrite NQsub_diag, NQsub_0_l, NQadd_comm, NQadd_opp_r.
+     apply NQlt_sub_lt_add_r.
+     eapply NQlt_le_trans.
+    **rewrite Hnup.
+      apply (B_upper_bound_for_many_add 3).
+    ---split; [ pauto | ].
+       destruct rad as [| rr]; [ easy | ].
+       destruct rr; [ flia Hr | cbn; flia ].
+    ---intros p Hp; replace p with (i + (p - i)) by flia Hp.
+       unfold "⊕"; replace 3 with (1 + 2) by easy.
+       rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+       apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+    **rewrite <- NQadd_sub_swap.
+      apply NQle_add_le_sub_r.
+      rewrite NQadd_pair; [ | pauto | pauto ].
+      rewrite Nat.mul_1_l, Nat.mul_1_r, <- Nat.pow_add_r.
+      rewrite NQadd_pair; [ | pauto | pauto ].
+      rewrite Nat.mul_1_l, Nat.mul_1_r.
+      apply NQle_pair; [ pauto | pauto | ].
+      rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
+      eapply Nat.le_trans; [ | apply Nat.le_add_r ].
+      apply Nat.mul_le_mono_r.
+      replace (j + 2) with (S j + 1) by flia.
+      rewrite Nat.pow_add_r, Nat.pow_1_r.
+      replace (rad ^ S j) with (rad ^ S j * 1) at 1 by flia.
+      rewrite <- Nat.mul_add_distr_l.
+      rewrite Nat.pow_add_r, Nat.mul_comm.
+      apply Nat.mul_le_mono_r.
+      replace (S j + 1) with (S (S j)) by flia.
+      clear - Hr.
+      induction j.
+      destruct rad as [| rr]; [ easy | ].
+      destruct rr; [ flia Hr | cbn; flia ].
+      eapply le_trans; [ apply IHj | ].
+      apply Nat.pow_le_mono_r; [ easy | flia ].
+  --idtac.
 ...
 (*
  apply A_ge_1_false_iff in Hj.
