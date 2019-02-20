@@ -4296,6 +4296,32 @@ destruct H4 as [H4| [H4| H4]].
      now rewrite H.
    }
    clear Ha0 Ha1.
+   specialize (A7 (j + 1)) as H7.
+   replace (S (j + 1)) with (j + 2) in H7 by easy.
+   rewrite min_n_add, Nat.mul_1_r, <- Hnup in H7.
+   rewrite <- ApB_A in H7. 2: {
+     rewrite Hnup; unfold min_n; destruct rad; [ easy | cbn; flia ].
+   }
+   rewrite A_additive in H7.
+   rewrite NQfrac_add_cond in H7; [ | | apply B_ge_0 ]. 2: {
+     replace 0%NQ with (0 + 0)%NQ by easy.
+     now apply NQadd_le_mono.
+   }
+   rewrite NQfrac_add_cond in H7; [ | easy | easy ].
+   rewrite (NQfrac_small (A i nup u)) in H7. 2: {
+     split; [ easy | ].
+     apply A_upper_bound_for_dig; intros p Hp.
+     replace p with (i + (p - i)) by flia Hp; apply Hu.
+   }
+   rewrite Ha in H7.
+   rewrite NQfrac_small in H7. 2: {
+     split; [ easy | ].
+     rewrite (A_9_8_all_18 k); [ | easy | easy | easy ].
+     apply NQsub_lt.
+     destruct (le_dec (i + k + 1) (nup - 1)) as [H| H]; [ easy | flia H Hnk ].
+   }
+...
+   destruct (1 // rad ^ s + A i nup v - (if NQlt_le_dec (1 // rad ^ s + A i nup v) 1 then 0 else 1) +
 ...
  rewrite (NQfrac_small) in H7. 2: {
    split.
