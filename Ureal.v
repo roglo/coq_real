@@ -1102,19 +1102,6 @@ destruct l.
     destruct rr; [ flia Hr | cbn; flia ].
 Qed.
 
-Theorem B_upper_bound_for_add_at_0 {r : radix} : ∀ u k l,
-  (∀ j, u j ≤ 2 * (rad - 1))
-  → (B 0 (min_n 0 k) u l < 1 // rad ^ S k)%NQ.
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hur.
-apply (B_upper_bound_for_many_add_at_0 2); [ | easy ].
-split; [ pauto | cbn; rewrite Nat.mul_1_r ].
-replace 2 with (2 * 1) by easy.
-now apply Nat.mul_le_mono.
-Qed.
-
 Theorem B_upper_bound_for_many_add {r : radix} : ∀ m u i k l,
   0 < m ≤ rad ^ 2
   → (∀ j, j ≥ i → u j ≤ m * (rad - 1))
@@ -1199,22 +1186,11 @@ Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
 Proof.
 intros * Hur.
 specialize radix_ge_2 as Hr.
-destruct i.
--apply B_upper_bound_for_add_at_0.
- intros j; apply Hur; flia.
--apply B_upper_bound_for_mul.
- intros j Hj.
- specialize (Hur _ Hj) as H1.
- apply (le_trans _ (2 * (rad - 1))); [ easy | ].
- destruct j; [ flia Hj | ].
- apply (le_trans _ (2 * (rad - 1) ^ 2)).
- +apply Nat.mul_le_mono_l.
-  rewrite <- Nat.pow_1_r at 1.
-  apply Nat.pow_le_mono_r; [ flia Hr | pauto ].
-  +apply Nat.mul_le_mono_r; flia.
+apply (B_upper_bound_for_many_add 2); [ | easy ].
+split; [ pauto | rewrite Nat.pow_2_r ].
+replace 2 with (2 * 1) by easy.
+now apply Nat.mul_le_mono.
 Qed.
-
-...
 
 Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
   let n := min_n i k in
@@ -1404,7 +1380,6 @@ Theorem frac_ge_if_all_fA_ge_1_ε_for_add {r : radix} : ∀ u i,
 Proof.
 intros u i Hur.
 specialize radix_ge_2 as Hr.
-About frac_ge_if_all_fA_ge_1_ε.
 split.
 -intros H1 k l.
  destruct (le_dec l rad) as [H2| H2].
