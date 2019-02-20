@@ -1125,19 +1125,73 @@ specialize radix_ge_2 as Hr.
 destruct i.
 -apply (B_upper_bound_for_many_add_at_0 m); [ easy | ].
  intros j; apply Hur; flia.
--apply B_upper_bound_for_mul.
- intros j Hj.
- specialize (Hur _ Hj) as H1.
- eapply le_trans; [ apply H1 | ].
- apply (le_trans _ (rad ^ 2 * (rad - 1))).
- +now apply Nat.mul_le_mono_r.
- +rewrite (Nat.pow_2_r (rad - 1)).
-  rewrite Nat.mul_assoc.
-  apply Nat.mul_le_mono_r.
-(* ah oui mais non *)
-(* bon, faut réfléchir : soit changer l'hypothèse Hm, soit ne pas
-   utiliser B_upper_bound_for_mul qui est tout de même marteau-pilon *)
-...
+-unfold B.
+ remember (min_n (S i) k) as n eqn:Hn.
+ destruct l.
+ +rewrite summation_empty; [ easy | ].
+  rewrite Nat.add_0_r; apply Nat.sub_lt; [ | pauto ].
+  rewrite Hn; unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+ +replace (n + S l - 1) with (n + l) by flia.
+  rewrite summation_shift; [ | flia ].
+  replace (n + l - n) with l by flia.
+  eapply NQle_lt_trans.
+  *apply summation_le_compat.
+   intros j Hj.
+   apply NQle_pair; [ pauto | | ]. 2: {
+     rewrite Nat.mul_comm.
+     apply Nat.mul_le_mono; [ apply Nat.le_refl | ].
+     apply Hur; rewrite Hn; unfold min_n.
+     destruct rad; [ easy | cbn; flia ].
+   }
+   pauto.
+  *remember summation as f; remember S as g; remember 1 as x.
+   cbn; subst f g x.
+   eapply NQle_lt_trans.
+  --apply summation_le_compat with
+      (g :=
+       λ j, ((m * (rad - 1)) // 1 * 1 // rad ^ (n - S i) * 1 // rad ^ j)%NQ).
+    intros j Hj.
+    rewrite <- NQpair_mul_r, Nat.mul_1_r.
+    rewrite NQmul_pair; [ | pauto | pauto ].
+    rewrite Nat.mul_1_r, <- Nat.pow_add_r.
+    replace (n + j - S i) with (n - S i + j); [ apply NQle_refl | ].
+    symmetry; apply Nat.add_sub_swap.
+    rewrite Hn; unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  --rewrite <- summation_mul_distr_l.
+    rewrite NQpower_summation; [ | easy ].
+    remember 1 as x; remember S as f; cbn; subst x f.
+    rewrite NQmul_mul_swap.
+    rewrite NQmul_pair; [ | easy | ]. 2: {
+      apply Nat.neq_mul_0.
+      split; [ pauto | flia Hr ].
+    }
+    rewrite Nat.mul_1_l, Nat.mul_comm, Nat.mul_assoc.
+    rewrite <-  NQmul_pair; [ | pauto | flia Hr ].
+    rewrite NQpair_diag, NQmul_1_r; [ | flia Hr ].
+    rewrite NQmul_pair; [ | pauto | pauto ].
+    rewrite Nat.mul_1_r, <- Nat.pow_add_r.
+    apply NQlt_pair; [ pauto | pauto | ].
+    rewrite Nat.mul_1_r, Nat.pow_add_r.
+    apply (lt_le_trans _ (rad ^ S l * m * rad ^ S k)).
+   ++apply Nat.mul_lt_mono_pos_r; [ apply Nat.neq_0_lt_0; pauto | ].
+     apply Nat.mul_lt_mono_pos_r; [ easy | ].
+     apply Nat.sub_lt; [ | pauto ].
+     now apply Nat_pow_ge_1.
+   ++rewrite <- Nat.add_1_r, Nat.pow_add_r, Nat.pow_1_r.
+     do 2 rewrite <- Nat.mul_assoc.
+     apply Nat.mul_le_mono_l.
+     apply (le_trans _ (rad * (rad ^ 2 * rad ^ S k))).
+    **apply Nat.mul_le_mono_l.
+      now apply Nat.mul_le_mono_r.
+    **rewrite <- Nat.pow_add_r.
+      rewrite <- Nat.pow_succ_r; [ | flia ].
+      apply Nat.pow_le_mono_r; [ easy | ].
+      rewrite Hn; unfold min_n.
+      destruct rad as [| rr]; [ easy | ].
+      destruct rr; [ flia Hr | cbn; flia ].
+Qed.
 
 Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l,
   (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
@@ -1159,6 +1213,8 @@ destruct i.
   apply Nat.pow_le_mono_r; [ flia Hr | pauto ].
   +apply Nat.mul_le_mono_r; flia.
 Qed.
+
+...
 
 Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
   let n := min_n i k in
