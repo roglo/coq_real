@@ -4358,76 +4358,39 @@ destruct H4 as [H4| [H4| H4]].
      apply NQle_add_le_sub_r.
      rewrite NQadd_comm.
      apply NQadd_le_mono_l.
-(* mmm... faut voir... *)
+     unfold B.
+     rewrite summation_split_first; [ | flia Hr ].
+     unfold "⊕" at 1.
+     replace nup with (i + k + (nup - i - k - 2) + 2) at 2 by flia Hnk.
+     rewrite Haft.
+     replace (nup - i) with (s + 1). 2: {
+       rewrite Hs.
+       rewrite Nat.sub_add; [ easy | ].
+       rewrite Hnup; unfold min_n.
+       destruct rad; [ easy | cbn; flia ].
+     }
+     eapply NQle_trans; [ | apply NQle_add_r ].
+    **rewrite NQpair_add_l.
+      eapply NQle_trans; [ | apply NQle_add_l ].
+    ---apply NQle_pair; [ pauto | pauto | ].
+       rewrite Nat.mul_1_l, Nat.mul_sub_distr_l, Nat.mul_1_r.
+       rewrite Nat.pow_add_r, Nat.pow_1_r.
+       apply Nat.mul_le_mono_l.
+       destruct rad as [| rr]; [ easy | ].
+       destruct rr; [ flia Hr | cbn; flia ].
+    ---replace 0%NQ with (0 // 1)%NQ by easy.
+       apply NQle_pair; [ easy | pauto | cbn; flia ].
+    **specialize
+        (@all_0_summation_0 _ NQ_ord_ring (λ j, 0%NQ) (S nup) (nup + rad - 1))
+        as Hsum0.
+      remember summation as f; cbn in Hsum0; subst f.
+      rewrite <- Hsum0; [ | easy ].
+      apply summation_le_compat.
+      intros p Hp.
+      replace 0%NQ with (0 // 1)%NQ by easy.
+      apply NQle_pair; [ easy | pauto | cbn; flia ].
+   ++idtac.
 ...
- rewrite (NQfrac_small (A _ _ v)) in H7. 2: {
-   split; [ easy | ].
-   rewrite (A_9_8_all_18 k); [ | easy | easy | easy ].
-   apply NQsub_lt.
-   replace 0%NQ with (0 // 1)%NQ by easy.
-   apply NQlt_pair; [ easy | pauto | ].
-   rewrite Nat.mul_0_l, Nat.mul_1_l.
-   destruct (le_dec (i + k + 1) (nup - 1)); pauto.
- }
-  destruct (NQlt_le_dec (A i nup u + A i nup v) 1) as [H3| H3].
-  *rewrite (A_9_8_all_18 k v) in H3; [ | easy | easy | easy ].
-   rewrite NQadd_comm in H3.
-   apply NQlt_add_lt_sub_l in H3.
-   rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H3.
-   destruct (le_dec (i + k + 1) (nup - 1)) as [H4| H4].
-  --replace (2 - 1) with 1 in H3 by easy.
-    rewrite Hnup in H3 at 1.
-...
- destruct (lt_dec (nup - i - 2) k) as [Hnk| Hnk].
- +specialize (Hbef (nup - i - 2) Hnk) as H1.
-  replace (i + (nup - i - 2) + 1) with (nup - 1) in H1. 2: {
-    rewrite Hnup; unfold min_n.
-    destruct rad; [ easy | cbn; flia ].
-  }
-...
-(*
-destruct j.
-destruct k.
-rewrite <- Hnv in Hnup; subst nup.
-clear Hjj Hbef.
-apply A_ge_1_false_iff in Hj.
-rewrite <- Hnv, Nat.pow_1_r in Hj.
-specialize (A7 1) as H7.
-replace 1 with (0 + 1) in H7 at 1 by easy.
-rewrite min_n_add, <- Hnv, Nat.mul_1_r in H7.
-  rewrite A_additive in H7.
-  rewrite NQfrac_add_cond in H7; [ | easy | easy ].
-  rewrite (NQfrac_small (A _ _ v)) in H7. 2: {
-    split; [ easy | ].
-    rewrite (A_9_8_all_18 0); [ | easy | easy | easy ].
-    apply NQsub_lt.
-    replace 0%NQ with (0 // 1)%NQ by easy.
-    apply NQlt_pair; [ easy | pauto | ].
-    rewrite Nat.mul_0_l, Nat.mul_1_l.
-    destruct (le_dec (i + 0 + 1) (nv + rad - 1)); pauto.
-  }
-  rewrite NQfrac_small in H7. 2: {
-    split; [ easy | ].
-    apply A_upper_bound_for_dig; intros p Hp.
-    replace p with (i + (p - i)) by flia Hp.
-    apply Hu.
-  }
-  destruct (NQlt_le_dec (A i (nv + rad) u + A i (nv + rad) v) 1) as [H3| H3].
-  *rewrite (A_9_8_all_18 0 v) in H3; [ | easy | easy | easy ].
-   rewrite NQadd_comm in H3.
-   apply NQlt_add_lt_sub_l in H3.
-   rewrite Nat.add_0_r in H3.
-   destruct (le_dec (i + 1) (nv + rad - 1)) as [H8| H8].
-   rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H3.
-   apply A_lt_le_pred in H3.
-   replace (2 - 1) with 1 in H3 by easy.
-   move H3 at bottom.
-   rewrite <- ApB_A in H3. 2: {
-     rewrite Hnv; unfold min_n; destruct rad; [ easy | cbn; flia ].
-   }
-(* H3 devrait le faire *)
-...
-*)
 (*
  apply A_ge_1_false_iff in Hj.
  rewrite <- Hnup in Hj.
