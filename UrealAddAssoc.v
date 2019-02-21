@@ -4564,10 +4564,35 @@ Theorem pre_Hugo_Herbelin_32 {r : radix} : ∀ u v i j k,
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hu Hv Hvt Hjj Hup Hjk Huv Hia0 Hiak Haa Hp.
+intros Hu Hv Hvt Hjj Hup Hjk Huv Hia0 Hiak Haa Hpv.
 remember (min_n i 0) as ni eqn:Hni.
+remember (min_n i j) as nij eqn:Hnij.
 remember (min_n i k) as nik eqn:Hnik.
-move ni before k; move nik before ni; move Hnik before Hni.
+move ni before k; move nij before ni; move nik before nij.
+move Hnij before Hni; move Hnik before Hnij.
+specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Hvt) as Avt.
+specialize (A_ge_1_add_all_true_if v i) as H1.
+assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+  intros p; rewrite <- Nat.add_assoc; apply Hv.
+}
+specialize (H1 H Hvt); clear H.
+destruct H1 as [H1| [H1| H1]].
+-rewrite (A_all_9 v) in Haa; [ | intros p Hp; apply H1 ].
+ rewrite NQadd_comm in Haa.
+ apply NQlt_add_lt_sub_l in Haa.
+ rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in Haa.
+ apply A_lt_le_pred in Haa.
+ rewrite Nat.sub_diag in Haa.
+ apply NQle_antisymm in Haa; [ | easy ].
+ symmetry in Haa; remember A as f; cbn in Haa; subst f.
+ clear Hiak.
+ destruct (le_dec j k) as [Hljk| Hljk].
+ +rewrite Hnik in Haa; replace k with (j + (k - j)) in Haa by flia Hljk.
+  rewrite min_n_add, <- Hnij in Haa.
+  rewrite <- ApB_A in Haa. 2: {
+    rewrite Hnij; unfold min_n; destruct rad; [ easy | cbn; flia ].
+  }
+  move Haa at bottom.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
