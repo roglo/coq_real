@@ -4600,13 +4600,27 @@ destruct H1 as [H1| [H1| H1]].
   apply B_ge_0.
  +apply Nat.nle_gt in Hljk.
 (**)
-move Hup at bottom.
 apply A_ge_1_false_iff in Hup.
+apply A_ge_1_false_iff in Huv.
+move Hup at bottom; move Huv at bottom.
 rewrite <- Hnij in Hup.
-rewrite A_additive in Hup.
+rewrite <- Hnik in Huv.
+rewrite A_additive in Hup, Huv.
 rewrite (A_all_9 (P v)) in Hup; [ | easy ].
-remember (nij - i - 1) as s eqn:Hx.
-assert (Hrp : (0 ≤ 1 - 1 // rad ^ s)%NQ). {
+rewrite (A_all_9 v) in Huv; [ | easy ].
+remember (nij - i - 1) as sj eqn:Hsj.
+remember (nik - i - 1) as sk eqn:Hsk.
+move sk before sj; move Hsk before Hsj.
+assert (Hrp : (0 ≤ 1 - 1 // rad ^ sj)%NQ). {
+  rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+    apply Nat.mul_le_mono_l.
+    now apply Nat_pow_ge_1.
+  }
+  do 2 rewrite Nat.mul_1_l.
+  replace 0%NQ with (0 // 1)%NQ by easy.
+  apply NQle_pair; [ easy | pauto | cbn; flia ].
+}
+assert (Hrv : (0 ≤ 1 - 1 // rad ^ sk)%NQ). {
   rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
     apply Nat.mul_le_mono_l.
     now apply Nat_pow_ge_1.
@@ -4616,9 +4630,20 @@ assert (Hrp : (0 ≤ 1 - 1 // rad ^ s)%NQ). {
   apply NQle_pair; [ easy | pauto | cbn; flia ].
 }
 rewrite NQfrac_add_cond in Hup; [ | easy | easy ].
-rewrite (NQfrac_small (1 - 1 // rad ^ s)%NQ) in Hup. 2: {
+rewrite NQfrac_add_cond in Huv; [ | easy | easy ].
+rewrite (NQfrac_small (1 - 1 // rad ^ sj)%NQ) in Hup. 2: {
   split; [ easy | now apply NQsub_lt ].
 }
+rewrite (NQfrac_small (1 - 1 // rad ^ sk)%NQ) in Huv. 2: {
+  split; [ easy | now apply NQsub_lt ].
+}
+replace j with (k + (j - k)) in Hnij by flia Hljk.
+rewrite min_n_add, <- Hnik in Hnij.
+subst nij; rewrite <- Nat.sub_add_distr in Hsj.
+rewrite Nat.add_sub_swap in Hsj. 2: {
+  rewrite Hnik; unfold min_n; destruct rad; [ easy | cbn; flia ].
+}
+rewrite Nat.sub_add_distr, <- Hsk in Hsj; subst sj.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
