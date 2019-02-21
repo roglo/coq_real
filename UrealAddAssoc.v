@@ -4431,32 +4431,43 @@ destruct H4 as [H4| [H4| H4]].
   *apply NQle_sub_le_add_r in Ha1.
    rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in Ha1.
    rewrite NQadd_sub_swap, NQadd_sub_assoc, NQsub_add in H7.
+   apply A_ge_1_false_iff in Hj.
+   rewrite <- Hnup in Hj.
+   rewrite A_additive in Hj.
+   rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
+   rewrite NQfrac_small in Hj. 2: {
+     split; [ easy | ].
+     apply A_upper_bound_for_dig; intros p Hp.
+     replace p with (i + (p - i)) by flia Hp.
+     apply Hu.
+   }
+   rewrite NQfrac_small in Hj. 2: {
+     split; [ easy | ].
+     rewrite A_all_9; [ | intros; apply H2 ].
+     now apply NQsub_lt.
+   }
+   destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1) as [H8| H8].
+  --rewrite (A_all_9 (P v)) in H8; [ | intros; apply H2 ].
+    apply NQlt_add_lt_sub_r in H8.
+    rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H8.
+    apply A_lt_le_pred in H8.
+    rewrite Nat.sub_diag in H8.
+    now apply NQle_antisymm in H8.
+  --move Hj at bottom.
+    rewrite (A_all_9 (P v)) in Hj; [ | intros; apply H2 ].
+    rewrite <- Hs, NQadd_sub_swap, NQadd_sub_assoc in Hj.
+    rewrite NQsub_add in Hj.
+    exfalso; apply NQnlt_ge in H7; apply H7; clear H7.
+    eapply NQle_lt_trans; [ | apply Hj ].
+    apply NQsub_le_mono; [ apply NQle_refl | ].
+    apply NQle_pair; [ pauto | pauto | ].
+    rewrite Nat.mul_1_l.
+    replace (rad ^ s * 2) with (rad ^ s + rad ^ s) by flia.
+    apply Nat.le_sub_le_add_l.
+    rewrite Nat.sub_diag.
+    apply Nat.le_0_l.
+ +apply Nat.nle_gt in Hnk.
 ...
-(*
- apply A_ge_1_false_iff in Hj.
- rewrite <- Hnup in Hj.
- rewrite A_additive in Hj.
- rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
- rewrite NQfrac_small in Hj. 2: {
-   split; [ easy | ].
-   apply A_upper_bound_for_dig; intros p Hp.
-   replace p with (i + (p - i)) by flia Hp.
-   apply Hu.
- }
- rewrite NQfrac_small in Hj. 2: {
-   split; [ easy | ].
-   rewrite A_all_9; [ | intros; apply H2 ].
-   now apply NQsub_lt.
- }
- destruct (NQlt_le_dec (A i nup u + A i nup (P v)) 1) as [H8| H8].
- +rewrite (A_all_9 (P v)) in H8; [ | intros; apply H2 ].
-  apply NQlt_add_lt_sub_r in H8.
-  rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H8.
-  apply A_lt_le_pred in H8.
-  rewrite Nat.sub_diag in H8.
-  now apply NQle_antisymm in H8.
- +idtac.
-*)
  rewrite (A_9_8_all_18 k v) in H5; [ | easy | easy | easy ].
  destruct (le_dec (i + k + 1) (nv - 1)) as [H1| H1].
  +rewrite NQadd_sub_assoc in H5.
