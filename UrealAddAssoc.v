@@ -4467,6 +4467,16 @@ destruct H4 as [H4| [H4| H4]].
     rewrite Nat.sub_diag.
     apply Nat.le_0_l.
  +apply Nat.nle_gt in Hnk.
+  rewrite NQfrac_small in H7. 2: {
+    split; [ | now apply NQsub_lt ].
+    apply NQle_add_le_sub_r.
+    rewrite NQadd_0_r.
+    apply NQle_pair; [ pauto | easy | ].
+    apply Nat.mul_le_mono_r.
+    now apply Nat_pow_ge_1.
+  }
+  destruct (NQlt_le_dec (A i nup u + (1 - 1 // rad ^ s))%NQ 1) as [Ha1| Ha1].
+  *rewrite NQsub_0_r in H7.
 ...
  rewrite (A_9_8_all_18 k v) in H5; [ | easy | easy | easy ].
  destruct (le_dec (i + k + 1) (nv - 1)) as [H1| H1].
