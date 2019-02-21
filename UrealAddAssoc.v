@@ -4599,6 +4599,7 @@ destruct H1 as [H1| [H1| H1]].
   rewrite Haa, NQadd_0_l.
   apply B_ge_0.
  +apply Nat.nle_gt in Hljk.
+...
 (**)
 apply A_ge_1_false_iff in Hup.
 apply A_ge_1_false_iff in Huv.
