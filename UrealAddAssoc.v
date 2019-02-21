@@ -4593,6 +4593,12 @@ destruct H1 as [H1| [H1| H1]].
     rewrite Hnij; unfold min_n; destruct rad; [ easy | cbn; flia ].
   }
   move Haa at bottom.
+  specialize (A_ge_0 i nij u) as Ha0.
+  apply NQle_antisymm in Ha0; [ easy | ].
+  apply (NQadd_le_mono_r _ _ (B i nij u (rad * (k - j)))).
+  rewrite Haa, NQadd_0_l.
+  apply B_ge_0.
+ +apply Nat.nle_gt in Hljk.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
