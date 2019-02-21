@@ -4599,6 +4599,26 @@ destruct H1 as [H1| [H1| H1]].
   rewrite Haa, NQadd_0_l.
   apply B_ge_0.
  +apply Nat.nle_gt in Hljk.
+(**)
+move Hup at bottom.
+apply A_ge_1_false_iff in Hup.
+rewrite <- Hnij in Hup.
+rewrite A_additive in Hup.
+rewrite (A_all_9 (P v)) in Hup; [ | easy ].
+remember (nij - i - 1) as s eqn:Hx.
+assert (Hrp : (0 ≤ 1 - 1 // rad ^ s)%NQ). {
+  rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+    apply Nat.mul_le_mono_l.
+    now apply Nat_pow_ge_1.
+  }
+  do 2 rewrite Nat.mul_1_l.
+  replace 0%NQ with (0 // 1)%NQ by easy.
+  apply NQle_pair; [ easy | pauto | cbn; flia ].
+}
+rewrite NQfrac_add_cond in Hup; [ | easy | easy ].
+rewrite (NQfrac_small (1 - 1 // rad ^ s)%NQ) in Hup. 2: {
+  split; [ easy | now apply NQsub_lt ].
+}
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
