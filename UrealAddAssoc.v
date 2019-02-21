@@ -4320,27 +4320,27 @@ destruct H4 as [H4| [H4| H4]].
      apply NQsub_lt.
      destruct (le_dec (i + k + 1) (nup - 1)) as [H| H]; [ easy | flia H Hnk ].
    }
+   rewrite NQfrac_small in H7. 2: {
+     split; [ apply B_ge_0 | ].
+     rewrite Hnup.
+     eapply NQlt_trans.
+     -apply (B_upper_bound_for_many_add 3).
+      +split; [ pauto | ].
+       destruct rad as [| rr]; [ easy | ].
+       destruct rr; [ flia Hr | cbn; flia ].
+      +intros p Hp; replace p with (i + (p - i)) by flia Hp.
+       unfold "⊕"; replace 3 with (1 + 2) by easy.
+       rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+       apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+     -apply NQlt_pair; [ pauto | easy | ].
+      apply Nat.mul_lt_mono_pos_r; [ pauto | ].
+      cbn; apply (lt_le_trans _ 2); [ pauto | ].
+      replace 2 with (2 * 1) by easy.
+      apply Nat.mul_le_mono; [ easy | ].
+      now apply Nat_pow_ge_1.
+   }
    destruct (NQlt_le_dec (1 // rad ^ s + A i nup v)%NQ 1) as [H11| H11].
   --rewrite NQsub_0_r in H7.
-    rewrite NQfrac_small in H7. 2: {
-      split; [ apply B_ge_0 | ].
-      rewrite Hnup.
-      eapply NQlt_trans.
-      -apply (B_upper_bound_for_many_add 3).
-       +split; [ pauto | ].
-        destruct rad as [| rr]; [ easy | ].
-        destruct rr; [ flia Hr | cbn; flia ].
-       +intros p Hp; replace p with (i + (p - i)) by flia Hp.
-        unfold "⊕"; replace 3 with (1 + 2) by easy.
-        rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-        apply Nat.add_le_mono; [ apply Hu | apply Hv ].
-      -apply NQlt_pair; [ pauto | easy | ].
-       apply Nat.mul_lt_mono_pos_r; [ pauto | ].
-       cbn; apply (lt_le_trans _ 2); [ pauto | ].
-       replace 2 with (2 * 1) by easy.
-       apply Nat.mul_le_mono; [ easy | ].
-       now apply Nat_pow_ge_1.
-    }
     rewrite (A_9_8_all_18 k v) in H7; [ | easy | easy | easy ].
     destruct (le_dec (i + k + 1) (nup - 1)) as [H| H]; [ | flia Hnk H ].
     clear H; rewrite <- Hs in H7.
