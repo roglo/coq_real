@@ -4686,6 +4686,9 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
   apply Nat.mul_le_mono; [ easy | ].
   now apply Nat_pow_ge_1.
 -destruct Hvr as (p & Hbef & Hwhi & Haft).
+ apply A_ge_1_false_iff in Hup.
+ rewrite <- Hnij, A_additive in Hup.
+ rewrite (A_all_9 (P v)) in Hup; [ | easy ].
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
