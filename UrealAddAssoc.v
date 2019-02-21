@@ -4135,22 +4135,21 @@ destruct H4 as [Hva| [Hva| Hva]].
   flia Hkwhi Hr.
 Qed.
 
-Theorem pre_Hugo_Herbelin_31 {r : radix} : ∀ u v i j nv nup,
+Theorem pre_Hugo_Herbelin_31 {r : radix} : ∀ u v i j,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε v i k = true)
-  → (∀ j0, j0 < j → fA_ge_1_ε (u ⊕ P v) i j0 = true)
   → fA_ge_1_ε (u ⊕ P v) i j = false
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
-  → nv = min_n i 0
-  →  nup = min_n i j
-  → (A i nv u + A i nv v < 1)%NQ
+  → (A i (min_n i 0) u + A i (min_n i 0) v < 1)%NQ
   → (∀ k, P v (i + k + 1) = rad - 1)
-  → A i nup u = 0%NQ.
+  → A i (min_n i j) u = 0%NQ.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hu Hv Hvt Hjj Hj H6 Hnv Hnup H5 H2.
+intros Hu Hv Hvt Hj H6 H5 H2.
+remember (min_n i 0) as nv eqn:Hnv.
+remember (min_n i j) as nup eqn:Hnup.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H6) as A7.
 specialize (A_ge_1_add_all_true_if v i) as H4.
 assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
@@ -4549,6 +4548,25 @@ destruct H4 as [H4| [H4| H4]].
     now apply Nat_pow_ge_1.
 Qed.
 
+Theorem pre_Hugo_Herbelin_32 {r : radix} : ∀ u v i j k,
+  (∀ k, u (i + k) ≤ rad - 1)
+  → (∀ k, v (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, fA_ge_1_ε v i k = true)
+  → (∀ k, k < j → fA_ge_1_ε (u ⊕ P v) i k = true)
+  → fA_ge_1_ε (u ⊕ P v) i j = false
+  → (∀ j, j < k → fA_ge_1_ε (u ⊕ v) i j = true)
+  → fA_ge_1_ε (u ⊕ v) i k = false
+  → NQintg (A i (min_n i 0) v) ≤ 1
+  → NQintg (A i (min_n i k) v) = 0
+  → (A i (min_n i k) u + A i (min_n i k) v < 1)%NQ
+  → (∀ k, P v (i + k + 1) = rad - 1)
+  → A i (min_n i j) u = 0%NQ.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hu Hv Hvt Hjj Hj Hjk Hk H1 Hm H5 H2.
+...
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -4656,10 +4674,13 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     }
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
    ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
-     clear Hm.
-     now apply (pre_Hugo_Herbelin_31 _ v _ j nv).
+     clear Hm; subst nv nup.
+     now apply (pre_Hugo_Herbelin_31 u v).
    ++destruct H6 as (k & Hjk & Hk); subst kuv.
      move j before i; move k before j.
+     subst nv nup nuv; clear Hr; move Hm before H1.
+...
+     now apply (pre_Hugo_Herbelin_32 u v _ _ k).
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
