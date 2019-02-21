@@ -4430,6 +4430,7 @@ destruct H4 as [H4| [H4| H4]].
     now apply NQsub_lt.
   *apply NQle_sub_le_add_r in Ha1.
    rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in Ha1.
+   rewrite NQadd_sub_swap, NQadd_sub_assoc, NQsub_add in H7.
 ...
 (*
  apply A_ge_1_false_iff in Hj.
