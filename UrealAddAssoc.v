@@ -4564,7 +4564,10 @@ Theorem pre_Hugo_Herbelin_32 {r : radix} : ∀ u v i j k,
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hu Hv Hvt Hjj Hj Hjk Hk H1 Hm H5 H2.
+intros Hu Hv Hvt Hjj Hup Hjk Huv Hia0 Hiak Haa Hp.
+remember (min_n i 0) as ni eqn:Hni.
+remember (min_n i k) as nik eqn:Hnik.
+move ni before k; move nik before ni; move Hnik before Hni.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
