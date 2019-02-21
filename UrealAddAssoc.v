@@ -4476,7 +4476,49 @@ destruct H4 as [H4| [H4| H4]].
     now apply Nat_pow_ge_1.
   }
   destruct (NQlt_le_dec (A i nup u + (1 - 1 // rad ^ s))%NQ 1) as [Ha1| Ha1].
-  *rewrite NQsub_0_r in H7.
+  *apply NQlt_add_lt_sub_r in Ha1.
+   rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in Ha1.
+   rewrite Hs in Ha1.
+   apply A_lt_le_pred in Ha1.
+   rewrite Nat.sub_diag in Ha1.
+   now apply NQle_antisymm in Ha1.
+  *exfalso; apply NQnlt_ge in H7; apply H7; clear H7.
+   rewrite NQadd_sub_swap, NQadd_sub_assoc, NQsub_add.
+   apply NQlt_sub_lt_add_r.
+   rewrite Hnup.
+   replace j with (0 + j) at 1 by easy.
+   rewrite min_n_add, <- Hnv.
+   rewrite <- ApB_A. 2: {
+     rewrite Hnv; unfold min_n.
+     destruct rad; [ easy | cbn; flia ].
+   }
+   rewrite (A_all_9 v) in H5. 2: {
+     intros p Hp; apply Hbef.
+     rewrite Hnup in Hnk.
+     replace j with (0 + j) in Hnk at 1 by easy.
+     rewrite min_n_add, <- Hnv in Hnk.
+     flia Hnk Hp.
+   }
+   apply NQlt_add_lt_sub_r in H5.
+   rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H5.
+   apply A_lt_le_pred in H5.
+   rewrite Nat.sub_diag in H5.
+   apply NQle_antisymm in H5; [ | easy ].
+   rewrite <- H5, NQadd_0_l.
+   specialize (B_upper_bound_for_many_add 1 u i 0 (rad * j)) as H1.
+   assert (H : 0 < 1 ≤ rad ^ 2). {
+     split; [ pauto | now apply Nat_pow_ge_1 ].
+   }
+   specialize (H1 H); clear H.
+   assert (H : ∀ j, j ≥ i → u j ≤ 1 * (rad - 1)). {
+     intros p Hp; rewrite Nat.mul_1_l.
+     replace p with (i + (p - i)) by flia Hp; apply Hu.
+   }
+   specialize (H1 H); clear H.
+   rewrite <- Hnv, Nat.pow_1_r in H1.
+   eapply NQlt_le_trans; [ apply H1 | ].
+   rewrite <- NQadd_sub_swap.
+   apply NQle_add_le_sub_r.
 ...
  rewrite (A_9_8_all_18 k v) in H5; [ | easy | easy | easy ].
  destruct (le_dec (i + k + 1) (nv - 1)) as [H1| H1].
