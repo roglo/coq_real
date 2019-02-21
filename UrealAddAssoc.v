@@ -4669,6 +4669,23 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
    rewrite Hsk, Hnik; unfold min_n.
    destruct rad; [ easy | cbn; flia ].
 -rewrite (A_all_18 v) in Haa; [ | intros p; apply Hvr ].
+ exfalso; apply NQnle_gt in Haa; apply Haa; clear Haa.
+ rewrite NQadd_comm, <- NQadd_sub_swap.
+ apply NQle_add_le_sub_l.
+ replace 2%NQ with (1 + 1)%NQ by easy.
+ rewrite <- NQadd_assoc.
+ apply NQadd_le_mono_l.
+ eapply NQle_trans; [ | now apply NQle_add_r ].
+ apply NQle_pair; [ pauto | pauto | ].
+ apply Nat.mul_le_mono_pos_r; [ pauto | ].
+ remember (nik - i - 1) as s eqn:Hs.
+ rewrite Hnik in Hs; unfold min_n in Hs.
+ destruct s.
+ +destruct rad; [ easy | cbn in Hs; flia Hs ].
+ +cbn; replace 2 with (2 * 1) by easy.
+  apply Nat.mul_le_mono; [ easy | ].
+  now apply Nat_pow_ge_1.
+-destruct Hvr as (p & Hbef & Hwhi & Haft).
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
