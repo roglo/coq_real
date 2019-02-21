@@ -4429,6 +4429,8 @@ destruct H4 as [H4| [H4| H4]].
   --apply NQnlt_ge in H11; apply H11; clear H11.
     now apply NQsub_lt.
   *idtac.
+   apply NQle_sub_le_add_r in Ha1.
+   rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in Ha1.
 ...
 (*
  apply A_ge_1_false_iff in Hj.
