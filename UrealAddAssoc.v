@@ -4709,6 +4709,46 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
   apply (pre_Hugo_Herbelin_32_lemma_999 _ v _ _ k); try easy.
   intros l Hl; apply Hbef; flia H Hl.
  +apply Nat.nlt_ge in Hip.
+  rewrite (A_9_8_all_18 p v) in Haa; [ | easy | easy | easy ].
+  destruct (le_dec (i + p + 1) (nik - 1)) as [H| H]; [ | easy ].
+  clear H.
+...
+  rewrite NQadd_comm, <- NQadd_sub_swap in Haa.
+  apply NQlt_sub_lt_add_r in Haa.
+  apply NQadd_lt_mono_l in Haa.
+  destruct p.
+  *rewrite Nat.add_0_r in Hwhi, Haft, Hip; clear Hbef.
+   destruct (Nat.eq_dec (i + 1) (nik - 1)) as [Hik| Hik].
+  --unfold A in Haa; rewrite Hik in Haa.
+   rewrite summation_only_one in Haa.
+...
+  exfalso; apply NQnle_gt in Haa; apply Haa; clear Haa.
+  apply NQle_add_le_sub_l.
+  apply NQadd_le_mono_l.
+  destruct p.
+  *rewrite Nat.add_0_r in Hwhi, Hip.
+   rewrite A_split_last; [ | easy ].
+
+
+  rewrite A_split_first; [ | flia Hip ].
+  rewrite <- (Nat.add_1_r i).
+  eapply NQle_trans; [ | apply NQle_add_r ]. 2: {
+    replace 0%NQ with (0 * 1 // rad)%NQ by easy.
+    now apply NQmul_le_mono_pos_r.
+  }
+  apply NQle_pair; [ pauto | pauto | ].
+  remember (nik - i - 1) as s eqn:Hs.
+...
+  rewrite Hnik in Hs; unfold min_n in Hs.
+  destruct s.
+  *destruct rad; [ easy | cbn in Hs; flia Hs ].
+  *rewrite Nat.pow_succ_r', <- Nat.mul_assoc, Nat.mul_comm.
+   apply Nat.mul_le_mono_l.
+   replace 2 with (2 * 1) by easy.
+...
+  apply Nat.mul_le_mono; [ easy | ].
+  now apply Nat_pow_ge_1.
+-destruct Hvr as (p & Hbef & Hwhi & Haft).
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
