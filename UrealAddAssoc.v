@@ -4674,6 +4674,13 @@ remember (min_n i j) as nij eqn:Hnij.
 remember (min_n i k) as nik eqn:Hnik.
 move ni before k; move nij before ni; move nik before nij.
 move Hnij before Hni; move Hnik before Hnij.
+clear - k Hu Hv Hvt Hup Huv Hnij Hnik Haa Hpr.
+subst nij nik.
+move Hpr before Hv.
+(**)
+remember (min_n i j) as nij eqn:Hnij.
+remember (min_n i k) as nik eqn:Hnik.
+specialize radix_ge_2 as Hr.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Hvt) as Avt.
 specialize (A_ge_1_add_all_true_if v i) as Hvr.
 assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
@@ -4681,7 +4688,7 @@ assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
 }
 specialize (Hvr H Hvt); clear H.
 destruct Hvr as [Hvr| [Hvr| Hvr]].
--subst ni nij nik.
+-subst (* ni *) nij nik.
  now apply (pre_Hugo_Herbelin_32_lemma_999 _ v _ _ k).
 -rewrite (A_all_18 v) in Haa; [ | intros p; apply Hvr ].
  exfalso; apply NQnle_gt in Haa; apply Haa; clear Haa.
@@ -4705,7 +4712,7 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
  +destruct (le_dec (i + p + 1) (nik - 1)) as [H| H]. {
     now apply Nat.nlt_ge in H.
   }
-  subst ni nij nik.
+  subst (*ni*) nij nik.
   apply (pre_Hugo_Herbelin_32_lemma_999 _ v _ _ k); try easy.
   intros l Hl; apply Hbef; flia H Hl.
  +apply Nat.nlt_ge in Hip.
@@ -4737,6 +4744,8 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
    rewrite Hs.
    destruct rad; [ easy | cbn; flia ].
 Qed.
+
+...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
