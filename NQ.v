@@ -2556,6 +2556,22 @@ replace 0%NQ with (0 + 0)%NQ by easy.
 now apply NQadd_le_mono.
 Qed.
 
+Theorem NQeq_add_0 : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
+  (x + y = 0)%NQ ↔ x = 0%NQ ∧ y = 0%NQ.
+Proof.
+intros * Hx Hy.
+split.
+-intros Hxy.
+ split.
+ +apply NQle_antisymm in Hx; [ easy | ].
+  apply (NQadd_le_mono_r _ _ y).
+  now rewrite Hxy.
+ +apply NQle_antisymm in Hy; [ easy | ].
+  apply (NQadd_le_mono_r _ _ x).
+  now rewrite NQadd_comm, Hxy.
+-now intros (H1, H2); subst x y.
+Qed.
+
 Theorem NQintg_sub_nat_l_lt : ∀ n x,
   (0 < x ≤ n // 1)%NQ
   → NQintg (n // 1 - x)%NQ < n.
