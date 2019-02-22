@@ -4712,10 +4712,13 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
   rewrite (A_9_8_all_18 p v) in Haa; [ | easy | easy | easy ].
   destruct (le_dec (i + p + 1) (nik - 1)) as [H| H]; [ | easy ].
   clear H.
-...
   rewrite NQadd_comm, <- NQadd_sub_swap in Haa.
-  apply NQlt_sub_lt_add_r in Haa.
-  apply NQadd_lt_mono_l in Haa.
+  apply NQlt_sub_lt_add_r, NQadd_lt_mono_l, A_lt_le_pred in Haa.
+  replace (2 - 1) with 1 in Haa by easy.
+  apply A_ge_1_false_iff in Huv.
+  exfalso; apply NQnle_gt in Huv; apply Huv; clear Huv.
+  rewrite <- Hnik.
+...
   destruct p.
   *rewrite Nat.add_0_r in Hwhi, Haft, Hip; clear Hbef.
    destruct (Nat.eq_dec (i + 1) (nik - 1)) as [Hik| Hik].
