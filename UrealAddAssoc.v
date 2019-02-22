@@ -4848,6 +4848,23 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      subst nv nup nuv; clear Hr; move Hm before H1.
      now apply (pre_Hugo_Herbelin_32 u v _ _ k).
  +destruct m; [ clear H2 | flia H2 ].
+  rewrite NQfrac_less_small. 2: {
+    split.
+    -specialize (NQintg_of_frac (A i nuv v) (A_ge_0 _ _ _)) as H2.
+     rewrite Hm in H2; rewrite H2.
+     now apply NQle_sub_l.
+    -eapply NQle_lt_trans; [ apply A_upper_bound_for_add | ].
+     intros k; rewrite <- Nat.add_assoc; apply Hv.
+     rewrite NQmul_sub_distr_l, NQmul_1_r.
+     now apply NQsub_lt.
+  }
+  rewrite NQadd_sub_assoc.
+  destruct (NQlt_le_dec (A i nup u + A i nup (P v))%NQ 1) as [H4| H4].
+  *destruct (NQlt_le_dec (A i nuv u + A i nuv v - 1)%NQ 1)
+      as [H5| H5]; [ easy | ].
+   exfalso.
+   apply NQnlt_ge in H5; apply H5; clear H5.
+   apply NQlt_sub_lt_add_r; replace (1 + 1)%NQ with 2%NQ by easy.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
