@@ -4551,24 +4551,22 @@ Qed.
 Theorem pre_Hugo_Herbelin_32_lemma_999 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, P v (i + k + 1) = rad - 1)
+  → (∀ p, i + p + 1 < min_n i k → v (i + p + 1) = rad - 1)
   → fA_ge_1_ε (u ⊕ P v) i j = false
   → fA_ge_1_ε (u ⊕ v) i k = false
-  → (∀ p, i + p + 1 < min_n i k → v (i + p + 1) = rad - 1)
-  → (A i (min_n i k) u + (1 - 1 // rad ^ (min_n i k - i - 1)) < 1)%NQ
+  → (A i (min_n i k) u + A i (min_n i k) v < 1)%NQ
   → A i (min_n i j) u = 0%NQ.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hu Hpr Hup Huv Hbef Haa.
+intros Hu Hpr Hbef Hup Huv Haa.
 remember (min_n i j) as nij eqn:Hnij.
 remember (min_n i k) as nik eqn:Hnik.
 apply A_ge_1_false_iff in Huv.
 rewrite <- Hnik in Huv.
 rewrite A_additive in Huv.
-rewrite (A_all_9 v) in Huv. 2: {
-  intros q Hq.
-  now apply Hbef.
-}
+rewrite (A_all_9 v) in Huv; [ | easy ].
+rewrite (A_all_9 v) in Haa; [ | easy ].
 rewrite NQadd_comm in Haa.
 apply NQlt_add_lt_sub_l in Haa.
 rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in Haa.
@@ -4683,8 +4681,7 @@ assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
 }
 specialize (Hvr H Hvt); clear H.
 destruct Hvr as [Hvr| [Hvr| Hvr]].
--rewrite (A_all_9 v) in Haa; [ | intros p Hp; apply Hvr ].
- subst ni nij nik.
+-subst ni nij nik.
  now apply (pre_Hugo_Herbelin_32_lemma_999 _ v _ _ k).
 -rewrite (A_all_18 v) in Haa; [ | intros p; apply Hvr ].
  exfalso; apply NQnle_gt in Haa; apply Haa; clear Haa.
@@ -4705,17 +4702,12 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
   now apply Nat_pow_ge_1.
 -destruct Hvr as (p & Hbef & Hwhi & Haft).
  destruct (lt_dec (nik - 1) (i + p + 1)) as [Hip| Hip].
- +rewrite (A_9_8_all_18 p v) in Haa; [ | easy | easy | easy ].
-  destruct (le_dec (i + p + 1) (nik - 1)) as [H| H]. {
+ +destruct (le_dec (i + p + 1) (nik - 1)) as [H| H]. {
     now apply Nat.nlt_ge in H.
   }
   subst ni nij nik.
   apply (pre_Hugo_Herbelin_32_lemma_999 _ v _ _ k); try easy.
   intros l Hl; apply Hbef; flia H Hl.
-(*
-  Haa : (A i nik u + A i nik v < 1)%NQ
-*)
-...
  +apply Nat.nlt_ge in Hip.
 ...
 
