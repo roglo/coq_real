@@ -4704,6 +4704,38 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
      now apply Nat.nlt_ge in H.
    }
    clear H.
+subst ni nij nik.
+Theorem glop {r : radix} : ∀ u v i j k p,
+  (∀ k, u (i + k) ≤ rad - 1)
+  → (∀ k, v (i + k) ≤ 2 * (rad - 1))
+  → (∀ k, fA_ge_1_ε v i k = true)
+  → (∀ k, k < j → fA_ge_1_ε (u ⊕ P v) i k = true)
+  → fA_ge_1_ε (u ⊕ P v) i j = false
+  → (∀ j, j < k → fA_ge_1_ε (u ⊕ v) i j = true)
+  → (NQfrac (A i (min_n i k) u + (1 - 1 // rad ^ (min_n i k - i - 1))) <
+       1 - 1 // rad ^ S k)%NQ
+  → NQintg (A i (min_n i 0) v) ≤ 1
+  → (A i (min_n i k) u + (1 - 1 // rad ^ (min_n i k - i - 1)) < 1)%NQ
+  → (∀ k, P v (i + k + 1) = rad - 1)
+  → (∀ k, (NQfrac (A i (min_n i k) v) ≥ 1 - 1 // rad ^ S k)%NQ)
+  → (∀ k, k < p → v (i + k + 1) = rad - 1)
+  → v (i + p + 1) = rad - 2
+  → (∀ k, v (i + p + k + 2) = 2 * (rad - 1))
+  → min_n i k - 1 < i + p + 1
+  → A i (min_n i j) u = 0%NQ.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hu Hv Hvt Hjj Hup Hjk Huv Hia0 Haa Hpr Avt Hbef Hwhi Haft Hip.
+remember (min_n i 0) as ni eqn:Hni.
+remember (min_n i j) as nij eqn:Hnij.
+remember (min_n i k) as nik eqn:Hnik.
+clear - Hnij Hnik Haa Hup Hpr Hu Huv.
+subst nij nik.
+...
+specialize radix_ge_2 as Hr.
+remember (min_n i j) as nij eqn:Hnij.
+remember (min_n i k) as nik eqn:Hnik.
  rewrite NQadd_comm in Haa.
  apply NQlt_add_lt_sub_l in Haa.
  rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in Haa.
@@ -4711,7 +4743,6 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
  rewrite Nat.sub_diag in Haa.
  apply NQle_antisymm in Haa; [ | easy ].
  symmetry in Haa; remember A as f; cbn in Haa; subst f.
- clear Hiak.
  destruct (le_dec j k) as [Hljk| Hljk].
  *rewrite Hnik in Haa; replace k with (j + (k - j)) in Haa by flia Hljk.
   rewrite min_n_add, <- Hnij in Haa.
@@ -4725,9 +4756,6 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
   rewrite Haa, NQadd_0_l.
   apply B_ge_0.
  *apply Nat.nle_gt in Hljk.
-(*
-  move Hvr before Hpr.
-*)
   apply A_ge_1_false_iff in Hup.
   move Hup at bottom.
   rewrite <- Hnij in Hup.
@@ -4792,6 +4820,10 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
    apply Nat.pow_le_mono_r; [ easy | ].
    rewrite Hsk, Hnik; unfold min_n.
    destruct rad; [ easy | cbn; flia ].
+Qed.
+...
+apply glop.
+...
  +apply Nat.nlt_ge in Hip.
 ...
 
