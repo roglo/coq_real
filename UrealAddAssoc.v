@@ -4709,16 +4709,23 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
   apply (pre_Hugo_Herbelin_32_lemma_999 _ v _ _ k); try easy.
   intros l Hl; apply Hbef; flia H Hl.
  +apply Nat.nlt_ge in Hip.
-  rewrite (A_9_8_all_18 p v) in Haa; [ | easy | easy | easy ].
-  destruct (le_dec (i + p + 1) (nik - 1)) as [H| H]; [ | easy ].
-  clear H.
+  apply A_ge_1_false_iff in Huv.
+  rewrite <- Hnik in Huv.
+  rewrite NQfrac_small in Huv. 2: {
+    split; [ easy | now rewrite A_additive ].
+  }
+  rewrite A_additive in Huv.
+  clear Haa.
+  apply A_ge_1_false_iff in Hup.
+  rewrite <- Hnij in Hup.
+...
+  rewrite NQadd_comm, <- NQadd_sub_swap.
+  apply NQlt_sub_lt_add_r, NQadd_lt_mono_l.
+  apply NQlt_add_lt_sub_l.
   rewrite NQadd_comm, <- NQadd_sub_swap in Haa.
   apply NQlt_sub_lt_add_r, NQadd_lt_mono_l, A_lt_le_pred in Haa.
   replace (2 - 1) with 1 in Haa by easy.
-  apply A_ge_1_false_iff in Huv.
-  rewrite <- Hnik in Huv.
-  apply A_ge_1_false_iff in Hup.
-  rewrite <- Hnij in Hup.
+...
 ...
   exfalso; apply NQnle_gt in Huv; apply Huv; clear Huv.
 ...
