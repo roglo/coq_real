@@ -4961,6 +4961,19 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
        apply Nat.mul_le_mono; [ | flia Hr ].
        now apply Nat_pow_ge_1.
    ++destruct H2 as (k & Hjk & Hk); subst kup; move k before j.
+...
+     destruct j.
+    **rewrite <- Hnv in Hnuv; subst nuv.
+      rewrite H1, NQadd_0_l.
+      eapply NQle_lt_trans.
+    ---apply A_upper_bound_for_add.
+       intros p; rewrite <- Nat.add_assoc; apply Hv.
+    ---rewrite NQmul_sub_distr_l, NQmul_1_r.
+       now apply NQsub_lt.
+    **specialize (Hjj j (Nat.lt_succ_diag_r _)) as H2.
+      apply A_ge_1_true_iff in H2.
+      rewrite <- Hnv in H2.
+...
      specialize (A_ge_1_add_all_true_if v i) as Hvv.
      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
        intros; rewrite <- Nat.add_assoc; apply Hv.
@@ -4972,6 +4985,10 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       apply NQlt_sub_lt_add_l, NQlt_add_lt_sub_r.
       rewrite <- NQadd_sub_assoc.
       replace (2 - 1)%NQ with 1%NQ by easy.
+      eapply NQlt_le_trans; [ | now apply NQle_add_l ].
+      apply A_upper_bound_for_dig.
+      intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+    **idtac.
 ...
      apply A_ge_1_false_iff in Hk.
      rewrite A_additive, <- Hnup in Hk.
@@ -5024,8 +5041,8 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     }
     rewrite NQadd_sub_assoc in Hj.
     destruct (NQlt_le_dec (A i nuv u + A i nuv v - 1)%NQ 1) as [Huv| Huv].
-   ++now apply NQlt_sub_lt_add_r in Huv.
-   ++idtac.
+  ---now apply NQlt_sub_lt_add_r in Huv.
+  ---idtac.
 ...
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
    ++subst kup; rewrite <- Hnv in Hnup; subst nup.
