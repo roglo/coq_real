@@ -4961,6 +4961,18 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
        apply Nat.mul_le_mono; [ | flia Hr ].
        now apply Nat_pow_ge_1.
    ++destruct H2 as (k & Hjk & Hk); subst kup; move k before j.
+     specialize (A_ge_1_add_all_true_if v i) as Hvv.
+     assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+       intros; rewrite <- Nat.add_assoc; apply Hv.
+     }
+     specialize (Hvv H H3); clear H.
+     destruct Hvv as [Hvv| [Hvv| Hvv]].
+    **rewrite (A_all_9 v); [ | easy ].
+      rewrite NQadd_sub_assoc.
+      apply NQlt_sub_lt_add_l, NQlt_add_lt_sub_r.
+      rewrite <- NQadd_sub_assoc.
+      replace (2 - 1)%NQ with 1%NQ by easy.
+...
      apply A_ge_1_false_iff in Hk.
      rewrite A_additive, <- Hnup in Hk.
      rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
