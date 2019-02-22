@@ -4966,6 +4966,7 @@ replace j with (0 + j) at 1 by easy.
 rewrite min_n_add, <- Hnv.
 rewrite <- ApB_A.
 rewrite H1, NQadd_0_l.
+Check B_upper_bound_for_many_add.
 ...
      destruct j.
     **rewrite <- Hnv in Hnuv; subst nuv.
