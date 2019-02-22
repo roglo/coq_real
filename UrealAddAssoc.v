@@ -4689,6 +4689,8 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
  apply A_ge_1_false_iff in Hup.
  rewrite <- Hnij, A_additive in Hup.
  rewrite (A_all_9 (P v)) in Hup; [ | easy ].
+(* si nij < i+p+1, voir si on peut pas regrouper le cas 999... avec ce
+   cas (9998/18/18...) *)
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
