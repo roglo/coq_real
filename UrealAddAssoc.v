@@ -4961,6 +4961,11 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
        apply Nat.mul_le_mono; [ | flia Hr ].
        now apply Nat_pow_ge_1.
    ++destruct H2 as (k & Hjk & Hk); subst kup; move k before j.
+rewrite Hnuv at 1.
+replace j with (0 + j) at 1 by easy.
+rewrite min_n_add, <- Hnv.
+rewrite <- ApB_A.
+rewrite H1, NQadd_0_l.
 ...
      destruct j.
     **rewrite <- Hnv in Hnuv; subst nuv.
