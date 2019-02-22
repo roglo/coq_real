@@ -4961,6 +4961,35 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
        apply Nat.mul_le_mono; [ | flia Hr ].
        now apply Nat_pow_ge_1.
    ++destruct H2 as (k & Hjk & Hk); subst kup; move k before j.
+     apply A_ge_1_false_iff in Hk.
+     rewrite A_additive, <- Hnup in Hk.
+     rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
+     rewrite NQfrac_small in Hk. 2: {
+       split; [ easy | ].
+       apply A_upper_bound_for_dig.
+       intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+     }
+     rewrite NQfrac_small in Hk. 2: {
+       split; [ easy | ].
+       apply A_upper_bound_for_dig.
+       intros p Hp; replace p with (i + (p - i - 1) + 1) by flia Hp.
+       now rewrite Hap.
+     }
+     destruct (NQlt_le_dec (A i nup u + A i nup (P v))%NQ 1) as [Hup| Hup].
+    **rewrite NQsub_0_r in Hk; clear Hup.
+      exfalso; apply NQnle_gt in Hk; apply Hk; clear Hk.
+      rewrite (A_all_9 (P v)); [ | easy ].
+      rewrite NQadd_comm.
+      rewrite <- NQsub_sub_distr.
+      apply NQsub_le_mono; [ apply NQle_refl | ].
+      apply NQle_sub_le_add_l.
+      eapply NQle_trans; [ | now apply NQle_add_l ].
+      apply NQle_pair; [ pauto | pauto | ].
+      rewrite Nat.mul_1_l, Nat.mul_1_r.
+      apply Nat.pow_le_mono_r; [ easy | ].
+      rewrite Hnup; unfold min_n.
+      destruct rad; [ easy | cbn; flia ].
+    **idtac.
 ...
     apply A_ge_1_false_iff in Hj.
     rewrite A_additive, <- Hnuv in Hj.
