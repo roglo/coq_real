@@ -4716,8 +4716,11 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
   apply NQlt_sub_lt_add_r, NQadd_lt_mono_l, A_lt_le_pred in Haa.
   replace (2 - 1) with 1 in Haa by easy.
   apply A_ge_1_false_iff in Huv.
+  rewrite <- Hnik in Huv.
+  apply A_ge_1_false_iff in Hup.
+  rewrite <- Hnij in Hup.
+...
   exfalso; apply NQnle_gt in Huv; apply Huv; clear Huv.
-  rewrite <- Hnik.
 ...
   destruct p.
   *rewrite Nat.add_0_r in Hwhi, Haft, Hip; clear Hbef.
