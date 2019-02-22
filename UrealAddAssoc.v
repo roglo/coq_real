@@ -4547,18 +4547,19 @@ destruct H4 as [H4| [H4| H4]].
     apply Nat.mul_le_mono; [ flia Hr | ].
     now apply Nat_pow_ge_1.
 Qed.
-Theorem glop {r : radix} : ∀ u v i j k,
+
+Theorem pre_Hugo_Herbelin_32_lemma_999 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
+  → (∀ k, P v (i + k + 1) = rad - 1)
   → fA_ge_1_ε (u ⊕ P v) i j = false
   → (A i (min_n i k) u + (1 - 1 // rad ^ (min_n i k - i - 1)) < 1)%NQ
   → (NQfrac (A i (min_n i k) u + (1 - 1 // rad ^ (min_n i k - i - 1))) <
          1 - 1 // rad ^ S k)%NQ
-  → (∀ k, P v (i + k + 1) = rad - 1)
   → A i (min_n i j) u = 0%NQ.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hu Hup Haa Huv Hpr.
+intros Hu Hpr Hup Haa Huv.
 remember (min_n i j) as nij eqn:Hnij.
 remember (min_n i k) as nik eqn:Hnik.
  rewrite NQadd_comm in Haa.
@@ -4682,7 +4683,7 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
  rewrite A_additive in Huv.
  rewrite (A_all_9 v) in Huv; [ | easy ].
  subst ni nij nik.
- now apply (glop _ v _ _ k).
+ now apply (pre_Hugo_Herbelin_32_lemma_999 _ v _ _ k).
 -rewrite (A_all_18 v) in Haa; [ | intros p; apply Hvr ].
  exfalso; apply NQnle_gt in Haa; apply Haa; clear Haa.
  rewrite NQadd_comm, <- NQadd_sub_swap.
@@ -4711,7 +4712,7 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
      now apply Nat.nlt_ge in H.
    }
    subst ni nij nik.
-   now apply (glop _ v _ _ k).
+   now apply (pre_Hugo_Herbelin_32_lemma_999 _ v _ _ k).
  +apply Nat.nlt_ge in Hip.
 ...
 
