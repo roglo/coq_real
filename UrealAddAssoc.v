@@ -4710,59 +4710,33 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
   intros l Hl; apply Hbef; flia H Hl.
  +apply Nat.nlt_ge in Hip.
   apply A_ge_1_false_iff in Huv.
-  rewrite <- Hnik in Huv.
-  rewrite NQfrac_small in Huv. 2: {
+  exfalso; apply NQnle_gt in Huv; apply Huv; clear Huv.
+  rewrite <- Hnik.
+  rewrite NQfrac_small. 2: {
     split; [ easy | now rewrite A_additive ].
   }
-  rewrite A_additive in Huv.
-  clear Haa.
-  apply A_ge_1_false_iff in Hup.
-  rewrite <- Hnij in Hup.
-...
-  rewrite NQadd_comm, <- NQadd_sub_swap.
-  apply NQlt_sub_lt_add_r, NQadd_lt_mono_l.
-  apply NQlt_add_lt_sub_l.
-  rewrite NQadd_comm, <- NQadd_sub_swap in Haa.
-  apply NQlt_sub_lt_add_r, NQadd_lt_mono_l, A_lt_le_pred in Haa.
-  replace (2 - 1) with 1 in Haa by easy.
-...
-...
-  exfalso; apply NQnle_gt in Huv; apply Huv; clear Huv.
-...
-  destruct p.
-  *rewrite Nat.add_0_r in Hwhi, Haft, Hip; clear Hbef.
-   destruct (Nat.eq_dec (i + 1) (nik - 1)) as [Hik| Hik].
-  --unfold A in Haa; rewrite Hik in Haa.
-   rewrite summation_only_one in Haa.
-...
-  exfalso; apply NQnle_gt in Haa; apply Haa; clear Haa.
-  apply NQle_add_le_sub_l.
-  apply NQadd_le_mono_l.
-  destruct p.
-  *rewrite Nat.add_0_r in Hwhi, Hip.
-   rewrite A_split_last; [ | easy ].
-
-
-  rewrite A_split_first; [ | flia Hip ].
-  rewrite <- (Nat.add_1_r i).
-  eapply NQle_trans; [ | apply NQle_add_r ]. 2: {
-    replace 0%NQ with (0 * 1 // rad)%NQ by easy.
-    now apply NQmul_le_mono_pos_r.
-  }
+  rewrite A_additive.
+  rewrite (A_9_8_all_18 p v); [ | easy | easy | easy ].
+  destruct (le_dec (i + p + 1) (nik - 1)) as [H| H]; [ clear H | easy ].
+  rewrite NQadd_sub_assoc.
+  apply NQle_sub_le_add_r.
+  rewrite <- NQadd_sub_assoc.
+  rewrite <- NQadd_assoc, NQadd_comm.
+  rewrite <- NQadd_assoc, <- NQadd_sub_swap.
+  apply NQle_add_le_sub_l, NQadd_le_mono_l.
+  eapply NQle_trans; [ | now apply NQle_add_r ].
   apply NQle_pair; [ pauto | pauto | ].
   remember (nik - i - 1) as s eqn:Hs.
-...
   rewrite Hnik in Hs; unfold min_n in Hs.
   destruct s.
   *destruct rad; [ easy | cbn in Hs; flia Hs ].
-  *rewrite Nat.pow_succ_r', <- Nat.mul_assoc, Nat.mul_comm.
-   apply Nat.mul_le_mono_l.
-   replace 2 with (2 * 1) by easy.
-...
-  apply Nat.mul_le_mono; [ easy | ].
-  now apply Nat_pow_ge_1.
--destruct Hvr as (p & Hbef & Hwhi & Haft).
-...
+  *rewrite (Nat.pow_succ_r' _ s), Nat.mul_1_r.
+   apply Nat.mul_le_mono; [ easy | ].
+   apply Nat.pow_le_mono_r; [ easy | ].
+   apply Nat.succ_le_mono.
+   rewrite Hs.
+   destruct rad; [ easy | cbn; flia ].
+Qed.
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
@@ -4876,8 +4850,8 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    ++destruct H6 as (k & Hjk & Hk); subst kuv.
      move j before i; move k before j.
      subst nv nup nuv; clear Hr; move Hm before H1.
-...
      now apply (pre_Hugo_Herbelin_32 u v _ _ k).
+ +destruct m; [ clear H2 | flia H2 ].
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
