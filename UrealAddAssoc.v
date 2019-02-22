@@ -4886,6 +4886,49 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    ++rewrite NQmul_sub_distr_l, NQmul_1_r.
      now apply NQsub_lt.
   --destruct H6 as (j & Hjj & Hj); subst kuv; move j before i.
+    destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
+   ++subst kup; rewrite <- Hnv in Hnup; subst nup; clear H4.
+     specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as Hup.
+     specialize (Hup j) as H4; rewrite <- Hnuv in H4.
+     rewrite A_additive in H4.
+     rewrite (A_all_9 (P v)) in H4; [ | easy ].
+     remember (nuv - i - 1) as s eqn:Hs.
+     rewrite NQfrac_add_cond in H4; [ | easy | ]. 2: {
+       apply NQle_add_le_sub_r.
+       rewrite NQadd_0_r.
+       apply NQle_pair; [ pauto | easy | ].
+       now apply Nat.mul_le_mono_r, Nat_pow_ge_1.
+     }
+     rewrite NQfrac_small in H4. 2: {
+       split; [ easy | ].
+       apply A_upper_bound_for_dig.
+       intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
+     }
+     rewrite NQfrac_small in H4. 2: {
+       split.
+       -apply NQle_add_le_sub_r.
+        rewrite NQadd_0_r.
+        apply NQle_pair; [ pauto | easy | ].
+        now apply Nat.mul_le_mono_r, Nat_pow_ge_1.
+       -now apply NQsub_lt.
+     }
+     rewrite NQadd_sub_assoc in H4.
+     destruct (NQlt_le_dec (A i nuv u + 1 - 1 // rad ^ s)%NQ 1) as [Har| Har].
+    **apply NQlt_sub_lt_add_l, NQadd_lt_mono_r in Har.
+      rewrite Hs in Har.
+      apply A_lt_le_pred in Har.
+      apply NQle_antisymm in Har; [ | easy ].
+      rewrite <- Har, NQadd_0_l.
+      eapply NQle_lt_trans.
+    ---apply A_upper_bound_for_add.
+       intros k; rewrite <- Nat.add_assoc; apply Hv.
+    ---rewrite NQmul_sub_distr_l, NQmul_1_r.
+       now apply NQsub_lt.
+    **idtac.
+(* mmm... chais pas... faut peut-être faire plutôt les cas
+   P(v)=999...⇒v=999 ou 1818 etc. *)
+...
+    (* brings nothing *)
     apply A_ge_1_false_iff in Hj.
     rewrite A_additive, <- Hnuv in Hj.
     rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
