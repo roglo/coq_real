@@ -4888,6 +4888,27 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   --destruct H6 as (j & Hjj & Hj); subst kuv; move j before i.
     apply A_ge_1_false_iff in Hj.
     rewrite A_additive, <- Hnuv in Hj.
+    rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
+    rewrite NQfrac_small in Hj. 2: {
+      split; [ easy | ].
+      apply A_upper_bound_for_dig.
+      intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+    }
+    rewrite NQfrac_less_small in Hj. 2: {
+      split.
+      -specialize (NQintg_of_frac (A i nuv v) (A_ge_0 _ _ _)) as H.
+       rewrite Hm in H; rewrite H.
+       now apply NQle_sub_l.
+      -eapply NQle_lt_trans.
+       +apply A_upper_bound_for_add.
+        intros p; rewrite <- Nat.add_assoc; apply Hv.
+       +rewrite NQmul_sub_distr_l, NQmul_1_r.
+        now apply NQsub_lt.
+    }
+    rewrite NQadd_sub_assoc in Hj.
+    destruct (NQlt_le_dec (A i nuv u + A i nuv v - 1)%NQ 1) as [Huv| Huv].
+   ++now apply NQlt_sub_lt_add_r in Huv.
+   ++idtac.
 ...
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
    ++subst kup; rewrite <- Hnv in Hnup; subst nup.
