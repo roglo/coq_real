@@ -4696,10 +4696,14 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
 (**)
  destruct (lt_dec (nik - 1) (i + p + 1)) as [Hip| Hip].
  +rewrite (A_9_8_all_18 p v) in Haa; [ | easy | easy | easy ].
-  destruct (le_dec (i + p + 1) (nik - 1)) as [H| H]. {
-    now apply Nat.nlt_ge in H.
-  }
-  clear H.
+   apply A_ge_1_false_iff in Huv.
+   rewrite <- Hnik in Huv.
+   rewrite A_additive in Huv.
+   rewrite (A_9_8_all_18 p v) in Huv; [ | easy | easy | easy ].
+   destruct (le_dec (i + p + 1) (nik - 1)) as [H| H]. {
+     now apply Nat.nlt_ge in H.
+   }
+   clear H.
  rewrite NQadd_comm in Haa.
  apply NQlt_add_lt_sub_l in Haa.
  rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in Haa.
@@ -4767,15 +4771,7 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
    apply NQle_add_le_sub_r in Har.
    apply NQadd_le_mono_r in Har.
    move Huv at bottom.
-   apply A_ge_1_false_iff in Huv.
-   rewrite <- Hnik in Huv.
-   rewrite A_additive in Huv.
    rewrite Haa, NQadd_0_l in Huv.
-   rewrite (A_9_8_all_18 p v) in Huv; [ | easy | easy | easy ].
-   destruct (le_dec (i + p + 1) (nik - 1)) as [H| H]. {
-     now apply Nat.nlt_ge in H.
-   }
-   clear H.
    remember (nik - i - 1) as sk eqn:Hsk.
    assert (Hrv : (0 ≤ 1 - 1 // rad ^ sk)%NQ). {
      rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
