@@ -5047,6 +5047,23 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
        eapply NQlt_le_trans; [ apply Hj | ].
        now apply NQle_sub_l.
     ---idtac.
+rewrite B_of_A.
+specialize (A_upper_bound_for_dig u (nik - 1) (nik + rad * (j - k))) as Huu.
+assert (H : ∀ k0,
+           nik - 1 + 1 ≤ k0 ≤ nik + rad * (j - k) - 1 → u k0 ≤ rad - 1). {
+  intros p Hp.
+  admit.
+}
+specialize (Huu H); clear H.
+(* 1/r^(nik-i-1) est peut-être vachement petit, plus petit que 1/r^(j+1),
+   ce qui ferait notre affaire ; mais si j est très très grand, ça fout
+   la merde ; à moins que ça ne contredise Hm ? *)
+Search (NQintg _ = 1).
+...
+Check A_upper_bound_for_adds.
+Check B_upper_bound_for_many_add.
+Search (B _ _ _ _).
+unfold B.
 ...
      destruct j.
     **rewrite <- Hnv in Hnuv; subst nuv.
