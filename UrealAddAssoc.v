@@ -5058,7 +5058,6 @@ specialize (Huu H); clear H.
 (* 1/r^(nik-i-1) est peut-être vachement petit, plus petit que 1/r^(j+1),
    ce qui ferait notre affaire ; mais si j est très très grand, ça fout
    la merde ; à moins que ça ne contredise Hm ? *)
-Search (NQintg _ = 1).
 ...
 Check A_upper_bound_for_adds.
 Check B_upper_bound_for_many_add.
