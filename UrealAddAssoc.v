@@ -4996,11 +4996,21 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       }
       rewrite H4, NQadd_0_l.
       rewrite Hnv, <- min_n_add, Nat.add_0_l, <- Hnup.
-...
-destruct (lt_dec j k) as [Hljk| Hljk].
-specialize (Hjk _ Hljk) as H2.
-apply A_ge_1_true_iff in H2.
-rewrite <- Hnuv in H2.
+      specialize (Hjj _ Hljk) as H2.
+      apply A_ge_1_true_iff in H2.
+      apply A_ge_1_false_iff in Hj.
+      rewrite <- Hnup in H2.
+      rewrite <- Hnuv in Hj.
+      move Hj at bottom.
+      rewrite A_additive in H2, Hj.
+      rewrite NQfrac_add_cond in H2, Hj; [ | easy | easy | easy | easy ].
+      assert (H : (∀ n, 0 ≤ A i n u < 1)%NQ). {
+        intros n.
+        split; [ easy | ].
+        apply A_upper_bound_for_dig.
+        intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+      }
+      rewrite NQfrac_small in H2, Hj; [ clear H | easy | easy ].
 ...
      destruct j.
     **rewrite <- Hnv in Hnuv; subst nuv.
