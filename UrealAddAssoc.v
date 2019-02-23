@@ -4963,6 +4963,11 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    ++destruct H2 as (k & Hjk & Hk); subst kup; move k before j.
      clear nup Hnup.
 ...
+destruct (lt_dec j k) as [Hljk| Hljk].
+specialize (Hjk _ Hljk) as H2.
+apply A_ge_1_true_iff in H2.
+rewrite <- Hnuv in H2.
+...
 rewrite Hnuv at 1.
 replace j with (0 + j) at 1 by easy.
 rewrite min_n_add, <- Hnv.
