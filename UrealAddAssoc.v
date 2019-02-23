@@ -4962,26 +4962,46 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
        now apply Nat_pow_ge_1.
    ++destruct H2 as (k & Hjk & Hk); subst kup; move k before j.
      clear nup Hnup.
-(*
+     rewrite Hnuv at 1.
+     replace j with (0 + j) at 1 by easy.
+     rewrite min_n_add, <- Hnv.
+     rewrite <- ApB_A. 2: {
+       rewrite Hnv; unfold min_n.
+       destruct rad; [ easy | cbn; flia ].
+     }
+     rewrite H1, NQadd_0_l.
+     destruct (le_dec j k) as [Hljk| Hljk].
+    **replace k with (j + (k - j)) in H4 by flia Hljk.
+      rewrite Nat.mul_add_distr_l in H4.
+      rewrite B_add_r in H4. 2: {
+        intros H; apply Nat.eq_add_0 in H.
+        destruct H as (H, _).
+        rewrite Hnv in H; unfold min_n in H.
+        destruct rad; [ easy | cbn in H; flia H ].
+      }
+      apply NQeq_add_0 in H4; [ | apply B_ge_0 | apply B_ge_0 ].
+      destruct H4 as (H4, H5); rewrite H4, NQadd_0_l.
+      eapply NQle_lt_trans.
+    ---apply A_upper_bound_for_add.
+       intros p; rewrite <- Nat.add_assoc; apply Hv.
+    ---rewrite NQmul_sub_distr_l, NQmul_1_r.
+       now apply NQsub_lt.
+    **apply Nat.nle_gt in Hljk.
+      replace j with (k + (j - k)) by flia Hljk.
+      rewrite Nat.mul_add_distr_l.
+      rewrite B_add_r. 2: {
+        intros H; apply Nat.eq_add_0 in H.
+        destruct H as (H, _).
+        rewrite Hnv in H; unfold min_n in H.
+        destruct rad; [ easy | cbn in H; flia H ].
+      }
+      rewrite H4, NQadd_0_l.
+      rewrite Hnv, <- min_n_add, Nat.add_0_l.
 ...
 destruct (lt_dec j k) as [Hljk| Hljk].
 specialize (Hjk _ Hljk) as H2.
 apply A_ge_1_true_iff in H2.
 rewrite <- Hnuv in H2.
-...
-*)
-rewrite Hnuv at 1.
-replace j with (0 + j) at 1 by easy.
-rewrite min_n_add, <- Hnv.
-rewrite <- ApB_A.
-rewrite H1, NQadd_0_l.
-destruct (le_dec j k) as [Hljk| Hljk].
-replace k with (j + (k - j)) in H4 by flia Hljk.
-rewrite Nat.mul_add_distr_l in H4.
-...
-rewrite B_add_r in H4.
-apply NQeq_add_0 in H4.
-destruct H4 as (H4, H5); rewrite H4, NQadd_0_l.
 ...
      destruct j.
     **rewrite <- Hnv in Hnuv; subst nuv.
