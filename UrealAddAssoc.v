@@ -4818,6 +4818,209 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ s)%NQ 1) as [Har| Har].
   now apply Nat_pow_ge_1.
 Qed.
 
+Theorem pre_Hugo_Herbelin_42 {r : radix} : ∀ u v i j k,
+  (∀ k : nat, u (i + k) ≤ rad - 1)
+  → (∀ k : nat, v (i + k) ≤ 2 * (rad - 1))
+  → (∀ k : nat, fA_ge_1_ε v i k = true)
+  → (∀ j : nat, j < k → fA_ge_1_ε (u ⊕ P v) i j = true)
+  → fA_ge_1_ε (u ⊕ P v) i k = false
+  → (∀ j0 : nat, j0 < j → fA_ge_1_ε (u ⊕ v) i j0 = true)
+  → fA_ge_1_ε (u ⊕ v) i j = false
+  → NQintg (A i (min_n i j) v) = 1
+  → B i (min_n i 0) u (rad * k) = 0%NQ
+  → A i (min_n i 0) u = 0%NQ
+  → (A i (min_n i j) u + A i (min_n i j) v < 2)%NQ.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hu Hv H3 Hjk Hk Hjj Hj Hm H4 H1.
+remember (min_n i 0) as nv eqn:Hnv.
+remember (min_n i k) as nup eqn:Hnup.
+remember (min_n i j) as nuv eqn:Hnuv.
+specialize (all_fA_ge_1_ε_P_999 v i H3) as Hap.
+rewrite Hnuv at 1.
+replace j with (0 + j) at 1 by easy.
+rewrite min_n_add, <- Hnv.
+rewrite <- ApB_A. 2: {
+  rewrite Hnv; unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
+rewrite H1, NQadd_0_l.
+destruct (le_dec j k) as [Hljk| Hljk].
+-replace k with (j + (k - j)) in H4 by flia Hljk.
+ rewrite Nat.mul_add_distr_l in H4.
+ rewrite B_add_r in H4. 2: {
+   intros H; apply Nat.eq_add_0 in H.
+   destruct H as (H, _).
+   rewrite Hnv in H; unfold min_n in H.
+   destruct rad; [ easy | cbn in H; flia H ].
+ }
+ apply NQeq_add_0 in H4; [ | apply B_ge_0 | apply B_ge_0 ].
+ destruct H4 as (H4, H5); rewrite H4, NQadd_0_l.
+ eapply NQle_lt_trans.
+ +apply A_upper_bound_for_add.
+  intros p; rewrite <- Nat.add_assoc; apply Hv.
+ +rewrite NQmul_sub_distr_l, NQmul_1_r.
+  now apply NQsub_lt.
+-apply Nat.nle_gt in Hljk.
+ replace j with (k + (j - k)) by flia Hljk.
+ rewrite Nat.mul_add_distr_l.
+ rewrite B_add_r. 2: {
+   intros H; apply Nat.eq_add_0 in H.
+   destruct H as (H, _).
+   rewrite Hnv in H; unfold min_n in H.
+   destruct rad; [ easy | cbn in H; flia H ].
+ }
+ rewrite H4, NQadd_0_l.
+ rewrite Hnv, <- min_n_add, Nat.add_0_l, <- Hnup.
+ specialize (Hjj _ Hljk) as H2.
+ apply A_ge_1_true_iff in H2.
+ apply A_ge_1_false_iff in Hj.
+ rewrite <- Hnup in H2.
+ rewrite <- Hnuv in Hj.
+ move Hj at bottom.
+ rewrite A_additive in H2, Hj.
+ rewrite NQfrac_add_cond in H2, Hj; [ | easy | easy | easy | easy ].
+ assert (H : (∀ n, 0 ≤ A i n u < 1)%NQ). {
+   intros n.
+   split; [ easy | ].
+   apply A_upper_bound_for_dig.
+   intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+ }
+ rewrite NQfrac_small in H2, Hj; [ clear H | easy | easy ].
+ rename nup into nik; rename nuv into nij.
+ rename Hnup into Hnik; rename Hnuv into Hnij.
+ rewrite NQfrac_less_small in Hj. 2: {
+   split.
+   -specialize (NQintg_of_frac (A i nij v) (A_ge_0 _ _ _)) as H.
+    rewrite Hm in H; rewrite H.
+    now apply NQle_sub_l.
+   -eapply NQle_lt_trans.
+    +apply A_upper_bound_for_add.
+     intros p; rewrite <- Nat.add_assoc; apply Hv.
+    +rewrite NQmul_sub_distr_l, NQmul_1_r.
+     now apply NQsub_lt.
+ }
+ rewrite NQadd_sub_assoc in Hj.
+ destruct (NQlt_le_dec (A i nij u + A i nij v - 1)%NQ 1) as [Hjuv| Hjuv].
+ +rewrite NQsub_0_r in Hj; clear Hjuv.
+  apply (NQlt_sub_lt_add_l (A i nij u + A i nij v)%NQ) in Hj.
+  rewrite NQadd_sub_assoc in Hj.
+  replace (1 + 1)%NQ with 2%NQ in Hj by easy.
+  rewrite Hnij in Hj at 1.
+  replace j with (k + (j - k)) in Hj at 1 by flia Hljk.
+  rewrite min_n_add in Hj.
+  rewrite <- ApB_A in Hj. 2: {
+    unfold min_n; destruct rad; [ easy | cbn; flia ].
+  }
+  rewrite <- Hnik in Hj.
+  rewrite Hnik in Hj at 1.
+  replace k with (0 + k) in Hj at 1 by easy.
+  rewrite min_n_add in Hj.
+  rewrite <- ApB_A in Hj. 2: {
+    unfold min_n; destruct rad; [ easy | cbn; flia ].
+  }
+  rewrite <- Hnv, H1, H4, NQadd_0_l in Hj.
+  eapply NQlt_le_trans; [ apply Hj | ].
+  now apply NQle_sub_l.
+ +idtac.
+...
+     destruct j.
+    **rewrite <- Hnv in Hnuv; subst nuv.
+      rewrite H1, NQadd_0_l.
+      eapply NQle_lt_trans.
+    ---apply A_upper_bound_for_add.
+       intros p; rewrite <- Nat.add_assoc; apply Hv.
+    ---rewrite NQmul_sub_distr_l, NQmul_1_r.
+       now apply NQsub_lt.
+    **specialize (Hjj j (Nat.lt_succ_diag_r _)) as H2.
+      apply A_ge_1_true_iff in H2.
+      rewrite <- Hnv in H2.
+...
+     specialize (A_ge_1_add_all_true_if v i) as Hvv.
+     assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+       intros; rewrite <- Nat.add_assoc; apply Hv.
+     }
+     specialize (Hvv H H3); clear H.
+     destruct Hvv as [Hvv| [Hvv| Hvv]].
+    **rewrite (A_all_9 v); [ | easy ].
+      rewrite NQadd_sub_assoc.
+      apply NQlt_sub_lt_add_l, NQlt_add_lt_sub_r.
+      rewrite <- NQadd_sub_assoc.
+      replace (2 - 1)%NQ with 1%NQ by easy.
+      eapply NQlt_le_trans; [ | now apply NQle_add_l ].
+      apply A_upper_bound_for_dig.
+      intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+    **idtac.
+...
+     apply A_ge_1_false_iff in Hk.
+     rewrite A_additive, <- Hnup in Hk.
+     rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
+     rewrite NQfrac_small in Hk. 2: {
+       split; [ easy | ].
+       apply A_upper_bound_for_dig.
+       intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+     }
+     rewrite NQfrac_small in Hk. 2: {
+       split; [ easy | ].
+       apply A_upper_bound_for_dig.
+       intros p Hp; replace p with (i + (p - i - 1) + 1) by flia Hp.
+       now rewrite Hap.
+     }
+     destruct (NQlt_le_dec (A i nup u + A i nup (P v))%NQ 1) as [Hup| Hup].
+    **rewrite NQsub_0_r in Hk; clear Hup.
+      exfalso; apply NQnle_gt in Hk; apply Hk; clear Hk.
+      rewrite (A_all_9 (P v)); [ | easy ].
+      rewrite NQadd_comm.
+      rewrite <- NQsub_sub_distr.
+      apply NQsub_le_mono; [ apply NQle_refl | ].
+      apply NQle_sub_le_add_l.
+      eapply NQle_trans; [ | now apply NQle_add_l ].
+      apply NQle_pair; [ pauto | pauto | ].
+      rewrite Nat.mul_1_l, Nat.mul_1_r.
+      apply Nat.pow_le_mono_r; [ easy | ].
+      rewrite Hnup; unfold min_n.
+      destruct rad; [ easy | cbn; flia ].
+    **idtac.
+...
+    apply A_ge_1_false_iff in Hj.
+    rewrite A_additive, <- Hnuv in Hj.
+    rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
+    rewrite NQfrac_small in Hj. 2: {
+      split; [ easy | ].
+      apply A_upper_bound_for_dig.
+      intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+    }
+    rewrite NQfrac_less_small in Hj. 2: {
+      split.
+      -specialize (NQintg_of_frac (A i nuv v) (A_ge_0 _ _ _)) as H.
+       rewrite Hm in H; rewrite H.
+       now apply NQle_sub_l.
+      -eapply NQle_lt_trans.
+       +apply A_upper_bound_for_add.
+        intros p; rewrite <- Nat.add_assoc; apply Hv.
+       +rewrite NQmul_sub_distr_l, NQmul_1_r.
+        now apply NQsub_lt.
+    }
+    rewrite NQadd_sub_assoc in Hj.
+    destruct (NQlt_le_dec (A i nuv u + A i nuv v - 1)%NQ 1) as [Huv| Huv].
+  ---now apply NQlt_sub_lt_add_r in Huv.
+  ---idtac.
+...
+    destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
+   ++subst kup; rewrite <- Hnv in Hnup; subst nup.
+...
+   ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
+     specialize (all_fA_ge_1_ε_P_999 v i H3) as Hap.
+     rewrite (A_all_9 (P v)) in H4; [ | easy ].
+     rewrite NQadd_comm, <- NQadd_sub_swap in H4.
+     apply NQlt_sub_lt_add_r, NQadd_lt_mono_l in H4.
+     apply A_lt_le_pred in H4.
+     apply NQle_antisymm in H4; [ | easy ].
+     rewrite <- H4, NQadd_0_l.
+     apply NQle_
+...
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -4978,187 +5181,8 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    ++subst kup; rewrite <- Hnv in Hnup; subst nup nv nuv.
      now apply pre_Hugo_Herbelin_41.
    ++destruct H2 as (k & Hjk & Hk); subst kup; move k before j.
-     rewrite Hnuv at 1.
-     replace j with (0 + j) at 1 by easy.
-     rewrite min_n_add, <- Hnv.
-     rewrite <- ApB_A. 2: {
-       rewrite Hnv; unfold min_n.
-       destruct rad; [ easy | cbn; flia ].
-     }
-     rewrite H1, NQadd_0_l.
-     destruct (le_dec j k) as [Hljk| Hljk].
-    **replace k with (j + (k - j)) in H4 by flia Hljk.
-      rewrite Nat.mul_add_distr_l in H4.
-      rewrite B_add_r in H4. 2: {
-        intros H; apply Nat.eq_add_0 in H.
-        destruct H as (H, _).
-        rewrite Hnv in H; unfold min_n in H.
-        destruct rad; [ easy | cbn in H; flia H ].
-      }
-      apply NQeq_add_0 in H4; [ | apply B_ge_0 | apply B_ge_0 ].
-      destruct H4 as (H4, H5); rewrite H4, NQadd_0_l.
-      eapply NQle_lt_trans.
-    ---apply A_upper_bound_for_add.
-       intros p; rewrite <- Nat.add_assoc; apply Hv.
-    ---rewrite NQmul_sub_distr_l, NQmul_1_r.
-       now apply NQsub_lt.
-    **apply Nat.nle_gt in Hljk.
-      replace j with (k + (j - k)) by flia Hljk.
-      rewrite Nat.mul_add_distr_l.
-      rewrite B_add_r. 2: {
-        intros H; apply Nat.eq_add_0 in H.
-        destruct H as (H, _).
-        rewrite Hnv in H; unfold min_n in H.
-        destruct rad; [ easy | cbn in H; flia H ].
-      }
-      rewrite H4, NQadd_0_l.
-      rewrite Hnv, <- min_n_add, Nat.add_0_l, <- Hnup.
-      specialize (Hjj _ Hljk) as H2.
-      apply A_ge_1_true_iff in H2.
-      apply A_ge_1_false_iff in Hj.
-      rewrite <- Hnup in H2.
-      rewrite <- Hnuv in Hj.
-      move Hj at bottom.
-      rewrite A_additive in H2, Hj.
-      rewrite NQfrac_add_cond in H2, Hj; [ | easy | easy | easy | easy ].
-      assert (H : (∀ n, 0 ≤ A i n u < 1)%NQ). {
-        intros n.
-        split; [ easy | ].
-        apply A_upper_bound_for_dig.
-        intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
-      }
-      rewrite NQfrac_small in H2, Hj; [ clear H | easy | easy ].
-      rename nup into nik; rename nuv into nij.
-      rename Hnup into Hnik; rename Hnuv into Hnij.
-      rewrite NQfrac_less_small in Hj. 2: {
-        split.
-        -specialize (NQintg_of_frac (A i nij v) (A_ge_0 _ _ _)) as H.
-         rewrite Hm in H; rewrite H.
-         now apply NQle_sub_l.
-        -eapply NQle_lt_trans.
-         +apply A_upper_bound_for_add.
-          intros p; rewrite <- Nat.add_assoc; apply Hv.
-         +rewrite NQmul_sub_distr_l, NQmul_1_r.
-          now apply NQsub_lt.
-      }
-      rewrite NQadd_sub_assoc in Hj.
-      destruct (NQlt_le_dec (A i nij u + A i nij v - 1)%NQ 1) as [Hjuv| Hjuv].
-    ---rewrite NQsub_0_r in Hj; clear Hjuv.
-       apply (NQlt_sub_lt_add_l (A i nij u + A i nij v)%NQ) in Hj.
-       rewrite NQadd_sub_assoc in Hj.
-       replace (1 + 1)%NQ with 2%NQ in Hj by easy.
-       rewrite Hnij in Hj at 1.
-       replace j with (k + (j - k)) in Hj at 1 by flia Hljk.
-       rewrite min_n_add in Hj.
-       rewrite <- ApB_A in Hj. 2: {
-         unfold min_n; destruct rad; [ easy | cbn; flia ].
-       }
-       rewrite <- Hnik in Hj.
-       rewrite Hnik in Hj at 1.
-       replace k with (0 + k) in Hj at 1 by easy.
-       rewrite min_n_add in Hj.
-       rewrite <- ApB_A in Hj. 2: {
-         unfold min_n; destruct rad; [ easy | cbn; flia ].
-       }
-       rewrite <- Hnv, H1, H4, NQadd_0_l in Hj.
-       eapply NQlt_le_trans; [ apply Hj | ].
-       now apply NQle_sub_l.
-    ---idtac.
 ...
-     destruct j.
-    **rewrite <- Hnv in Hnuv; subst nuv.
-      rewrite H1, NQadd_0_l.
-      eapply NQle_lt_trans.
-    ---apply A_upper_bound_for_add.
-       intros p; rewrite <- Nat.add_assoc; apply Hv.
-    ---rewrite NQmul_sub_distr_l, NQmul_1_r.
-       now apply NQsub_lt.
-    **specialize (Hjj j (Nat.lt_succ_diag_r _)) as H2.
-      apply A_ge_1_true_iff in H2.
-      rewrite <- Hnv in H2.
-...
-     specialize (A_ge_1_add_all_true_if v i) as Hvv.
-     assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
-       intros; rewrite <- Nat.add_assoc; apply Hv.
-     }
-     specialize (Hvv H H3); clear H.
-     destruct Hvv as [Hvv| [Hvv| Hvv]].
-    **rewrite (A_all_9 v); [ | easy ].
-      rewrite NQadd_sub_assoc.
-      apply NQlt_sub_lt_add_l, NQlt_add_lt_sub_r.
-      rewrite <- NQadd_sub_assoc.
-      replace (2 - 1)%NQ with 1%NQ by easy.
-      eapply NQlt_le_trans; [ | now apply NQle_add_l ].
-      apply A_upper_bound_for_dig.
-      intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
-    **idtac.
-...
-     apply A_ge_1_false_iff in Hk.
-     rewrite A_additive, <- Hnup in Hk.
-     rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
-     rewrite NQfrac_small in Hk. 2: {
-       split; [ easy | ].
-       apply A_upper_bound_for_dig.
-       intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
-     }
-     rewrite NQfrac_small in Hk. 2: {
-       split; [ easy | ].
-       apply A_upper_bound_for_dig.
-       intros p Hp; replace p with (i + (p - i - 1) + 1) by flia Hp.
-       now rewrite Hap.
-     }
-     destruct (NQlt_le_dec (A i nup u + A i nup (P v))%NQ 1) as [Hup| Hup].
-    **rewrite NQsub_0_r in Hk; clear Hup.
-      exfalso; apply NQnle_gt in Hk; apply Hk; clear Hk.
-      rewrite (A_all_9 (P v)); [ | easy ].
-      rewrite NQadd_comm.
-      rewrite <- NQsub_sub_distr.
-      apply NQsub_le_mono; [ apply NQle_refl | ].
-      apply NQle_sub_le_add_l.
-      eapply NQle_trans; [ | now apply NQle_add_l ].
-      apply NQle_pair; [ pauto | pauto | ].
-      rewrite Nat.mul_1_l, Nat.mul_1_r.
-      apply Nat.pow_le_mono_r; [ easy | ].
-      rewrite Hnup; unfold min_n.
-      destruct rad; [ easy | cbn; flia ].
-    **idtac.
-...
-    apply A_ge_1_false_iff in Hj.
-    rewrite A_additive, <- Hnuv in Hj.
-    rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
-    rewrite NQfrac_small in Hj. 2: {
-      split; [ easy | ].
-      apply A_upper_bound_for_dig.
-      intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
-    }
-    rewrite NQfrac_less_small in Hj. 2: {
-      split.
-      -specialize (NQintg_of_frac (A i nuv v) (A_ge_0 _ _ _)) as H.
-       rewrite Hm in H; rewrite H.
-       now apply NQle_sub_l.
-      -eapply NQle_lt_trans.
-       +apply A_upper_bound_for_add.
-        intros p; rewrite <- Nat.add_assoc; apply Hv.
-       +rewrite NQmul_sub_distr_l, NQmul_1_r.
-        now apply NQsub_lt.
-    }
-    rewrite NQadd_sub_assoc in Hj.
-    destruct (NQlt_le_dec (A i nuv u + A i nuv v - 1)%NQ 1) as [Huv| Huv].
-  ---now apply NQlt_sub_lt_add_r in Huv.
-  ---idtac.
-...
-    destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
-   ++subst kup; rewrite <- Hnv in Hnup; subst nup.
-...
-   ++subst kuv; rewrite <- Hnv in Hnuv; subst nuv; clear H1.
-     specialize (all_fA_ge_1_ε_P_999 v i H3) as Hap.
-     rewrite (A_all_9 (P v)) in H4; [ | easy ].
-     rewrite NQadd_comm, <- NQadd_sub_swap in H4.
-     apply NQlt_sub_lt_add_r, NQadd_lt_mono_l in H4.
-     apply A_lt_le_pred in H4.
-     apply NQle_antisymm in H4; [ | easy ].
-     rewrite <- H4, NQadd_0_l.
-     apply NQle_
+     now apply pre_Hugo_Herbelin_42.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
