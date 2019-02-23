@@ -4837,6 +4837,8 @@ intros Hu Hv H3 Hjk Hk Hjj Hj Hm H4 H1.
 remember (min_n i 0) as nv eqn:Hnv.
 remember (min_n i k) as nup eqn:Hnup.
 remember (min_n i j) as nuv eqn:Hnuv.
+move nv after nuv; move nup before nuv.
+move Hnv after Hnuv; move Hnup before Hnuv.
 specialize (all_fA_ge_1_ε_P_999 v i H3) as Hap.
 rewrite Hnuv at 1.
 replace j with (0 + j) at 1 by easy.
@@ -4924,6 +4926,7 @@ destruct (le_dec j k) as [Hljk| Hljk].
   eapply NQlt_le_trans; [ apply Hj | ].
   now apply NQle_sub_l.
  +idtac.
+(*
 ...
      destruct j.
     **rewrite <- Hnv in Hnuv; subst nuv.
@@ -4953,8 +4956,9 @@ destruct (le_dec j k) as [Hljk| Hljk].
       intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
     **idtac.
 ...
+*)
      apply A_ge_1_false_iff in Hk.
-     rewrite A_additive, <- Hnup in Hk.
+     rewrite A_additive, <- Hnik in Hk.
      rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
      rewrite NQfrac_small in Hk. 2: {
        split; [ easy | ].
@@ -4967,7 +4971,7 @@ destruct (le_dec j k) as [Hljk| Hljk].
        intros p Hp; replace p with (i + (p - i - 1) + 1) by flia Hp.
        now rewrite Hap.
      }
-     destruct (NQlt_le_dec (A i nup u + A i nup (P v))%NQ 1) as [Hup| Hup].
+     destruct (NQlt_le_dec (A i nik u + A i nik (P v))%NQ 1) as [Hup| Hup].
     **rewrite NQsub_0_r in Hk; clear Hup.
       exfalso; apply NQnle_gt in Hk; apply Hk; clear Hk.
       rewrite (A_all_9 (P v)); [ | easy ].
@@ -4979,9 +4983,10 @@ destruct (le_dec j k) as [Hljk| Hljk].
       apply NQle_pair; [ pauto | pauto | ].
       rewrite Nat.mul_1_l, Nat.mul_1_r.
       apply Nat.pow_le_mono_r; [ easy | ].
-      rewrite Hnup; unfold min_n.
+      rewrite Hnik; unfold min_n.
       destruct rad; [ easy | cbn; flia ].
-    **idtac.
+    **move Hup before Hjuv.
+      move Hk before Hj.
 ...
     apply A_ge_1_false_iff in Hj.
     rewrite A_additive, <- Hnuv in Hj.
@@ -5180,6 +5185,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
    ++subst kup; rewrite <- Hnv in Hnup; subst nup nv nuv.
      now apply pre_Hugo_Herbelin_41.
+...
    ++destruct H2 as (k & Hjk & Hk); subst kup; move k before j.
 ...
      now apply pre_Hugo_Herbelin_42.
