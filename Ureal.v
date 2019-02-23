@@ -1192,6 +1192,18 @@ replace 2 with (2 * 1) by easy.
 now apply Nat.mul_le_mono.
 Qed.
 
+Theorem B_add_r {r : radix} (rg := NQ_ord_ring) : ∀ u i n l m,
+  n + l ≠ 0
+  → B i n u (l + m) = (B i n u l + B i (n + l) u m)%NQ.
+Proof.
+intros * Hnl.
+unfold B.
+rewrite Nat.add_assoc.
+rewrite Nat.add_sub_swap; [ | flia Hnl ].
+rewrite (summation_split _ _ (n + l - 1)); [ | flia ].
+now replace (S (n + l - 1)) with (n + l) by flia Hnl.
+Qed.
+
 Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
   let n := min_n i k in
   let s := n - i - 1 in

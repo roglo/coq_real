@@ -4962,18 +4962,26 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
        now apply Nat_pow_ge_1.
    ++destruct H2 as (k & Hjk & Hk); subst kup; move k before j.
      clear nup Hnup.
+(*
 ...
 destruct (lt_dec j k) as [Hljk| Hljk].
 specialize (Hjk _ Hljk) as H2.
 apply A_ge_1_true_iff in H2.
 rewrite <- Hnuv in H2.
 ...
+*)
 rewrite Hnuv at 1.
 replace j with (0 + j) at 1 by easy.
 rewrite min_n_add, <- Hnv.
 rewrite <- ApB_A.
 rewrite H1, NQadd_0_l.
-Check B_upper_bound_for_many_add.
+destruct (le_dec j k) as [Hljk| Hljk].
+replace k with (j + (k - j)) in H4 by flia Hljk.
+rewrite Nat.mul_add_distr_l in H4.
+...
+rewrite B_add_r in H4.
+apply NQeq_add_0 in H4.
+destruct H4 as (H4, H5); rewrite H4, NQadd_0_l.
 ...
      destruct j.
     **rewrite <- Hnv in Hnuv; subst nuv.
