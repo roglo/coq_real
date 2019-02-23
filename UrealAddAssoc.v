@@ -4323,7 +4323,7 @@ destruct H4 as [H4| [H4| H4]].
      split; [ apply B_ge_0 | ].
      rewrite Hnup.
      eapply NQlt_trans.
-     -apply (B_upper_bound_for_many_add 3).
+     -apply (B_upper_bound_for_adds 3).
       +split; [ pauto | ].
        destruct rad as [| rr]; [ easy | ].
        destruct rr; [ flia Hr | cbn; flia ].
@@ -4394,7 +4394,7 @@ destruct H4 as [H4| [H4| H4]].
      apply NQlt_sub_lt_add_r.
      eapply NQlt_le_trans.
     **rewrite Hnup.
-      apply (B_upper_bound_for_many_add 3).
+      apply (B_upper_bound_for_adds 3).
     ---split; [ pauto | ].
        destruct rad as [| rr]; [ easy | ].
        destruct rr; [ flia Hr | cbn; flia ].
@@ -4504,7 +4504,7 @@ destruct H4 as [H4| [H4| H4]].
    rewrite Nat.sub_diag in H5.
    apply NQle_antisymm in H5; [ | easy ].
    rewrite <- H5, NQadd_0_l.
-   specialize (B_upper_bound_for_many_add 1 u i 0 (rad * j)) as H1.
+   specialize (B_upper_bound_for_adds 1 u i 0 (rad * j)) as H1.
    assert (H : 0 < 1 ≤ rad ^ 2). {
      split; [ pauto | now apply Nat_pow_ge_1 ].
    }
@@ -4937,7 +4937,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       apply NQlt_sub_lt_add_r.
       eapply NQlt_le_trans.
     ---rewrite Hnv.
-       apply (B_upper_bound_for_many_add 1).
+       apply (B_upper_bound_for_adds 1).
      +++split; [ pauto | ].
         rewrite Nat.pow_2_r.
         replace 1 with (1 * 1) by easy.
@@ -5060,7 +5060,7 @@ specialize (Huu H); clear H.
    la merde ; à moins que ça ne contredise Hm ? *)
 ...
 Check A_upper_bound_for_adds.
-Check B_upper_bound_for_many_add.
+Check B_upper_bound_for_adds.
 Search (B _ _ _ _).
 unfold B.
 ...
