@@ -5011,6 +5011,42 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
         intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
       }
       rewrite NQfrac_small in H2, Hj; [ clear H | easy | easy ].
+      rename nup into nik; rename nuv into nij.
+      rename Hnup into Hnik; rename Hnuv into Hnij.
+      rewrite NQfrac_less_small in Hj. 2: {
+        split.
+        -specialize (NQintg_of_frac (A i nij v) (A_ge_0 _ _ _)) as H.
+         rewrite Hm in H; rewrite H.
+         now apply NQle_sub_l.
+        -eapply NQle_lt_trans.
+         +apply A_upper_bound_for_add.
+          intros p; rewrite <- Nat.add_assoc; apply Hv.
+         +rewrite NQmul_sub_distr_l, NQmul_1_r.
+          now apply NQsub_lt.
+      }
+      rewrite NQadd_sub_assoc in Hj.
+      destruct (NQlt_le_dec (A i nij u + A i nij v - 1)%NQ 1) as [Hjuv| Hjuv].
+    ---rewrite NQsub_0_r in Hj; clear Hjuv.
+       apply (NQlt_sub_lt_add_l (A i nij u + A i nij v)%NQ) in Hj.
+       rewrite NQadd_sub_assoc in Hj.
+       replace (1 + 1)%NQ with 2%NQ in Hj by easy.
+       rewrite Hnij in Hj at 1.
+       replace j with (k + (j - k)) in Hj at 1 by flia Hljk.
+       rewrite min_n_add in Hj.
+       rewrite <- ApB_A in Hj. 2: {
+         unfold min_n; destruct rad; [ easy | cbn; flia ].
+       }
+       rewrite <- Hnik in Hj.
+       rewrite Hnik in Hj at 1.
+       replace k with (0 + k) in Hj at 1 by easy.
+       rewrite min_n_add in Hj.
+       rewrite <- ApB_A in Hj. 2: {
+         unfold min_n; destruct rad; [ easy | cbn; flia ].
+       }
+       rewrite <- Hnv, H1, H4, NQadd_0_l in Hj.
+       eapply NQlt_le_trans; [ apply Hj | ].
+       now apply NQle_sub_l.
+    ---idtac.
 ...
      destruct j.
     **rewrite <- Hnv in Hnuv; subst nuv.
