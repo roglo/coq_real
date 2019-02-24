@@ -4824,7 +4824,6 @@ Theorem pre_Hugo_Herbelin_42 {r : radix} : ∀ u v i j k,
   (∀ k : nat, u (i + k) ≤ rad - 1)
   → (∀ k : nat, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k : nat, fA_ge_1_ε v i k = true)
-  → (∀ j : nat, j < k → fA_ge_1_ε (u ⊕ P v) i j = true)
   → fA_ge_1_ε (u ⊕ P v) i k = false
   → (∀ j0 : nat, j0 < j → fA_ge_1_ε (u ⊕ v) i j0 = true)
   → fA_ge_1_ε (u ⊕ v) i j = false
@@ -4835,7 +4834,7 @@ Theorem pre_Hugo_Herbelin_42 {r : radix} : ∀ u v i j k,
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hu Hv H3 Hjk Hk Hjj Hj Hm H4 H1.
+intros Hu Hv H3 Hk Hjj Hj Hm H4 H1.
 remember (min_n i 0) as nv eqn:Hnv.
 remember (min_n i k) as nup eqn:Hnup.
 remember (min_n i j) as nuv eqn:Hnuv.
