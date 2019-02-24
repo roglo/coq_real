@@ -1,4 +1,4 @@
-(* jeu avec les catégories *)
+(* jeu avec les catégories - 1ere version *)
 
 Require Import Utf8.
 
