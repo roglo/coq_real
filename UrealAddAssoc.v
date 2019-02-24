@@ -3811,6 +3811,30 @@ apply Nat.lt_le_pred in Ha.
 now rewrite <- Nat.sub_1_r in Ha.
 Qed.
 
+Theorem A_le_pred_lt {r : radix} : ∀ i n u m,
+  m ≠ 0
+  → i + 1 < n
+  → (A i n u ≤ (m - 1) // rad ^ (n - i - 1))%NQ
+  → (A i n u < m // rad ^ (n - i - 1))%NQ.
+Proof.
+intros * Hm Hin Ha.
+remember (n - i - 1) as s eqn:Hs.
+rewrite A_num_den in Ha |-*.
+unfold den_A in Ha |-*.
+rewrite <- Hs in Ha |-*.
+apply NQle_pair in Ha; [ | pauto | pauto ].
+apply NQlt_pair; [ pauto | pauto | ].
+rewrite Nat.mul_comm in Ha |-*.
+assert (Hsz : 0 < rad ^ s). {
+  destruct s; [ flia Hin Hs | ].
+  now apply Nat_pow_ge_1.
+}
+apply Nat.mul_le_mono_pos_l in Ha; [ | easy ].
+apply Nat.mul_lt_mono_pos_l; [ easy | ].
+eapply Nat.le_lt_trans; [ apply Ha | ].
+apply Nat.sub_lt; [ flia Hm | pauto ].
+Qed.
+
 Theorem pre_Hugo_Herbelin_21 {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -4969,6 +4993,15 @@ specialize radix_ge_2 as Hr.
 intros Hu Hv Hvt Hup Huv Ha1 Haa.
 remember (min_n i 0) as ni eqn:Hni.
 move ni before i.
+specialize (all_fA_ge_1_ε_P_999 v i Hvt) as Hpr.
+rewrite (A_all_9 (P _)); [ | easy ].
+rewrite NQadd_sub_assoc.
+apply NQlt_sub_lt_add_l, NQadd_lt_mono_r.
+apply A_le_pred_lt; [ easy | | ]. {
+  rewrite Hni; unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
+(* ah, pute *)
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
