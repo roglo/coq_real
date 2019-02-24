@@ -5081,8 +5081,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   rewrite NQadd_sub_assoc.
   destruct (NQlt_le_dec (A i nup u + A i nup (P v))%NQ 1) as [H4| H4].
   *destruct (NQlt_le_dec (A i nuv u + A i nuv v - 1)%NQ 1)
-      as [H5| H5]; [ easy | ].
-   exfalso.
+      as [H5| H5]; [ easy | exfalso ].
    apply NQnlt_ge in H5; apply H5; clear H5.
    apply NQlt_sub_lt_add_r; replace (1 + 1)%NQ with 2%NQ by easy.
    specialize (all_fA_ge_1_ε_P_999 v i H3) as Hap.
@@ -5116,7 +5115,8 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    ++destruct H2 as (k & Hjk & Hk); subst kup; move k before j.
      subst nv nup nuv.
      now apply (pre_Hugo_Herbelin_42 _ _ _ _ k).
-  *idtac.
+  *destruct (NQlt_le_dec (A i nuv u + A i nuv v - 1)%NQ 1)
+      as [H5| H5]; [ exfalso | easy ].
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
