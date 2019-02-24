@@ -4839,6 +4839,18 @@ remember (min_n i k) as nup eqn:Hnup.
 remember (min_n i j) as nuv eqn:Hnuv.
 move nv after nuv; move nup before nuv.
 move Hnv after Hnuv; move Hnup before Hnuv.
+(**)
+assert (∀ p, p < k → u (i + p + 1) = 0). {
+  intros p Hp.
+  induction p.
+  -apply A_ge_1_false_iff in Hk.
+   specialize (Hjk _ Hp) as H2.
+   apply A_ge_1_true_iff in H2.
+   rewrite A_additive in H2.
+   rewrite <- Hnv, Nat.pow_1_r in H2.
+   rewrite A_split_first, <- Nat.add_1_r in H2.
+   rewrite Nat.add_0_r.
+...
 specialize (all_fA_ge_1_ε_P_999 v i H3) as Hap.
 rewrite Hnuv at 1.
 replace j with (0 + j) at 1 by easy.
