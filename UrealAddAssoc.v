@@ -5053,6 +5053,16 @@ destruct (NQlt_le_dec (A i ni u + (1 - 1 // rad ^ s))%NQ 1) as [H2| H2].
  rewrite NQadd_sub_assoc in H3.
  destruct (NQlt_le_dec (A i ni u + A i ni v - 1)%NQ 1) as [H4| H4].
  +rewrite NQsub_0_r in H3.
+  specialize (A_ge_1_add_all_true_if v i) as Hvr.
+  assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+    intros k; rewrite <- Nat.add_assoc; apply Hv.
+  }
+  specialize (Hvr H Hvt); clear H.
+  destruct Hvr as [Hvr| [Hvr| Hvr]].
+  *rewrite (A_all_9 v) in H4; [ | intros; apply Hvr ].
+   rewrite <- Hs in H4.
+   (* contradiction H4-H2 ? *)
+   (* probable mais je suis fatigué *)
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
