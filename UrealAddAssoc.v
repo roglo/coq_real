@@ -5001,7 +5001,58 @@ apply A_le_pred_lt; [ easy | | ]. {
   rewrite Hni; unfold min_n.
   destruct rad; [ easy | cbn; flia ].
 }
-(* ah, pute *)
+rewrite Nat.sub_diag.
+enough (H : A i ni u = 0%NQ) by (rewrite H; apply NQle_refl).
+specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Hup) as Haup.
+specialize (Haup 0) as H1.
+rewrite <- Hni in H1.
+rewrite A_additive in H1.
+rewrite (A_all_9 (P _)) in H1; [ | easy ].
+remember (ni - i - 1) as s eqn:Hs.
+assert (H11 : (0 ≤ 1 - 1 // rad ^ s)%NQ). {
+  apply NQle_add_le_sub_r; rewrite NQadd_0_r.
+  apply NQle_pair; [ pauto | easy | ].
+  apply Nat.mul_le_mono_r.
+  now apply Nat_pow_ge_1.
+}
+rewrite NQfrac_add_cond in H1; [ | easy | easy ].
+rewrite NQfrac_small in H1. 2: {
+  split; [ easy | ].
+  apply A_upper_bound_for_dig; intros k Hk.
+  replace k with (i + (k - i)) by flia Hk; apply Hu.
+}
+rewrite (NQfrac_small (_ - _)%NQ) in H1. 2: {
+  split; [ easy | now apply NQsub_lt ].
+}
+destruct (NQlt_le_dec (A i ni u + (1 - 1 // rad ^ s))%NQ 1) as [H2| H2].
+-rewrite NQadd_sub_assoc in H2.
+ apply NQlt_sub_lt_add_l, NQadd_lt_mono_r in H2.
+ rewrite Hs in H2.
+ apply A_lt_le_pred in H2.
+ now apply NQle_antisymm in H2.
+-specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Huv) as Hauv.
+ specialize (Hauv 0) as H3.
+ rewrite <- Hni, A_additive, Nat.pow_1_r in H3.
+ rewrite NQfrac_add_cond in H3; [ | easy | easy ].
+ rewrite NQfrac_small in H3. 2: {
+   split; [ easy | ].
+   apply A_upper_bound_for_dig; intros k Hk.
+   replace k with (i + (k - i)) by flia Hk; apply Hu.
+ }
+ rewrite NQfrac_less_small in H3. 2: {
+   split.
+   -specialize (NQintg_of_frac (A i ni v) (A_ge_0 _ _ _)) as H.
+    rewrite Ha1 in H; rewrite H.
+    now apply NQle_sub_l.
+   -eapply NQle_lt_trans.
+    +apply A_upper_bound_for_add.
+     intros p; rewrite <- Nat.add_assoc; apply Hv.
+    +rewrite NQmul_sub_distr_l, NQmul_1_r.
+     now apply NQsub_lt.
+ }
+ rewrite NQadd_sub_assoc in H3.
+ destruct (NQlt_le_dec (A i ni u + A i ni v - 1)%NQ 1) as [H4| H4].
+ +rewrite NQsub_0_r in H3.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
