@@ -5269,6 +5269,7 @@ exfalso.
         --replace 1 with (1 ^ S j) by apply Nat.pow_1_l.
           now apply Nat.pow_lt_mono_l.
    }
+   eapply NQlt_le_trans; [ apply NQadd_lt_mono_l, H1 | ].
 ...
   rewrite NQfrac_add_cond in H1; [ | easy | easy ].
   rewrite NQfrac_small in H1. 2: {
