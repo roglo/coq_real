@@ -5195,6 +5195,31 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ s)%NQ 1) as [Hau1| Hau1].
    apply NQle_add_le_sub_r, NQadd_le_mono_r in Hau1.
    apply NQle_antisymm in Hau1; [ clear H2 | easy ].
    move Hau1 at bottom.
+clear H1 Hpi.
+exfalso.
+...
+specialize (all_fA_ge_1_ε_P_999 _ i Huvt) as Huvr.
+specialize (P_999_start (u ⊕ v) (i + 1) 3) as Huv3.
+assert (H : (∀ k : nat, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1))) by ...
+specialize (Huv3 H); clear H.
+assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
+  intros; rewrite Nat.add_shuffle0; apply Huvr.
+}
+specialize (Huv3 H); clear H.
+destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
+++clear Huv3.
+  unfold "⊕" in H1.
+  (* ouais, c'est bon *) ...
+++destruct (le_dec 3 rad) as [H2| H2].
+ **destruct Huv3 as (H3 & H4 & H5).
+...
+specialize (A_ge_1_add_all_true_if (u ⊕ v) i) as Huvr.
+ assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 2 * (rad - 1)). {
+   intros k; rewrite <- Nat.add_assoc; apply Hv.
+ }
+ specialize (Hvr H Hvt); clear H.
+ destruct Hvr as [Hvr| [Hvr| Hvr]].
+ *exfalso.
 ...
    apply NQnlt_ge in H1; apply H1; clear H1.
    rewrite Hau1, NQsub_0_r, NQadd_comm, NQadd_sub_swap.
