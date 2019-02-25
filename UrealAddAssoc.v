@@ -5232,6 +5232,16 @@ exfalso.
     replace 2 with (2 ^ 1) by easy.
     now apply Nat.pow_le_mono.
   }
+  specialize (B_upper_bound_for_adds 1 u i j rad) as H1.
+  rewrite Nat.mul_1_l, <- Hnij in H1.
+  assert (H : 0 < 1 ≤ rad ^ 2). {
+    split; [ pauto | now apply Nat_pow_ge_1 ].
+  }
+  specialize (H1 H); clear H.
+  assert (H : ∀ j : nat, j ≥ i → u j ≤ rad - 1). {
+    intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+  }
+  specialize (H1 H); clear H.
 ...
 rewrite NQfrac_small.
 apply NQlt_sub_lt_add_r.
