@@ -5149,18 +5149,7 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
   rewrite A_all_9 in Ha1; [ | easy ].
   rewrite NQintg_small in Ha1; [ easy | ].
   split; [ easy | now apply NQsub_lt ].
- *idtac.
-(*
-...
- *exfalso.
-  apply NQnle_gt in Haa; apply Haa; clear Haa.
-  rewrite (A_all_18 v); [ | easy ].
-  rewrite NQadd_sub_assoc.
-  apply NQle_add_le_sub_r, NQadd_le_mono_r.
-  remember (ni - i - 1) as si eqn:Hsi.
-  move si before s; move Hsi before Hs.
-*)
-  specialize (Hauv j) as H1.
+ *specialize (Hauv j) as H1.
   rewrite <- Hnij, A_additive in H1.
   rewrite (A_all_18 v), <- Hsij in H1; [ | easy ].
   rewrite NQfrac_add_cond in H1; [ | easy | easy ].
@@ -5168,6 +5157,15 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
     split; [ easy | ].
     apply A_upper_bound_for_dig.
     intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+  }
+  assert (H012r : ∀ n, n ≠ 0 → (0 ≤ 1 - 2 // rad ^ n)%NQ). {
+    intros n Hn.
+    destruct n; [ easy | ].
+    apply NQle_add_le_sub_r; rewrite NQadd_0_r.
+    apply NQle_pair; [ pauto | easy | ].
+    apply Nat.mul_le_mono_r.
+    replace 2 with (2 ^ 1) by easy.
+    apply Nat.pow_le_mono; [ easy | easy | flia ].
   }
   rewrite NQfrac_less_small in H1. 2: {
     split; [ | now apply NQsub_lt ].
@@ -5226,11 +5224,7 @@ exfalso.
     replace 0%NQ with (0 * 0 + 0)%NQ by easy.
     apply NQadd_le_mono; [ | apply B_ge_0 ].
     apply NQmul_le_mono_nonneg; [ easy | easy | easy | ].
-    apply NQle_add_le_sub_r; rewrite NQadd_0_r.
-    apply NQle_pair; [ pauto | easy | ].
-    apply Nat.mul_le_mono_r.
-    replace 2 with (2 ^ 1) by easy.
-    now apply Nat.pow_le_mono.
+    now apply H012r.
   }
   specialize (B_upper_bound_for_adds 1 u i j rad) as H1.
   rewrite Nat.mul_1_l, <- Hnij in H1.
@@ -5253,6 +5247,18 @@ exfalso.
      replace 2 with (2 ^ 1) by easy.
      now apply Nat.pow_le_mono.
     -eapply NQlt_le_trans; [ apply NQadd_lt_mono_l, H1 | ].
+     eapply NQle_trans.
+     +apply NQadd_le_mono_r.
+      apply NQmul_le_mono_nonneg with (t := 1%NQ); [ easy | | | ].
+      *apply NQle_refl.
+      *now apply H012r.
+      *now apply NQle_sub_l.
+     +rewrite NQmul_1_r.
+      rewrite NQadd_pair; [ | pauto | pauto ].
+      rewrite Nat.mul_1_l, Nat.mul_1_r.
+      apply NQle_pair; [ | easy | ].
+      *apply Nat.neq_mul_0; pauto.
+      *apply Nat.mul_le_mono_r.
 ...
 apply NQlt_sub_lt_add_r.
 rewrite <- NQadd_sub_swap.
