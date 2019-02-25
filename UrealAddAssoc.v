@@ -5197,7 +5197,6 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
    move Hau1 at bottom.
 clear H1 Hpi.
 exfalso.
-...
   specialize (Hauv (j + 1)) as H1.
   rewrite A_additive in H1.
   rewrite (A_all_18 v) in H1; [ | easy ].
@@ -5243,6 +5242,7 @@ do 2 rewrite Nat.mul_add_distr_l.
 rewrite Nat.mul_add_distr_r.
 rewrite Nat.mul_1_r, Nat.add_assoc.
 (* pas sûr que ça soit bon, ça *)
+(* à vérifier *)
 ...
   rewrite NQfrac_add_cond in H1; [ | easy | easy ].
   rewrite NQfrac_small in H1. 2: {
