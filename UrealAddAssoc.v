@@ -5259,6 +5259,16 @@ exfalso.
       apply NQle_pair; [ | easy | ].
       *apply Nat.neq_mul_0; pauto.
       *apply Nat.mul_le_mono_r.
+       rewrite Nat.add_comm.
+       apply Nat.add_le_mul.
+      --rewrite Hnij in Hsij; unfold min_n in Hsij.
+        replace 1 with (1 ^ sij) by apply Nat.pow_1_l.
+        apply Nat.pow_lt_mono_l; [ | easy ].
+        intros H; rewrite H in Hsij.
+        destruct rad; [ easy | cbn in Hsij; flia Hsij ].
+      --replace 1 with (1 ^ S j) by apply Nat.pow_1_l.
+        now apply Nat.pow_lt_mono_l.
+  }
 ...
 apply NQlt_sub_lt_add_r.
 rewrite <- NQadd_sub_swap.
