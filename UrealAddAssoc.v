@@ -5242,8 +5242,18 @@ exfalso.
     intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
   }
   specialize (H1 H); clear H.
+  rewrite NQfrac_small. 2: {
+    split.
+    -replace 0%NQ with (0 * 0 + 0)%NQ by easy.
+     apply NQadd_le_mono; [ | apply B_ge_0 ].
+     apply NQmul_le_mono_nonneg; [ easy | easy | easy | ].
+     apply NQle_add_le_sub_r; rewrite NQadd_0_r.
+     apply NQle_pair; [ pauto | easy | ].
+     apply Nat.mul_le_mono_r.
+     replace 2 with (2 ^ 1) by easy.
+     now apply Nat.pow_le_mono.
+    -eapply NQlt_le_trans; [ apply NQadd_lt_mono_l, H1 | ].
 ...
-rewrite NQfrac_small.
 apply NQlt_sub_lt_add_r.
 rewrite <- NQadd_sub_swap.
 apply -> NQlt_add_lt_sub_r.
