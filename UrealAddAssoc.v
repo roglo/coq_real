@@ -5202,15 +5202,37 @@ exfalso.
   rewrite (A_all_18 v) in H1; [ | easy ].
   rewrite min_n_add, Nat.mul_1_r, <- Hnij in H1.
   rewrite <- Nat.sub_add_distr in H1.
-  rewrite Nat.add_sub_swap in H1. 2: admit.
+  assert (Hinij : i + 1 ≤ nij). {
+    rewrite Hnij; unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  }
+  rewrite Nat.add_sub_swap in H1; [ | easy ].
   rewrite Nat.sub_add_distr, <- Hsij in H1.
-  rewrite <- ApB_A in H1. 2: admit.
+  rewrite <- ApB_A in H1; [ | easy ].
   rewrite Hau1 in H1.
-apply NQnlt_ge in H1; apply H1; clear H1.
-rewrite NQadd_comm.
-rewrite <- NQadd_sub_swap.
-rewrite <- NQadd_sub_assoc.
-rewrite NQfrac_add_nat_l.
+  apply NQnlt_ge in H1; apply H1; clear H1.
+  rewrite NQadd_comm.
+  rewrite NQadd_assoc.
+  rewrite <- NQadd_sub_swap.
+  rewrite <- NQadd_sub_assoc.
+  rewrite <- NQadd_assoc.
+  rewrite Nat.pow_add_r.
+  replace (1 // rad ^ sij)%NQ with (1 // rad ^ sij * 1)%NQ at 1
+    by apply NQmul_1_r.
+  replace 2 with (1 * 2) at 2 by easy.
+  rewrite <- NQmul_pair; [ | pauto | pauto ].
+  rewrite <- NQmul_sub_distr_l.
+  rewrite NQfrac_add_nat_l. 2: {
+    replace 0%NQ with (0 * 0 + 0)%NQ by easy.
+    apply NQadd_le_mono; [ | apply B_ge_0 ].
+    apply NQmul_le_mono_nonneg; [ easy | easy | easy | ].
+    apply NQle_add_le_sub_r; rewrite NQadd_0_r.
+    apply NQle_pair; [ pauto | easy | ].
+    apply Nat.mul_le_mono_r.
+    replace 2 with (2 ^ 1) by easy.
+    now apply Nat.pow_le_mono.
+  }
+...
 rewrite NQfrac_small.
 apply NQlt_sub_lt_add_r.
 rewrite <- NQadd_sub_swap.
