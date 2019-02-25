@@ -5115,7 +5115,7 @@ enough (H : A i nij u = 0%NQ) by (rewrite H; apply NQle_refl).
 apply A_ge_1_false_iff in Hpi.
 rewrite <- Hnij, A_additive in Hpi.
 rewrite (A_all_9 (P _)) in Hpi; [ | easy ].
-remember (nij - i - 1) as s eqn:Hs.
+remember (nij - i - 1) as sij eqn:Hsij.
 assert (H1s : ∀ s n, (0 ≤ n // 1 - n // rad ^ s)%NQ). {
   intros.
   apply NQle_add_le_sub_l; rewrite NQadd_0_l.
@@ -5133,9 +5133,9 @@ rewrite NQfrac_small in Hpi. 2: {
   split; [ easy | now apply NQsub_lt ].
 }
 rewrite NQadd_sub_assoc in Hpi.
-destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ s)%NQ 1) as [Hau1| Hau1].
+destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
 -apply NQlt_sub_lt_add_l, NQadd_lt_mono_r in Hau1.
- rewrite Hs in Hau1.
+ rewrite Hsij in Hau1.
  apply A_lt_le_pred in Hau1.
  now apply NQle_antisymm in Hau1.
 -specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Huvt) as Hauv.
@@ -5162,7 +5162,7 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ s)%NQ 1) as [Hau1| Hau1].
 *)
   specialize (Hauv j) as H1.
   rewrite <- Hnij, A_additive in H1.
-  rewrite (A_all_18 v), <- Hs in H1; [ | easy ].
+  rewrite (A_all_18 v), <- Hsij in H1; [ | easy ].
   rewrite NQfrac_add_cond in H1; [ | easy | easy ].
   rewrite NQfrac_small in H1. 2: {
     split; [ easy | ].
@@ -5176,9 +5176,9 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ s)%NQ 1) as [Hau1| Hau1].
     apply NQadd_le_mono_l.
     apply NQle_pair; [ pauto | easy | ].
     apply Nat.mul_le_mono_r.
-    rewrite Hnij in Hs; unfold min_n in Hs.
-    destruct s.
-    -destruct rad; [ easy | cbn in Hs; flia Hs ].
+    rewrite Hnij in Hsij; unfold min_n in Hsij.
+    destruct sij.
+    -destruct rad; [ easy | cbn in Hsij; flia Hsij ].
     -cbn; replace 2 with (2 * 1) by easy.
      apply Nat.mul_le_mono; [ easy | ].
      now apply Nat_pow_ge_1.
@@ -5186,12 +5186,12 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ s)%NQ 1) as [Hau1| Hau1].
   rewrite NQsub_sub_swap in H1.
   replace (2 - 1)%NQ with 1%NQ in H1 by easy.
   rewrite NQadd_sub_assoc in H1.
-  destruct (NQlt_le_dec (A i nij u + 1 - 2 // rad ^ s)%NQ 1) as [H2| H2].
+  destruct (NQlt_le_dec (A i nij u + 1 - 2 // rad ^ sij)%NQ 1) as [H2| H2].
  --apply NQlt_sub_lt_add_l, NQadd_lt_mono_r in H2.
-   rewrite Hs in H2.
+   rewrite Hsij in H2.
    apply A_lt_le_pred in H2.
    replace (2 - 1) with 1 in H2 by easy.
-   rewrite <- Hs in H2.
+   rewrite <- Hsij in H2.
    apply NQle_add_le_sub_r, NQadd_le_mono_r in Hau1.
    apply NQle_antisymm in Hau1; [ clear H2 | easy ].
    move Hau1 at bottom.
