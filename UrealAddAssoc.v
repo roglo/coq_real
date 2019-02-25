@@ -5197,6 +5197,7 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
    move Hau1 at bottom.
 clear H1 Hpi.
 exfalso.
+...
   specialize (Hauv (j + 1)) as H1.
   rewrite A_additive in H1.
   rewrite (A_all_18 v) in H1; [ | easy ].
@@ -5212,6 +5213,36 @@ rewrite <- NQadd_sub_swap.
 rewrite <- NQadd_sub_assoc.
 rewrite NQfrac_add_nat_l.
 rewrite NQfrac_small.
+apply NQlt_sub_lt_add_r.
+rewrite <- NQadd_sub_swap.
+apply -> NQlt_add_lt_sub_r.
+specialize (B_upper_bound_for_adds 1 u i j rad) as H1.
+rewrite Nat.mul_1_l, <- Hnij in H1.
+assert (H : 0 < 1 ≤ rad ^ 2) by admit.
+specialize (H1 H); clear H.
+assert (H : ∀ j : nat, j ≥ i → u j ≤ rad - 1) by admit.
+specialize (H1 H); clear H.
+apply (NQlt_le_trans _ (1 // rad ^ sij + 1 // rad ^ S j + 1 // rad ^ (S (j + 1)))%NQ).
+now apply NQadd_lt_mono_r, NQadd_lt_mono_l.
+rewrite <- NQadd_assoc.
+rewrite NQadd_pair; [ | pauto | pauto ].
+rewrite Nat.mul_1_l, Nat.mul_1_r.
+replace (S (j + 1)) with (S (S j)) by flia.
+rewrite Nat.pow_succ_r' at 1.
+replace (rad ^ S j) with (1 * rad ^ S j) at 2 by flia.
+rewrite <- Nat.mul_add_distr_r.
+rewrite Nat.mul_comm.
+rewrite NQmul_pair_mono_l; [ | pauto | pauto ].
+rewrite NQadd_pair; [ | pauto | pauto ].
+rewrite Nat.mul_1_l.
+rewrite NQadd_pair; [ | easy | pauto ].
+do 2 rewrite Nat.mul_1_l.
+apply NQle_pair; [ | pauto | ]. admit.
+rewrite Nat.mul_add_distr_r.
+do 2 rewrite Nat.mul_add_distr_l.
+rewrite Nat.mul_add_distr_r.
+rewrite Nat.mul_1_r, Nat.add_assoc.
+(* pas sûr que ça soit bon, ça *)
 ...
   rewrite NQfrac_add_cond in H1; [ | easy | easy ].
   rewrite NQfrac_small in H1. 2: {
