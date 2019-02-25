@@ -4983,14 +4983,13 @@ Theorem pre_Hugo_Herbelin_51 {r : radix} : ∀ u v i,
   → (∀ k : nat, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k : nat, fA_ge_1_ε v i k = true)
   → (∀ k : nat, fA_ge_1_ε (u ⊕ P v) i k = true)
-  → (∀ k : nat, fA_ge_1_ε (u ⊕ v) i k = true)
   → NQintg (A i (min_n i 0) v) = 1
   → (A i (min_n i 0) u + A i (min_n i 0) v < 2)%NQ
   → (A i (min_n i 0) u + A i (min_n i 0) (P v) < 1)%NQ.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hu Hv Hvt Hup Huv Ha1 Haa.
+intros Hu Hv Hvt Hup Ha1 Haa.
 remember (min_n i 0) as ni eqn:Hni.
 move ni before i.
 specialize (all_fA_ge_1_ε_P_999 v i Hvt) as Hpr.
@@ -5258,7 +5257,8 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    ++subst kup; rewrite <- Hnv in Hnup; subst nup.
      subst nv; clear Hr.
      now apply pre_Hugo_Herbelin_51.
-   ++idtac.
+   ++destruct H2 as (j & Hjj & Hj); move j before i.
+     subst kup.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
