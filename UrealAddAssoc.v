@@ -5206,6 +5206,12 @@ exfalso.
   rewrite Nat.sub_add_distr, <- Hsij in H1.
   rewrite <- ApB_A in H1. 2: admit.
   rewrite Hau1 in H1.
+apply NQnlt_ge in H1; apply H1; clear H1.
+rewrite NQadd_comm.
+rewrite <- NQadd_sub_swap.
+rewrite <- NQadd_sub_assoc.
+rewrite NQfrac_add_nat_l.
+rewrite NQfrac_small.
 ...
   rewrite NQfrac_add_cond in H1; [ | easy | easy ].
   rewrite NQfrac_small in H1. 2: {
