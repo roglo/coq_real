@@ -5149,16 +5149,20 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ s)%NQ 1) as [Hau1| Hau1].
   rewrite A_all_9 in Ha1; [ | easy ].
   rewrite NQintg_small in Ha1; [ easy | ].
   split; [ easy | now apply NQsub_lt ].
+ *idtac.
+(*
+...
  *exfalso.
   apply NQnle_gt in Haa; apply Haa; clear Haa.
   rewrite (A_all_18 v); [ | easy ].
   rewrite NQadd_sub_assoc.
   apply NQle_add_le_sub_r, NQadd_le_mono_r.
   remember (ni - i - 1) as si eqn:Hsi.
-...
-  specialize (Hauv 0) as H1.
-  rewrite <- Hni, A_additive in H1.
-  rewrite (A_all_18 v), Nat.pow_1_r in H1; [ | easy ].
+  move si before s; move Hsi before Hs.
+*)
+  specialize (Hauv j) as H1.
+  rewrite <- Hnij, A_additive in H1.
+  rewrite (A_all_18 v), <- Hs in H1; [ | easy ].
   rewrite NQfrac_add_cond in H1; [ | easy | easy ].
   rewrite NQfrac_small in H1. 2: {
     split; [ easy | ].
@@ -5172,9 +5176,9 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ s)%NQ 1) as [Hau1| Hau1].
     apply NQadd_le_mono_l.
     apply NQle_pair; [ pauto | easy | ].
     apply Nat.mul_le_mono_r.
-    rewrite Hni in Hsi; unfold min_n in Hsi.
-    destruct si.
-    -destruct rad; [ easy | cbn in Hsi; flia Hsi ].
+    rewrite Hnij in Hs; unfold min_n in Hs.
+    destruct s.
+    -destruct rad; [ easy | cbn in Hs; flia Hs ].
     -cbn; replace 2 with (2 * 1) by easy.
      apply Nat.mul_le_mono; [ easy | ].
      now apply Nat_pow_ge_1.
@@ -5182,12 +5186,31 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ s)%NQ 1) as [Hau1| Hau1].
   rewrite NQsub_sub_swap in H1.
   replace (2 - 1)%NQ with 1%NQ in H1 by easy.
   rewrite NQadd_sub_assoc in H1.
-  destruct (NQlt_le_dec (A i ni u + 1 - 2 // rad ^ si)%NQ 1) as [H2| H2].
- --rewrite NQsub_0_r in H1.
+  destruct (NQlt_le_dec (A i nij u + 1 - 2 // rad ^ s)%NQ 1) as [H2| H2].
+ --apply NQlt_sub_lt_add_l, NQadd_lt_mono_r in H2.
+   rewrite Hs in H2.
+   apply A_lt_le_pred in H2.
+   replace (2 - 1) with 1 in H2 by easy.
+   rewrite <- Hs in H2.
+   apply NQle_add_le_sub_r, NQadd_le_mono_r in Hau1.
+   apply NQle_antisymm in Hau1; [ clear H2 | easy ].
+   move Hau1 at bottom.
+...
+   apply NQnlt_ge in H1; apply H1; clear H1.
+   rewrite Hau1, NQsub_0_r, NQadd_comm, NQadd_sub_swap.
+   rewrite <- NQsub_sub_distr.
+   rewrite <- NQpair_sub_l; [ | pauto ].
+   replace (2 - 1) with 1 by easy.
+Search ((_ // _ - _ // _))%NQ.
+
+   rewrite NQsub_pair_pos in H1.
+
    apply NQle_add_le_sub_r in H1.
    rewrite NQadd_sub_assoc in H1.
    apply NQle_sub_le_add_r in H1.
    rewrite NQsub_sub_swap, NQadd_sub in H1.
+   rewrite Hau1 in H1.
+   app
 ...
   rewrite NQsub_sub_swap, NQadd_sub in Hpi.
   apply NQle_add_le_sub_r, NQadd_le_mono_r in Hau1.
