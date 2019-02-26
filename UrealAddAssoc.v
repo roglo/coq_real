@@ -5445,19 +5445,16 @@ destruct (NQlt_le_dec (A i ni u + (1 - 1 // rad ^ si))%NQ 1) as [H2| H2].
    apply Nat.pow_le_mono; [ easy | easy | ].
    apply Nat.mul_le_mono; [ easy | flia ].
  *destruct Hvr as (k & Hbef & Hwhi & Haft).
-...
-  rewrite (A_9_8_all_18 k) in Ha1; [ | easy | easy | easy ].
-  rewrite NQintg_small in Ha1; [ easy | ].
+  rewrite (A_9_8_all_18 k) in Haj; [ | easy | easy | easy ].
+  rewrite NQintg_small in Haj; [ easy | ].
   split.
  --apply NQle_add_le_sub_l; rewrite NQadd_0_l.
    apply NQle_pair; [ pauto | easy | ].
    apply Nat.mul_le_mono_r.
-   remember (ni - i - 1) as si eqn:Hsi.
-   destruct (le_dec (i + k + 1) (ni - 1)) as [H3| H3].
-  ++rewrite Hni in Hsi; unfold min_n in Hsi.
+   destruct (le_dec (i + k + 1) (nij - 1)) as [H3| H3].
+  ++rewrite Hnij; unfold min_n.
     destruct rad as [| rr]; [ easy | cbn ].
     destruct rr; [ flia Hr | cbn ].
-    destruct si; [ cbn in Hsi; flia Hsi | ].
     replace 2 with (2 ^ 1) by easy.
     apply Nat.pow_le_mono; [ easy | easy | flia ].
   ++rewrite Hni in Hsi; unfold min_n in Hsi.
@@ -5465,10 +5462,8 @@ destruct (NQlt_le_dec (A i ni u + (1 - 1 // rad ^ si))%NQ 1) as [H2| H2].
     destruct si; [ cbn in Hsi; flia Hsi | ].
     apply Nat_pow_ge_1, Nat.lt_0_succ.
  --apply NQsub_lt.
-   now destruct (le_dec (i + k + 1) (ni - 1)).
+   now destruct (le_dec (i + k + 1) (nij - 1)).
 Qed.
-
-...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
@@ -5647,7 +5642,6 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   --destruct H6 as (j & Hjj & Hj); subst kuv.
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
    ++subst kup; rewrite <- Hnv in Hnup; subst nup nuv nv.
-...
      now apply (pre_Hugo_Herbelin_61 _ _ _ j).
    ++idtac.
 ...
