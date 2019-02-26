@@ -5292,11 +5292,8 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
    rewrite NQadd_sub_assoc in Haa.
    apply NQlt_sub_lt_add_l, NQadd_lt_mono_r in Haa.
    move Haa at bottom; move H2 at bottom.
-   (* ah la la, c'est compliqué *)
 ...
-   rewrite NQsub_sub_swap, NQadd_sub in H1.
    rename H1 into H3.
-...
    specialize (Hauv (j + 1)) as H1.
    rewrite A_additive in H1.
    rewrite (A_all_18 v) in H1; [ | easy ].
