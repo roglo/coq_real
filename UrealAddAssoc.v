@@ -5288,6 +5288,12 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
     now apply Nat_pow_ge_1.
  --idtac.
    apply NQle_add_le_sub_r, NQadd_le_mono_r in H2.
+   rewrite (A_all_18 v) in Haa; [ | easy ].
+   rewrite NQadd_sub_assoc in Haa.
+   apply NQlt_sub_lt_add_l, NQadd_lt_mono_r in Haa.
+   move Haa at bottom; move H2 at bottom.
+...
+
    rewrite NQsub_sub_swap, NQadd_sub in H1.
    rename H1 into H3.
 ...
