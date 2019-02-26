@@ -5295,6 +5295,19 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
  --idtac.
    apply NQle_add_le_sub_r, NQadd_le_mono_r in H2.
    rewrite NQsub_sub_swap, NQadd_sub in H1.
+   rename H1 into H3.
+   specialize (Hauv (j + 1)) as H1.
+   rewrite A_additive in H1.
+   rewrite (A_all_18 v) in H1; [ | easy ].
+   rewrite min_n_add, Nat.mul_1_r, <- Hnij in H1.
+   rewrite <- Nat.sub_add_distr in H1.
+   assert (Hinij : i + 1 ≤ nij). {
+     rewrite Hnij; unfold min_n.
+     destruct rad; [ easy | cbn; flia ].
+   }
+   rewrite Nat.add_sub_swap in H1; [ | easy ].
+   rewrite Nat.sub_add_distr, <- Hsij in H1.
+   rewrite <- ApB_A in H1; [ | easy ].
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
