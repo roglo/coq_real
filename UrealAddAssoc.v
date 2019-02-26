@@ -5386,6 +5386,18 @@ destruct (NQlt_le_dec (A i ni u + (1 - 1 // rad ^ si))%NQ 1) as [H2| H2].
   rewrite (A_all_18 v); [ | easy ].
   rewrite NQadd_sub_assoc.
   apply NQle_add_le_sub_r, NQadd_le_mono_r.
+  rewrite NQadd_sub_assoc in H2.
+  apply NQle_add_le_sub_r, NQadd_le_mono_r in H2.
+  rewrite Hnij at 2.
+  replace j with (0 + j) by easy.
+  rewrite min_n_add, <- Hni.
+  rewrite <- ApB_A. 2: {
+    rewrite Hni; unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  }
+  eapply NQle_trans; [ | apply NQle_add_r, B_ge_0 ].
+  eapply NQle_trans; [ | apply H2 ].
+  rewrite Hsi.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
