@@ -1628,10 +1628,12 @@ intros H; apply Nat.eq_mul_0 in H.
 now destruct H.
 Qed.
 
-Theorem NQle_inv : ∀ a b, 0 < a ≤ b → (1 // b ≤ 1 // a)%NQ.
+Theorem NQle_pair_mono_l : ∀ a b c, 0 < a ≤ b → (c // b ≤ c // a)%NQ.
 Proof.
 intros * Hab.
-apply NQle_pair; flia Hab.
+apply NQle_pair; [ flia Hab | flia Hab | ].
+rewrite Nat.mul_comm.
+now apply Nat.mul_le_mono_r.
 Qed.
 
 Theorem NQpair_inv_mul : ∀ a b c, b ≠ 0 → c ≠ 0 →

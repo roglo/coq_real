@@ -822,13 +822,13 @@ rewrite NQfrac_small. 2: {
   split.
   -apply NQle_add_le_sub_l.
    rewrite NQadd_0_l.
-   apply NQle_inv; split; [ pauto | now apply Nat_pow_ge_1 ].
+   apply NQle_pair_mono_l; split; [ pauto | now apply Nat_pow_ge_1 ].
   -apply NQsub_lt.
    replace 0%NQ with (0 // 1)%NQ by easy.
    apply NQlt_pair; [ easy | pauto | flia ].
 }
 apply NQsub_le_mono; [ apply NQle_refl | ].
-apply NQle_inv; split; [ apply Nat.neq_0_lt_0; pauto | ].
+apply NQle_pair_mono_l; split; [ apply Nat.neq_0_lt_0; pauto | ].
 apply Nat.pow_le_mono_r; [ easy | ].
 unfold min_n.
 destruct rad; [ easy | cbn; flia ].
@@ -1526,7 +1526,7 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
     symmetry in Hs.
     now apply Nat.pow_nonzero in Hs.
   }
-  apply NQle_inv; split; [ pauto | flia ].
+  apply NQle_pair_mono_l; split; [ pauto | flia ].
 -apply Nat.nlt_ge in Hin.
  remember (n - i - 1) as s eqn:Hs.
  destruct s; [ flia Hin Hs | ].
@@ -1584,7 +1584,7 @@ split.
  apply NQlt_pair; [ easy | easy | now rewrite Nat.mul_1_l ].
 -replace (m // 1)%NQ with (m // 1 * 1)%NQ at 2 by apply NQmul_1_r.
  apply NQmul_le_mono_pos_l. 2: {
-   apply NQle_inv; split; [ pauto | now apply Nat_pow_ge_1 ].
+   apply NQle_pair_mono_l; split; [ pauto | now apply Nat_pow_ge_1 ].
  }
  replace 0%NQ with (0 // 1)%NQ by easy.
  apply NQlt_pair; [ easy | easy | now rewrite Nat.mul_1_l ].
@@ -5272,7 +5272,7 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
     do 2 apply NQadd_le_mono_r.
     rewrite NQmul_sub_distr_l, NQmul_1_r.
     eapply NQle_trans; [ now apply NQle_sub_l | ].
-    apply NQle_inv; split; [ apply Nat.neq_0_lt_0; pauto | ].
+    apply NQle_pair_mono_l; split; [ apply Nat.neq_0_lt_0; pauto | ].
     apply Nat.pow_le_mono_r; [ easy | ].
     rewrite Hsij, Hnij; unfold min_n.
     destruct rad; [ easy | cbn; flia ].
@@ -5308,6 +5308,26 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
    rewrite Nat.add_sub_swap in H1; [ | easy ].
    rewrite Nat.sub_add_distr, <- Hsij in H1.
    rewrite <- ApB_A in H1; [ | easy ].
+   rewrite NQadd_add_swap, NQadd_sub_assoc in H1.
+   rewrite (NQadd_comm (A i nij u)) in H1.
+   rewrite <- NQadd_sub_assoc, <- NQadd_assoc in H1.
+   rewrite NQfrac_add_nat_l in H1. 2: {
+     apply NQadd_nonneg_nonneg; [ | apply B_ge_0 ].
+     apply NQle_0_sub.
+     eapply NQle_trans; [ | apply H2 ].
+Search (_ // _ ≤ _ // _)%NQ.
+...
+
+     apply NQle_
+
+     rewrite <- NQadd_sub_swap, <- NQadd_sub_assoc.
+
+     apply NQ
+
+   rewrite NQfrac_add_cond in H1; [ | | apply B_ge_0 ]. 2: {
+     now apply NQadd_nonneg_nonneg.
+   }
+   rewrite NQadd_comm in H1.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
