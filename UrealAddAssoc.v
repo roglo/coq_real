@@ -5386,7 +5386,6 @@ destruct (NQlt_le_dec (A i ni u + (1 - 1 // rad ^ si))%NQ 1) as [H2| H2].
   rewrite (A_all_18 v); [ | easy ].
   rewrite NQadd_sub_assoc.
   apply NQle_add_le_sub_r, NQadd_le_mono_r.
-  (* voir avec Haj *)
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
