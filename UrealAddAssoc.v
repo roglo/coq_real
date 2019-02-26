@@ -5395,9 +5395,79 @@ destruct (NQlt_le_dec (A i ni u + (1 - 1 // rad ^ si))%NQ 1) as [H2| H2].
     rewrite Hni; unfold min_n.
     destruct rad; [ easy | cbn; flia ].
   }
-  eapply NQle_trans; [ | apply NQle_add_r, B_ge_0 ].
-  eapply NQle_trans; [ | apply H2 ].
-  rewrite Hsi.
+  rewrite NQadd_sub_assoc, NQsub_sub_swap, NQadd_sub in H1.
+  apply NQle_add_le_sub_l in H1.
+  rewrite Nat.pow_1_r in H1.
+  destruct j.
+ --rewrite <- Hni in Hnij; subst nij; rewrite <- Hsi.
+   rewrite Nat.mul_0_r.
+   unfold B; rewrite summation_empty. 2: {
+     rewrite Nat.add_0_r; apply Nat.sub_lt; [ | pauto ].
+     rewrite Hni; unfold min_n.
+     destruct rad; [ easy | cbn; flia ].
+   }
+   rewrite NQadd_0_r.
+   eapply NQle_trans; [ | apply H1 ].
+   replace 2 with (1 + 1) by easy.
+   rewrite NQpair_add_l.
+   apply NQadd_le_mono_r.
+   apply NQle_add_le_sub_r.
+   rewrite NQadd_pair; [ | easy | pauto ].
+   rewrite Nat.mul_1_l, Nat.mul_1_r.
+   apply NQle_pair; [ | easy | ]. {
+     apply Nat.neq_mul_0; pauto.
+   }
+   rewrite Nat.add_comm.
+   apply Nat.mul_le_mono_r, Nat.add_le_mul; [ easy | ].
+   rewrite Hni in Hsi; unfold min_n in Hsi.
+   destruct si.
+  ++destruct rad; [ easy | cbn in Hsi; flia Hsi ].
+  ++cbn; replace 1 with (1 * 1) by easy.
+    eapply lt_le_trans; [ apply Nat.mul_lt_mono_pos_l; pauto | ].
+    rewrite Nat.mul_comm.
+    apply Nat.mul_le_mono; [ easy | ].
+    now apply Nat_pow_ge_1.
+ --eapply NQle_trans; [ | apply NQle_add_r, B_ge_0 ].
+   eapply NQle_trans; [ | apply H2 ].
+   rewrite Hsi.
+   apply NQle_pair; [ pauto | pauto | ].
+   rewrite Nat.mul_1_r, Hnij.
+   replace (S j) with (0 + S j) by easy.
+   rewrite min_n_add, <- Hni.
+   do 2 rewrite <- Nat.sub_add_distr.
+   rewrite Nat.add_sub_swap. 2: {
+     rewrite Hni; unfold min_n.
+     destruct rad; [ easy | cbn; flia ].
+   }
+   rewrite Nat.pow_add_r, Nat.mul_comm.
+   apply Nat.mul_le_mono_l.
+   replace 2 with (2 ^ (1 * 1)) by easy.
+   apply Nat.pow_le_mono; [ easy | easy | ].
+   apply Nat.mul_le_mono; [ easy | flia ].
+ *destruct Hvr as (k & Hbef & Hwhi & Haft).
+...
+  rewrite (A_9_8_all_18 k) in Ha1; [ | easy | easy | easy ].
+  rewrite NQintg_small in Ha1; [ easy | ].
+  split.
+ --apply NQle_add_le_sub_l; rewrite NQadd_0_l.
+   apply NQle_pair; [ pauto | easy | ].
+   apply Nat.mul_le_mono_r.
+   remember (ni - i - 1) as si eqn:Hsi.
+   destruct (le_dec (i + k + 1) (ni - 1)) as [H3| H3].
+  ++rewrite Hni in Hsi; unfold min_n in Hsi.
+    destruct rad as [| rr]; [ easy | cbn ].
+    destruct rr; [ flia Hr | cbn ].
+    destruct si; [ cbn in Hsi; flia Hsi | ].
+    replace 2 with (2 ^ 1) by easy.
+    apply Nat.pow_le_mono; [ easy | easy | flia ].
+  ++rewrite Hni in Hsi; unfold min_n in Hsi.
+    destruct rad as [| rr]; [ easy | cbn ].
+    destruct si; [ cbn in Hsi; flia Hsi | ].
+    apply Nat_pow_ge_1, Nat.lt_0_succ.
+ --apply NQsub_lt.
+   now destruct (le_dec (i + k + 1) (ni - 1)).
+Qed.
+
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
