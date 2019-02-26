@@ -5201,11 +5201,8 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
    rewrite <- ApB_A in H1; [ | easy ].
    rewrite Hau1 in H1.
    apply NQnlt_ge in H1; apply H1; clear H1.
-   rewrite NQadd_comm.
-   rewrite NQadd_assoc.
-   rewrite <- NQadd_sub_swap.
-   rewrite <- NQadd_sub_assoc.
-   rewrite <- NQadd_assoc.
+   rewrite NQadd_comm, NQadd_assoc.
+   rewrite <- NQadd_sub_swap, <- NQadd_sub_assoc, <- NQadd_assoc.
    rewrite Nat.pow_add_r.
    replace (1 // rad ^ sij)%NQ with (1 // rad ^ sij * 1)%NQ at 1
      by apply NQmul_1_r.
@@ -5293,6 +5290,7 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
    apply NQle_add_le_sub_r, NQadd_le_mono_r in H2.
    rewrite NQsub_sub_swap, NQadd_sub in H1.
    rename H1 into H3.
+...
    specialize (Hauv (j + 1)) as H1.
    rewrite A_additive in H1.
    rewrite (A_all_18 v) in H1; [ | easy ].
@@ -5333,6 +5331,9 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
    }
    remember (NQfrac (A i nij u - 2 // rad ^ (sij + rad))%NQ) as x eqn:Hx.
    destruct (NQlt_le_dec (x + B i nij u rad) 1) as [H4| H4]; subst x.
+  ++exfalso.
+    apply NQnlt_ge in H1; apply H1; clear H1.
+    rewrite NQsub_0_r.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
