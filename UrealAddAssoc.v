@@ -5321,6 +5321,18 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
      apply NQle_pair_mono_l; split; [ apply Nat.neq_0_lt_0; pauto | ].
      apply Nat.pow_le_mono_r; [ easy | flia ].
    }
+   rewrite (NQfrac_small (B _ _ _ _)) in H1. 2: {
+     split; [ apply B_ge_0 | ].
+     rewrite Hnij.
+     eapply NQlt_le_trans; [ apply (B_upper_bound_for_adds 1) | ].
+     -split; [ pauto | now apply Nat_pow_ge_1 ].
+     -rewrite Nat.mul_1_l.
+      intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+     -apply NQle_pair_mono_l.
+      split; [ pauto | now apply Nat_pow_ge_1 ].
+   }
+   remember (NQfrac (A i nij u - 2 // rad ^ (sij + rad))%NQ) as x eqn:Hx.
+   destruct (NQlt_le_dec (x + B i nij u rad) 1) as [H4| H4]; subst x.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
