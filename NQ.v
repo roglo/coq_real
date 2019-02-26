@@ -1628,6 +1628,20 @@ intros H; apply Nat.eq_mul_0 in H.
 now destruct H.
 Qed.
 
+Theorem NQle_inv : ∀ a b, 0 < a ≤ b → (1 // b ≤ 1 // a)%NQ.
+Proof.
+intros * Hab.
+apply NQle_pair; flia Hab.
+Qed.
+
+Theorem NQpair_inv_mul : ∀ a b c, b ≠ 0 → c ≠ 0 →
+  (a // (b * c))%NQ = (a // b * 1 // c)%NQ.
+Proof.
+intros * Hb Hc.
+rewrite NQmul_pair; [ | easy | easy ].
+now rewrite Nat.mul_1_r.
+Qed.
+
 Theorem NQmul_1_l : ∀ a, (1 * a)%NQ = a.
 Proof.
 intros.
