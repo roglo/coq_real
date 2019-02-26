@@ -5180,7 +5180,8 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
   replace (2 - 1)%NQ with 1%NQ in H1 by easy.
   rewrite NQadd_sub_assoc in H1.
   destruct (NQlt_le_dec (A i nij u + 1 - 2 // rad ^ sij)%NQ 1) as [H2| H2].
- --apply NQlt_sub_lt_add_l, NQadd_lt_mono_r in H2.
+ --exfalso.
+   apply NQlt_sub_lt_add_l, NQadd_lt_mono_r in H2.
    rewrite Hsij in H2.
    apply A_lt_le_pred in H2.
    replace (2 - 1) with 1 in H2 by easy.
@@ -5188,8 +5189,7 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
    apply NQle_add_le_sub_r, NQadd_le_mono_r in Hau1.
    apply NQle_antisymm in Hau1; [ clear H2 | easy ].
    move Hau1 at bottom.
-clear H1 Hpi.
-exfalso.
+   clear H1 Hpi.
    specialize (Hauv (j + 1)) as H1.
    rewrite A_additive in H1.
    rewrite (A_all_18 v) in H1; [ | easy ].
