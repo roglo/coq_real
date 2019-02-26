@@ -1628,12 +1628,28 @@ intros H; apply Nat.eq_mul_0 in H.
 now destruct H.
 Qed.
 
+Theorem NQden_0 : ∀ a, (a // 0 = a // 1)%NQ.
+Proof. easy. Qed.
+
 Theorem NQle_pair_mono_l : ∀ a b c, 0 < a ≤ b → (c // b ≤ c // a)%NQ.
 Proof.
 intros * Hab.
 apply NQle_pair; [ flia Hab | flia Hab | ].
 rewrite Nat.mul_comm.
 now apply Nat.mul_le_mono_r.
+Qed.
+
+Theorem NQle_pair_mono_r : ∀ a b c, a ≤ b → (a // c ≤ b // c)%NQ.
+Proof.
+intros * Hab.
+destruct c.
+-do 2 rewrite NQden_0.
+ apply NQle_pair; [ easy | easy | ].
+ rewrite Nat.mul_comm.
+ now apply Nat.mul_le_mono_l.
+-apply NQle_pair; [ easy | easy | ].
+ rewrite Nat.mul_comm.
+ now apply Nat.mul_le_mono_l.
 Qed.
 
 Theorem NQpair_inv_mul : ∀ a b c, b ≠ 0 → c ≠ 0 →
@@ -1734,9 +1750,6 @@ destruct ab as [| pab| pab]; [ | | now destruct a ].
    rewrite <- He.
    now apply GQadd_pair.
 Qed.
-
-Theorem NQden_0 : ∀ a, (a // 0 = a // 1)%NQ.
-Proof. easy. Qed.
 
 Theorem NQsub_pair_pos : ∀ a b c d,
   b ≠ 0 → d ≠ 0 → b * c ≤ a * d

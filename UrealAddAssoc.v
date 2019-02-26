@@ -5286,7 +5286,14 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
     replace 2 with (2 * 1) by easy.
     apply Nat.mul_le_mono; [ easy | ].
     now apply Nat_pow_ge_1.
- --idtac.
+ --exfalso.
+   move H1 at bottom; move Hpi at bottom.
+   rewrite NQsub_sub_swap, NQadd_sub in H1, Hpi.
+   apply NQnlt_ge in H1; apply H1; clear H1.
+   eapply NQle_lt_trans; [ | apply Hpi ].
+   apply NQsub_le_mono; [ apply NQle_refl | ].
+Search (_ // _ ≤ _ // _)%NQ.
+...
    apply NQle_add_le_sub_r, NQadd_le_mono_r in H2.
    rewrite (A_all_18 v) in Haa; [ | easy ].
    rewrite NQadd_sub_assoc in Haa.
