@@ -5772,6 +5772,12 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    rewrite Nat.mod_small. 2: {
      eapply Nat.le_lt_trans; [ apply H1 | easy ].
    }
+   destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [Haup| Haup].
+  --subst kup.
+    destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [Hauv| Hauv].
+   ++subst kuv; rewrite <- Hnup in Hnuv; subst nuv nv nup.
+     move H2 before H1.
+(* faire pre_Hugo_Herbelin_91 *)
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
