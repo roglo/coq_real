@@ -5635,11 +5635,17 @@ destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
  apply -> NQlt_sub_lt_add_l in Hj.
  rewrite NQadd_sub_assoc in Hj.
  replace (1 + 1)%NQ with 2%NQ in Hj by easy.
+ assert (Hini : i + 1 ≤ ni - 1). {
+   rewrite Hni; unfold min_n; destruct rad; [ easy | cbn; flia ].
+ }
+ assert (Hinij : i + 1 ≤ nij - 1). {
+   rewrite Hnij; unfold min_n; destruct rad; [ easy | cbn; flia ].
+ }
  destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
  +clear Huvr; unfold "⊕" in H1.
   apply NQnle_gt in Haav; apply Haav; clear Haav.
-  rewrite A_split_first by admit.
-  rewrite (A_split_first _ _ v) by admit.
+  rewrite A_split_first; [ | easy ].
+  rewrite (A_split_first _ _ v); [ | easy ].
   rewrite NQadd_add_swap, NQadd_assoc, <- (Nat.add_1_r i).
   rewrite <- NQpair_add_l, H1, <- NQadd_assoc, <- NQmul_add_distr_r.
   eapply NQle_trans. 2: {
@@ -5653,6 +5659,37 @@ destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
   apply Nat.mul_le_mono_l; flia Hr.
  +destruct (le_dec 3 rad) as [Hr3| Hr3].
   *destruct Huvr as (H2 & H3 & H4).
+   remember ((u ⊕ v) (i + 1) / rad + 1) as q eqn:Hq.
+   remember (carry (u ⊕ v) (i + 1) + 1) as p eqn:Hp.
+   move p before q; move Hp before Hq.
+   destruct Hupr as [Hupr| [Hupr| Hupr]].
+  --idtac.
+...
+   destruct (Nat.eq_dec q 1) as [Hq1| Hq1].
+  --move Hq1 at top; subst q; rewrite Nat.mul_1_l in H4; clear H2.
+    move Haj at bottom.
+    rewrite A_num_den in Haj.
+    rewrite NQintg_pair in Haj; [ | unfold den_A; pauto ].
+Search (_ / _ = 1).
+unfold num_A in Haj.
+    rewrite A_split_first in Haj; [ | easy ].
+...
+   specialize (NQfrac_of_intg (A i nij v)) as H.
+Search NQintg.
+   rewrite NQintg_frac in Haj.
+
+Search (NQintg _ = _).
+...
+Search (NQintg _ = 1).
+...
+   rewrite A_split_first in Haj; [ | easy ].
+...
+   unfold "⊕" in H4 at 1.
+   apply NQnle_gt in Haav; apply Haav; clear Haav.
+   rewrite A_split_first; [ | easy ].
+   rewrite (A_split_first _ _ v); [ | easy ].
+   rewrite NQadd_add_swap, NQadd_assoc, <- (Nat.add_1_r i).
+   rewrite <- NQpair_add_l, H4.
 ...
  specialize (A_ge_1_add_all_true_if (u ⊕ v) i) as Huvr.
  assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 2 * (rad - 1)). {
