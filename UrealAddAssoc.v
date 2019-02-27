@@ -5465,18 +5465,15 @@ Theorem pre_Hugo_Herbelin_62 {r : radix} : ∀ u v i j k,
   (∀ k : nat, u (i + k) ≤ rad - 1)
   → (∀ k : nat, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k : nat, fA_ge_1_ε v i k = true)
-  → (∀ j : nat, j < k → fA_ge_1_ε (u ⊕ P v) i j = true)
   → fA_ge_1_ε (u ⊕ P v) i k = false
-  → (∀ j0 : nat, j0 < j → fA_ge_1_ε (u ⊕ v) i j0 = true)
   → fA_ge_1_ε (u ⊕ v) i j = false
-  → NQintg (A i (min_n i 0) v) ≤ 1
   → NQintg (A i (min_n i j) v) = 1
   → (A i (min_n i j) u + A i (min_n i j) v < 2)%NQ
   → (A i (min_n i k) u + A i (min_n i k) (P v) < 1)%NQ.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hu Hv Hvt Hjk Hk Hjj Hj Ha0 Haj Haa.
+intros Hu Hv Hvt Hk Hj Haj Haa.
 remember (min_n i 0) as ni eqn:Hni.
 remember (min_n i j) as nij eqn:Hnij.
 remember (min_n i k) as nik eqn:Hnik.
@@ -5513,8 +5510,7 @@ destruct (NQlt_le_dec (A i nik u + 1 - 1 // rad ^ sik)%NQ 1) as [H1| H1].
  rewrite Hsik in H1.
  apply A_lt_le_pred in H1.
  now apply NQle_antisymm in H1.
--idtac.
- apply A_ge_1_false_iff in Hj.
+-apply A_ge_1_false_iff in Hj.
  rewrite <- Hnij, A_additive in Hj.
  rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
  rewrite NQfrac_small in Hj. 2: {
@@ -5539,7 +5535,7 @@ destruct (NQlt_le_dec (A i nik u + 1 - 1 // rad ^ sik)%NQ 1) as [H1| H1].
   apply -> NQlt_sub_lt_add_l in Hj.
   rewrite NQadd_sub_assoc in Hj.
   replace (1 + 1)%NQ with 2%NQ in Hj by easy.
-  clear H2 Haa.
+  clear H2 (*Haa*).
   specialize (A_ge_1_add_all_true_if v i) as Hvr.
   assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
     intros p; rewrite <- Nat.add_assoc; apply Hv.
@@ -5765,7 +5761,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      now apply (pre_Hugo_Herbelin_61 _ _ _ j).
    ++destruct H2 as (k & Hjk & Hk); subst kup nv nuv nup; move k before j.
      now apply (pre_Hugo_Herbelin_62 _ _ _ j).
--idtac.
+-destruct H3 as (j & Hjj & Hj); subst kv.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
