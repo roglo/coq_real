@@ -5627,6 +5627,12 @@ apply NQintg_small.
 split; [ now apply NQadd_nonneg_nonneg | ].
 ...
 destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
+-rewrite NQfrac_small; [ | easy ].
+ rewrite NQfrac_small in Haav; [ | easy ].
+ rewrite ApB_A; [ | flia Hini ].
+ rewrite Hni, <- min_n_add, Nat.add_0_l, <- Hnij.
+...
+destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
 -rewrite NQfrac_small in Haav; [ | easy ].
  rewrite NQintg_small; [ symmetry; clear Ha1 | easy ].
  apply NQintg_small; split; [ easy | ].
