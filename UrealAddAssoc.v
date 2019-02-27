@@ -5493,6 +5493,28 @@ apply A_le_pred_lt; [ easy | | ]. {
 }
 rewrite Nat.sub_diag.
 enough (H : A i nik u = 0%NQ) by (rewrite H; apply NQle_refl).
+apply A_ge_1_false_iff in Hk.
+rewrite <- Hnik, A_additive in Hk.
+rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
+rewrite NQfrac_small in Hk. 2: {
+  split; [ easy | ].
+  apply A_upper_bound_for_dig.
+  intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+}
+rewrite NQfrac_small in Hk. 2: {
+  split; [ easy | ].
+  rewrite (A_all_9 (P _)); [ | easy ].
+  now apply NQsub_lt.
+}
+rewrite (A_all_9 (P _)) in Hk; [ | easy ].
+remember (nik - i - 1) as sik eqn:Hsik.
+rewrite NQadd_sub_assoc in Hk.
+destruct (NQlt_le_dec (A i nik u + 1 - 1 // rad ^ sik)%NQ 1) as [H1| H1].
+-apply NQlt_sub_lt_add_l, NQadd_lt_mono_r in H1.
+ rewrite Hsik in H1.
+ apply A_lt_le_pred in H1.
+ now apply NQle_antisymm in H1.
+-idtac.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
