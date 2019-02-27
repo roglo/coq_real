@@ -5612,6 +5612,29 @@ destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
    now apply H.
  }
  symmetry in Haj; move Haj at bottom; clear Haj1.
+ specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as Hupr.
+ assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
+   intros p; unfold "⊕"; rewrite <- Nat.add_assoc.
+   replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+   apply Nat.add_le_mono; [ apply Hu | apply P_le ].
+ }
+ specialize (Hupr H Haup); clear H.
+ specialize (P_999_start (u ⊕ v) (i + 1) 3) as Huvr.
+ assert (H : ∀ k : nat, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)) by admit.
+ specialize (Huvr H); clear H.
+ assert (H : ∀ k : nat, P (u ⊕ v) (i + 1 + k) = rad - 1). {
+   intros k; rewrite Nat.add_shuffle0.
+   now apply all_fA_ge_1_ε_P_999.
+ }
+ specialize (Huvr H); clear H.
+...
+ specialize (A_ge_1_add_all_true_if (u ⊕ v) i) as Huvr.
+ assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 2 * (rad - 1)). {
+   intros p; unfold "⊕"; rewrite <- Nat.add_assoc.
+   replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+   apply Nat.add_le_mono; [ apply Hu | apply P_le ].
+ }
+ specialize (Hupr H Haup); clear H.
 ...
  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as Haupk.
  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Hauv) as Hauvk.
