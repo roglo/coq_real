@@ -5535,7 +5535,7 @@ destruct (NQlt_le_dec (A i nik u + 1 - 1 // rad ^ sik)%NQ 1) as [H1| H1].
   apply -> NQlt_sub_lt_add_l in Hj.
   rewrite NQadd_sub_assoc in Hj.
   replace (1 + 1)%NQ with 2%NQ in Hj by easy.
-  clear H2 (*Haa*).
+  clear H2.
   specialize (A_ge_1_add_all_true_if v i) as Hvr.
   assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
     intros p; rewrite <- Nat.add_assoc; apply Hv.
@@ -5597,6 +5597,75 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hjj Hj Haup Hauv Haj Ha0 Haap Haav.
+remember (min_n i 0) as ni eqn:Hni.
+remember (min_n i j) as nij eqn:Hnij.
+move ni before j; move nij before ni; move Hnij before Hni.
+destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
+-rewrite NQfrac_small in Haav; [ | easy ].
+ rewrite NQintg_small; [ symmetry | easy ].
+ apply NQintg_small; split; [ easy | ].
+ destruct (NQlt_le_dec (A i nij v) 1) as [Haj1| Haj1]; [ easy | ].
+ exfalso.
+ apply A_ge_1_false_iff in Hj.
+ rewrite <- Hnij in Hj.
+ specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as Hupr.
+ (* bon, faut que je réfléchisse... *)
+...
+  assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+    intros p; rewrite <- Nat.add_assoc; apply Hv.
+  }
+  specialize (Hvr H Hvt); clear H.
+...
+ specialize (all_fA_ge_1_ε_P_999 _ _ Haup) as Hupr.
+rewrite (A_all_9 (P _)); [ | easy ].
+rewrite NQadd_sub_assoc.
+apply NQlt_sub_lt_add_l, NQadd_lt_mono_r.
+...
+destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
+-rewrite NQfrac_small in Haav; [ | easy ].
+ rewrite (NQintg_small (A _ ni _)); [ symmetry | easy ].
+ apply NQintg_small.
+ split; [ easy | ].
+ clear Ha0 Ha1.
+ apply A_ge_1_false_iff in Hj.
+ rewrite <- Hnij in Hj.
+...
+ rewrite Hnij; replace j with (0 + j) by easy.
+ rewrite min_n_add, <- Hni.
+ rewrite <- ApB_A. 2: {
+   rewrite Hni; unfold min_n.
+   destruct rad; [ easy | cbn; flia ].
+ }
+ apply NQintg_small.
+Search (NQintg _ = 0).
+...
+ rewrite NQintg_add; [ | easy | apply B_ge_0 ].
+ rewrite NQintg_small; [ | easy ].
+ rewrite Nat.add_0_l.
+ rewrite NQfrac_small; [ | easy ].
+ assert (HB : (0 ≤ B i ni v (rad * j) < 1)%NQ). {
+   split; [ apply B_ge_0 | ].
+   specialize (B_upper_bound_for_adds 2 v i 0 (rad * j)) as H1.
+   rewrite <- Hni in H1.
+   assert (H : 0 < 2 ≤ rad ^ 2). {
+     split; [ pauto | ].
+     rewrite Nat.pow_2_r.
+     replace 2 with (2 * 1) by easy.
+     now apply Nat.mul_le_mono.
+   }
+   specialize (H1 H); clear H.
+   assert (H : ∀ j : nat, j ≥ i → v j ≤ 2 * (rad - 1)). {
+     intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hv.
+   }
+   specialize (H1 H); clear H.
+   eapply NQlt_le_trans; [ apply H1 | rewrite Nat.pow_1_r ].
+   apply NQle_pair_mono_l; split; [ pauto | easy ].
+ }
+ rewrite NQintg_small; [ | easy ].
+ rewrite NQfrac_small; [ | easy ].
+ rewrite Nat.add_0_l.
+  ============================
+  NQintg (A i ni v + B i ni v (rad * j)) = 0
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
