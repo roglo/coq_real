@@ -5597,20 +5597,32 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hjj Hj Haup Hauv Haj Ha0 Haap Haav.
+clear Ha0.
 remember (min_n i 0) as ni eqn:Hni.
 remember (min_n i j) as nij eqn:Hnij.
 move ni before j; move nij before ni; move Hnij before Hni.
 destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
 -rewrite NQfrac_small in Haav; [ | easy ].
- rewrite NQintg_small; [ symmetry | easy ].
+ rewrite NQintg_small; [ symmetry; clear Ha1 | easy ].
  apply NQintg_small; split; [ easy | ].
  destruct (NQlt_le_dec (A i nij v) 1) as [Haj1| Haj1]; [ easy | ].
  exfalso.
+ apply Nat.le_antisymm in Haj. 2: {
+   specialize (NQintg_le_mono 1%NQ (A i nij v)) as H.
+   now apply H.
+ }
+ symmetry in Haj; move Haj at bottom; clear Haj1.
+...
+   eapply le_trans.
+   eapply le_trans; [ | apply Haj1 ].
+   apply A_upper_bound_for_add.
+   specialize (A_upper_bound_for_add v i n) as H.
+Search (A _ _ _ ≤ 1)%NQ.
+...
+ specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as Hupr.
+...
  apply A_ge_1_false_iff in Hj.
  rewrite <- Hnij in Hj.
- specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as Hupr.
- (* bon, faut que je réfléchisse... *)
-...
   assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
     intros p; rewrite <- Nat.add_assoc; apply Hv.
   }
