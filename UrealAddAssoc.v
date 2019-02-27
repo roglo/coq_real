@@ -5627,6 +5627,14 @@ destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
    now apply all_fA_ge_1_ε_P_999.
  }
  specialize (Huvr H); clear H.
+ apply A_ge_1_false_iff in Hj.
+ rewrite <- Hnij in Hj.
+ move Hj after Haj.
+ rewrite NQfrac_of_intg in Hj; [ | easy ].
+ rewrite Haj in Hj.
+ apply -> NQlt_sub_lt_add_l in Hj.
+ rewrite NQadd_sub_assoc in Hj.
+ replace (1 + 1)%NQ with 2%NQ in Hj by easy.
 ...
  specialize (A_ge_1_add_all_true_if (u ⊕ v) i) as Huvr.
  assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 2 * (rad - 1)). {
