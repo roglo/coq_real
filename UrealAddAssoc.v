@@ -5635,6 +5635,24 @@ destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
  apply -> NQlt_sub_lt_add_l in Hj.
  rewrite NQadd_sub_assoc in Hj.
  replace (1 + 1)%NQ with 2%NQ in Hj by easy.
+ destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
+ +clear Huvr; unfold "⊕" in H1.
+  apply NQnle_gt in Haav; apply Haav; clear Haav.
+  rewrite A_split_first by admit.
+  rewrite (A_split_first _ _ v) by admit.
+  rewrite NQadd_add_swap, NQadd_assoc, <- (Nat.add_1_r i).
+  rewrite <- NQpair_add_l, H1, <- NQadd_assoc, <- NQmul_add_distr_r.
+  eapply NQle_trans. 2: {
+    apply NQle_add_r.
+    replace 0%NQ with (0 * 0)%NQ by easy.
+    apply NQmul_le_mono_nonneg; [ apply NQle_refl | | apply NQle_refl | ].
+    -now apply NQadd_nonneg_nonneg.
+    -easy.
+  }
+  apply NQle_pair; [ easy | easy | ].
+  apply Nat.mul_le_mono_l; flia Hr.
+ +destruct (le_dec 3 rad) as [Hr3| Hr3].
+  *destruct Huvr as (H2 & H3 & H4).
 ...
  specialize (A_ge_1_add_all_true_if (u ⊕ v) i) as Huvr.
  assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 2 * (rad - 1)). {
