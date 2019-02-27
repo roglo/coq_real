@@ -5625,6 +5625,8 @@ rewrite (NQfrac_small (B _ _ _ _)); [ | easy ].
 rewrite Nat.add_0_l.
 apply NQintg_small.
 split; [ now apply NQadd_nonneg_nonneg | ].
+specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as Haupk.
+specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Hauv) as Hauvk.
 ...
 destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
 -rewrite NQfrac_small; [ | easy ].
