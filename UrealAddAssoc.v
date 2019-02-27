@@ -5515,6 +5515,32 @@ destruct (NQlt_le_dec (A i nik u + 1 - 1 // rad ^ sik)%NQ 1) as [H1| H1].
  apply A_lt_le_pred in H1.
  now apply NQle_antisymm in H1.
 -idtac.
+ apply A_ge_1_false_iff in Hj.
+ rewrite <- Hnij, A_additive in Hj.
+ rewrite NQfrac_add_cond in Hj; [ | easy | easy ].
+ rewrite NQfrac_small in Hj. 2: {
+   split; [ easy | ].
+   apply A_upper_bound_for_dig.
+   intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+ }
+ rewrite NQfrac_less_small in Hj. 2: {
+   split.
+   -specialize (NQintg_of_frac (A i nij v) (A_ge_0 _ _ _)) as H.
+    rewrite Haj in H; rewrite H.
+    now apply NQle_sub_l.
+   -eapply NQle_lt_trans.
+    +apply A_upper_bound_for_add.
+     intros p; rewrite <- Nat.add_assoc; apply Hv.
+    +rewrite NQmul_sub_distr_l, NQmul_1_r.
+     now apply NQsub_lt.
+ }
+ rewrite NQadd_sub_assoc in Hj.
+ destruct (NQlt_le_dec (A i nij u + A i nij v - 1)%NQ 1) as [H2| H2].
+ +rewrite NQsub_0_r in Hj.
+  apply -> NQlt_sub_lt_add_l in Hj.
+  rewrite NQadd_sub_assoc in Hj.
+  replace (1 + 1)%NQ with 2%NQ in Hj by easy.
+  clear H2 Haa.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
