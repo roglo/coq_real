@@ -5601,6 +5601,31 @@ clear Ha0.
 remember (min_n i 0) as ni eqn:Hni.
 remember (min_n i j) as nij eqn:Hnij.
 move ni before j; move nij before ni; move Hnij before Hni.
+rewrite Hnij; replace j with (0 + j) by easy.
+assert (Hini : i + 1 ≤ ni - 1). {
+  rewrite Hni; unfold min_n; destruct rad; [ easy | cbn; flia ].
+}
+rewrite min_n_add, <- Hni, <- ApB_A; [ | flia Hini ].
+rewrite NQintg_add; [ | easy | apply B_ge_0 ].
+rewrite <- (Nat.add_0_r (NQintg _)) at 1.
+rewrite <- Nat.add_assoc.
+apply Nat.add_cancel_l; symmetry.
+assert (HB : (0 ≤ B i ni v (rad * j) < 1)%NQ). {
+  split; [ apply B_ge_0 | ].
+  eapply NQlt_le_trans.
+  -rewrite Hni.
+   apply B_upper_bound_for_add.
+   intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hv.
+  -rewrite Nat.pow_1_r.
+   apply NQle_pair_mono_l.
+   split; [ apply Nat.lt_0_1 | easy ].
+}
+rewrite NQintg_small; [ | easy ].
+rewrite (NQfrac_small (B _ _ _ _)); [ | easy ].
+rewrite Nat.add_0_l.
+apply NQintg_small.
+split; [ now apply NQadd_nonneg_nonneg | ].
+...
 destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
 -rewrite NQfrac_small in Haav; [ | easy ].
  rewrite NQintg_small; [ symmetry; clear Ha1 | easy ].
