@@ -5656,6 +5656,7 @@ destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
   (* H1 implique que u(i+1)=9 et v(i+1)=18 ; donc Hupr implique que
      P(v)(i+1)=0 ce qui, je pense n'est pas compatible avec v(i+1)=18
      parce que ça supposerait que la retenue vaille 2 *)
+Check carry_upper_bound_for_add.
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as Haupk.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Hauv) as Hauvk.
