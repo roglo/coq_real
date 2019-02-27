@@ -5620,7 +5620,12 @@ destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
  }
  specialize (Hupr H Haup); clear H.
  specialize (P_999_start (u ⊕ v) (i + 1) 3) as Huvr.
- assert (H : ∀ k : nat, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)) by admit.
+ assert (H : ∀ k : nat, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
+   intros k; rewrite <- Nat.add_assoc.
+   unfold "⊕"; replace 3 with (1 + 2) by easy.
+   rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+   apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+ }
  specialize (Huvr H); clear H.
  assert (H : ∀ k : nat, P (u ⊕ v) (i + 1 + k) = rad - 1). {
    intros k; rewrite Nat.add_shuffle0.
