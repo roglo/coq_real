@@ -5613,6 +5613,34 @@ destruct (NQlt_le_dec (A i ni v) 1) as [Ha1| Ha1].
  }
  symmetry in Haj; move Haj at bottom; clear Haj1.
 ...
+ specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as Haupk.
+ specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Hauv) as Hauvk.
+ specialize (Haupk j) as H1.
+ specialize (Hauvk j) as H2.
+ rewrite <- Hnij, A_additive in H1, H2.
+ rewrite NQfrac_add_cond in H1; [ | easy | easy ].
+ rewrite NQfrac_add_cond in H2; [ | easy | easy ].
+ assert (Hau : ∀ n, (0 ≤ A i n u < 1)%NQ). {
+   intros n; split; [ easy | ].
+   apply A_upper_bound_for_dig.
+   intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
+ }
+ rewrite NQfrac_small in H1; [ | easy ].
+ rewrite NQfrac_small in H2; [ | easy ].
+ rewrite NQfrac_small in H1. 2: {
+   split; [ easy | ].
+   apply A_upper_bound_for_dig.
+   intros p Hp; apply P_le.
+ }
+ rewrite NQfrac_less_small in H2. 2: {
+   rewrite (NQintg_frac (A _ _ _)); [ | easy ].
+   rewrite Haj.
+   split; [ now apply NQle_add_r | ].
+   apply NQlt_add_lt_sub_l, NQfrac_lt_1.
+ }
+ rewrite NQadd_sub_assoc in H2.
+ destruct (NQlt_le_dec (A i nij u + A i nij (P v)) 1) as [H3| H3].
+...
    eapply le_trans.
    eapply le_trans; [ | apply Haj1 ].
    apply A_upper_bound_for_add.
@@ -5628,7 +5656,6 @@ Search (A _ _ _ ≤ 1)%NQ.
   }
   specialize (Hvr H Hvt); clear H.
 ...
- specialize (all_fA_ge_1_ε_P_999 _ _ Haup) as Hupr.
 rewrite (A_all_9 (P _)); [ | easy ].
 rewrite NQadd_sub_assoc.
 apply NQlt_sub_lt_add_l, NQadd_lt_mono_r.
