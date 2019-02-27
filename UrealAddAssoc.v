@@ -5483,6 +5483,16 @@ remember (min_n i j) as nij eqn:Hnij.
 remember (min_n i k) as nik eqn:Hnik.
 move ni before k; move nij before ni; move nik before nij.
 move Hnij before Hni; move Hnik before Hnij.
+specialize (all_fA_ge_1_ε_P_999 v i Hvt) as Hpr.
+rewrite (A_all_9 (P _)); [ | easy ].
+rewrite NQadd_sub_assoc.
+apply NQlt_sub_lt_add_l, NQadd_lt_mono_r.
+apply A_le_pred_lt; [ easy | | ]. {
+  rewrite Hnik; unfold min_n.
+  destruct rad; [ easy | cbn; flia ].
+}
+rewrite Nat.sub_diag.
+enough (H : A i nik u = 0%NQ) by (rewrite H; apply NQle_refl).
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
