@@ -5625,6 +5625,38 @@ rewrite (NQfrac_small (B _ _ _ _)); [ | easy ].
 rewrite Nat.add_0_l.
 apply NQintg_small.
 split; [ now apply NQadd_nonneg_nonneg | ].
+specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as Hupr.
+assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
+  intros p; unfold "⊕"; rewrite <- Nat.add_assoc.
+  replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+  apply Nat.add_le_mono; [ apply Hu | apply P_le ].
+}
+specialize (Hupr H Haup); clear H.
+specialize (P_999_start (u ⊕ v) (i + 1) 3) as Huvr.
+assert (H : ∀ k : nat, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
+  intros k; rewrite <- Nat.add_assoc.
+  unfold "⊕"; replace 3 with (1 + 2) by easy.
+  rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+  apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+}
+specialize (Huvr H); clear H.
+assert (H : ∀ k : nat, P (u ⊕ v) (i + 1 + k) = rad - 1). {
+  intros k; rewrite Nat.add_shuffle0.
+  now apply all_fA_ge_1_ε_P_999.
+}
+specialize (Huvr H); clear H.
+clear HB.
+apply A_ge_1_false_iff in Hj.
+rewrite <- Hnij in Hj.
+move Hj after Haj.
+destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
+-clear Huvr; unfold "⊕" in H1.
+ destruct Hupr as [Hupr| [Hupr| Hupr]].
+ +idtac.
+  (* H1 implique que u(i+1)=9 et v(i+1)=18 ; donc Hupr implique que
+     P(v)(i+1)=0 ce qui, je pense n'est pas compatible avec v(i+1)=18
+     parce que ça supposerait que la retenue vaille 2 *)
+...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as Haupk.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Hauv) as Hauvk.
 ...
