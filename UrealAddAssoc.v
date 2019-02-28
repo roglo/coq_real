@@ -1622,12 +1622,8 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
 -rewrite Hum in H1.
  rewrite Nat.div_small in H1; [ | flia Hr ].
  rewrite Nat.add_0_l in H1.
- destruct (lt_dec rad m) as [H3| H3].
- +clear H1.
-  split; [ split | ].
-...
-
-; [ easy | clear H3 ].
+ destruct (lt_dec rad m) as [H3| H3]; [ now apply Nat.nle_gt in H3 | ].
+ clear H3.
  destruct H1 as ((_, Hm) & (_, Hc) & H1).
  rewrite Nat.mul_1_l in H1.
  destruct (Nat.eq_dec m 1) as [H4| H4]; [ flia Hm H4 | clear H4 ].
@@ -1661,12 +1657,13 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
    intros k; do 2 rewrite <- Nat.add_assoc; apply Hpu.
  }
  specialize (H1 H); clear H.
+ destruct (lt_dec rad m) as [H3| H3]; [ now apply Nat.nle_gt in H3 | ].
+ clear H3.
  destruct (Nat.eq_dec (u (i + j + 1)) (m * (rad - 1))) as [H4| H4].
  +clear H1.
   rewrite H4, Nat.mul_sub_distr_l, Nat.mul_1_r.
   destruct m; [ easy | cbn; flia ].
- +destruct (le_dec m rad) as [H3| H3]; [ clear H3 | easy ].
-  rewrite Nat.div_small in H1; [ | easy ].
+ +rewrite Nat.div_small in H1; [ | easy ].
   rewrite Nat.add_0_l in H1.
   destruct H1 as (H1 & H3 & H5); rewrite H5, Nat.mul_1_l.
   rewrite Nat_sub_sub_distr; [ now rewrite Nat.sub_diag | ].
@@ -1697,6 +1694,7 @@ assert (H : ∀ n, P u (i + k + n) = rad - 1). {
 }
 specialize (H1 H); clear H.
 destruct (le_dec 2 rad) as [H2| H2]; [ clear H2 | flia Hr H2 ].
+...
 destruct (eq_nat_dec (u (i + k)) (2 * (rad - 1))) as [H2| H2].
 -clear H1.
  destruct (zerop (carry u (i + k))) as [H3| H3].
