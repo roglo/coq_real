@@ -1693,8 +1693,7 @@ assert (H : ∀ n, P u (i + k + n) = rad - 1). {
   intros n; rewrite <- Nat.add_assoc; apply Hpr.
 }
 specialize (H1 H); clear H.
-destruct (le_dec 2 rad) as [H2| H2]; [ clear H2 | flia Hr H2 ].
-...
+destruct (lt_dec rad 2) as [H2| H2]; [ flia Hr H2 | clear H2 ].
 destruct (eq_nat_dec (u (i + k)) (2 * (rad - 1))) as [H2| H2].
 -clear H1.
  destruct (zerop (carry u (i + k))) as [H3| H3].
