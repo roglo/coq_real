@@ -5653,10 +5653,33 @@ destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
 -clear Huvr; unfold "⊕" in H1.
  destruct Hupr as [Hupr| [Hupr| Hupr]].
  +idtac.
-  (* H1 implique que u(i+1)=9 et v(i+1)=18 ; donc Hupr implique que
-     P(v)(i+1)=0 ce qui, je pense n'est pas compatible avec v(i+1)=18
+  (* H1 implique que u(i+1)=r-1 et v(i+1)=2r-2 ; donc Hupr implique que
+     P(v)(i+1)=0 ce qui, je pense n'est pas compatible avec v(i+1)=2r-2
      parce que ça supposerait que la retenue vaille 2 *)
-Check carry_upper_bound_for_add.
+  (* euh... sauf si r=2 *)
+  assert (H2 : v (i + 1) = 2 * (rad - 1)). {
+    specialize (Hu 1) as H2.
+    specialize (Hv 1) as H3.
+    flia H1 H2 H3.
+  }
+  assert (H3 : P v (i + 1) = 0). {
+    specialize (Hupr 0) as H3.
+    rewrite Nat.add_0_r in H3; unfold "⊕" in H3.
+    flia H1 H2 H3.
+  }
+  unfold P, d2n, prop_carr in H3; cbn in H3.
+  rewrite H2 in H3.
+  remember (carry v (i + 1)) as c eqn:Hc; symmetry in Hc.
+  specialize (carry_upper_bound_for_add v (i + 1)) as H4.
+  assert (H : ∀ k, v (i + 1 + k + 1) ≤ 2 * (rad - 1)). {
+    intros k; do 2 rewrite <- Nat.add_assoc; apply Hv.
+  }
+  specialize (H4 H); clear H.
+  rewrite Hc in H4.
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H3.
+  destruct c.
+  *rewrite Nat.add_0_r in H3.
+   (* ah oui mais si r=2, c'est pas contradictoire *)
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as Haupk.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Hauv) as Hauvk.
