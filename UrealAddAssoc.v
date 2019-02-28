@@ -1426,20 +1426,22 @@ Qed.
 Theorem P_999_start {r : radix} : ∀ u i m,
   (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
-  → if eq_nat_dec (u i) (m * (rad - 1)) then True
-    else
+  → if lt_dec rad m then
       let j :=
-        if le_dec m rad then u i / rad + 1
-        else if lt_dec (carry u i) rad then u i / rad + 1
+        if lt_dec (carry u i) rad then u i / rad + 1
         else if zerop (u i) then 1
         else (u i + carry u i) / rad
       in
       let k :=
-        if le_dec m rad then carry u i + 1
-        else if lt_dec (carry u i) rad then carry u i + 1
+        if lt_dec (carry u i) rad then carry u i + 1
         else if zerop (u i) then rad
         else carry u i - (rad - 1)
       in
+      1 ≤ j ≤ rad ∧ 1 ≤ k ≤ rad ∧ u i = j * rad - k
+    else if eq_nat_dec (u i) (m * (rad - 1)) then True
+    else
+      let j := u i / rad + 1 in
+      let k := carry u i + 1 in
       1 ≤ j < m ∧ 1 ≤ k ≤ m ∧ u i = j * rad - k.
 Proof.
 intros * Hur Hpu.
@@ -1461,6 +1463,84 @@ destruct (zerop m) as [Hm| Hm]. {
    now apply Nat.le_0_r in H4; rewrite H4.
 }
 apply Nat.neq_0_lt_0 in Hm.
+specialize (Hpu 0) as H2.
+rewrite Nat.add_0_r in H2.
+unfold P, d2n, prop_carr in H2; cbn in H2.
+specialize (carry_upper_bound_for_adds u i m Hm) as H3.
+assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+  intros; rewrite <- Nat.add_assoc; apply Hur.
+}
+specialize (H3 H); clear H.
+specialize (H3 0) as H4.
+rewrite Nat.add_0_r in H4.
+destruct (lt_dec rad m) as [Hrm| Hrm].
+-destruct (lt_dec (carry u i) rad) as [Hcr| Hcr].
+ +assert (H5 : u i mod rad = rad - 1 - carry u i). {
+    specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
+    rewrite H2 in H5.
+    apply Nat.add_sub_eq_r in H5.
+    rewrite <- Nat.add_sub_assoc in H5; [ | flia Hcr ].
+    rewrite <- H5, Nat.add_comm, Nat.mul_comm.
+    rewrite Nat.mod_add; [ | easy ].
+    apply Nat.mod_small; flia Hr.
+  }
+  specialize (Nat.div_mod (u i) rad radix_ne_0) as H6.
+  rewrite H5 in H6.
+  rewrite Nat_sub_sub_swap, <- Nat.sub_add_distr in H6.
+  rewrite Nat.add_sub_assoc in H6; [ | flia Hr Hcr ].
+  replace rad with (rad * 1) in H6 at 3 by flia.
+  rewrite <- Nat.mul_add_distr_l, Nat.mul_comm in H6.
+  split; [ | split ]; [ | flia Hcr | easy ].
+  split; [ flia | ].
+  specialize (Hur 0) as H7; rewrite Nat.add_0_r in H7.
+...
+(*
+  assert (H8 : u i < m * (rad - 1)) by flia H1 H7.
+*)
+  apply (Nat.mul_le_mono_pos_r _ _ rad); [ easy | ].
+  apply (Nat.add_cancel_r _ _ (carry u i + 1)) in H6.
+  rewrite Nat.sub_add in H6. 2: {
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+    flia Hr Hcr.
+  }
+  rewrite <- H6.
+  apply (le_trans _ (m * (rad - 1) + (carry u i + 1))).
+  *now apply Nat.add_le_mono_r.
+  *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   rewrite <- Nat_sub_sub_distr.
+...
+   rewrite <- Nat_sub_sub_distr; [ apply Nat.le_sub_l | ].
+   split; [ flia Hcr Hmr | ].
+   destruct rad; [ easy | rewrite Nat.mul_comm; cbn; flia ].
+ +apply Nat.nlt_ge in Hcr.
+  specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
+  rewrite H2 in H5.
+  apply Nat.add_sub_eq_r in H5.
+  destruct (zerop (u i)) as [H6| H6]. {
+    split; [ | split ]; [ flia Hmr Hr | flia Hmr Hr | ].
+    now rewrite Nat.mul_1_l, Nat.sub_diag.
+  }
+  rewrite <- Nat_sub_sub_assoc in H5. 2: {
+    split; [ flia Hcr | flia H5 H6 ].
+  }
+  rewrite Nat.mul_comm in H5.
+  split; [ | split ]; [ split | | easy ].
+  *apply Nat.neq_0_lt_0.
+   intros H.
+   now rewrite <- H5, H in H6.
+  *apply (Nat.mul_lt_mono_pos_r rad); [ easy | ].
+   rewrite Nat.mul_comm.
+   eapply Nat.le_lt_trans; [ now apply Nat.mul_div_le | ].
+   specialize (Hur 0) as H7.
+   rewrite Nat.add_0_r in H7.
+   apply (lt_le_trans _ (m * (rad - 1) + m)).
+  --now apply Nat.add_le_lt_mono.
+  --rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+    rewrite Nat.sub_add; [ easy | ].
+    replace m with (m * 1) at 1 by flia.
+    now apply Nat.mul_le_mono_l.
+  *split; [ flia Hcr Hr | flia H4 ].
+...
 destruct (eq_nat_dec (u i) (m * (rad - 1))) as [H1| H1]; [ easy | ].
 specialize (Hpu 0) as H2.
 rewrite Nat.add_0_r in H2.
