@@ -1614,8 +1614,7 @@ Qed.
    - limited by 27, then u is 7, 8, 9, 17, 18, 19 or 27,
    - and so on.
    This just gives the start u_i of the sequence; the following
-   values (u_(i+1), u_(i+2), etc.) are given by an automat
-   decribed later. *)
+   values (u_(i+1), u_(i+2), etc.) will be treated separately. *)
 Theorem P_999_start {r : radix} : ∀ u i m,
   (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
@@ -1637,15 +1636,24 @@ Theorem P_999_start {r : radix} : ∀ u i m,
 Proof.
 intros * Hur Hpu.
 specialize radix_ge_2 as Hr.
-destruct (eq_nat_dec (u i) (m * (rad - 1))) as [H1| H1]; [ easy | ].
 destruct (zerop m) as [Hm| Hm]. {
   exfalso.
   subst m; rewrite Nat.mul_0_l in Hur.
-  rewrite Nat.mul_0_l in H1.
-  specialize (Hur 0); rewrite Nat.add_0_r in Hur.
-  now apply Nat.le_0_r in Hur.
+  specialize (Hpu 0) as H1; rewrite Nat.add_0_r in H1.
+  unfold P, d2n, prop_carr in H1; cbn in H1.
+  specialize (Hur 0) as H2; rewrite Nat.add_0_r in H2.
+  apply Nat.le_0_r in H2.
+  rewrite H2, Nat.add_0_l in H1.
+  unfold carry, A in H1.
+  rewrite all_0_summation_0 in H1.
+  -rewrite Nat.mod_0_l in H1; [ flia H1 Hr | easy ].
+  -intros k Hk.
+   specialize (Hur (k - i)) as H4.
+   replace (i + (k - i)) with k in H4 by flia Hk.
+   now apply Nat.le_0_r in H4; rewrite H4.
 }
 apply Nat.neq_0_lt_0 in Hm.
+destruct (eq_nat_dec (u i) (m * (rad - 1))) as [H1| H1]; [ easy | ].
 specialize (Hpu 0) as H2.
 rewrite Nat.add_0_r in H2.
 unfold P, d2n, prop_carr in H2; cbn in H2.
@@ -5679,7 +5687,9 @@ destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H3.
   destruct c.
   *rewrite Nat.add_0_r in H3.
-   (* ah oui mais si r=2, c'est pas contradictoire *)
+   destruct (Nat.eq_dec rad 2) as [Hr2| Hr2].
+  --idtac.
+Check P_999_after_mod_is_9.
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as Haupk.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Hauv) as Hauvk.
