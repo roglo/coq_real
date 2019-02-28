@@ -1475,6 +1475,8 @@ specialize (H3 0) as H4.
 rewrite Nat.add_0_r in H4.
 destruct (lt_dec rad m) as [Hrm| Hrm].
 -destruct (lt_dec (carry u i) rad) as [Hcr| Hcr].
+ +idtac.
+...
  +assert (H5 : u i mod rad = rad - 1 - carry u i). {
     specialize (Nat.div_mod (u i + carry u i) rad radix_ne_0) as H5.
     rewrite H2 in H5.
