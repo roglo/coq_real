@@ -1357,6 +1357,28 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
   apply NQle_refl.
 Qed.
 
+Theorem B_upper_bound_for_adds' {r : radix} : ∀ m u i n l,
+  0 < m ≤ rad ^ 2
+  → i + 1 ≤ n
+  → (∀ j : nat, j ≥ i → u j ≤ m * (rad - 1))
+  → (B i n u l ≤ m // rad ^ (n - i - 1) * (1 - 1 // rad ^ l))%NQ.
+Proof.
+intros * Hm Hin Hu.
+rewrite B_of_A; [ | easy ].
+remember (n - i - 1) as s eqn:Hs.
+specialize (A_upper_bound_for_adds u (n - 1) (n + l) m) as H1.
+replace (n + l - (n - 1) - 1) with l in H1 by flia Hin.
+assert (H : ∀ k : nat, u (n - 1 + k + 1) ≤ m * (rad - 1)). {
+  intros.
+  rewrite Nat.add_shuffle0.
+  rewrite Nat.sub_add; [ apply Hu; flia Hin | flia Hin ].
+}
+specialize (H1 H); clear H.
+apply (NQmul_le_mono_pos_r (1 // rad ^ s)%NQ) in H1; [ | easy ].
+rewrite NQmul_mul_swap in H1.
+now rewrite NQmul_pair_den_num in H1.
+Qed.
+
 (* generalizes NQintg_A_le_1_for_add *)
 Theorem NQintg_A_le_for_adds {r : radix} : ∀ u i j m,
   (∀ k, u (i + k + 1) ≤ m * (rad - 1))
@@ -3426,7 +3448,7 @@ clear HB.
 apply A_ge_1_false_iff in Hj.
 rewrite <- Hnij in Hj.
 move Hj after Haj.
-(**)
+(*
 specialize (B_upper_bound_for_adds 2 v i 0 (rad * j)) as Hbv.
 rewrite <- Hni in Hbv.
 assert (H : 0 < 2 ≤ rad ^ 2). {
@@ -3440,6 +3462,21 @@ assert (H : ∀ j : nat, j ≥ i → v j ≤ 2 * (rad - 1)). {
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hv.
 }
 specialize (Hbv H); clear H; rewrite Nat.pow_1_r in Hbv.
+*)
+specialize (B_upper_bound_for_adds' 2 v i ni (rad * j)) as Hbw.
+assert (H : 0 < 2 ≤ rad ^ 2). {
+  split; [ pauto | ].
+  rewrite Nat.pow_2_r.
+  replace 2 with (2 * 1) by easy.
+  now apply Nat.mul_le_mono.
+}
+specialize (Hbw H); clear H.
+assert (H : i + 1 ≤ ni) by flia Hini.
+specialize (Hbw H); clear H.
+assert (H : ∀ j : nat, j ≥ i → v j ≤ 2 * (rad - 1)). {
+  intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hv.
+}
+specialize (Hbw H); clear H.
 destruct (lt_dec rad 3) as [Hr3| Hr3].
 -assert (Hr2 : rad = 2) by flia Hr Hr3.
  (* in the case rad=2, any value of (u⊕v)(i+1) is possible (3 values) *)
@@ -3479,8 +3516,9 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
    remember (2 * (1 - 1 // rad ^ si) * 1 // rad)%NQ as x eqn:Hx.
    apply (NQle_lt_trans _ (x + B i ni v (rad * j))%NQ); subst x.
   --now apply NQadd_le_mono_r.
-  --eapply NQlt_le_trans; [ apply NQadd_lt_mono_l, Hbv | ].
-    (* ah bin non *)
+  --eapply NQle_lt_trans; [ apply NQadd_le_mono_l, Hbw | ].
+    replace (ni - i - 1) with (si + 1) by flia Hsi Hini.
+    (* mouais... pas impossible que ça marche, mais fatigué *)
 ...
 destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
 -clear Huvr; unfold "⊕" in H1.
