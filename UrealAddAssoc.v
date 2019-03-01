@@ -3462,6 +3462,29 @@ assert (H : ∀ j : nat, j ≥ i → v j ≤ 2 * (rad - 1)). {
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hv.
 }
 specialize (Hbv H); clear H.
+(**)
+destruct (NQlt_le_dec (A i nij v) 1%NQ) as [Ha1| H1a].
+-rewrite NQfrac_small in Hj; [ | easy ].
+ rewrite NQfrac_small; [ | split ]; [ | easy | ]. 2: {
+   apply (NQle_lt_trans _ (A i nij v)); [ | easy ].
+   rewrite Hnij; replace j with (0 + j) by easy.
+   rewrite min_n_add, <- Hni.
+   rewrite <- ApB_A; [ | flia Hini ].
+   apply NQle_add_r, B_ge_0.
+ }
+ rewrite ApB_A; [ | flia Hini ].
+ now rewrite Hni, <- min_n_add, Nat.add_0_l, <- Hnij.
+-idtac.
+...
+-rewrite NQfrac_less_small. 2: {
+   split.
+   -rewrite Hnij in Ha0; replace j with (0 + j) in Ha0 by easy.
+    rewrite min_n_add, <- Hni in Ha0.
+    rewrite <- ApB_A in Ha0; [ | flia Hini ].
+...
+    eapply NQle_trans; [ apply Ha0 | ].
+    apply NQle_add_r, B_ge_0 in Ha0.
+...
 destruct (lt_dec rad 3) as [Hr3| Hr3].
 -assert (Hr2 : rad = 2) by flia Hr Hr3.
  clear Hr3 Huvr.
