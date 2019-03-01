@@ -3448,9 +3448,7 @@ clear HB.
 apply A_ge_1_false_iff in Hj.
 rewrite <- Hnij in Hj.
 move Hj after Haj.
-(*
-specialize (B_upper_bound_for_adds 2 v i 0 (rad * j)) as Hbv.
-rewrite <- Hni in Hbv.
+specialize (B_upper_bound_for_adds' 2 v i ni (rad * j)) as Hbv.
 assert (H : 0 < 2 ≤ rad ^ 2). {
   split; [ pauto | ].
   rewrite Nat.pow_2_r.
@@ -3458,28 +3456,19 @@ assert (H : 0 < 2 ≤ rad ^ 2). {
   now apply Nat.mul_le_mono.
 }
 specialize (Hbv H); clear H.
-assert (H : ∀ j : nat, j ≥ i → v j ≤ 2 * (rad - 1)). {
-  intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hv.
-}
-specialize (Hbv H); clear H; rewrite Nat.pow_1_r in Hbv.
-*)
-specialize (B_upper_bound_for_adds' 2 v i ni (rad * j)) as Hbw.
-assert (H : 0 < 2 ≤ rad ^ 2). {
-  split; [ pauto | ].
-  rewrite Nat.pow_2_r.
-  replace 2 with (2 * 1) by easy.
-  now apply Nat.mul_le_mono.
-}
-specialize (Hbw H); clear H.
 assert (H : i + 1 ≤ ni) by flia Hini.
-specialize (Hbw H); clear H.
+specialize (Hbv H); clear H.
 assert (H : ∀ j : nat, j ≥ i → v j ≤ 2 * (rad - 1)). {
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hv.
 }
-specialize (Hbw H); clear H.
+specialize (Hbv H); clear H.
 destruct (lt_dec rad 3) as [Hr3| Hr3].
 -assert (Hr2 : rad = 2) by flia Hr Hr3.
  clear Hr3 Huvr.
+ rewrite Hr2 in Hbv |-*.
+ replace 2 with (2 ^ 1) in Hbv at 2 by easy.
+ rewrite NQpow_pair_r in Hbv; [ | easy | flia Hini ].
+ replace (ni - i - 1 - 1) with (ni - i - 2) in Hbv by flia.
  destruct Hupr as [Hupr| [Hupr| Hupr]].
  +clear Haap.
   (* in the case rad=2, any value of (u⊕v)(i+1) is possible (3 values) *)
@@ -3514,10 +3503,10 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
     rewrite <- Nat.add_1_r, Hv0, NQadd_0_l.
     apply (NQmul_le_mono_pos_r (1 // rad)%NQ) in Har; [ | easy ].
     remember (2 * (1 - 1 // rad ^ si) * 1 // rad)%NQ as x eqn:Hx.
-    apply (NQle_lt_trans _ (x + B i ni v (rad * j))%NQ); subst x.
+    apply (NQle_lt_trans _ (x + B i ni v (2 * j))%NQ); subst x.
     -now apply NQadd_le_mono_r.
-    -eapply NQle_lt_trans; [ apply NQadd_le_mono_l, Hbw | ].
-     replace (ni - i - 1) with (si + 1) by flia Hsi Hini.
+    -eapply NQle_lt_trans; [ apply NQadd_le_mono_l, Hbv | ].
+     replace (ni - i - 2) with si by flia Hsi.
      rewrite NQmul_sub_distr_l, NQmul_1_r.
      rewrite NQmul_sub_distr_r.
      rewrite <- NQmul_assoc.
@@ -3525,9 +3514,11 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
      rewrite <- NQpair_inv_mul; [ | pauto | easy ].
      rewrite Nat.mul_comm, <- Nat.pow_succ_r'.
      rewrite <- NQpair_inv_mul, Nat.mul_1_l; [ | easy | pauto ].
-     rewrite Nat.add_1_r.
      rewrite NQmul_sub_distr_l, NQmul_1_r, NQadd_sub_assoc.
-     rewrite NQsub_add, Hr2, NQpair_diag; [ | easy ].
+     replace 2 with (2 ^ 1) at 2 by easy.
+     rewrite Hr2, NQpow_pair_r; [ | easy | flia Hini ].
+     replace (S si - 1) with si by flia.
+     rewrite NQsub_add, NQpair_diag; [ | easy ].
      now apply NQsub_lt.
   }
   destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) 1) as [Huv1| Huv1]. {
