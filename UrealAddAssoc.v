@@ -3623,9 +3623,9 @@ rewrite Hr2 in H1a.
        (* ne marche que si v(i+1)=0 *)
 ...
 destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
--clear Huvr; unfold "⊕" in H1.
+*clear Huvr; unfold "⊕" in H1.
  destruct Hupr as [Hupr| [Hupr| Hupr]].
- +idtac.
+--idtac.
   (* H1 implique que u(i+1)=r-1 et v(i+1)=2r-2 ; donc Hupr implique que
      P(v)(i+1)=0 ce qui, je pense n'est pas compatible avec v(i+1)=2r-2
      parce que ça supposerait que la retenue vaille 2 *)
@@ -3651,9 +3651,10 @@ destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
   rewrite Hc in H4.
   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H3.
   destruct c.
-  *rewrite Nat.add_0_r in H3.
-   destruct (Nat.eq_dec rad 2) as [Hr2| Hr2].
-  --idtac.
+ ++rewrite Nat.add_0_r in H3.
+   ...
+ ++destruct c; [ clear H4 | flia H4 ].
+   ...
 Check P_999_after_mod_is_9.
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as Haupk.
