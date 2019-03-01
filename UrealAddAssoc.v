@@ -3427,6 +3427,19 @@ apply A_ge_1_false_iff in Hj.
 rewrite <- Hnij in Hj.
 move Hj after Haj.
 (**)
+specialize (B_upper_bound_for_adds 2 v i 0 (rad * j)) as Hbv.
+rewrite <- Hni in Hbv.
+assert (H : 0 < 2 ≤ rad ^ 2). {
+  split; [ pauto | ].
+  rewrite Nat.pow_2_r.
+  replace 2 with (2 * 1) by easy.
+  now apply Nat.mul_le_mono.
+}
+specialize (Hbv H); clear H.
+assert (H : ∀ j : nat, j ≥ i → v j ≤ 2 * (rad - 1)). {
+  intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hv.
+}
+specialize (Hbv H); clear H; rewrite Nat.pow_1_r in Hbv.
 destruct (lt_dec rad 3) as [Hr3| Hr3].
 -assert (Hr2 : rad = 2) by flia Hr Hr3.
  (* in the case rad=2, any value of (u⊕v)(i+1) is possible (3 values) *)
@@ -3437,16 +3450,14 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
   *unfold "⊕" in Huv0.
    apply Nat.eq_add_0 in Huv0.
    destruct Huv0 as (Hu0, Hv0).
-...
-   assert (Har : (A (i + 1) ni v < rad // 1)%NQ). {
+   remember (ni - (i + 1) - 1) as si eqn:Hsi.
+   assert (Har : (A (i + 1) ni v ≤ 2 * (1 - 1 // rad ^ si))%NQ). {
      specialize (A_upper_bound_for_add v (i + 1) ni) as H1.
      assert (H : ∀ k, v (i + 1 + k + 1) ≤ 2 * (rad - 1)). {
        intros k; do 2 rewrite <- Nat.add_assoc; apply Hv.
      }
      specialize (H1 H); clear H.
-     eapply NQle_lt_trans; [ apply H1 | ].
-     rewrite NQmul_sub_distr_l, NQmul_1_r, Hr2.
-     now apply NQsub_lt.
+     now rewrite Hsi.
    }
    rewrite NQfrac_small. 2: {
      split; [ easy | ].
@@ -3455,21 +3466,21 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
      apply (NQmul_lt_mono_pos_r (rad // 1)%NQ). 2: {
        rewrite <- NQmul_assoc.
        rewrite NQmul_inv_pair; [ | easy | easy ].
-       now rewrite NQmul_1_l, NQmul_1_r.
+       rewrite NQmul_1_l, NQmul_1_r.
+       eapply NQle_lt_trans; [ apply Har | ].
+       rewrite NQmul_sub_distr_l, NQmul_1_r, Hr2.
+       now apply NQsub_lt.
      }
      now rewrite Hr2.
    }
    rewrite A_split_first; [ | easy ].
    rewrite <- Nat.add_1_r, Hv0, NQadd_0_l.
-   apply (NQmul_lt_mono_pos_r (rad // 1)%NQ). 2: {
-     rewrite NQmul_add_distr_r.
-     rewrite <- NQmul_assoc.
-     rewrite NQmul_inv_pair; [ | easy | easy ].
-     rewrite NQmul_1_l, NQmul_1_r.
-   }
-...
-   specialize (Hupr 0) as Hpv.
-   unfold "⊕" in Hpv; rewrite Nat.add_0_r, Hu0, Nat.add_0_l in Hpv.
+   apply (NQmul_le_mono_pos_r (1 // rad)%NQ) in Har.
+   remember (2 * (1 - 1 // rad ^ si) * 1 // rad)%NQ as x eqn:Hx.
+   apply (NQle_lt_trans _ (x + B i ni v (rad * j))%NQ); subst x.
+  --now apply NQadd_le_mono_r.
+  --eapply NQlt_le_trans; [ apply NQadd_lt_mono_l, Hbv | ].
+    (* ah bin non *)
 ...
 destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
 -clear Huvr; unfold "⊕" in H1.
