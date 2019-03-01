@@ -3497,6 +3497,16 @@ destruct (NQlt_le_dec (A i nij v) 1%NQ) as [Ha1| H1a].
   destruct Hupr as [Hupr| [Hupr| Hupr]].
   *clear Haap.
    (* in the case rad=2, any value of (u⊕v)(i+1) is possible (3 values) *)
+(**)
+move H1a at bottom.
+rewrite Hnij in H1a; replace j with (0 + j) in H1a by easy.
+rewrite min_n_add, <- Hni in H1a.
+rewrite <- ApB_A in H1a; [ | flia Hini ].
+rewrite A_split_first in H1a; [ | easy ].
+rewrite <- (Nat.add_1_r i) in H1a.
+(* si v(i+1) vaut 2 ou 3, H1a ne contredit pas ;
+   mais s'il vaut 0 ou 1, contredit-il ? *)
+...
    (* peut-être qu'il faut traiter le cas v(i+1)=0, là, parce qu'on est sûr
       que ça marche ; mais du coup, et les cas v(i+1)=1 et v(i+1)=2 ? *)
    destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) 0) as [Huv0| Huv0]. {
