@@ -3496,17 +3496,57 @@ destruct (NQlt_le_dec (A i nij v) 1%NQ) as [Ha1| H1a].
   move Hbv at bottom.
   destruct Hupr as [Hupr| [Hupr| Hupr]].
   *clear Haap.
-   (* in the case rad=2, any value of (u⊕v)(i+1) is possible (3 values) *)
-(**)
+   destruct (Nat.eq_dec (v (i + 1)) 0) as [Hv0| Hv0]. {
+     rewrite NQfrac_small. 2: {
+       split; [ easy | ].
+       rewrite A_split_first; [ | easy ].
+       rewrite <- Nat.add_1_r, Hv0, NQadd_0_l.
+       apply (NQmul_lt_mono_pos_r (rad // 1)%NQ). 2: {
+         rewrite <- NQmul_assoc.
+         rewrite NQmul_inv_pair; [ | easy | easy ].
+         rewrite NQmul_1_l, NQmul_1_r.
+         eapply NQle_lt_trans; [ apply Har | ].
+         rewrite NQmul_sub_distr_l, NQmul_1_r, Hr2.
+         now apply NQsub_lt.
+       }
+       now rewrite Hr2.
+     }
+     rewrite A_split_first; [ | easy ].
+     rewrite <- Nat.add_1_r, Hv0, NQadd_0_l.
+     apply (NQmul_le_mono_pos_r (1 // rad)%NQ) in Har; [ | easy ].
+     remember (2 * (1 - 1 // rad ^ si) * 1 // rad)%NQ as x eqn:Hx.
+     apply (NQle_lt_trans _ (x + B i ni v (2 * j))%NQ); subst x.
+     -now apply NQadd_le_mono_r.
+     -eapply NQle_lt_trans; [ apply NQadd_le_mono_l, Hbv | ].
+      replace (ni - i - 2) with si by flia Hsi.
+      rewrite NQmul_sub_distr_l, NQmul_1_r.
+      rewrite NQmul_sub_distr_r.
+      rewrite <- NQmul_assoc.
+      rewrite <- NQpair_inv_mul, Nat.mul_1_l; [ | easy | easy ].
+      rewrite <- NQpair_inv_mul; [ | pauto | easy ].
+      rewrite Nat.mul_comm, <- Nat.pow_succ_r'.
+      rewrite <- NQpair_inv_mul, Nat.mul_1_l; [ | easy | pauto ].
+      rewrite NQmul_sub_distr_l, NQmul_1_r, NQadd_sub_assoc.
+      replace 2 with (2 ^ 1) at 2 by easy.
+      rewrite Hr2, NQpow_pair_r; [ | easy | flia Hini ].
+      replace (S si - 1) with si by flia.
+      rewrite NQsub_add, NQpair_diag; [ | easy ].
+      now apply NQsub_lt.
+   }
+destruct (Nat.eq_dec (v (i + 1)) 1) as [Hv1| Hv1]. {
+(* je suis désolé mais : *) exfalso.
+...
 move H1a at bottom.
 rewrite Hnij in H1a; replace j with (0 + j) in H1a by easy.
 rewrite min_n_add, <- Hni in H1a.
 rewrite <- ApB_A in H1a; [ | flia Hini ].
 rewrite A_split_first in H1a; [ | easy ].
 rewrite <- (Nat.add_1_r i) in H1a.
+rewrite Hr2 in H1a.
 (* si v(i+1) vaut 2 ou 3, H1a ne contredit pas ;
    mais s'il vaut 0 ou 1, contredit-il ? *)
 ...
+   (* in the case rad=2, any value of (u⊕v)(i+1) is possible (3 values) *)
    (* peut-être qu'il faut traiter le cas v(i+1)=0, là, parce qu'on est sûr
       que ça marche ; mais du coup, et les cas v(i+1)=1 et v(i+1)=2 ? *)
    destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) 0) as [Huv0| Huv0]. {
@@ -3555,8 +3595,8 @@ rewrite <- (Nat.add_1_r i) in H1a.
      rewrite A_split_first; [ | easy ].
      rewrite <- Nat.add_1_r.
      rewrite NQfrac_add_cond.
-     -rewrite NQfrac_small; [ | admit ].
-      rewrite NQfrac_small; [ | admit ].
+     -rewrite NQfrac_small; [ | ... ].
+      rewrite NQfrac_small; [ | ... ].
       remember (A (i + 1) ni v * 1 // rad)%NQ as x eqn:Hx.
       destruct (NQlt_le_dec (v (i + 1)%nat // rad + x)%NQ 1) as [H1| H1].
       +rewrite NQsub_0_r.
@@ -3580,7 +3620,6 @@ rewrite <- (Nat.add_1_r i) in H1a.
        rewrite NQadd_sub_swap, NQsub_sub_swap, NQsub_diag.
        rewrite <- NQadd_sub_swap, NQadd_0_l.
        apply NQsub_lt_mono_l.
-...
        (* ne marche que si v(i+1)=0 *)
 ...
 destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
