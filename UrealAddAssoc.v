@@ -3524,42 +3524,35 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
   destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) 1) as [Huv1| Huv1]. {
     clear Huv0.
     unfold "⊕" in Huv1.
-    rewrite NQfrac_small. 2: {
-      split; [ easy | ].
-      rewrite A_split_first; [ | easy ].
-      rewrite <- Nat.add_1_r.
-...
-      rewrite Hv0, NQadd_0_l.
-      apply (NQmul_lt_mono_pos_r (rad // 1)%NQ). 2: {
-        rewrite <- NQmul_assoc.
-        rewrite NQmul_inv_pair; [ | easy | easy ].
-        rewrite NQmul_1_l, NQmul_1_r.
-        eapply NQle_lt_trans; [ apply Har | ].
-        rewrite NQmul_sub_distr_l, NQmul_1_r, Hr2.
-        now apply NQsub_lt.
-      }
-      now rewrite Hr2.
-    }
     rewrite A_split_first; [ | easy ].
-    rewrite <- Nat.add_1_r, Hv0, NQadd_0_l.
-    apply (NQmul_le_mono_pos_r (1 // rad)%NQ) in Har; [ | easy ].
-    remember (2 * (1 - 1 // rad ^ si) * 1 // rad)%NQ as x eqn:Hx.
-    apply (NQle_lt_trans _ (x + B i ni v (rad * j))%NQ); subst x.
-    -now apply NQadd_le_mono_r.
-    -eapply NQle_lt_trans; [ apply NQadd_le_mono_l, Hbw | ].
-     replace (ni - i - 1) with (si + 1) by flia Hsi Hini.
-     rewrite NQmul_sub_distr_l, NQmul_1_r.
-     rewrite NQmul_sub_distr_r.
-     rewrite <- NQmul_assoc.
-     rewrite <- NQpair_inv_mul, Nat.mul_1_l; [ | easy | easy ].
-     rewrite <- NQpair_inv_mul; [ | pauto | easy ].
-     rewrite Nat.mul_comm, <- Nat.pow_succ_r'.
-     rewrite <- NQpair_inv_mul, Nat.mul_1_l; [ | easy | pauto ].
-     rewrite Nat.add_1_r.
-     rewrite NQmul_sub_distr_l, NQmul_1_r, NQadd_sub_assoc.
-     rewrite NQsub_add, Hr2, NQpair_diag; [ | easy ].
-     now apply NQsub_lt.
-  }
+    rewrite <- Nat.add_1_r.
+    rewrite NQfrac_add_cond.
+    -rewrite NQfrac_small; [ | admit ].
+     rewrite NQfrac_small; [ | admit ].
+     remember (A (i + 1) ni v * 1 // rad)%NQ as x eqn:Hx.
+     destruct (NQlt_le_dec (v (i + 1)%nat // rad + x)%NQ 1) as [H1| H1].
+     +rewrite NQsub_0_r.
+      eapply NQle_lt_trans; [ apply NQadd_le_mono_l, Hbv | ].
+      rewrite NQadd_add_swap; subst x.
+      apply (NQmul_le_mono_pos_r (1 // rad)%NQ) in Har; [ | easy ].
+      eapply NQle_lt_trans; [ apply NQadd_le_mono_l, Har | ].
+      rewrite <- NQadd_assoc.
+      apply NQlt_add_lt_sub_l.
+      rewrite NQmul_sub_distr_l, NQmul_1_r.
+      rewrite NQmul_sub_distr_l, NQmul_1_r.
+      rewrite NQmul_sub_distr_r.
+      rewrite Hr2.
+      rewrite (NQmul_pair 2); [ | easy | easy ].
+      rewrite Nat.mul_1_r, Nat.mul_1_l, NQpair_diag; [ | easy ].
+      rewrite <- NQpair_inv_mul; [ | pauto | pauto ].
+      rewrite NQpair_inv_mul; [ | pauto | pauto ].
+      rewrite NQmul_mul_swap.
+      rewrite NQmul_inv_pair; [ | easy | easy ].
+      rewrite NQmul_1_l, NQadd_sub_assoc.
+      rewrite NQadd_sub_swap, NQsub_sub_swap, NQsub_diag.
+      rewrite <- NQadd_sub_swap, NQadd_0_l.
+      apply NQsub_lt_mono_l.
+      (* ne marche que si v(i+1)=0 *)
 ...
 destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
 -clear Huvr; unfold "⊕" in H1.
