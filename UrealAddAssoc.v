@@ -3400,13 +3400,13 @@ clear Ha0.
 remember (min_n i 0) as ni eqn:Hni.
 remember (min_n i j) as nij eqn:Hnij.
 move ni before j; move nij before ni; move Hnij before Hni.
-rewrite Hnij; replace j with (0 + j) by easy.
 assert (Hini : i + 1 ≤ ni - 1). {
   rewrite Hni; unfold min_n; destruct rad; [ easy | cbn; flia ].
 }
 assert (Hinij : i + 1 ≤ nij - 1). {
   rewrite Hnij; unfold min_n; destruct rad; [ easy | cbn; flia ].
 }
+rewrite Hnij; replace j with (0 + j) by easy.
 rewrite min_n_add, <- Hni, <- ApB_A; [ | flia Hini ].
 rewrite NQintg_add; [ | easy | apply B_ge_0 ].
 rewrite <- (Nat.add_0_r (NQintg _)) at 1.
