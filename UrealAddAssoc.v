@@ -3469,6 +3469,15 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
  replace 2 with (2 ^ 1) in Hbv at 2 by easy.
  rewrite NQpow_pair_r in Hbv; [ | easy | flia Hini ].
  replace (ni - i - 1 - 1) with (ni - i - 2) in Hbv by flia.
+ remember (ni - i - 2) as si eqn:Hsi.
+ assert (Har : (A (i + 1) ni v ≤ 2 * (1 - 1 // rad ^ si))%NQ). {
+   specialize (A_upper_bound_for_add v (i + 1) ni) as H1.
+   assert (H : ∀ k, v (i + 1 + k + 1) ≤ 2 * (rad - 1)). {
+     intros k; do 2 rewrite <- Nat.add_assoc; apply Hv.
+   }
+   specialize (H1 H); clear H.
+   now replace (ni - (i + 1) - 1) with si in H1 by flia Hsi.
+ }
  destruct Hupr as [Hupr| [Hupr| Hupr]].
  +clear Haap.
   (* in the case rad=2, any value of (u⊕v)(i+1) is possible (3 values) *)
@@ -3476,15 +3485,6 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
     unfold "⊕" in Huv0.
     apply Nat.eq_add_0 in Huv0.
     destruct Huv0 as (Hu0, Hv0).
-    remember (ni - (i + 1) - 1) as si eqn:Hsi.
-    assert (Har : (A (i + 1) ni v ≤ 2 * (1 - 1 // rad ^ si))%NQ). {
-      specialize (A_upper_bound_for_add v (i + 1) ni) as H1.
-      assert (H : ∀ k, v (i + 1 + k + 1) ≤ 2 * (rad - 1)). {
-        intros k; do 2 rewrite <- Nat.add_assoc; apply Hv.
-      }
-      specialize (H1 H); clear H.
-      now rewrite Hsi.
-    }
     rewrite NQfrac_small. 2: {
       split; [ easy | ].
       rewrite A_split_first; [ | easy ].
@@ -3524,22 +3524,12 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
   destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) 1) as [Huv1| Huv1]. {
     clear Huv0.
     unfold "⊕" in Huv1.
-...
-    apply Nat.eq_add_0 in Huv0.
-    destruct Huv0 as (Hu0, Hv0).
-    remember (ni - (i + 1) - 1) as si eqn:Hsi.
-    assert (Har : (A (i + 1) ni v ≤ 2 * (1 - 1 // rad ^ si))%NQ). {
-      specialize (A_upper_bound_for_add v (i + 1) ni) as H1.
-      assert (H : ∀ k, v (i + 1 + k + 1) ≤ 2 * (rad - 1)). {
-        intros k; do 2 rewrite <- Nat.add_assoc; apply Hv.
-      }
-      specialize (H1 H); clear H.
-      now rewrite Hsi.
-    }
     rewrite NQfrac_small. 2: {
       split; [ easy | ].
       rewrite A_split_first; [ | easy ].
-      rewrite <- Nat.add_1_r, Hv0, NQadd_0_l.
+      rewrite <- Nat.add_1_r.
+...
+      rewrite Hv0, NQadd_0_l.
       apply (NQmul_lt_mono_pos_r (rad // 1)%NQ). 2: {
         rewrite <- NQmul_assoc.
         rewrite NQmul_inv_pair; [ | easy | easy ].
