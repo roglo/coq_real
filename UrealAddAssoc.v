@@ -3426,6 +3426,11 @@ clear HB.
 apply A_ge_1_false_iff in Hj.
 rewrite <- Hnij in Hj.
 move Hj after Haj.
+(**)
+destruct (lt_dec rad 3) as [Hr3| Hr3].
+-assert (Hr2 : rad = 2) by flia Hr Hr3.
+ clear Hr3 Huvr.
+...
 destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) (3 * (rad - 1))) as [H1| H1].
 -clear Huvr; unfold "⊕" in H1.
  destruct Hupr as [Hupr| [Hupr| Hupr]].
