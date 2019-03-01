@@ -3478,9 +3478,13 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
    specialize (H1 H); clear H.
    now replace (ni - (i + 1) - 1) with si in H1 by flia Hsi.
  }
+ move Hbv at bottom.
  destruct Hupr as [Hupr| [Hupr| Hupr]].
  +clear Haap.
   (* in the case rad=2, any value of (u⊕v)(i+1) is possible (3 values) *)
+...
+  (* peut-être qu'il faut traiter le cas v(i+1)=0, là, parce qu'on est sûr
+     que ça marche ; mais du coup, et les cas v(i+1)=1 et v(i+1)=2 ? *)
   destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) 0) as [Huv0| Huv0]. {
     unfold "⊕" in Huv0.
     apply Nat.eq_add_0 in Huv0.
