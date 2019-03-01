@@ -3465,7 +3465,6 @@ assert (H : ∀ j : nat, j ≥ i → v j ≤ 2 * (rad - 1)). {
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hv.
 }
 specialize (Hbv H); clear H.
-(**)
 destruct (NQlt_le_dec (A i nij v) 1%NQ) as [Ha1| H1a].
 -rewrite NQfrac_small in Hj; [ | easy ].
  rewrite NQfrac_small; [ | split ]; [ | easy | ]. 2: {
