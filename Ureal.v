@@ -1285,7 +1285,7 @@ Theorem frac_ge_if_all_fA_ge_1_ε_le_rad_for_add {r : radix} : ∀ u i,
   → ∀ k l, l ≤ rad
   → (NQfrac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%NQ.
 Proof.
-intros u i Hur.
+intros * Hur.
 specialize radix_ge_2 as Hr.
 intros H1 k l Hlr.
 remember (min_n i k) as n eqn:Hn.
