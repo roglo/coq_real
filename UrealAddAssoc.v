@@ -1593,7 +1593,7 @@ destruct (zerop (NQintg (NQfrac (A i n u) + NQfrac (B i n u 1)))) as [H1| H1].
 Qed.
 
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
-  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, NQintg (A i (min_n i k + l) u) = NQintg (A i (min_n i k) u).
 Proof.
@@ -1647,6 +1647,7 @@ apply NQadd_cancel_r in H3.
 unfold B in H3.
 rewrite Nat.add_sub in H3.
 rewrite summation_only_one in H3.
+...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε_for_add u i Hur) Hut k) as H1.
 rewrite <- Hn in H1.
 specialize (H1 (l + 1)) as H2.

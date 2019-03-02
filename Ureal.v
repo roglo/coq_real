@@ -1280,7 +1280,7 @@ erewrite <- (all_0_summation_0 (λ _, 0%Rg)).
 Qed.
 
 Theorem frac_ge_if_all_fA_ge_1_ε_le_rad_for_add {r : radix} : ∀ u i,
-  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, l ≤ rad
   → (NQfrac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%NQ.
@@ -1304,10 +1304,11 @@ assert (HB : ∀ l, (0 ≤ B i n u l < 1)%NQ). {
   rewrite Hn.
   split; [ apply B_ge_0 | ].
   eapply NQlt_le_trans.
-  -apply B_upper_bound_for_add.
-   intros j Hj.
-   replace j with (i + (j - i)) by flia Hj.
-   apply Hur.
+  -apply (B_upper_bound_for_adds 3).
+   +split; [ pauto | ].
+    destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | cbn; flia ].
+   +intros j Hj; replace j with (i + (j - i)) by flia Hj; apply Hur.
   -apply NQle_pair; [ pauto | easy | ].
    do 2 rewrite Nat.mul_1_r.
    now apply Nat_pow_ge_1.
@@ -1339,8 +1340,14 @@ destruct (NQlt_le_dec (NQfrac (A i n u) + B i n u l) 1) as [H4| H4].
   eapply NQle_lt_trans; [ | apply H6 ].
   apply NQadd_le_mono_l.
   now apply B_le_mono_r.
- +specialize (B_upper_bound_for_add u i k rad) as H7.
-  assert (H : ∀ j, j ≥ i → u j ≤ 2 * (rad - 1)). {
+ +specialize (B_upper_bound_for_adds 3 u i k rad) as H7.
+  assert (H : 0 < 3 ≤ rad ^ 2). {
+    split; [ pauto | ].
+    destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | cbn; flia ].
+  }
+  specialize (H7 H); clear H.
+  assert (H : ∀ j, j ≥ i → u j ≤ 3 * (rad - 1)). {
     intros j Hj; replace j with (i + (j - i)) by flia Hj; apply Hur.
   }
   specialize (H7 H); clear H.
@@ -1386,7 +1393,7 @@ destruct (NQlt_le_dec (NQfrac (A i n u) + B i n u l) 1) as [H4| H4].
 Qed.
 
 Theorem frac_ge_if_all_fA_ge_1_ε_for_add {r : radix} : ∀ u i,
-  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   ↔ (∀ k l, (NQfrac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%NQ).
 Proof.
