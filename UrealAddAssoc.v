@@ -1885,12 +1885,20 @@ rewrite (NQfrac_small (A _ _ (P v))) in H4; [ | easy ].
 (**)
 clear H2 H3.
 (**)
-destruct (NQlt_le_dec (A i nik u + A i nik (P v))%NQ 1) as [H5| H5].
--destruct (NQlt_le_dec (A i nij u + A i nij (P v))%NQ 1) as [H6| H6].
+destruct (NQlt_le_dec (A i nik u + A i nik (P v))%NQ 1) as [Hakp| Hakp].
+-destruct (NQlt_le_dec (A i nij u + A i nij (P v))%NQ 1) as [Hajp| Hajp].
  +clear H4.
+  apply A_ge_1_false_iff in Hk.
+  rewrite <- Hnik, A_additive in Hk.
+  rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
+  rewrite NQfrac_small in Hk; [ | easy ].
+  move Haap before Hakp.
+  destruct (NQlt_le_dec (A i nik u + NQfrac (A i nik v))%NQ 1) as [H7| H7].
+  *idtac.
 ...
+  *now apply NQnle_gt in Haav.
  +easy.
--destruct (NQlt_le_dec (A i nij u + A i nij (P v))%NQ 1) as [H6| H6].
+-destruct (NQlt_le_dec (A i nij u + A i nij (P v))%NQ 1) as [Hajp| Hajp].
  +easy.
 ...
 rewrite (NQintg_small (A _ _ u)) in H1; [ | easy ].
