@@ -3534,6 +3534,7 @@ destruct (NQlt_le_dec (A i nij v) 1%NQ) as [Ha1| H1a].
    }
 destruct (Nat.eq_dec (v (i + 1)) 1) as [Hv1| Hv1]. {
 (* je suis désolé mais : *) exfalso.
+rewrite Hr2 in Hu, Hv, Har; cbn in Hu, Hv.
 ...
 move H1a at bottom.
 rewrite Hnij in H1a; replace j with (0 + j) in H1a by easy.
