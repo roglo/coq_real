@@ -1750,6 +1750,72 @@ assert (Hini : i + 1 ≤ ni - 1). {
 assert (Hinij : i + 1 ≤ nij - 1). {
   rewrite Hnij; unfold min_n; destruct rad; [ easy | cbn; flia ].
 }
+(**)
+specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as H1.
+assert (H : ∀ k : nat, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+  intros k.
+  unfold "⊕"; replace 3 with (1 + 2) by easy.
+  rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+  apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+}
+specialize (H1 H Hauv j); clear H.
+rewrite <- Hni, <- Hnij in H1.
+rewrite A_additive, NQintg_add in H1; symmetry in H1; [ | easy | easy ].
+rewrite A_additive, NQintg_add in H1; symmetry in H1; [ | easy | easy ].
+specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ P v)) as H2.
+assert (H : ∀ k : nat, (u ⊕ P v) (i + k) ≤ 3 * (rad - 1)). {
+  intros k.
+  unfold "⊕"; replace 3 with (1 + 2) by easy.
+  rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+  apply Nat.add_le_mono; [ apply Hu | ].
+  eapply Nat.le_trans; [ apply P_le | flia Hr ].
+}
+specialize (H2 H Haup j); clear H.
+rewrite <- Hni, <- Hnij in H2.
+rewrite A_additive, NQintg_add in H2; symmetry in H2; [ | easy | easy ].
+rewrite A_additive, NQintg_add in H2; symmetry in H2; [ | easy | easy ].
+assert (Haui : ∀ n, (0 ≤ A i n u < 1)%NQ). {
+  intros; split; [ easy | ].
+  apply A_upper_bound_for_dig.
+  intros k Hk; replace k with (i + (k - i)) by flia Hk.
+  apply Hu.
+}
+rewrite (NQintg_small (A _ _ u)) in H1; [ | easy ].
+rewrite (NQintg_small (A _ _ u)) in H1; [ | easy ].
+rewrite (NQintg_small (A _ _ u)) in H2; [ | easy ].
+rewrite (NQintg_small (A _ _ u)) in H2; [ | easy ].
+do 2 rewrite Nat.add_0_l in H1, H2.
+do 2 rewrite NQintg_add_frac in H1, H2.
+rewrite (NQfrac_small (A _ _ u)) in H1; [ | easy ].
+rewrite (NQfrac_small (A _ _ u)) in H1; [ | easy ].
+rewrite (NQfrac_small (A _ _ u)) in H2; [ | easy ].
+rewrite (NQfrac_small (A _ _ u)) in H2; [ | easy ].
+destruct (NQlt_le_dec (A i nij u + NQfrac (A i nij v))%NQ 1) as [H3| H3].
+-destruct (NQlt_le_dec (A i ni u + NQfrac (A i ni v))%NQ 1) as [H4| H4].
+ +now apply Nat.add_cancel_r in H1.
+ +now apply NQnlt_ge in H4.
+-destruct (NQlt_le_dec (A i ni u + NQfrac (A i ni v))%NQ 1) as [H4| H4].
+ +rewrite Nat.add_0_r in H1.
+  clear Haav.
+  assert (H5 : NQintg (A i nij v) = 0) by flia Haj Ha0 H1.
+  assert (H6 : NQintg (A i ni v) = 1) by flia Haj Ha0 H1.
+  clear Haj Ha0 H1; exfalso.
+  rewrite NQfrac_small in H3; [ | split ]; [ | easy | ]. 2: {
+    now apply eq_NQintg_0.
+  }
+  apply A_ge_1_false_iff in Hj.
+  rewrite <- Hnij in Hj.
+  destruct j.
+  *rewrite <- Hni in Hnij; subst nij.
+   now rewrite H5 in H6.
+  *idtac.
+   specialize (Hjj 0 (Nat.lt_0_succ _)) as H7.
+   apply A_ge_1_true_iff in H7; rewrite <- Hni, Nat.pow_1_r in H7.
+   specialize (Hjj j (Nat.lt_succ_diag_r _)) as H8.
+   apply A_ge_1_true_iff in H8.
+...
+ +now apply Nat.add_cancel_r in H1.
+...
 rewrite Hnij; replace j with (0 + j) by easy.
 rewrite min_n_add, <- Hni, <- ApB_A; [ | flia Hini ].
 rewrite NQintg_add; [ | easy | apply B_ge_0 ].
@@ -1887,48 +1953,6 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
       -rewrite Nat.mul_0_r, Nat.add_0_r.
        apply Nat.sub_lt; [ flia Hini | pauto ].
     }
-    specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as H1.
-    assert (H : ∀ k : nat, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
-      intros k.
-      unfold "⊕"; replace 3 with (1 + 2) by easy.
-      rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-      rewrite Hr2.
-      apply Nat.add_le_mono; [ apply Hu | apply Hv ].
-    }
-    specialize (H1 H Hauv (S j)); clear H.
-    rewrite <- Hni, <- Hnij in H1.
-    rewrite A_additive, NQintg_add in H1; symmetry in H1; [ | easy | easy ].
-    rewrite A_additive, NQintg_add in H1; symmetry in H1; [ | easy | easy ].
-    specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ P v)) as H2.
-    assert (H : ∀ k : nat, (u ⊕ P v) (i + k) ≤ 3 * (rad - 1)). {
-      intros k.
-      unfold "⊕"; replace 3 with (1 + 2) by easy.
-      rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-      rewrite Hr2.
-      apply Nat.add_le_mono; [ apply Hu | ].
-      eapply Nat.le_trans; [ apply P_le | ].
-      flia Hr2.
-    }
-    specialize (H2 H Haup (S j)); clear H.
-    rewrite <- Hni, <- Hnij in H2.
-    rewrite A_additive, NQintg_add in H2; symmetry in H2; [ | easy | easy ].
-    rewrite A_additive, NQintg_add in H2; symmetry in H2; [ | easy | easy ].
-    assert (Haui : ∀ n, (0 ≤ A i n u < 1)%NQ). {
-      intros; split; [ easy | ].
-      apply A_upper_bound_for_dig.
-      intros k Hk; replace k with (i + (k - i)) by flia Hk.
-      rewrite Hr2; apply Hu.
-    }
-    rewrite (NQintg_small (A _ _ u)) in H1; [ | easy ].
-    rewrite (NQintg_small (A _ _ u)) in H1; [ | easy ].
-    rewrite (NQintg_small (A _ _ u)) in H2; [ | easy ].
-    rewrite (NQintg_small (A _ _ u)) in H2; [ | easy ].
-    do 2 rewrite Nat.add_0_l in H1, H2.
-    do 2 rewrite NQintg_add_frac in H1, H2.
-    rewrite (NQfrac_small (A _ _ u)) in H1; [ | easy ].
-    rewrite (NQfrac_small (A _ _ u)) in H1; [ | easy ].
-    rewrite (NQfrac_small (A _ _ u)) in H2; [ | easy ].
-    rewrite (NQfrac_small (A _ _ u)) in H2; [ | easy ].
 ...
     specialize (Hjj 0 (Nat.lt_0_succ _)) as H1.
     apply A_ge_1_true_iff in H1; rewrite <- Hni in H1.
