@@ -1507,7 +1507,7 @@ now apply A_upper_bound_for_dig.
 Qed.
 
 Theorem B_lt_1 {r : radix} : ∀ i n u,
-  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → i + 1 < n - 1
   → (B i n u 1 < 1)%NQ.
 Proof.
@@ -1531,7 +1531,7 @@ destruct m; [ flia Hin Hm | ].
 destruct m; [ flia Hin Hm | ].
 destruct m; [ flia Hin Hm | ].
 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-apply (lt_le_trans _ (2 * rad)).
+apply (lt_le_trans _ (3 * rad)).
 -apply Nat.sub_lt; [ flia Hr | pauto ].
 -apply (le_trans _ (rad * S (S (S m)))).
  +rewrite Nat.mul_comm.
@@ -1540,7 +1540,7 @@ apply (lt_le_trans _ (2 * rad)).
 Qed.
 
 Theorem NQintg_A_slow_incr {r : radix} : ∀ u i,
-  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k n, min_n i k ≤ n
   → NQintg (A i n u) < NQintg (A i (n + 1) u)
@@ -1617,7 +1617,11 @@ remember (min_n i k) as n eqn:Hn.
 replace (n + S l) with (n + l + 1) by flia.
 apply Nat.nlt_ge.
 intros H2.
-specialize (NQintg_A_slow_incr u i Hur Hut k (n + l)) as H3.
+assert (Hur2 : ∀ k, u (i + k) ≤ 3 * (rad - 1)). {
+  intros; eapply le_trans; [ apply Hur | ].
+  apply Nat.mul_le_mono_r; pauto.
+}
+specialize (NQintg_A_slow_incr u i Hur2 Hut k (n + l)) as H3.
 assert (H : min_n i k ≤ n + l) by (rewrite Hn; flia).
 specialize (H3 H H2); clear H H1 H2 IHl.
 symmetry in H3.
@@ -1877,6 +1881,7 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
       -rewrite Nat.mul_0_r, Nat.add_0_r.
        apply Nat.sub_lt; [ flia Hini | pauto ].
     }
+Check NQintg_A_slow_incr.
 ...
     specialize (Hjj 0 (Nat.lt_0_succ _)) as H1.
     apply A_ge_1_true_iff in H1; rewrite <- Hni in H1.
