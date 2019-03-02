@@ -1805,14 +1805,14 @@ destruct (NQlt_le_dec (A i nij u + NQfrac (A i nij v))%NQ 1) as [H3| H3].
   }
   apply A_ge_1_false_iff in Hj.
   rewrite <- Hnij in Hj.
-  destruct j.
-  *rewrite <- Hni in Hnij; subst nij.
-   now rewrite H5 in H6.
-  *idtac.
-   specialize (Hjj 0 (Nat.lt_0_succ _)) as H7.
-   apply A_ge_1_true_iff in H7; rewrite <- Hni, Nat.pow_1_r in H7.
-   specialize (Hjj j (Nat.lt_succ_diag_r _)) as H8.
-   apply A_ge_1_true_iff in H8.
+  destruct j. {
+    rewrite <- Hni in Hnij; subst nij.
+    now rewrite H5 in H6.
+  }
+  specialize (Hjj 0 (Nat.lt_0_succ _)) as H7.
+  apply A_ge_1_true_iff in H7; rewrite <- Hni, Nat.pow_1_r in H7.
+  specialize (Hjj j (Nat.lt_succ_diag_r _)) as H8.
+  apply A_ge_1_true_iff in H8.
 ...
  +now apply Nat.add_cancel_r in H1.
 ...
