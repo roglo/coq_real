@@ -1860,11 +1860,10 @@ specialize (H2 k) as H4; rewrite <- Hnik in H4.
 rewrite <- H3 in H4.
 rewrite A_additive, NQintg_add in H4; symmetry in H4; [ | easy | easy ].
 rewrite A_additive, NQintg_add in H4; symmetry in H4; [ | easy | easy ].
-...
 assert (Haui : ∀ n, (0 ≤ A i n u < 1)%NQ). {
   intros; split; [ easy | ].
   apply A_upper_bound_for_dig.
-  intros k Hk; replace k with (i + (k - i)) by flia Hk.
+  intros p Hp; replace p with (i + (p - i)) by flia Hp.
   apply Hu.
 }
 assert (Hapi : ∀ n, (0 ≤ A i n (P v) < 1)%NQ). {
@@ -1872,6 +1871,28 @@ assert (Hapi : ∀ n, (0 ≤ A i n (P v) < 1)%NQ). {
   apply A_upper_bound_for_dig.
   intros; apply P_le.
 }
+rewrite (NQintg_small (A _ _ u)) in H4; [ | easy ].
+rewrite (NQintg_small (A _ _ u)) in H4; [ | easy ].
+do 2 rewrite Nat.add_0_l in H4.
+rewrite (NQintg_small (A _ _ (P _))) in H4; [ | easy ].
+rewrite (NQintg_small (A _ _ (P _))) in H4; [ | easy ].
+do 2 rewrite Nat.add_0_l in H4.
+do 2 rewrite NQintg_add_frac in H4.
+rewrite (NQfrac_small (A _ _ u)) in H4; [ | easy ].
+rewrite (NQfrac_small (A _ _ u)) in H4; [ | easy ].
+rewrite (NQfrac_small (A _ _ (P v))) in H4; [ | easy ].
+rewrite (NQfrac_small (A _ _ (P v))) in H4; [ | easy ].
+(**)
+clear H2 H3.
+(**)
+destruct (NQlt_le_dec (A i nik u + A i nik (P v))%NQ 1) as [H5| H5].
+-destruct (NQlt_le_dec (A i nij u + A i nij (P v))%NQ 1) as [H6| H6].
+ +clear H4.
+...
+ +easy.
+-destruct (NQlt_le_dec (A i nij u + A i nij (P v))%NQ 1) as [H6| H6].
+ +easy.
+...
 rewrite (NQintg_small (A _ _ u)) in H1; [ | easy ].
 rewrite (NQintg_small (A _ _ u)) in H1; [ | easy ].
 rewrite (NQintg_small (A _ _ u)) in H2; [ | easy ].
