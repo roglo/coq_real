@@ -1647,7 +1647,6 @@ apply NQadd_cancel_r in H3.
 unfold B in H3.
 rewrite Nat.add_sub in H3.
 rewrite summation_only_one in H3.
-...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε_for_add u i Hur) Hut k) as H1.
 rewrite <- Hn in H1.
 specialize (H1 (l + 1)) as H2.
@@ -1659,7 +1658,7 @@ apply (NQlt_le_trans _ (1 + u (n + l)%nat // rad ^ m)%NQ).
 -apply NQadd_lt_mono_r, NQfrac_lt_1.
 -rewrite NQadd_comm.
  apply NQadd_le_mono_r.
- apply (NQle_trans _ ((2 * (rad - 1)) // rad ^ m)).
+ apply (NQle_trans _ ((3 * (rad - 1)) // rad ^ m)).
  +apply NQle_pair; [ pauto | pauto | ].
   rewrite Nat.mul_comm.
   replace (n + l) with (i + (n + l - i)) by flia Hin.
@@ -1682,9 +1681,15 @@ apply (NQlt_le_trans _ (1 + u (n + l)%nat // rad ^ m)%NQ).
     unfold min_n in Hp.
     destruct rad; [ easy | cbn in Hp; flia Hp ].
   --cbn.
-    replace 2 with (2 * 1) by easy.
-    apply Nat.mul_le_mono; [ easy | ].
-    now apply Nat_pow_ge_1.
+    destruct p.
+   ++rewrite Hm, Hn in Hp.
+     unfold min_n in Hp.
+     destruct rad; [ easy | cbn in Hp; flia Hp ].
+   ++cbn; rewrite Nat.mul_assoc.
+     replace 3 with (3 * 1) by easy.
+     apply Nat.mul_le_mono; [ | now apply Nat_pow_ge_1 ].
+     destruct rad as [| rr]; [ easy | ].
+     destruct rr; [ flia Hr | cbn; flia ].
   *apply Nat.sub_le_mono_r; cbn.
    replace rad with (rad * 1) at 1 by flia.
    apply Nat.mul_le_mono_l.
@@ -1692,7 +1697,7 @@ apply (NQlt_le_trans _ (1 + u (n + l)%nat // rad ^ m)%NQ).
 Qed.
 
 Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ i u,
-  (∀ k, u (i + k) ≤ 2 * (rad - 1))
+  (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, NQintg (A i (min_n i k) u) = NQintg (A i (min_n i 0) u).
 Proof.
@@ -1882,7 +1887,19 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
       -rewrite Nat.mul_0_r, Nat.add_0_r.
        apply Nat.sub_lt; [ flia Hini | pauto ].
     }
-Check NQintg_A_slow_incr.
+    specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as H1.
+    assert (H : ∀ k : nat, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+      intros k.
+      unfold "⊕"; replace 3 with (1 + 2) by easy.
+      rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+      rewrite Hr2.
+      apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+    }
+    specialize (H1 H Hauv (S j)); clear H.
+    rewrite <- Hni, <- Hnij in H1.
+    rewrite A_additive, NQintg_add in H1; symmetry in H1.
+    rewrite A_additive, NQintg_add in H1; symmetry in H1.
+(* chais ps si ça fait que'que chose, ça *)
 ...
     specialize (Hjj 0 (Nat.lt_0_succ _)) as H1.
     apply A_ge_1_true_iff in H1; rewrite <- Hni in H1.
