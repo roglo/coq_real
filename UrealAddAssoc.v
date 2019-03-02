@@ -3534,7 +3534,7 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
      now apply NQsub_lt.
   }
   destruct (Nat.eq_dec (v (i + 1)) 1) as [Hv1| Hv1]. {
-    rewrite Hr2 in Hu, Hv, Har, Hupr; cbn in Hu, Hv, Hupr.
+    rewrite Hr2 in Hu, Hv, Har, Hupr, Hj; cbn in Hu, Hv, Hupr.
     destruct j. {
       unfold B; rewrite summation_empty, NQadd_0_r.
       -rewrite <- Hni in Hnij; subst nij.
