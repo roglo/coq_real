@@ -3532,9 +3532,28 @@ destruct (NQlt_le_dec (A i nij v) 1%NQ) as [Ha1| H1a].
       rewrite NQsub_add, NQpair_diag; [ | easy ].
       now apply NQsub_lt.
    }
-destruct (Nat.eq_dec (v (i + 1)) 1) as [Hv1| Hv1]. {
-(* je suis désolé mais : *) exfalso.
-rewrite Hr2 in Hu, Hv, Har, Hupr; cbn in Hu, Hv, Hupr.
+   destruct (Nat.eq_dec (v (i + 1)) 1) as [Hv1| Hv1]. {
+     rewrite Hr2 in Hu, Hv, Har, Hupr; cbn in Hu, Hv, Hupr.
+     destruct j. {
+       unfold B; rewrite summation_empty, NQadd_0_r.
+       -rewrite <- Hni in Hnij; subst nij.
+        eapply NQlt_le_trans; [ apply Hj | ].
+        now apply NQle_sub_l.
+       -rewrite Nat.mul_0_r, Nat.add_0_r.
+        apply Nat.sub_lt; [ flia Hini | pauto ].
+     }
+...
+     specialize (Hjj 0 (Nat.lt_0_succ _)) as H1.
+     apply A_ge_1_true_iff in H1; rewrite <- Hni in H1.
+     specialize (Hjj j (Nat.lt_succ_diag_r _)) as H2.
+     apply A_ge_1_true_iff in H2.
+     rewrite Hr2 in H1, H2.
+     rewrite Nat.pow_1_r in H1.
+     rewrite NQsub_pair_pos in H1; [ | easy | easy | cbn; pauto ].
+     do 2 rewrite Nat.mul_1_l in H1.
+     rewrite Nat.sub_succ_l, Nat.sub_diag in H1; [ | easy ].
+     rewrite A_split_first in H1; [ | easy ].
+     rewrite <- Nat.add_1_r, Hv1, Hr2 in H1.
 ...
 move H1a at bottom.
 rewrite Hnij in H1a; replace j with (0 + j) in H1a by easy.
