@@ -1899,7 +1899,20 @@ destruct (lt_dec rad 3) as [Hr3| Hr3].
     rewrite <- Hni, <- Hnij in H1.
     rewrite A_additive, NQintg_add in H1; symmetry in H1.
     rewrite A_additive, NQintg_add in H1; symmetry in H1.
-(* chais ps si ça fait que'que chose, ça *)
+    specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ P v)) as H2.
+    assert (H : ∀ k : nat, (u ⊕ P v) (i + k) ≤ 3 * (rad - 1)). {
+      intros k.
+      unfold "⊕"; replace 3 with (1 + 2) by easy.
+      rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+      rewrite Hr2.
+      apply Nat.add_le_mono; [ apply Hu | ].
+      eapply Nat.le_trans; [ apply P_le | ].
+      flia Hr2.
+    }
+    specialize (H2 H Haup (S j)); clear H.
+    rewrite <- Hni, <- Hnij in H2.
+    rewrite A_additive, NQintg_add in H2; symmetry in H2.
+    rewrite A_additive, NQintg_add in H2; symmetry in H2.
 ...
     specialize (Hjj 0 (Nat.lt_0_succ _)) as H1.
     apply A_ge_1_true_iff in H1; rewrite <- Hni in H1.
