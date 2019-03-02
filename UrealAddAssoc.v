@@ -1738,6 +1738,7 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hjj Hj Haup Hauv Haj Ha0 Haap Haav.
+...
 remember (min_n i 0) as ni eqn:Hni.
 remember (min_n i j) as nij eqn:Hnij.
 move ni before j; move nij before ni; move Hni after Hnij.
