@@ -1506,59 +1506,6 @@ split; [ easy | ].
 now apply A_upper_bound_for_dig.
 Qed.
 
-Theorem all_fA_ge_1_ε_NQfrac_A_B {r : radix} : ∀ i u,
-  (∀ k, u (i + k) ≤ 2 * (rad - 1))
-  → (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k l, (NQfrac (A i (min_n i k) u) + B i (min_n i k) u l < 1)%NQ.
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hur Hut k l.
-specialize (fApB_upper_bound_for_add u i) as H1.
-assert (H : ∀ j, j ≥ i → u j ≤ 2 * (rad - 1)). {
-  intros j Hj; replace j with (i + (j - i)) by flia Hj; apply Hur.
-}
-specialize (H1 H k).
-specialize (B_upper_bound_for_add u i k l H) as H2; clear H.
-specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) Hut) as H3.
-Abort. (*
-...
-remember (NQfrac (A i (min_n i k) u)) as x eqn:Hx.
-...
-induction l.
--unfold B; rewrite Nat.add_0_r.
- rewrite summation_empty. 2: {
-   apply Nat.sub_lt; [ | pauto ].
-   unfold min_n.
-   destruct rad; [ easy | cbn; flia ].
- }
- rewrite NQadd_0_r.
- apply NQfrac_lt_1.
--remember (min_n i k) as n eqn:Hn.
- destruct l.
- +unfold B; rewrite Nat.add_sub, summation_only_one.
-  clear IHl. (* because became trivial *)
-  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) Hut) as H2.
-  specialize (H2 k) as H3; rewrite <- Hn in H3.
-  (* ouais, chais pas bien... *)
-...
-fApB_upper_bound_for_add
-     : ∀ (u : nat → nat) (i k l : nat),
-         (∀ j : nat, j ≥ i → u j ≤ 2 * (rad - 1))
-         → (NQfrac (A i (min_n i k) u) + B i (min_n i k) u l < 1 + 1 // rad ^ S k)%NQ
-fApB_lower_bound:
-  ∀ (r : radix) (u : nat → nat) (i k l : nat),
-    (∀ k0 : nat, fA_ge_1_ε u i k0 = true)
-    → (1 - 1 // rad ^ S k ≤ NQfrac (A i (min_n i k) u) + B i (min_n i k) u l)%NQ
-B_upper_bound_for_add:
-  ∀ (r : radix) (u : nat → nat) (i k l : nat),
-    (∀ j : nat, j ≥ i → u j ≤ 2 * (rad - 1))
-    → (B i (min_n i k) u l < 1 // rad ^ S k)%NQ
-...
-Search (∀ _, fA_ge_1_ε _ _ _ = true).
-...
-*)
-
 Theorem B_lt_1 {r : radix} : ∀ i n u,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
   → i + 1 < n - 1
