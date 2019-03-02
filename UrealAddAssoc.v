@@ -1895,6 +1895,10 @@ destruct (NQlt_le_dec (A i nik u + A i nik (P v))%NQ 1) as [Hakp| Hakp].
   move Haap before Hakp.
   destruct (NQlt_le_dec (A i nik u + NQfrac (A i nik v))%NQ 1) as [H7| H7].
   *idtac.
+   destruct (lt_dec j k) as [Hljk| Hgjk].
+  --specialize (Hjk _ Hljk) as H1.
+    apply A_ge_1_true_iff in H1.
+    rewrite <- Hnij in H1.
 ...
   *now apply NQnle_gt in Haav.
  +easy.
