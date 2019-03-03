@@ -1541,14 +1541,13 @@ Qed.
 
 Theorem NQintg_A_slow_incr {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 3 * (rad - 1))
-  → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k n, min_n i k ≤ n
   → NQintg (A i n u) < NQintg (A i (n + 1) u)
   → NQintg (A i (n + 1) u) = NQintg (A i n u) + 1.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur Hut k n Hn Hlt.
+intros Hur k n Hn Hlt.
 assert (Hin : i + 1 < n - 1). {
   unfold min_n in Hn.
   destruct rad; [ easy | cbn in Hn; flia Hn ].
@@ -1621,7 +1620,7 @@ assert (Hur2 : ∀ k, u (i + k) ≤ 3 * (rad - 1)). {
   intros; eapply le_trans; [ apply Hur | ].
   apply Nat.mul_le_mono_r; pauto.
 }
-specialize (NQintg_A_slow_incr u i Hur2 Hut k (n + l)) as H3.
+specialize (NQintg_A_slow_incr u i Hur2 k (n + l)) as H3.
 assert (H : min_n i k ≤ n + l) by (rewrite Hn; flia).
 specialize (H3 H H2); clear H H1 H2 IHl.
 symmetry in H3.
@@ -1918,9 +1917,20 @@ destruct (NQlt_le_dec (A i nik u + A i nik (P v))%NQ 1) as [Hakp| Hakp].
         now apply Nat.lt_le_incl in Hljk.
      }
      rewrite <- ApB_A in Hak1; [ | flia Hinij ].
+     apply A_ge_1_false_iff in Hk.
+     rewrite <- Hnik, A_additive in Hk.
+     apply A_ge_1_false_iff in Hj.
+     rewrite <- Hnij in Hj.
+specialize (Hjk _ Hljk) as H1.
+apply A_ge_1_true_iff in H1.
+rewrite <- Hnij, A_additive in H1.
+rewrite NQfrac_add_cond in H1.
+move Hj at bottom.
+destruct (NQlt_le_dec (NQfrac (A i nij u) + NQfrac (A i nij v))%NQ 1)
+  as [H4| H4].
+rewrite NQsub_0_r in H1.
+Check NQintg_A_slow_incr.
 ...
-    apply A_ge_1_false_iff in Hk.
-    rewrite <- Hnik, A_additive in Hk.
     rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
     rewrite NQfrac_small in Hk; [ | easy ].
     rewrite NQfrac_less_small in Hk. 2: {
