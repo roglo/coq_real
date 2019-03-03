@@ -1839,6 +1839,18 @@ remember (min_n i j) as nij eqn:Hnij.
 remember (min_n i k) as nik eqn:Hnik.
 move ni before k; move nij before ni; move nik before nij.
 move Hni after Hnij; move Hnik before Hnij.
+(**)
+specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as Hup.
+assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
+  intros p; unfold "⊕".
+  replace 2 with (1 + 1) by easy.
+  rewrite Nat.mul_add_distr_r, Nat.mul_1_l, <- Nat.add_assoc.
+  apply Nat.add_le_mono; [ apply Hu | apply P_le ].
+}
+specialize (Hup H Haup); clear H.
+destruct Hup as [Hup| [Hup| Hup]].
+-idtac.
+...
 assert (Hinij : i + 1 ≤ nij - 1). {
   rewrite Hnij; unfold min_n; destruct rad; [ easy | cbn; flia ].
 }
