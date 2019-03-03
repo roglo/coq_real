@@ -1882,9 +1882,9 @@ rewrite (NQfrac_small (A _ _ u)) in H4; [ | easy ].
 rewrite (NQfrac_small (A _ _ u)) in H4; [ | easy ].
 rewrite (NQfrac_small (A _ _ (P v))) in H4; [ | easy ].
 rewrite (NQfrac_small (A _ _ (P v))) in H4; [ | easy ].
-(**)
+(*
 clear H2 H3.
-(**)
+*)
 destruct (NQlt_le_dec (A i nik u + A i nik (P v))%NQ 1) as [Hakp| Hakp].
 -destruct (NQlt_le_dec (A i nij u + A i nij (P v))%NQ 1) as [Hajp| Hajp].
  +clear H4.
@@ -1894,7 +1894,7 @@ destruct (NQlt_le_dec (A i nik u + A i nik (P v))%NQ 1) as [Hakp| Hakp].
   rewrite NQfrac_small in Hk; [ | easy ].
   move Haap before Hakp.
   destruct (NQlt_le_dec (A i nik u + NQfrac (A i nik v))%NQ 1) as [H7| H7].
-  *idtac.
+  *rewrite NQsub_0_r in Hk.
    destruct (lt_dec j k) as [Hljk| Hgjk].
   --specialize (Hjk _ Hljk) as H1.
     apply A_ge_1_true_iff in H1.
