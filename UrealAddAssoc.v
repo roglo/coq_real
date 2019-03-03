@@ -1838,6 +1838,34 @@ remember (min_n i j) as nij eqn:Hnij.
 remember (min_n i k) as nik eqn:Hnik.
 move ni before k; move nij before ni; move nik before nij.
 move Hni after Hnij; move Hnik before Hnij.
+(**)
+apply A_ge_1_false_iff in Hk.
+rewrite <- Hnik, A_additive in Hk.
+move Hk at bottom.
+specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
+specialize (H2 k) as H1k.
+specialize (H2 j) as H1j.
+rewrite <- Hnik in H1k.
+rewrite <- Hnij in H1j.
+rewrite A_additive in H1k, H1j.
+clear H2.
+...
+specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ P v)) as H2.
+assert (H : ∀ k : nat, (u ⊕ P v) (i + k) ≤ 3 * (rad - 1)). {
+  intros p.
+  unfold "⊕"; replace 3 with (1 + 2) by easy.
+  rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+  apply Nat.add_le_mono; [ apply Hu | ].
+  eapply Nat.le_trans; [ apply P_le | flia Hr ].
+}
+specialize (H2 H Haup); clear H.
+rewrite <- Hni in H2.
+specialize (H2 k) as H1k.
+specialize (H2 j) as H1j.
+rewrite <- H1j in H1k; clear H1j.
+rewrite <- Hnik, <- Hnij in H1k.
+do 2 rewrite A_additive in H1k.
+...
 (*
 specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as Hup.
 assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
