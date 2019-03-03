@@ -1908,6 +1908,17 @@ destruct (NQlt_le_dec (A i nik u + A i nik (P v))%NQ 1) as [Hakp| Hakp].
     exfalso.
     assert (Hak1 : NQintg (A i nik v) = 1) by flia Hak Hak0.
     clear Haj Hak Hak0.
+    destruct (lt_dec j k) as [Hljk| Hgjk].
+    -replace nik with (nij + (nik - nij)) in Hak1. 2: {
+       rewrite Nat.add_sub_assoc.
+       -now rewrite Nat.add_comm, Nat.add_sub.
+       -rewrite Hnij, Hnik; unfold min_n.
+        apply Nat.mul_le_mono_l.
+        apply Nat.add_le_mono_r, Nat.add_le_mono_l.
+        now apply Nat.lt_le_incl in Hljk.
+     }
+     rewrite <- ApB_A in Hak1; [ | flia Hinij ].
+...
     apply A_ge_1_false_iff in Hk.
     rewrite <- Hnik, A_additive in Hk.
     rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
