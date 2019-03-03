@@ -1839,7 +1839,7 @@ remember (min_n i j) as nij eqn:Hnij.
 remember (min_n i k) as nik eqn:Hnik.
 move ni before k; move nij before ni; move nik before nij.
 move Hni after Hnij; move Hnik before Hnij.
-(**)
+(*
 specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as Hup.
 assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
   intros p; unfold "⊕".
@@ -1851,6 +1851,7 @@ specialize (Hup H Haup); clear H.
 destruct Hup as [Hup| [Hup| Hup]].
 -idtac.
 ...
+*)
 assert (Hinij : i + 1 ≤ nij - 1). {
   rewrite Hnij; unfold min_n; destruct rad; [ easy | cbn; flia ].
 }
@@ -1900,13 +1901,35 @@ clear H2 H3.
 destruct (NQlt_le_dec (A i nik u + A i nik (P v))%NQ 1) as [Hakp| Hakp].
 -destruct (NQlt_le_dec (A i nij u + A i nij (P v))%NQ 1) as [Hajp| Hajp].
  +clear H4.
-  apply A_ge_1_false_iff in Hk.
-  rewrite <- Hnik, A_additive in Hk.
-  rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
-  rewrite NQfrac_small in Hk; [ | easy ].
+(**)
+  destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0]. {
+    rewrite Haj0.
+    destruct (Nat.eq_dec (NQintg (A i nik v)) 0) as [Hak0| Hak0]; [ easy | ].
+    exfalso.
+    assert (Hak1 : NQintg (A i nik v) = 1) by flia Hak Hak0.
+    clear Haj Hak Hak0.
+    apply A_ge_1_false_iff in Hk.
+    rewrite <- Hnik, A_additive in Hk.
+    rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
+    rewrite NQfrac_small in Hk; [ | easy ].
+    rewrite NQfrac_less_small in Hk. 2: {
+      split.
+      -specialize (NQintg_of_frac (A i nik v) (A_ge_0 _ _ _)) as H.
+       rewrite Hak1 in H; rewrite H.
+       now apply NQle_sub_l.
+      -eapply NQle_lt_trans; [ apply A_upper_bound_for_add | ].
+       intros p; rewrite <- Nat.add_assoc; apply Hv.
+       rewrite NQmul_sub_distr_l, NQmul_1_r.
+       now apply NQsub_lt.
+    }
+    rewrite NQadd_sub_assoc in Hk.
+    destruct (NQlt_le_dec (A i nik u + A i nik v - 1)%NQ 1) as [H1| H1].
+    -rewrite NQsub_0_r in Hk.
+...
   move Haap before Hakp.
   destruct (NQlt_le_dec (A i nik u + NQfrac (A i nik v))%NQ 1) as [H7| H7].
   *rewrite NQsub_0_r in Hk.
+...
    destruct (lt_dec j k) as [Hljk| Hgjk].
   --specialize (Hjk _ Hljk) as H1.
     apply A_ge_1_true_iff in H1.
