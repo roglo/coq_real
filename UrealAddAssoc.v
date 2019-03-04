@@ -1956,7 +1956,13 @@ destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
        apply NQnlt_ge in Hauvt; apply Hauvt; clear Hauvt.
        now rewrite A_num_den, H, NQadd_0_l.
      }
-     unfold "⊕" in Hupv.
+...
+     assert (Hvm : (A i nij v < 1 - 1 // rad ^ (nij - i - 1))%NQ). {
+       apply (NQadd_lt_mono_l (A i nij u)).
+       eapply NQlt_le_trans; [ apply Hajv | ].
+       rewrite NQadd_sub_assoc.
+       now apply NQle_add_le_sub_r, NQadd_le_mono_r.
+     }
 ...
      apply NQnle_gt in Hajv; apply Hajv; clear Hajv.
      eapply NQle_trans; [ apply Havi | ].
