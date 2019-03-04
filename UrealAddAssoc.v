@@ -1834,10 +1834,10 @@ intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Haup Hjj Hj Hjk Hk Haj Hak Haav Haap.
 remember (min_n i 0) as ni eqn:Hni.
-remember (min_n i j) as nij eqn:Hnij.
-remember (min_n i k) as nik eqn:Hnik.
-move ni before k; move nij before ni; move nik before nij.
-move Hni after Hnij; move Hnik before Hnij.
+remember (min_n i j) as nj eqn:Hnj.
+remember (min_n i k) as nk eqn:Hnk.
+move ni before k; move nj before ni; move nk before nj.
+move Hni after Hnj; move Hnk before Hnj.
 (**)
 assert (Haui : ∀ n, (0 ≤ A i n u < 1)%NQ). {
   intros; split; [ easy | ].
@@ -1850,30 +1850,30 @@ assert (Hapi : ∀ n, (0 ≤ A i n (P v) < 1)%NQ). {
   apply A_upper_bound_for_dig.
   intros; apply P_le.
 }
-assert (Hinij : i + 1 ≤ nij - 1). {
-  rewrite Hnij; unfold min_n; destruct rad; [ easy | cbn; flia ].
+assert (Hinij : i + 1 ≤ nj - 1). {
+  rewrite Hnj; unfold min_n; destruct rad; [ easy | cbn; flia ].
 }
-assert (Hinik : i + 1 ≤ nik - 1). {
-  rewrite Hnik; unfold min_n; destruct rad; [ easy | cbn; flia ].
+assert (Hinik : i + 1 ≤ nk - 1). {
+  rewrite Hnk; unfold min_n; destruct rad; [ easy | cbn; flia ].
 }
 apply A_ge_1_false_iff in Hj.
-rewrite <- Hnij in Hj.
+rewrite <- Hnj in Hj.
 apply A_ge_1_false_iff in Hk.
-rewrite <- Hnik, A_additive in Hk.
+rewrite <- Hnk, A_additive in Hk.
 move Hj at bottom; move Hk at bottom.
-destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
+destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
 -clear Haj; rewrite Haj0.
- destruct (Nat.eq_dec (NQintg (A i nik v)) 0) as [Hak0| Hak0]; [ easy | ].
+ destruct (Nat.eq_dec (NQintg (A i nk v)) 0) as [Hak0| Hak0]; [ easy | ].
  exfalso.
- assert (Hak1 : NQintg (A i nik v) = 1) by flia Hak Hak0.
+ assert (Hak1 : NQintg (A i nk v) = 1) by flia Hak Hak0.
  clear Hak Hak0; apply eq_NQintg_0 in Haj0; [ | easy ].
  rewrite NQfrac_small in Hj; [ | easy ].
  move Hj at bottom; clear Haj0.
  rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
  rewrite NQfrac_small in Hk; [ | easy ].
- assert (Havi : (1 ≤ A i nik v < 2)%NQ). {
+ assert (Havi : (1 ≤ A i nk v < 2)%NQ). {
    split.
-   -specialize (NQintg_of_frac (A i nik v) (A_ge_0 _ _ _)) as H.
+   -specialize (NQintg_of_frac (A i nk v) (A_ge_0 _ _ _)) as H.
     rewrite Hak1 in H; rewrite H.
     now apply NQle_sub_l.
    -eapply NQle_lt_trans; [ apply A_upper_bound_for_add | ].
@@ -1883,10 +1883,10 @@ destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
  }
  destruct (le_dec k j) as [Hlkj| Hljk]. {
    apply NQnle_gt in Hj; apply Hj; clear Hj.
-   replace nij with (nik + (nij - nik)). 2: {
+   replace nj with (nk + (nj - nk)). 2: {
      rewrite Nat.add_sub_assoc.
      -now rewrite Nat.add_comm, Nat.add_sub.
-     -rewrite Hnij, Hnik; unfold min_n.
+     -rewrite Hnj, Hnk; unfold min_n.
       apply Nat.mul_le_mono_l.
       now apply Nat.add_le_mono_r, Nat.add_le_mono_l.
    }
@@ -1901,19 +1901,19 @@ destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
  rewrite NQfrac_less_small in Hk; [ | easy ].
  rewrite NQadd_sub_assoc in Haav, Hk.
  apply NQnle_gt in Haav.
- destruct (NQlt_le_dec (A i nik u + A i nik v - 1)%NQ 1) as [H| ]; [ | easy ].
+ destruct (NQlt_le_dec (A i nk u + A i nk v - 1)%NQ 1) as [H| ]; [ | easy ].
  rewrite NQsub_0_r in Hk; clear H Haav Hak1.
  apply -> NQlt_sub_lt_add_r in Hk.
  rewrite <- NQadd_sub_swap in Hk.
  replace (1 + 1)%NQ with 2%NQ in Hk by easy.
  specialize (Hjk _ Hljk) as Hauvt.
  apply A_ge_1_true_iff in Hauvt.
- rewrite <- Hnij, A_additive in Hauvt.
+ rewrite <- Hnj, A_additive in Hauvt.
  rewrite NQfrac_add_cond in Hauvt; [ | easy | easy ].
  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup 0) as Hup.
  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup j) as Hupj.
  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup k) as Hupk.
- rewrite <- Hni in Hup; rewrite <- Hnij in Hupj; rewrite <- Hnik in Hupk.
+ rewrite <- Hni in Hup; rewrite <- Hnj in Hupj; rewrite <- Hnk in Hupk.
  rewrite A_additive in Hup, Hupj, Hupk.
  rewrite Nat.pow_1_r in Hup.
  rewrite NQfrac_add_cond in Hup; [ | easy | easy ].
@@ -1932,9 +1932,9 @@ destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
  apply NQnle_gt in Haap.
  destruct (NQlt_le_dec (A i ni u + A i ni (P v))%NQ 1) as [Hap| Hap]; [ | easy ].
  rewrite NQsub_0_r in Hup; clear Haap.
- destruct (NQlt_le_dec (A i nij u + A i nij (P v))%NQ 1) as [Hajp| Hajp].
+ destruct (NQlt_le_dec (A i nj u + A i nj (P v))%NQ 1) as [Hajp| Hajp].
  +rewrite NQsub_0_r in Hupj.
-  destruct (NQlt_le_dec (A i nik u + A i nik (P v))%NQ 1) as [Hakp| Hakp].
+  destruct (NQlt_le_dec (A i nk u + A i nk (P v))%NQ 1) as [Hakp| Hakp].
   *rewrite NQsub_0_r in Hupk.
    specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as Hupv.
    assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
@@ -1946,9 +1946,9 @@ destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
    specialize (Hupv H Haup); clear H.
    destruct Hupv as [Hupv| [Hupv| Hupv]].
   --clear Hap Hup Hajp Hupj Hakp Hupk.
-    destruct (NQlt_le_dec (A i nij u + A i nij v)%NQ 1) as [Hajv| Hajv].
+    destruct (NQlt_le_dec (A i nj u + A i nj v)%NQ 1) as [Hajv| Hajv].
    ++rewrite NQsub_0_r in Hauvt.
-     assert (Hum : (A i nij u ≥ 1 // rad ^ (nij - i - 1))%NQ). {
+     assert (Hum : (A i nj u ≥ 1 // rad ^ (nj - i - 1))%NQ). {
        rewrite A_num_den; unfold den_A.
        apply NQle_pair_mono_r.
        apply Nat.nlt_ge; intros H.
