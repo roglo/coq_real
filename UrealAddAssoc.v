@@ -1957,6 +1957,7 @@ destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
        now rewrite A_num_den, H, NQadd_0_l.
      }
      unfold "⊕" in Hupv.
+...
      apply NQnle_gt in Hajv; apply Hajv; clear Hajv.
      eapply NQle_trans; [ apply Havi | ].
      rewrite Hnik; replace k with (j + (k - j)) by flia Hljk.
