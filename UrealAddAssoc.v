@@ -1948,11 +1948,25 @@ destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
   --clear Hap Hup Hajp Hupj Hakp Hupk.
     destruct (NQlt_le_dec (A i nij u + A i nij v)%NQ 1) as [Hajv| Hajv].
    ++rewrite NQsub_0_r in Hauvt.
-     assert (Hu0 : A i nij u ≠ 0%NQ). {
-       intros H.
-       rewrite H, NQadd_0_l in Hauvt.
-       now apply NQnlt_ge in Hauvt.
+     assert (Hum : (A i nij u ≥ 1 // rad ^ (nij - i - 1))%NQ). {
+       rewrite A_num_den; unfold den_A.
+       apply NQle_pair_mono_r.
+       apply Nat.nlt_ge; intros H.
+       apply Nat.lt_1_r in H.
+       apply NQnlt_ge in Hauvt; apply Hauvt; clear Hauvt.
+       now rewrite A_num_den, H, NQadd_0_l.
      }
+     unfold "⊕" in Hupv.
+     apply NQnle_gt in Hajv; apply Hajv; clear Hajv.
+     eapply NQle_trans; [ apply Havi | ].
+     rewrite Hnik; replace k with (j + (k - j)) by flia Hljk.
+     rewrite min_n_add, <- Hnij.
+     rewrite NQadd_comm, <- ApB_A; [ | flia Hinij ].
+     apply NQadd_le_mono_l.
+Check B_upper_bound_for_adds'.
+...
+     eapply NQle_trans.
+    **apply (B_upper_bound_for_adds' 2).
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
 specialize (H2 k) as H1k.
