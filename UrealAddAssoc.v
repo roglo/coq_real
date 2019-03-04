@@ -1907,6 +1907,16 @@ destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
  +rewrite NQsub_0_r in Hupj.
   destruct (NQlt_le_dec (A i nik u + A i nik (P v))%NQ 1) as [Hakp| Hakp].
   *rewrite NQsub_0_r in Hupk.
+   specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as Hupv.
+   assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
+     intros p; unfold "⊕".
+     replace 2 with (1 + 1) by easy.
+     rewrite Nat.mul_add_distr_r, Nat.mul_1_l, <- Nat.add_assoc.
+     apply Nat.add_le_mono; [ apply Hu | apply P_le ].
+   }
+   specialize (Hupv H Haup); clear H.
+   destruct Hupv as [Hupv| [Hupv| Hupv]].
+  --clear Hap Hup Hajp Hupj Hakp Hupk.
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
 specialize (H2 k) as H1k.
