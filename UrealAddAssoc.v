@@ -1950,7 +1950,8 @@ destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
    ++rewrite NQsub_0_r in Hauvt.
 (* est-ce que Hajv et Hauvt n'impliqueraient pas que
     A i nij u + A i nij v = 1 - 1 // rad ^ S j
-   ?
+   ? chais pas à quoi ça sert, mais bon, ce serait une
+     information.
  *)
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
