@@ -1819,9 +1819,9 @@ Qed.
 Theorem pre_Hugo_Herbelin_92 {r : radix} : ∀ u v i j k,
   (∀ k : nat, u (i + k) ≤ rad - 1)
   → (∀ k : nat, v (i + k) ≤ 2 * (rad - 1))
+  → (∀ k : nat, fA_ge_1_ε (u ⊕ P v) i k = true)
   → (∀ j0 : nat, j0 < j → fA_ge_1_ε v i j0 = true)
   → fA_ge_1_ε v i j = false
-  → (∀ k : nat, fA_ge_1_ε (u ⊕ P v) i k = true)
   → (∀ j : nat, j < k → fA_ge_1_ε (u ⊕ v) i j = true)
   → fA_ge_1_ε (u ⊕ v) i k = false
   → NQintg (A i (min_n i j) v) ≤ 1
@@ -1832,16 +1832,57 @@ Theorem pre_Hugo_Herbelin_92 {r : radix} : ∀ u v i j k,
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hu Hv Hjj Hj Haup Hjk Hk Haj Hak Haav Haap.
+intros Hu Hv Haup Hjj Hj Hjk Hk Haj Hak Haav Haap.
 remember (min_n i 0) as ni eqn:Hni.
 remember (min_n i j) as nij eqn:Hnij.
 remember (min_n i k) as nik eqn:Hnik.
 move ni before k; move nij before ni; move nik before nij.
 move Hni after Hnij; move Hnik before Hnij.
 (**)
+assert (Haui : ∀ n, (0 ≤ A i n u < 1)%NQ). {
+  intros; split; [ easy | ].
+  apply A_upper_bound_for_dig.
+  intros p Hp; replace p with (i + (p - i)) by flia Hp.
+  apply Hu.
+}
+assert (Hapi : ∀ n, (0 ≤ A i n (P v) < 1)%NQ). {
+  intros; split; [ easy | ].
+  apply A_upper_bound_for_dig.
+  intros; apply P_le.
+}
+apply A_ge_1_false_iff in Hj.
+rewrite <- Hnij in Hj.
 apply A_ge_1_false_iff in Hk.
 rewrite <- Hnik, A_additive in Hk.
-move Hk at bottom.
+move Hj at bottom; move Hk at bottom.
+destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
+-clear Haj; rewrite Haj0.
+ destruct (Nat.eq_dec (NQintg (A i nik v)) 0) as [Hak0| Hak0]; [ easy | ].
+ exfalso.
+ assert (Hak1 : NQintg (A i nik v) = 1) by flia Hak Hak0.
+ clear Hak Hak0; apply eq_NQintg_0 in Haj0; [ | easy ].
+ rewrite NQfrac_small in Hj; [ | easy ].
+ move Hj at bottom; clear Haj0.
+ rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
+ rewrite NQfrac_small in Hk; [ | easy ].
+ assert (Havi : (1 ≤ A i nik v < 2)%NQ). {
+   split.
+   -specialize (NQintg_of_frac (A i nik v) (A_ge_0 _ _ _)) as H.
+    rewrite Hak1 in H; rewrite H.
+    now apply NQle_sub_l.
+   -eapply NQle_lt_trans; [ apply A_upper_bound_for_add | ].
+    intros p; rewrite <- Nat.add_assoc; apply Hv.
+    rewrite NQmul_sub_distr_l, NQmul_1_r.
+    now apply NQsub_lt.
+ }
+ move Havi before Hapi.
+ rewrite NQfrac_less_small in Haav; [ | easy ].
+ rewrite NQfrac_less_small in Hk; [ | easy ].
+ rewrite NQadd_sub_assoc in Haav, Hk.
+ apply NQnle_gt in Haav.
+ destruct (NQlt_le_dec (A i nik u + A i nik v - 1)%NQ 1) as [H| ]; [ | easy ].
+ rewrite NQsub_0_r in Hk; apply NQnle_gt in Haav; clear H.
+...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
 specialize (H2 k) as H1k.
 specialize (H2 j) as H1j.
