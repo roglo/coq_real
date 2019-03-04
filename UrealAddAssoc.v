@@ -1948,6 +1948,11 @@ destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
   --clear Hap Hup Hajp Hupj Hakp Hupk.
     destruct (NQlt_le_dec (A i nij u + A i nij v)%NQ 1) as [Hajv| Hajv].
    ++rewrite NQsub_0_r in Hauvt.
+     assert (Hu0 : A i nij u ≠ 0%NQ). {
+       intros H.
+       rewrite H, NQadd_0_l in Hauvt.
+       now apply NQnlt_ge in Hauvt.
+     }
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
 specialize (H2 k) as H1k.
