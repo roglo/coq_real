@@ -1850,6 +1850,12 @@ assert (Hapi : ∀ n, (0 ≤ A i n (P v) < 1)%NQ). {
   apply A_upper_bound_for_dig.
   intros; apply P_le.
 }
+assert (Hinij : i + 1 ≤ nij - 1). {
+  rewrite Hnij; unfold min_n; destruct rad; [ easy | cbn; flia ].
+}
+assert (Hinik : i + 1 ≤ nik - 1). {
+  rewrite Hnik; unfold min_n; destruct rad; [ easy | cbn; flia ].
+}
 apply A_ge_1_false_iff in Hj.
 rewrite <- Hnij in Hj.
 apply A_ge_1_false_iff in Hk.
@@ -1875,6 +1881,21 @@ destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
     rewrite NQmul_sub_distr_l, NQmul_1_r.
     now apply NQsub_lt.
  }
+ destruct (le_dec k j) as [Hlkj| Hljk]. {
+   apply NQnle_gt in Hj; apply Hj; clear Hj.
+   replace nij with (nik + (nij - nik)). 2: {
+     rewrite Nat.add_sub_assoc.
+     -now rewrite Nat.add_comm, Nat.add_sub.
+     -rewrite Hnij, Hnik; unfold min_n.
+      apply Nat.mul_le_mono_l.
+      now apply Nat.add_le_mono_r, Nat.add_le_mono_l.
+   }
+   rewrite <- ApB_A; [ | flia Hinik ].
+   apply (NQle_trans _ 1); [ now apply NQle_sub_l | ].
+   eapply NQle_trans; [ apply Havi | ].
+   apply NQle_add_r, B_ge_0.
+ }
+ apply Nat.nle_gt in Hljk.
  move Havi before Hapi.
  rewrite NQfrac_less_small in Haav; [ | easy ].
  rewrite NQfrac_less_small in Hk; [ | easy ].
