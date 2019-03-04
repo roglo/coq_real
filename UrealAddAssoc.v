@@ -1881,7 +1881,24 @@ destruct (Nat.eq_dec (NQintg (A i nij v)) 0) as [Haj0| Haj0].
  rewrite NQadd_sub_assoc in Haav, Hk.
  apply NQnle_gt in Haav.
  destruct (NQlt_le_dec (A i nik u + A i nik v - 1)%NQ 1) as [H| ]; [ | easy ].
- rewrite NQsub_0_r in Hk; apply NQnle_gt in Haav; clear H.
+ rewrite NQsub_0_r in Hk; clear H Haav Hak1.
+ apply -> NQlt_sub_lt_add_r in Hk.
+ rewrite <- NQadd_sub_swap in Hk.
+ replace (1 + 1)%NQ with 2%NQ in Hk by easy.
+ specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup j) as Hupj.
+ specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup k) as Hupk.
+ rewrite <- Hnij in Hupj; rewrite <- Hnik in Hupk.
+ rewrite A_additive in Hupj, Hupk.
+ rewrite NQfrac_add_cond in Hupj; [ | easy | easy ].
+ rewrite NQfrac_add_cond in Hupk; [ | easy | easy ].
+ rewrite NQfrac_small in Hupj; [ | easy ].
+ rewrite NQfrac_small in Hupj; [ | easy ].
+ rewrite NQfrac_small in Hupk; [ | easy ].
+ rewrite NQfrac_small in Hupk; [ | easy ].
+ destruct (NQlt_le_dec (A i nij u + A i nij (P v))%NQ 1) as [Hajp| Hajp].
+ +rewrite NQsub_0_r in Hupj.
+  destruct (NQlt_le_dec (A i nik u + A i nik (P v))%NQ 1) as [Hakp| Hakp].
+  *rewrite NQsub_0_r in Hupk.
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
 specialize (H2 k) as H1k.
