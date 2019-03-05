@@ -1992,6 +1992,14 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
         Havi, A i nk v ≥ 1, faut que la retenue soit au moins 2, ce qui
         n'est pas possible ; enfin, je crois *)
      destruct Havi as (Havi1, Havi2).
+     move Hajv at bottom; move Havi1 at bottom.
+     rewrite Hnk in Havi1.
+     replace k with (j + (k - j)) in Havi1 by flia Hljk.
+     rewrite min_n_add, <- Hnj in Havi1.
+     rewrite <- ApB_A in Havi1; [ | flia Hinij ].
+     specialize (B_upper_bound_for_adds' 2 v i nj) as Hb.
+     specialize (Hb (rad * (k - j))).
+...
      apply NQnlt_ge in Havi1; apply Havi1; clear Havi1.
      rewrite Hnk; replace k with (j + (k - j)) by flia Hljk.
      rewrite min_n_add, <- Hnj.
