@@ -2062,16 +2062,7 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
             flia Hr2 H1.
          }
          symmetry.
-...
-assert (H : u (i + sj + 1) = 1). {
-rewrite A_num_den, Hsj in Hum.
-unfold den_A in Hum.
-apply NQeq_pair in Hum; [ | pauto | pauto ].
-rewrite Nat.mul_comm in Hum.
-apply Nat.mul_cancel_l in Hum; [ | pauto ].
-unfold num_A in Hum.
-replace (nj - 1) with (S (nj - 2)) in Hum.
-rewrite summation_split_last in Hum.
+         move Hvm at bottom.
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
 specialize (H2 k) as H1k.
