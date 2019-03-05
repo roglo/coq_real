@@ -1988,6 +1988,29 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
           apply NQle_refl.
      }
      apply NQle_antisymm in Hum; [ clear Hum1 | easy ].
+     (* d'après Hajv, A i nj v ≤ 0,999...9998 ; donc pour que, d'après
+        Havi, A i nk v ≥ 1, faut que la retenue soit au moins 2, ce qui
+        n'est pas possible ; enfin, je crois *)
+     destruct Havi as (Havi1, Havi2).
+     apply NQnlt_ge in Havi1; apply Havi1; clear Havi1.
+     rewrite Hnk; replace k with (j + (k - j)) by flia Hljk.
+     rewrite min_n_add, <- Hnj.
+     rewrite <- ApB_A; [ | flia Hinij ].
+     apply (NQadd_lt_mono_l (A i nj u)).
+     rewrite NQadd_assoc.
+     eapply (NQlt_le_trans _ (1 + B i nj v (rad * (k - j)))%NQ).
+    **now apply NQadd_lt_mono_r.
+    **rewrite NQadd_comm; apply NQadd_le_mono_r.
+      eapply NQle_trans.
+    ---apply (B_upper_bound_for_adds' 2).
+     +++split; [ pauto | cbn; rewrite Nat.mul_1_r ].
+        replace 2 with (2 * 1) by easy.
+        now apply Nat.mul_le_mono.
+     +++flia Hinij.
+     +++intros p Hp; replace p with (i + (p - i)) by flia Hp.
+        apply Hv.
+    ---idtac.
+(* ah merde, ça marche pas *)
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
 specialize (H2 k) as H1k.
