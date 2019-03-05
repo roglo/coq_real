@@ -1993,6 +1993,34 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
      move Hauvt at bottom.
      move Hj at bottom.
      assert (Hvm : A i nj v = (1 - 1 // rad ^ S j - 1 // rad ^ sj)%NQ). {
+       rewrite <- Hum.
+...
+       apply NQadd_move_l, NQle_antisymm; [ | easy ].
+       rewrite Hum, A_num_den; unfold den_A; rewrite <- Hsj.
+       rewrite A_num_den in Hj; unfold den_A in Hj; rewrite <- Hsj in Hj.
+       rewrite <- NQpair_add_l.
+       rewrite NQsub_pair_pos in Hj; [ | pauto | pauto | ]. 2: {
+         now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
+       }
+       rewrite NQsub_pair_pos; [ | pauto | pauto | ]. 2: {
+         now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
+       }
+       do 2 rewrite Nat.mul_1_l in Hj |-*.
+       apply NQlt_pair in Hj; [ | pauto | pauto ].
+       apply NQle_pair; [ pauto | pauto | ].
+       apply Nat.lt_le_pred in Hj.
+       rewrite <- Nat.sub_1_r in Hj.
+       apply (Nat.add_le_mono_r _ _ 1) in Hj.
+       rewrite Nat.sub_add in Hj.
+       -eapply le_trans; [ | apply Hj ].
+
+       apply <- Nat.le_sub_le_add_r in Hj.
+Search (_ ≤ pred _).
+apply Nat.le_succ_le_pred in Hj.
+       rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+       eapply le_trans.
+       rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hj |-*.
+       apply Nat.lt_add_lt_sub_r in Hj.
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
 specialize (H2 k) as H1k.
