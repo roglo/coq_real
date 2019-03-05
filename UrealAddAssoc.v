@@ -2040,6 +2040,7 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
        now apply Nat.lt_le_pred.
      }
      move Hum at bottom; move Hupv at bottom.
+...
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. 2: {
        specialize (Hupv sj) as H1.
        unfold "⊕" in H1.
@@ -2063,6 +2064,15 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
          }
          symmetry.
          move Hvm at bottom.
+(*
+rewrite NQsub_sub_swap in Hvm.
+replace sj with (S (sj - 1)) in Hvm.
+rewrite NQpower_summation_inv in Hvm.
+unfold A in Hvm.
+rewrite summation_shift in Hvm.
+replace (nj - 1 - (i + 1)) with (sj - 1) in Hvm by flia Hsj.
+rewrite summation_mul_distr_l in Hvm.
+*)
          rewrite NQsub_pair_pos in Hvm; [ | easy | pauto | ]. 2: {
            now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
          }
@@ -2090,6 +2100,12 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
          rewrite <- Nat.pow_add_r in Hvm.
          rewrite Nat.sub_add in Hvm; [ | easy ].
          unfold num_A in Hvm.
+         rewrite Nat_sub_sub_swap in Hvm.
+replace sj with (S (sj - 1)) in Hvm at 1.
+rewrite power_summation in Hvm.
+...
+rewrite (Nat.add_comm _ 1) in Hvm.
+Search (_ ^ _ - 1).
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
 specialize (H2 k) as H1k.
