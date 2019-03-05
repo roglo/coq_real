@@ -1956,24 +1956,38 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
        apply NQnlt_ge in Hauvt; apply Hauvt; clear Hauvt.
        now rewrite A_num_den, H, NQadd_0_l.
      }
-...
-     assert (Hvm : (A i nij v < 1 - 1 // rad ^ (nij - i - 1))%NQ). {
-       apply (NQadd_lt_mono_l (A i nij u)).
-       eapply NQlt_le_trans; [ apply Hajv | ].
-       rewrite NQadd_sub_assoc.
-       now apply NQle_add_le_sub_r, NQadd_le_mono_r.
+     destruct (NQlt_le_dec (1 // rad ^ (nj - i - 1))%NQ (A i nj u))
+       as [Hum1| Hum1]. {
+       apply NQnle_gt in Hajv; apply Hajv; clear Hajv.
+       eapply NQle_trans; [ apply Havi | ].
+       rewrite Hnk; replace k with (j + (k - j)) by flia Hljk.
+       rewrite min_n_add, <- Hnj.
+       rewrite NQadd_comm, <- ApB_A; [ | flia Hinij ].
+       apply NQadd_le_mono_l.
+       eapply NQle_trans.
+       -apply (B_upper_bound_for_adds' 2).
+        +split; [ pauto | cbn; rewrite Nat.mul_1_r ].
+         replace 2 with (2 * 1) by easy.
+         now apply Nat.mul_le_mono.
+        +flia Hinij.
+        +intros p Hp; replace p with (i + (p - i)) by flia Hp.
+         apply Hv.
+       -apply (NQle_trans _ (2 // rad ^ (nj - i - 1))).
+        +rewrite NQmul_sub_distr_l, NQmul_1_r.
+         now apply NQle_sub_l.
+        +rewrite A_num_den; unfold den_A.
+         apply NQle_pair_mono_r.
+         apply Nat.nlt_ge; intros H.
+         remember (num_A i nj u) as x eqn:Hx.
+         destruct x.
+         *apply NQnlt_ge in Hauvt; apply Hauvt; clear Hauvt.
+          now rewrite A_num_den, <- Hx, NQadd_0_l.
+         *destruct x; [ | flia H ].
+          apply NQnle_gt in Hum1; apply Hum1; clear Hum1.
+          rewrite A_num_den, <- Hx.
+          apply NQle_refl.
      }
-...
-     apply NQnle_gt in Hajv; apply Hajv; clear Hajv.
-     eapply NQle_trans; [ apply Havi | ].
-     rewrite Hnik; replace k with (j + (k - j)) by flia Hljk.
-     rewrite min_n_add, <- Hnij.
-     rewrite NQadd_comm, <- ApB_A; [ | flia Hinij ].
-     apply NQadd_le_mono_l.
-Check B_upper_bound_for_adds'.
-...
-     eapply NQle_trans.
-    **apply (B_upper_bound_for_adds' 2).
+     apply NQle_antisymm in Hum; [ clear Hum1 | easy ].
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
 specialize (H2 k) as H1k.
