@@ -2039,6 +2039,39 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
        rewrite Nat.sub_1_r.
        now apply Nat.lt_le_pred.
      }
+     move Hum at bottom; move Hupv at bottom.
+     destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. 2: {
+       specialize (Hupv sj) as H1.
+       unfold "⊕" in H1.
+       unfold P, d2n, prop_carr in H1.
+       cbn in H1.
+       replace (u (i + sj + 1)) with 1 in H1. {
+         replace (v (i + sj + 1)) with (rad - 1) in H1. {
+           specialize (carry_upper_bound_for_add v (i + sj + 1)) as H2.
+           assert (H : ∀ k : nat, v (i + sj + 1 + k + 1) ≤ 2 * (rad - 1)). {
+             intros p; do 3 rewrite <- Nat.add_assoc; apply Hv.
+           }
+           specialize (H2 H); clear H.
+           remember (carry v (i + sj + 1)) as x eqn:Hx.
+           destruct x.
+           -rewrite Nat.add_0_r in H1.
+            rewrite Nat.mod_small in H1; [ flia Hr H1 | flia Hr ].
+           -destruct x; [ | flia H2 ].
+            rewrite Nat.sub_add in H1; [ | easy ].
+            rewrite Nat.mod_same in H1; [ | easy ].
+            flia Hr2 H1.
+         }
+         symmetry.
+...
+assert (H : u (i + sj + 1) = 1). {
+rewrite A_num_den, Hsj in Hum.
+unfold den_A in Hum.
+apply NQeq_pair in Hum; [ | pauto | pauto ].
+rewrite Nat.mul_comm in Hum.
+apply Nat.mul_cancel_l in Hum; [ | pauto ].
+unfold num_A in Hum.
+replace (nj - 1) with (S (nj - 2)) in Hum.
+rewrite summation_split_last in Hum.
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
 specialize (H2 k) as H1k.
