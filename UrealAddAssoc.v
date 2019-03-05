@@ -1992,6 +1992,10 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
      move Hum at bottom.
      move Hauvt at bottom.
      move Hj at bottom.
+     assert (Hsnj : S j ≤ sj). {
+       rewrite Hsj, Hnj; unfold min_n.
+       destruct rad; [ easy | cbn; flia ].
+     }
      assert (Hvm : A i nj v = (1 - 1 // rad ^ S j - 1 // rad ^ sj)%NQ). {
        rewrite <- Hum.
        apply NQadd_move_l, NQle_antisymm; [ | easy ].
@@ -2006,10 +2010,6 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
          now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
        }
        do 2 rewrite Nat.mul_1_l.
-       assert (Hsnj : S j ≤ sj). {
-         rewrite Hsj, Hnj; unfold min_n.
-         destruct rad; [ easy | cbn; flia ].
-       }
        replace sj with ((sj - S j) + S j) at 1 3 by flia Hsnj.
        rewrite Nat.pow_add_r.
        rewrite NQpair_inv_mul; [ | pauto | pauto ].
@@ -2063,6 +2063,33 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
          }
          symmetry.
          move Hvm at bottom.
+         rewrite NQsub_pair_pos in Hvm; [ | easy | pauto | ]. 2: {
+           now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
+         }
+         do 2 rewrite Nat.mul_1_l in Hvm.
+         rewrite NQsub_pair_pos in Hvm; [ | pauto | pauto | ]. 2: {
+           rewrite Nat.mul_comm.
+           apply Nat.mul_le_mono.
+           -apply Nat.le_add_le_sub_r; cbn.
+            replace 2 with (2 * 1) by easy.
+            apply Nat.mul_le_mono; [ easy | ].
+            now apply Nat_pow_ge_1.
+           -now apply Nat.pow_le_mono_r.
+         }
+         replace sj with (S j + (sj - S j)) in Hvm at 1 by flia Hsnj.
+         rewrite Nat.pow_add_r in Hvm.
+         rewrite Nat.mul_comm , <- Nat.mul_assoc in Hvm.
+         rewrite <- Nat.mul_sub_distr_l in Hvm.
+         rewrite NQmul_pair_mono_l in Hvm; [ | pauto | pauto ].
+         rewrite A_num_den in Hvm.
+         unfold den_A in Hvm; rewrite <- Hsj in Hvm.
+         apply NQeq_pair in Hvm; [ | pauto | pauto ].
+         rewrite Nat.mul_comm in Hvm.
+         apply Nat.mul_cancel_l in Hvm; [ | pauto ].
+         rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hvm.
+         rewrite <- Nat.pow_add_r in Hvm.
+         rewrite Nat.sub_add in Hvm; [ | easy ].
+         unfold num_A in Hvm.
 ...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Haup) as H2.
 specialize (H2 k) as H1k.
