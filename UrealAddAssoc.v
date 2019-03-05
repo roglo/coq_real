@@ -1993,10 +1993,64 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
      move Hauvt at bottom.
      move Hj at bottom.
      assert (Hvm : A i nj v = (1 - 1 // rad ^ S j - 1 // rad ^ sj)%NQ). {
-       rewrite <- Hum.
-...
+       rewrite Hum in Hauvt.
        apply NQadd_move_l, NQle_antisymm; [ | easy ].
-       rewrite Hum, A_num_den; unfold den_A; rewrite <- Hsj.
+       rewrite NQadd_comm.
+...
+       rewrite <- Hum.
+       apply NQadd_move_l, NQle_antisymm; [ | easy ].
+       rewrite Hum.
+       apply NQlt_add_lt_sub_r in Hj.
+       apply -> NQle_add_le_sub_r.
+       rewrite NQadd_comm, <- NQadd_assoc.
+       apply NQle_add_le_sub_r.
+       rewrite A_num_den in Hj; unfold den_A in Hj; rewrite <- Hsj in Hj.
+       rewrite A_num_den; unfold den_A; rewrite <- Hsj.
+       rewrite NQsub_pair_pos; [ | easy | pauto | ].
+       do 2 rewrite Nat.mul_1_l.
+       replace sj with ((sj - S j) + S j) at 1 3.
+       rewrite Nat.pow_add_r.
+       rewrite NQpair_inv_mul; [ | pauto | pauto ].
+       replace (1 // rad ^ S j)%NQ with (1 * 1 // rad ^ S j)%NQ at 2 by apply NQmul_1_l.
+       rewrite <- NQmul_add_distr_r.
+       rewrite NQpair_inv_mul; [ | pauto | pauto ].
+       apply NQmul_le_mono_pos_r; [ easy | ].
+...
+       apply NQle_pair_mono_r.
+...
+       rewrite NQadd_pair; [ | pauto | pauto ].
+rewrite NQpair_inv_mul; [ | pauto | pauto ].
+       replace sj with (S j + (sj - S j)).
+       rewrite Nat.pow_add_r.
+rewrite <- NH
+...
+       remember (A i nj v + 1 // rad ^ S j)%NQ as x eqn:Hx.
+       rewrite (NQnum_den x) in Hj.
+       rewrite (NQnum_den x).
+       rewrite NQsub_pair_pos; [ | pauto | pauto | ]. 2: {
+         now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
+       }
+       do 2 rewrite Nat.mul_1_l.
+       apply NQlt_pair in Hj; [ | pauto | pauto ].
+       apply NQle_pair; [ pauto | pauto | ].
+       do 2 rewrite Nat.mul_1_r in Hj.
+       replace (NQden x) with (NQnum x + (NQden x - NQnum x)) by flia Hj.
+       rewrite Nat.mul_add_distr_r.
+       rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+...
+       rewrite <- Nat.add_sub_swap.
+       -rewrite <- Nat.add_sub_assoc.
+       -apply Nat.le_add_r.
+       rewrite <- Nat_sub_sub_distr.
+...
+       apply Nat.lt_le_pred in Hj.
+       rewrite <- Nat.sub_1_r in Hj.
+       apply (Nat.add_le_mono_r _ _ 1) in Hj.
+       rewrite A_num_den; unfold den_A; rewrite <- Hsj.
+       rewrite A_num_den in Hj; unfold den_A in Hj; rewrite <- Hsj in Hj.
+       rewrite <- NQpair_add_l.
+...
+       rewrite A_num_den; unfold den_A; rewrite <- Hsj.
        rewrite A_num_den in Hj; unfold den_A in Hj; rewrite <- Hsj in Hj.
        rewrite <- NQpair_add_l.
        rewrite NQsub_pair_pos in Hj; [ | pauto | pauto | ]. 2: {
@@ -2011,9 +2065,9 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
        apply Nat.lt_le_pred in Hj.
        rewrite <- Nat.sub_1_r in Hj.
        apply (Nat.add_le_mono_r _ _ 1) in Hj.
+...
        rewrite Nat.sub_add in Hj.
        -eapply le_trans; [ | apply Hj ].
-
        apply <- Nat.le_sub_le_add_r in Hj.
 Search (_ ≤ pred _).
 apply Nat.le_succ_le_pred in Hj.
