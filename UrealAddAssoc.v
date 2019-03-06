@@ -2162,21 +2162,18 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
  rewrite NQadd_sub_assoc in Hj.
  replace (1 + 1)%NQ with 2%NQ in Hj by easy.
  destruct (le_dec j k) as [Hljk| Hlkj]. {
-...
-   apply NQnle_gt in Hk; apply Hk; clear Hk.
-   replace nk with (nj + (nk - nj)). 2: {
+   replace nk with (nj + (nk - nj)) in Hak. 2: {
      rewrite Nat.add_sub_assoc.
      -now rewrite Nat.add_comm, Nat.add_sub.
      -rewrite Hnj, Hnk; unfold min_n.
       apply Nat.mul_le_mono_l.
       now apply Nat.add_le_mono_r, Nat.add_le_mono_l.
    }
-   rewrite <- ApB_A; [ | flia Hinij ].
-   apply (NQle_trans _ 1); [ now apply NQle_sub_l | ].
-   eapply NQle_trans; [ apply Havi | ].
-   apply NQle_add_r, B_ge_0.
+   rewrite <- ApB_A in Hak; [ | flia Hinij ].
+   rewrite NQintg_add in Hak; [ | easy | apply B_ge_0 ].
+   now rewrite Haj in Hak.
  }
- apply Nat.nle_gt in Hljk.
+ apply Nat.nle_gt in Hlkj.
 ...
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. 2: {
        specialize (Hupv sj) as H1.
