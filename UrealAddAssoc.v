@@ -1820,6 +1820,19 @@ Theorem carry_0_A_P_eq {r : radix} : ∀ u i n,
   carry u (n - i - 1) = 0
   → A i n (P u) = NQfrac (A i n u).
 Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hc.
+remember (n - i - 1) as s eqn:Hs.
+unfold carry in Hc.
+destruct (LPO_fst (fA_ge_1_ε u s)) as [H1| H1].
+-idtac.
+... suite
+-destruct H1 as (j & Hjj & Hj); move j before i.
+ apply A_ge_1_false_iff in Hj.
+ apply eq_NQintg_0 in Hc; [ | easy ].
+ rewrite NQfrac_small in Hj; [ clear Hc | easy ].
+...
 intros * Hc.
 do 2 rewrite A_num_den.
 rewrite NQfrac_pair.
@@ -1833,8 +1846,9 @@ unfold den_A.
 Check Nat.mul_mod_distr_r.
 Print M.
 *)
-Search carry.
 remember (n - i - 1) as s eqn:Hs.
+...
+Search carry.
 revert u i n Hc Hs.
 induction s; intros.
 -unfold num_A.
@@ -1848,6 +1862,9 @@ induction s; intros.
                                | inl _ => 0
                                | inr (exist _ k _) => k
                                end) as m eqn:Hm.
+ apply eq_NQintg_0 in Hc; [ | easy ].
+Print A.
+Search (A (S _)).
 ...
 
 Theorem pre_Hugo_Herbelin_92 {r : radix} : ∀ u v i j k,
