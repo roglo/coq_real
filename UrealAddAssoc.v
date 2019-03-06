@@ -1816,6 +1816,7 @@ destruct (NQlt_le_dec (A i nij u + NQfrac (A i nij v))%NQ 1) as [H3| H3].
  +now apply Nat.add_cancel_r in H1.
 Qed.
 
+(*
 Theorem carry_0_A_P_eq {r : radix} : ∀ u i n,
   carry u (n - 1) = 0
   → A i n (P u) = NQfrac (A i n u).
@@ -1823,31 +1824,10 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hc.
-(*
-remember (n - i - 1) as s eqn:Hs.
-unfold carry in Hc.
-destruct (LPO_fst (fA_ge_1_ε u s)) as [H1| H1].
--idtac.
-... suite
--destruct H1 as (j & Hjj & Hj); move j before i.
- apply A_ge_1_false_iff in Hj.
- apply eq_NQintg_0 in Hc; [ | easy ].
- rewrite NQfrac_small in Hj; [ clear Hc | easy ].
-...
-intros * Hc.
-*)
 do 2 rewrite A_num_den.
 rewrite NQfrac_pair.
 apply NQpair_eq_r.
-(*
-unfold P, d2n, prop_carr.
-remember num_A as f; cbn; subst f.
-*)
 unfold den_A.
-(*
-Check Nat.mul_mod_distr_r.
-Print M.
-*)
 remember (n - i - 1) as s eqn:Hs.
 revert u i n Hc Hs.
 induction s; intros.
@@ -1891,7 +1871,8 @@ induction s; intros.
    rewrite Nat.mul_mod_distr_r; [ | easy | easy ].
    symmetry.
    rewrite <- Nat.add_mod_idemp_l; [ | easy ].
-...
+(* mouais... ça doit être faux, mon truc *)
+*)
 
 Theorem pre_Hugo_Herbelin_92 {r : radix} : ∀ u v i j k,
   (∀ k : nat, u (i + k) ≤ rad - 1)
@@ -2117,6 +2098,7 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
        now apply Nat.lt_le_pred.
      }
      move Hum at bottom; move Hupv at bottom.
+...
      assert (Hcv : carry v sj ≤ 1). {
        specialize (carry_upper_bound_for_add v sj) as Hcv.
        assert (H : ∀ k, v (sj + k + 1) ≤ 2 * (rad - 1)). {
@@ -2130,8 +2112,6 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
        }
        now specialize (Hcv H).
      }
-     destruct (Nat.eq_dec (carry v sj) 0) as [Hc0| Hc1].
-    **idtac.
 ...
 rewrite Hsj in Hc0.
 specialize (carry_0_A_P_eq v i nj Hc0) as H1.
