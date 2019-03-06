@@ -2134,21 +2134,10 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
       apply Nat.pow_le_mono_r; [ easy | ].
       rewrite Hsj, Hnj; unfold min_n.
       destruct rad; [ easy | cbn; flia ].
-   ++idtac.
-...
-     assert (Hcv : carry v sj ≤ 1). {
-       specialize (carry_upper_bound_for_add v sj) as Hcv.
-       assert (H : ∀ k, v (sj + k + 1) ≤ 2 * (rad - 1)). {
-         intros p.
-         replace (sj + p + 1) with (i + (sj + p + 1 - i)).
-         -apply Hv.
-         -rewrite Nat.add_comm; apply Nat.sub_add.
-          rewrite Hsj, Hnj; unfold min_n.
-          destruct rad as [| rr]; [ easy | ].
-          destruct rr; [ flia Hr | cbn; flia ].
-       }
-       now specialize (Hcv H).
-     }
+   ++apply NQnlt_ge in Hauvt; apply Hauvt; clear Hauvt.
+     apply NQlt_sub_lt_add_l.
+     apply NQadd_lt_mono; [ apply Haui | apply Hj ].
+  --idtac.
 ...
 rewrite Hsj in Hc0.
 specialize (carry_0_A_P_eq v i nj Hc0) as H1.
