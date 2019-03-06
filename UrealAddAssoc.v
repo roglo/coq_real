@@ -1824,6 +1824,11 @@ intros * Hc.
 do 2 rewrite A_num_den.
 rewrite NQfrac_pair.
 apply NQpair_eq_r.
+unfold P, d2n, prop_carr.
+remember num_A as f; cbn; subst f.
+unfold den_A.
+...
+
 remember (n - i - 1) as s eqn:Hs.
 revert i n Hs.
 induction s; intros.
