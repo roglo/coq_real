@@ -2136,7 +2136,31 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
   apply NQadd_lt_mono; [ apply Haui | apply Hj ].
 -assert (H : NQintg (A i nj v) = 1) by flia Haj Haj0.
  clear Haj Haj0; rename H into Haj.
- move Haj after Hak.
+ move Haj after Hak; rewrite Haj.
+ destruct (Nat.eq_dec (NQintg (A i nk v)) 1) as [Hak0| Hak0]; [ easy | ].
+ exfalso.
+ assert (H : NQintg (A i nk v) = 0) by flia Hak Hak0.
+ clear Hak Hak0; rename H into Hak.
+ move Hak before Haj.
+ rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
+ rewrite NQfrac_small in Hk; [ | easy ].
+ assert (Havi : (0 ≤ A i nk v < 1)%NQ). {
+   split; [ easy | ].
+   rewrite (NQintg_frac (A _ _ _)); [ | easy ].
+   rewrite Hak, NQadd_0_l.
+   apply NQfrac_lt_1.
+ }
+ rewrite NQfrac_small in Haav; [ | easy ].
+ rewrite NQfrac_small in Hk; [ | easy ].
+ apply NQnle_gt in Haav.
+ destruct (NQlt_le_dec (A i nk u + A i nk v)%NQ 1) as [H| ]; [ | easy ].
+ apply NQnle_gt in Haav; clear H.
+ rewrite NQsub_0_r in Hk.
+ rewrite NQfrac_of_intg in Hj; [ | easy ].
+ rewrite Haj in Hj.
+ apply -> NQlt_sub_lt_add_l in Hj.
+ rewrite NQadd_sub_assoc in Hj.
+ replace (1 + 1)%NQ with 2%NQ in Hj by easy.
 ...
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. 2: {
        specialize (Hupv sj) as H1.
