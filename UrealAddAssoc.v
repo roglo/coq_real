@@ -2134,7 +2134,9 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
  +apply NQnlt_ge in Hauvt; apply Hauvt; clear Hauvt.
   apply NQlt_sub_lt_add_l.
   apply NQadd_lt_mono; [ apply Haui | apply Hj ].
--idtac.
+-assert (H : NQintg (A i nj v) = 1) by flia Haj Haj0.
+ clear Haj Haj0; rename H into Haj.
+ move Haj after Hak.
 ...
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. 2: {
        specialize (Hupv sj) as H1.
