@@ -2098,6 +2098,43 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
        now apply Nat.lt_le_pred.
      }
      move Hum at bottom; move Hupv at bottom.
+     destruct Havi as (Havi, Havi2).
+     apply NQnlt_ge in Havi; apply Havi; clear Havi.
+     rewrite Hnk.
+     replace k with (j + (k - j)) by flia Hljk.
+     rewrite min_n_add, <- Hnj.
+     rewrite <- ApB_A; [ | flia Hinij ].
+     rewrite Hvm, <- NQsub_add_distr.
+     rewrite <- NQadd_sub_swap.
+     apply NQlt_sub_lt_add_r, NQadd_lt_mono_l.
+     specialize (B_upper_bound_for_adds' 2 v i nj (rad * (k - j))) as H1.
+     rewrite <- Hsj in H1.
+     assert (H : 0 < 2 ≤ rad ^ 2). {
+       split; [ pauto | cbn; rewrite Nat.mul_1_r ].
+       replace 2 with (2 * 1) by easy.
+       now apply Nat.mul_le_mono.
+     }
+     specialize (H1 H); clear H.
+     assert (H : i + 1 ≤ nj) by flia Hinij.
+     specialize (H1 H); clear H.
+     assert (H : ∀ j, j ≥ i → v j ≤ 2 * (rad - 1)). {
+       intros p Hp; replace p with (i + (p - i)) by flia Hp.
+       apply Hv.
+     }
+     specialize (H1 H); clear H.
+     eapply NQle_lt_trans; [ apply H1 | ].
+     eapply NQlt_le_trans; [ | now apply NQle_add_r ].
+     rewrite NQmul_sub_distr_l, NQmul_1_r.
+     eapply NQlt_le_trans; [ now apply NQsub_lt | ].
+     apply NQle_pair; [ pauto | pauto | ].
+     rewrite Nat.mul_1_r.
+     apply (Nat.le_trans _ (rad * rad ^ S j)).
+    **now apply Nat.mul_le_mono_r.
+    **rewrite <- Nat.pow_succ_r'.
+      apply Nat.pow_le_mono_r; [ easy | ].
+      rewrite Hsj, Hnj; unfold min_n.
+      destruct rad; [ easy | cbn; flia ].
+   ++idtac.
 ...
      assert (Hcv : carry v sj ≤ 1). {
        specialize (carry_upper_bound_for_add v sj) as Hcv.
