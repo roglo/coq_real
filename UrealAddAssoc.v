@@ -1824,6 +1824,14 @@ intros * Hc.
 do 2 rewrite A_num_den.
 rewrite NQfrac_pair.
 apply NQpair_eq_r.
+remember (n - i - 1) as s eqn:Hs.
+revert i n Hs.
+induction s; intros.
+-unfold num_A.
+ rewrite summation_empty; [ | flia Hs ].
+ rewrite summation_empty; [ | flia Hs ].
+ rewrite Nat.mod_0_l; [ easy | unfold den_A; pauto ].
+-idtac.
 ...
 
 Theorem pre_Hugo_Herbelin_92 {r : radix} : ∀ u v i j k,
