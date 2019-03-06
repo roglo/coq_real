@@ -1834,7 +1834,6 @@ Check Nat.mul_mod_distr_r.
 Print M.
 *)
 Search carry.
-...
 remember (n - i - 1) as s eqn:Hs.
 revert u i n Hc Hs.
 induction s; intros.
@@ -1844,6 +1843,11 @@ induction s; intros.
  rewrite Nat.mod_0_l; [ easy | unfold den_A; pauto ].
 -rewrite Nat.pow_succ_r', Nat.mul_comm.
  rewrite Nat.mod_mul_r; [ | pauto | pauto ].
+ unfold carry in Hc.
+ remember (min_n (S s) match LPO_fst (fA_ge_1_ε u (S s)) with
+                               | inl _ => 0
+                               | inr (exist _ k _) => k
+                               end) as m eqn:Hm.
 ...
 
 Theorem pre_Hugo_Herbelin_92 {r : radix} : ∀ u v i j k,
