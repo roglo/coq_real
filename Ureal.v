@@ -149,7 +149,7 @@ intros * Ha.
 induction n.
 -rewrite summation_only_one.
  rewrite Nat.pow_0_r, Nat.pow_1_r, Nat.mul_1_l.
- apply NQeq_pair; [ easy | flia Ha | easy ].
+ symmetry; apply NQpair_diag; flia Ha.
 -rewrite summation_split_last; [ | flia ].
  rewrite IHn.
  remember NQ_of_pair as f; remember S as g; cbn; subst f g.

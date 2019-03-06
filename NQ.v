@@ -1610,6 +1610,23 @@ destruct a as [| a| a]; [ | | now destruct x ].
    now rewrite H.
 Qed.
 
+Theorem NQden_0 : ∀ a, (a // 0 = a // 1)%NQ.
+Proof. easy. Qed.
+
+Theorem NQpair_eq_r : ∀ a b c, (a // c = b // c)%NQ ↔ a = b.
+Proof.
+intros; split; [ | now intros; subst ].
+intros H.
+destruct c.
+-do 2 rewrite NQden_0 in H.
+ apply NQeq_pair in H; [ | easy | easy ].
+ rewrite Nat.mul_comm in H.
+ now apply Nat.mul_cancel_l in H.
+-apply NQeq_pair in H; [ | easy | easy ].
+ rewrite Nat.mul_comm in H.
+ now apply Nat.mul_cancel_l in H.
+Qed.
+
 Theorem NQpair_diag : ∀ a, a ≠ 0 → (a // a = 1)%NQ.
 Proof.
 intros.
@@ -1627,9 +1644,6 @@ apply NQpair_diag.
 intros H; apply Nat.eq_mul_0 in H.
 now destruct H.
 Qed.
-
-Theorem NQden_0 : ∀ a, (a // 0 = a // 1)%NQ.
-Proof. easy. Qed.
 
 Theorem NQle_pair_mono_l : ∀ a b c, 0 < a ≤ b → (c // b ≤ c // a)%NQ.
 Proof.
@@ -2568,7 +2582,7 @@ Theorem NQpow_pair_r : ∀ n a b, n ≠ 0 → a ≤ b →
   (n ^ a // n ^ b)%NQ = (1 // n ^ (b - a))%NQ.
 Proof.
 intros * Hn Hab.
-apply NQeq_pair; [ | | ].
+apply NQeq_pair.
 -now apply Nat.pow_nonzero.
 -now apply Nat.pow_nonzero.
 -rewrite Nat.mul_1_r.
@@ -2653,13 +2667,6 @@ apply Nat.add_sub_eq_l in H4.
 rewrite Nat.mul_comm in H4.
 symmetry in H4; rewrite Nat.sub_diag in H4.
 now apply Nat.eq_add_0 in H4.
-Qed.
-
-Theorem NQeq_of_eq_nat : ∀ a b, a = b → (a // 1 = b // 1)%NQ.
-Proof.
-intros * Hab.
-apply NQeq_pair; [ easy | easy | ].
-now rewrite Nat.mul_1_l, Nat.mul_1_r.
 Qed.
 
 Require Import Summation.

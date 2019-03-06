@@ -382,9 +382,8 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
          now do 2 rewrite Nat.mul_1_l; apply Nat_pow_ge_1.
        }
        do 2 rewrite Nat.mul_1_l in HAu.
-       replace 0%NQ with (0 // 1)%NQ in HAu; [ | easy ].
-       apply NQeq_pair in HAu; [ | pauto | easy ].
-       rewrite Nat.mul_1_r, Nat.mul_0_r in HAu.
+       replace 0%NQ with (0 // rad ^ (nv - i - 1))%NQ in HAu; [ | easy ].
+       apply NQpair_eq_r in HAu.
        apply Nat.sub_0_le, Nat.nlt_ge in HAu; apply HAu; clear HAu.
        apply Nat.pow_gt_1; [ easy | ].
        rewrite Hnv; unfold min_n.
@@ -474,10 +473,7 @@ destruct H4 as [Hva| [Hva| Hva]].
    rewrite A_num_den in H7.
    unfold den_A in H7.
    rewrite <- Hs in H7.
-   apply NQeq_pair in H7; [ | pauto | pauto ].
-   rewrite Nat.mul_comm in H7.
-   apply Nat.mul_cancel_l in H7; [ | pauto ].
-   unfold num_A in H7.
+   apply NQpair_eq_r in H7.
    destruct (lt_dec (nv - 1) (i + 1)) as [H4| H4]. {
      now rewrite summation_empty in H7.
    }
@@ -669,10 +665,7 @@ destruct H4 as [Hva| [Hva| Hva]].
    rewrite A_num_den in H7.
    unfold den_A in H7.
    rewrite <- Hs in H7.
-   apply NQeq_pair in H7; [ | pauto | pauto ].
-   rewrite Nat.mul_comm in H7.
-   apply Nat.mul_cancel_l in H7; [ | pauto ].
-   unfold num_A in H7.
+   apply NQpair_eq_r in H7.
    destruct (lt_dec (nv - 1) (i + 1)) as [H6| H6]. {
      now rewrite summation_empty in H7.
    }
