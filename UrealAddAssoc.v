@@ -1817,12 +1817,13 @@ destruct (NQlt_le_dec (A i nij u + NQfrac (A i nij v))%NQ 1) as [H3| H3].
 Qed.
 
 Theorem carry_0_A_P_eq {r : radix} : ∀ u i n,
-  carry u (n - i - 1) = 0
+  carry u (n - 1) = 0
   → A i n (P u) = NQfrac (A i n u).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hc.
+(*
 remember (n - i - 1) as s eqn:Hs.
 unfold carry in Hc.
 destruct (LPO_fst (fA_ge_1_ε u s)) as [H1| H1].
@@ -1834,6 +1835,7 @@ destruct (LPO_fst (fA_ge_1_ε u s)) as [H1| H1].
  rewrite NQfrac_small in Hj; [ clear Hc | easy ].
 ...
 intros * Hc.
+*)
 do 2 rewrite A_num_den.
 rewrite NQfrac_pair.
 apply NQpair_eq_r.
@@ -1847,24 +1849,48 @@ Check Nat.mul_mod_distr_r.
 Print M.
 *)
 remember (n - i - 1) as s eqn:Hs.
-...
-Search carry.
 revert u i n Hc Hs.
 induction s; intros.
 -unfold num_A.
  rewrite summation_empty; [ | flia Hs ].
  rewrite summation_empty; [ | flia Hs ].
  rewrite Nat.mod_0_l; [ easy | unfold den_A; pauto ].
--rewrite Nat.pow_succ_r', Nat.mul_comm.
- rewrite Nat.mod_mul_r; [ | pauto | pauto ].
- unfold carry in Hc.
- remember (min_n (S s) match LPO_fst (fA_ge_1_ε u (S s)) with
-                               | inl _ => 0
-                               | inr (exist _ k _) => k
-                               end) as m eqn:Hm.
- apply eq_NQintg_0 in Hc; [ | easy ].
-Print A.
-Search (A (S _)).
+-destruct s. {
+   rewrite Nat.pow_1_r.
+   unfold num_A.
+   rewrite summation_shift; [ symmetry | flia Hs ].
+   rewrite summation_shift; [ symmetry | flia Hs ].
+   replace (n - 1 - (i + 1)) with 0 by flia Hs.
+   do 2 rewrite summation_only_one.
+   rewrite Nat.add_0_r.
+   replace (n - (i + 1) - 1) with 0 by flia Hs.
+   rewrite Nat.pow_0_r, Nat.mul_1_r, Nat.mul_1_r.
+   unfold P, d2n, prop_carr; cbn.
+   replace (n - 1) with (i + 1) in Hc by flia Hs.
+   now rewrite Hc, Nat.add_0_r.
+ }
+ destruct s. {
+   unfold num_A.
+   rewrite summation_shift; [ symmetry | flia Hs ].
+   rewrite summation_shift; [ symmetry | flia Hs ].
+   replace (n - 1 - (i + 1)) with 1 by flia Hs.
+   remember P as f; cbn; subst f.
+   rewrite Nat.add_0_r.
+   replace (n - (i + 1) - 1) with 1 by flia Hs.
+   replace (n - (i + 1 + 1) - 1) with 0 by flia Hs.
+   rewrite Nat.pow_0_r.
+   do 3 rewrite Nat.mul_1_r.
+   rewrite Nat.pow_1_r.
+   do 2 rewrite Nat.add_0_r.
+   unfold P, d2n, prop_carr; cbn.
+   replace (i + 1 + 1) with (i + 2) by flia.
+   replace (n - 1) with (i + 2) in Hc by flia Hs.
+   rewrite Hc, Nat.add_0_r.
+   symmetry.
+   rewrite <- Nat.add_mod_idemp_l.
+   rewrite Nat.mul_mod_distr_r; [ | easy | easy ].
+   symmetry.
+   rewrite <- Nat.add_mod_idemp_l; [ | easy ].
 ...
 
 Theorem pre_Hugo_Herbelin_92 {r : radix} : ∀ u v i j k,
