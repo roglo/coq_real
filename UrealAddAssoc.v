@@ -1444,7 +1444,7 @@ remember (min_n i k) as nk eqn:Hnk.
 move nk before k; move nj before k; move n before k.
 move Hnk before Hn; move Hnj before Hn.
 (**)
-assert (Hiij : ∀ k, j ≤ k → NQintg (A i (min_n i k) v) = NQintg (A i nj v)). {
+assert (Hiij : ∀ p, j ≤ p → NQintg (A i (min_n i p) v) = NQintg (A i nj v)). {
   specialize (fA_lt_1_ε_NQintg_A i v j) as H1.
   assert (H : ∀ k, v (i + k) ≤ 3 * (rad - 1)). {
     intros p.
@@ -1468,7 +1468,7 @@ assert (Hiik : ∀ p, k ≤ p →
   now rewrite <- Hnk in H1.
 }
 assert
-  (Hii : ∀ k, NQintg (A i (min_n i k) (u ⊕ v)) = NQintg (A i n (u ⊕ v))). {
+  (Hii : ∀ p, NQintg (A i (min_n i p) (u ⊕ v)) = NQintg (A i n (u ⊕ v))). {
   specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as Hii.
   assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
     intros p.
