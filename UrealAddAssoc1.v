@@ -2393,7 +2393,7 @@ destruct (NQlt_le_dec (A i nik u + 1 - 1 // rad ^ sik)%NQ 1) as [H1| H1].
  +now apply NQle_add_le_sub_r, NQnlt_ge in H2.
 Qed.
 
-Theorem pre_Hugo_Herbelin_91 {r : radix} : ∀ u v i j,
+Theorem pre_Hugo_Herbelin_71 {r : radix} : ∀ u v i j,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
@@ -2449,7 +2449,7 @@ destruct (Nat.eq_dec (NQintg (A i n v)) 0) as [Hai0| Hai0].
  destruct rad; [ easy | cbn; flia ].
 Qed.
 
-Theorem pre_Hugo_Herbelin_92_lemma_1 {r : radix} : ∀ u v i j k,
+Theorem pre_Hugo_Herbelin_72_lemma_1 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → fA_ge_1_ε v i j = false
@@ -2659,7 +2659,7 @@ destruct (NQlt_le_dec (A i nj u + A i nj v)%NQ 1) as [Hajv| Hajv].
  apply NQadd_lt_mono; [ apply Haui | apply Hj ].
 Qed.
 
-Theorem pre_Hugo_Herbelin_92_lemma_2 {r : radix} : ∀ u v i j k,
+Theorem pre_Hugo_Herbelin_72_lemma_2 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ j0 : nat, j0 < j → fA_ge_1_ε v i j0 = true)
   → fA_ge_1_ε v i j = false
@@ -2733,7 +2733,7 @@ eapply NQle_lt_trans; [ | apply Hk ].
 now apply NQle_add_l.
 Qed.
 
-Theorem pre_Hugo_Herbelin_92 {r : radix} : ∀ u v i j k,
+Theorem pre_Hugo_Herbelin_72 {r : radix} : ∀ u v i j k,
   (∀ k : nat, u (i + k) ≤ rad - 1)
   → (∀ k : nat, v (i + k) ≤ 2 * (rad - 1))
   → (∀ j0 : nat, j0 < j → fA_ge_1_ε v i j0 = true)
@@ -2752,8 +2752,8 @@ remember (min_n i k) as nk eqn:Hnk.
 move nj before k; move nk before nj; move Hnk before Hnj.
 destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
 -rewrite Haj0; subst nj nk.
- now apply (pre_Hugo_Herbelin_92_lemma_1 u _ _ j).
+ now apply (pre_Hugo_Herbelin_72_lemma_1 u _ _ j).
 -assert (H : NQintg (A i nj v) = 1) by flia Haj Haj0.
  rewrite H; subst nj nk.
- now apply (pre_Hugo_Herbelin_92_lemma_2 u _ _ j).
+ now apply (pre_Hugo_Herbelin_72_lemma_2 u _ _ j).
 Qed.

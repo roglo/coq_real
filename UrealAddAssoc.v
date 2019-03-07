@@ -1743,9 +1743,9 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    clear kup Hv3 Hkup Hnup.
    subst kuv nv nuv.
    destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [Hauv| Hauv].
-  --now apply (pre_Hugo_Herbelin_91 u).
+  --now apply (pre_Hugo_Herbelin_71 u).
   --destruct Hauv.
-    now apply (pre_Hugo_Herbelin_92 u).
+    now apply (pre_Hugo_Herbelin_72 u).
   *idtac.
 ...
 
