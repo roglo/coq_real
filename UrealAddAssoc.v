@@ -1443,6 +1443,45 @@ remember (min_n i j) as nj eqn:Hnj.
 remember (min_n i k) as nk eqn:Hnk.
 move nk before k; move nj before k; move n before k.
 move Hnk before Hn; move Hnj before Hn.
+(**)
+assert (Hiij : ∀ k, j ≤ k → NQintg (A i (min_n i k) v) = NQintg (A i nj v)). {
+  specialize (fA_lt_1_ε_NQintg_A i v j) as H1.
+  assert (H : ∀ k, v (i + k) ≤ 3 * (rad - 1)). {
+    intros p.
+    eapply Nat.le_trans; [ apply Hv | ].
+    apply Nat.mul_le_mono_r; pauto.
+  }
+  specialize (H1 H Hjj Hj); clear H.
+  now rewrite Hnj.
+}
+assert (Hiik : ∀ p, k ≤ p →
+  NQintg (A i (min_n i p) (u ⊕ P v)) = NQintg (A i nk (u ⊕ P v))). {
+  specialize (fA_lt_1_ε_NQintg_A i (u ⊕ P v) k) as H1.
+  assert (H : ∀ k, (u ⊕ P v) (i + k) ≤ 3 * (rad - 1)). {
+    intros p.
+    unfold "⊕"; replace 3 with (1 + 2) by easy.
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+    apply Nat.add_le_mono; [ apply Hu | ].
+    eapply Nat.le_trans; [ apply P_le | flia Hr ].
+  }
+  specialize (H1 H Hjk Hk).
+  now rewrite <- Hnk in H1.
+}
+assert
+  (Hii : ∀ k, NQintg (A i (min_n i k) (u ⊕ v)) = NQintg (A i n (u ⊕ v))). {
+  specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as Hii.
+  assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+    intros p.
+    unfold "⊕"; replace 3 with (1 + 2) by easy.
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+    apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+  }
+  specialize (Hii H Huvt); clear H.
+  now rewrite <- Hn in Hii.
+}
+destruct (le_dec j k) as [Hljk| Hkj]. {
+  rewrite <- (Hiij k Hljk), <- Hnk.
+...
 rewrite NQfrac_small in Haav; [ | now apply eq_NQintg_0 in Haj ].
 destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0]; [ easy | ].
 exfalso.
