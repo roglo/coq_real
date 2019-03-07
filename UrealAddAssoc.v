@@ -1421,53 +1421,20 @@ split; [ easy | ].
 now apply A_upper_bound_for_dig.
 Qed.
 
-Theorem pre_Hugo_Herbelin_101_lemma_1 {r : radix} : ∀ u v i j k,
+Theorem pre_Hugo_Herbelin_101_lemma_1 {r : radix} : ∀ u v i j,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
-  → (∀ j0 : nat, j0 < j → fA_ge_1_ε v i j0 = true)
-  → fA_ge_1_ε v i j = false
-  → (∀ j, j < k → fA_ge_1_ε (u ⊕ P v) i j = true)
-  → fA_ge_1_ε (u ⊕ P v) i k = false
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
   → (A i (min_n i 0) u + NQfrac (A i (min_n i 0) v) < 1)%NQ
-  → (A i (min_n i k) u + A i (min_n i k) (P v) < 1)%NQ
   → NQintg (A i (min_n i j) v) ≤ 1
   → NQintg (A i (min_n i 0) v) = 0
   → NQintg (A i (min_n i j) v) = 0.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hu Hv Hjj Hj Hjk Hk Huvt Haav Haap Ha0 Haj.
+intros Hu Hv Huvt Haav Ha0 Haj.
 remember (min_n i 0) as n eqn:Hn.
 remember (min_n i j) as nj eqn:Hnj.
-remember (min_n i k) as nk eqn:Hnk.
-move nk before k; move nj before k; move n before k.
-move Hnk before Hn; move Hnj before Hn.
-(*
-assert (Hiij : ∀ p, j ≤ p → NQintg (A i (min_n i p) v) = NQintg (A i nj v)). {
-  specialize (fA_lt_1_ε_NQintg_A i v j) as H1.
-  assert (H : ∀ k, v (i + k) ≤ 3 * (rad - 1)). {
-    intros p.
-    eapply Nat.le_trans; [ apply Hv | ].
-    apply Nat.mul_le_mono_r; pauto.
-  }
-  specialize (H1 H Hjj Hj); clear H.
-  now rewrite Hnj.
-}
-assert (Hiik : ∀ p, k ≤ p →
-  NQintg (A i (min_n i p) (u ⊕ P v)) = NQintg (A i nk (u ⊕ P v))). {
-  specialize (fA_lt_1_ε_NQintg_A i (u ⊕ P v) k) as H1.
-  assert (H : ∀ k, (u ⊕ P v) (i + k) ≤ 3 * (rad - 1)). {
-    intros p.
-    unfold "⊕"; replace 3 with (1 + 2) by easy.
-    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-    apply Nat.add_le_mono; [ apply Hu | ].
-    eapply Nat.le_trans; [ apply P_le | flia Hr ].
-  }
-  specialize (H1 H Hjk Hk).
-  now rewrite <- Hnk in H1.
-}
-*)
 assert
   (Hii : ∀ p, NQintg (A i (min_n i p) (u ⊕ v)) = NQintg (A i n (u ⊕ v))). {
   specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as Hii.
@@ -1480,7 +1447,6 @@ assert
   specialize (Hii H Huvt); clear H.
   now rewrite <- Hn in Hii.
 }
-(**)
 rewrite NQfrac_small in Haav; [ | now apply eq_NQintg_0 in Haj ].
 destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0]; [ easy | ].
 assert (Haj1 : NQintg (A i nj v) = 1) by flia Ha0 Haj0.
@@ -1496,8 +1462,6 @@ rewrite NQintg_small in H2; [ | split ]; [ | | easy ]. 2: {
 rewrite NQintg_add in H2; [ | easy | easy ].
 now rewrite Haj1, <- Nat.add_assoc, Nat.add_comm in H2.
 Qed.
-
-...
 
 Theorem pre_Hugo_Herbelin_101 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
@@ -1522,8 +1486,8 @@ move nk before k; move nj before k; move n before k.
 move Hnk before Hn; move Hnj before Hn.
 destruct (Nat.eq_dec (NQintg (A i n v)) 0) as [Hai0| Hai0].
 -rewrite Hai0; symmetry; subst n nj nk.
-...
- now apply (pre_Hugo_Herbelin_101_lemma_1 u _ _ _ k).
+ now apply (pre_Hugo_Herbelin_101_lemma_1 u).
+-idtac.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
