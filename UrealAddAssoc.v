@@ -1479,16 +1479,23 @@ assert
   specialize (Hii H Huvt); clear H.
   now rewrite <- Hn in Hii.
 }
-destruct (le_dec j k) as [Hljk| Hkj]. {
-  rewrite <- (Hiij k Hljk), <- Hnk.
-...
 rewrite NQfrac_small in Haav; [ | now apply eq_NQintg_0 in Haj ].
 destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0]; [ easy | ].
 exfalso.
 assert (Haj1 : NQintg (A i nj v) = 1) by flia Ha0 Haj0.
 clear Ha0 Haj0.
+move Haj1 before Haj.
+(*
+destruct (le_dec j k) as [Hljk| Hkj]. {
+  generalize Haj1; intros Hak1.
+  rewrite <- (Hiij k Hljk), <- Hnk in Hak1.
+  move Hak1 before Haj1.
+  apply A_ge_1_false_iff in Hj.
+  rewrite <- Hnj in Hj.
+...
 generalize Hj; intros Hj'.
 generalize Hk; intros Hk'.
+*)
 apply A_ge_1_false_iff in Hj.
 rewrite <- Hnj in Hj.
 rewrite NQfrac_less_small in Hj. 2: {
@@ -1522,25 +1529,34 @@ rewrite NQfrac_small in H1; [ | split ]; [ | easy | ]. 2: {
   now apply eq_NQintg_0 in Haj.
 }
 destruct (lt_dec j k) as [Hljk| Hkj].
--specialize (fA_lt_1_ε_NQintg_A i v j) as H2.
- assert (H : ∀ k, v (i + k) ≤ 3 * (rad - 1)). {
-   intros p.
-   eapply Nat.le_trans; [ apply Hv | ].
-   apply Nat.mul_le_mono_r; pauto.
- }
- specialize (H2 H Hjj Hj' k); clear H.
- assert (H : j ≤ k) by flia Hljk.
- specialize (H2 H); clear H.
- rewrite <- Hnj, <- Hnk in H2.
- rewrite Haj1 in H2.
- rename H2 into Hak1.
+-assert (Hak1 : j ≤ k) by now apply Nat.lt_le_incl.
+ apply Hiij in Hak1.
+ rewrite <- Hnk, Haj1 in Hak1.
  move Hak1 before Haj1.
- specialize (Hjk _ Hljk) as H2.
- apply A_ge_1_true_iff in H2.
- rewrite <- Hnj, A_additive in H2.
- rewrite NQfrac_add_cond in H2; [ | pauto | pauto ].
+ specialize (Hii k) as H2.
+ rewrite <- Hnk in H2.
+ do 2 rewrite A_additive in H2.
+ symmetry in H2.
+ rewrite NQintg_small in H2; [ | split ]; [ | | easy ]. 2: {
+   replace 0%NQ with (0 + 0)%NQ by easy.
+   now apply NQadd_le_mono.
+ }
+ rewrite NQintg_add in H2; [ | easy | easy ].
+ now rewrite Hak1, <- Nat.add_assoc, Nat.add_comm in H2.
+-apply Nat.nlt_ge in Hkj.
 ...
- rewrite A_additive
+ specialize (Hiik _ Hkj) as H2.
+ rewrite <- Hnj in H2.
+ do 2 rewrite A_additive in H2.
+ symmetry in H2.
+ rewrite NQintg_small in H2. 2: {
+   split.
+   -replace 0%NQ with (0 + 0)%NQ by easy.
+    now apply NQadd_le_mono.
+   -eapply NQlt_le_trans; [ apply Hk | ].
+    now apply NQle_sub_l.
+ }
+ rewrite NQintg_add in H2; [ | easy | easy ].
 ...
 (*
 destruct (zerop k) as [Hk0| Hk0]. {
