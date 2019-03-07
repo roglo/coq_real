@@ -446,7 +446,7 @@ replace (min_n i k) with (min_n i 0 + rad * k). 2: {
 now apply all_fA_ge_1_ε_NQintg_A.
 Qed.
 
-Theorem fA_lt_1_ε_NQintg_A' {r : radix} : ∀ i u j,
+Theorem fA_lt_1_ε_NQintg_A {r : radix} : ∀ i u j,
   (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, k < j → fA_ge_1_ε u i k = true)
   → fA_ge_1_ε u i j = false

@@ -1448,6 +1448,8 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0]; [ easy | ].
 exfalso.
 assert (Haj1 : NQintg (A i nj v) = 1) by flia Ha0 Haj0.
 clear Ha0 Haj0.
+generalize Hj; intros Hj'.
+generalize Hk; intros Hk'.
 apply A_ge_1_false_iff in Hj.
 rewrite <- Hnj in Hj.
 rewrite NQfrac_less_small in Hj. 2: {
@@ -1480,14 +1482,35 @@ rewrite <- Hn, Nat.pow_1_r in H1.
 rewrite NQfrac_small in H1; [ | split ]; [ | easy | ]. 2: {
   now apply eq_NQintg_0 in Haj.
 }
+destruct (lt_dec j k) as [Hljk| Hkj].
+-specialize (fA_lt_1_ε_NQintg_A i v j) as H2.
+ assert (H : ∀ k, v (i + k) ≤ 3 * (rad - 1)). {
+   intros p.
+   eapply Nat.le_trans; [ apply Hv | ].
+   apply Nat.mul_le_mono_r; pauto.
+ }
+ specialize (H2 H Hjj Hj' k); clear H.
+ assert (H : j ≤ k) by flia Hljk.
+ specialize (H2 H); clear H.
+ rewrite <- Hnj, <- Hnk in H2.
+ rewrite Haj1 in H2.
+ rename H2 into Hak1.
+ move Hak1 before Haj1.
+ specialize (Hjk _ Hljk) as H2.
+ apply A_ge_1_true_iff in H2.
+ rewrite <- Hnj, A_additive in H2.
+ rewrite NQfrac_add_cond in H2; [ | pauto | pauto ].
 ...
+ rewrite A_additive
+...
+(*
 destruct (zerop k) as [Hk0| Hk0]. {
   subst k; rewrite <- Hn in Hnk; subst nk; clear Hjk.
   rewrite Nat.pow_1_r in Hk.
 ...
-(*
+*)
 destruct (lt_dec j k) as [Hljk| Hkj]. {
-  specialize (Hjk _ Hljk) as H1.
+  specialize (Hjk _ Hljk) as H2.
   apply A_ge_1_true_iff in H1.
   rewrite <- Hnj, A_additive in H1.
   rewrite NQfrac_add_cond in H1; [ | easy | easy ].
@@ -2406,8 +2429,6 @@ rewrite nA_ureal_add_series, Nat.add_comm in H4.
    ++apply Nat.nlt_ge in H4.
      rewrite Nat_div_less_small; [ easy | ].
      split; [ easy | rewrite Hs2; apply nA_ureal_add_series_lt ].
-...
-*)
 ...
 
 Theorem ureal_add_assoc {r : radix} : ∀ x y z,
