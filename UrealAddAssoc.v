@@ -1463,29 +1463,22 @@ rewrite NQintg_add in H2; [ | easy | easy ].
 now rewrite Haj1, <- Nat.add_assoc, Nat.add_comm in H2.
 Qed.
 
-Theorem pre_Hugo_Herbelin_101 {r : radix} : ∀ u v i j k,
+Theorem pre_Hugo_Herbelin_101 {r : radix} : ∀ u v i j,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
-  → (∀ j0 : nat, j0 < j → fA_ge_1_ε v i j0 = true)
-  → fA_ge_1_ε v i j = false
-  → (∀ j, j < k → fA_ge_1_ε (u ⊕ P v) i j = true)
-  → fA_ge_1_ε (u ⊕ P v) i k = false
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
   → NQintg (A i (min_n i 0) v) ≤ 1
   → NQintg (A i (min_n i j) v) ≤ 1
   → (A i (min_n i 0) u + NQfrac (A i (min_n i 0) v) < 1)%NQ
-  → (A i (min_n i k) u + A i (min_n i k) (P v) < 1)%NQ
   → NQintg (A i (min_n i 0) v) = NQintg (A i (min_n i j) v).
 Proof.
 intros *.
-intros Hu Hv Hjj Hj Hjk Hk Huvt Ha0 Haj Haav Haap.
+intros Hu Hv Huvt Ha0 Haj Haav.
 remember (min_n i 0) as n eqn:Hn.
 remember (min_n i j) as nj eqn:Hnj.
-remember (min_n i k) as nk eqn:Hnk.
-move nk before k; move nj before k; move n before k.
-move Hnk before Hn; move Hnj before Hn.
+move nj before n; move Hnj before Hn.
 destruct (Nat.eq_dec (NQintg (A i n v)) 0) as [Hai0| Hai0].
--rewrite Hai0; symmetry; subst n nj nk.
+-rewrite Hai0; symmetry; subst n nj.
  now apply (pre_Hugo_Herbelin_101_lemma_1 u).
 -specialize radix_ge_2 as Hr.
  assert
@@ -1724,7 +1717,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   --destruct Haup as (k & Hjk & Hk); subst kup.
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [Hauv| Hauv].
    ++subst kuv nv nup nuv.
-     now apply (pre_Hugo_Herbelin_101 u _ _ _ k).
+     now apply (pre_Hugo_Herbelin_101 u).
    ++idtac.
 ...
 
