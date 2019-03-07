@@ -1469,6 +1469,47 @@ rewrite NQfrac_small in Hk; [ | split ]; [ | | easy ]. 2: {
   now apply NQadd_le_mono.
 }
 move Hk before Haap; clear Haap.
+(**)
+destruct (zerop j) as [Hj0| Hj0]. {
+  subst j; rewrite <- Hn in Hnj; subst nj.
+  now rewrite Haj in Haj1.
+}
+specialize (Hjj _ Hj0) as H1.
+apply A_ge_1_true_iff in H1.
+rewrite <- Hn, Nat.pow_1_r in H1.
+rewrite NQfrac_small in H1; [ | split ]; [ | easy | ]. 2: {
+  now apply eq_NQintg_0 in Haj.
+}
+destruct (zerop k) as [Hk0| Hk0]. {
+  subst k; rewrite <- Hn in Hnk; subst nk; clear Hjk.
+  rewrite Nat.pow_1_r in Hk.
+...
+(*
+destruct (lt_dec j k) as [Hljk| Hkj]. {
+  specialize (Hjk _ Hljk) as H1.
+  apply A_ge_1_true_iff in H1.
+  rewrite <- Hnj, A_additive in H1.
+  rewrite NQfrac_add_cond in H1; [ | easy | easy ].
+  rewrite NQfrac_small in H1; [ | split ]; [ | easy | ]. 2: {
+    apply A_upper_bound_for_dig; intros p Hp.
+    replace p with (i + (p - i)) by flia Hp; apply Hu.
+  }
+  rewrite NQfrac_P_M in H1.
+  destruct (NQlt_le_dec (A i nj u + A i nj (P v)) 1) as [Hauv| Hauv].
+  -rewrite NQsub_0_r in H1.
+...
+*)
+(*
+destruct (lt_dec k j) as [Hkj| Hljk]. {
+  specialize (Hjj _ Hkj) as H1.
+  apply A_ge_1_true_iff in H1.
+  rewrite <- Hnk in H1.
+*)
+...
+ apply NQnlt_ge in H1; apply H1; clear H1.
+ eapply NQle_lt_trans; [ | apply Hk ].
+ rewrite NQfrac_small; [ | ].
+
 ...
 specialize (all_fA_ge_1_ε_P_999 (u ⊕ v) i Huvt) as Huv.
 specialize (P_999_start (u ⊕ v) (i + 1) 3) as Huvc.
@@ -1484,6 +1525,11 @@ assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
   apply Huv.
 }
 specialize (Huvc H); clear H.
+destruct (lt_dec rad 3) as [H| Hr2].
+-assert (Hr2 : rad = 2) by flia Hr H; clear H Huvc.
+ rewrite Hr2 in Hu, Hv, Hj, Hk, Huv.
+ cbn in Hu, Hv.
+ remember P as f; cbn in Huv; subst f.
 ...
 
 Theorem pre_Hugo_Herbelin_101 {r : radix} : ∀ u v i j k,
