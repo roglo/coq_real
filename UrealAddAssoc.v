@@ -1469,9 +1469,21 @@ rewrite NQfrac_small in Hk; [ | split ]; [ | | easy ]. 2: {
   now apply NQadd_le_mono.
 }
 move Hk before Haap; clear Haap.
-assert (Hin : i + 1 ≤ n - 1). {
-  rewrite Hn; unfold min_n; destruct rad; [ easy | cbn; flia ].
+...
+specialize (all_fA_ge_1_ε_P_999 (u ⊕ v) i Huvt) as Huv.
+specialize (P_999_start (u ⊕ v) (i + 1) 3) as Huvc.
+assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
+  intros p; rewrite <- Nat.add_assoc.
+  unfold "⊕"; replace 3 with (1 + 2) by easy.
+  rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+  apply Nat.add_le_mono; [ apply Hu | apply Hv ].
 }
+specialize (Huvc H); clear H.
+assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
+  intros p; rewrite Nat.add_shuffle0.
+  apply Huv.
+}
+specialize (Huvc H); clear H.
 ...
 
 Theorem pre_Hugo_Herbelin_101 {r : radix} : ∀ u v i j k,
