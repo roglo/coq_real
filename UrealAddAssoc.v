@@ -1524,7 +1524,12 @@ assert
   specialize (Hii H Huvt); clear H.
   now rewrite <- Hn in Hii.
 }
-replace (NQintg (A i n v)) with 1 by flia Ha0 Hai0; symmetry.
+assert (H : NQintg (A i n v) = 1) by flia Ha0 Hai0.
+move H before Ha0; clear Ha0 Hai0; rename H into Ha0.
+rewrite Ha0; symmetry.
+destruct (Nat.eq_dec (NQintg (A i nj v)) 1) as [Haj1| Haj1]; [ easy | ].
+assert (Haj0 : NQintg (A i nj v) = 0) by flia Haj Haj1.
+exfalso; move Haj0 before Ha0; clear Haj Haj1.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
