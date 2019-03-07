@@ -2068,13 +2068,22 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0].
    apply NQfrac_lt_1.
  }
  rewrite NQfrac_small in Haav; [ | easy ].
+ apply A_ge_1_false_iff in Hk.
+ rewrite <- Hnk in Hk.
+ rewrite A_additive in Hk.
+ rewrite NQfrac_add_cond in Hk; [ | easy | easy ].
+ rewrite NQfrac_small in Hk; [ | split ]; [ | easy | ]. 2: {
+   apply A_upper_bound_for_dig.
+   intros p Hp; replace p with (i + (p - i)) by flia Hp.
+   apply Hu.
+ }
+ rewrite NQfrac_small in Hk; [ | easy ].
  apply NQnle_gt in Haav.
  destruct (NQlt_le_dec (A i nk u + A i nk v)%NQ 1) as [H| ]; [ | easy ].
  apply NQnle_gt in Haav; clear H.
+ rewrite NQsub_0_r in Hk.
  apply A_ge_1_false_iff in Hj.
  rewrite <- Hnj in Hj.
- apply A_ge_1_false_iff in Hk.
- rewrite <- Hnk in Hk.
  move Hj before Hk.
  rewrite NQfrac_of_intg in Hj; [ | easy ].
  rewrite Haj in Hj.
