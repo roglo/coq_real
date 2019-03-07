@@ -1421,48 +1421,6 @@ split; [ easy | ].
 now apply A_upper_bound_for_dig.
 Qed.
 
-Theorem pre_Hugo_Herbelin_101_lemma_1 {r : radix} : ∀ u v i j,
-  (∀ k, u (i + k) ≤ rad - 1)
-  → (∀ k, v (i + k) ≤ 2 * (rad - 1))
-  → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
-  → (A i (min_n i 0) u + NQfrac (A i (min_n i 0) v) < 1)%NQ
-  → NQintg (A i (min_n i j) v) ≤ 1
-  → NQintg (A i (min_n i 0) v) = 0
-  → NQintg (A i (min_n i j) v) = 0.
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hu Hv Huvt Haav Ha0 Haj.
-remember (min_n i 0) as n eqn:Hn.
-remember (min_n i j) as nj eqn:Hnj.
-assert
-  (Hii : ∀ p, NQintg (A i (min_n i p) (u ⊕ v)) = NQintg (A i n (u ⊕ v))). {
-  specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as Hii.
-  assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
-    intros p.
-    unfold "⊕"; replace 3 with (1 + 2) by easy.
-    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-    apply Nat.add_le_mono; [ apply Hu | apply Hv ].
-  }
-  specialize (Hii H Huvt); clear H.
-  now rewrite <- Hn in Hii.
-}
-rewrite NQfrac_small in Haav; [ | now apply eq_NQintg_0 in Haj ].
-destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0]; [ easy | ].
-assert (Haj1 : NQintg (A i nj v) = 1) by flia Ha0 Haj0.
-exfalso.
-specialize (Hii j) as H2.
-rewrite <- Hnj in H2.
-do 2 rewrite A_additive in H2.
-symmetry in H2.
-rewrite NQintg_small in H2; [ | split ]; [ | | easy ]. 2: {
-  replace 0%NQ with (0 + 0)%NQ by easy.
-  now apply NQadd_le_mono.
-}
-rewrite NQintg_add in H2; [ | easy | easy ].
-now rewrite Haj1, <- Nat.add_assoc, Nat.add_comm in H2.
-Qed.
-
 Theorem pre_Hugo_Herbelin_101 {r : radix} : ∀ u v i j,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -1473,34 +1431,43 @@ Theorem pre_Hugo_Herbelin_101 {r : radix} : ∀ u v i j,
   → NQintg (A i (min_n i 0) v) = NQintg (A i (min_n i j) v).
 Proof.
 intros *.
+specialize radix_ge_2 as Hr.
 intros Hu Hv Huvt Ha0 Haj Haav.
 remember (min_n i 0) as n eqn:Hn.
 remember (min_n i j) as nj eqn:Hnj.
 move nj before n; move Hnj before Hn.
+assert (Hii : NQintg (A i nj (u ⊕ v)) = NQintg (A i n (u ⊕ v))). {
+  specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as Hii.
+  assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+    intros p.
+    unfold "⊕"; replace 3 with (1 + 2) by easy.
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+    apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+  }
+  specialize (Hii H Huvt j); clear H.
+  now rewrite <- Hn, <- Hnj in Hii.
+}
+rewrite A_additive in Hii.
 destruct (Nat.eq_dec (NQintg (A i n v)) 0) as [Hai0| Hai0].
--rewrite Hai0; symmetry; subst n nj.
- now apply (pre_Hugo_Herbelin_101_lemma_1 u).
--specialize radix_ge_2 as Hr.
- assert
-   (Hii : ∀ p, NQintg (A i (min_n i p) (u ⊕ v)) = NQintg (A i n (u ⊕ v))). {
-   specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as Hii.
-   assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
-     intros p.
-     unfold "⊕"; replace 3 with (1 + 2) by easy.
-     rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-     apply Nat.add_le_mono; [ apply Hu | apply Hv ].
-   }
-   specialize (Hii H Huvt); clear H.
-   now rewrite <- Hn in Hii.
+-rewrite Hai0.
+ rewrite NQfrac_small in Haav; [ | now apply eq_NQintg_0 in Hai0 ].
+ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0]; [ easy | ].
+ assert (Haj1 : NQintg (A i nj v) = 1) by flia Haj Haj0.
+ exfalso.
+ rewrite A_additive in Hii.
+ symmetry in Hii.
+ rewrite NQintg_small in Hii; [ | split ]; [ | | easy ]. 2: {
+   replace 0%NQ with (0 + 0)%NQ by easy.
+   now apply NQadd_le_mono.
  }
- assert (H : NQintg (A i n v) = 1) by flia Ha0 Hai0.
+ rewrite NQintg_add in Hii; [ | easy | easy ].
+ now rewrite Haj1, <- Nat.add_assoc, Nat.add_comm in Hii.
+-assert (H : NQintg (A i n v) = 1) by flia Ha0 Hai0.
  move H before Ha0; clear Ha0 Hai0; rename H into Ha0.
  rewrite Ha0; symmetry.
  destruct (Nat.eq_dec (NQintg (A i nj v)) 1) as [Haj1| Haj1]; [ easy | ].
  assert (Haj0 : NQintg (A i nj v) = 0) by flia Haj Haj1.
- exfalso; move Haj0 before Ha0; clear Haj Haj1.
- specialize (Hii j) as H3.
- rewrite <- Hnj, A_additive in H3.
+ exfalso.
  rewrite Hnj in Haj0.
  replace j with (0 + j) in Haj0 by easy.
  rewrite min_n_add, <- Hn in Haj0.
