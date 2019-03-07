@@ -1530,6 +1530,16 @@ rewrite Ha0; symmetry.
 destruct (Nat.eq_dec (NQintg (A i nj v)) 1) as [Haj1| Haj1]; [ easy | ].
 assert (Haj0 : NQintg (A i nj v) = 0) by flia Haj Haj1.
 exfalso; move Haj0 before Ha0; clear Haj Haj1.
+specialize (Hii k) as H1.
+rewrite <- Hnk in H1.
+do 2 rewrite A_additive in H1.
+rewrite NQintg_add in H1; [ symmetry in H1 | easy | easy ].
+rewrite NQintg_add in H1; [ symmetry in H1 | easy | easy ].
+rewrite Ha0 in H1.
+rewrite NQintg_small in H1.
+rewrite NQfrac_small in H1.
+rewrite (NQfrac_small (A _ _ u)) in H1.
+rewrite Nat.add_0_l in H1.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
