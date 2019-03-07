@@ -1448,6 +1448,27 @@ destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0]; [ easy | ].
 exfalso.
 assert (Haj1 : NQintg (A i nj v) = 1) by flia Ha0 Haj0.
 clear Ha0 Haj0.
+apply A_ge_1_false_iff in Hj.
+rewrite <- Hnj in Hj.
+rewrite NQfrac_less_small in Hj. 2: {
+  split.
+  -rewrite NQintg_frac; [ | easy ].
+   now rewrite Haj1; apply NQle_add_r.
+  -rewrite (NQintg_frac (A i nj v)); [ | easy ].
+   rewrite Haj1; replace 2%NQ with (1 + 1)%NQ by easy.
+   apply NQadd_lt_mono_l, NQfrac_lt_1.
+}
+apply -> NQlt_sub_lt_add_l in Hj.
+rewrite NQadd_sub_assoc in Hj.
+replace (1 + 1)%NQ with 2%NQ in Hj by easy.
+move Hj before Haap.
+apply A_ge_1_false_iff in Hk.
+rewrite <- Hnk, A_additive in Hk.
+rewrite NQfrac_small in Hk; [ | split ]; [ | | easy ]. 2: {
+  replace 0%NQ with (0 + 0)%NQ by easy.
+  now apply NQadd_le_mono.
+}
+move Hk before Haap; clear Haap.
 ...
 
 Theorem pre_Hugo_Herbelin_101 {r : radix} : ∀ u v i j k,
