@@ -1488,6 +1488,43 @@ destruct (Nat.eq_dec (NQintg (A i n v)) 0) as [Hai0| Hai0].
 -rewrite Hai0; symmetry; subst n nj nk.
  now apply (pre_Hugo_Herbelin_101_lemma_1 u).
 -idtac.
+assert (Hiij : ∀ p, j ≤ p → NQintg (A i (min_n i p) v) = NQintg (A i nj v)). {
+  specialize (fA_lt_1_ε_NQintg_A i v j) as H1.
+  assert (H : ∀ k, v (i + k) ≤ 3 * (rad - 1)). {
+    intros p.
+    eapply Nat.le_trans; [ apply Hv | ].
+    apply Nat.mul_le_mono_r; pauto.
+  }
+  specialize (H1 H Hjj Hj); clear H.
+  now rewrite Hnj.
+}
+assert (Hiik : ∀ p, k ≤ p →
+  NQintg (A i (min_n i p) (u ⊕ P v)) = NQintg (A i nk (u ⊕ P v))). {
+  specialize radix_ge_2 as Hr.
+  specialize (fA_lt_1_ε_NQintg_A i (u ⊕ P v) k) as H1.
+  assert (H : ∀ k, (u ⊕ P v) (i + k) ≤ 3 * (rad - 1)). {
+    intros p.
+    unfold "⊕"; replace 3 with (1 + 2) by easy.
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+    apply Nat.add_le_mono; [ apply Hu | ].
+    eapply Nat.le_trans; [ apply P_le | flia Hr ].
+  }
+  specialize (H1 H Hjk Hk).
+  now rewrite <- Hnk in H1.
+}
+assert
+  (Hii : ∀ p, NQintg (A i (min_n i p) (u ⊕ v)) = NQintg (A i n (u ⊕ v))). {
+  specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as Hii.
+  assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+    intros p.
+    unfold "⊕"; replace 3 with (1 + 2) by easy.
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+    apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+  }
+  specialize (Hii H Huvt); clear H.
+  now rewrite <- Hn in Hii.
+}
+replace (NQintg (A i n v)) with 1 by flia Ha0 Hai0; symmetry.
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
