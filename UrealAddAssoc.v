@@ -1450,6 +1450,129 @@ remember (min_n i kv) as nv eqn:Hnv.
 remember (min_n i kup) as nup eqn:Hnup.
 remember (min_n i kuv) as nuv eqn:Hnuv.
 move nuv before kuv; move nup before kuv; move nv before kuv.
+(*
+destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
+-subst kv.
+ assert (Hii : ∀ p, NQintg (A i (min_n i p) v) = NQintg (A i nv v)). {
+   specialize (all_fA_ge_1_ε_NQintg_A' i v) as Hii.
+   assert (H : ∀ k, v (i + k) ≤ 3 * (rad - 1)). {
+     intros p.
+     eapply Nat.le_trans; [ apply Hv | ].
+     apply Nat.mul_le_mono_r; pauto.
+   }
+   specialize (Hii H H3); clear H.
+   now rewrite <- Hnv in Hii.
+ }
+ rewrite <- (Hii kuv), <- Hnuv.
+ destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [Hupv| Hupv].
+ *subst kup; rewrite <- Hnv in Hnup; subst nup.
+  assert (Hik : ∀ p,
+    NQintg (A i (min_n i p) (u ⊕ P v)) = NQintg (A i nv (u ⊕ P v))). {
+    specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ P v)) as Hik.
+    assert (H : ∀ k, (u ⊕ P v) (i + k) ≤ 3 * (rad - 1)). {
+      intros p.
+      unfold "⊕"; replace 3 with (1 + 2) by easy.
+      rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+      apply Nat.add_le_mono; [ apply Hu | ].
+      eapply Nat.le_trans; [ apply P_le | flia Hr ].
+    }
+    specialize (Hik H Hupv); clear H.
+    now rewrite <- Hnv in Hik.
+  }
+  rewrite <- (Hik kuv), <- Hnuv.
+  do 2 rewrite A_additive.
+  rewrite NQintg_add; [ symmetry | easy | easy ].
+  rewrite NQintg_add; [ symmetry | easy | easy ].
+  do 2 rewrite Nat.add_assoc.
+  rewrite (Nat.add_comm (NQintg (A i nuv v))).
+  do 3 rewrite <- Nat.add_assoc.
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  f_equal; f_equal.
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  f_equal; f_equal.
+  rewrite NQfrac_small. 2: {
+    split; [ easy | ].
+    apply A_upper_bound_for_dig; intros p Hp.
+    replace p with (i + (p - i)) by flia Hp.
+    apply Hu.
+  }
+  assert (HAP : (0 ≤ A i nuv (P v) < 1)%NQ). {
+    split; [ easy | ].
+    apply A_upper_bound_for_dig; intros p Hp.
+    apply P_le.
+  }
+  rewrite (NQfrac_small (A _ _ (P _))); [ | easy ].
+  rewrite (NQintg_small (A _ _ (P _))); [ | easy ].
+  rewrite Nat.add_0_l.
+  rewrite (A_all_9 (P _)); [ | now intros; apply all_fA_ge_1_ε_P_999 ].
+  specialize (A_ge_1_add_all_true_if v i) as H1.
+  assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+    intros k; rewrite <- Nat.add_assoc; apply Hv.
+  }
+  specialize (H1 H H3); clear H.
+  destruct H1 as [H1| [H1| H1]].
+ --rewrite (A_all_9 v); [ | intros; apply H1 ].
+   rewrite NQfrac_small; [ easy | ].
+   split; [ | now apply NQsub_lt ].
+   apply NQle_0_sub, NQle_pair_mono_l.
+   split; [ pauto | now apply Nat_pow_ge_1 ].
+ --rewrite (A_all_18 v); [ | intros; apply H1 ].
+   rewrite NQfrac_less_small.
+  ++rewrite NQsub_sub_swap.
+    replace (2 - 1)%NQ with 1%NQ by easy.
+    remember (nuv - i - 1) as s eqn:Hs.
+    setoid_rewrite NQadd_comm.
+    destruct (NQeq_dec (A i nuv u) 0) as [H2| H2].
+   **rewrite H2, NQadd_0_r, NQadd_0_r.
+     rewrite NQintg_small. 2: {
+       split; [ | now apply NQsub_lt ].
+       apply NQle_0_sub.
+       apply NQle_pair; [ pauto | easy | ].
+       apply Nat.mul_lt_mono_pos_r; [ pauto | ].
+       destruct s.
+       -rewrite Hnuv in Hs; unfold min_n in Hs.
+        destruct rad; [ easy | cbn in Hs; flia Hs ].
+       -cbn.
+        apply (Nat.lt_le_trans _ 2); [ pauto | ].
+        replace 2 with (2 * 1) at 1 by easy.
+        apply Nat.mul_le_mono; [ easy | ].
+        now apply Nat_pow_ge_1.
+     }
+     rewrite NQintg_small. 2: {
+       split; [ | now apply NQsub_lt ].
+       apply NQle_0_sub.
+       apply NQle_pair; [ pauto | easy | ].
+       apply Nat.mul_lt_mono_pos_r; [ pauto | ].
+       destruct s.
+       -rewrite Hnuv in Hs; unfold min_n in Hs.
+        destruct rad; [ easy | cbn in Hs; flia Hs ].
+       -cbn.
+        apply (Nat.lt_le_trans _ 2); [ pauto | ].
+        replace 2 with (2 * 1) at 1 by easy.
+        apply Nat.mul_le_mono; [ easy | ].
+        now apply Nat_pow_ge_1.
+     }
+     easy.
+   **idtac.
+...
+  destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [Huv| Huv].
+ --subst kuv; rewrite <- Hnv in Hnuv; subst nuv.
+   assert (Hauv : ∀ p,
+     NQintg (A i (min_n i p) (u ⊕ v)) = NQintg (A i nv (u ⊕ v))). {
+     specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as Hauv.
+     assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+       intros p.
+       unfold "⊕"; replace 3 with (1 + 2) by easy.
+       rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+       apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+     }
+     specialize (Hauv H Huv); clear H.
+     now rewrite <- Hnv in Hauv.
+   }
+...
+*)
 do 2 rewrite A_additive.
 rewrite NQintg_add; [ symmetry | easy | easy ].
 rewrite NQintg_add; [ symmetry | easy | easy ].
