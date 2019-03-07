@@ -1469,6 +1469,9 @@ rewrite NQfrac_small in Hk; [ | split ]; [ | | easy ]. 2: {
   now apply NQadd_le_mono.
 }
 move Hk before Haap; clear Haap.
+assert (Hin : i + 1 ≤ n - 1). {
+  rewrite Hn; unfold min_n; destruct rad; [ easy | cbn; flia ].
+}
 ...
 
 Theorem pre_Hugo_Herbelin_101 {r : radix} : ∀ u v i j k,
