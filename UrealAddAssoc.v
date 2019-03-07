@@ -1443,6 +1443,11 @@ remember (min_n i j) as nj eqn:Hnj.
 remember (min_n i k) as nk eqn:Hnk.
 move nk before k; move nj before k; move n before k.
 move Hnk before Hn; move Hnj before Hn.
+rewrite NQfrac_small in Haav; [ | now apply eq_NQintg_0 in Haj ].
+destruct (Nat.eq_dec (NQintg (A i nj v)) 0) as [Haj0| Haj0]; [ easy | ].
+exfalso.
+assert (Haj1 : NQintg (A i nj v) = 1) by flia Ha0 Haj0.
+clear Ha0 Haj0.
 ...
 
 Theorem pre_Hugo_Herbelin_101 {r : radix} : ∀ u v i j k,
