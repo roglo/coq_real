@@ -1685,7 +1685,9 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [Hauv| Hauv].
    ++subst kuv nv nup nuv.
      now apply (pre_Hugo_Herbelin_101 u).
-   ++idtac.
+   ++destruct Hauv as (m & Hjm & Hm); subst kuv nv nup nuv.
+     now apply (pre_Hugo_Herbelin_92 u).
+  *idtac.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
