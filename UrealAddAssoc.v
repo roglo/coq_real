@@ -1469,7 +1469,7 @@ rewrite NQfrac_small in Hk; [ | split ]; [ | | easy ]. 2: {
   now apply NQadd_le_mono.
 }
 move Hk before Haap; clear Haap.
-(*
+(**)
 destruct (zerop j) as [Hj0| Hj0]. {
   subst j; rewrite <- Hn in Hnj; subst nj.
   now rewrite Haj in Haj1.
@@ -1480,10 +1480,11 @@ rewrite <- Hn, Nat.pow_1_r in H1.
 rewrite NQfrac_small in H1; [ | split ]; [ | easy | ]. 2: {
   now apply eq_NQintg_0 in Haj.
 }
+...
 destruct (zerop k) as [Hk0| Hk0]. {
   subst k; rewrite <- Hn in Hnk; subst nk; clear Hjk.
   rewrite Nat.pow_1_r in Hk.
-*)
+...
 (*
 destruct (lt_dec j k) as [Hljk| Hkj]. {
   specialize (Hjk _ Hljk) as H1.
@@ -1511,6 +1512,7 @@ destruct (lt_dec k j) as [Hkj| Hljk]. {
  rewrite NQfrac_small; [ | ].
 ...
 *)
+...
 specialize (all_fA_ge_1_ε_P_999 (u ⊕ v) i Huvt) as Huv.
 specialize (P_999_start (u ⊕ v) (i + 1) 3) as Huvc.
 assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
