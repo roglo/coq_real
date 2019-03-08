@@ -1424,14 +1424,6 @@ assert (HAu : ∀ n, (0 ≤ A i n u < 1)%NQ). {
   apply A_upper_bound_for_dig.
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
 }
-specialize (Hiup j) as H1; rewrite <- Hnj in H1.
-do 2 rewrite A_additive in H1.
-rewrite (NQintg_less_small 1 (A _ n _ + _)%NQ) in H1. 2: {
-  split; [ easy | ].
-  apply NQadd_lt_mono; [ apply HAu | ].
-  apply A_upper_bound_for_dig.
-  intros k Hk; replace k with (i + (k - i)) by flia Hk; apply P_le.
-}
 specialize (Hiuv j) as H2; rewrite <- Hnj in H2.
 do 2 rewrite A_additive in H2.
 rewrite NQintg_add_cond in H2; [ | easy | easy ].
@@ -1537,6 +1529,14 @@ destruct (NQlt_le_dec (A i nj u + NQfrac (A i nj v)) 1) as [H3| H3].
     apply Nat.mul_le_mono_r.
     rewrite Hnj; apply rad_pow_min_n.
  +destruct H4 as (k & Hbef & Hwhi & Haft).
+  specialize (Hiup j) as H1; rewrite <- Hnj in H1.
+  do 2 rewrite A_additive in H1.
+  rewrite (NQintg_less_small 1 (A _ n _ + _)%NQ) in H1. 2: {
+    split; [ now rewrite <- A_additive | ].
+    apply NQadd_lt_mono; [ apply HAu | ].
+    apply A_upper_bound_for_dig.
+    intros p Hp; replace p with (i + (p - i)) by flia Hp; apply P_le.
+  }
   rewrite <- A_additive in H1.
   rewrite (A_9_8_all_18 k) in H1; [ | easy | easy | easy ].
   rewrite NQintg_small in H1; [ easy | ].
@@ -1589,7 +1589,7 @@ assert (Hiv : ∀ p, j ≤ p → NQintg (A i (min_n i p) v) = NQintg (A i nj v))
   now rewrite Hnj.
 }
 assert
-  (Hipv : ∀ p, k ≤ p
+  (Hiup : ∀ p, k ≤ p
    → NQintg (A i (min_n i p) (u ⊕ P v)) = NQintg (A i nk (u ⊕ P v))). {
   specialize (fA_lt_1_ε_NQintg_A i (u ⊕ P v) k) as H1.
   assert (H : ∀ k, (u ⊕ P v) (i + k) ≤ 3 * (rad - 1)). {
