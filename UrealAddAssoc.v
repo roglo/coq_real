@@ -1421,6 +1421,28 @@ split; [ easy | ].
 now apply A_upper_bound_for_dig.
 Qed.
 
+Theorem pre_Hugo_Herbelin_81 {r : radix} : ∀ u v i j,
+  (∀ k, u (i + k) ≤ rad - 1)
+  → (∀ k, v (i + k) ≤ 2 * (rad - 1))
+  → (∀ j0, j0 < j → fA_ge_1_ε v i j0 = true)
+  → fA_ge_1_ε v i j = false
+  → (∀ k, fA_ge_1_ε (u ⊕ P v) i k = true)
+  → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
+  → NQintg (A i (min_n i j) v) ≤ 1
+  → NQintg (A i (min_n i 0) v) ≤ 1
+  → (∀ k, v (i + k) ≤ 3 * (rad - 1))
+  → (1 ≤ A i (min_n i 0) u + A i (min_n i 0) (P v))%NQ
+  → (A i (min_n i 0) u + NQfrac (A i (min_n i 0) v) < 1)%NQ
+  → NQintg (A i (min_n i 0) v) = (NQintg (A i (min_n i j) v) + 1) mod rad.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hu Hv Hjj Hj Haup Hauv Haj Ha0 Hup Huv.
+remember (min_n i 0) as n eqn:Hn.
+remember (min_n i j) as nj eqn:Hnj.
+move n after nj; move Hn after Hnj.
+...
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -1608,6 +1630,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
       now apply NQle_add_r, NQle_0_sub.
     }
     exfalso.
+ah ouais, faut regarder en nj+1, un truc comme ça...
 Search (∀ _, fA_ge_1_ε _ _ _ = true).
 ...
 ...
@@ -1800,7 +1823,12 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     now apply (pre_Hugo_Herbelin_72 u).
   *subst kuv.
    destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [Hauv| Hauv].
-  --idtac.
+  --destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [Haup| Haup].
+   ++subst kup; rewrite <- Hnuv in Hnup; subst nup.
+     subst nv nuv.
+...
+     now apply (pre_Hugo_Herbelin_81 u).
+   ++idtac.
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
