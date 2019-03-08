@@ -1475,8 +1475,40 @@ assert
   specialize (Hiuv H Hauv); clear H.
   now rewrite <- Hn in Hiuv.
 }
+assert (HAu : ∀ n, (0 ≤ A i n u < 1)%NQ). {
+  intros m.
+  split; [ easy | ].
+  apply A_upper_bound_for_dig.
+  intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
+}
 specialize (Hiup j) as H1; rewrite <- Hnj in H1.
 do 2 rewrite A_additive in H1.
+rewrite (NQintg_less_small 1 (A _ n _ + _)%NQ) in H1. 2: {
+  split; [ easy | ].
+  apply NQadd_lt_mono; [ apply HAu | ].
+  apply A_upper_bound_for_dig.
+  intros k Hk; replace k with (i + (k - i)) by flia Hk; apply P_le.
+}
+specialize (Hiuv j) as H2; rewrite <- Hnj in H2.
+do 2 rewrite A_additive in H2.
+rewrite NQintg_add_cond in H2; [ | easy | easy ].
+rewrite NQintg_add_cond in H2; [ | easy | easy ].
+rewrite (NQintg_small (A _ _ u)) in H2; [ | easy ].
+rewrite (NQintg_small (A _ _ u)) in H2; [ | easy ].
+rewrite (NQfrac_small (A _ _ u)) in H2; [ | easy ].
+rewrite (NQfrac_small (A _ _ u)) in H2; [ | easy ].
+do 2 rewrite Nat.add_0_l in H2.
+apply NQnle_gt in Huv.
+destruct (NQlt_le_dec (A i n u + NQfrac (A i n v))) as [H| ]; [ | easy ].
+clear H; rewrite Nat.add_0_r in H2.
+apply NQnle_gt in Huv.
+destruct (NQlt_le_dec (A i nj u + NQfrac (A i nj v)) 1) as [H3| H3].
+-rewrite Nat.add_0_r in H2; exfalso; clear Haj.
+...
+-rewrite H2.
+ rewrite Nat.mod_small; [ easy | ].
+ now apply (Nat.le_lt_trans _ 1).
+...
 rewrite (NQintg_less_small 1 (A _ n _ + _)%NQ) in H1. 2: {
   split; [ easy | ].
   apply NQadd_lt_mono.
