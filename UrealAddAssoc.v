@@ -1550,6 +1550,9 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     }
     rewrite <- NQsub_sub_swap in H1.
     replace (2 - 1)%NQ with 1%NQ in H1 by easy.
+    remember (nuv - i - 1) as s eqn:Hs.
+    destruct (NQlt_le_dec (1 // rad ^ s) (A i nuv u)) as [H4| H4].
+   **rewrite NQadd_comm.
 ...
   ++rewrite NQsub_sub_swap.
     replace (2 - 1)%NQ with 1%NQ by easy.
