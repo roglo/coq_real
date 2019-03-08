@@ -1406,6 +1406,7 @@ assert (Hiup : ∀ p,
   specialize (Hiup H Haup).
   now rewrite <- Hn in Hiup.
 }
+(*
 assert
   (Hiuv : ∀ p, NQintg (A i (min_n i p) (u ⊕ v)) = NQintg (A i n (u ⊕ v))). {
   specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as Hiuv.
@@ -1418,12 +1419,14 @@ assert
   specialize (Hiuv H Hauv); clear H.
   now rewrite <- Hn in Hiuv.
 }
+*)
 assert (HAu : ∀ n, (0 ≤ A i n u < 1)%NQ). {
   intros m.
   split; [ easy | ].
   apply A_upper_bound_for_dig.
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
 }
+...
 specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H4.
 assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
   intros k; unfold "⊕"; rewrite <- Nat.add_assoc.
