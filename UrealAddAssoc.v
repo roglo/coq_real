@@ -1550,23 +1550,24 @@ destruct (NQlt_le_dec (A i nj u + NQfrac (A i nj v)) 1) as [H3| H3].
     apply Nat.mul_le_mono_r.
     rewrite Hnj; apply rad_pow_min_n.
  +destruct H4 as (k & Hbef & Hwhi & Haft).
-...
+  rewrite <- A_additive in H1.
+  rewrite (A_9_8_all_18 k) in H1; [ | easy | easy | easy ].
+  rewrite NQintg_small in H1; [ easy | ].
+  split.
+  *apply NQle_0_sub.
+   destruct (le_dec (i + k + 1) (nj - 1)) as [H4| H4].
+  --apply NQle_pair; [ pauto | easy | ].
+    apply Nat.mul_le_mono_r.
+    rewrite Hnj; apply rad_pow_min_n.
+  --apply NQle_pair; [ pauto | easy | ].
+    apply Nat.mul_le_mono_r.
+    now apply Nat_pow_ge_1.
+  *apply NQsub_lt.
+   now destruct (le_dec (i + k + 1) (nj - 1)).
 -rewrite H2.
  rewrite Nat.mod_small; [ easy | ].
  now apply (Nat.le_lt_trans _ 1).
 Qed.
-
-...
-
-rewrite (NQintg_less_small 1 (A _ n _ + _)%NQ) in H1. 2: {
-  split; [ easy | ].
-  apply NQadd_lt_mono.
-  -apply A_upper_bound_for_dig.
-   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
-  -apply A_upper_bound_for_dig.
-   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply P_le.
-}
-...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
@@ -1863,7 +1864,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      subst nv nup nuv; clear Hr; move Hm before H1.
      now apply (pre_Hugo_Herbelin_32 u v _ _ k).
  +destruct m; [ clear H2 | flia H2 ].
-  rewrite NQfrac_less_small. 2: {
+  rewrite (NQfrac_less_small 1). 2: {
     split.
     -specialize (NQintg_of_frac (A i nuv v) (A_ge_0 _ _ _)) as H2.
      rewrite Hm in H2; rewrite H2.
@@ -1951,7 +1952,6 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   --destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [Haup| Haup].
    ++subst kup; rewrite <- Hnuv in Hnup; subst nup.
      subst nv nuv.
-...
      now apply (pre_Hugo_Herbelin_81 u).
    ++idtac.
 ...
