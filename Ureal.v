@@ -1477,7 +1477,7 @@ destruct (NQlt_le_dec (NQfrac (A i n u) + B i n u l) 1) as [H4| H4].
     eapply NQlt_trans; [ apply NQadd_lt_mono_l, H7 | ].
     apply NQadd_lt_mono_r, NQfrac_lt_1.
   }
-  rewrite NQfrac_less_small. 2: {
+  rewrite (NQfrac_less_small 1). 2: {
     split; [ easy | ].
     eapply NQlt_le_trans; [ apply H8 | ].
     replace 2%NQ with (1 + 1)%NQ by easy.
@@ -3115,7 +3115,8 @@ specialize (A_lower_bound_when_999_gt_9 u i k n H6 H3 H5) as H7.
 specialize (A_upper_bound_for_add u i n Hur) as H8.
 rewrite <- Hs in H8.
 unfold NQfrac.
-rewrite Nat_mod_less_small; cycle 1. {
+rewrite (Nat_mod_less_small 1); cycle 1. {
+  rewrite Nat.mul_1_l.
   split.
   -rewrite NQnum_den in H7; [ | apply A_ge_0 ].
    apply NQle_pair in H7; [ | easy | pauto ].
@@ -3144,9 +3145,11 @@ rewrite Nat_mod_less_small; cycle 1. {
 rewrite NQpair_sub_l; cycle 1. {
   rewrite NQnum_den in H7; [ | apply A_ge_0 ].
   apply NQle_pair in H7; [ | easy | pauto ].
+  rewrite Nat.mul_1_l.
   now do 2 rewrite Nat.mul_1_l in H7.
 }
 rewrite <- NQnum_den; [ | apply A_ge_0 ].
+rewrite Nat.mul_1_l.
 rewrite NQpair_diag; [ | pauto ].
 apply (NQadd_lt_mono_r _ _ 1).
 rewrite NQsub_add, <- NQadd_sub_swap.
