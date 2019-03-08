@@ -1556,6 +1556,25 @@ destruct (NQlt_le_dec (A i nj u + NQfrac (A i nj v)) 1) as [H3| H3].
  now apply (Nat.le_lt_trans _ 1).
 Qed.
 
+Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
+  (∀ k, u (i + k) ≤ rad - 1)
+  → (∀ k, v (i + k) ≤ 2 * (rad - 1))
+  → (∀ j0, j0 < j → fA_ge_1_ε v i j0 = true)
+  → fA_ge_1_ε v i j = false
+  → (∀ j, j < k → fA_ge_1_ε (u ⊕ P v) i j = true)
+  → fA_ge_1_ε (u ⊕ P v) i k = false
+  → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
+  → NQintg (A i (min_n i j) v) ≤ 1
+  → NQintg (A i (min_n i 0) v) ≤ 1
+  → (A i (min_n i 0) u + NQfrac (A i (min_n i 0) v) < 1)%NQ
+  → (1 ≤ A i (min_n i k) u + A i (min_n i k) (P v))%NQ
+  → NQintg (A i (min_n i 0) v) = (NQintg (A i (min_n i j) v) + 1) mod rad.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hu Hv Hjj Hj Hjk Hk Hauv Haj Ha0 Huv Hup.
+...
+
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -1940,7 +1959,9 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    ++subst kup; rewrite <- Hnuv in Hnup; subst nup.
      subst nv nuv.
      now apply (pre_Hugo_Herbelin_81 u).
-   ++idtac.
+   ++destruct Haup as (k & Hjk & Hk); subst kup nv nup nuv.
+...
+     now apply (pre_Hugo_Herbelin_82 u _ _ _ k).
 ...
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
