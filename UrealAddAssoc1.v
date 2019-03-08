@@ -1730,7 +1730,7 @@ destruct (le_dec j k) as [Hljk| Hljk].
  rewrite NQfrac_small in Hj; [ clear H | easy ].
  rename nup into nik; rename nuv into nij.
  rename Hnup into Hnik; rename Hnuv into Hnij.
- rewrite NQfrac_less_small in Hj. 2: {
+ rewrite (NQfrac_less_small 1) in Hj. 2: {
    split.
    -specialize (NQintg_of_frac (A i nij v) (A_ge_0 _ _ _)) as H.
     rewrite Hm in H; rewrite H.
@@ -1969,7 +1969,7 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
     replace 2 with (2 ^ 1) by easy.
     apply Nat.pow_le_mono; [ easy | easy | flia ].
   }
-  rewrite NQfrac_less_small in H1. 2: {
+  rewrite (NQfrac_less_small 1) in H1. 2: {
     split; [ | now apply NQsub_lt ].
     apply NQle_add_le_sub_l.
     replace 2%NQ with (1 + 1)%NQ by easy.
@@ -2330,7 +2330,7 @@ destruct (NQlt_le_dec (A i nik u + 1 - 1 // rad ^ sik)%NQ 1) as [H1| H1].
    apply A_upper_bound_for_dig.
    intros p Hp; replace p with (i + (p - i)) by flia Hp; apply Hu.
  }
- rewrite NQfrac_less_small in Hj. 2: {
+ rewrite (NQfrac_less_small 1) in Hj. 2: {
    split.
    -specialize (NQintg_of_frac (A i nij v) (A_ge_0 _ _ _)) as H.
     rewrite Haj in H; rewrite H.
