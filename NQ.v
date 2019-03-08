@@ -2123,46 +2123,34 @@ destruct x as [| px| px].
   destruct dx; [ now rewrite Nat.mul_comm in H2 | ].
   rewrite Nat.mul_comm, GQpair_mul_l; [ | easy | easy | easy ].
   rewrite GQpair_diag, GQmul_1_l; [ | easy ].
-...
- remember (GQcompare 1 (1 // 1)) as c eqn:Hc.
- symmetry in Hc.
- destruct c; GQcompare_iff; [ easy | | ].
- +replace 1%GQ with (1 // 1)%GQ in Hc by now apply GQeq_eq.
-  apply GQnle_gt in Hc.
-  exfalso; apply Hc; apply GQle_refl.
- +replace 1%GQ with (1 // 1)%GQ in Hc by now apply GQeq_eq.
-  apply GQnle_gt in Hc.
-  exfalso; apply Hc; apply GQle_refl.
--remember (GQcompare (nx // dx) (1 // 1)) as c eqn:Hc.
- symmetry in Hc.
- destruct c; GQcompare_iff.
- +exfalso.
-  apply GQeq_pair in Hc; [ | | | easy | easy ].
-  *now do 2 rewrite Nat.mul_1_r in Hc; rewrite Hc, Nat.sub_diag in Hx.
-  *now intros H3; rewrite H3 in Hx.
-  *now intros H3; rewrite H3, Nat.mul_0_r in H2.
- +exfalso.
-  apply GQnle_gt in Hc; apply Hc; clear Hc.
-  apply GQle_pair; [ easy | easy | | | ].
-  *now intros H3; rewrite H3 in Hx.
-  *now intros H3; rewrite H3, Nat.mul_0_r in H2.
-  *now do 2 rewrite Nat.mul_1_l.
- +f_equal.
+  now rewrite GQcompare_diag.
+ +remember (GQcompare (nx // dx) (S n // 1)) as c eqn:Hc.
+  symmetry in Hc.
+  destruct c; GQcompare_iff.
+  *exfalso.
+   apply GQeq_pair in Hc; [ | | | easy | easy ].
+  --rewrite Nat.mul_1_r, Nat.mul_comm in Hc.
+    now rewrite Hc, Nat.sub_diag in Hx.
+  --now intros H3; rewrite H3 in Hx.
+  --now intros H3; rewrite H3, Nat.mul_0_r in H2.
+  *exfalso.
+   apply GQnle_gt in Hc; apply Hc; clear Hc.
+   apply GQle_pair; [ easy | easy | | | ].
+  --now intros H3; rewrite H3 in Hx.
+  --now intros H3; rewrite H3, Nat.mul_0_r in H2.
+  --now rewrite Nat.mul_1_l.
+ *f_equal; rewrite Nat.mul_comm in Hx.
   rewrite GQsub_pair; [ | | | easy | easy | ].
-  *now do 2 rewrite Nat.mul_1_r; rewrite Hx.
-  *now intros H3; rewrite H3 in Hx.
-  *now intros H3; rewrite H3, Nat.mul_0_r in H2.
-  *do 2 rewrite Nat.mul_1_r.
+ --now do 2 rewrite Nat.mul_1_r; rewrite Hx.
+ --now intros H3; rewrite H3 in Hx.
+ --now intros H3; rewrite H3, Nat.mul_0_r in H2.
+ --rewrite Nat.mul_comm, Nat.mul_1_r.
    unfold GQgt in Hc.
-   specialize (GQlt_pair 1 1 nx dx) as H3.
-   assert (H : 1 ≠ 0) by easy.
-   specialize (H3 H H); clear H.
-   assert (H : nx ≠ 0) by now intros H; rewrite H in Hx.
-   specialize (H3 H); clear H.
-   assert (H : dx ≠ 0) by now intros H; rewrite H, Nat.mul_0_r in H2.
-   specialize (H3 H); clear H.
-   specialize (proj1 H3 Hc) as H4.
-   now do 2 rewrite Nat.mul_1_l in H4.
+   apply -> GQlt_pair in Hc; [ | | | easy | easy ].
+  ++now rewrite Nat.mul_1_l in Hc.
+  ++now intros H; rewrite H, Nat.mul_comm in H2.
+  ++now intros H; rewrite H in Hx.
+-now destruct n.
 Qed.
 
 Theorem NQintg_0 : NQintg 0 = 0.
@@ -2230,11 +2218,18 @@ unfold PQ.PQlt, PQ.nd in Hx2; cbn in Hx2.
 now rewrite Nat.mul_1_r, Nat.add_0_r in Hx2.
 Qed.
 
-Theorem NQintg_less_small : ∀ n x, (n ≤ x < S n)%NQ → NQintg x = n.
+Theorem NQintg_less_small : ∀ n x,
+  (n // 1 ≤ x < n // 1 + 1)%NQ → NQintg x = n.
 Proof.
 intros * Hx.
-
-...
+apply (NQpair_eq_r _ _ 1).
+rewrite NQintg_of_frac.
+-rewrite (NQfrac_less_small n); [ | easy ].
+ now rewrite NQsub_sub_distr, NQsub_diag.
+-eapply NQle_trans; [ | apply Hx ].
+ replace 0%NQ with (0 // 1)%NQ by easy.
+ apply NQle_pair_mono_r, Nat.le_0_l.
+Qed.
 
 Theorem eq_NQintg_0 : ∀ x, (0 ≤ x)%NQ → NQintg x = 0 → (x < 1)%NQ.
 Proof.
