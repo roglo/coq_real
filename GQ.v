@@ -1064,6 +1064,15 @@ rewrite Nat.sub_add; [ | flia Ht ].
 easy.
 Qed.
 
+Theorem GQpair_mul_l :
+  ∀ a b c, a ≠ 0 → b ≠ 0 → c ≠ 0
+  → ((a * b) // c)%GQ = (a // c * b // 1)%GQ.
+Proof.
+intros.
+rewrite GQmul_pair; [ | easy | easy | easy | easy ].
+now rewrite Nat.mul_1_r.
+Qed.
+
 Theorem GQmul_sub_distr_l : ∀ x y z, (z < y)%GQ → (x * (y - z) = x * y - x * z)%GQ.
 Proof.
 intros.

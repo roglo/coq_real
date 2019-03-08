@@ -247,20 +247,20 @@ apply (Nat.le_trans _ a); [ easy | ].
 apply Nat.le_add_r.
 Qed.
 
-Theorem Nat_mod_less_small : ∀ a b,
-  b ≤ a < 2 * b
-  → a mod b = a - b.
+Theorem Nat_mod_less_small : ∀ n a b,
+  n * b ≤ a < (n + 1) * b
+  → a mod b = a - n * b.
 Proof.
 intros * Hab.
-assert (Hb : b ≠ 0) by now intros Hb; rewrite Hb in Hab.
-replace a with (a - b + 1 * b) at 1.
--rewrite Nat.mod_add; [ | easy ].
- apply Nat.mod_small.
- apply Nat.add_lt_mono_r with (p := b).
- simpl in Hab; rewrite Nat.add_0_r in Hab.
- now rewrite Nat.sub_add.
--rewrite Nat.mul_1_l.
- now apply Nat.sub_add.
+assert (Hb : b ≠ 0). {
+  now intros Hb; rewrite Hb, (Nat.mul_comm (n + 1)) in Hab.
+}
+replace a with (a - n * b + n * b) at 1 by now apply Nat.sub_add.
+rewrite Nat.mod_add; [ | easy ].
+apply Nat.mod_small.
+apply Nat.add_lt_mono_r with (p := n * b).
+rewrite Nat.add_comm in Hab; cbn in Hab.
+now rewrite Nat.sub_add.
 Qed.
 
 Theorem Nat_div_less_small : ∀ a b,

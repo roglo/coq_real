@@ -2090,29 +2090,40 @@ destruct dx; [ now apply GQden_neq_0 in Hdx | ].
 now rewrite (GQnum_den px), Hnx, Hdx.
 Qed.
 
-Theorem NQfrac_less_small : ∀ x, (1 ≤ x < 2)%NQ → NQfrac x = (x - 1)%NQ.
+Theorem NQfrac_less_small : ∀ n x,
+  (n // 1 ≤ x < n // 1 + 1)%NQ → NQfrac x = (x - n // 1)%NQ.
 Proof.
 intros * Hx.
-destruct x as [| px| px]; [ easy | | easy ].
-cbn in Hx; destruct Hx as (H1, H2).
-rewrite (GQnum_den px) in H1, H2.
-apply GQpair_le_nat_l in H1; [ | easy | easy | easy ].
-rewrite Nat.mul_1_l in H1.
-apply GQpair_lt_nat_r in H2; [ | easy | easy | easy ].
-rewrite Nat.mul_comm in H2.
-unfold NQfrac; cbn.
-rewrite Nat_mod_less_small; [ | easy ].
-unfold "//"%NQ.
-remember (GQnum px) as nx eqn:Hnx.
-remember (GQden px) as dx eqn:Hdx.
-symmetry in Hnx, Hdx.
-move dx before nx.
-rewrite (GQnum_den px), Hnx, Hdx.
-remember (nx - dx) as x eqn:Hx.
-symmetry in Hx.
-destruct x.
--replace nx with dx by flia H1 Hx.
- rewrite GQpair_diag; [ | now intros H; rewrite H, Nat.mul_0_r in H2 ].
+destruct x as [| px| px].
+-destruct Hx as (H, _).
+ replace 0%NQ with (0 // 1)%NQ in H by easy.
+ apply NQle_pair in H; [ | easy | easy ].
+ rewrite Nat.mul_comm in H.
+ apply Nat.mul_le_mono_pos_l in H; [ | pauto ].
+ now apply Nat.le_0_r in H; subst n.
+-cbn in Hx; destruct Hx as (H1, H2).
+ destruct n; [ now apply NQfrac_small | ].
+ rewrite (GQnum_den px) in H1, H2; cbn in H1, H2.
+ apply GQpair_le_nat_l in H1; [ | easy | easy | easy ].
+ rewrite <- GQpair_add_l in H2; [ | easy | easy | easy ].
+ apply GQpair_lt_nat_r in H2; [ | easy | easy | easy ].
+ rewrite Nat.mul_comm in H2.
+ unfold NQfrac; cbn.
+ rewrite (Nat_mod_less_small (S n)); [ | easy ].
+ unfold "//"%NQ.
+ remember (GQnum px) as nx eqn:Hnx.
+ remember (GQden px) as dx eqn:Hdx.
+ symmetry in Hnx, Hdx.
+ move dx before nx.
+ rewrite (GQnum_den px), Hnx, Hdx.
+ remember (nx - S n * dx) as x eqn:Hx.
+ symmetry in Hx.
+ destruct x.
+ +replace nx with (S n * dx) by flia H1 Hx.
+  destruct dx; [ now rewrite Nat.mul_comm in H2 | ].
+  rewrite Nat.mul_comm, GQpair_mul_l; [ | easy | easy | easy ].
+  rewrite GQpair_diag, GQmul_1_l; [ | easy ].
+...
  remember (GQcompare 1 (1 // 1)) as c eqn:Hc.
  symmetry in Hc.
  destruct c; GQcompare_iff; [ easy | | ].
@@ -2218,6 +2229,12 @@ unfold "<"%GQ in Hx2; cbn in Hx2.
 unfold PQ.PQlt, PQ.nd in Hx2; cbn in Hx2.
 now rewrite Nat.mul_1_r, Nat.add_0_r in Hx2.
 Qed.
+
+Theorem NQintg_less_small : ∀ n x, (n ≤ x < S n)%NQ → NQintg x = n.
+Proof.
+intros * Hx.
+
+...
 
 Theorem eq_NQintg_0 : ∀ x, (0 ≤ x)%NQ → NQintg x = 0 → (x < 1)%NQ.
 Proof.

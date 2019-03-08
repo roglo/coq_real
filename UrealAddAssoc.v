@@ -1475,6 +1475,11 @@ assert
   specialize (Hiuv H Hauv); clear H.
   now rewrite <- Hn in Hiuv.
 }
+specialize (Hiup j) as H1; rewrite <- Hnj in H1.
+do 2 rewrite A_additive in H1.
+About NQfrac_less_small.
+...
+rewrite (NQintg_less_small (A _ n _ + _)%NQ) in H1; [ | ].
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
