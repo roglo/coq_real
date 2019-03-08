@@ -62,6 +62,20 @@ split; [ easy | ].
 apply A_M_upper_bound.
 Qed.
 
+Theorem rad_pow_min_n {r : radix} : ∀ i j,
+  2 ≤ rad ^ (min_n i j - i - 1).
+Proof.
+intros.
+specialize radix_ge_2 as Hr.
+remember (min_n i j - i - 1) as s eqn:Hs.
+destruct s.
+-unfold min_n in Hs.
+ destruct rad; [ easy | cbn in Hs; flia Hs ].
+-cbn.
+ replace 2 with (2 * 1) by flia.
+ apply Nat.mul_le_mono; [ easy | now apply Nat_pow_ge_1 ].
+Qed.
+
 Theorem pre_Hugo_Herbelin_lemma {r : radix} : ∀ i n u v,
   n = min_n i 0
   → (∀ k, fA_ge_1_ε (u ⊕ P v) i k = true)
@@ -75,14 +89,7 @@ specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
 assert (H4 : (0 ≤ 1 - 2 // rad ^ (n - i - 1))%NQ). {
   rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
     do 2 rewrite Nat.mul_1_l.
-    remember (n - i - 1) as s eqn:Hs.
-    destruct s.
-    -rewrite Hn in Hs; unfold min_n in Hs.
-     rewrite Nat.add_0_r, Nat.mul_add_distr_l in Hs.
-     destruct rad; [ easy | cbn in Hs; flia Hs ].
-    -cbn.
-     replace 2 with (2 * 1) by flia.
-     apply Nat.mul_le_mono; [ easy | now apply Nat_pow_ge_1 ].
+    rewrite Hn; apply rad_pow_min_n.
   }
   do 2 rewrite Nat.mul_1_l.
   replace 0%NQ with (0 // 1)%NQ by easy.
@@ -191,14 +198,7 @@ assert (H3 : (0 ≤ 1 - 2 * 1 // rad ^ (n - i - 1))%NQ). {
   rewrite Nat.mul_1_r, Nat.mul_1_l.
   apply NQle_pair; [ pauto | easy | ].
   do 2 rewrite Nat.mul_1_r.
-  remember (n - i - 1) as s eqn:Hs.
-  destruct s.
-  -rewrite Hn in Hs.
-   unfold min_n in Hs.
-   destruct rad; [ easy | cbn in Hs; flia Hs ].
-  -cbn; replace 2 with (2 * 1) by flia.
-   apply Nat.mul_le_mono; [ easy | ].
-   now apply Nat_pow_ge_1.
+  rewrite Hn; apply rad_pow_min_n.
 }
 rewrite NQintg_add_nat_l; [ | easy ].
 rewrite NQintg_small; [ easy | ].
@@ -1167,22 +1167,12 @@ destruct H1 as [H1| [H1| H1]].
 -rewrite A_all_18 by (intros j; rewrite Nat.add_shuffle0; apply H1).
  replace 2%NQ with (1 + 1)%NQ by easy.
  rewrite <- NQadd_sub_assoc.
- remember (min_n i k - i - 1) as s eqn:Hs.
- assert (H2 : 2 ≤ rad ^ s). {
-   destruct s.
-   +unfold min_n in Hs.
-    destruct rad; [ easy | cbn in Hs; flia Hs ].
-   +cbn.
-    replace 2 with (2 * 1) by easy.
-    apply Nat.mul_le_mono_nonneg; [ flia | easy | flia | ].
-    now apply Nat_pow_ge_1.
- }
  rewrite NQfrac_add_nat_l.
  +rewrite NQfrac_small. 2: {
     split.
     -apply NQle_0_sub.
      apply NQle_pair; [ pauto | easy | ].
-     now apply Nat.mul_le_mono_r.
+     apply Nat.mul_le_mono_r, rad_pow_min_n.
     -apply NQsub_lt.
      replace 0%NQ with (0 // 1)%NQ by easy.
      apply NQlt_pair; [ easy | pauto | flia ].
@@ -1194,32 +1184,20 @@ destruct H1 as [H1| [H1| H1]].
   *rewrite (Nat.pow_succ_r' _ (S k)).
    now apply Nat.mul_le_mono.
   *apply Nat.pow_le_mono_r; [ easy | ].
-   rewrite Hs.
    unfold min_n.
    destruct rad; [ easy | cbn; flia ].
  +apply NQle_0_sub.
   apply NQle_pair; [ pauto | easy | ].
-  now apply Nat.mul_le_mono_r.
+  apply Nat.mul_le_mono_r, rad_pow_min_n.
 -destruct H1 as (j & Hjj & Hj).
  rewrite Nat.add_shuffle0 in Hj.
- remember (min_n i k - i - 1) as s eqn:Hs.
- assert (H2 : 2 ≤ rad ^ s). {
-   destruct s.
-   +unfold min_n in Hs.
-    destruct rad; [ easy | cbn in Hs; flia Hs ].
-   +cbn.
-    replace 2 with (2 * 1) by easy.
-    apply Nat.mul_le_mono_nonneg; [ flia | easy | flia | ].
-    now apply Nat_pow_ge_1.
- }
  rewrite (A_9_8_all_18 j); [ | | easy | ].
- +rewrite <- Hs.
-  rewrite NQfrac_small. 2: {
+ +rewrite NQfrac_small. 2: {
     split.
     -apply NQle_0_sub.
      apply NQle_pair; [ pauto | easy | ].
      do 2 rewrite Nat.mul_1_r.
-     apply (le_trans _ 2); [ | easy ].
+     apply (le_trans _ 2); [ | apply rad_pow_min_n ].
      destruct (le_dec (i + j + 1) (min_n i k - 1)); [ easy | pauto ].
     -apply NQsub_lt.
      replace 0%NQ with (0 // 1)%NQ by easy.
@@ -1235,12 +1213,11 @@ destruct H1 as [H1| [H1| H1]].
   --rewrite (Nat.pow_succ_r' _ (S k)).
     now apply Nat.mul_le_mono.
   --apply Nat.pow_le_mono_r; [ easy | ].
-    rewrite Hs.
     unfold min_n.
     destruct rad; [ easy | cbn; flia ].
   *rewrite Nat.mul_1_l.
    apply Nat.pow_le_mono_r; [ easy | ].
-   rewrite Hs; unfold min_n.
+   unfold min_n.
    destruct rad; [ easy | cbn; flia ].
  +intros l Hl.
   now rewrite Nat.add_shuffle0; apply Hjj.
@@ -1284,14 +1261,7 @@ specialize (A_ge_1_add_all_true_if v i H H3) as H'3; clear H.
 assert (H4 : (0 ≤ 1 - 2 // rad ^ (n - i - 1))%NQ). {
   rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
     do 2 rewrite Nat.mul_1_l.
-    remember (n - i - 1) as s eqn:Hs.
-    destruct s.
-    -rewrite Hn in Hs; unfold min_n in Hs.
-     rewrite Nat.add_0_r, Nat.mul_add_distr_l in Hs.
-     destruct rad; [ easy | cbn in Hs; flia Hs ].
-    -cbn.
-     replace 2 with (2 * 1) by flia.
-     apply Nat.mul_le_mono; [ easy | now apply Nat_pow_ge_1 ].
+    rewrite Hn; apply rad_pow_min_n.
   }
   do 2 rewrite Nat.mul_1_l.
   replace 0%NQ with (0 // 1)%NQ by easy.
@@ -1550,14 +1520,7 @@ destruct (NQlt_le_dec (A i nj u + NQfrac (A i nj v)) 1) as [H3| H3].
   assert (H2r1 : (2 // rad ^ (nj - i - 1) ≤ 1)%NQ). {
     apply NQle_pair; [ pauto | easy | ].
     apply Nat.mul_le_mono_r.
-    remember (nj - i - 1) as s eqn:Hs.
-    destruct s.
-    -rewrite Hnj in Hs; unfold min_n in Hs.
-     destruct rad; [ easy | cbn in Hs; flia Hs ].
-    -cbn.
-     replace 2 with (2 * 1) by easy.
-     apply Nat.mul_le_mono; [ easy | ].
-     now apply Nat_pow_ge_1.
+    rewrite Hnj; apply rad_pow_min_n.
   }
   destruct H5 as [H5| [H5| H5]].
   *rewrite A_all_9; [ | easy ].
@@ -1602,14 +1565,7 @@ destruct (NQlt_le_dec (A i nj u + NQfrac (A i nj v)) 1) as [H3| H3].
      apply NQle_0_sub.
      apply NQle_pair; [ pauto | easy | ].
      apply Nat.mul_le_mono_r.
-     remember (nj - i - 1) as s eqn:Hs.
-     destruct s.
-     -rewrite Hnj in Hs; unfold min_n in Hs.
-      destruct rad; [ easy | cbn in Hs; flia Hs ].
-     -cbn.
-      replace 2 with (2 * 1) by easy.
-      apply Nat.mul_le_mono; [ easy | ].
-      now apply Nat_pow_ge_1.
+     rewrite Hnj; apply rad_pow_min_n.
    }
    destruct (le_dec (i + k + 1) (nj - 1)) as [H5| H5].
   --idtac.
