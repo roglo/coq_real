@@ -62,20 +62,6 @@ split; [ easy | ].
 apply A_M_upper_bound.
 Qed.
 
-Theorem rad_pow_min_n {r : radix} : ∀ i j,
-  2 ≤ rad ^ (min_n i j - i - 1).
-Proof.
-intros.
-specialize radix_ge_2 as Hr.
-remember (min_n i j - i - 1) as s eqn:Hs.
-destruct s.
--unfold min_n in Hs.
- destruct rad; [ easy | cbn in Hs; flia Hs ].
--cbn.
- replace 2 with (2 * 1) by flia.
- apply Nat.mul_le_mono; [ easy | now apply Nat_pow_ge_1 ].
-Qed.
-
 Theorem pre_Hugo_Herbelin_lemma {r : radix} : ∀ i n u v,
   n = min_n i 0
   → (∀ k, fA_ge_1_ε (u ⊕ P v) i k = true)

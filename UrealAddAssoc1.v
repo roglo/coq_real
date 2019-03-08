@@ -847,13 +847,7 @@ destruct H4 as [Hva| [Hva| Hva]].
  eapply NQle_trans; [ | now apply NQle_add_l ].
  apply NQle_pair; [ pauto | easy | ].
  apply Nat.mul_le_mono_r.
- destruct s. {
-   rewrite Hnv in Hs; unfold min_n in Hs.
-   destruct rad; [ easy | cbn in Hs; flia Hs ].
- }
- cbn; replace 2 with (2 * 1) by easy.
- apply Nat.mul_le_mono; [ easy | ].
- now apply Nat_pow_ge_1.
+ rewrite Hs, Hnv; apply rad_pow_min_n.
 -destruct Hva as (k & Hbef & Hwhi & Haft).
  rewrite (A_all_9 (P v)); [ | easy ].
  rewrite (A_9_8_all_18 k v) in Huvf; [ | easy | easy | easy ].
@@ -1066,16 +1060,8 @@ destruct H4 as [H4| [H4| H4]].
  apply NQadd_le_mono_l.
  apply NQle_pair; [ pauto | easy | ].
  apply Nat.mul_le_mono_r.
- remember (nv - i - 1) as s eqn:Hs.
- rewrite Hnv in Hs; unfold min_n in Hs.
- destruct s.
- +destruct rad; [ easy | cbn in Hs; flia Hs ].
- +cbn.
-  replace 2 with (2 * 1) by easy.
-  apply Nat.mul_le_mono; [ easy | ].
-  now apply Nat_pow_ge_1.
+ rewrite Hnv; apply rad_pow_min_n.
 -destruct H4 as (k & Hbef & Hwhi & Haft).
-(**)
  specialize (A7 j) as H7.
  rewrite <- Hnup in H7.
  rewrite A_additive in H7.
@@ -1094,12 +1080,7 @@ destruct H4 as [H4| [H4| H4]].
     apply NQle_add_le_sub_r; rewrite NQadd_0_r.
     apply NQle_pair; [ pauto | easy | ].
     apply Nat.mul_le_mono_r.
-    rewrite Hnup in Hs; unfold min_n in Hs.
-    destruct s.
-    -destruct rad; [ easy | cbn in Hs; flia Hs ].
-    -cbn; replace 2 with (2 * 1) by easy.
-     apply Nat.mul_le_mono; [ easy | ].
-     now apply Nat_pow_ge_1.
+    rewrite Hs, Hnup; apply rad_pow_min_n.
   }
   destruct (NQlt_le_dec (A i nup u + (1 - 2 // rad ^ s))%NQ 1) as [Ha1| Ha1].
   *clear H7.
@@ -1513,13 +1494,7 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
  eapply NQle_trans; [ | now apply NQle_add_r ].
  apply NQle_pair; [ pauto | pauto | ].
  apply Nat.mul_le_mono_pos_r; [ pauto | ].
- remember (nik - i - 1) as s eqn:Hs.
- rewrite Hnik in Hs; unfold min_n in Hs.
- destruct s.
- +destruct rad; [ easy | cbn in Hs; flia Hs ].
- +cbn; replace 2 with (2 * 1) by easy.
-  apply Nat.mul_le_mono; [ easy | ].
-  now apply Nat_pow_ge_1.
+ rewrite Hnik; apply rad_pow_min_n.
 -destruct Hvr as (p & Hbef & Hwhi & Haft).
  destruct (lt_dec (nik - 1) (i + p + 1)) as [Hip| Hip].
  +destruct (le_dec (i + p + 1) (nik - 1)) as [H| H]. {
@@ -1976,12 +1951,7 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
     apply NQadd_le_mono_l.
     apply NQle_pair; [ pauto | easy | ].
     apply Nat.mul_le_mono_r.
-    rewrite Hnij in Hsij; unfold min_n in Hsij.
-    destruct sij.
-    -destruct rad; [ easy | cbn in Hsij; flia Hsij ].
-    -cbn; replace 2 with (2 * 1) by easy.
-     apply Nat.mul_le_mono; [ easy | ].
-     now apply Nat_pow_ge_1.
+    rewrite Hsij, Hnij; apply rad_pow_min_n.
   }
   rewrite NQsub_sub_swap in H1.
   replace (2 - 1)%NQ with 1%NQ in H1 by easy.
@@ -2227,14 +2197,7 @@ destruct (NQlt_le_dec (A i ni u + (1 - 1 // rad ^ si))%NQ 1) as [H2| H2].
    }
    rewrite Nat.add_comm.
    apply Nat.mul_le_mono_r, Nat.add_le_mul; [ easy | ].
-   rewrite Hni in Hsi; unfold min_n in Hsi.
-   destruct si.
-  ++destruct rad; [ easy | cbn in Hsi; flia Hsi ].
-  ++cbn; replace 1 with (1 * 1) by easy.
-    eapply lt_le_trans; [ apply Nat.mul_lt_mono_pos_l; pauto | ].
-    rewrite Nat.mul_comm.
-    apply Nat.mul_le_mono; [ easy | ].
-    now apply Nat_pow_ge_1.
+   rewrite Hsi, Hni; apply rad_pow_min_n.
  --eapply NQle_trans; [ | apply NQle_add_r, B_ge_0 ].
    eapply NQle_trans; [ | apply H2 ].
    rewrite Hsi.

@@ -452,6 +452,20 @@ Definition fA_ge_1_ε {r : radix} u i k :=
   let s := n - i - 1 in
   if NQlt_le_dec (NQfrac (A i n u)) (1 - 1 // rad ^ S k)%NQ then false else true.
 
+Theorem rad_pow_min_n {r : radix} : ∀ i j,
+  2 ≤ rad ^ (min_n i j - i - 1).
+Proof.
+intros.
+specialize radix_ge_2 as Hr.
+remember (min_n i j - i - 1) as s eqn:Hs.
+destruct s.
+-unfold min_n in Hs.
+ destruct rad; [ easy | cbn in Hs; flia Hs ].
+-cbn.
+ replace 2 with (2 * 1) by flia.
+ apply Nat.mul_le_mono; [ easy | now apply Nat_pow_ge_1 ].
+Qed.
+
 (* Propagation of Carries *)
 
 Definition carry {r : radix} u i :=
@@ -1913,11 +1927,7 @@ remember (n - i - 1) as s eqn:Hs.
 replace (S (s - 1)) with s by flia Hs Hin.
 rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
   apply Nat.mul_le_mono_l.
-  apply lt_le_trans with (m := 2); [ apply Nat.lt_0_2 | ].
-  destruct s; [ flia Hs Hin | ].
-  cbn; replace 2 with (2 * 1) by easy.
-  apply Nat.mul_le_mono; [ easy | ].
-  apply Nat.neq_0_lt_0; pauto.
+  now apply Nat_pow_ge_1.
 }
 do 2 rewrite Nat.mul_1_l.
 rewrite NQmul_pair; [ | easy | ]; cycle 1. {
@@ -1972,11 +1982,7 @@ replace (S (s - 1)) with s by flia Hs Hin.
 rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
   rewrite Nat.mul_comm.
   apply Nat.mul_le_mono_l.
-  apply lt_le_trans with (m := 2); [ apply Nat.lt_0_2 | ].
-  destruct s; [ flia Hs Hin | ].
-  cbn; replace 2 with (2 * 1) by easy.
-  apply Nat.mul_le_mono; [ easy | ].
-  apply Nat.neq_0_lt_0; pauto.
+  now apply Nat_pow_ge_1.
 }
 do 2 rewrite Nat.mul_1_l.
 rewrite NQmul_pair; [ | easy | easy ].
