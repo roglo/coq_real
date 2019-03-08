@@ -466,6 +466,29 @@ destruct s.
  apply Nat.mul_le_mono; [ easy | now apply Nat_pow_ge_1 ].
 Qed.
 
+Theorem rad_pow_min_n_3 {r : radix} : ∀ i j,
+  3 ≤ rad ^ (min_n i j - i - 1).
+Proof.
+intros.
+specialize radix_ge_2 as Hr.
+remember (min_n i j - i - 1) as s eqn:Hs.
+destruct s. {
+  unfold min_n in Hs.
+  destruct rad; [ easy | cbn in Hs; flia Hs ].
+}
+destruct s. {
+  unfold min_n in Hs.
+  destruct rad; [ easy | cbn in Hs; flia Hs ].
+}
+cbn.
+rewrite Nat.mul_assoc.
+replace 3 with (3 * 1) by easy.
+apply Nat.mul_le_mono; [ | now apply Nat_pow_ge_1 ].
+apply (le_trans _ 4); [ pauto | ].
+replace 4 with (2 * 2) by easy.
+now apply Nat.mul_le_mono.
+Qed.
+
 (* Propagation of Carries *)
 
 Definition carry {r : radix} u i :=

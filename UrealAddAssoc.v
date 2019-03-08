@@ -1527,22 +1527,7 @@ destruct (NQlt_le_dec (A i nj u + NQfrac (A i nj v)) 1) as [H3| H3].
    replace (2 - 1)%NQ with 1%NQ by easy.
    apply NQle_pair; [ pauto | easy | ].
    apply Nat.mul_le_mono_r.
-   remember (nj - i - 1) as s eqn:Hs.
-   destruct s. {
-     rewrite Hnj in Hs; unfold min_n in Hs.
-     destruct rad; [ easy | cbn in Hs; flia Hs ].
-   }
-   destruct s. {
-     rewrite Hnj in Hs; unfold min_n in Hs.
-     destruct rad; [ easy | cbn in Hs; flia Hs ].
-   }
-   cbn.
-   rewrite Nat.mul_assoc.
-   replace 3 with (3 * 1) by easy.
-   apply Nat.mul_le_mono; [ | now apply Nat_pow_ge_1 ].
-   apply (le_trans _ 4); [ pauto | ].
-   replace 4 with (2 * 2) by easy.
-   now apply Nat.mul_le_mono.
+   rewrite Hnj; apply rad_pow_min_n_3.
   *destruct H5 as (k & Hbef & Hwhi & Haft).
    rewrite (A_9_8_all_18 k); [ | easy | easy | easy ].
    rewrite NQfrac_small. 2: {
@@ -1554,10 +1539,16 @@ destruct (NQlt_le_dec (A i nj u + NQfrac (A i nj v)) 1) as [H3| H3].
      rewrite Hnj; apply rad_pow_min_n.
    }
    destruct (le_dec (i + k + 1) (nj - 1)) as [H5| H5].
-  --idtac.
-...
   --apply NQle_add_le_sub_r.
-    now rewrite <- NQpair_add_l; replace (1 + 1) with 2.
+    rewrite <- NQpair_add_l; replace (2 + 1) with 3 by easy.
+    apply NQle_pair; [ pauto | easy | ].
+    apply Nat.mul_le_mono_r.
+    rewrite Hnj; apply rad_pow_min_n_3.
+  --apply NQle_add_le_sub_r.
+    rewrite <- NQpair_add_l.
+    apply NQle_pair; [ pauto | easy | ].
+    apply Nat.mul_le_mono_r.
+    rewrite Hnj; apply rad_pow_min_n.
  +destruct H4 as (k & Hbef & Hwhi & Haft).
 ...
 -rewrite H2.
