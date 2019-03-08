@@ -2506,6 +2506,16 @@ destruct (NQlt_le_dec (NQfrac x + NQfrac y)) as [H1| H1].
  now f_equal; symmetry; apply NQfrac_of_intg.
 Qed.
 
+Theorem NQintg_add_cond : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
+  NQintg (x + y) =
+    NQintg x + NQintg y +
+    if NQlt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
+Proof.
+intros * Hxz Hyz.
+rewrite NQintg_add; [ | easy | easy ].
+now rewrite NQintg_add_frac.
+Qed.
+
 Theorem NQintg_pair : ∀ a b, b ≠ 0 → NQintg (a // b) = a / b.
 Proof.
 intros * Hbz.
