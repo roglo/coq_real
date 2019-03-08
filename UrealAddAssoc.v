@@ -1504,11 +1504,127 @@ clear H; rewrite Nat.add_0_r in H2.
 apply NQnle_gt in Huv.
 destruct (NQlt_le_dec (A i nj u + NQfrac (A i nj v)) 1) as [H3| H3].
 -rewrite Nat.add_0_r in H2; exfalso; clear Haj.
+ specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H4.
+ assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
+   intros k; unfold "⊕"; rewrite <- Nat.add_assoc.
+   replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+   apply Nat.add_le_mono; [ apply Hu | now rewrite P_le ].
+ }
+ specialize (H4 H Haup); clear H.
+ rewrite <- A_additive in Hup.
+ destruct H4 as [H4| [H4| H4]].
+ +apply NQnlt_ge in Hup; apply Hup; clear Hup.
+  rewrite A_all_9; [ | intros; apply H4 ].
+  now apply NQsub_lt.
+ +assert (Hu9 : ∀ k, u (i + k + 1) = rad - 1). {
+    intros k; specialize (H4 k).
+    unfold "⊕" in H4.
+    specialize (Hu (k + 1)); rewrite Nat.add_assoc in Hu.
+    assert (H : P v (i + k + 1) ≤ rad - 1) by apply P_le.
+    flia Hu H H4.
+  }
+  assert (Hp9 : ∀ k, P v (i + k + 1) = rad - 1). {
+    intros k; specialize (H4 k).
+    unfold "⊕" in H4.
+    specialize (Hu (k + 1)); rewrite Nat.add_assoc in Hu.
+    assert (H : P v (i + k + 1) ≤ rad - 1) by apply P_le.
+    flia Hu H H4.
+  }
+  move H3 at bottom.
+  rewrite A_all_9 in H3; [ | easy ].
+  apply NQlt_add_lt_sub_l in H3.
+  rewrite NQsub_sub_distr, NQsub_diag, NQadd_0_l in H3.
+  apply NQnle_gt in H3; apply H3; clear H3.
+  specialize (A_ge_1_add_all_true_if v i) as H5.
+  assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+    intros; rewrite <- Nat.add_assoc; apply Hv.
+  }
+  specialize (all_P_9_all_fA_true v i H Hp9) as H'.
+  specialize (H5 H H'); clear H H'.
+  assert (Hrj : (0 ≤ 1 - 1 // rad ^ (nj - i - 1) < 1)%NQ). {
+    split; [ | now apply NQsub_lt ].
+    apply NQle_0_sub.
+    apply NQle_pair_mono_l; split; [ pauto | ].
+    now apply Nat_pow_ge_1.
+  }
+  assert (H2r1 : (2 // rad ^ (nj - i - 1) ≤ 1)%NQ). {
+    apply NQle_pair; [ pauto | easy | ].
+    apply Nat.mul_le_mono_r.
+    remember (nj - i - 1) as s eqn:Hs.
+    destruct s.
+    -rewrite Hnj in Hs; unfold min_n in Hs.
+     destruct rad; [ easy | cbn in Hs; flia Hs ].
+    -cbn.
+     replace 2 with (2 * 1) by easy.
+     apply Nat.mul_le_mono; [ easy | ].
+     now apply Nat_pow_ge_1.
+  }
+  destruct H5 as [H5| [H5| H5]].
+  *rewrite A_all_9; [ | easy ].
+   rewrite NQfrac_small; [ | easy ].
+   apply NQle_add_le_sub_r.
+   now rewrite <- NQpair_add_l; replace (1 + 1) with 2.
+  *rewrite A_all_18; [ | easy ].
+   rewrite (NQfrac_less_small 1). 2: {
+     split; [ | now apply NQsub_lt ].
+     apply NQle_0_sub.
+     rewrite NQsub_sub_swap.
+     replace (2 - 1)%NQ with 1%NQ by easy.
+     now apply NQle_0_sub.
+   }
+   rewrite NQsub_sub_swap.
+   apply NQle_add_le_sub_r.
+   rewrite <- NQpair_add_l; replace (2 + 1) with 3 by easy.
+   replace (2 - 1)%NQ with 1%NQ by easy.
+   apply NQle_pair; [ pauto | easy | ].
+   apply Nat.mul_le_mono_r.
+   remember (nj - i - 1) as s eqn:Hs.
+   destruct s. {
+     rewrite Hnj in Hs; unfold min_n in Hs.
+     destruct rad; [ easy | cbn in Hs; flia Hs ].
+   }
+   destruct s. {
+     rewrite Hnj in Hs; unfold min_n in Hs.
+     destruct rad; [ easy | cbn in Hs; flia Hs ].
+   }
+   cbn.
+   rewrite Nat.mul_assoc.
+   replace 3 with (3 * 1) by easy.
+   apply Nat.mul_le_mono; [ | now apply Nat_pow_ge_1 ].
+   apply (le_trans _ 4); [ pauto | ].
+   replace 4 with (2 * 2) by easy.
+   now apply Nat.mul_le_mono.
+  *destruct H5 as (k & Hbef & Hwhi & Haft).
+   rewrite (A_9_8_all_18 k); [ | easy | easy | easy ].
+   rewrite NQfrac_small. 2: {
+     destruct (le_dec (i + k + 1) (nj - 1)) as [H| H]; [ | easy ].
+     split; [ | now apply NQsub_lt ].
+     apply NQle_0_sub.
+     apply NQle_pair; [ pauto | easy | ].
+     apply Nat.mul_le_mono_r.
+     remember (nj - i - 1) as s eqn:Hs.
+     destruct s.
+     -rewrite Hnj in Hs; unfold min_n in Hs.
+      destruct rad; [ easy | cbn in Hs; flia Hs ].
+     -cbn.
+      replace 2 with (2 * 1) by easy.
+      apply Nat.mul_le_mono; [ easy | ].
+      now apply Nat_pow_ge_1.
+   }
+   destruct (le_dec (i + k + 1) (nj - 1)) as [H5| H5].
+  --idtac.
+...
+  --apply NQle_add_le_sub_r.
+    now rewrite <- NQpair_add_l; replace (1 + 1) with 2.
+ +destruct H4 as (k & Hbef & Hwhi & Haft).
 ...
 -rewrite H2.
  rewrite Nat.mod_small; [ easy | ].
  now apply (Nat.le_lt_trans _ 1).
+Qed.
+
 ...
+
 rewrite (NQintg_less_small 1 (A _ n _ + _)%NQ) in H1. 2: {
   split; [ easy | ].
   apply NQadd_lt_mono.
