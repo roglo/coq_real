@@ -1380,11 +1380,8 @@ Qed.
 Theorem pre_Hugo_Herbelin_81 {r : radix} : ∀ u v i j,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
-  → (∀ j0, j0 < j → fA_ge_1_ε v i j0 = true)
-  → fA_ge_1_ε v i j = false
   → (∀ k, fA_ge_1_ε (u ⊕ P v) i k = true)
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
-  → NQintg (A i (min_n i j) v) ≤ 1
   → NQintg (A i (min_n i 0) v) ≤ 1
   → (1 ≤ A i (min_n i 0) u + A i (min_n i 0) (P v))%NQ
   → (A i (min_n i 0) u + NQfrac (A i (min_n i 0) v) < 1)%NQ
@@ -1392,20 +1389,10 @@ Theorem pre_Hugo_Herbelin_81 {r : radix} : ∀ u v i j,
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hu Hv Hjj Hj Haup Hauv Haj Ha0 Hup Huv.
+intros Hu Hv Haup Hauv Ha0 Hup Huv.
 remember (min_n i 0) as n eqn:Hn.
 remember (min_n i j) as nj eqn:Hnj.
 move n after nj; move Hn after Hnj.
-assert (Hiij : ∀ p, j ≤ p → NQintg (A i (min_n i p) v) = NQintg (A i nj v)). {
-  specialize (fA_lt_1_ε_NQintg_A i v j) as H1.
-  assert (H : ∀ k, v (i + k) ≤ 3 * (rad - 1)). {
-    intros p.
-    eapply Nat.le_trans; [ apply Hv | ].
-    apply Nat.mul_le_mono_r; pauto.
-  }
-  specialize (H1 H Hjj Hj); clear H.
-  now rewrite Hnj.
-}
 assert (Hiup : ∀ p,
   NQintg (A i (min_n i p) (u ⊕ P v)) = NQintg (A i n (u ⊕ P v))). {
   specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ P v)) as Hiup.
@@ -1459,7 +1446,7 @@ destruct (NQlt_le_dec (A i n u + NQfrac (A i n v))) as [H| ]; [ | easy ].
 clear H; rewrite Nat.add_0_r in H2.
 apply NQnle_gt in Huv.
 destruct (NQlt_le_dec (A i nj u + NQfrac (A i nj v)) 1) as [H3| H3].
--rewrite Nat.add_0_r in H2; exfalso; clear Haj.
+-rewrite Nat.add_0_r in H2; exfalso.
  specialize (A_ge_1_add_all_true_if (u ⊕ P v) i) as H4.
  assert (H : ∀ k, (u ⊕ P v) (i + k + 1) ≤ 2 * (rad - 1)). {
    intros k; unfold "⊕"; rewrite <- Nat.add_assoc.
