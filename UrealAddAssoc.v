@@ -1430,7 +1430,6 @@ Theorem pre_Hugo_Herbelin_81 {r : radix} : ∀ u v i j,
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
   → NQintg (A i (min_n i j) v) ≤ 1
   → NQintg (A i (min_n i 0) v) ≤ 1
-  → (∀ k, v (i + k) ≤ 3 * (rad - 1))
   → (1 ≤ A i (min_n i 0) u + A i (min_n i 0) (P v))%NQ
   → (A i (min_n i 0) u + NQfrac (A i (min_n i 0) v) < 1)%NQ
   → NQintg (A i (min_n i 0) v) = (NQintg (A i (min_n i j) v) + 1) mod rad.
@@ -1441,6 +1440,41 @@ intros Hu Hv Hjj Hj Haup Hauv Haj Ha0 Hup Huv.
 remember (min_n i 0) as n eqn:Hn.
 remember (min_n i j) as nj eqn:Hnj.
 move n after nj; move Hn after Hnj.
+assert (Hiij : ∀ p, j ≤ p → NQintg (A i (min_n i p) v) = NQintg (A i nj v)). {
+  specialize (fA_lt_1_ε_NQintg_A i v j) as H1.
+  assert (H : ∀ k, v (i + k) ≤ 3 * (rad - 1)). {
+    intros p.
+    eapply Nat.le_trans; [ apply Hv | ].
+    apply Nat.mul_le_mono_r; pauto.
+  }
+  specialize (H1 H Hjj Hj); clear H.
+  now rewrite Hnj.
+}
+assert (Hiup : ∀ p,
+  NQintg (A i (min_n i p) (u ⊕ P v)) = NQintg (A i n (u ⊕ P v))). {
+  specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ P v)) as Hiup.
+  assert (H : ∀ k, (u ⊕ P v) (i + k) ≤ 3 * (rad - 1)). {
+    intros p.
+    unfold "⊕"; replace 3 with (1 + 2) by easy.
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+    apply Nat.add_le_mono; [ apply Hu | ].
+    eapply Nat.le_trans; [ apply P_le | flia Hr ].
+  }
+  specialize (Hiup H Haup).
+  now rewrite <- Hn in Hiup.
+}
+assert
+  (Hiuv : ∀ p, NQintg (A i (min_n i p) (u ⊕ v)) = NQintg (A i n (u ⊕ v))). {
+  specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as Hiuv.
+  assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+    intros p.
+    unfold "⊕"; replace 3 with (1 + 2) by easy.
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+    apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+  }
+  specialize (Hiuv H Hauv); clear H.
+  now rewrite <- Hn in Hiuv.
+}
 ...
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
