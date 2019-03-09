@@ -1660,6 +1660,67 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
    rewrite NQfrac_small in H5; [ | split; [ easy | now apply eq_NQintg_0 ] ].
    rewrite NQfrac_small in Huv; [ | split; [ easy | now apply eq_NQintg_0 ] ].
    rewrite NQfrac_small in Hj; [ | split; [ easy | now apply eq_NQintg_0 ] ].
+   specialize (P_999_start (u ⊕ v) (i + 1) 3) as H1.
+   assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
+     intros p.
+     unfold "⊕"; replace 3 with (1 + 2) by easy.
+     rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+     rewrite <- Nat.add_assoc.
+     apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+   }
+   specialize (H1 H); clear H.
+   assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
+     specialize (all_fA_ge_1_ε_P_999 _ _ Hauv) as H.
+     intros; rewrite Nat.add_shuffle0; apply H.
+   }
+   specialize (H1 H); clear H.
+   destruct (lt_dec rad 3) as [H| Hr3]. {
+     assert (Hr2 : rad = 2) by flia H Hr; clear H H1.
+     rewrite Hr2 in Hu, Hv, Hk, Hj; cbn in Hu, Hv.
+     destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) 0) as [Huv0| Huv0]. {
+       apply NQnlt_ge in Hup; apply Hup; clear Hup.
+       apply Nat.eq_add_0 in Huv0.
+       destruct Huv0 as (Hu0, Hv0).
+       assert (Hik : i + 1 ≤ nk - 1). {
+         rewrite Hnk; unfold min_n; destruct rad; [ easy | cbn; flia ].
+       }
+       setoid_rewrite A_split_first; [ | easy | easy ].
+       rewrite <- Nat.add_1_r, Hu0, NQadd_0_l.
+       apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now rewrite Hr2 | ].
+       rewrite NQmul_add_distr_r, NQmul_1_l.
+       rewrite <- NQmul_assoc, NQmul_inv_pair, NQmul_1_r; [ | easy | easy ].
+       rewrite NQmul_add_distr_r.
+       rewrite <- NQmul_assoc, NQmul_inv_pair, NQmul_1_r; [ | easy | easy ].
+       rewrite NQmul_pair_den_num, NQadd_assoc, Hr2; [ | easy ].
+       move H5 at bottom.
+       setoid_rewrite A_split_first in H5; [ | easy | easy ].
+       rewrite <- Nat.add_1_r, Hu0, NQadd_0_l in H5.
+       apply (NQmul_lt_mono_pos_r (rad // 1)%NQ) in H5; [ | now rewrite Hr2 ].
+       rewrite NQmul_add_distr_r, NQmul_1_l in H5.
+       rewrite <- NQmul_assoc, NQmul_inv_pair in H5; [ | easy | easy ].
+       rewrite NQmul_1_r, NQmul_add_distr_r in H5.
+       rewrite <- NQmul_assoc, NQmul_inv_pair in H5; [ | easy | easy ].
+       rewrite NQmul_1_r in H5.
+       rewrite NQmul_pair_den_num, NQadd_assoc, Hr2 in H5; [ | easy ].
+       rewrite Hv0, NQadd_0_r in H5.
+...
+       eapply NQle_lt_trans; [ | apply H5 ].
+       rewrite <- NQadd_assoc.
+       apply NQadd_le_mono_l.
+       unfold P at 1, d2n, prop_carr, dig.
+       rewrite Hv0, Nat.add_0_l, Hr2.
+       rewrite Nat.mod_small. 2: {
+         apply (Nat.le_lt_trans _ 1); [ | pauto ].
+         apply carry_upper_bound_for_add.
+         intros p; do 2 rewrite <- Nat.add_assoc; rewrite Hr2; apply Hv.
+       }
+...
+(* faut savoir ce qu'il y a après un 0 (en i+2) dans Hauv *)
+(* mmmm... je pense que (u⊕v)(i+2) doit valoir 2 ou 3,
+   donc v(i+2) vaudrait 1 ou 2. *)
+unfold carry.
+unfold min_n.
+rewrite Hr2.
 ...
  }
 ... suite
