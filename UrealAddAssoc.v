@@ -1716,13 +1716,14 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          unfold carry in H1.
          destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1))) as [H6| H6].
          -clear H6.
-          rewrite NQintg_small in H1; [ easy | ].
-          split; [ easy | ].
-          rewrite A_split_first. 2: {
+(**)
+          rewrite A_split_first in H1. 2: {
             unfold min_n; destruct rad; [ easy | cbn; flia ].
           }
-          replace (S (i + 1)) with (i + 2) by flia.
-          rewrite Huv20, NQadd_0_l.
+          replace (S (i + 1)) with (i + 2) in H1 by flia.
+          rewrite Huv20, NQadd_0_l in H1.
+          rewrite Hr2 in H1.
+...
           apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now rewrite Hr2 | ].
           rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | easy ].
           rewrite NQmul_comm; apply NQmul_lt_mono_pos_l; [ easy | ].
