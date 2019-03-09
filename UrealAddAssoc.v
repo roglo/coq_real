@@ -1654,6 +1654,12 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
  apply A_ge_1_false_iff in Hj.
  rewrite <- Hnj in Hj.
  move Hj after Hk.
+ destruct (zerop (NQintg (A i n v))) as [Hzn| Hzn]. {
+   rewrite Hzn in H2, H3; clear Ha0.
+   rewrite NQfrac_small in H4; [ | split; [ easy | now apply eq_NQintg_0 ] ].
+   rewrite NQfrac_small in H5; [ | split; [ easy | now apply eq_NQintg_0 ] ].
+   rewrite NQfrac_small in Huv; [ | split; [ easy | now apply eq_NQintg_0 ] ].
+   rewrite NQfrac_small in Hj; [ | split; [ easy | now apply eq_NQintg_0 ] ].
 ...
 destruct (NQlt_le_dec (A i n u + NQfrac (A i n v))) as [H| ]; [ | easy ].
 clear H; rewrite Nat.add_0_r in H2.
