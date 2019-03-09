@@ -1703,6 +1703,32 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
        rewrite NQmul_1_r in H5.
        rewrite NQmul_pair_den_num, NQadd_assoc, Hr2 in H5; [ | easy ].
        rewrite Hv0, NQadd_0_r in H5.
+       destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 0) as [Huv20| Huv20]. {
+         (* in principle, not possible: if P(u⊕v) (by Hauv) is an infinity
+            of 1s (we are in radix 2), a 0 cannot be followed by another 0
+            in u⊕v *)
+         specialize (all_fA_ge_1_ε_P_999 _ _ Hauv) as Hpuv.
+         specialize (Hpuv 0) as H1.
+         rewrite Nat.add_0_r, Hr2 in H1.
+         unfold P, d2n, prop_carr in H1; cbn in H1.
+         unfold "⊕" in H1 at 1.
+         rewrite Hr2, Hu0, Hv0, Nat.add_0_l in H1.
+         unfold carry in H1.
+         destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1))) as [H6| H6].
+         -clear H6.
+          rewrite NQintg_small in H1; [ easy | ].
+          split; [ easy | ].
+          rewrite A_split_first. 2: {
+            unfold min_n; destruct rad; [ easy | cbn; flia ].
+          }
+          replace (S (i + 1)) with (i + 2) by flia.
+          rewrite Huv20, NQadd_0_l.
+          apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now rewrite Hr2 | ].
+          rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | easy ].
+          rewrite NQmul_comm; apply NQmul_lt_mono_pos_l; [ easy | ].
+          rewrite Hr2.
+Check A_upper_bound_for_adds.
+(* ah bin zut ça marche pas : c'est 3(1-ε), la valeur max *)
 ...
        eapply NQle_lt_trans; [ | apply H5 ].
        rewrite <- NQadd_assoc.
