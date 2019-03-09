@@ -1661,6 +1661,11 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
    rewrite NQfrac_small in Huv; [ | split; [ easy | now apply eq_NQintg_0 ] ].
    rewrite NQfrac_small in Hj; [ | split; [ easy | now apply eq_NQintg_0 ] ].
 ...
+ }
+... suite
+ assert (H1 : NQintg (A i n v) = 1) by flia Ha0 Hzn; clear Ha0 Hzn.
+ rewrite H1 in H2, H3.
+...
 destruct (NQlt_le_dec (A i n u + NQfrac (A i n v))) as [H| ]; [ | easy ].
 clear H; rewrite Nat.add_0_r in H2.
 apply NQnle_gt in Huv.
