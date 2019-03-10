@@ -461,7 +461,7 @@ apply (lt_le_trans _ (rad * (m - 1) + carry u i + 1)).
  *destruct m; [ easy | cbn; flia ].
 Qed.
 
-Theorem P_999_after_mod_is_9 {r : radix} : ∀ u i m,
+Theorem P_999_after_9 {r : radix} : ∀ u i m,
   m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, P u (i + k) = rad - 1)
@@ -1718,7 +1718,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          rewrite Huv20, Nat.add_0_l, Hr2 in H6.
          replace (2 - 1) with 1 in H6 by easy.
 Check P_999_start.
-Check P_999_after_mod_is_9.
+About P_999_after_9.
 ...
          unfold carry in H1.
          destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1))) as [H6| H6].
