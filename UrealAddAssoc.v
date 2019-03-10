@@ -1717,6 +1717,8 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          rewrite <- Nat.add_assoc in H6; cbn in H6.
          rewrite Huv20, Nat.add_0_l, Hr2 in H6.
          replace (2 - 1) with 1 in H6 by easy.
+Check P_999_start.
+Check P_999_after_mod_is_9.
 ...
          unfold carry in H1.
          destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1))) as [H6| H6].
