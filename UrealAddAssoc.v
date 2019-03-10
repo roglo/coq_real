@@ -1713,6 +1713,11 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          unfold P, d2n, prop_carr in H1; cbn in H1.
          unfold "⊕" in H1 at 1.
          rewrite Hr2, Hu0, Hv0, Nat.add_0_l in H1.
+         specialize (Hpuv 1) as H6.
+         rewrite <- Nat.add_assoc in H6; cbn in H6.
+         rewrite Huv20, Nat.add_0_l, Hr2 in H6.
+         replace (2 - 1) with 1 in H6 by easy.
+...
          unfold carry in H1.
          destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1))) as [H6| H6].
          -clear H6.
