@@ -173,7 +173,7 @@ Proof.
 intros * Hu *.
 specialize radix_ge_2 as Hr.
 unfold P, prop_carr; cbn.
-unfold carry.
+unfold carry, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H1| H1]. 2: {
   destruct H1 as (j & Hj & H1).
   rewrite A_ge_1_add_r_true_if in H1; [ easy | apply Hu ].
