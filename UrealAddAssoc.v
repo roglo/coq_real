@@ -470,8 +470,7 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
    -rewrite <- (Nat.add_1_r (i + j)).
     eapply NQle_trans. 2: {
       apply NQle_add_r.
-      replace 0%NQ with (0 * 1 // rad)%NQ by easy.
-      now apply NQmul_le_mono_pos_r.
+      now apply NQmul_nonneg_cancel_r.
     }
     apply NQle_pair; [ easy | easy | ].
     now do 2 rewrite Nat.mul_1_l.
@@ -586,10 +585,7 @@ intros * Hur Hin H3.
      intros l; do 3 rewrite <- Nat.add_assoc; apply Hur.
    ++rewrite NQmul_sub_distr_l, NQmul_1_r.
      apply NQsub_lt.
-     remember (n - (i + k + 1) - 1) as l eqn:Hl.
-     replace 0%NQ with (0 * 1 // rad ^ l)%NQ by easy.
-     apply NQmul_lt_le_mono_pos; [ easy | easy | easy | ].
-     apply NQle_refl.
+     now apply NQmul_pos_cancel_l.
 Qed.
 
 Theorem all_P_9_all_8g9_9n18_18g9 {r : radix} : ∀ u i,
@@ -779,10 +775,7 @@ destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
      apply (NQle_trans _ 1).
     **apply NQle_pair; [ easy | easy | flia Hr ].
     **apply NQle_add_r.
-      replace 0%NQ with (0 * 1 // rad)%NQ by easy.
-      apply NQmul_le_mono_nonneg_r; [ | easy ].
-      replace 0%NQ with (0 // 1)%NQ by easy.
-      apply NQle_pair; [ easy | easy | flia Hr ].
+      now apply NQmul_nonneg_cancel_r.
    ++rewrite <- NQsub_sub_distr.
      apply NQsub_lt.
      apply NQlt_0_sub.
@@ -846,8 +839,7 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
  rewrite H4.
  eapply NQle_trans; [ | apply NQle_add_r ].
  +apply NQle_pair; [ easy | easy | flia Hr ].
- +replace 0%NQ with (0 * 0)%NQ by easy.
-  now apply NQmul_le_mono_nonneg.
+ +now apply NQmul_nonneg_cancel_r.
 -assert (H3 : carry u (i + j) = 1). {
    specialize (carry_upper_bound_for_add u (i + j)) as H3.
    assert (H : ∀ k, u (i + j + k + 1) ≤ 2 * (rad - 1)). {
@@ -1684,16 +1676,8 @@ rewrite A_split_first in H1.
 replace (S (i + 1)) with (i + 2) in H1 by easy.
 rewrite Huv20, NQadd_0_l in H1.
 rewrite NQintg_small in H1; [ now rewrite Nat.mod_0_l in H1 | ].
-Search (0 ≤ _ * _)%NQ.
-Search (0 <= _ * _)%nat.
+split; [ now apply NQmul_nonneg_cancel_r | ].
 ...
-split.
-now apply NQmul_nonneg_cancel_r.
-...
-Check NQmul_nonneg_cancel_l.
-Check NQmul_nonneg_cancel_r.
-Nat.mul_nonneg_cancel_r: ∀ n m : nat, 0 < m → 0 ≤ n * m ↔ 0 ≤ n
-Nat.mul_nonneg_cancel_l: ∀ n m : nat, 0 < n → 0 ≤ n * m ↔ 0 ≤ m
 remember (min_n (i + 1)
                match LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1)) with
                | inl _ => 0
