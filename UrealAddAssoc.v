@@ -1647,6 +1647,90 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          (* in principle, not possible: if P(u⊕v) (by Hauv) is an infinity
             of 1s (we are in radix 2), a 0 cannot be followed by another 0
             in u⊕v *)
+         assert (Hc3 : ∀ k, carry (u ⊕ v) (i + k) < 3). {
+           specialize (carry_upper_bound_for_adds (u ⊕ v) i 3) as H6.
+           assert (H : 3 ≠ 0) by easy.
+           specialize (H6 H); clear H.
+           assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3 * (rad - 1)). {
+             intros p.
+             unfold "⊕"; replace 3 with (1 + 2) by easy.
+             rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+             rewrite <- Nat.add_assoc, Hr2.
+             apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+           }
+           now specialize (H6 H).
+         }
+specialize (all_fA_ge_1_ε_P_999 _ _ Hauv) as Hpuv.
+rewrite Hr2 in Hpuv.
+specialize (Hpuv 1) as H1.
+unfold P, d2n, prop_carr in H1; cbn in H1.
+rewrite <- Nat.add_assoc in H1; replace (1 + 1) with 2 in H1 by easy.
+rewrite Huv20, Nat.add_0_l, Hr2 in H1.
+assert (H6 : carry (u ⊕ v) (i + 2) = 1). {
+  destruct (Nat.eq_dec (carry (u ⊕ v) (i + 2)) 2) as [H6| H6]. {
+    rewrite H6 in H1; easy.
+  }
+  specialize (Hc3 2) as H7.
+  rewrite Nat.mod_small in H1; [ easy | flia H6 H7 ].
+}
+clear H1.
+specialize (Hpuv 0) as H1.
+rewrite Nat.add_0_r in H1.
+unfold P, d2n, prop_carr, dig in H1.
+unfold "⊕" in H1 at 1.
+rewrite Hu0, Hv0, Nat.add_0_l in H1.
+unfold carry in H1.
+rewrite A_split_first in H1.
+replace (S (i + 1)) with (i + 2) in H1 by easy.
+rewrite Huv20, NQadd_0_l in H1.
+rewrite NQintg_small in H1; [ now rewrite Nat.mod_0_l in H1 | ].
+Search (0 ≤ _ * _)%NQ.
+Search (0 <= _ * _)%nat.
+...
+split.
+now apply NQmul_nonneg_cancel_r.
+...
+Check NQmul_nonneg_cancel_l.
+Check NQmul_nonneg_cancel_r.
+Nat.mul_nonneg_cancel_r: ∀ n m : nat, 0 < m → 0 ≤ n * m ↔ 0 ≤ n
+Nat.mul_nonneg_cancel_l: ∀ n m : nat, 0 < n → 0 ≤ n * m ↔ 0 ≤ m
+remember (min_n (i + 1)
+               match LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1)) with
+               | inl _ => 0
+               | inr (exist _ k _) => k
+               end) as n' eqn:Hn'.
+specialize (A_upper_bound_for_adds (u ⊕ v) (i + 2) n' 3) as H7.
+assert (H : ∀ k, (u ⊕ v) (i + 2 + k + 1) ≤ 3 * (rad - 1)). {
+             intros p.
+             unfold "⊕"; replace 3 with (1 + 2) by easy.
+             rewrite Nat.mul_add_distr_r, Nat.mul_1_l, Hr2.
+             do 2 rewrite <- Nat.add_assoc.
+             apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+           }
+specialize (H7 H); clear H.
+...
+replace
+rewrite Hr2, Hu0, Hv0, Nat.add_0_l in H1.
+rewrite Nat.mod_small in H1. 2: {
+specialize (Hpuv 0) as H1.
+rewrite Nat.add_0_r in H1.
+unfold P, d2n, prop_carr in H1; cbn in H1.
+unfold "⊕" in H1 at 1.
+rewrite Hr2, Hu0, Hv0, Nat.add_0_l in H1.
+rewrite Nat.mod_small in H1. 2: {
+
+...
+         specialize (Hpuv 1) as H6.
+         rewrite <- Nat.add_assoc in H6; cbn in H6.
+         rewrite Huv20, Nat.add_0_l, Hr2 in H6.
+         replace (2 - 1) with 1 in H6 by easy.
+...
+specialize (Hc3 0) as H6.
+rewrite Nat.add_0_r in H6.
+unfold carry in H6.
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H7| H7].
+clear H7.
+...
          specialize (all_fA_ge_1_ε_P_999 _ _ Hauv) as Hpuv.
          specialize (Hpuv 0) as H1.
          rewrite Nat.add_0_r, Hr2 in H1.

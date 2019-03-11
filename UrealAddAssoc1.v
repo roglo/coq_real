@@ -1,3 +1,4 @@
+Set Nested Proofs Allowed.
 Require Import Utf8 Arith PeanoNat.
 Require Import Misc Summation NQ Ureal.
 
@@ -71,6 +72,11 @@ apply Nat.lt_le_pred.
 apply NQintg_sub_nat_l_lt.
 split.
 -rewrite NQmul_comm.
+ apply NQmul_pos_cancel_l; [ easy | ].
+Search (0 < _ // _)%NQ.
+...
+now apply NQlt_0_pair.
+...
  replace 0%NQ with (0 * m // 1)%NQ by easy.
  apply NQmul_lt_le_mono_pos; [ easy | easy | | apply NQle_refl ].
  replace 0%NQ with (0 // 1)%NQ by easy.
@@ -629,8 +635,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
   }
   replace (A i nv u) with (A i nv u + 0)%NQ at 1 by apply NQadd_0_r.
   apply NQadd_le_mono_l.
-  replace 0%NQ with (0 * 0)%NQ by easy.
-  now apply NQmul_le_mono_nonneg.
+  now apply NQmul_nonneg_cancel_r.
  +now rewrite HAu, NQadd_0_l.
 -destruct H6 as (j & Hjj & Hj).
  subst kuv.
@@ -2085,8 +2090,7 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
    rewrite NQfrac_small. 2: {
      split.
      -apply NQadd_nonneg_nonneg; [ | apply B_ge_0 ].
-      replace 0%NQ with (0 * 0)%NQ by easy.
-      apply NQmul_le_mono_nonneg; [ easy | easy | easy | ].
+      apply NQmul_nonneg_cancel_l; [ easy | ].
       apply NQle_add_le_sub_r; rewrite NQadd_0_r.
       apply NQle_pair; [ pauto | easy | ].
       apply Nat.mul_le_mono_r.

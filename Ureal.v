@@ -3170,8 +3170,7 @@ rewrite (Nat_mod_less_small 1); cycle 1. {
    +rewrite <- Nat.mul_assoc.
     apply Nat.mul_le_mono_l.
     apply Nat_mul_le_pos_r, Nat.neq_0_lt_0; pauto.
-   +replace 0 with (2 * 0) at 1 by easy.
-    apply Nat.mul_lt_mono_pos_l; [ pauto | ].
+   +apply Nat.mul_pos_cancel_l; [ pauto | ].
     apply Nat.neq_0_lt_0, NQden_neq_0.
 }
 rewrite NQpair_sub_l; cycle 1. {
@@ -3383,12 +3382,8 @@ destruct (NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
       apply NQmul_le_mono_pos_r; [ | apply A_ge_0 ].
       replace 0%NQ with (0 // 1)%NQ by easy.
       apply NQlt_pair; [ easy | pauto | pauto ].
-    -apply NQsub_lt.
-     replace 0%NQ with (0 * 1 // rad ^ j)%NQ by easy.
-     apply NQmul_lt_mono_pos_r.
-     +replace 0%NQ with (0 // 1)%NQ by easy.
-      apply NQlt_pair; [ easy | pauto | pauto ].
-     +now apply NQlt_0_sub.
+    -apply NQsub_lt, NQmul_pos_cancel_l; [ | easy ].
+     now apply NQlt_0_sub.
   }
   rewrite NQadd_opp_r.
   apply NQsub_lt_mono_l.

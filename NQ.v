@@ -2691,6 +2691,60 @@ symmetry in H4; rewrite Nat.sub_diag in H4.
 now apply Nat.eq_add_0 in H4.
 Qed.
 
+Theorem NQlt_0_pair : ∀ a b, (0 < a // b)%NQ ↔ 0 < a.
+Proof.
+intros.
+split; intros Ha.
+-apply Nat.nle_gt; intros H.
+ now apply Nat.le_0_r in H; rewrite H in Ha.
+-replace 0%NQ with (0 // 1)%NQ by easy.
+ destruct b. {
+   rewrite NQden_0.
+   apply NQlt_pair; [ easy | easy | ].
+   now rewrite Nat.mul_1_l.
+ }
+ apply NQlt_pair; [ easy | easy | ].
+ now rewrite Nat.mul_1_l.
+Qed.
+
+Theorem NQmul_nonneg_cancel_l : ∀ a b, (0 < a → 0 ≤ a * b ↔ 0 ≤ b)%NQ.
+Proof.
+intros * Ha.
+split.
+-intros Hab.
+ apply (NQmul_le_mono_pos_l a); [ easy | ].
+ now rewrite NQmul_comm.
+-intros Hb.
+ replace 0%NQ with (a * 0)%NQ by apply NQmul_0_r.
+ now apply NQmul_le_mono_pos_l.
+Qed.
+
+Theorem NQmul_nonneg_cancel_r : ∀ a b, (0 < b → 0 ≤ a * b ↔ 0 ≤ a)%NQ.
+Proof.
+intros.
+rewrite NQmul_comm.
+now apply NQmul_nonneg_cancel_l.
+Qed.
+
+Theorem NQmul_pos_cancel_l : ∀ a b, (0 < a → 0 < a * b ↔ 0 < b)%NQ.
+Proof.
+intros * Ha.
+split.
+-intros Hab.
+ apply (NQmul_lt_mono_pos_l a); [ easy | ].
+ now rewrite NQmul_comm.
+-intros Hb.
+ replace 0%NQ with (a * 0)%NQ by apply NQmul_0_r.
+ now apply NQmul_lt_mono_pos_l.
+Qed.
+
+Theorem NQmul_pos_cancel_r: ∀ a b, (0 < b → 0 < a * b ↔ 0 < a)%NQ.
+Proof.
+intros.
+rewrite NQmul_comm.
+now apply NQmul_pos_cancel_l.
+Qed.
+
 Require Import Summation.
 
 Definition NQ_ord_ring_def :=
