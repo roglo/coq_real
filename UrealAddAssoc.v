@@ -1672,17 +1672,26 @@ unfold P, d2n, prop_carr, dig in H1.
 unfold "⊕" in H1 at 1.
 rewrite Hu0, Hv0, Nat.add_0_l in H1.
 unfold carry in H1.
+remember (min_n (i + 1) (carry_cases (u ⊕ v) (i + 1))) as nn eqn:Hnn.
 rewrite A_split_first in H1.
 replace (S (i + 1)) with (i + 2) in H1 by easy.
 rewrite Huv20, NQadd_0_l in H1.
+...
 rewrite NQintg_small in H1; [ now rewrite Nat.mod_0_l in H1 | ].
 split; [ now apply NQmul_nonneg_cancel_r | ].
+apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now apply NQlt_0_pair | ].
+rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | easy ].
+rewrite NQmul_1_r, NQmul_1_l, Hr2.
+eapply NQle_lt_trans. {
+  apply (A_upper_bound_for_adds _ _ _ 3).
+  intros p.
+             unfold "⊕"; replace 3 with (1 + 2) by easy.
+             rewrite Nat.mul_add_distr_r, Nat.mul_1_l, Hr2.
+             do 2 rewrite <- Nat.add_assoc.
+             apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+           }
+rewrite Hr2.
 ...
-remember (min_n (i + 1)
-               match LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1)) with
-               | inl _ => 0
-               | inr (exist _ k _) => k
-               end) as n' eqn:Hn'.
 specialize (A_upper_bound_for_adds (u ⊕ v) (i + 2) n' 3) as H7.
 assert (H : ∀ k, (u ⊕ v) (i + 2 + k + 1) ≤ 3 * (rad - 1)). {
              intros p.
