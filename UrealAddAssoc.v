@@ -2231,57 +2231,24 @@ Theorem ureal_add_assoc {r : radix} : ∀ x y z, (x + (y + z) = z + (y + x))%F.
 Proof.
 intros.
 unfold "+"%F.
-do 2 rewrite truc.
 intros i.
-unfold ureal_normalize, fd2n; cbn.
-do 2 rewrite fold_P.
-f_equal.
-apply normalize_eq_compat.
-intros j.
-apply digit_eq_eq.
-do 2 rewrite fold_d2n, fold_P.
-rewrite <- Hugo_Herbelin.
-(* better with <- because I just need P(y⊕z)i be less than rad-1 *)
-Check add_series_assoc.
-unfold "⊕".
-unfold P at 1, d2n.
-Check P_idemp.
-...
-rewrite P_idemp.
-...
-unfold carry at 3.
-...
-rewrite P_idemp.
-...
-unfold P at 1 3, d2n.
-Check add_series_assoc.
-f_equal.
-rewrite add_series_assoc.
-rewrite fold_fd2n.
-...
-intros.
-unfold "+"%F.
-do 2 rewrite truc.
-intros i.
-unfold ureal_normalize, fd2n; cbn.
-apply digit_eq_eq.
-do 2 rewrite fold_P.
+Print P.
 assert (H1 : ∀ x z i,
   prop_carr (d2n (ureal x) ⊕ P (y ⊕ z)%F) i =
   prop_carr (d2n (ureal x) ⊕ (y ⊕ z)%F) i). {
   clear x z i.
   intros x z i.
   apply digit_eq_eq.
-  rewrite fold_d2n, fold_P.
-  rewrite fold_d2n, fold_P.
-Check Hugo_Herbelin.
-...
   apply Hugo_Herbelin.
   -intros k.
    apply digit_le_pred_radix.
   -intros k.
    apply ureal_add_series_le_twice_pred.
 }
+do 2 rewrite truc.
+do 2 rewrite fold_P.
+unfold ureal_normalize, fd2n; cbn.
+apply digit_eq_eq.
 apply normalize_eq_compat.
 intros j.
 do 2 rewrite H1.
