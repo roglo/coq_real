@@ -249,66 +249,6 @@ unfold is_num_9.
 now destruct (Nat.eq_dec (u (i + j)) (rad - 1)).
 Qed.
 
-(* generalizes NQintg_A_le_1_for_add *)
-Theorem NQintg_A_le_for_adds {r : radix} : ∀ u i j m,
-  (∀ k, u (i + k + 1) ≤ m * (rad - 1))
-  → NQintg (A i (min_n i j) u) ≤ m - 1.
-Proof.
-intros * Hmr.
-specialize radix_ge_2 as Hr.
-remember (min_n i j) as n eqn:Hn.
-destruct (zerop m) as [Hm| Hm]. {
-  subst m.
-  unfold A.
-  rewrite all_0_summation_0; [ easy | ].
-  intros k Hk.
-  specialize (Hmr (k - i - 1)).
-  replace (i + (k - i - 1) + 1) with k in Hmr by flia Hk.
-  now apply Nat.le_0_r in Hmr; rewrite Hmr.
-}
-specialize (A_upper_bound_for_adds u i n m Hmr) as H2.
-rewrite NQmul_sub_distr_l, NQmul_1_r in H2.
-apply NQintg_le_mono in H2; [ | easy ].
-eapply le_trans; [ apply H2 | ].
-rewrite (Nat.sub_1_r m).
-apply Nat.lt_le_pred.
-apply NQintg_sub_nat_l_lt.
-split.
--rewrite NQmul_comm.
- replace 0%NQ with (0 * m // 1)%NQ by easy.
- apply NQmul_lt_le_mono_pos; [ easy | easy | | apply NQle_refl ].
- replace 0%NQ with (0 // 1)%NQ by easy.
- apply NQlt_pair; [ easy | easy | now rewrite Nat.mul_1_l ].
--replace (m // 1)%NQ with (m // 1 * 1)%NQ at 2 by apply NQmul_1_r.
- apply NQmul_le_mono_pos_l. 2: {
-   apply NQle_pair_mono_l; split; [ pauto | now apply Nat_pow_ge_1 ].
- }
- replace 0%NQ with (0 // 1)%NQ by easy.
- apply NQlt_pair; [ easy | easy | now rewrite Nat.mul_1_l ].
-Qed.
-
-(* generalizes carry_upper_bound_for_add *)
-Theorem carry_upper_bound_for_adds {r : radix} : ∀ u i m,
-  m ≠ 0
-  → (∀ k, u (i + k + 1) ≤ m * (rad - 1))
-  → ∀ k, carry u (i + k) < m.
-Proof.
-intros * Hm Hur *.
-specialize radix_ge_2 as Hr.
-unfold carry.
-enough (∀ l, NQintg (A (i + k) (min_n (i + k) l) u) < m). {
-  destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [| (j & Hj)]; apply H.
-}
-intros l.
-destruct m; [ easy | ].
-apply -> Nat.succ_le_mono.
-replace m with (S m - 1) by flia.
-apply NQintg_A_le_for_adds.
-intros j.
-replace (i + k + j + 1) with (i + (k + j) + 1) by flia.
-apply Hur.
-Qed.
-
 (* Says that if P(u) ends with an infinity of 9s, and u is
    - limited by 18, then u_i is 8, 9 or 18,
    - limited by 27, then u is 7, 8, 9, 17, 18, 19 or 27,
@@ -2303,6 +2243,15 @@ do 2 rewrite fold_d2n, fold_P.
 rewrite <- Hugo_Herbelin.
 (* better with <- because I just need P(y⊕z)i be less than rad-1 *)
 Check add_series_assoc.
+unfold "⊕".
+unfold P at 1, d2n.
+Check P_idemp.
+...
+rewrite P_idemp.
+...
+unfold carry at 3.
+...
+rewrite P_idemp.
 ...
 unfold P at 1 3, d2n.
 Check add_series_assoc.

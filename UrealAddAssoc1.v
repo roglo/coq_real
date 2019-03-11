@@ -16,6 +16,112 @@ apply Nat.lt_le_pred.
 now apply Nat.mod_upper_bound.
 Qed.
 
+Theorem M_upper_bound {r : radix} : ∀ u i, M u i < rad.
+Proof.
+intros.
+unfold M.
+now apply Nat.mod_upper_bound.
+Qed.
+
+Theorem A_M_upper_bound {r : radix} : ∀ u i n, (A i n (M u) < 1)%NQ.
+Proof.
+intros.
+destruct (le_dec (i + 1) (n - 1)) as [H1| H1].
+-eapply NQle_lt_trans.
+ +apply A_dig_seq_ub; [ | easy ].
+  intros j Hj; apply M_upper_bound.
+ +apply NQsub_lt.
+  replace 0%NQ with (0 // 1)%NQ by easy.
+  apply NQlt_pair; [ easy | pauto | pauto ].
+-apply Nat.nle_gt in H1.
+ unfold A.
+ now rewrite summation_empty.
+Qed.
+
+Theorem NQintg_P_M {r : radix} : ∀ i n u, NQintg (A i n (P u)) = 0.
+Proof.
+intros.
+apply NQintg_small.
+split; [ easy | apply A_M_upper_bound ].
+Qed.
+
+(* generalizes NQintg_A_le_1_for_add *)
+Theorem NQintg_A_le_for_adds {r : radix} : ∀ u i j m,
+  (∀ k, u (i + k + 1) ≤ m * (rad - 1))
+  → NQintg (A i (min_n i j) u) ≤ m - 1.
+Proof.
+intros * Hmr.
+specialize radix_ge_2 as Hr.
+remember (min_n i j) as n eqn:Hn.
+destruct (zerop m) as [Hm| Hm]. {
+  subst m.
+  unfold A.
+  rewrite all_0_summation_0; [ easy | ].
+  intros k Hk.
+  specialize (Hmr (k - i - 1)).
+  replace (i + (k - i - 1) + 1) with k in Hmr by flia Hk.
+  now apply Nat.le_0_r in Hmr; rewrite Hmr.
+}
+specialize (A_upper_bound_for_adds u i n m Hmr) as H2.
+rewrite NQmul_sub_distr_l, NQmul_1_r in H2.
+apply NQintg_le_mono in H2; [ | easy ].
+eapply le_trans; [ apply H2 | ].
+rewrite (Nat.sub_1_r m).
+apply Nat.lt_le_pred.
+apply NQintg_sub_nat_l_lt.
+split.
+-rewrite NQmul_comm.
+ replace 0%NQ with (0 * m // 1)%NQ by easy.
+ apply NQmul_lt_le_mono_pos; [ easy | easy | | apply NQle_refl ].
+ replace 0%NQ with (0 // 1)%NQ by easy.
+ apply NQlt_pair; [ easy | easy | now rewrite Nat.mul_1_l ].
+-replace (m // 1)%NQ with (m // 1 * 1)%NQ at 2 by apply NQmul_1_r.
+ apply NQmul_le_mono_pos_l. 2: {
+   apply NQle_pair_mono_l; split; [ pauto | now apply Nat_pow_ge_1 ].
+ }
+ replace 0%NQ with (0 // 1)%NQ by easy.
+ apply NQlt_pair; [ easy | easy | now rewrite Nat.mul_1_l ].
+Qed.
+
+(* generalizes carry_upper_bound_for_add *)
+Theorem carry_upper_bound_for_adds {r : radix} : ∀ u i m,
+  m ≠ 0
+  → (∀ k, u (i + k + 1) ≤ m * (rad - 1))
+  → ∀ k, carry u (i + k) < m.
+Proof.
+intros * Hm Hur *.
+specialize radix_ge_2 as Hr.
+unfold carry.
+enough (∀ l, NQintg (A (i + k) (min_n (i + k) l) u) < m). {
+  destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [| (j & Hj)]; apply H.
+}
+intros l.
+destruct m; [ easy | ].
+apply -> Nat.succ_le_mono.
+replace m with (S m - 1) by flia.
+apply NQintg_A_le_for_adds.
+intros j.
+replace (i + k + j + 1) with (i + (k + j) + 1) by flia.
+apply Hur.
+Qed.
+
+Theorem P_idemp {r : radix} : ∀ u i, P (P u) i = P u i.
+Proof.
+intros.
+unfold P at 1 3; cbn.
+rewrite Nat.add_mod_idemp_l; [ | easy ].
+rewrite <- (Nat.add_mod_idemp_r _ (carry (P _) _)); [ | easy ].
+f_equal; symmetry.
+rewrite <- (Nat.add_0_r (u _ + _)) at 1.
+f_equal; symmetry.
+rewrite Nat.mod_small; [ apply NQintg_P_M | ].
+apply (lt_le_trans _ 1); [ | easy ].
+replace i with (0 + i) at 1 by easy.
+apply (carry_upper_bound_for_adds _ _ 1); [ easy | ].
+intros k; rewrite Nat.add_0_l, Nat.mul_1_l.
+apply P_le.
+Qed.
+
 Theorem A_lt_le_pred {r : radix} : ∀ i n u m,
   (A i n u < m // rad ^ (n - i - 1))%NQ
   → (A i n u ≤ (m - 1) // rad ^ (n - i - 1))%NQ.
@@ -242,35 +348,6 @@ destruct H5 as [H5| [H5| H5]].
 -exfalso.
  destruct H5 as (l & _ & H5 & _); unfold "⊕" in H5.
  rewrite A3 in H5; flia H5 Hr.
-Qed.
-
-Theorem M_upper_bound {r : radix} : ∀ u i, M u i < rad.
-Proof.
-intros.
-unfold M.
-now apply Nat.mod_upper_bound.
-Qed.
-
-Theorem A_M_upper_bound {r : radix} : ∀ u i n, (A i n (M u) < 1)%NQ.
-Proof.
-intros.
-destruct (le_dec (i + 1) (n - 1)) as [H1| H1].
--eapply NQle_lt_trans.
- +apply A_dig_seq_ub; [ | easy ].
-  intros j Hj; apply M_upper_bound.
- +apply NQsub_lt.
-  replace 0%NQ with (0 // 1)%NQ by easy.
-  apply NQlt_pair; [ easy | pauto | pauto ].
--apply Nat.nle_gt in H1.
- unfold A.
- now rewrite summation_empty.
-Qed.
-
-Theorem NQintg_P_M {r : radix} : ∀ i n u, NQintg (A i n (P u)) = 0.
-Proof.
-intros.
-apply NQintg_small.
-split; [ easy | apply A_M_upper_bound ].
 Qed.
 
 Theorem NQintg_A_slow_incr {r : radix} : ∀ u i,
