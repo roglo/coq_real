@@ -2114,7 +2114,6 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   --destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [Haup| Haup].
    ++now subst; apply (pre_Hugo_Herbelin_81 u).
    ++destruct Haup as (k & Hjk & Hk); subst kup nv nup nuv.
-Abort. (*
 ...
      now apply (pre_Hugo_Herbelin_82 u _ _ _ k).
   --destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [Haup| Haup].
@@ -2138,7 +2137,6 @@ Abort. (*
    ++...
    ++...
 ...
-*)
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, u (i + k) ≤ rad - 1)
@@ -2163,10 +2161,8 @@ rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
 subst v'; rewrite Nat.add_comm; symmetry.
-Admitted. (*
 now apply pre_Hugo_Herbelin.
 Qed.
-*)
 
 Theorem truc {r : radix} : ∀ x u,
   ({| ureal := prop_carr (x ⊕ {| ureal := prop_carr u |}) |} =
