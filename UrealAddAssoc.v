@@ -1659,7 +1659,6 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          replace (2 - 1) with 1 in H6 by easy.
 Check P_999_start.
 About P_999_after_9.
-Abort. (*
 ...
          unfold carry in H1.
          destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1))) as [H6| H6].
@@ -1729,7 +1728,6 @@ assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
 }
 specialize (H1 H); clear H.
 ...
-*)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
