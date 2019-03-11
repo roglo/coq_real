@@ -494,14 +494,14 @@ Qed.
 
 (* Propagation of Carries *)
 
+Definition carry_cases {r : radix} u i :=
+  match LPO_fst (fA_ge_1_ε u i) with
+  | inl _ => 0
+  | inr (exist _ k _) => k
+  end.
+
 Definition carry {r : radix} u i :=
-  let k :=
-    match LPO_fst (fA_ge_1_ε u i) with
-    | inl _ => 0
-    | inr (exist _ k _) => k
-    end
-  in
-  NQintg (A i (min_n i k) u).
+  NQintg (A i (min_n i (carry_cases u i)) u).
 
 Definition prop_carr {r : radix} u i :=
   let d := u i + carry u i in
@@ -1759,7 +1759,7 @@ Theorem prop_carr_add_comm {r : radix} : ∀ x y i,
 Proof.
 intros.
 apply digit_eq_eq; cbn.
-unfold carry.
+unfold carry, carry_cases.
 rewrite ureal_add_series_comm.
 destruct (LPO_fst (fA_ge_1_ε (x ⊕ y)%F i)) as [Hxy| Hxy].
 -setoid_rewrite ureal_add_series_comm.
@@ -2312,7 +2312,7 @@ Proof.
 intros * Hfg *.
 unfold prop_carr.
 apply digit_eq_eq; cbn.
-unfold carry.
+unfold carry, carry_cases.
 rewrite Hfg.
 destruct (LPO_fst (fA_ge_1_ε f i)) as [Hf| Hf].
 -destruct (LPO_fst (fA_ge_1_ε g i)) as [Hg| Hg].
