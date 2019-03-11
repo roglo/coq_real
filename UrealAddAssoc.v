@@ -1719,6 +1719,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          replace (2 - 1) with 1 in H6 by easy.
 Check P_999_start.
 About P_999_after_9.
+Abort. (*
 ...
          unfold carry in H1.
          destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1))) as [H6| H6].
@@ -1788,6 +1789,7 @@ assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
 }
 specialize (H1 H); clear H.
 ...
+*)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
@@ -2172,6 +2174,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   --destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [Haup| Haup].
    ++now subst; apply (pre_Hugo_Herbelin_81 u).
    ++destruct Haup as (k & Hjk & Hk); subst kup nv nup nuv.
+Abort. (*
 ...
      now apply (pre_Hugo_Herbelin_82 u _ _ _ k).
   --destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [Haup| Haup].
@@ -2195,6 +2198,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    ++...
    ++...
 ...
+*)
 
 Theorem Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k : nat, u (i + k) ≤ rad - 1)
@@ -2219,8 +2223,10 @@ rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
 subst v'; rewrite Nat.add_comm; symmetry.
+Admitted. (*
 now apply pre_Hugo_Herbelin.
 Qed.
+*)
 
 Theorem truc {r : radix} : ∀ x u,
   ({| ureal := prop_carr (x ⊕ {| ureal := prop_carr u |}) |} =
@@ -2271,8 +2277,7 @@ destruct (LPO_fst (is_9_strict_after u i)) as [H1| H1].
 Qed.
 
 Theorem add_series_assoc {r : radix} : ∀ x y z i,
-  add_series (λ j, dig (ureal x j)) (y ⊕ z)%F i =
-  add_series (λ j, dig (ureal z j)) (y ⊕ x)%F i.
+  add_series (fd2n x) (y ⊕ z)%F i = add_series (fd2n z) (y ⊕ x)%F i.
 Proof.
 intros.
 unfold add_series, "⊕", fd2n.
@@ -2289,6 +2294,27 @@ unfold "+"%F.
 do 2 rewrite truc.
 intros i.
 unfold ureal_normalize, fd2n; cbn.
+do 2 rewrite fold_P.
+f_equal.
+apply normalize_eq_compat.
+intros j.
+apply digit_eq_eq.
+do 2 rewrite fold_d2n, fold_P.
+rewrite <- Hugo_Herbelin.
+(* better with <- because I just need P(y⊕z)i be less than rad-1 *)
+Check add_series_assoc.
+...
+unfold P at 1 3, d2n.
+Check add_series_assoc.
+f_equal.
+rewrite add_series_assoc.
+rewrite fold_fd2n.
+...
+intros.
+unfold "+"%F.
+do 2 rewrite truc.
+intros i.
+unfold ureal_normalize, fd2n; cbn.
 apply digit_eq_eq.
 do 2 rewrite fold_P.
 assert (H1 : ∀ x z i,
@@ -2297,6 +2323,10 @@ assert (H1 : ∀ x z i,
   clear x z i.
   intros x z i.
   apply digit_eq_eq.
+  rewrite fold_d2n, fold_P.
+  rewrite fold_d2n, fold_P.
+Check Hugo_Herbelin.
+...
   apply Hugo_Herbelin.
   -intros k.
    apply digit_le_pred_radix.

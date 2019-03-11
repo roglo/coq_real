@@ -125,6 +125,9 @@ Definition d2n {r : radix} u (i : nat) := dig (u i).
 
 Hint Resolve digit_lt_radix digit_le_pred_radix.
 
+Theorem fold_d2n {r : radix} : ∀ u i, dig (u i) = d2n u i.
+Proof. easy. Qed.
+
 (* Frac Real *)
 
 Declare Scope ureal_scope.
