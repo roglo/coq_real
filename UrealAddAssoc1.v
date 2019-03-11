@@ -73,20 +73,12 @@ apply NQintg_sub_nat_l_lt.
 split.
 -rewrite NQmul_comm.
  apply NQmul_pos_cancel_l; [ easy | ].
-Search (0 < _ // _)%NQ.
-...
-now apply NQlt_0_pair.
-...
- replace 0%NQ with (0 * m // 1)%NQ by easy.
- apply NQmul_lt_le_mono_pos; [ easy | easy | | apply NQle_refl ].
- replace 0%NQ with (0 // 1)%NQ by easy.
- apply NQlt_pair; [ easy | easy | now rewrite Nat.mul_1_l ].
+ now apply NQlt_0_pair.
 -replace (m // 1)%NQ with (m // 1 * 1)%NQ at 2 by apply NQmul_1_r.
  apply NQmul_le_mono_pos_l. 2: {
    apply NQle_pair_mono_l; split; [ pauto | now apply Nat_pow_ge_1 ].
  }
- replace 0%NQ with (0 // 1)%NQ by easy.
- apply NQlt_pair; [ easy | easy | now rewrite Nat.mul_1_l ].
+ now apply NQlt_0_pair.
 Qed.
 
 (* generalizes carry_upper_bound_for_add *)
@@ -2072,10 +2064,8 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
    rewrite <- NQmul_pair; [ | pauto | pauto ].
    rewrite <- NQmul_sub_distr_l.
    rewrite NQfrac_add_nat_l. 2: {
-     replace 0%NQ with (0 * 0 + 0)%NQ by easy.
-     apply NQadd_le_mono; [ | apply B_ge_0 ].
-     apply NQmul_le_mono_nonneg; [ easy | easy | easy | ].
-     now apply H012r.
+     apply NQadd_nonneg_nonneg; [ | apply B_ge_0 ].
+     apply NQmul_nonneg_cancel_l; [ easy | now apply H012r ].
    }
    specialize (B_upper_bound_for_adds 1 u i j rad) as H1.
    rewrite Nat.mul_1_l, <- Hnij in H1.
