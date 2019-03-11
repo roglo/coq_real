@@ -603,7 +603,7 @@ intros * Hur Hpr k.
 specialize radix_ge_2 as Hr.
 specialize (all_P_9_all_8_9_18 u i Hur Hpr k) as H1.
 assert (Hc : ∃ n, carry u (i + k) = NQintg (A (i + k) (min_n (i + k) n) u)). {
-  unfold carry.
+  unfold carry, carry_cases.
   destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3].
   -exists 0; easy.
   -destruct H3 as (j & Hjj & Hj).
@@ -816,7 +816,7 @@ specialize radix_ge_2 as Hr.
 intros Hur Hi j.
 specialize (all_P_9_all_8_9_18 u i Hur Hi j) as H1.
 assert (Hc : ∃ n, carry u (i + j) = NQintg (A (i + j) (min_n (i + j) n) u)). {
-  unfold carry.
+  unfold carry, carry_cases.
   destruct (LPO_fst (fA_ge_1_ε u (i + j))) as [H3| H3].
   -exists 0; easy.
   -destruct H3 as (k & Hjk & Hk).

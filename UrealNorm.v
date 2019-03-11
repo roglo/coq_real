@@ -423,45 +423,6 @@ Qed.
 *)
 *)
 
-(* ∀ k, ∃ m, { A_k^n } < 1 - 1 / r^(m+1) ∧ (u_k + ⌋ A_k^n ⌊) mod r = r-1 *)
-Theorem eq_all_prop_carr_9_cond {r : radix} : ∀ u i,
-  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
-  → (∀ k, d2n (prop_carr u) (i + k) = rad - 1)
-  → ∀ k, ∃ m,
-  let n := rad * (i + k + m + 3) in
-  let s := n - (i + k) - 1 in
-(**)
-  (NQfrac (A (i + k) n u) < 1 - 1 // rad ^ S m)%NQ ∧
-  (u (i + k) + NQintg (A (i + k) n u)) mod rad = rad - 1.
-(*
-  nA (i + k) n u mod rad ^ s < (rad ^ S m - 1) * rad ^ (s - S m) ∧
-  (u (i + k) + nA (i + k) n u / rad ^ s) mod rad = rad - 1.
-*)
-Proof.
-intros * Hur Hi *.
-specialize (Hi k) as Huni.
-unfold prop_carr, d2n in Huni; simpl in Huni.
-unfold carry in Huni.
-destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H2| H2]; simpl in Huni.
--assert (Hn' : ∀ l, d2n (prop_carr u) ((i + k) + l) = rad - 1). {
-   intros j.
-   replace ((i + k) + j) with (i + (k + j)) by flia.
-   apply Hi.
- }
- exfalso; revert Hn'.
- unfold min_n in Huni; rewrite Nat.add_0_r in Huni.
-Abort. (* à terminer
-...
- apply not_prop_carr_all_9_all_ge_1; [ | easy | easy ].
- intros l.
- replace (i + k + l + 1) with (i + (k + l) + 1) by flia.
- apply Hur.
--destruct H2 as (m & Hjm & Hm).
- apply A_ge_1_false_iff in Hm.
- exists m; easy.
-Qed.
-*)
-
 (*
 Theorem eq_all_prop_carr_9_cond1 {r : radix} : ∀ u i n s j,
   (∀ k, u (i + k) ≤ 2 * (rad - 1))
