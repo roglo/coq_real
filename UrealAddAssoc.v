@@ -1676,6 +1676,11 @@ remember (min_n (i + 1) (carry_cases (u ⊕ v) (i + 1))) as nn eqn:Hnn.
 rewrite A_split_first in H1.
 replace (S (i + 1)) with (i + 2) in H1 by easy.
 rewrite Huv20, NQadd_0_l in H1.
+replace (2 - 1) with 1 in H1 by easy.
+unfold carry in H6.
+remember (min_n (i + 2) (carry_cases (u ⊕ v) (i + 2))) as nn' eqn:Hnn'.
+move nn after nn'; move Hnn after Hnn'.
+move H1 before H6.
 ...
 rewrite NQintg_small in H1; [ now rewrite Nat.mod_0_l in H1 | ].
 split; [ now apply NQmul_nonneg_cancel_r | ].
