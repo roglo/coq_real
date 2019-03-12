@@ -1692,6 +1692,53 @@ rewrite NQintg_add_cond in H6.
 rewrite (NQintg_small (B _ _ _ _)) in H6.
 rewrite (NQfrac_small (B _ _ _ _)) in H6.
 rewrite Nat.add_0_r in H6.
+(**)
+rewrite NQintg_small in H1; [ now rewrite Hr2 in H1 | ].
+split; [ now apply NQmul_nonneg_cancel_r | ].
+rewrite Hr2.
+apply (NQmul_lt_mono_pos_r 2%NQ); [ easy | ].
+rewrite <- NQmul_assoc, NQmul_inv_pair.
+rewrite NQmul_1_r, NQmul_1_l.
+rewrite A_num_den in H6 |-*.
+rewrite NQintg_pair in H6.
+apply NQlt_pair.
+unfold den_A; pauto.
+easy.
+rewrite Nat.mul_1_r.
+specialize (Nat.div_mod (num_A (i + 2) nn (u ⊕ v)) (den_A (i + 2) nn)) as H.
+assert (den_A (i + 2) nn ≠ 0) by (unfold den_A; pauto).
+specialize (H H0); clear H0.
+destruct
+  (NQlt_le_dec
+     (NQfrac (num_A (i + 2) nn (u ⊕ v) // den_A (i + 2) nn) +
+      B (i + 2) nn (u ⊕ v) (2 * (c2 - c1 + 1))) 1) as [H7| H7].
+rewrite Nat.add_0_r in H6.
+rewrite H6, Nat.mul_1_r in H.
+rewrite H.
+remember (den_A (i + 2) nn).
+replace (n0 * 2) with (n0 + n0) by flia; subst n0.
+apply Nat.add_lt_mono_l.
+apply Nat.mod_upper_bound.
+unfold den_A; pauto.
+apply Nat.add_sub_eq_r in H6.
+rewrite <- H6, Nat.mul_0_r, Nat.add_0_l in H.
+remember (den_A (i + 2) nn).
+replace (n0 * 2) with (n0 + n0) by flia; subst n0.
+apply Nat.lt_lt_add_l.
+rewrite H.
+apply Nat.mod_upper_bound.
+unfold den_A; pauto.
+unfold den_A; pauto.
+easy.
+easy.
+split; [ apply B_ge_0 | ].
+eapply NQlt_le_trans.
+rewrite Hnn at 1.
+rewrite min_n_add_l.
+Check B_upper_bound_for_adds.
+...
+apply (B_upper_bound_for_adds 3).
+...
 destruct
   (NQlt_le_dec
      (NQfrac (A (i + 2) nn (u ⊕ v)) +
@@ -1709,7 +1756,24 @@ apply NQlt_pair.
 unfold den_A; pauto.
 easy.
 rewrite Nat.mul_1_r.
-Search (_ / _ = 1).
+specialize (Nat.div_mod (num_A (i + 2) nn (u ⊕ v)) (den_A (i + 2) nn)) as H.
+assert (den_A (i + 2) nn ≠ 0) by (unfold den_A; pauto).
+specialize (H H0); clear H0.
+rewrite H6, Nat.mul_1_r in H.
+rewrite H.
+remember (den_A (i + 2) nn).
+replace (n0 * 2) with (n0 + n0) by flia; subst n0.
+apply Nat.add_lt_mono_l.
+apply Nat.mod_upper_bound.
+unfold den_A; pauto.
+unfold den_A; pauto.
+easy.
+easy.
+apply Nat.add_sub_eq_r in H6.
+rewrite NQintg_small in H1; [ now rewrite Hr2 in H1 | ].
+split; [ now apply NQmul_nonneg_cancel_r | ].
+rewrite Hr2.
+
 ...
 specialize (all_fA_ge_1_ε_NQintg_A i (u ⊕ v)) as H7.
 ...
