@@ -1683,14 +1683,18 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 2))) as [HA| HA]. 2: {
   now rewrite A_ge_1_add_r_true_if in Hp.
 }
 clear HA.
-...
-         remember (min_n (i + 1) (carry_cases (u ⊕ v) (i + 1))) as nn eqn:Hnn.
+replace (i + 2) with (i + 1 + 1) in H6 at 2 by flia.
+rewrite min_n_add_l, Hr2, Nat.mul_1_r in H6.
+         remember (min_n (i + 1) 0) as nn eqn:Hnn.
          rewrite A_split_first in H1. {
            replace (S (i + 1)) with (i + 2) in H1 by easy.
            rewrite Huv20, NQadd_0_l in H1.
+rewrite <- ApB_A in H6.
+...
+(*
            replace (2 - 1) with 1 in H1 by easy.
            unfold carry in H6.
-           remember (min_n (i + 2) (carry_cases (u ⊕ v) (i + 2))) as nn' eqn:Hnn'.
+           remember (min_n (i + 2) 0) as nn' eqn:Hnn'.
            move nn after nn'; move Hnn after Hnn'.
            move H1 before H6.
            replace (i + 2) with (i + 1 + 1) in Hnn' at 1 by flia.
@@ -1731,6 +1735,7 @@ clear HA.
            clear Hc12 Hc21.
            move Hcc at top; subst c2; rename c1 into c.
            rewrite Hr2, Nat.mul_1_r, <- Hnn in Hnn'; subst nn'.
+*)
 ...
  }
 ... suite
