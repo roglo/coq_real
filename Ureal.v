@@ -959,7 +959,7 @@ induction m; intros.
 Qed.
 
 (* generalizes A_upper_bound_for_add *)
-Theorem A_upper_bound_for_adds {r : radix} (rg := nat_ord_ring) : ∀ u i n m,
+Theorem A_upper_bound_for_adds {r : radix} (rg := nat_ord_ring) : ∀ m u i n,
   (∀ k, u (i + k + 1) ≤ m * (rad - 1))
   → (A i n u ≤ (m // 1 * (1 - 1 // rad ^ (n - i - 1))))%NQ.
 Proof.
@@ -1339,7 +1339,7 @@ Proof.
 intros * Hm Hin Hu.
 rewrite B_of_A; [ | easy ].
 remember (n - i - 1) as s eqn:Hs.
-specialize (A_upper_bound_for_adds u (n - 1) (n + l) m) as H1.
+specialize (A_upper_bound_for_adds m u (n - 1) (n + l)) as H1.
 replace (n + l - (n - 1) - 1) with l in H1 by flia Hin.
 assert (H : ∀ k : nat, u (n - 1 + k + 1) ≤ m * (rad - 1)). {
   intros.

@@ -47,7 +47,7 @@ split; [ easy | apply A_M_upper_bound ].
 Qed.
 
 (* generalizes NQintg_A_le_1_for_add *)
-Theorem NQintg_A_le_for_adds {r : radix} : ∀ u i j m,
+Theorem NQintg_A_le_for_adds {r : radix} : ∀ m u i j,
   (∀ k, u (i + k + 1) ≤ m * (rad - 1))
   → NQintg (A i (min_n i j) u) ≤ m - 1.
 Proof.
@@ -63,7 +63,7 @@ destruct (zerop m) as [Hm| Hm]. {
   replace (i + (k - i - 1) + 1) with k in Hmr by flia Hk.
   now apply Nat.le_0_r in Hmr; rewrite Hmr.
 }
-specialize (A_upper_bound_for_adds u i n m Hmr) as H2.
+specialize (A_upper_bound_for_adds m u i n Hmr) as H2.
 rewrite NQmul_sub_distr_l, NQmul_1_r in H2.
 apply NQintg_le_mono in H2; [ | easy ].
 eapply le_trans; [ apply H2 | ].
@@ -82,7 +82,7 @@ split.
 Qed.
 
 (* generalizes carry_upper_bound_for_add *)
-Theorem carry_upper_bound_for_adds {r : radix} : ∀ u i m,
+Theorem carry_upper_bound_for_adds {r : radix} : ∀ m u i,
   m ≠ 0
   → (∀ k, u (i + k + 1) ≤ m * (rad - 1))
   → ∀ k, carry u (i + k) < m.
@@ -115,7 +115,7 @@ f_equal; symmetry.
 rewrite Nat.mod_small; [ apply NQintg_P_M | ].
 apply (lt_le_trans _ 1); [ | easy ].
 replace i with (0 + i) at 1 by easy.
-apply (carry_upper_bound_for_adds _ _ 1); [ easy | ].
+apply (carry_upper_bound_for_adds 1); [ easy | ].
 intros k; rewrite Nat.add_0_l, Nat.mul_1_l.
 apply P_le.
 Qed.

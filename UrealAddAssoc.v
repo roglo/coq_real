@@ -290,7 +290,7 @@ destruct (eq_nat_dec (u i) (m * (rad - 1))) as [H1| H1]; [ easy | ].
 specialize (Hpu 0) as H2.
 rewrite Nat.add_0_r in H2.
 unfold P, d2n, prop_carr in H2; cbn in H2.
-specialize (carry_upper_bound_for_adds u i m Hm) as H3.
+specialize (carry_upper_bound_for_adds m u i Hm) as H3.
 assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
   intros; rewrite <- Nat.add_assoc; apply Hur.
 }
@@ -435,7 +435,7 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
  specialize (Hpu (j + 1)) as H1.
  rewrite Nat.add_assoc in H1.
  unfold P, d2n, prop_carr in H1; cbn in H1.
- specialize (carry_upper_bound_for_adds u i 1) as H2.
+ specialize (carry_upper_bound_for_adds 1 u i) as H2.
  assert (H : 1 ≠ 0) by easy.
  specialize (H2 H); clear H.
  assert (H : ∀ k, u (i + k + 1) ≤ 1 * (rad - 1)). {
@@ -1765,6 +1765,20 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              rewrite Hnn; unfold min_n.
              destruct rad; [ easy | cbn; flia ].
            }
+rewrite NQmul_add_distr_r in H1.
+rewrite NQintg_add_cond in H1.
+rewrite NQintg_small in H1. 2: {
+  rewrite Hr2.
+  split; [ now apply NQmul_nonneg_cancel_r | ].
+  apply (NQmul_lt_mono_pos_r 2%NQ); [ easy | ].
+  rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | easy ].
+  rewrite NQmul_1_r, NQmul_1_l.
+  eapply NQle_lt_trans.
+  -apply (A_upper_bound_for_adds _ _ _ 3).
+...
+  specialize (A_upper_bound_for_adds) as H.
+
+...
 (*
            assert (HB : (0 ≤ B (i + 2) nn (u ⊕ v) (2 * (c2 - c1 + 1)) < 1)%NQ). {
                split; [ easy | ].
@@ -1796,6 +1810,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              rewrite (NQfrac_small (B _ _ _ _)) in H6; [ | easy ].
              rewrite Nat.add_0_r in H6.
 *)
+idtac.
 ...
              rewrite NQintg_small in H1; [ now rewrite Hr2 in H1 | ].
              split. {
