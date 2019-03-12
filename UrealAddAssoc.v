@@ -1668,6 +1668,22 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            now rewrite Hu0, Hv0, Nat.add_0_l in H1.
          }
          unfold carry in H1.
+(**)
+unfold carry_cases in H1.
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1))) as [HA| HA]. 2: {
+  destruct HA as (p & Hjp & Hp).
+  specialize (Hauv (1 + p)).
+  now rewrite A_ge_1_add_r_true_if in Hp.
+}
+clear HA.
+unfold carry, carry_cases in H6.
+destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 2))) as [HA| HA]. 2: {
+  destruct HA as (p & Hjp & Hp).
+  specialize (Hauv (2 + p)).
+  now rewrite A_ge_1_add_r_true_if in Hp.
+}
+clear HA.
+...
          remember (min_n (i + 1) (carry_cases (u ⊕ v) (i + 1))) as nn eqn:Hnn.
          rewrite A_split_first in H1. {
            replace (S (i + 1)) with (i + 2) in H1 by easy.
