@@ -1683,7 +1683,6 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            remember (carry_cases (u ⊕ v) (i + 2)) as c2.
            move c2 before c1.
            move Heqc2 before Heqc1.
-(**)
            destruct (lt_dec c1 c2) as [Hc12| Hc12]. {
              rewrite Heqc1, Heqc2 in Hc12.
              unfold carry_cases in Hc12.
