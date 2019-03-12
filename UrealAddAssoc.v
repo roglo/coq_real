@@ -1827,6 +1827,14 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              rewrite Hnn; unfold min_n.
              destruct rad; [ easy | cbn; flia ].
            }
+           destruct (NQlt_le_dec (A (i + 2) (nn + 2 * (c1 - c2 - 1)) (u ⊕ v) * (1 // rad)%NQ) 1) as [H7| H7]. {
+             now rewrite Nat.mod_0_l in H1.
+           }
+           rewrite <- ApB_A in H7. 2: {
+             rewrite Hnn; unfold min_n.
+             destruct rad; [ easy | cbn; flia ].
+           }
+           rewrite NQmul_add_distr_r in H7.
 ...
  }
 ... suite
