@@ -1693,7 +1693,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                destruct rad; [ easy | cbn; flia ].
              }
              assert (HB : (0 ≤ B (i + 2) nn (u ⊕ v) (2 * (c2 - c1 + 1)) < 1)%NQ). {
-               split; [ apply B_ge_0 | ].
+               split; [ easy | ].
                eapply NQle_lt_trans. {
                  apply (B_upper_bound_for_adds' 3); [ | | ]. 2: {
                    rewrite Hnn; unfold min_n.
@@ -1757,17 +1757,17 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              unfold den_A; pauto.
            }
            apply Nat.nle_gt in Hcc.
-           replace c1 with (c2 + (c1 - c2)) in Hnn by flia Hcc.
-...
-             rewrite min_n_add, <- Hnn, Hr2 in Hnn'.
-             rewrite <- Nat.add_assoc, <- Nat.mul_add_distr_l in Hnn'.
-             subst nn'.
-             rewrite <- ApB_A in H6. 2: {
-               rewrite Hnn; unfold min_n.
-               destruct rad; [ easy | cbn; flia ].
-             }
-             assert (HB : (0 ≤ B (i + 2) nn (u ⊕ v) (2 * (c2 - c1 + 1)) < 1)%NQ). {
-               split; [ apply B_ge_0 | ].
+           replace c1 with (c2 + (c1 - c2 - 1) + 1) in Hnn by flia Hcc.
+           do 2 rewrite min_n_add in Hnn.
+           rewrite Nat.add_shuffle0, <- Hnn', Hr2 in Hnn.
+           subst nn; rename nn' into nn; rename Hnn' into Hnn.
+           rewrite <- ApB_A in H1. 2: {
+             rewrite Hnn; unfold min_n.
+             destruct rad; [ easy | cbn; flia ].
+           }
+(*
+           assert (HB : (0 ≤ B (i + 2) nn (u ⊕ v) (2 * (c2 - c1 + 1)) < 1)%NQ). {
+               split; [ easy | ].
                eapply NQle_lt_trans. {
                  apply (B_upper_bound_for_adds' 3); [ | | ]. 2: {
                    rewrite Hnn; unfold min_n.
@@ -1791,16 +1791,22 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                 rewrite Hnn; unfold min_n; rewrite Hr2.
                 cbn; flia.
              }
-             rewrite NQintg_add_cond in H6; [ | easy | easy ].
+             rewrite NQintg_add_cond in H1; [ | easy | easy ].
              rewrite (NQintg_small (B _ _ _ _)) in H6; [ | easy ].
              rewrite (NQfrac_small (B _ _ _ _)) in H6; [ | easy ].
              rewrite Nat.add_0_r in H6.
+*)
+...
              rewrite NQintg_small in H1; [ now rewrite Hr2 in H1 | ].
-             split; [ now apply NQmul_nonneg_cancel_r | ].
+             split. {
+               apply NQmul_nonneg_cancel_r; [ easy | ].
+               now apply NQadd_nonneg_nonneg.
+             }
              rewrite Hr2.
              apply (NQmul_lt_mono_pos_r 2%NQ); [ easy | ].
              rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | easy ].
              rewrite NQmul_1_r, NQmul_1_l.
+...
              rewrite A_num_den in H6 |-*.
              rewrite NQintg_pair in H6; [ | unfold den_A; pauto ].
              apply NQlt_pair; [ unfold den_A; pauto | easy | ].
@@ -2188,7 +2194,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      rewrite Hnv; unfold min_n.
      destruct rad; [ easy | cbn; flia ].
    }
-   apply NQeq_add_0 in H4; [ | easy | apply B_ge_0 ].
+   apply NQeq_add_0 in H4; [ | easy | easy ].
    clear H1; destruct H4 as (H1, H4).
    destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
   --subst kuv; rewrite <- Hnv in Hnuv; subst nuv.

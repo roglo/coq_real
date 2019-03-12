@@ -594,8 +594,6 @@ replace 0%NQ with (Σ (j = i + 1, n - 1), 0)%NQ.
 -now apply all_0_summation_0.
 Qed.
 
-Hint Resolve A_ge_0.
-
 Theorem B_ge_0 {r : radix} : ∀ i n u l, (0 ≤ B i n u l)%NQ.
 Proof.
 intros.
@@ -609,6 +607,8 @@ replace 0%NQ with (Σ (j = n, n + l - 1), 0)%NQ.
  apply Nat.le_0_l.
 -now apply all_0_summation_0.
 Qed.
+
+Hint Resolve A_ge_0 B_ge_0.
 
 Theorem B_lt_1 {r : radix} : ∀ i n u,
   (∀ k, u (i + k) ≤ 3 * (rad - 1))
@@ -1467,11 +1467,11 @@ apply A_ge_1_true_iff in H3.
 rewrite <- Hn in H3.
 apply NQnlt_ge; intros H2.
 rewrite <- ApB_A in H2; [ | easy ].
-rewrite NQfrac_add in H2; [ | easy | apply B_ge_0 ].
+rewrite NQfrac_add in H2; [ | easy | easy ].
 assert (HB : ∀ l, (0 ≤ B i n u l < 1)%NQ). {
   clear l H2 Hlr; intros l.
   rewrite Hn.
-  split; [ apply B_ge_0 | ].
+  split; [ easy | ].
   eapply NQlt_le_trans.
   -apply (B_upper_bound_for_adds 3).
    +split; [ pauto | ].
@@ -1490,14 +1490,13 @@ destruct (NQlt_le_dec (NQfrac (A i n u) + B i n u l) 1) as [H4| H4].
    apply NQadd_le_mono; [ easy | apply HB ].
  }
  apply NQnle_gt in H2; apply H2; clear H2.
- eapply NQle_trans; [ apply H3 | ].
- apply NQle_add_r, B_ge_0.
+ eapply NQle_trans; [ apply H3 | now apply NQle_add_r ].
 -specialize (H1 (k + 1)) as H5.
  apply A_ge_1_true_iff in H5.
  rewrite min_n_add, Nat.mul_1_r in H5.
  rewrite <- Hn in H5.
  rewrite <- ApB_A in H5; [ | easy ].
- rewrite NQfrac_add in H5; [ | easy | apply B_ge_0 ].
+ rewrite NQfrac_add in H5; [ | easy | easy ].
  rewrite (NQfrac_small (B _ _ _ _)) in H5; [ | easy ].
  destruct (NQlt_le_dec (NQfrac (A i n u) + B i n u rad) 1) as [H6| H6].
  +rewrite NQfrac_small in H5. 2: {
@@ -1617,8 +1616,7 @@ intros * HfA.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) HfA k) as H.
 eapply NQle_trans; [ apply H | ].
 apply NQle_sub_le_add_l.
-rewrite NQsub_diag.
-apply B_ge_0.
+now rewrite NQsub_diag.
 Qed.
 
 Theorem fApB_upper_bound_for_add {r : radix} : ∀ u i,
