@@ -1592,15 +1592,14 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
    rewrite NQfrac_small in H5; [ | split; [ easy | now apply eq_NQintg_0 ] ].
    rewrite NQfrac_small in Huv; [ | split; [ easy | now apply eq_NQintg_0 ] ].
    rewrite NQfrac_small in Hj; [ | split; [ easy | now apply eq_NQintg_0 ] ].
-   specialize (P_999_start (u ⊕ v) (i + 1) 3) as H1.
-   assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
-     intros p.
+   assert (Huv3 : ∀ k l, (u ⊕ v) (i + k + l) ≤ 3 * (rad - 1)). {
+     intros p q.
      unfold "⊕"; replace 3 with (1 + 2) by easy.
      rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
      rewrite <- Nat.add_assoc.
      apply Nat.add_le_mono; [ apply Hu | apply Hv ].
    }
-   specialize (H1 H); clear H.
+   specialize (P_999_start (u ⊕ v) (i + 1) 3 (Huv3 _)) as H1.
    assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
      specialize (all_fA_ge_1_ε_P_999 _ _ Hauv) as H.
      intros; rewrite Nat.add_shuffle0; apply H.
@@ -1644,11 +1643,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            assert (H : 3 ≠ 0) by easy.
            specialize (H6 H); clear H.
            assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3 * (rad - 1)). {
-             intros p.
-             unfold "⊕"; replace 3 with (1 + 2) by easy.
-             rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-             rewrite <- Nat.add_assoc, Hr2.
-             apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+             intros p; apply Huv3.
            }
            now specialize (H6 H).
          }
@@ -1681,6 +1676,49 @@ unfold carry in H6.
 remember (min_n (i + 2) (carry_cases (u ⊕ v) (i + 2))) as nn' eqn:Hnn'.
 move nn after nn'; move Hnn after Hnn'.
 move H1 before H6.
+replace (i + 2) with (i + 1 + 1) in Hnn' at 1 by flia.
+rewrite min_n_add_l in Hnn'.
+remember (carry_cases (u ⊕ v) (i + 1)) as c1.
+remember (carry_cases (u ⊕ v) (i + 2)) as c2.
+move c2 before c1.
+move Heqc2 before Heqc1.
+destruct (le_dec c1 c2) as [Hcc| Hcc].
+replace c2 with (c1 + (c2 - c1)) in Hnn' by flia Hcc.
+rewrite min_n_add, <- Hnn, Hr2 in Hnn'.
+rewrite <- Nat.add_assoc, <- Nat.mul_add_distr_l in Hnn'.
+subst nn'.
+rewrite <- ApB_A in H6.
+rewrite NQintg_add_cond in H6.
+rewrite (NQintg_small (B _ _ _ _)) in H6.
+rewrite (NQfrac_small (B _ _ _ _)) in H6.
+rewrite Nat.add_0_r in H6.
+destruct
+  (NQlt_le_dec
+     (NQfrac (A (i + 2) nn (u ⊕ v)) +
+      B (i + 2) nn (u ⊕ v) (2 * (c2 - c1 + 1))) 1) as [H7| H7].
+rewrite Nat.add_0_r in H6.
+rewrite NQintg_small in H1; [ now rewrite Hr2 in H1 | ].
+split; [ now apply NQmul_nonneg_cancel_r | ].
+rewrite Hr2.
+apply (NQmul_lt_mono_pos_r 2%NQ); [ easy | ].
+rewrite <- NQmul_assoc, NQmul_inv_pair.
+rewrite NQmul_1_r, NQmul_1_l.
+rewrite A_num_den in H6 |-*.
+rewrite NQintg_pair in H6.
+apply NQlt_pair.
+unfold den_A; pauto.
+easy.
+rewrite Nat.mul_1_r.
+Search (_ / _ = 1).
+...
+specialize (all_fA_ge_1_ε_NQintg_A i (u ⊕ v)) as H7.
+...
+all_fA_ge_1_ε_NQintg_A:
+  ∀ (r : radix) (i : nat) (u : nat → nat),
+    (∀ k : nat, u (i + k) ≤ 3 * (rad - 1))
+    → (∀ k : nat, fA_ge_1_ε u i k = true)
+      → ∀ k l : nat,
+          NQintg (A i (min_n i k + l) u) = NQintg (A i (min_n i k) u)
 ...
 rewrite NQintg_small in H1; [ now rewrite Nat.mod_0_l in H1 | ].
 split; [ now apply NQmul_nonneg_cancel_r | ].

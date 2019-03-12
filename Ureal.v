@@ -1422,6 +1422,15 @@ rewrite <- Nat.mul_add_distr_l.
 f_equal; flia.
 Qed.
 
+Theorem min_n_add_l {r : radix} : ∀ i j k,
+  min_n (i + j) k = min_n i k + rad * j.
+Proof.
+intros.
+unfold min_n.
+rewrite <- Nat.mul_add_distr_l.
+f_equal; flia.
+Qed.
+
 Theorem B_le_mono_r {r : radix} : ∀ i n u l,
   l ≤ rad
   → (B i n u l ≤ B i n u rad)%NQ.
