@@ -37,6 +37,7 @@ Notation "a // b" := (NQ_of_pair a b) : NQ_scope.
 Notation "0" := NQ0 : NQ_scope.
 Notation "1" := (1 // 1)%NQ : NQ_scope.
 Notation "2" := (2 // 1)%NQ : NQ_scope.
+Notation "3" := (3 // 1)%NQ : NQ_scope.
 
 Definition NQnum x :=
   match x with

@@ -1687,7 +1687,31 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          rewrite A_split_first in H1. {
            replace (S (i + 1)) with (i + 2) in H1 by easy.
            rewrite Huv20, NQadd_0_l in H1.
-           rewrite <- ApB_A in H6.
+           rewrite Nat.mod_small in H1. 2: {
+             remember (A (i + 2) nn (u ⊕ v)) as m eqn:Hm.
+             symmetry in Hm.
+             destruct (NQlt_le_dec m 2) as [Hm2| Hm2]. {
+               rewrite NQintg_small; [ easy | ].
+               rewrite Hr2; split.
+               -apply NQmul_nonneg_cancel_r; [ easy | ].
+                now rewrite <- Hm.
+               -apply (NQlt_le_trans _ (2 * 1 // 2)%NQ).
+                +now apply NQmul_lt_mono_pos_r.
+                +rewrite <- NQpair_mul_r, Nat.mul_1_r.
+                 rewrite NQpair_diag; [ apply NQle_refl | easy ].
+             }
+             destruct (NQlt_le_dec m 3) as [Hm3| Hm3]. {
+               rewrite (NQintg_less_small 1); [ easy | ].
+               rewrite Hr2.
+               split.
+...
+             rewrite (Nat_mod_less_small 1) in H1. 2: {
+               rewrite Hr2, Nat.mul_1_l.
+...
+           rewrite <- ApB_A in H6. 2: {
+             rewrite Hnn; unfold min_n.
+             destruct rad; [ easy | cbn; flia ].
+           }
 ...
 (*
            replace (2 - 1) with 1 in H1 by easy.
