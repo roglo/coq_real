@@ -1740,7 +1740,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
        rewrite NQmul_1_r in H5.
        rewrite NQmul_pair_den_num, NQadd_assoc, Hr2 in H5; [ | easy ].
        rewrite Hv0, NQadd_0_r in H5.
-       destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 0) as [Huv2| Huv2]. {
+       destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 0) as [Huv20| Huv20]. {
          exfalso.
          assert (Hu3' : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
            intros p; replace (i + p) with (i + p + 0) by easy; apply Huv3.
@@ -1748,7 +1748,14 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          assert (Huv1 : (u ⊕ v) (i + 1) = 0) by (unfold "⊕"; flia Hu0 Hv0).
          now apply (rad_2_sum_3_all_9_not_0_0 (u ⊕ v) i).
        }
-       rewrite <- A_additive in H5.
+       destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 1) as [Huv21| Huv21]. {
+         rewrite <- A_additive in H5.
+         rewrite A_split_first in H5. 2: {
+           rewrite Hnk; unfold min_n.
+           destruct rad; [ easy | cbn; flia ].
+         }
+         replace (S (i + 1)) with (i + 2) in H5 by easy.
+         rewrite Huv21 in H5.
 ...
  }
 ... suite
