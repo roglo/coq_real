@@ -1684,98 +1684,55 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          replace (i + 2) with (i + 1 + 1) in H6 at 2 by flia.
          rewrite min_n_add_l, Hr2, Nat.mul_1_r in H6.
          remember (min_n (i + 1) 0) as nn eqn:Hnn.
-         rewrite A_split_first in H1. {
-           replace (S (i + 1)) with (i + 2) in H1 by easy.
-           rewrite Huv20, NQadd_0_l in H1.
-           rewrite Nat.mod_small in H1. 2: {
-             remember (A (i + 2) nn (u ⊕ v)) as m eqn:Hm.
-             symmetry in Hm.
-             destruct (NQlt_le_dec m 2) as [Hm2| Hm2]. {
-               rewrite NQintg_small; [ easy | ].
-               rewrite Hr2; split.
-               -apply NQmul_nonneg_cancel_r; [ easy | ].
-                now rewrite <- Hm.
-               -apply (NQlt_le_trans _ (2 * 1 // 2)%NQ).
-                +now apply NQmul_lt_mono_pos_r.
-                +rewrite <- NQpair_mul_r, Nat.mul_1_r.
-                 rewrite NQpair_diag; [ apply NQle_refl | easy ].
-             }
-(*
-             destruct (NQlt_le_dec m 3) as [Hm3| Hm3]. {
-               rewrite (NQintg_less_small 1); [ easy | ].
-               rewrite Hr2.
-               split.
-               -apply (NQmul_le_mono_pos_r 2%NQ); [ easy | ].
-                rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | easy ].
-                now rewrite NQmul_1_l, NQmul_1_r.
-               -apply (NQmul_lt_mono_pos_r 2%NQ); [ easy | ].
-                rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | easy ].
-                rewrite NQmul_1_r.
-                apply (NQlt_le_trans _ 3); [ easy | ].
-                rewrite NQmul_add_distr_r, NQmul_1_l.
-                rewrite <- NQpair_add_l.
-                apply NQle_pair_mono_r; cbn; pauto.
-             }
-*)
-             rewrite <- ApB_A in H6. 2: {
-               rewrite Hnn; unfold min_n.
-               destruct rad; [ easy | cbn; flia ].
-             }
-             rewrite Hm in H6.
-             rewrite NQintg_add in H6; [ | now rewrite <- Hm | easy ].
-             move H6 at bottom.
-             assert (H : NQintg m ≥ 2). {
-               replace 2 with (NQintg 2) by easy.
-               now apply NQintg_le_mono.
-             }
-             flia H6 H.
+         rewrite A_split_first in H1. 2: {
+           rewrite Hnn; unfold min_n.
+           destruct rad; [ easy | cbn; flia ].
+         }
+         replace (S (i + 1)) with (i + 2) in H1 by easy.
+         rewrite Huv20, NQadd_0_l in H1.
+         rewrite <- ApB_A in H6. 2: {
+           rewrite Hnn; unfold min_n.
+           destruct rad; [ easy | cbn; flia ].
+         }
+         remember (A (i + 2) nn (u ⊕ v)) as m eqn:Hm.
+         symmetry in Hm.
+         rewrite Nat.mod_small in H1. 2: {
+           destruct (NQlt_le_dec m 2) as [Hm2| Hm2]. {
+             rewrite NQintg_small; [ easy | ].
+             rewrite Hr2; split.
+             -apply NQmul_nonneg_cancel_r; [ easy | ].
+              now rewrite <- Hm.
+             -apply (NQlt_le_trans _ (2 * 1 // 2)%NQ).
+              +now apply NQmul_lt_mono_pos_r.
+              +rewrite <- NQpair_mul_r, Nat.mul_1_r.
+               rewrite NQpair_diag; [ apply NQle_refl | easy ].
            }
-...
-(*
-           replace (2 - 1) with 1 in H1 by easy.
-           unfold carry in H6.
-           remember (min_n (i + 2) 0) as nn' eqn:Hnn'.
-           move nn after nn'; move Hnn after Hnn'.
-           move H1 before H6.
-           replace (i + 2) with (i + 1 + 1) in Hnn' at 1 by flia.
-           rewrite min_n_add_l in Hnn'.
-           remember (carry_cases (u ⊕ v) (i + 1)) as c1.
-           remember (carry_cases (u ⊕ v) (i + 2)) as c2.
-           move c2 before c1.
-           move Heqc2 before Heqc1.
-           destruct (lt_dec c1 c2) as [Hc12| Hc12]. {
-             rewrite Heqc1, Heqc2 in Hc12.
-             unfold carry_cases in Hc12.
-             move Hauv at bottom.
-             destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 2))) as [H7| H7].
-             -destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1))) as [H8| H8]; [ easy | ].
-              destruct H8 as (p & Hjp & Hp).
-              specialize (Hauv (1 + p)).
-              now rewrite A_ge_1_add_r_true_if in Hp.
-             -destruct H7 as (p & Hjp & Hp).
-              specialize (Hauv (2 + p)).
-              now rewrite A_ge_1_add_r_true_if in Hp.
+           rewrite NQintg_add in H6; [ | now rewrite <- Hm | easy ].
+           move H6 at bottom.
+           assert (H : NQintg m ≥ 2). {
+             replace 2 with (NQintg 2) by easy.
+             now apply NQintg_le_mono.
            }
-           destruct (lt_dec c2 c1) as [Hc21| Hc21]. {
-             rewrite Heqc1, Heqc2 in Hc21.
-             unfold carry_cases in Hc21.
-             move Hauv at bottom.
-             destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 2))) as [H7| H7].
-             -destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1))) as [H8| H8]; [ easy | ].
-              destruct H8 as (p & Hjp & Hp).
-              specialize (Hauv (1 + p)).
-              now rewrite A_ge_1_add_r_true_if in Hp.
-             -destruct H7 as (p & Hjp & Hp).
-              specialize (Hauv (2 + p)).
-              now rewrite A_ge_1_add_r_true_if in Hp.
-           }
-           apply Nat.nlt_ge in Hc12.
-           apply Nat.nlt_ge in Hc21.
-           assert (Hcc : c1 = c2) by now apply Nat.le_antisymm.
-           clear Hc12 Hc21.
-           move Hcc at top; subst c2; rename c1 into c.
-           rewrite Hr2, Nat.mul_1_r, <- Hnn in Hnn'; subst nn'.
-*)
+           flia H6 H.
+         }
+         assert (H : NQintg m ≥ 2). {
+           replace 2 with (NQintg 2) by easy.
+           apply NQintg_le_mono; [ easy | ].
+           apply NQnlt_ge; intros H.
+           rewrite NQintg_small in H1; [ easy | ].
+           rewrite Hr2; split.
+           -apply NQmul_nonneg_cancel_r; [ easy | ].
+            now rewrite <- Hm.
+           -apply (NQlt_le_trans _ (2 * 1 // 2)%NQ).
+            +now apply NQmul_lt_mono_pos_r.
+            +rewrite <- NQpair_mul_r, Nat.mul_1_r.
+             rewrite NQpair_diag; [ apply NQle_refl | easy ].
+         }
+         rewrite NQintg_add in H6; [ | now rewrite <- Hm | easy ].
+         move H6 at bottom.
+         flia H6 H.
+       }
+       rewrite <- A_additive in H5.
 ...
  }
 ... suite
