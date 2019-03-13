@@ -1667,29 +1667,27 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            unfold "⊕" in H1 at 1.
            now rewrite Hu0, Hv0, Nat.add_0_l in H1.
          }
-         unfold carry in H1.
-(**)
-unfold carry_cases in H1.
-destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1))) as [HA| HA]. 2: {
-  destruct HA as (p & Hjp & Hp).
-  specialize (Hauv (1 + p)).
-  now rewrite A_ge_1_add_r_true_if in Hp.
-}
-clear HA.
-unfold carry, carry_cases in H6.
-destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 2))) as [HA| HA]. 2: {
-  destruct HA as (p & Hjp & Hp).
-  specialize (Hauv (2 + p)).
-  now rewrite A_ge_1_add_r_true_if in Hp.
-}
-clear HA.
-replace (i + 2) with (i + 1 + 1) in H6 at 2 by flia.
-rewrite min_n_add_l, Hr2, Nat.mul_1_r in H6.
+         unfold carry, carry_cases in H1.
+         destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 1))) as [HA| HA]. 2: {
+           destruct HA as (p & Hjp & Hp).
+           specialize (Hauv (1 + p)).
+           now rewrite A_ge_1_add_r_true_if in Hp.
+         }
+         clear HA.
+         unfold carry, carry_cases in H6.
+         destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) (i + 2))) as [HA| HA]. 2: {
+           destruct HA as (p & Hjp & Hp).
+           specialize (Hauv (2 + p)).
+           now rewrite A_ge_1_add_r_true_if in Hp.
+         }
+         clear HA.
+         replace (i + 2) with (i + 1 + 1) in H6 at 2 by flia.
+         rewrite min_n_add_l, Hr2, Nat.mul_1_r in H6.
          remember (min_n (i + 1) 0) as nn eqn:Hnn.
          rewrite A_split_first in H1. {
            replace (S (i + 1)) with (i + 2) in H1 by easy.
            rewrite Huv20, NQadd_0_l in H1.
-rewrite <- ApB_A in H6.
+           rewrite <- ApB_A in H6.
 ...
 (*
            replace (2 - 1) with 1 in H1 by easy.
