@@ -1704,9 +1704,17 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                rewrite (NQintg_less_small 1); [ easy | ].
                rewrite Hr2.
                split.
-...
-             rewrite (Nat_mod_less_small 1) in H1. 2: {
-               rewrite Hr2, Nat.mul_1_l.
+               -apply (NQmul_le_mono_pos_r 2%NQ); [ easy | ].
+                rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | easy ].
+                now rewrite NQmul_1_l, NQmul_1_r.
+               -apply (NQmul_lt_mono_pos_r 2%NQ); [ easy | ].
+                rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | easy ].
+                rewrite NQmul_1_r.
+                apply (NQlt_le_trans _ 3); [ easy | ].
+                rewrite NQmul_add_distr_r, NQmul_1_l.
+                rewrite <- NQpair_add_l.
+                apply NQle_pair_mono_r; cbn; pauto.
+             }
 ...
            rewrite <- ApB_A in H6. 2: {
              rewrite Hnn; unfold min_n.
