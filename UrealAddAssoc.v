@@ -1700,6 +1700,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                 +rewrite <- NQpair_mul_r, Nat.mul_1_r.
                  rewrite NQpair_diag; [ apply NQle_refl | easy ].
              }
+(*
              destruct (NQlt_le_dec m 3) as [Hm3| Hm3]. {
                rewrite (NQintg_less_small 1); [ easy | ].
                rewrite Hr2.
@@ -1715,10 +1716,19 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                 rewrite <- NQpair_add_l.
                 apply NQle_pair_mono_r; cbn; pauto.
              }
-...
-           rewrite <- ApB_A in H6. 2: {
-             rewrite Hnn; unfold min_n.
-             destruct rad; [ easy | cbn; flia ].
+*)
+             rewrite <- ApB_A in H6. 2: {
+               rewrite Hnn; unfold min_n.
+               destruct rad; [ easy | cbn; flia ].
+             }
+             rewrite Hm in H6.
+             rewrite NQintg_add in H6; [ | now rewrite <- Hm | easy ].
+             move H6 at bottom.
+             assert (H : NQintg m ≥ 2). {
+               replace 2 with (NQintg 2) by easy.
+               now apply NQintg_le_mono.
+             }
+             flia H6 H.
            }
 ...
 (*
