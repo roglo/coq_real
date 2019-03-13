@@ -1718,10 +1718,10 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
        apply NQnlt_ge in Hup; apply Hup; clear Hup.
        apply Nat.eq_add_0 in Huv0.
        destruct Huv0 as (Hu0, Hv0).
-       assert (Hik : i + 1 ≤ nk - 1). {
+       assert (Hik : i + 2 ≤ nk - 1). {
          rewrite Hnk; unfold min_n; destruct rad; [ easy | cbn; flia ].
        }
-       setoid_rewrite A_split_first; [ | easy | easy ].
+       setoid_rewrite A_split_first; [ | flia Hik | flia Hik ].
        rewrite <- Nat.add_1_r, Hu0, NQadd_0_l.
        apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now rewrite Hr2 | ].
        rewrite NQmul_add_distr_r, NQmul_1_l.
@@ -1730,7 +1730,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
        rewrite <- NQmul_assoc, NQmul_inv_pair, NQmul_1_r; [ | easy | easy ].
        rewrite NQmul_pair_den_num, NQadd_assoc, Hr2; [ | easy ].
        move H5 at bottom.
-       setoid_rewrite A_split_first in H5; [ | easy | easy ].
+       setoid_rewrite A_split_first in H5; [ | flia Hik | flia Hik ].
        rewrite <- Nat.add_1_r, Hu0, NQadd_0_l in H5.
        apply (NQmul_lt_mono_pos_r (rad // 1)%NQ) in H5; [ | now rewrite Hr2 ].
        rewrite NQmul_add_distr_r, NQmul_1_l in H5.
@@ -1750,10 +1750,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
        }
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 1) as [Huv21| Huv21]. {
          rewrite <- A_additive in H5.
-         rewrite A_split_first in H5. 2: {
-           rewrite Hnk; unfold min_n.
-           destruct rad; [ easy | cbn; flia ].
-         }
+         rewrite A_split_first in H5; [ | flia Hik ].
          replace (S (i + 1)) with (i + 2) in H5 by easy.
          rewrite Huv21 in H5.
 ...
