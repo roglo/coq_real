@@ -1590,6 +1590,35 @@ Proof.
 intros m u i.
 specialize radix_ge_2 as Hr.
 intros Hum Haut *.
+(**)
+destruct (zerop m) as [Hm| Hm]. {
+  specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) Haut 0) as H.
+  rewrite Nat.pow_1_r in H; unfold A in H.
+  rewrite all_0_summation_0 in H.
+  -exfalso; apply NQnlt_ge in H; apply H; clear H.
+   apply NQlt_0_sub.
+   apply NQlt_pair_mono_l; [ | pauto ].
+   split; [ pauto | flia Hr ].
+  -intros j Hj.
+   replace j with (i + (j - i)) by flia Hj.
+   specialize (Hum (j - i)) as H1.
+   rewrite Hm in H1.
+   now apply Nat.le_0_r in H1; rewrite H1.
+}
+assert (Hc : ∀ k, carry u (i + k) < m). {
+  intros j.
+  apply carry_upper_bound_for_adds; [ flia Hm | ].
+  intros p; rewrite <- Nat.add_assoc; apply Hum.
+}
+remember (carry u (i + k)) as ck eqn:Hck.
+remember (carry u (i + k + 1)) as ck1 eqn:Hck1.
+move ck1 before ck.
+symmetry in Hck, Hck1.
+destruct ck.
+-rewrite Nat.mul_1_l.
+ destruct ck1.
+ +rewrite Nat.add_0_l.
+...
 unfold carry.
 rewrite (min_n_add_l (i + k)).
 rewrite Nat.mul_1_r.
@@ -1605,15 +1634,15 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1].
   }
   replace (S (i + k)) with (i + k + 1) by apply Nat.add_1_r.
   rewrite NQintg_add_cond; cycle 1. {
-    admit.
+    ...
   } {
-    admit.
+    ...
   }
   destruct (NQlt_le_dec (NQfrac (u (i + k + 1) // rad) + NQfrac (A (i + k + 1) n u * (1 // rad)%NQ)) 1) as [H1| H1].
   *rewrite Nat.add_0_r.
-   rewrite <- ApB_A. 2: { admit. }
+   rewrite <- ApB_A. 2: { .... }
    remember (A (i + k + 1) n u) as a eqn:Ha.
-   rewrite NQintg_add_cond; [ | admit | easy ].
+   rewrite NQintg_add_cond; [ | ... | easy ].
    destruct (NQlt_le_dec (NQfrac a + NQfrac (B (i + k + 1) n u rad)) 1) as [H2| H2].
   --rewrite Nat.add_0_r.
 ...

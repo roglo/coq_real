@@ -1667,6 +1667,28 @@ destruct c.
  now apply Nat.mul_le_mono_l.
 Qed.
 
+Theorem NQlt_pair_mono_l : ∀ a b c, 0 < a < b → 0 < c → (c // b < c // a)%NQ.
+Proof.
+intros * Hab Hc.
+apply NQlt_pair; [ flia Hab | flia Hab | ].
+rewrite Nat.mul_comm.
+now apply Nat.mul_lt_mono_pos_r.
+Qed.
+
+Theorem NQlt_pair_mono_r : ∀ a b c, a < b → (a // c < b // c)%NQ.
+Proof.
+intros * Hab.
+destruct c.
+-do 2 rewrite NQden_0.
+ apply NQlt_pair; [ easy | easy | ].
+ rewrite Nat.mul_comm.
+ apply Nat.mul_lt_mono_pos_l; [ pauto | easy ].
+-apply NQlt_pair; [ easy | easy | ].
+ rewrite Nat.mul_comm.
+ apply Nat.mul_lt_mono_pos_l; [ | easy ].
+ apply Nat.lt_0_succ.
+Qed.
+
 Theorem NQpair_inv_mul : ∀ a b c, b ≠ 0 → c ≠ 0 →
   (a // (b * c))%NQ = (a // b * 1 // c)%NQ.
 Proof.
