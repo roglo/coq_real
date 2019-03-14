@@ -1619,6 +1619,35 @@ destruct (lt_dec a rad) as [Har| Har]. {
     now rewrite Hj in H1.
   }
   clear H1.
+  unfold carry in Ha.
+  rewrite A_split_first. 2: {
+    unfold min_n; destruct rad; [ easy | cbn; flia ].
+  }
+  replace (S (i + k)) with (i + k + 1) by flia.
+  rewrite NQintg_add_cond; [ | | ].
+  apply Nat.eq_add_0.
+  split. {
+    apply Nat.eq_add_0.
+    split. {
+      apply NQintg_small.
+      split. {
+        replace 0%NQ with (0 // 1)%NQ by easy.
+        apply NQle_pair; [ easy | easy | apply Nat.le_0_l ].
+      }
+      apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now apply NQlt_0_pair | ].
+      rewrite NQmul_pair_den_num; [ | easy ].
+      rewrite NQmul_1_l.
+      apply NQlt_pair_mono_r; flia Ha Hr.
+    }
+    apply NQintg_small.
+    split; [ now apply NQmul_nonneg_cancel_r | ].
+    apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now apply NQlt_0_pair | ].
+    rewrite <- NQmul_assoc.
+    rewrite NQmul_pair_den_num; [ | easy ].
+    rewrite NQmul_1_r, NQmul_1_l.
+...
+  remember (NQfrac (A (i + k + 1) (min_n (i + k) 0) u * 1 // rad)%NQ) as a.
+  destruct (NQlt_le_dec (NQfrac (u (i + k + 1) // rad) + a) 1) as [H1| H1]. {
 ...
 unfold carry at 1, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3]. {
