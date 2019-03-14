@@ -1689,15 +1689,19 @@ exfalso; rewrite Nat.add_0_r in H3.
 clear Haj; move H4 after Huv.
 destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
 -rewrite Nat.add_0_r in H2; move H5 before H4.
+(*
  apply A_ge_1_false_iff in Hj.
  rewrite <- Hnj in Hj.
  move Hj after Hk.
+*)
  destruct (zerop (NQintg (A i n v))) as [Hzn| Hzn]. {
    rewrite Hzn in H2, H3; clear Ha0.
    rewrite NQfrac_small in H4; [ | split; [ easy | now apply eq_NQintg_0 ] ].
    rewrite NQfrac_small in H5; [ | split; [ easy | now apply eq_NQintg_0 ] ].
    rewrite NQfrac_small in Huv; [ | split; [ easy | now apply eq_NQintg_0 ] ].
+(*
    rewrite NQfrac_small in Hj; [ | split; [ easy | now apply eq_NQintg_0 ] ].
+*)
    assert (Huv3 : ∀ k l, (u ⊕ v) (i + k + l) ≤ 3 * (rad - 1)). {
      intros p q.
      unfold "⊕"; replace 3 with (1 + 2) by easy.
@@ -1713,7 +1717,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
    specialize (H1 H); clear H.
    destruct (lt_dec rad 3) as [H| Hr3]. {
      assert (Hr2 : rad = 2) by flia H Hr; clear H H1.
-     rewrite Hr2 in Hu, Hv, Hk, Hj; cbn in Hu, Hv.
+     rewrite Hr2 in Hu, Hv, Hk(*, Hj*); cbn in Hu, Hv.
      destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) 0) as [Huv0| Huv0]. {
        apply NQnlt_ge in Hup; apply Hup; clear Hup.
        apply Nat.eq_add_0 in Huv0.
@@ -1756,6 +1760,8 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
 (* normalement, ici, tout le reste des u⊕v, à partir de i+3, sont des 3 ;
    du coup, u n'aurait que des 1 et v que des 2, ce qui serait contradictoire
    avec Hj *)
+assert (Huv33 : ∀ k, (u ⊕ v) (i + k + 3) = 3). {
+  intros p.
 ...
  }
 ... suite
