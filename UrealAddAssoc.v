@@ -1585,12 +1585,30 @@ Proof. easy. Qed.
 Theorem Vincent_Tourneur {r : radix} : ∀ m u i,
   (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k, u (i + k) = (carry u (i + k) + 1) * rad - (carry u (i + k + 1) + 1).
+  → ∀ k,
+     u (i + k + 1) = (carry u (i + k) + 1) * rad - (carry u (i + k + 1) + 1).
 Proof.
 intros m u i.
 specialize radix_ge_2 as Hr.
 intros Hum Haut *.
 (**)
+specialize (fA_ge_1_ε_999 u (i + k)) as Hp.
+unfold P, d2n, prop_carr, dig in Hp.
+assert (H : ∀ j, fA_ge_1_ε u (i + k) j = true). {
+  intros j; apply A_ge_1_add_r_true_if, Haut.
+}
+specialize (Hp H); clear H.
+specialize (Nat.div_mod (u (i + k + 1) + carry u (i + k + 1)) rad) as H1.
+specialize (H1 radix_ne_0).
+rewrite Hp in H1.
+symmetry; apply Nat.add_sub_eq_r.
+rewrite Nat.add_assoc, H1, Nat.mul_comm.
+rewrite Nat.add_sub_assoc; [ | easy ].
+rewrite Nat.sub_add; [ | flia Hr ].
+replace rad with (1 * rad) at 3 by flia.
+rewrite <- Nat.mul_add_distr_r; f_equal; f_equal.
+symmetry.
+...
 destruct (zerop m) as [Hm| Hm]. {
   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) Haut 0) as H.
   rewrite Nat.pow_1_r in H; unfold A in H.
@@ -1618,6 +1636,28 @@ destruct ck.
 -rewrite Nat.mul_1_l.
  destruct ck1.
  +rewrite Nat.add_0_l.
+  unfold carry in Hck.
+  rewrite A_split_first in Hck. 2: {
+    unfold min_n; destruct rad; [ easy | cbn; flia ].
+  }
+  replace (S (i + k)) with (i + k + 1) in Hck by flia.
+  rewrite NQintg_add_cond in Hck; [ | | ].
+  apply Nat.eq_add_0 in Hck.
+  destruct Hck as (Hck, H3).
+  apply Nat.eq_add_0 in Hck.
+  destruct Hck as (H1, H2).
+  apply eq_NQintg_0 in H1; [ | ].
+  rewrite NQfrac_small in H3; [ | split ]; [ | | easy ].
+  apply eq_NQintg_0 in H2; [ | ].
+  rewrite NQfrac_small in H3; [ | split ]; [ | | easy ].
+  destruct
+    (NQlt_le_dec
+       ((u (i + k + 1)%nat // rad)%NQ +
+        (A (i + k + 1)
+           (min_n (i + k) (carry_cases u (i + k))) u * 1 // rad)%NQ) 1)
+    as [H4| H4]; [ | easy ].
+  clear H3.
+  specialize (A_upper_bound_for_adds m u (i + k + 1)) as H3.
 ...
 unfold carry.
 rewrite (min_n_add_l (i + k)).
