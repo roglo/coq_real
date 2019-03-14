@@ -1608,8 +1608,17 @@ remember (u (i + k + 1) + carry u (i + k + 1)) as a eqn:Ha.
 symmetry; symmetry in Ha.
 destruct (lt_dec a rad) as [Har| Har]. {
   rewrite Nat.mod_small in H1; [ | easy ].
-  rewrite H1 in Har.
+  rewrite H1 in Har, Ha; clear H2.
   rewrite H1, Nat.div_small; [ clear Har | easy ].
+  clear a H1.
+  unfold carry, carry_cases.
+  destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]. 2: {
+    destruct H1 as (j & Hjj & Hj).
+    specialize (Haut (k + j)) as H1.
+    apply A_ge_1_add_r_true_if in H1.
+    now rewrite Hj in H1.
+  }
+  clear H1.
 ...
 unfold carry at 1, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3]. {
