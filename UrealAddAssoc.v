@@ -1578,6 +1578,13 @@ destruct H4 as [H4| [H4| H4]].
   now destruct (le_dec (i + k + 1) (nj - 1)).
 Qed.
 
+Theorem Vincent_Tourneur {r : radix} : ∀ m u i,
+  (∀ k, u (i + k) ≤ m * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k, u (i + k) = (carry u (i + k) + 1) * rad - (carry u (i + k + 1) + 1).
+Proof.
+...
+
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -1799,6 +1806,22 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                  destruct c; [ flia Hpuv0 | flia Hc3 ].
                }
                move H before Hpuv0; clear Hpuv0; rename H into Hpuv0.
+assert (H42 : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
+  intros p.
+  apply A_ge_1_add_r_true_if, Hauv.
+}
+...
+specialize (Vincent_Tourneur 3 (u ⊕ v) (i + 1) (Huv3 1) H42) as H1.
+specialize (H1 0) as H10.
+rewrite Nat.add_0_r, Huv0, Hpuv0 in H10.
+replace (i + 1 + 1) with (i + 2) in H10 by flia.
+symmetry in H10.
+apply Nat.sub_0_le in H10.
+rewrite Hr2 in H10.
+replace ((1 + 1) * 2) with (3 + 1) in H10 by easy.
+apply Nat.add_le_mono_r in H10.
+exfalso; apply Nat.nlt_ge in H10; apply H10; clear H10.
+apply Hc3.
 ...
                unfold carry in Hpuv0.
                rewrite A_split_first in Hpuv0. 2: {
