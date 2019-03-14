@@ -1615,8 +1615,32 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3]. {
   unfold carry, carry_cases.
   destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H3| H3]. {
     clear H3.
+...
     rewrite <- (NQmul_pair_den_num _ 1); [ | easy ].
     rewrite <- NQmul_add_distr_r.
+    rewrite (min_n_add_l (i + k)), Nat.mul_1_r.
+    rewrite <- ApB_A. 2: {
+      unfold min_n; destruct rad; [ easy | cbn; flia ].
+    }
+    remember (A (i + k + 1) (min_n (i + k) 0) u) as a eqn:Ha.
+    remember (u (i + k + 1)) as ui eqn:Hui.
+    rewrite NQintg_add_cond; [ | now rewrite Ha | easy ].
+    do 2 rewrite Nat.add_assoc.
+...
+    rewrite <- ApB_A. 2: {
+      unfold min_n; destruct rad; [ easy | cbn; flia ].
+    }
+    rewrite NQintg_add_cond; [ | easy | easy ].
+    remember (A (i + k + 1) (min_n (i + k) 0) u) as a eqn:Ha.
+...
+Check all_fA_ge_1_ε_NQintg_A'.
+...
+all_fA_ge_1_ε_NQintg_A:
+  ∀ (r : radix) (i : nat) (u : nat → nat),
+    (∀ k : nat, u (i + k) ≤ 3 * (rad - 1))
+    → (∀ k : nat, fA_ge_1_ε u i k = true)
+      → ∀ k l : nat, NQintg (A i (min_n i k + l) u) = NQintg (A i (min_n i k) u)
+Search (NQintg (A _ _ _)).
 ...
 destruct (zerop m) as [Hm| Hm]. {
   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) Haut 0) as H.
