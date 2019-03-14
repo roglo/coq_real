@@ -1645,6 +1645,20 @@ destruct (lt_dec a rad) as [Har| Har]. {
     rewrite <- NQmul_assoc.
     rewrite NQmul_pair_den_num; [ | easy ].
     rewrite NQmul_1_r, NQmul_1_l.
+    rewrite min_n_add_l in Ha.
+    rewrite <- ApB_A in Ha; [ | ].
+    rewrite NQintg_add in Ha; [ | easy | easy ].
+    assert
+      (Har :
+       NQintg (A (i + k + 1) (min_n (i + k)
+          (carry_cases u (i + k + 1))) u) ≤ rad - 1)
+      by flia Ha.
+...
+Search (_ -> NQintg _ = NQintg _).
+rewrite all_fA_ge_1_ε_NQintg_A' in H.
+...
+Check A_upper_bound_for_adds.
+Search (A _ _ _ < _)%NQ.
 ...
   remember (NQfrac (A (i + k + 1) (min_n (i + k) 0) u * 1 // rad)%NQ) as a.
   destruct (NQlt_le_dec (NQfrac (u (i + k + 1) // rad) + a) 1) as [H1| H1]. {
