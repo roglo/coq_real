@@ -1592,22 +1592,31 @@ intros m u i.
 specialize radix_ge_2 as Hr.
 intros Hum Haut *.
 (**)
-specialize (fA_ge_1_ε_999 u (i + k)) as Hp.
-unfold P, d2n, prop_carr, dig in Hp.
-assert (H : ∀ j, fA_ge_1_ε u (i + k) j = true). {
-  intros j; apply A_ge_1_add_r_true_if, Haut.
-}
-specialize (Hp H); clear H.
-specialize (Nat.div_mod (u (i + k + 1) + carry u (i + k + 1)) rad) as H1.
-specialize (H1 radix_ne_0).
-rewrite Hp in H1.
+specialize (all_fA_ge_1_ε_P_999 u i Haut) as Hp.
+specialize (Hp k) as H1.
+unfold P, d2n, prop_carr, dig in H1.
+specialize (Nat.div_mod (u (i + k + 1) + carry u (i + k + 1)) rad) as H2.
+specialize (H2 radix_ne_0).
+rewrite H1 in H2.
 symmetry; apply Nat.add_sub_eq_r.
-rewrite Nat.add_assoc, H1, Nat.mul_comm.
+rewrite Nat.add_assoc, H2, Nat.mul_comm.
 rewrite Nat.add_sub_assoc; [ | easy ].
 rewrite Nat.sub_add; [ | flia Hr ].
 replace rad with (1 * rad) at 3 by flia.
 rewrite <- Nat.mul_add_distr_r; f_equal; f_equal.
 symmetry.
+unfold carry at 1, carry_cases.
+destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3]. {
+  clear H3.
+  rewrite A_split_first. 2: {
+    unfold min_n; destruct rad; [ easy | cbn; flia ].
+  }
+  replace (S (i + k)) with (i + k + 1) by flia.
+  unfold carry, carry_cases.
+  destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H3| H3]. {
+    clear H3.
+    rewrite <- (NQmul_pair_den_num _ 1); [ | easy ].
+    rewrite <- NQmul_add_distr_r.
 ...
 destruct (zerop m) as [Hm| Hm]. {
   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) Haut 0) as H.
