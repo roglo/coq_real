@@ -1753,6 +1753,9 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          rewrite A_split_first in H5; [ | flia Hik ].
          replace (S (i + 1)) with (i + 2) in H5 by easy.
          rewrite Huv21 in H5.
+(* normalement, ici, tout le reste des u⊕v, à partir de i+3, sont des 3 ;
+   du coup, u n'aurait que des 1 et v que des 2, ce qui serait contradictoire
+   avec Hj *)
 ...
  }
 ... suite
