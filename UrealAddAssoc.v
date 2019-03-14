@@ -1578,11 +1578,60 @@ destruct H4 as [H4| [H4| H4]].
   now destruct (le_dec (i + k + 1) (nj - 1)).
 Qed.
 
+Theorem fold_carry {r : radix} : ∀ u i,
+  NQintg (A i (min_n i (carry_cases u i)) u) = carry u i.
+Proof. easy. Qed.
+
 Theorem Vincent_Tourneur {r : radix} : ∀ m u i,
   (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, u (i + k) = (carry u (i + k) + 1) * rad - (carry u (i + k + 1) + 1).
 Proof.
+intros m u i.
+specialize radix_ge_2 as Hr.
+intros Hum Haut *.
+unfold carry.
+rewrite (min_n_add_l (i + k)).
+rewrite Nat.mul_1_r.
+unfold carry_cases.
+destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1].
+-clear H1.
+ destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H2| H2].
+ +clear H2.
+  remember (min_n (i + k) 0) as n eqn:Hn.
+  rewrite A_split_first. 2: {
+    rewrite Hn; unfold min_n.
+    destruct rad; [ easy | cbn; flia ].
+  }
+  replace (S (i + k)) with (i + k + 1) by apply Nat.add_1_r.
+  rewrite NQintg_add_cond; cycle 1. {
+    admit.
+  } {
+    admit.
+  }
+  destruct (NQlt_le_dec (NQfrac (u (i + k + 1) // rad) + NQfrac (A (i + k + 1) n u * (1 // rad)%NQ)) 1) as [H1| H1].
+  *rewrite Nat.add_0_r.
+   rewrite <- ApB_A. 2: { admit. }
+   remember (A (i + k + 1) n u) as a eqn:Ha.
+   rewrite NQintg_add_cond; [ | admit | easy ].
+   destruct (NQlt_le_dec (NQfrac a + NQfrac (B (i + k + 1) n u rad)) 1) as [H2| H2].
+  --rewrite Nat.add_0_r.
+...
+Search (NQintg (B _ _ _ _)).
+Search (B _ _ _ _ < _)%NQ.
+rewrite Hn.
+specialize (B_upper_bound_for_adds m u (i + k + 1) 0 rad) as H3.
+rewrite (NQintg_small (B _ _ _ _)). 2: {
+  split; [ easy | ].
+  eapply NQlt_le_trans.
+  apply H3.
+...
+Search (A _ _ _ < _)%NQ.
+Check A_upper_bound_for_adds.
+specialize (A_upper_bound_for_adds m u (i + k + 1) n) as H2.
+...
+rewrite A_split_first.
+rewrite fold_carry.
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
