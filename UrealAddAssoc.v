@@ -1720,8 +1720,9 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
      rewrite Hr2 in Hu, Hv, Hk(*, Hj*); cbn in Hu, Hv.
      destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) 0) as [Huv0| Huv0]. {
        apply NQnlt_ge in Hup; apply Hup; clear Hup.
-       apply Nat.eq_add_0 in Huv0.
-       destruct Huv0 as (Hu0, Hv0).
+       generalize Huv0; intros H.
+       apply Nat.eq_add_0 in H.
+       destruct H as (Hu0, Hv0).
        assert (Hik : i + 2 ≤ nk - 1). {
          rewrite Hnk; unfold min_n; destruct rad; [ easy | cbn; flia ].
        }
@@ -1798,6 +1799,19 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                  destruct c; [ flia Hpuv0 | flia Hc3 ].
                }
                move H before Hpuv0; clear Hpuv0; rename H into Hpuv0.
+...
+               unfold carry in Hpuv0.
+               rewrite A_split_first in Hpuv0. 2: {
+                 unfold min_n; destruct rad; [ easy | cbn; flia ].
+               }
+               replace (S (i + 1)) with (i + 2) in Hpuv0 by easy.
+               rewrite Huv21, Hr2 in Hpuv0.
+               rewrite A_split_first in Hpuv0. 2: {
+                 unfold min_n; destruct rad; [ easy | cbn; flia ].
+               }
+               replace (S (i + 2)) with (i + 3) in Hpuv0 by easy.
+               rewrite Huv30, Hr2 in Hpuv0.
+               rewrite NQadd_0_l in Hpuv0.
 ...
            specialize (Hpuv (p + 2)) as H1.
            replace (i + (p + 2) + 1) with (i + p + 3) in H1 by flia.
