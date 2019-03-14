@@ -1604,7 +1604,13 @@ rewrite Nat.add_sub_assoc; [ | easy ].
 rewrite Nat.sub_add; [ | flia Hr ].
 replace rad with (1 * rad) at 3 by flia.
 rewrite <- Nat.mul_add_distr_r; f_equal; f_equal.
-symmetry.
+remember (u (i + k + 1) + carry u (i + k + 1)) as a eqn:Ha.
+symmetry; symmetry in Ha.
+destruct (lt_dec a rad) as [Har| Har]. {
+  rewrite Nat.mod_small in H1; [ | easy ].
+  rewrite H1 in Har.
+  rewrite H1, Nat.div_small; [ clear Har | easy ].
+...
 unfold carry at 1, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3]. {
   clear H3.
