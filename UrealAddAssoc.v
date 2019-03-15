@@ -1630,7 +1630,12 @@ destruct (lt_dec a rad) as [Har| Har]. {
     unfold min_n; destruct rad; [ easy | cbn; flia ].
   }
   replace (S (i + k)) with (i + k + 1) by flia.
-  rewrite NQintg_add_cond; [ | | ].
+  rewrite NQintg_add_cond; cycle 1. {
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQle_pair; [ easy | easy | cbn; apply Nat.le_0_l ].
+  } {
+    now apply NQmul_nonneg_cancel_r.
+  }
   apply Nat.eq_add_0.
   split. {
     apply Nat.eq_add_0.
@@ -1664,95 +1669,22 @@ destruct (lt_dec a rad) as [Har| Har]. {
     apply NQlt_pair; [ unfold den_A; pauto | easy | ].
     rewrite Nat.mul_1_r.
     apply (Nat.add_le_mono_r _ _ 1) in Har.
-...
+    rewrite Nat.sub_add in Har; [ | easy ].
+    apply (Nat.mul_le_mono_l _ _ (den_A j n)) in Har.
+    eapply Nat.lt_le_trans; [ | apply Har ].
+    rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
     specialize (Nat.div_mod (num_A j n u) (den_A j n)) as H2.
     assert (H : den_A j n ≠ 0) by (unfold den_A; pauto).
     specialize (H2 H); clear H.
-    rewrite H2.
-    apply Nat.lt_add_lt_sub_l.
-    rewrite <- Nat.mul_sub_distr_l.
-...
-    assert (Har : NQintg (A j n u) < rad) by flia Ha Hr.
-    rewrite A_num_den in Har |-*.
-    rewrite NQintg_pair in Har; [ | unfold den_A; pauto ].
-    apply NQlt_pair; [ unfold den_A; pauto | easy | ].
-    rewrite Nat.mul_1_r.
-    apply (Nat.mul_lt_mono_pos_l (den_A j n)) in Har. 2: {
-      unfold den_A; apply Nat.neq_0_lt_0; pauto.
-    }
-    eapply Nat.le_lt_trans; [ | apply Har ].
-...
-    assert (Har : NQintg (A j n u) ≤ rad - 1) by flia Ha.
-    rewrite A_num_den in Har |-*.
-    rewrite NQintg_pair in Har; [ | unfold den_A; pauto ].
-    apply NQlt_pair; [ unfold den_A; pauto | easy | ].
-    rewrite Nat.mul_1_r.
-Search (_ / _ ≤ _).
-assert (H : num_A j n u / den
-...
-    apply (Nat.mul_le_mono_l _ _ (den_A j n)) in Har.
-    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Har.
-    apply (Nat.add_le_mono_r _ _ (den_A j n)) in Har.
-    rewrite Nat.sub_add in Har.
-Search (_ ≤ _ - _ → _).
-...
-    specialize (Nat.div_mod (num_A j n u) (den_A j n)) as H2.
-    assert (H : den_A j n ≠ 0) by (unfold den_A; pauto).
-    specialize (H2 H); clear H.
-    rewrite H2.
-...
-    apply Nat.mul_lt_mono_pos_l.
-...
-    apply (Nat.mul_le_mono_l _ _ (den_A j n)) in Har.
-    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Har.
-Search (_ ≤ _ - _ → _).
-....
-    apply (Nat.mul_lt_mono_pos_r (num_A j n u / den_A j n)). {
-...
-      apply Nat.div_str_pos.
-      split; [ unfold den_A; apply Nat.neq_0_lt_0; pauto | ].
-...
-      specialize (A_ge_0 j n u) as H.
-      rewrite A_num_den in H.
-      replace 0%NQ with (0 // 1)%NQ in H by easy.
-      apply NQle_pair in H; [ | easy | unfold den_A; pauto ].
-      split; [ apply Nat.neq_0_lt_0 | ].
-...
-    remember (A (i + k + 1) n u) as b eqn:Hb.
-    assert (Har : NQintg b ≤ rad - 1) by flia Ha.
-    rewrite Hb, A_num_den in Har.
-    rewrite NQintg_pair in Har; [ | unfold den_A; pauto ].
-    rewrite Hb, A_num_den.
-    apply NQlt_pair; [ unfold den_A; pauto | easy | ].
-    rewrite Nat.mul_1_r.
-    apply (Nat.mul_le_mono_l _ _ (NQden b)) in Har.
-...
-    unfold NQintg in Har.
-    rewrite (NQnum_den b); [ | ].
-    apply NQlt_pair; [ easy | easy | ].
-    rewrite Nat.mul_1_r.
-    apply (Nat.mul_le_mono_l _ _ (NQden b)) in Har.
-    apply (Nat.mul_lt_mono_pos_r (NQnum b / NQden b)). {
-      apply Nat.div_str_pos.
-      split; [ apply Nat.neq_0_lt_0, NQden_neq_0 | ].
-      rewrite Hb.
-...
-
-    specialize (Nat.div_mod (NQnum b) (NQden b)) as H.
-    specialize (H (NQden_neq_0 _)).
-    rewrite H.
-
-
-Search (_ / _ ≤ _).
-...
-    apply (Nat.mul_le_mono_r _ _ (NQden b)) in Har.
-Check all_fA_ge_1_ε_NQintg_A.
-...
-Search (_ -> NQintg _ = NQintg _).
-rewrite all_fA_ge_1_ε_NQintg_A' in H.
-...
-Check A_upper_bound_for_adds.
-Search (A _ _ _ < _)%NQ.
+    rewrite H2 at 1.
+    apply Nat.add_lt_mono_l.
+    apply Nat.mod_upper_bound; unfold den_A; pauto.
+  }
+  destruct
+    (NQlt_le_dec
+      (NQfrac (u (i + k + 1) // rad) +
+       NQfrac (A (i + k + 1) (min_n (i + k) 0) u * (1 // rad)%NQ)) 1)
+    as [H2| H2]; [ easy | exfalso ].
 ...
   remember (NQfrac (A (i + k + 1) (min_n (i + k) 0) u * 1 // rad)%NQ) as a.
   destruct (NQlt_le_dec (NQfrac (u (i + k + 1) // rad) + a) 1) as [H1| H1]. {
