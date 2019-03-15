@@ -8,6 +8,8 @@ Require Import Utf8 Arith NPeano Psatz PeanoNat.
 Require Import Misc Summation Ureal UrealNorm NQ UrealAddAssoc1.
 Set Nested Proofs Allowed.
 
+Ltac min_n_ge := unfold min_n; destruct rad; [ easy | cbn; flia ].
+
 Theorem pred_rad_lt_rad {r : radix} : rad - 1 < rad.
 Proof.
 specialize radix_ge_2 as H; lia.
@@ -36,9 +38,7 @@ rewrite NQfrac_small. 2: {
 }
 apply NQsub_le_mono; [ apply NQle_refl | ].
 apply NQle_pair_mono_l; split; [ apply Nat.neq_0_lt_0; pauto | ].
-apply Nat.pow_le_mono_r; [ easy | ].
-unfold min_n.
-destruct rad; [ easy | cbn; flia ].
+apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
 Qed.
 
 Theorem NQintg_A_M {r : radix} : ∀ i n u, NQintg (A i n (M u)) = 0.
@@ -448,16 +448,10 @@ clear HA.
 replace (i + 2) with (i + 1 + 1) in H6 at 2 by flia.
 rewrite min_n_add_l, Hr2, Nat.mul_1_r in H6.
 remember (min_n (i + 1) 0) as nn eqn:Hnn.
-rewrite A_split_first in H1. 2: {
-  rewrite Hnn; unfold min_n.
-  destruct rad; [ easy | cbn; flia ].
-}
+rewrite A_split_first in H1 by (rewrite Hnn; min_n_ge).
 replace (S (i + 1)) with (i + 2) in H1 by easy.
 rewrite Hu2, NQadd_0_l in H1.
-rewrite <- ApB_A in H6. 2: {
-  rewrite Hnn; unfold min_n.
-  destruct rad; [ easy | cbn; flia ].
-}
+rewrite <- ApB_A in H6 by (rewrite Hnn; min_n_ge).
 remember (A (i + 2) nn u) as m eqn:Hm.
 symmetry in Hm.
 rewrite Nat.mod_small in H1. 2: {
@@ -561,16 +555,14 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
    unfold carry in Hcu.
    apply eq_NQintg_0 in Hcu; [ | easy ].
    apply NQnle_gt in Hcu; apply Hcu; clear Hcu.
-   rewrite A_split_first.
-   -rewrite <- (Nat.add_1_r (i + j)).
-    eapply NQle_trans. 2: {
-      apply NQle_add_r.
-      now apply NQmul_nonneg_cancel_r.
-    }
-    apply NQle_pair; [ easy | easy | ].
-    now do 2 rewrite Nat.mul_1_l.
-   -unfold min_n.
-    destruct rad; [ easy | cbn; flia ].
+   rewrite A_split_first; [ | min_n_ge ].
+   rewrite <- (Nat.add_1_r (i + j)).
+   eapply NQle_trans. 2: {
+     apply NQle_add_r.
+     now apply NQmul_nonneg_cancel_r.
+   }
+   apply NQle_pair; [ easy | easy | ].
+   now do 2 rewrite Nat.mul_1_l.
  }
  split; [ | flia Hur1 ].
  split; [ flia Hur1 | ].
@@ -705,10 +697,7 @@ assert (Hc : ∃ n, carry u (i + k) = NQintg (A (i + k) (min_n (i + k) n) u)). {
 }
 destruct Hc as (m & Hm).
 remember (min_n (i + k) m) as n eqn:Hn.
-assert (Hin : i + k + 1 ≤ n - 1). {
-  rewrite Hn; unfold min_n.
-  destruct rad; [ easy | cbn; flia ].
-}
+assert (Hin : i + k + 1 ≤ n - 1) by (rewrite Hn; min_n_ge).
 destruct (zerop (carry u (i + k))) as [H2| H2].
 -split; [ easy | ].
  rewrite Hm in H2.
@@ -911,10 +900,7 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
 -left; split; [ easy | ].
  rewrite H2 in Hm; symmetry in Hm.
  remember (min_n (i + j) m) as n eqn:Hn.
- assert (Hin : i + j + 1 ≤ n - 1). {
-   rewrite Hn; unfold min_n.
-   destruct rad; [ easy | cbn; flia ].
- }
+ assert (Hin : i + j + 1 ≤ n - 1) by (rewrite Hn; min_n_ge).
  apply eq_NQintg_0 in Hm; [ | easy ].
  apply NQnle_gt in Hm.
  intros H4; apply Hm; clear Hm.
@@ -1161,9 +1147,7 @@ destruct H1 as [H1| [H1| H1]].
  apply NQsub_le_mono; [ apply NQle_refl | ].
  apply NQle_pair; [ pauto | pauto | ].
  rewrite Nat.mul_1_l, Nat.mul_1_r.
- apply Nat.pow_le_mono_r; [ easy | ].
- unfold min_n.
- destruct rad; [ easy | cbn; flia ].
+ apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
 -rewrite A_all_18 by (intros j; rewrite Nat.add_shuffle0; apply H1).
  replace 2%NQ with (1 + 1)%NQ by easy.
  rewrite <- NQadd_sub_assoc.
@@ -1181,9 +1165,7 @@ destruct H1 as [H1| [H1| H1]].
   apply (le_trans _ (rad ^ S (S k))).
   *rewrite (Nat.pow_succ_r' _ (S k)).
    now apply Nat.mul_le_mono.
-  *apply Nat.pow_le_mono_r; [ easy | ].
-   unfold min_n.
-   destruct rad; [ easy | cbn; flia ].
+  *apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
  +apply NQle_0_sub.
   apply NQle_pair; [ pauto | easy | ].
   apply Nat.mul_le_mono_r, rad_pow_min_n.
@@ -1207,13 +1189,9 @@ destruct H1 as [H1| [H1| H1]].
   *apply (le_trans _ (rad ^ S (S k))).
   --rewrite (Nat.pow_succ_r' _ (S k)).
     now apply Nat.mul_le_mono.
-  --apply Nat.pow_le_mono_r; [ easy | ].
-    unfold min_n.
-    destruct rad; [ easy | cbn; flia ].
+  --apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
   *rewrite Nat.mul_1_l.
-   apply Nat.pow_le_mono_r; [ easy | ].
-   unfold min_n.
-   destruct rad; [ easy | cbn; flia ].
+   apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
  +intros l Hl.
   now rewrite Nat.add_shuffle0; apply Hjj.
  +intros l.
@@ -1571,29 +1549,20 @@ rewrite <- Nat.mul_add_distr_r; f_equal; f_equal.
 remember (u (i + k + 1) + carry u (i + k + 1)) as a eqn:Ha.
 move a before k.
 symmetry; symmetry in Ha.
+unfold carry, carry_cases.
+destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3]. 2: {
+  destruct H3 as (j & Hjj & Hj).
+  specialize (Haut (k + j)) as H3.
+  apply A_ge_1_add_r_true_if in H3.
+  now rewrite Hj in H3.
+}
+clear H3.
+rewrite A_split_first; [ | min_n_ge ].
 destruct (lt_dec a rad) as [Har| Har]. {
   rewrite Nat.mod_small in H1; [ | easy ].
   rewrite H1 in Har, Ha; clear H2.
   rewrite H1, Nat.div_small; [ clear Har | easy ].
   clear a H1.
-  unfold carry, carry_cases.
-  destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]. 2: {
-    destruct H1 as (j & Hjj & Hj).
-    specialize (Haut (k + j)) as H1.
-    apply A_ge_1_add_r_true_if in H1.
-    now rewrite Hj in H1.
-  }
-  clear H1.
-  unfold carry, carry_cases in Ha.
-  destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1]. 2: {
-    destruct H1 as (j & Hjj & Hj).
-    specialize (Haut (k + 1 + j)) as H1.
-    apply A_ge_1_add_r_true_if in H1.
-    now rewrite Nat.add_assoc, Hj in H1.
-  }
-  rewrite A_split_first. 2: {
-    unfold min_n; destruct rad; [ easy | cbn; flia ].
-  }
   replace (S (i + k)) with (i + k + 1) by flia.
   rewrite NQintg_add_cond; cycle 1. {
     replace 0%NQ with (0 // 1)%NQ by easy.
