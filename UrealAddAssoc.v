@@ -1619,7 +1619,13 @@ destruct (lt_dec a rad) as [Har| Har]. {
     now rewrite Hj in H1.
   }
   clear H1.
-  unfold carry in Ha.
+  unfold carry, carry_cases in Ha.
+  destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1]. 2: {
+    destruct H1 as (j & Hjj & Hj).
+    specialize (Haut (k + 1 + j)) as H1.
+    apply A_ge_1_add_r_true_if in H1.
+    now rewrite Nat.add_assoc, Hj in H1.
+  }
   rewrite A_split_first. 2: {
     unfold min_n; destruct rad; [ easy | cbn; flia ].
   }
@@ -1646,13 +1652,15 @@ destruct (lt_dec a rad) as [Har| Har]. {
     rewrite NQmul_pair_den_num; [ | easy ].
     rewrite NQmul_1_r, NQmul_1_l.
     rewrite min_n_add_l in Ha.
-    rewrite <- ApB_A in Ha; [ | ].
+    rewrite <- ApB_A in Ha. 2: {
+      unfold min_n; destruct rad; [ easy | cbn; flia ].
+    }
     rewrite NQintg_add in Ha; [ | easy | easy ].
     assert
       (Har :
-       NQintg (A (i + k + 1) (min_n (i + k)
-          (carry_cases u (i + k + 1))) u) ≤ rad - 1)
+       NQintg (A (i + k + 1) (min_n (i + k) 0) u) ≤ rad - 1)
       by flia Ha.
+Check all_fA_ge_1_ε_NQintg_A.
 ...
 Search (_ -> NQintg _ = NQintg _).
 rewrite all_fA_ge_1_ε_NQintg_A' in H.
