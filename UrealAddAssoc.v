@@ -1567,7 +1567,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H3| H3]. 2: {
 clear H3.
 rewrite min_n_add_l, Nat.mul_1_r in Ha.
 rewrite <- ApB_A in Ha by min_n_ge.
-rewrite NQintg_add in Ha; [ | easy | easy ].
+rewrite NQintg_add_cond in Ha; [ | easy | easy ].
 rewrite A_split_first; [ | min_n_ge ].
 replace (S (i + k)) with (i + k + 1) by flia.
 destruct (lt_dec a rad) as [Har| Har]. {
@@ -1628,6 +1628,17 @@ destruct (lt_dec a rad) as [Har| Har]. {
   rewrite NQintg_add_nat_l; [ flia Ha Hr | easy ].
 }
 apply Nat.nlt_ge in Har.
+rewrite NQintg_add; [ | apply NQle_0_pair | ]. 2: {
+  now apply NQmul_nonneg_cancel_r.
+}
+remember (min_n (i + k) 0) as n eqn:Hn.
+remember (i + k + 1) as j eqn:Hj.
+destruct (NQlt_le_dec (NQfrac (A j n u) + NQfrac (B j n u rad)) 1)
+  as [H3| H3]. {
+  rewrite Nat.add_0_r in Ha.
+...
+rewrite <- (NQmul_pair_den_num _ 1); [ | easy ].
+rewrite <- NQmul_add_distr_r.
 ...
 destruct (zerop m) as [Hm| Hm]. {
   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) Haut 0) as H.
