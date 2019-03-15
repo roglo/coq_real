@@ -1625,8 +1625,13 @@ destruct (NQlt_le_dec (NQfrac (A j n u) + B j n u rad) 1) as [H1| H1]. {
   destruct (NQlt_le_dec (NQfrac (u j // rad) + NQfrac (A j n u * (1 // rad)%NQ)) 1) as [H3| H3]. {
     rewrite Nat.add_0_r.
     rewrite NQintg_pair; [ | easy ].
-...
+    apply (Nat.mul_cancel_l _ _ rad); [ easy | ].
+    apply (Nat.add_cancel_r _ _ (rad - 1)).
+    rewrite <- H2, <- Ha, Nat.mul_add_distr_l.
     specialize (Nat.div_mod (u j) rad radix_ne_0) as Hu.
+    rewrite Hu at 2.
+    do 2 rewrite <- Nat.add_assoc; f_equal.
+...
     rewrite <- Ha.
     rewrite Hu at 2.
 ...
