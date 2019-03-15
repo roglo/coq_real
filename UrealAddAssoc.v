@@ -1757,7 +1757,7 @@ destruct ck.
  destruct ck1.
  +rewrite Nat.add_0_l.
   unfold carry in Hck.
-  rewrite A_split_first in Hck. 2: {
+  rewrite A_split_first in Hck by min_n_ge.
     unfold min_n; destruct rad; [ easy | cbn; flia ].
   }
   replace (S (i + k)) with (i + k + 1) in Hck by flia.
