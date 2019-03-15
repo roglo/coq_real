@@ -1663,6 +1663,14 @@ destruct (lt_dec a rad) as [Har| Har]. {
     rewrite NQintg_pair in Har; [ | unfold den_A; pauto ].
     apply NQlt_pair; [ unfold den_A; pauto | easy | ].
     rewrite Nat.mul_1_r.
+    apply (Nat.add_le_mono_r _ _ 1) in Har.
+...
+    specialize (Nat.div_mod (num_A j n u) (den_A j n)) as H2.
+    assert (H : den_A j n ≠ 0) by (unfold den_A; pauto).
+    specialize (H2 H); clear H.
+    rewrite H2.
+    apply Nat.lt_add_lt_sub_l.
+    rewrite <- Nat.mul_sub_distr_l.
 ...
     assert (Har : NQintg (A j n u) < rad) by flia Ha Hr.
     rewrite A_num_den in Har |-*.
