@@ -1554,7 +1554,7 @@ specialize (Hp k) as H1.
 unfold P, d2n, prop_carr, dig in H1.
 specialize (Nat.div_mod (u (i + k + 1) + carry u (i + k + 1)) rad) as H2.
 specialize (H2 radix_ne_0).
-rewrite H1 in H2.
+rewrite H1 in H2; clear H1.
 symmetry; apply Nat.add_sub_eq_r.
 rewrite Nat.add_assoc, H2, Nat.mul_comm.
 rewrite Nat.add_sub_assoc; [ | easy ].
@@ -1562,8 +1562,10 @@ rewrite Nat.sub_add; [ | flia Hr ].
 replace rad with (1 * rad) at 3 by flia.
 rewrite <- Nat.mul_add_distr_r; f_equal; f_equal.
 remember (u (i + k + 1) + carry u (i + k + 1)) as a eqn:Ha.
-move a before k.
+move a before k; move Ha at bottom.
 symmetry; symmetry in Ha.
+rewrite <- Ha.
+...
 unfold carry, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3]. 2: {
   destruct H3 as (j & Hjj & Hj).
@@ -1579,7 +1581,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H3| H3]. 2: {
   apply A_ge_1_add_r_true_if in H3.
   now rewrite Nat.add_assoc, Hj in H3.
 }
-clear H3 H1.
+clear H3.
 rewrite min_n_add_l, Nat.mul_1_r in Ha.
 rewrite <- ApB_A in Ha by min_n_ge.
 rewrite A_split_first; [ | min_n_ge ].
