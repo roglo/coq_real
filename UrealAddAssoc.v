@@ -1508,6 +1508,20 @@ Theorem fold_carry {r : radix} : ∀ u i,
   NQintg (A i (min_n i (carry_cases u i)) u) = carry u i.
 Proof. easy. Qed.
 
+Theorem glop {r : radix} : ∀ m u i,
+  (∀ k, u (i + k) ≤ m * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k,
+    carry u (i + k) =
+    NQintg
+      ((u (i + k + 1) + carry u (i + k + 1))%nat // rad +
+       NQfrac (A (i + 1) 0 u) * 1 // rad)%NQ.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hmr Haut *.
+...
+
 Theorem Vincent_Tourneur {r : radix} : ∀ m u i,
   m ≤ rad ^ 2
   → (∀ k, u (i + k) ≤ m * (rad - 1))
