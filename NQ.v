@@ -2272,6 +2272,25 @@ apply NQintg_small.
 split; [ easy | apply NQfrac_lt_1 ].
 Qed.
 
+Theorem NQintg_lt_lt : ∀ a b, (0 ≤ a)%NQ → NQintg a < b → (a < b // 1)%NQ.
+Proof.
+intros * Ha Hab.
+unfold NQintg in Hab.
+rewrite (NQnum_den a); [ | easy ].
+apply NQlt_pair; [ easy | easy | ].
+rewrite Nat.mul_1_r.
+destruct b; [ easy | ].
+apply Nat.succ_le_mono in Hab.
+apply (Nat.mul_le_mono_l _ _ (NQden a)) in Hab.
+apply (Nat.add_le_mono_r _ _ (NQden a)) in Hab.
+rewrite <- Nat.add_1_r, Nat.mul_add_distr_l, Nat.mul_1_r.
+eapply lt_le_trans; [ | apply Hab ].
+specialize (Nat.div_mod (NQnum a) (NQden a) (NQden_neq_0 _)) as H1.
+rewrite H1 at 1.
+apply Nat.add_lt_mono_l.
+now apply Nat.mod_upper_bound.
+Qed.
+
 Theorem NQfrac_add_nat_l : ∀ a x, (0 ≤ x)%NQ →
   NQfrac (a // 1 + x)%NQ = NQfrac x.
 Proof.

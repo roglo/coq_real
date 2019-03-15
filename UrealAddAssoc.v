@@ -1626,35 +1626,26 @@ destruct (lt_dec a rad) as [Har| Har]. {
     rewrite NQintg_add in Ha; [ | easy | easy ].
     remember (min_n (i + k) 0) as n eqn:Hn.
     remember (i + k + 1) as j eqn:Hj.
-    assert (Har : NQintg (A j n u) ≤ rad - 1) by flia Ha.
-    rewrite A_num_den in Har |-*.
-    rewrite NQintg_pair in Har; [ | unfold den_A; pauto ].
-    apply NQlt_pair; [ unfold den_A; pauto | easy | ].
-    rewrite Nat.mul_1_r.
-    apply (Nat.add_le_mono_r _ _ 1) in Har.
-    rewrite Nat.sub_add in Har; [ | easy ].
-    apply (Nat.mul_le_mono_l _ _ (den_A j n)) in Har.
-    eapply Nat.lt_le_trans; [ | apply Har ].
-    rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
-    specialize (Nat.div_mod (num_A j n u) (den_A j n)) as H2.
-    assert (H : den_A j n ≠ 0) by (unfold den_A; pauto).
-    specialize (H2 H); clear H.
-    rewrite H2 at 1.
-    apply Nat.add_lt_mono_l.
-    apply Nat.mod_upper_bound; unfold den_A; pauto.
+    apply NQintg_lt_lt; [ easy | flia Ha Hr ].
   }
   rewrite NQfrac_small. 2: {
-    split.
-Search (0 ≤ _ // _)%NQ.
-Check NQlt_0_pair.
-Theorem NQle_0_pair : ∀ a b, (0 ≤ a // b)%NQ ↔ 0 ≤ a.
-...
-  destruct
-    (NQlt_le_dec
-      (NQfrac (u (i + k + 1) // rad) +
-       NQfrac (A (i + k + 1) (min_n (i + k) 0) u * (1 // rad)%NQ)) 1)
-    as [H2| H2]; [ easy | exfalso ].
-  apply NQnlt_ge in H2; apply H2; clear H2.
+    split; [ apply NQle_0_pair | ].
+    apply NQlt_pair; [ easy | easy | ].
+    do 2 rewrite Nat.mul_1_r; flia Ha Hr.
+  }
+  rewrite NQfrac_small. 2: {
+    split; [ now apply NQmul_nonneg_cancel_r | ].
+    apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now apply NQlt_0_pair | ].
+    rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | easy ].
+    rewrite NQmul_1_r, NQmul_1_l.
+    rewrite min_n_add_l, Nat.mul_1_r in Ha.
+    rewrite <- ApB_A in Ha. 2: {
+      unfold min_n; destruct rad; [ easy | cbn; flia ].
+    }
+    rewrite NQintg_add in Ha; [ | easy | easy ].
+    remember (min_n (i + k) 0) as n eqn:Hn.
+    apply NQintg_lt_lt; [ easy | flia Ha Hr ].
+  }
 ...
   rewrite <- (NQmul_pair_den_num _ 1); [ | easy ].
   rewrite <- NQmul_add_distr_r.
