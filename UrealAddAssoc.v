@@ -1555,6 +1555,7 @@ intros m u i.
 specialize radix_ge_2 as Hr.
 intros Hum Haut *.
 (**)
+move k before i.
 specialize (all_fA_ge_1_ε_P_999 u i Haut) as Hp.
 specialize (Hp k) as H1.
 unfold P, d2n, prop_carr, dig in H1.
@@ -1568,6 +1569,7 @@ rewrite Nat.sub_add; [ | flia Hr ].
 replace rad with (1 * rad) at 3 by flia.
 rewrite <- Nat.mul_add_distr_r; f_equal; f_equal.
 remember (u (i + k + 1) + carry u (i + k + 1)) as a eqn:Ha.
+move a before k.
 symmetry; symmetry in Ha.
 destruct (lt_dec a rad) as [Har| Har]. {
   rewrite Nat.mod_small in H1; [ | easy ].
@@ -1646,49 +1648,81 @@ destruct (lt_dec a rad) as [Har| Har]. {
     remember (min_n (i + k) 0) as n eqn:Hn.
     apply NQintg_lt_lt; [ easy | flia Ha Hr ].
   }
-...
+  destruct
+    (NQlt_le_dec
+       ((u (i + k + 1)%nat // rad)%NQ +
+        (A (i + k + 1) (min_n (i + k) 0) u * 1 // rad)%NQ) 1)
+    as [H2| H2]; [ easy | exfalso ].
+  apply NQnlt_ge in H2; apply H2; clear H2.
   rewrite <- (NQmul_pair_den_num _ 1); [ | easy ].
   rewrite <- NQmul_add_distr_r.
+  apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now apply NQlt_0_pair | ].
+  rewrite <- NQmul_assoc, NQmul_inv_pair; [ | easy | easy ].
+  rewrite NQmul_1_r, NQmul_1_l.
+  apply NQintg_lt_lt. {
+    apply NQadd_nonneg_nonneg; [ apply NQle_0_pair | easy ].
+  }
+  rewrite NQintg_add_nat_l; [ | easy ].
+  rewrite min_n_add_l in Ha.
+  rewrite <- ApB_A in Ha. 2: {
+    unfold min_n; destruct rad; [ easy | cbn; flia ].
+  }
+  rewrite NQintg_add in Ha; [ | easy | easy ].
+  flia Ha Hr.
+}
+apply Nat.nlt_ge in Har.
+(* ci-dessous, toute une partie commune avec le cas d'avant,
+   à regrouper peut-être *)
 ...
-  remember (NQfrac (A (i + k + 1) (min_n (i + k) 0) u * 1 // rad)%NQ) as a.
-  destruct (NQlt_le_dec (NQfrac (u (i + k + 1) // rad) + a) 1) as [H1| H1]. {
-...
-unfold carry at 1, carry_cases.
-destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3]. {
-  clear H3.
+unfold carry, carry_cases.
+destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3]. 2: {
+  destruct H3 as (j & Hjj & Hj).
+  specialize (Haut (k + j)) as H3.
+  apply A_ge_1_add_r_true_if in H3.
+  now rewrite Hj in H3.
+}
+clear H3.
+  unfold carry, carry_cases in Ha.
+  destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H3| H3]. 2: {
+    destruct H3 as (j & Hjj & Hj).
+    specialize (Haut (k + 1 + j)) as H3.
+    apply A_ge_1_add_r_true_if in H3.
+    now rewrite Nat.add_assoc, Hj in H3.
+  }
   rewrite A_split_first. 2: {
     unfold min_n; destruct rad; [ easy | cbn; flia ].
   }
   replace (S (i + k)) with (i + k + 1) by flia.
-  unfold carry, carry_cases.
-  destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H3| H3]. {
-    clear H3.
+  rewrite NQintg_add_cond; cycle 1. {
+    replace 0%NQ with (0 // 1)%NQ by easy.
+    apply NQle_pair; [ easy | easy | cbn; apply Nat.le_0_l ].
+  } {
+    now apply NQmul_nonneg_cancel_r.
+  }
 ...
-    rewrite <- (NQmul_pair_den_num _ 1); [ | easy ].
-    rewrite <- NQmul_add_distr_r.
-    rewrite (min_n_add_l (i + k)), Nat.mul_1_r.
-    rewrite <- ApB_A. 2: {
-      unfold min_n; destruct rad; [ easy | cbn; flia ].
+  apply Nat.eq_add_0.
+  split. {
+    apply Nat.eq_add_0.
+    split. {
+      apply NQintg_small.
+      split. {
+        replace 0%NQ with (0 // 1)%NQ by easy.
+        apply NQle_pair; [ easy | easy | apply Nat.le_0_l ].
+      }
+      apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now apply NQlt_0_pair | ].
+      rewrite NQmul_pair_den_num; [ | easy ].
+      rewrite NQmul_1_l.
+      apply NQlt_pair_mono_r; flia Ha Hr.
     }
-    remember (A (i + k + 1) (min_n (i + k) 0) u) as a eqn:Ha.
-    remember (u (i + k + 1)) as ui eqn:Hui.
-    rewrite NQintg_add_cond; [ | now rewrite Ha | easy ].
-    do 2 rewrite Nat.add_assoc.
-...
-    rewrite <- ApB_A. 2: {
+    apply NQintg_small.
+    split; [ now apply NQmul_nonneg_cancel_r | ].
+    apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now apply NQlt_0_pair | ].
+    rewrite <- NQmul_assoc.
+    rewrite NQmul_pair_den_num; [ | easy ].
+    rewrite NQmul_1_r, NQmul_1_l.
+    rewrite min_n_add_l in Ha.
+    rewrite <- ApB_A in Ha. 2: {
       unfold min_n; destruct rad; [ easy | cbn; flia ].
-    }
-    rewrite NQintg_add_cond; [ | easy | easy ].
-    remember (A (i + k + 1) (min_n (i + k) 0) u) as a eqn:Ha.
-...
-Check all_fA_ge_1_ε_NQintg_A'.
-...
-all_fA_ge_1_ε_NQintg_A:
-  ∀ (r : radix) (i : nat) (u : nat → nat),
-    (∀ k : nat, u (i + k) ≤ 3 * (rad - 1))
-    → (∀ k : nat, fA_ge_1_ε u i k = true)
-      → ∀ k l : nat, NQintg (A i (min_n i k + l) u) = NQintg (A i (min_n i k) u)
-Search (NQintg (A _ _ _)).
 ...
 destruct (zerop m) as [Hm| Hm]. {
   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) Haut 0) as H.
