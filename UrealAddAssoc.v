@@ -1656,10 +1656,9 @@ destruct (lt_dec a rad) as [Har| Har]. {
       unfold min_n; destruct rad; [ easy | cbn; flia ].
     }
     rewrite NQintg_add in Ha; [ | easy | easy ].
-    assert
-      (Har :
-       NQintg (A (i + k + 1) (min_n (i + k) 0) u) ≤ rad - 1)
-      by flia Ha.
+    remember (A (i + k + 1) (min_n (i + k) 0) u) as b eqn:Hb.
+    assert (Har : NQintg b ≤ rad - 1) by flia Ha.
+unfold NQintg in Har.
 Check all_fA_ge_1_ε_NQintg_A.
 ...
 Search (_ -> NQintg _ = NQintg _).
