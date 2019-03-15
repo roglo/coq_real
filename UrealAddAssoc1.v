@@ -1,3 +1,7 @@
+(* voir tous les
+    replace 0%NQ with (0 // 1)%NQ by easy.
+   et utiliser plutôt NQlt_0_pair et NQle_0_pair *)
+
 Set Nested Proofs Allowed.
 Require Import Utf8 Arith PeanoNat.
 Require Import Misc Summation NQ Ureal.

@@ -1,5 +1,9 @@
 (* Reals between 0 and 1; associativity of addition *)
 
+(* voir tous les
+    replace 0%NQ with (0 // 1)%NQ by easy.
+   et utiliser plutôt NQlt_0_pair et NQle_0_pair *)
+
 Require Import Utf8 Arith NPeano Psatz PeanoNat.
 Require Import Misc Summation Ureal UrealNorm NQ UrealAddAssoc1.
 Set Nested Proofs Allowed.
@@ -862,8 +866,7 @@ destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
      apply NQlt_0_sub.
      replace (1 // rad)%NQ with (1 * 1 // rad)%NQ at 2 by apply NQmul_1_l.
      apply NQmul_lt_mono_pos_r; [ | easy ].
-     replace 0%NQ with (0 // 1)%NQ by easy.
-     apply NQlt_pair; [ easy | easy | flia Hr ].
+     apply NQlt_0_pair; pauto.
   --apply eq_nA_div_1.
    ++intros; do 2 rewrite <- Nat.add_assoc; apply Hur.
    ++now apply NQintg_le_mono in H5.
@@ -1153,9 +1156,7 @@ destruct H1 as [H1| [H1| H1]].
    -apply NQle_0_sub.
     apply NQle_pair; [ pauto | easy | ].
     now apply Nat.mul_le_mono_r, Nat_pow_ge_1.
-   -apply NQsub_lt.
-    replace 0%NQ with (0 // 1)%NQ by easy.
-    apply NQlt_pair; [ easy | pauto | flia ].
+   -apply NQsub_lt, NQlt_0_pair; pauto.
  }
  apply NQsub_le_mono; [ apply NQle_refl | ].
  apply NQle_pair; [ pauto | pauto | ].
@@ -1172,9 +1173,7 @@ destruct H1 as [H1| [H1| H1]].
     -apply NQle_0_sub.
      apply NQle_pair; [ pauto | easy | ].
      apply Nat.mul_le_mono_r, rad_pow_min_n.
-    -apply NQsub_lt.
-     replace 0%NQ with (0 // 1)%NQ by easy.
-     apply NQlt_pair; [ easy | pauto | flia ].
+    -apply NQsub_lt, NQlt_0_pair; pauto.
   }
   apply NQsub_le_mono; [ apply NQle_refl | ].
   apply NQle_pair; [ pauto | pauto | ].
@@ -1198,10 +1197,7 @@ destruct H1 as [H1| [H1| H1]].
      do 2 rewrite Nat.mul_1_r.
      apply (le_trans _ 2); [ | apply rad_pow_min_n ].
      destruct (le_dec (i + j + 1) (min_n i k - 1)); [ easy | pauto ].
-    -apply NQsub_lt.
-     replace 0%NQ with (0 // 1)%NQ by easy.
-     apply NQlt_pair; [ easy | pauto | ].
-     cbn; rewrite Nat.add_0_r.
+    -apply NQsub_lt, NQlt_0_pair.
      destruct (le_dec (i + j + 1) (min_n i k - 1)); pauto.
   }
   apply NQsub_le_mono; [ apply NQle_refl | ].
@@ -1263,9 +1259,7 @@ assert (H4 : (0 ≤ 1 - 2 // rad ^ (n - i - 1))%NQ). {
     rewrite Hn; apply rad_pow_min_n.
   }
   do 2 rewrite Nat.mul_1_l.
-  replace 0%NQ with (0 // 1)%NQ by easy.
-  apply NQle_pair; [ easy | pauto | ].
-  rewrite Nat.mul_0_l, Nat.mul_1_l; flia.
+  apply NQle_0_pair.
 }
 destruct H'3 as [H'3| [H'3| H'3]].
 -f_equal; f_equal; f_equal; f_equal.
@@ -1288,9 +1282,7 @@ destruct H'3 as [H'3| [H'3| H'3]].
  set (s := n - i - 1) in H4 |-*.
  rewrite NQfrac_small. 2: {
    split; [ easy | ].
-   apply NQsub_lt.
-   replace 0%NQ with (0 // 1)%NQ by easy.
-   apply NQlt_pair; [ easy | pauto | cbn; pauto ].
+   apply NQsub_lt, NQlt_0_pair; pauto.
  }
  f_equal.
  subst s x.
@@ -1308,16 +1300,12 @@ destruct H'3 as [H'3| [H'3| H'3]].
     apply NQle_pair; [ pauto | easy | ].
     do 2 rewrite Nat.mul_1_r.
     now apply Nat_pow_ge_1.
-   -apply NQsub_lt.
-    replace 0%NQ with (0 // 1)%NQ by easy.
-    apply NQlt_pair; [ easy | pauto | flia ].
+   -apply NQsub_lt, NQlt_0_pair; pauto.
  }
  set (s := n - i - 1) in H4 |-*.
  rewrite NQfrac_small. 2: {
    split; [ easy | ].
-   apply NQsub_lt.
-   replace 0%NQ with (0 // 1)%NQ by easy.
-   apply NQlt_pair; [ easy | pauto | flia ].
+   apply NQsub_lt, NQlt_0_pair; pauto.
  }
  f_equal.
  subst x s.
