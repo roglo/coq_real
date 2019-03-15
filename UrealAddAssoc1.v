@@ -1,7 +1,3 @@
-(* voir tous les
-    replace 0%NQ with (0 // 1)%NQ by easy.
-   et utiliser plutôt NQlt_0_pair et NQle_0_pair *)
-
 Set Nested Proofs Allowed.
 Require Import Utf8 Arith PeanoNat.
 Require Import Misc Summation NQ Ureal.
@@ -35,9 +31,7 @@ destruct (le_dec (i + 1) (n - 1)) as [H1| H1].
 -eapply NQle_lt_trans.
  +apply A_dig_seq_ub; [ | easy ].
   intros j Hj; apply M_upper_bound.
- +apply NQsub_lt.
-  replace 0%NQ with (0 // 1)%NQ by easy.
-  apply NQlt_pair; [ easy | pauto | pauto ].
+ +apply NQsub_lt, NQlt_0_pair; pauto.
 -apply Nat.nle_gt in H1.
  unfold A.
  now rewrite summation_empty.
@@ -198,10 +192,7 @@ apply NQnlt_ge in H3; apply H3; clear H3.
 rewrite A_split_first; [ | subst n; min_n_ge ].
 replace (u (i + 1) + NQintg (A (i + 1) n u)) with
   (NQintg (u (i + 1)%nat // 1 + A (i + 1) n u))%NQ in H2. 2: {
-  rewrite NQintg_add; [ | | easy ]. 2: {
-    replace 0%NQ with (0 // 1)%NQ by easy.
-    apply NQle_pair; [ easy | easy | flia ].
-  }
+  rewrite NQintg_add; [ | apply NQle_0_pair | easy ].
   rewrite NQintg_pair; [ | easy ].
   rewrite Nat.div_1_r, <- Nat.add_assoc; f_equal.
   rewrite NQfrac_of_nat, NQadd_0_l, NQintg_NQfrac, Nat.add_0_r.
@@ -219,9 +210,7 @@ remember (u (i + 1)%nat // 1 + A (i + 1) n u)%NQ as x.
 remember x as y eqn:Hy.
 rewrite NQnum_den in Hy. 2: {
   subst x y.
-  apply NQadd_nonneg_nonneg; [ | easy ].
-  replace 0%NQ with (0 // 1)%NQ by easy.
-  apply NQle_pair; [ easy | easy | flia ].
+  apply NQle_0_add; [ apply NQle_0_pair | easy ].
 }
 subst y.
 remember (NQnum x) as xn.
@@ -552,12 +541,10 @@ rewrite (NQfrac_small (B _ _ _ _)); [ | split ]; [ | easy | ]. 2: {
 }
 apply A_ge_1_false_iff in Huf.
 apply NQintg_small.
-split.
--replace 0%NQ with (0 + 0)%NQ by easy.
- now apply NQadd_le_mono.
--eapply NQlt_le_trans; [ apply NQadd_lt_mono_l, HB | ].
- apply NQle_add_le_sub_l.
- now apply NQlt_le_incl.
+split; [ now apply NQle_0_add | ].
+eapply NQlt_le_trans; [ apply NQadd_lt_mono_l, HB | ].
+apply NQle_add_le_sub_l.
+now apply NQlt_le_incl.
 Qed.
 
 Theorem pre_Hugo_Herbelin_1 {r : radix} : ∀ u v i kup kuv,
@@ -613,7 +600,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
   }
   replace (A i nv u) with (A i nv u + 0)%NQ at 1 by apply NQadd_0_r.
   apply NQadd_le_mono_l.
-  now apply NQmul_nonneg_cancel_r.
+  now apply NQle_0_mul_r.
  +now rewrite HAu, NQadd_0_l.
 -destruct H6 as (j & Hjj & Hj).
  subst kuv.
@@ -1222,24 +1209,20 @@ destruct H4 as [H4| [H4| H4]].
      }
      eapply NQle_trans; [ | apply NQle_add_r ].
     **rewrite NQpair_add_l.
-      eapply NQle_trans; [ | apply NQle_add_l ].
-    ---apply NQle_pair; [ pauto | pauto | ].
-       rewrite Nat.mul_1_l, Nat.mul_sub_distr_l, Nat.mul_1_r.
-       rewrite Nat.pow_add_r, Nat.pow_1_r.
-       apply Nat.mul_le_mono_l.
-       destruct rad as [| rr]; [ easy | ].
-       destruct rr; [ flia Hr | cbn; flia ].
-    ---replace 0%NQ with (0 // 1)%NQ by easy.
-       apply NQle_pair; [ easy | pauto | cbn; flia ].
+      eapply NQle_trans; [ | apply NQle_add_l, NQle_0_pair ].
+      apply NQle_pair; [ pauto | pauto | ].
+      rewrite Nat.mul_1_l, Nat.mul_sub_distr_l, Nat.mul_1_r.
+      rewrite Nat.pow_add_r, Nat.pow_1_r.
+      apply Nat.mul_le_mono_l.
+      destruct rad as [| rr]; [ easy | ].
+      destruct rr; [ flia Hr | cbn; flia ].
     **specialize
         (@all_0_summation_0 _ NQ_ord_ring (λ j, 0%NQ) (S nup) (nup + rad - 1))
         as Hsum0.
       remember summation as f; cbn in Hsum0; subst f.
       rewrite <- Hsum0; [ | easy ].
       apply summation_le_compat.
-      intros p Hp.
-      replace 0%NQ with (0 // 1)%NQ by easy.
-      apply NQle_pair; [ easy | pauto | cbn; flia ].
+      intros p Hp; apply NQle_0_pair.
    ++apply NQnlt_ge in H7; apply H7; clear H7.
      rewrite NQadd_sub_swap, NQsub_sub_swap.
      rewrite NQsub_diag, NQsub_0_l, NQadd_comm, NQadd_opp_r.
@@ -1441,8 +1424,7 @@ destruct (le_dec j k) as [Hljk| Hljk].
      now apply Nat_pow_ge_1.
    }
    do 2 rewrite Nat.mul_1_l.
-   replace 0%NQ with (0 // 1)%NQ by easy.
-   apply NQle_pair; [ easy | pauto | cbn; flia ].
+   apply NQle_0_pair.
  }
  rewrite NQfrac_add_cond in Hup; [ | easy | easy ].
  rewrite NQfrac_small in Hup. 2: {
@@ -1477,8 +1459,7 @@ destruct (le_dec j k) as [Hljk| Hljk].
       now apply Nat_pow_ge_1.
     }
     do 2 rewrite Nat.mul_1_l.
-    replace 0%NQ with (0 // 1)%NQ by easy.
-    apply NQle_pair; [ easy | pauto | cbn; flia ].
+    apply NQle_0_pair.
   }
   rewrite NQfrac_small in Huv. 2: {
     split; [ easy | now apply NQsub_lt ].
@@ -2000,8 +1981,8 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
    rewrite <- NQmul_pair; [ | pauto | pauto ].
    rewrite <- NQmul_sub_distr_l.
    rewrite NQfrac_add_nat_l. 2: {
-     apply NQadd_nonneg_nonneg; [ | easy ].
-     apply NQmul_nonneg_cancel_l; [ easy | now apply H012r ].
+     apply NQle_0_add; [ | easy ].
+     apply NQle_0_mul_l; [ easy | now apply H012r ].
    }
    specialize (B_upper_bound_for_adds 1 u i j rad) as H1.
    rewrite Nat.mul_1_l, <- Hnij in H1.
@@ -2015,8 +1996,8 @@ destruct (NQlt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%NQ 1) as [Hau1| Hau1].
    specialize (H1 H); clear H.
    rewrite NQfrac_small. 2: {
      split.
-     -apply NQadd_nonneg_nonneg; [ | easy ].
-      apply NQmul_nonneg_cancel_l; [ easy | ].
+     -apply NQle_0_add; [ | easy ].
+      apply NQle_0_mul_l; [ easy | ].
       apply NQle_add_le_sub_r; rewrite NQadd_0_r.
       apply NQle_pair; [ pauto | easy | ].
       apply Nat.mul_le_mono_r.
@@ -2544,10 +2525,7 @@ destruct (NQlt_le_dec (A i nj u + A i nj v)%NQ 1) as [Hajv| Hajv].
    rewrite <- NQpair_add_l.
    apply NQle_pair_mono_r.
    apply (NQmul_lt_mono_pos_r (rad ^ sj // 1)%NQ) in Hj. 2: {
-     replace 0%NQ with (0 // 1)%NQ by easy.
-     apply NQlt_pair; [ easy | easy | ].
-     rewrite Nat.mul_0_l, Nat.mul_1_l.
-     apply Nat.neq_0_lt_0; pauto.
+     apply NQlt_0_pair, Nat.neq_0_lt_0; pauto.
    }
    rewrite NQmul_add_distr_r in Hj.
    rewrite NQmul_pair_den_num in Hj; [ | pauto ].

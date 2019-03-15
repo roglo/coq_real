@@ -1,9 +1,5 @@
 (* Reals between 0 and 1; associativity of addition *)
 
-(* voir tous les
-    replace 0%NQ with (0 // 1)%NQ by easy.
-   et utiliser plutôt NQlt_0_pair et NQle_0_pair *)
-
 Require Import Utf8 Arith NPeano Psatz PeanoNat.
 Require Import Misc Summation Ureal UrealNorm NQ UrealAddAssoc1.
 Set Nested Proofs Allowed.
@@ -85,8 +81,7 @@ remember (NQfrac (A i n u)) as x eqn:Hx.
 destruct (NQlt_le_dec x (1 // rad ^ s)%NQ) as [H5| H5].
 -rewrite NQintg_small. 2: {
    split.
-   -apply NQadd_nonneg_nonneg; [ now subst x | ].
-    apply NQle_0_sub.
+   -apply NQle_0_add; [ now subst x | apply NQle_0_sub ].
     apply NQle_pair_mono_l; split; [ pauto | ].
     now apply Nat_pow_ge_1.
    -rewrite NQadd_comm, <- NQsub_sub_distr.
@@ -95,7 +90,7 @@ destruct (NQlt_le_dec x (1 // rad ^ s)%NQ) as [H5| H5].
  }
  rewrite NQintg_small; [ easy | ]. {
    split.
-   -apply NQadd_nonneg_nonneg; [ now subst x | easy ].
+   -apply NQle_0_add; [ now subst x | easy ].
    -rewrite NQadd_comm, <- NQsub_sub_distr.
     apply NQsub_lt, NQlt_add_lt_sub_l.
     rewrite NQadd_0_r.
@@ -456,8 +451,7 @@ rewrite Nat.mod_small in H1. 2: {
   destruct (NQlt_le_dec m 2) as [Hm2| Hm2]. {
     rewrite NQintg_small; [ easy | ].
     rewrite Hr2; split.
-    -apply NQmul_nonneg_cancel_r; [ easy | ].
-     now rewrite <- Hm.
+    -apply NQle_0_mul_r; [ easy | now rewrite <- Hm ].
     -apply (NQlt_le_trans _ (2 * 1 // 2)%NQ).
      +now apply NQmul_lt_mono_pos_r.
      +rewrite <- NQpair_mul_r, Nat.mul_1_r.
@@ -477,8 +471,7 @@ assert (H : NQintg m ≥ 2). {
   apply NQnlt_ge; intros H.
   rewrite NQintg_small in H1; [ easy | ].
   rewrite Hr2; split.
-  -apply NQmul_nonneg_cancel_r; [ easy | ].
-   now rewrite <- Hm.
+  -apply NQle_0_mul_r; [ easy | now rewrite <- Hm ].
   -apply (NQlt_le_trans _ (2 * 1 // 2)%NQ).
    +now apply NQmul_lt_mono_pos_r.
    +rewrite <- NQpair_mul_r, Nat.mul_1_r.
@@ -555,10 +548,7 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
    apply NQnle_gt in Hcu; apply Hcu; clear Hcu.
    rewrite A_split_first; [ | min_n_ge ].
    rewrite <- (Nat.add_1_r (i + j)).
-   eapply NQle_trans. 2: {
-     apply NQle_add_r.
-     now apply NQmul_nonneg_cancel_r.
-   }
+   eapply NQle_trans; [ | now apply NQle_add_r, NQle_0_mul_r ].
    apply NQle_pair; [ easy | easy | ].
    now do 2 rewrite Nat.mul_1_l.
  }
@@ -708,9 +698,8 @@ destruct (zerop (carry u (i + k))) as [H2| H2].
  replace (2 * (rad - 1)) with (rad + (rad - 2)) by flia Hr.
  rewrite NQpair_add_l, (NQpair_diag rad); [ | easy ].
  rewrite <- NQadd_assoc.
- apply NQle_add_r.
- apply NQadd_nonneg_nonneg; [ apply NQle_0_pair | ].
- now apply NQmul_nonneg_cancel_r.
+ apply NQle_add_r, NQle_0_add; [ apply NQle_0_pair | ].
+ now apply NQle_0_mul_r.
 -assert (H3 : carry u (i + k) ≥ 1). {
    specialize (carry_upper_bound_for_add u (i + k)) as H3.
    assert (H : ∀ l, u (i + k + l + 1) ≤ 2 * (rad - 1)). {
@@ -846,8 +835,7 @@ destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
      apply NQle_0_sub.
      apply (NQle_trans _ 1).
     **apply NQle_pair; [ easy | easy | flia Hr ].
-    **apply NQle_add_r.
-      now apply NQmul_nonneg_cancel_r.
+    **now apply NQle_add_r, NQle_0_mul_r.
    ++rewrite <- NQsub_sub_distr.
      apply NQsub_lt.
      apply NQlt_0_sub.
@@ -905,9 +893,8 @@ destruct (zerop (carry u (i + j))) as [H2| H2].
  rewrite A_split_first; [ | easy ].
  replace (S (i + j)) with (i + j + 1) by flia.
  rewrite H4.
- eapply NQle_trans; [ | apply NQle_add_r ].
- +apply NQle_pair; [ easy | easy | flia Hr ].
- +now apply NQmul_nonneg_cancel_r.
+ eapply NQle_trans; [ | now apply NQle_add_r, NQle_0_mul_r ].
+ apply NQle_pair; [ easy | easy | flia Hr ].
 -assert (H3 : carry u (i + j) = 1). {
    specialize (carry_upper_bound_for_add u (i + j)) as H3.
    assert (H : ∀ k, u (i + j + k + 1) ≤ 2 * (rad - 1)). {

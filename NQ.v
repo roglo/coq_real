@@ -2664,7 +2664,7 @@ destruct x as [| xp| xp], y as [| yp| yp]; (try now left); (try now right).
 -apply GQle_decidable.
 Qed.
 
-Theorem NQadd_nonneg_nonneg : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ → (0 ≤ x + y)%NQ.
+Theorem NQle_0_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ → (0 ≤ x + y)%NQ.
 Proof.
 intros * Hx Hy.
 replace 0%NQ with (0 + 0)%NQ by easy.
@@ -2760,7 +2760,7 @@ split; intros Ha.
  now rewrite Nat.mul_1_l.
 Qed.
 
-Theorem NQmul_nonneg_cancel_l : ∀ a b, (0 < a → 0 ≤ a * b ↔ 0 ≤ b)%NQ.
+Theorem NQle_0_mul_l : ∀ a b, (0 < a → 0 ≤ a * b ↔ 0 ≤ b)%NQ.
 Proof.
 intros * Ha.
 split.
@@ -2772,11 +2772,11 @@ split.
  now apply NQmul_le_mono_pos_l.
 Qed.
 
-Theorem NQmul_nonneg_cancel_r : ∀ a b, (0 < b → 0 ≤ a * b ↔ 0 ≤ a)%NQ.
+Theorem NQle_0_mul_r : ∀ a b, (0 < b → 0 ≤ a * b ↔ 0 ≤ a)%NQ.
 Proof.
 intros.
 rewrite NQmul_comm.
-now apply NQmul_nonneg_cancel_l.
+now apply NQle_0_mul_l.
 Qed.
 
 Theorem NQmul_pos_cancel_l : ∀ a b, (0 < a → 0 < a * b ↔ 0 < b)%NQ.
