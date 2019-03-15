@@ -455,18 +455,19 @@ Definition fA_ge_1_ε {r : radix} u i k :=
   let s := n - i - 1 in
   if NQlt_le_dec (NQfrac (A i n u)) (1 - 1 // rad ^ S k)%NQ then false else true.
 
+Ltac min_n_ge := unfold min_n; destruct rad; [ easy | cbn; flia ].
+Ltac min_n_ge_in h := unfold min_n in h; destruct rad; [ easy | cbn in h; flia h ].
+
 Theorem rad_pow_min_n {r : radix} : ∀ i j,
   2 ≤ rad ^ (min_n i j - i - 1).
 Proof.
 intros.
 specialize radix_ge_2 as Hr.
 remember (min_n i j - i - 1) as s eqn:Hs.
-destruct s.
--unfold min_n in Hs.
- destruct rad; [ easy | cbn in Hs; flia Hs ].
--cbn.
- replace 2 with (2 * 1) by flia.
- apply Nat.mul_le_mono; [ easy | now apply Nat_pow_ge_1 ].
+destruct s; [ min_n_ge_in Hs | ].
+cbn.
+replace 2 with (2 * 1) by flia.
+apply Nat.mul_le_mono; [ easy | now apply Nat_pow_ge_1 ].
 Qed.
 
 Theorem rad_pow_min_n_3 {r : radix} : ∀ i j,
@@ -475,14 +476,8 @@ Proof.
 intros.
 specialize radix_ge_2 as Hr.
 remember (min_n i j - i - 1) as s eqn:Hs.
-destruct s. {
-  unfold min_n in Hs.
-  destruct rad; [ easy | cbn in Hs; flia Hs ].
-}
-destruct s. {
-  unfold min_n in Hs.
-  destruct rad; [ easy | cbn in Hs; flia Hs ].
-}
+destruct s; [ min_n_ge_in Hs | ].
+destruct s; [ min_n_ge_in Hs | ].
 cbn.
 rewrite Nat.mul_assoc.
 replace 3 with (3 * 1) by easy.
@@ -1124,18 +1119,13 @@ intros * Hur.
 specialize radix_ge_2 as Hr.
 remember (min_n i k) as n eqn:Hn.
 eapply NQle_lt_trans.
--apply B_gen_upper_bound_for_mul. {
+-apply B_gen_upper_bound_for_mul; [ | subst n; min_n_ge | ]. {
    subst n; unfold min_n.
    apply Nat.neq_mul_0.
    split; [ easy | flia ].
- } {
-   subst n; unfold min_n.
-   destruct rad; [ easy | cbn; flia ].
  }
  intros j.
- apply Hur.
- subst n; unfold min_n.
- destruct rad; [ easy | cbn; flia ].
+ apply Hur; subst n; min_n_ge.
 -enough (H : n * (rad - 1) + rad < rad ^ (n - (i + k + 2))). {
    apply (NQmul_lt_mono_pos_r (rad ^ (n - i - 1) // 1)%NQ). 1: {
      replace 0%NQ with (0 // 1)%NQ by easy.
@@ -1148,17 +1138,13 @@ eapply NQle_lt_trans.
    rewrite NQpair_diag, NQmul_1_l; [ | pauto ].
    rewrite NQmul_pair; [ | pauto | easy ].
    rewrite Nat.mul_1_l, Nat.mul_1_r.
-   rewrite NQpow_pair_l; [ | easy | ]. 2: {
-     subst n; unfold min_n.
-     destruct rad; [ easy | cbn; flia ].
-   }
-   apply NQlt_pair; [ easy | easy | ].
+   rewrite NQpow_pair_l; [ | easy | subst n; min_n_ge ].
+    apply NQlt_pair; [ easy | easy | ].
    rewrite Nat.mul_1_r, Nat.mul_1_l.
    now replace (n - i - 1 - S k) with (n - (i + k + 2)) by flia.
  }
  apply minimum_value_for_A_upper_bound; [ easy | | rewrite Hn; pauto ].
- rewrite Hn; unfold min_n.
- destruct rad; [ easy | cbn; flia ].
+ rewrite Hn; min_n_ge.
 Qed.
 
 Theorem B_upper_bound_for_adds_at_0 {r : radix} : ∀ m u k l,
@@ -1173,9 +1159,7 @@ unfold B.
 destruct l.
 -rewrite summation_empty; [ easy | ].
  rewrite Nat.add_0_r.
- apply Nat.sub_lt; [ | pauto ].
- unfold min_n.
- destruct rad; [ easy | cbn; flia ].
+ apply Nat.sub_lt; [ min_n_ge | pauto ].
 -rewrite <- Nat.add_sub_assoc; [ | flia ].
  replace (S l - 1) with l by flia.
  eapply NQle_lt_trans.
@@ -1219,9 +1203,7 @@ destruct l.
    apply Nat.mul_lt_mono_pos_r; [ easy | ].
    rewrite Nat.mul_comm.
    replace n with (n - 1 + 1) at 2. 2: {
-     rewrite Nat.sub_add; [ easy | ].
-     rewrite Hn; unfold min_n.
-     destruct rad; [ easy | cbn; flia ].
+     rewrite Nat.sub_add; [ easy | rewrite Hn; min_n_ge ].
    }
    rewrite Nat.pow_add_r, <- Nat.mul_assoc.
    apply Nat.mul_lt_mono_pos_l; [ apply Nat.neq_0_lt_0; pauto | ].
@@ -1255,8 +1237,7 @@ destruct i.
  destruct l.
  +rewrite summation_empty; [ easy | ].
   rewrite Nat.add_0_r; apply Nat.sub_lt; [ | pauto ].
-  rewrite Hn; unfold min_n.
-  destruct rad; [ easy | cbn; flia ].
+  rewrite Hn; min_n_ge.
  +replace (n + S l - 1) with (n + l) by flia.
   rewrite summation_shift; [ | flia ].
   replace (n + l - n) with l by flia.
@@ -1266,8 +1247,7 @@ destruct i.
    apply NQle_pair; [ pauto | | ]. 2: {
      rewrite Nat.mul_comm.
      apply Nat.mul_le_mono; [ apply Nat.le_refl | ].
-     apply Hur; rewrite Hn; unfold min_n.
-     destruct rad; [ easy | cbn; flia ].
+     apply Hur; rewrite Hn; min_n_ge.
    }
    pauto.
   *remember summation as f; remember S as g; remember 1 as x.
@@ -1282,8 +1262,7 @@ destruct i.
     rewrite Nat.mul_1_r, <- Nat.pow_add_r.
     replace (n + j - S i) with (n - S i + j); [ apply NQle_refl | ].
     symmetry; apply Nat.add_sub_swap.
-    rewrite Hn; unfold min_n.
-    destruct rad; [ easy | cbn; flia ].
+    rewrite Hn; min_n_ge.
   --rewrite <- summation_mul_distr_l.
     rewrite NQpower_summation; [ | easy ].
     remember 1 as x; remember S as f; cbn; subst x f.
@@ -1458,10 +1437,7 @@ intros * Hur.
 specialize radix_ge_2 as Hr.
 intros H1 k l Hlr.
 remember (min_n i k) as n eqn:Hn.
-assert (Hin : i + 1 ≤ n). {
-  rewrite Hn; unfold min_n.
-  destruct rad; [ easy | cbn; flia ].
-}
+assert (Hin : i + 1 ≤ n) by (rewrite Hn; min_n_ge).
 specialize (H1 k) as H3.
 apply A_ge_1_true_iff in H3.
 rewrite <- Hn in H3.
@@ -1693,8 +1669,7 @@ remember (min_n i k) as n eqn:Hn.
 move n before l.
 specialize (ApB_lower_bound u i k l n HfA Hn) as H1.
 rewrite ApB_A in H1; [ easy | ].
-rewrite Hn; unfold min_n.
-destruct rad; [ easy | cbn; flia ].
+rewrite Hn; min_n_ge.
 Qed.
 
 Theorem A_upper_bound_for_mul {r : radix} : ∀ u i,
@@ -1709,8 +1684,7 @@ remember (min_n i k) as n eqn:Hn.
 move n before l.
 specialize (ApB_upper_bound_for_mul u i k l n Hur Hn) as H1.
 rewrite ApB_A in H1; [ easy | ].
-rewrite Hn; unfold min_n.
-destruct rad; [ easy | cbn; flia ].
+rewrite Hn; min_n_ge.
 Qed.
 
 Theorem frac_eq_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
@@ -2437,9 +2411,7 @@ apply (NQle_lt_trans _ ((rad - 3) // rad + 2 // rad * (1 - 1 // rad ^ s))%NQ).
   replace (i + 1 + j - i) with (S j) by flia.
   replace (S (i + 1 + j)) with (i + j + 2) by flia.
   rewrite NQmul_pair; [ | pauto | easy ].
-  rewrite NQmul_pair; [ | | pauto ]; cycle 1. {
-    now destruct rad.
-  }
+  rewrite NQmul_pair; [ | now destruct rad | pauto ].
   do 2 rewrite Nat.mul_1_r.
   rewrite <- Nat.mul_assoc, <- Nat.pow_succ_r', Nat.mul_comm.
   rewrite <- Nat.pow_succ_r'.

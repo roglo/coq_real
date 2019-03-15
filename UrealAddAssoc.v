@@ -8,8 +8,6 @@ Require Import Utf8 Arith NPeano Psatz PeanoNat.
 Require Import Misc Summation Ureal UrealNorm NQ UrealAddAssoc1.
 Set Nested Proofs Allowed.
 
-Ltac min_n_ge := unfold min_n; destruct rad; [ easy | cbn; flia ].
-
 Theorem pred_rad_lt_rad {r : radix} : rad - 1 < rad.
 Proof.
 specialize radix_ge_2 as H; lia.
