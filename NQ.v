@@ -2714,6 +2714,17 @@ symmetry in H4; rewrite Nat.sub_diag in H4.
 now apply Nat.eq_add_0 in H4.
 Qed.
 
+Theorem NQle_0_pair : ∀ a b, (0 ≤ a // b)%NQ.
+Proof.
+intros.
+replace 0%NQ with (0 // 1)%NQ by easy.
+destruct b. {
+  rewrite NQden_0.
+  apply NQle_pair; [ easy | easy | apply Nat.le_0_l ].
+}
+apply NQle_pair; [ easy | easy | apply Nat.le_0_l ].
+Qed.
+
 Theorem NQlt_0_pair : ∀ a b, (0 < a // b)%NQ ↔ 0 < a.
 Proof.
 intros.
