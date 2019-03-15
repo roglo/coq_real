@@ -1515,7 +1515,7 @@ Theorem glop {r : radix} : ∀ m u i,
     carry u (i + k) =
     NQintg
       ((u (i + k + 1) + carry u (i + k + 1))%nat // rad +
-       NQfrac (A (i + 1) 0 u) * 1 // rad)%NQ.
+       NQfrac (A (i + k + 1) (min_n (i + k) 0) u) * 1 // rad)%NQ.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -1543,6 +1543,23 @@ rewrite <- NQmul_add_distr_r.
 rewrite (min_n_add_l (i + k)), Nat.mul_1_r.
 f_equal; f_equal; f_equal.
 rewrite NQintg_frac at 1; [ | easy ].
+f_equal.
+rewrite <- ApB_A; [ | min_n_ge ].
+rewrite NQintg_add_cond; [ | easy | easy ].
+assert (HB : (0 ≤ B (i + k + 1) (min_n (i + k) 0) u rad < 1)%NQ). {
+  split; [ easy | ].
+... suite
+}
+rewrite (NQintg_small (B _ _ _ _)); [ | easy ].
+rewrite (NQfrac_small (B _ _ _ _)); [ | easy ].
+rewrite Nat.add_0_r.
+destruct
+  (NQlt_le_dec
+     (NQfrac (A (i + k + 1) (min_n (i + k) 0) u) +
+      B (i + k + 1) (min_n (i + k) 0) u rad) 1) as [H1| H1]. {
+  now rewrite Nat.add_0_r.
+}
+exfalso; apply NQnlt_ge in H1; apply H1; clear H1.
 ...
 
 Theorem Vincent_Tourneur {r : radix} : ∀ m u i,
