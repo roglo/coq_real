@@ -1520,6 +1520,27 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Haut *.
+unfold carry, carry_cases.
+destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]. 2: {
+  destruct H1 as (j & Hjj & Hj).
+  specialize (Haut (k + j)) as H1.
+  apply A_ge_1_add_r_true_if in H1.
+  now rewrite Hj in H1.
+}
+clear H1.
+destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1]. 2: {
+  destruct H1 as (j & Hjj & Hj).
+  specialize (Haut (k + 1 + j)) as H1.
+  apply A_ge_1_add_r_true_if in H1.
+  now rewrite Nat.add_assoc, Hj in H1.
+}
+clear H1.
+rewrite A_split_first; [ | min_n_ge ].
+replace (S (i + k)) with (i + k + 1) by flia.
+rewrite NQpair_add_l, <- NQadd_assoc.
+rewrite <- (NQmul_pair_den_num (NQintg _) 1); [ | easy ].
+rewrite <- NQmul_add_distr_r.
+rewrite (min_n_add_l (i + k)), Nat.mul_1_r.
 ...
 
 Theorem Vincent_Tourneur {r : radix} : ∀ m u i,
