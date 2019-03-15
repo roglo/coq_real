@@ -1541,6 +1541,8 @@ rewrite NQpair_add_l, <- NQadd_assoc.
 rewrite <- (NQmul_pair_den_num (NQintg _) 1); [ | easy ].
 rewrite <- NQmul_add_distr_r.
 rewrite (min_n_add_l (i + k)), Nat.mul_1_r.
+f_equal; f_equal; f_equal.
+rewrite NQintg_frac at 1; [ | easy ].
 ...
 
 Theorem Vincent_Tourneur {r : radix} : ∀ m u i,
