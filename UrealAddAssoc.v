@@ -1508,26 +1508,43 @@ Theorem fold_carry {r : radix} : ∀ u i,
   NQintg (A i (min_n i (carry_cases u i)) u) = carry u i.
 Proof. easy. Qed.
 
-Theorem glop {r : radix} : ∀ u i,
+Theorem all_fA_ge_1_ε_carry {r : radix} : ∀ u i,
+  (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k, carry u (i + k) = NQintg (A (i + k) (min_n (i + k) 0) u).
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Haut *.
+clear - Haut.
+unfold carry, carry_cases.
+destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]; [ easy | ].
+destruct H1 as (j & Hjj & Hj).
+specialize (Haut (k + j)) as H1.
+apply A_ge_1_add_r_true_if in H1.
+now rewrite Hj in H1.
+Qed.
+
+Theorem all_fA_ge_1_ε_carry_carry {r : radix} : ∀ u i,
   (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k,
     carry u (i + k) =
     NQintg
       ((u (i + k + 1) + carry u (i + k + 1))%nat // rad +
-       NQfrac (A (i + k + 1) (min_n (i + k) 0) u) * 1 // rad)%NQ.
+       NQfrac (A (i + k + 1) (min_n (i + k) 1) u) * 1 // rad)%NQ.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Haut *.
-unfold carry, carry_cases.
-destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]. 2: {
-  destruct H1 as (j & Hjj & Hj).
-  specialize (Haut (k + j)) as H1.
-  apply A_ge_1_add_r_true_if in H1.
-  now rewrite Hj in H1.
+rewrite all_fA_ge_1_ε_carry; [ | easy ].
+assert (Hmr' : ∀ l, u (i + k + l) ≤ 3 * (rad - 1)). {
+  intros; rewrite <- Nat.add_assoc; apply Hmr.
 }
-clear H1.
+assert (Haut' : ∀ l, fA_ge_1_ε u (i + k) l = true). {
+  intros l; apply A_ge_1_add_r_true_if, Haut.
+}
+rewrite <- (all_fA_ge_1_ε_NQintg_A (i + k) u Hmr' Haut' 0 rad).
+unfold carry, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1]. 2: {
   destruct H1 as (j & Hjj & Hj).
   specialize (Haut (k + 1 + j)) as H1.
@@ -1543,57 +1560,12 @@ rewrite <- NQmul_add_distr_r.
 rewrite (min_n_add_l (i + k)), Nat.mul_1_r.
 f_equal; f_equal; f_equal.
 rewrite NQintg_frac at 1; [ | easy ].
-f_equal.
-rewrite <- ApB_A; [ | min_n_ge ].
-rewrite NQintg_add_cond; [ | easy | easy ].
-remember (min_n (i + k) 0) as n eqn:Hn; move n before k.
-assert
-  (Hbu :
-     (B (i + k + 1) n u rad
-      ≤ 3 // rad ^ (n - (i + k + 1) - 1) * (1 - 1 // rad ^ rad))%NQ). {
-  apply B_upper_bound_for_adds'; [ | rewrite Hn; min_n_ge | ].
-  -split; [ flia | ].
-   rewrite Nat.pow_2_r.
-   destruct rad as [| rr]; [ easy | ].
-   destruct rr; [ flia Hr | cbn; flia ].
-  -intros j Hj.
-   replace j with (i + (j - i)) by flia Hj; apply Hmr.
-}
-assert (HB : (0 ≤ B (i + k + 1) n u rad < 1)%NQ). {
-  split; [ easy | ].
-  eapply NQle_lt_trans; [ apply Hbu | ].
-  rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
-    now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
-  }
-  do 2 rewrite Nat.mul_1_l.
-  rewrite NQmul_pair; [ | pauto | pauto ].
-  apply NQlt_pair; [ apply Nat.neq_mul_0; pauto | easy | ].
-  do 2 rewrite Nat.mul_1_r.
-  rewrite Nat.mul_sub_distr_l.
-  eapply Nat.lt_le_trans.
-  -apply Nat.sub_lt; [ | cbn; pauto ].
-   now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
-  -apply Nat.mul_le_mono_r.
-   apply (Nat.le_trans _ (rad ^ 2)).
-   +destruct rad as [| rr]; [ easy | ].
-    destruct rr; [ flia Hr | cbn; flia ].
-   +apply Nat.pow_le_mono_r; [ easy | ].
-    rewrite Hn; unfold min_n.
-    destruct rad as [| rr]; [ easy | ].
-    destruct rr; [ flia Hr | cbn; flia ].
-}
-rewrite (NQintg_small (B _ _ _ _)); [ | easy ].
-rewrite (NQfrac_small (B _ _ _ _)); [ | easy ].
-rewrite Nat.add_0_r.
-destruct
-  (NQlt_le_dec
-     (NQfrac (A (i + k + 1) n u) + B (i + k + 1) n u rad) 1) as [H1| H1]. {
-  now rewrite Nat.add_0_r.
-}
-exfalso; apply NQnlt_ge in H1; apply H1; clear H1.
-(* mmmm... pas sûr que ça marche A étant trop proche de 1 à cause de Haut *)
-...
+f_equal; symmetry.
+replace 1 with (0 + 1) by easy.
+now rewrite min_n_add, Nat.mul_1_r.
+Qed.
 
+(*
 Theorem Vincent_Tourneur {r : radix} : ∀ m u i,
   m ≤ rad ^ 2
   → (∀ k, u (i + k) ≤ m * (rad - 1))
@@ -1895,6 +1867,7 @@ specialize (A_upper_bound_for_adds m u (i + k + 1) n) as H2.
 rewrite A_split_first.
 rewrite fold_carry.
 ...
+*)
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
@@ -2117,10 +2090,18 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                  destruct c; [ flia Hpuv0 | flia Hc3 ].
                }
                move H before Hpuv0; clear Hpuv0; rename H into Hpuv0.
-assert (H42 : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
+specialize (all_fA_ge_1_ε_carry_carry (u ⊕ v) (i + 1)) as H1.
+assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
+  intros; rewrite Nat.add_shuffle0; apply Huv3.
+}
+specialize (H1 H); clear H.
+assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
   intros p.
   apply A_ge_1_add_r_true_if, Hauv.
 }
+specialize (H1 H); clear H.
+...
+specialize (Vincent_Tourneur 3 (u ⊕ v) (i + 1) (Huv3 1) H42) as H1.
 ...
 specialize (Vincent_Tourneur 3 (u ⊕ v) (i + 1) (Huv3 1) H42) as H1.
 specialize (H1 0) as H10.
