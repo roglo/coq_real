@@ -1548,11 +1548,23 @@ rewrite <- ApB_A; [ | min_n_ge ].
 rewrite NQintg_add_cond; [ | easy | easy ].
 assert (HB : (0 ≤ B (i + k + 1) (min_n (i + k) 0) u rad < 1)%NQ). {
   split; [ easy | ].
+  specialize (B_upper_bound_for_adds 3 u (i + k + 1) 0 rad) as H1.
+apply (NQlt_trans _ (1 // rad ^ 1)).
+eapply NQle_lt_trans; [ | apply H1 ].
+...
+rewrite B_of_A; [ | min_n_ge ].
+rewrite B_of_A; [ | min_n_ge ].
+rewrite A_split_first.
+unfold B.
+apply summation_le_compat.
+...
   remember (min_n (i + k) 0) as n eqn:Hn.
   rewrite B_of_A; [ | rewrite Hn; min_n_ge ].
+...
+...
+Search (A _ _ _ < _)%NQ.
 Search B.
 ...
-Search (B _ _ _ _ < _)%NQ.
 eapply NQlt_trans.
 eapply NQlt_trans; [ | apply B_upper_bound_for_adds ].
   apply B_lt_1.
