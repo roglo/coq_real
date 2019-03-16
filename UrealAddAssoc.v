@@ -1551,9 +1551,25 @@ assert (HB : (0 ≤ B (i + k + 1) (min_n (i + k) 0) u rad < 1)%NQ). {
   specialize (B_upper_bound_for_adds 3 u (i + k + 1) 0 rad) as H1.
 apply (NQlt_trans _ (1 // rad ^ 1)).
 eapply NQle_lt_trans; [ | apply H1 ].
+rewrite (min_n_add_l (i + k)), Nat.mul_1_r.
+  remember (min_n (i + k) 0) as n eqn:Hn.
+rewrite B_of_A; [ | rewrite Hn; min_n_ge ].
+rewrite B_of_A; [ | rewrite Hn; min_n_ge ].
+remember (n - (i + k + 1) - 1) as s eqn:Hs.
+move s before n.
+replace (n + rad) with (rad + n) by apply Nat.add_comm.
+rewrite <- Nat.add_sub_assoc; [ | rewrite Hn; min_n_ge ].
+rewrite <- Nat.add_sub_assoc; [ | rewrite Hn; min_n_ge ].
+rewrite <- Nat.add_sub_assoc; [ | rewrite Hn; min_n_ge ].
+rewrite <- Hs, (Nat.add_comm _ (n - 1)).
+unfold A; rewrite Nat.sub_add.
+rewrite Nat.add_shuffle0, Nat.sub_add.
+rewrite summation_shift; [ | rewrite Hn; min_n_ge ].
+rewrite (summation_shift (n + rad)); [ | rewrite Hn; min_n_ge ].
+rewrite Nat_sub_sub_swap, Nat.add_sub.
+rewrite <- Nat.add_sub_assoc; [ | easy ].
+rewrite Nat.add_comm, (Nat.add_comm rad), Nat.add_sub.
 ...
-rewrite B_of_A; [ | min_n_ge ].
-rewrite B_of_A; [ | min_n_ge ].
 rewrite A_split_first.
 unfold B.
 apply summation_le_compat.
