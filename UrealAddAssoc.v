@@ -1557,6 +1557,9 @@ rewrite B_of_A; [ | rewrite Hn; min_n_ge ].
 rewrite B_of_A; [ | rewrite Hn; min_n_ge ].
 remember (n - (i + k + 1) - 1) as s eqn:Hs.
 move s before n.
+(**)
+rewrite (A_split (n + rad - 1)).
+...
 replace (n + rad) with (rad + n) by apply Nat.add_comm.
 rewrite <- Nat.add_sub_assoc; [ | rewrite Hn; min_n_ge ].
 rewrite <- Nat.add_sub_assoc; [ | rewrite Hn; min_n_ge ].
