@@ -1508,8 +1508,8 @@ Theorem fold_carry {r : radix} : ∀ u i,
   NQintg (A i (min_n i (carry_cases u i)) u) = carry u i.
 Proof. easy. Qed.
 
-Theorem glop {r : radix} : ∀ m u i,
-  (∀ k, u (i + k) ≤ m * (rad - 1))
+Theorem glop {r : radix} : ∀ u i,
+  (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k,
     carry u (i + k) =
@@ -1546,56 +1546,48 @@ rewrite NQintg_frac at 1; [ | easy ].
 f_equal.
 rewrite <- ApB_A; [ | min_n_ge ].
 rewrite NQintg_add_cond; [ | easy | easy ].
-assert (HB : (0 ≤ B (i + k + 1) (min_n (i + k) 0) u rad < 1)%NQ). {
+remember (min_n (i + k) 0) as n eqn:Hn; move n before k.
+assert
+  (Hbu :
+     (B (i + k + 1) n u rad
+      ≤ 3 // rad ^ (n - (i + k + 1) - 1) * (1 - 1 // rad ^ rad))%NQ). {
+  apply B_upper_bound_for_adds'; [ | rewrite Hn; min_n_ge | ].
+  -split; [ flia | ].
+   rewrite Nat.pow_2_r.
+   destruct rad as [| rr]; [ easy | ].
+   destruct rr; [ flia Hr | cbn; flia ].
+  -intros j Hj.
+   replace j with (i + (j - i)) by flia Hj; apply Hmr.
+}
+assert (HB : (0 ≤ B (i + k + 1) n u rad < 1)%NQ). {
   split; [ easy | ].
-  specialize (B_upper_bound_for_adds 3 u (i + k + 1) 0 rad) as H1.
-apply (NQlt_trans _ (1 // rad ^ 1)).
-eapply NQle_lt_trans; [ | apply H1 ].
-rewrite (min_n_add_l (i + k)), Nat.mul_1_r.
-  remember (min_n (i + k) 0) as n eqn:Hn.
-rewrite B_of_A; [ | rewrite Hn; min_n_ge ].
-rewrite B_of_A; [ | rewrite Hn; min_n_ge ].
-remember (n - (i + k + 1) - 1) as s eqn:Hs.
-move s before n.
-(**)
-rewrite (A_split (n + rad - 1)).
-...
-replace (n + rad) with (rad + n) by apply Nat.add_comm.
-rewrite <- Nat.add_sub_assoc; [ | rewrite Hn; min_n_ge ].
-rewrite <- Nat.add_sub_assoc; [ | rewrite Hn; min_n_ge ].
-rewrite <- Nat.add_sub_assoc; [ | rewrite Hn; min_n_ge ].
-rewrite <- Hs, (Nat.add_comm _ (n - 1)).
-unfold A; rewrite Nat.sub_add.
-rewrite Nat.add_shuffle0, Nat.sub_add.
-rewrite summation_shift; [ | rewrite Hn; min_n_ge ].
-rewrite (summation_shift (n + rad)); [ | rewrite Hn; min_n_ge ].
-rewrite Nat_sub_sub_swap, Nat.add_sub.
-rewrite <- Nat.add_sub_assoc; [ | easy ].
-rewrite Nat.add_comm, (Nat.add_comm rad), Nat.add_sub.
-...
-rewrite A_split_first.
-unfold B.
-apply summation_le_compat.
-...
-  remember (min_n (i + k) 0) as n eqn:Hn.
-  rewrite B_of_A; [ | rewrite Hn; min_n_ge ].
-...
-...
-Search (A _ _ _ < _)%NQ.
-Search B.
-...
-eapply NQlt_trans.
-eapply NQlt_trans; [ | apply B_upper_bound_for_adds ].
-  apply B_lt_1.
-... suite
+  eapply NQle_lt_trans; [ apply Hbu | ].
+  rewrite NQsub_pair_pos; [ | easy | pauto | ]. 2: {
+    now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
+  }
+  do 2 rewrite Nat.mul_1_l.
+  rewrite NQmul_pair; [ | pauto | pauto ].
+  apply NQlt_pair; [ apply Nat.neq_mul_0; pauto | easy | ].
+  do 2 rewrite Nat.mul_1_r.
+  rewrite Nat.mul_sub_distr_l.
+  eapply Nat.lt_le_trans.
+  -apply Nat.sub_lt; [ | cbn; pauto ].
+   now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
+  -apply Nat.mul_le_mono_r.
+   apply (Nat.le_trans _ (rad ^ 2)).
+   +destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | cbn; flia ].
+   +apply Nat.pow_le_mono_r; [ easy | ].
+    rewrite Hn; unfold min_n.
+    destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | cbn; flia ].
 }
 rewrite (NQintg_small (B _ _ _ _)); [ | easy ].
 rewrite (NQfrac_small (B _ _ _ _)); [ | easy ].
 rewrite Nat.add_0_r.
 destruct
   (NQlt_le_dec
-     (NQfrac (A (i + k + 1) (min_n (i + k) 0) u) +
-      B (i + k + 1) (min_n (i + k) 0) u rad) 1) as [H1| H1]. {
+     (NQfrac (A (i + k + 1) n u) + B (i + k + 1) n u rad) 1) as [H1| H1]. {
   now rewrite Nat.add_0_r.
 }
 exfalso; apply NQnlt_ge in H1; apply H1; clear H1.
