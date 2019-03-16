@@ -1591,6 +1591,7 @@ destruct
   now rewrite Nat.add_0_r.
 }
 exfalso; apply NQnlt_ge in H1; apply H1; clear H1.
+(* mmmm... pas sûr que ça marche A étant trop proche de 1 à cause de Haut *)
 ...
 
 Theorem Vincent_Tourneur {r : radix} : ∀ m u i,
