@@ -2045,6 +2045,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          now apply (rad_2_sum_3_all_9_not_0_0 (u ⊕ v) i).
        }
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 1) as [Huv21| Huv21]. {
+         clear Huv20.
          rewrite <- A_additive in H5.
          rewrite A_split_first in H5; [ | flia Hik ].
          replace (S (i + 1)) with (i + 2) in H5 by easy.
@@ -2057,6 +2058,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            destruct p. {
              rewrite Nat.add_0_r.
              destruct (Nat.eq_dec ((u ⊕ v) (i + 3)) 0) as [Huv30| Huv30]. {
+               exfalso.
                specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as Hpuv0.
                rewrite Nat.add_0_r in Hpuv0.
                unfold P, d2n, prop_carr, dig in Hpuv0.
@@ -2090,6 +2092,13 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                  destruct c; [ flia Hpuv0 | flia Hc3 ].
                }
                move H before Hpuv0; clear Hpuv0; rename H into Hpuv0.
+               rename Huv0 into Huv10; move Huv10 before Huv21.
+               rename Hpuv0 into Hc1.
+               remember (carry (u ⊕ v) (i + 2)) as c2 eqn:Hc2.
+               symmetry in Hc2.
+               destruct (Nat.eq_dec c2 0) as [Hc20| Hc20]. {
+                 move Hc20 at top; subst c2; clear Hpuv1.
+...
 specialize (all_fA_ge_1_ε_carry_carry (u ⊕ v) (i + 1)) as H1.
 assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
   intros; rewrite Nat.add_shuffle0; apply Huv3.
@@ -2099,7 +2108,10 @@ assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
   intros p.
   apply A_ge_1_add_r_true_if, Hauv.
 }
-specialize (H1 H); clear H.
+specialize (H1 H 1); clear H.
+replace (i + 1 + 1) with (i + 2) in H1 by flia.
+replace (i + 2 + 1) with (i + 3) in H1 by flia.
+               rewrite Huv30, Nat.add_0_l in H1.
 ...
 specialize (Vincent_Tourneur 3 (u ⊕ v) (i + 1) (Huv3 1) H42) as H1.
 ...
