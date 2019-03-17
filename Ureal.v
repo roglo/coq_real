@@ -453,10 +453,12 @@ Definition min_n {r : radix} i k := rad * (i + k + 3).
 Definition fA_ge_1_ε {r : radix} u i k :=
   let n := min_n i k in
   let s := n - i - 1 in
-  if NQlt_le_dec (NQfrac (A i n u)) (1 - 1 // rad ^ S k)%NQ then false else true.
+  if NQlt_le_dec (NQfrac (A i n u)) (1 - 1 // rad ^ S k)%NQ then false
+  else true.
 
 Ltac min_n_ge := unfold min_n; destruct rad; [ easy | cbn; flia ].
-Ltac min_n_ge_in h := unfold min_n in h; destruct rad; [ easy | cbn in h; flia h ].
+Ltac min_n_ge_in h :=
+  unfold min_n in h; destruct rad; [ easy | cbn in h; flia h ].
 
 Theorem rad_pow_min_n {r : radix} : ∀ i j,
   2 ≤ rad ^ (min_n i j - i - 1).
