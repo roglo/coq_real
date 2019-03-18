@@ -2163,10 +2163,13 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                move Hc22 at top; subst c2; clear Hc20 Hcuv2.
                rename Hc2 into Hcuv2.
 (**)
+(*
                specialize (all_fA_ge_1_ε_carry (u ⊕ v) i Hauv 1) as H1.
                rewrite Hcuv1 in H1; symmetry in H1.
+*)
                specialize (all_fA_ge_1_ε_carry (u ⊕ v) i Hauv 2) as H6.
                rewrite Hcuv2 in H6; symmetry in H6.
+(*
                specialize (all_fA_ge_1_ε_NQintg_A (i + 1) (u ⊕ v)) as H7.
                specialize (H7 (Huv3 _)).
                assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
@@ -2187,16 +2190,34 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                  split; [ easy | apply NQlt_pair_mono_l; pauto ].
                }
                rewrite Nat.add_0_l in H1.
+*)
+(*
                replace (i + 2) with (i + 1 + 1) in H6 at 2 by flia.
                rewrite min_n_add_l, Nat.mul_1_r in H6.
+*)
                symmetry in H6.
                apply NQintg_interv in H6; [ | easy ].
+(*
                rewrite (NQintg_less_small 1) in H1. 2: {
                  admit. (* ouais *)
                }
+               destruct
+                 (NQlt_le_dec
+                    ((1 // rad)%NQ +
+                     NQfrac (A (i + 2) (min_n (i + 1) 0 + rad) (u ⊕ v) *
+                             (1 // rad)%NQ))) as [H7| H7]; [ | easy ].
+               clear H1.
+               rewrite A_split_first in H7.
+*)
+               rewrite A_split_first in H6.
+               replace (S (i + 2)) with (i + 3) in H6 by easy.
+               remember ((u ⊕ v) (i + 3)) as uv3 eqn:Huv33.
+               symmetry in Huv33.
+               destruct (Nat.eq_dec uv3 0) as [Huv30| Huv30]. {
+                 exfalso; move Huv30 at top; subst uv3.
+                 rewrite NQadd_0_l in H6.
 ...
-...
-               rewrite H6 in H1.
+(u ⊕ v) (i + 3) // rad
 ...
                rewrite all_fA_ge_1_ε_NQintg_A in H6.
 
