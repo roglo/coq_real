@@ -2060,6 +2060,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              destruct (Nat.eq_dec ((u ⊕ v) (i + 3)) 0) as [Huv30| Huv30]. {
                exfalso.
                rename Huv0 into Huv10; move Huv10 before Huv21.
+...
                specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as Hpuv1.
                rewrite Nat.add_0_r in Hpuv1.
                unfold P, d2n, prop_carr, dig in Hpuv1.
