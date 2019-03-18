@@ -2162,8 +2162,32 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
                move Hc22 at top; subst c2; clear Hc20 Hcuv2.
                rename Hc2 into Hcuv2.
-               specialize (all_fA_ge_1_ε_carry (u ⊕ v) i Hauv 2) as H1.
-               rewrite Hcuv2 in H1; symmetry in H1.
+(**)
+               specialize (all_fA_ge_1_ε_carry (u ⊕ v) i Hauv 1) as H1.
+               rewrite Hcuv1 in H1; symmetry in H1.
+               specialize (all_fA_ge_1_ε_carry (u ⊕ v) i Hauv 2) as H6.
+               rewrite Hcuv2 in H6; symmetry in H6.
+               rewrite A_split_first in H1; [ | min_n_ge ].
+               replace (S (i + 1)) with (i + 2) in H1 by flia.
+               rewrite Huv21 in H1.
+               rewrite NQintg_add_cond in H1; [ | apply NQle_0_pair | ]. 2: {
+                 now apply NQle_0_mul_r.
+               }
+...
+               replace (i + 2) with (i + 1 + 1) in H6 at 2 by flia.
+               rewrite min_n_add_l in H6.
+...
+               rewrite all_fA_ge_1_ε_NQintg_A in H6.
+
+Search (NQintg _ = NQintg _).
+all_fA_ge_1_ε_NQintg_A:
+  ∀ (r : radix) (i : nat) (u : nat → nat),
+    (∀ k : nat, u (i + k) ≤ 3 * (rad - 1))
+    → (∀ k : nat, fA_ge_1_ε u i k = true)
+      → ∀ k l : nat, NQintg (A i (min_n i k + l) u) = NQintg (A i (min_n i k) u)
+...
+               rewrite H6 in H1.
+
                rewrite A_split_first in H1; [ | min_n_ge ].
                replace (S (i + 2)) with (i + 3) in H1 by flia.
                rewrite NQintg_add_cond in H1; [ | apply NQle_0_pair | ]. 2: {
