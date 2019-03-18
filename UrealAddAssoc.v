@@ -2167,6 +2167,13 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                rewrite Hcuv1 in H1; symmetry in H1.
                specialize (all_fA_ge_1_ε_carry (u ⊕ v) i Hauv 2) as H6.
                rewrite Hcuv2 in H6; symmetry in H6.
+               specialize (all_fA_ge_1_ε_NQintg_A (i + 1) (u ⊕ v)) as H7.
+               specialize (H7 (Huv3 _)).
+               assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
+                 intros p; apply A_ge_1_add_r_true_if, Hauv.
+               }
+               specialize (H7 H 0 rad); clear H.
+               rewrite <- H7 in H1; clear H7.
                rewrite A_split_first in H1; [ | min_n_ge ].
                replace (S (i + 1)) with (i + 2) in H1 by flia.
                rewrite Huv21 in H1.
@@ -2180,9 +2187,16 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                  split; [ easy | apply NQlt_pair_mono_l; pauto ].
                }
                rewrite Nat.add_0_l in H1.
-...
                replace (i + 2) with (i + 1 + 1) in H6 at 2 by flia.
-               rewrite min_n_add_l in H6.
+               rewrite min_n_add_l, Nat.mul_1_r in H6.
+               symmetry in H6.
+               apply NQintg_interv in H6; [ | easy ].
+               rewrite (NQintg_less_small 1) in H1. 2: {
+                 admit. (* ouais *)
+               }
+...
+...
+               rewrite H6 in H1.
 ...
                rewrite all_fA_ge_1_ε_NQintg_A in H6.
 
