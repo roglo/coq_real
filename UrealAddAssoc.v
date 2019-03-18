@@ -2099,41 +2099,6 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                destruct (Nat.eq_dec c2 0) as [Hc20| Hc20]. {
                  move Hc20 at top; subst c2; clear Hpuv2.
 ...
-base 2
-00 ⊥
-010 ⊥
-0110
-0111
-100 ⊥
-1010
-1011
-1100 ⊥
-1101
-1110
-1111
-0102=0110
-0103=0111
-0112=1000 ⊥
-0113=1001 ⊥
-1012=1100 ⊥
-1013=1101
-1102=1110
-1103=1111
-1112=0000 ⊥
-1113=0001
-012=100 ⊥
-013=101
-102=110
-103=111
-112=000 ⊥
-113=001 ⊥
-02=10
-03=11
-12=00 ⊥
-13=01
-2=0
-3=1
-...
 specialize (all_fA_ge_1_ε_carry_carry (u ⊕ v) (i + 1)) as H1.
 assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
   intros; rewrite Nat.add_shuffle0; apply Huv3.
