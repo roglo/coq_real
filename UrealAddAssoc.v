@@ -2058,7 +2058,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            destruct p. {
              rewrite Nat.add_0_r.
              rename Huv0 into Huv10; move Huv10 before Huv21.
-             assert (Huvc1 : carry (u ⊕ v) (i + 1) = 1). {
+             assert (Hcuv1 : carry (u ⊕ v) (i + 1) = 1). {
                specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as Hpuv1.
                rewrite Nat.add_0_r in Hpuv1.
                unfold P, d2n, prop_carr, dig in Hpuv1.
@@ -2099,20 +2099,83 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                exfalso.
                move Hc20 at top; subst c2; clear Hcuv2.
                rename Hc2 into Hcuv2.
+(*
+               specialize (all_fA_ge_1_ε_carry (u ⊕ v) i Hauv 1) as H1.
+               rewrite Hcuv1 in H1; symmetry in H1.
+               rewrite NQintg_small in H1; [ easy | ].
+               split; [ easy | ].
+               rewrite A_split_first; [ | min_n_ge ].
+               replace (S (i + 1)) with (i + 2) by flia.
+               rewrite Huv21.
+*)
+               specialize (all_fA_ge_1_ε_carry_carry (u ⊕ v) i) as H1.
+               assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+                 intros p; replace p with (0 + p) by easy.
+                 rewrite Nat.add_assoc; apply Huv3.
+               }
+               specialize (H1 H Hauv 1); clear H.
+               replace (i + 1 + 1) with (i + 2) in H1 by flia.
+               rewrite Hcuv1, Huv21, Hcuv2, Nat.add_0_r in H1.
+               symmetry in H1.
+               rewrite NQintg_add_cond in H1; [ | easy | ]. 2: {
+                 now apply NQle_0_mul_r.
+               }
+               rewrite NQintg_small in H1. 2: {
+                 split; [ easy | apply NQlt_pair_mono_l; pauto ].
+               }
+               rewrite (NQfrac_small (_ // _)%NQ) in H1. 2: {
+                 split; [ easy | apply NQlt_pair_mono_l; pauto ].
+               }
+               rewrite Nat.add_0_l in H1.
+               assert
+                 (HF :
+                    (0 ≤
+                     NQfrac (A (i + 2) (min_n (i + 1) 1) (u ⊕ v)) * 1 // rad
+                     < 1)%NQ). {
+                 split; [ now apply NQle_0_mul_r | ].
+                 apply (NQmul_lt_mono_pos_r (rad // 1)%NQ). {
+                   now apply NQlt_0_pair.
+                 }
+                 rewrite <- NQmul_assoc, NQmul_pair_den_num; [ | easy ].
+                 rewrite NQmul_1_r, NQmul_1_l.
+                 eapply NQlt_trans; [ apply NQfrac_lt_1 | ].
+                 now apply NQlt_pair_mono_r.
+               }
+               rewrite NQintg_small in H1; [ | easy ].
+               rewrite NQfrac_small in H1; [ | easy ].
+               rewrite Nat.add_0_l in H1.
+               destruct
+                 (NQlt_le_dec
+                    (1 // rad +
+                     NQfrac (A (i + 2) (min_n (i + 1) 1) (u ⊕ v)) *
+                     1 // rad)%NQ
+                    1) as [H6| H6]; [ easy | clear H1 ].
+               apply NQnlt_ge in H6; apply H6; clear H6.
+               apply NQlt_add_lt_sub_l.
+               rewrite NQsub_pair_pos; [ | easy | easy | flia Hr ].
+               do 2 rewrite Nat.mul_1_l.
+               rewrite <- (NQmul_pair_den_num (rad - 1) 1); [ | easy ].
+               apply NQmul_lt_mono_pos_r; [ easy | ].
+               eapply NQlt_le_trans; [ apply NQfrac_lt_1 | ].
+               apply NQle_pair_mono_r; flia Hr.
+             }
+             destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
+               move Hc22 at top; subst c2; clear Hc20 Hcuv2.
+               rename Hc2 into Hcuv2.
+               specialize (all_fA_ge_1_ε_carry (u ⊕ v) i Hauv 2) as H1.
+               rewrite Hcuv2 in H1; symmetry in H1.
+               rewrite A_split_first in H1; [ | min_n_ge ].
+               replace (S (i + 2)) with (i + 3) in H1 by flia.
+               rewrite NQintg_add_cond in H1; [ | apply NQle_0_pair | ]. 2: {
+                 now apply NQle_0_mul_r.
+               }
 ...
-specialize (all_fA_ge_1_ε_carry_carry (u ⊕ v) (i + 1)) as H1.
-assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
-  intros; rewrite Nat.add_shuffle0; apply Huv3.
-}
-specialize (H1 H); clear H.
-assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
-  intros p.
-  apply A_ge_1_add_r_true_if, Hauv.
-}
-specialize (H1 H 1); clear H.
-replace (i + 1 + 1) with (i + 2) in H1 by flia.
-replace (i + 2 + 1) with (i + 3) in H1 by flia.
-               rewrite Huv30, Nat.add_0_l in H1.
+               rewrite (NQintg_less_small 1) in H1. 2: {
+               rewrite NQintg_less_small in H1; [ easy | ].
+               split; [ easy | ].
+               rewrite A_split_first; [ | min_n_ge ].
+               replace (S (i + 1)) with (i + 2) by flia.
+               rewrite Huv21.
 ...
 specialize (Vincent_Tourneur 3 (u ⊕ v) (i + 1) (Huv3 1) H42) as H1.
 ...
