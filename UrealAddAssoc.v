@@ -2169,6 +2169,13 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                rewrite NQintg_add_cond in H1; [ | apply NQle_0_pair | ]. 2: {
                  now apply NQle_0_mul_r.
                }
+               destruct
+                 (NQlt_le_dec
+                    (NQfrac ((u ⊕ v) (i + 3) // rad) +
+                     NQfrac
+                       (A (i + 3) (min_n (i + 2) 0) (u ⊕ v) *
+                        (1 // rad)%NQ)) 1) as [H6| H6]. {
+                 rewrite Nat.add_0_r in H1.
 ...
                rewrite (NQintg_less_small 1) in H1. 2: {
                rewrite NQintg_less_small in H1; [ easy | ].
