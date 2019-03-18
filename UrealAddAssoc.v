@@ -2101,8 +2101,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
 ...
 base 2
 00 ⊥
-0100 ⊥
-0101
+010 ⊥
 0110
 0111
 100 ⊥
