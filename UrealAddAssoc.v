@@ -2173,6 +2173,13 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                rewrite NQintg_add_cond in H1; [ | apply NQle_0_pair | ]. 2: {
                  now apply NQle_0_mul_r.
                }
+               rewrite NQintg_small in H1. 2: {
+                 split; [ easy | apply NQlt_pair_mono_l; pauto ].
+               }
+               rewrite NQfrac_small in H1. 2: {
+                 split; [ easy | apply NQlt_pair_mono_l; pauto ].
+               }
+               rewrite Nat.add_0_l in H1.
 ...
                replace (i + 2) with (i + 1 + 1) in H6 at 2 by flia.
                rewrite min_n_add_l in H6.
