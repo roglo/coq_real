@@ -2058,6 +2058,28 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            destruct p. {
              rewrite Nat.add_0_r.
              rename Huv0 into Huv10; move Huv10 before Huv21.
+             assert (Huvc1 : carry (u ⊕ v) (i + 1) = 1). {
+               specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as Hpuv1.
+               rewrite Nat.add_0_r in Hpuv1.
+               unfold P, d2n, prop_carr, dig in Hpuv1.
+               unfold "⊕" in Hpuv1 at 1.
+               rewrite Hu0, Hv0, Nat.add_0_l, Hr2 in Hpuv1.
+               replace (2 - 1) with 1 in Hpuv1 by easy.
+               specialize (Nat.div_mod (carry (u ⊕ v) (i + 1)) 2) as H1.
+               assert (H : 2 ≠ 0) by easy.
+               specialize (H1 H); clear H; rewrite Hpuv1 in H1.
+               rewrite H1, <- Nat.add_0_l; f_equal.
+               assert (Hc3 : ∀ k, carry (u ⊕ v) (i + k) < 3). {
+                 intros p.
+                 apply carry_upper_bound_for_adds; [ easy | ].
+                 intros q; apply Huv3.
+               }
+               specialize (Hc3 1).
+               remember (carry (u ⊕ v) (i + 1)) as c eqn:Hc.
+               destruct c; [ easy | ].
+               destruct c; [ easy | exfalso ].
+               destruct c; [ flia H1 | flia Hc3 ].
+             }
              assert
                (Hcuv2 :
                   carry (u ⊕ v) (i + 2) =
@@ -2077,38 +2099,6 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                exfalso.
                move Hc20 at top; subst c2; clear Hcuv2.
                rename Hc2 into Hcuv2.
-...
-(*
-             destruct (Nat.eq_dec ((u ⊕ v) (i + 3)) 0) as [Huv30| Huv30]. {
-               exfalso.
-*)
-(*
-               assert (Hc1 : carry (u ⊕ v) (i + 1) = 1). {
-                 specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as Hpuv1.
-                 rewrite Nat.add_0_r in Hpuv1.
-                 unfold P, d2n, prop_carr, dig in Hpuv1.
-                 unfold "⊕" in Hpuv1 at 1.
-                 rewrite Hu0, Hv0, Nat.add_0_l, Hr2 in Hpuv1.
-                 replace (2 - 1) with 1 in Hpuv1 by easy.
-                 specialize (Nat.div_mod (carry (u ⊕ v) (i + 1)) 2) as H1.
-                 assert (H : 2 ≠ 0) by easy.
-                 specialize (H1 H); clear H; rewrite Hpuv1 in H1.
-                 rewrite H1, <- Nat.add_0_l; f_equal.
-                 assert (Hc3 : ∀ k, carry (u ⊕ v) (i + k) < 3). {
-                   intros p.
-                   apply carry_upper_bound_for_adds; [ easy | ].
-                   intros q; apply Huv3.
-                 }
-                 specialize (Hc3 1).
-                 remember (carry (u ⊕ v) (i + 1)) as c eqn:Hc.
-                 destruct c; [ easy | ].
-                 destruct c; [ easy | exfalso ].
-                 destruct c; [ flia H1 | flia Hc3 ].
-               }
-*)
-(*
-               move H before Hc1; clear Hc1; rename H into Hc1.
-*)
 ...
 specialize (all_fA_ge_1_ε_carry_carry (u ⊕ v) (i + 1)) as H1.
 assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
