@@ -2255,7 +2255,8 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                }
                destruct (Nat.eq_dec uv3 2) as [Huv32| Huv32]. {
                  exfalso; move Huv32 at top; subst uv3.
-                 clear Huv30 Huv31 H6.
+                 clear Huv30 Huv31.
+rewrite Hr2, NQpair_diag in H6; [ | easy ].
 (**)
                  unfold carry in Hcuv1.
                  rewrite A_split_first in Hcuv1; [ | min_n_ge ].
