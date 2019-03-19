@@ -2256,6 +2256,34 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                destruct (Nat.eq_dec uv3 2) as [Huv32| Huv32]. {
                  exfalso; move Huv32 at top; subst uv3.
                  clear Huv30 Huv31 H6.
+(**)
+                 unfold carry in Hcuv1.
+                 rewrite A_split_first in Hcuv1; [ | min_n_ge ].
+                 replace (S (i + 1)) with (i + 2) in Hcuv1 by easy.
+                 rewrite Huv21 in Hcuv1.
+                 rewrite A_split_first in Hcuv1; [ | min_n_ge ].
+                 replace (S (i + 2)) with (i + 3) in Hcuv1 by easy.
+                 rewrite Huv33, Hr2, NQpair_diag in Hcuv1; [ | easy ].
+                 rewrite NQadd_comm in Hcuv1.
+                 rewrite NQmul_add_distr_r, NQmul_1_l in Hcuv1.
+                 rewrite NQadd_add_swap in Hcuv1.
+                 rewrite NQadd_pair in Hcuv1; [ | easy | easy ].
+                 rewrite Nat.mul_1_l, Nat.mul_1_r in Hcuv1.
+                 rewrite NQpair_diag in Hcuv1; [ | easy ].
+                 rewrite NQintg_add_nat_l in Hcuv1. 2: {
+                   rewrite <- NQmul_assoc.
+                   now apply NQle_0_mul_r.
+                 }
+                 symmetry in Hcuv1.
+                 replace 1 with (1 + 0) in Hcuv1 at 1 by easy.
+                 apply Nat.add_cancel_l in Hcuv1.
+                 apply NQintg_interv in Hcuv1. 2: {
+                   rewrite <- NQmul_assoc.
+                   now apply NQle_0_mul_r.
+                 }
+                 rewrite NQadd_0_l in Hcuv1.
+                 destruct Hcuv1 as (_, Hcuv1).
+                 (* aucun intérêt *)
 ...
                  unfold carry in Hcuv2.
                  rewrite A_split_first in Hcuv2; [ | min_n_ge ].
