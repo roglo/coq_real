@@ -481,6 +481,28 @@ rewrite NQintg_add in H6; [ | now rewrite <- Hm | easy ].
 flia H6 H.
 Qed.
 
+(*
+Theorem rad_2_sum_3_all_9_not_0_0 {r : radix} : ∀ u i,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → u (i + 1) = 0
+  → u (i + 2) = 0
+  → False.
+Proof.
+  r : radix
+  u, v : nat → nat
+  i : nat
+  Hr2 : rad = 2
+  Huv3 : ∀ k l, (u ⊕ v) (i + k + l) ≤ 3 * (rad - 1)
+  Hauv : ∀ k, fA_ge_1_ε (u ⊕ v) i k = true
+  Huv10 : (u ⊕ v) (i + 1) = 0
+  Huv21 : (u ⊕ v) (i + 2) = 1
+  ============================
+  (u ⊕ v) (i + 3) = 3
+...
+*)
+
 Theorem P_999_after_9 {r : radix} : ∀ u i m,
   m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
@@ -2063,12 +2085,31 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            destruct p. {
              rewrite Nat.add_0_r.
              rename Huv0 into Huv10; move Huv10 before Huv21.
+clear - Hu Hv Hauv Hr2 Huv10 Huv21.
+   assert (Huv3 : ∀ k l, (u ⊕ v) (i + k + l) ≤ 3 * (rad - 1)). {
+     intros p q.
+     unfold "⊕"; replace 3 with (1 + 2) by easy.
+     rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+     rewrite <- Nat.add_assoc.
+     rewrite Hr2.
+     apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+   }
+clear Hu Hv.
+(*
+remember (u ⊕ v) as w.
+clear u v Heqw.
+rename w into u.
+*)
+       assert (Hc3 : ∀ k, carry (u ⊕ v) (i + k) < 3). {
+         intros p.
+         apply carry_upper_bound_for_adds; [ easy | ].
+         intros q; apply Huv3.
+       }
              assert (Hcuv1 : carry (u ⊕ v) (i + 1) = 1). {
                specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as Hpuv1.
                rewrite Nat.add_0_r in Hpuv1.
                unfold P, d2n, prop_carr, dig in Hpuv1.
-               unfold "⊕" in Hpuv1 at 1.
-               rewrite Hu0, Hv0, Nat.add_0_l, Hr2 in Hpuv1.
+               rewrite Huv10, Nat.add_0_l, Hr2 in Hpuv1.
                replace (2 - 1) with 1 in Hpuv1 by easy.
                specialize (Nat.div_mod (carry (u ⊕ v) (i + 1)) 2) as H1.
                assert (H : 2 ≠ 0) by easy.
@@ -2121,10 +2162,11 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                  now apply NQle_0_mul_r.
                }
                rewrite NQintg_small in H1. 2: {
-                 split; [ easy | apply NQlt_pair_mono_l; pauto ].
+                 split; [ easy | ].
+                 apply NQlt_pair_mono_l; [ flia Hr2 | pauto ].
                }
                rewrite (NQfrac_small (_ // _)%NQ) in H1. 2: {
-                 split; [ easy | apply NQlt_pair_mono_l; pauto ].
+                 split; [ easy | apply NQlt_pair_mono_l; flia Hr2 ].
                }
                rewrite Nat.add_0_l in H1.
                assert
@@ -2139,7 +2181,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                  rewrite <- NQmul_assoc, NQmul_pair_den_num; [ | easy ].
                  rewrite NQmul_1_r, NQmul_1_l.
                  eapply NQlt_trans; [ apply NQfrac_lt_1 | ].
-                 now apply NQlt_pair_mono_r.
+                 apply NQlt_pair_mono_r; flia Hr2.
                }
                rewrite NQintg_small in H1; [ | easy ].
                rewrite NQfrac_small in H1; [ | easy ].
@@ -2152,12 +2194,12 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                     1) as [H6| H6]; [ easy | clear H1 ].
                apply NQnlt_ge in H6; apply H6; clear H6.
                apply NQlt_add_lt_sub_l.
-               rewrite NQsub_pair_pos; [ | easy | easy | flia Hr ].
+               rewrite NQsub_pair_pos; [ | easy | easy | flia Hr2 ].
                do 2 rewrite Nat.mul_1_l.
                rewrite <- (NQmul_pair_den_num (rad - 1) 1); [ | easy ].
                apply NQmul_lt_mono_pos_r; [ easy | ].
                eapply NQlt_le_trans; [ apply NQfrac_lt_1 | ].
-               apply NQle_pair_mono_r; flia Hr.
+               apply NQle_pair_mono_r; flia Hr2.
              }
              destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
                move Hc22 at top; subst c2; clear Hc20 Hcuv2.
@@ -2196,7 +2238,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                rewrite min_n_add_l, Nat.mul_1_r in H6.
 *)
                symmetry in H6.
-               rewrite <- all_fA_ge_1_ε_NQintg_A' with (k0 := 0 + 1) in H6;
+               rewrite <- all_fA_ge_1_ε_NQintg_A' with (k := 0 + 1) in H6;
                  cycle 1. {
                  apply Huv3.
                } {
