@@ -2261,6 +2261,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
             serait contradictoire avec Hj *)
          assert (Huv33 : ∀ k, (u ⊕ v) (i + k + 3) = 3). {
            intros p.
+           induction p as (p, IHp) using lt_wf_rec.
            destruct p. {
              rewrite Nat.add_0_r.
              assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
