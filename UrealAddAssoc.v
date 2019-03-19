@@ -2086,11 +2086,10 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              rewrite Nat.add_0_r.
              rename Huv0 into Huv10; move Huv10 before Huv21.
 clear - Hu Hv Hauv Hr2 Huv10 Huv21.
-   assert (Huv3 : ∀ k l, (u ⊕ v) (i + k + l) ≤ 3 * (rad - 1)). {
-     intros p q.
+   assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+     intros p.
      unfold "⊕"; replace 3 with (1 + 2) by easy.
      rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-     rewrite <- Nat.add_assoc.
      rewrite Hr2.
      apply Nat.add_le_mono; [ apply Hu | apply Hv ].
    }
@@ -2101,7 +2100,7 @@ rename w into u.
        assert (Hc3 : ∀ k, carry u (i + k) < 3). {
          intros p.
          apply carry_upper_bound_for_adds; [ easy | ].
-         intros q; apply Huv3.
+         intros q; rewrite <- Nat.add_assoc; apply Huv3.
        }
              assert (Hcuv1 : carry u (i + 1) = 1). {
                specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as Hpuv1.
@@ -2147,12 +2146,7 @@ rename w into u.
                replace (S (i + 1)) with (i + 2) by flia.
                rewrite Huv21.
 *)
-               specialize (all_fA_ge_1_ε_carry_carry u i) as H1.
-               assert (H : ∀ k, u (i + k) ≤ 3 * (rad - 1)). {
-                 intros p; replace p with (0 + p) by easy.
-                 rewrite Nat.add_assoc; apply Huv3.
-               }
-               specialize (H1 H Hauv 1); clear H.
+               specialize (all_fA_ge_1_ε_carry_carry u i Huv3 Hauv 1) as H1.
                replace (i + 1 + 1) with (i + 2) in H1 by flia.
                rewrite Hcuv1, Huv21, Hcuv2, Nat.add_0_r in H1.
                symmetry in H1.
@@ -2238,7 +2232,8 @@ rename w into u.
                symmetry in H6.
                rewrite <- all_fA_ge_1_ε_NQintg_A' with (k := 0 + 1) in H6;
                  cycle 1. {
-                 apply Huv3.
+                 intros p.
+                 rewrite <- Nat.add_assoc; apply Huv3.
                } {
                  intros p.
                  apply A_ge_1_add_r_true_if, Hauv.
@@ -2273,7 +2268,7 @@ rename w into u.
                  rewrite NQmul_1_r.
                  eapply NQle_lt_trans. {
                    apply (A_upper_bound_for_adds 3).
-                   intros p; rewrite <- Nat.add_assoc; apply Huv3.
+                   intros p; do 2 rewrite <- Nat.add_assoc; apply Huv3.
                  }
                  rewrite NQmul_sub_distr_l, NQmul_1_r.
                  eapply NQlt_le_trans; [ now apply NQsub_lt | ].
@@ -2294,7 +2289,7 @@ rename w into u.
                  rewrite NQmul_1_r.
                  eapply NQle_lt_trans. {
                    apply (A_upper_bound_for_adds 3).
-                   intros p; rewrite <- Nat.add_assoc; apply Huv3.
+                   intros p; do 2 rewrite <- Nat.add_assoc; apply Huv3.
                  }
                  rewrite NQmul_sub_distr_l, NQmul_1_r.
                  eapply NQlt_le_trans; [ now apply NQsub_lt | ].
@@ -2322,7 +2317,7 @@ rename w into u.
                  }
                  unfold carry in Hpuv3.
                  rewrite all_fA_ge_1_ε_NQintg_A' in Hpuv3; cycle 1. {
-                   apply Huv3.
+                   intros p; rewrite <- Nat.add_assoc; apply Huv3.
                  } {
                    intros p.
                    apply A_ge_1_add_r_true_if, Hauv.
@@ -2343,8 +2338,8 @@ rename w into u.
                  rewrite NQmul_1_l, NQmul_1_r in H6.
                  now rewrite Hr2.
                }
-               specialize (Huv3 0 3) as H.
-               rewrite Nat.add_0_r, Huv33, Hr2 in H.
+               specialize (Huv3 3) as H.
+               rewrite Huv33, Hr2 in H.
                flia Huv30 Huv31 Huv32 H.
              }
              specialize (Hc3 2) as H.
