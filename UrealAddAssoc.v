@@ -2216,17 +2216,79 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                destruct (Nat.eq_dec uv3 0) as [Huv30| Huv30]. {
                  exfalso; move Huv30 at top; subst uv3.
                  rewrite NQadd_0_l in H6.
+                 destruct H6 as (H6, _).
+                 apply NQnlt_ge in H6; apply H6; clear H6.
+                 apply (NQmul_lt_mono_pos_r (rad // 1)%NQ). {
+                   now apply NQlt_0_pair.
+                 }
+                 rewrite <- NQmul_assoc, NQmul_pair_den_num; [ | easy ].
+                 rewrite NQmul_1_r.
+                 eapply NQle_lt_trans. {
+                   apply (A_upper_bound_for_adds 3).
+                   intros p; rewrite <- Nat.add_assoc; apply Huv3.
+                 }
+                 rewrite NQmul_sub_distr_l, NQmul_1_r.
+                 eapply NQlt_le_trans; [ now apply NQsub_lt | ].
+                 rewrite <- NQpair_mul_l, Hr2.
+                 apply NQle_pair_mono_r; cbn; pauto.
+               }
+               destruct (Nat.eq_dec uv3 1) as [Huv31| Huv31]. {
+                 exfalso; move Huv31 at top; subst uv3.
+                 clear Huv30.
+                 destruct H6 as (H6, _).
+                 apply NQnlt_ge in H6; apply H6; clear H6.
+                 apply (NQmul_lt_mono_pos_r (rad // 1)%NQ). {
+                   now apply NQlt_0_pair.
+                 }
+                 rewrite NQmul_add_distr_r.
+                 apply NQlt_add_lt_sub_l.
+                 rewrite <- NQmul_assoc, NQmul_pair_den_num; [ | easy ].
+                 rewrite NQmul_1_r.
+                 eapply NQle_lt_trans. {
+                   apply (A_upper_bound_for_adds 3).
+                   intros p; rewrite <- Nat.add_assoc; apply Huv3.
+                 }
+                 rewrite NQmul_sub_distr_l, NQmul_1_r.
+                 eapply NQlt_le_trans; [ now apply NQsub_lt | ].
+                 rewrite <- NQpair_mul_l, Hr2.
+                 apply NQle_refl.
+               }
+               destruct (Nat.eq_dec uv3 2) as [Huv32| Huv32]. {
+                 exfalso; move Huv32 at top; subst uv3.
+                 clear Huv30 Huv31 H6.
 ...
-(u ⊕ v) (i + 3) // rad
+                 unfold carry in Hcuv2.
+                 rewrite A_split_first in Hcuv2; [ | min_n_ge ].
+                 replace (S (i + 2)) with (i + 3) in Hcuv2 by easy.
+                 rewrite Huv33, Hr2, NQpair_diag in Hcuv2; [ | easy ].
+                 rewrite NQintg_add_nat_l in Hcuv2. 2: {
+                   now apply NQle_0_mul_r.
+                 }
+                 replace 2 with (1 + 1) in Hcuv2 by easy.
+                 apply Nat.add_cancel_l in Hcuv2.
+                 symmetry in Hcuv2.
+                 apply NQintg_interv in Hcuv2; [ | now apply NQle_0_mul_r ].
+                 destruct Hcuv2 as (_, H).
+                 apply NQnle_gt in H; apply H; clear H.
 ...
-               rewrite all_fA_ge_1_ε_NQintg_A in H6.
-
-Search (NQintg _ = NQintg _).
-all_fA_ge_1_ε_NQintg_A:
-  ∀ (r : radix) (i : nat) (u : nat → nat),
-    (∀ k : nat, u (i + k) ≤ 3 * (rad - 1))
-    → (∀ k : nat, fA_ge_1_ε u i k = true)
-      → ∀ k l : nat, NQintg (A i (min_n i k + l) u) = NQintg (A i (min_n i k) u)
+                 destruct H6 as (H6, _).
+                 apply NQnlt_ge in H6; apply H6; clear H6.
+                 apply (NQmul_lt_mono_pos_r (rad // 1)%NQ). {
+                   now apply NQlt_0_pair.
+                 }
+                 rewrite NQmul_add_distr_r.
+                 apply NQlt_add_lt_sub_l.
+                 rewrite <- NQmul_assoc, NQmul_pair_den_num; [ | easy ].
+                 rewrite NQmul_1_r.
+                 eapply NQle_lt_trans. {
+                   apply (A_upper_bound_for_adds 3).
+                   intros p; rewrite <- Nat.add_assoc; apply Huv3.
+                 }
+                 rewrite NQmul_sub_distr_l, NQmul_1_r.
+                 eapply NQlt_le_trans; [ now apply NQsub_lt | ].
+                 rewrite <- NQpair_mul_l, Hr2.
+                 apply NQle_refl.
+               }
 ...
                rewrite H6 in H1.
 
