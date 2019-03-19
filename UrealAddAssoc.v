@@ -2256,6 +2256,12 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                destruct (Nat.eq_dec uv3 2) as [Huv32| Huv32]. {
                  exfalso; move Huv32 at top; subst uv3.
                  clear Huv30 Huv31.
+specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 2) as Hpuv3.
+replace (i + 2 + 1) with (i + 3) in Hpuv3 by flia.
+unfold P, d2n, prop_carr, dig in Hpuv3.
+rewrite Huv33, Hr2 in Hpuv3.
+rewrite Nat_mod_add_same_l in Hpuv3; [ | easy ].
+replace (2 - 1) with 1 in Hpuv3 by easy.
 ...
 rewrite Hr2, NQpair_diag in H6; [ | easy ].
 (**)
