@@ -2236,6 +2236,11 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              apply carry_upper_bound_for_adds; [ easy | ].
              intros s; apply Huv3.
            }
+specialize (Hc3 (p + 2)) as H1.
+unfold carry in H1.
+rewrite A_split_first in H1.
+replace (S (i + (p + 2))) with (i + p + 3) in H1 by flia.
+rewrite IHp in H1; [ | pauto ].
 ...
  }
 ... suite
