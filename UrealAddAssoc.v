@@ -2044,6 +2044,11 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          assert (Huv1 : (u ⊕ v) (i + 1) = 0) by (unfold "⊕"; flia Hu0 Hv0).
          now apply (rad_2_sum_3_all_9_not_0_0 (u ⊕ v) i).
        }
+       assert (Hc3 : ∀ k, carry (u ⊕ v) (i + k) < 3). {
+         intros p.
+         apply carry_upper_bound_for_adds; [ easy | ].
+         intros q; apply Huv3.
+       }
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 1) as [Huv21| Huv21]. {
          clear Huv20.
          rewrite <- A_additive in H5.
@@ -2069,11 +2074,6 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                assert (H : 2 ≠ 0) by easy.
                specialize (H1 H); clear H; rewrite Hpuv1 in H1.
                rewrite H1, <- Nat.add_0_l; f_equal.
-               assert (Hc3 : ∀ k, carry (u ⊕ v) (i + k) < 3). {
-                 intros p.
-                 apply carry_upper_bound_for_adds; [ easy | ].
-                 intros q; apply Huv3.
-               }
                specialize (Hc3 1).
                remember (carry (u ⊕ v) (i + 1)) as c eqn:Hc.
                destruct c; [ easy | ].
@@ -2196,6 +2196,14 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                rewrite min_n_add_l, Nat.mul_1_r in H6.
 *)
                symmetry in H6.
+               rewrite <- all_fA_ge_1_ε_NQintg_A' with (k0 := 0 + 1) in H6;
+                 cycle 1. {
+                 apply Huv3.
+               } {
+                 intros p.
+                 apply A_ge_1_add_r_true_if, Hauv.
+               }
+               rewrite min_n_add, Nat.mul_1_r in H6.
                apply NQintg_interv in H6; [ | easy ].
 (*
                rewrite (NQintg_less_small 1) in H1. 2: {
@@ -2209,7 +2217,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                clear H1.
                rewrite A_split_first in H7.
 *)
-               rewrite A_split_first in H6.
+               rewrite A_split_first in H6; [ | min_n_ge ].
                replace (S (i + 2)) with (i + 3) in H6 by easy.
                remember ((u ⊕ v) (i + 3)) as uv3 eqn:Huv33.
                symmetry in Huv33.
@@ -2256,99 +2264,56 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                destruct (Nat.eq_dec uv3 2) as [Huv32| Huv32]. {
                  exfalso; move Huv32 at top; subst uv3.
                  clear Huv30 Huv31.
-specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 2) as Hpuv3.
-replace (i + 2 + 1) with (i + 3) in Hpuv3 by flia.
-unfold P, d2n, prop_carr, dig in Hpuv3.
-rewrite Huv33, Hr2 in Hpuv3.
-rewrite Nat_mod_add_same_l in Hpuv3; [ | easy ].
-replace (2 - 1) with 1 in Hpuv3 by easy.
-...
-rewrite Hr2, NQpair_diag in H6; [ | easy ].
-(**)
-                 unfold carry in Hcuv1.
-                 rewrite A_split_first in Hcuv1; [ | min_n_ge ].
-                 replace (S (i + 1)) with (i + 2) in Hcuv1 by easy.
-                 rewrite Huv21 in Hcuv1.
-                 rewrite A_split_first in Hcuv1; [ | min_n_ge ].
-                 replace (S (i + 2)) with (i + 3) in Hcuv1 by easy.
-                 rewrite Huv33, Hr2, NQpair_diag in Hcuv1; [ | easy ].
-                 rewrite NQadd_comm in Hcuv1.
-                 rewrite NQmul_add_distr_r, NQmul_1_l in Hcuv1.
-                 rewrite NQadd_add_swap in Hcuv1.
-                 rewrite NQadd_pair in Hcuv1; [ | easy | easy ].
-                 rewrite Nat.mul_1_l, Nat.mul_1_r in Hcuv1.
-                 rewrite NQpair_diag in Hcuv1; [ | easy ].
-                 rewrite NQintg_add_nat_l in Hcuv1. 2: {
-                   rewrite <- NQmul_assoc.
-                   now apply NQle_0_mul_r.
+                 specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 2) as Hpuv3.
+                 replace (i + 2 + 1) with (i + 3) in Hpuv3 by flia.
+                 unfold P, d2n, prop_carr, dig in Hpuv3.
+                 rewrite Huv33, Hr2 in Hpuv3.
+                 rewrite Nat_mod_add_same_l in Hpuv3; [ | easy ].
+                 replace (2 - 1) with 1 in Hpuv3 by easy.
+                 rewrite Nat.mod_small in Hpuv3. 2: {
+                   remember (carry (u ⊕ v) (i + 3)) as c eqn:Hc.
+                   destruct c; [ easy | ].
+                   destruct c; [ pauto | exfalso ].
+                   replace (S (S c)) with (2 + c) in Hpuv3 by easy.
+                   rewrite Nat_mod_add_same_l in Hpuv3; [ | easy ].
+                   destruct c; [ easy | ].
+                   specialize (Hc3 3) as H7.
+                   rewrite <- Hc in H7; flia H7.
                  }
-                 symmetry in Hcuv1.
-                 replace 1 with (1 + 0) in Hcuv1 at 1 by easy.
-                 apply Nat.add_cancel_l in Hcuv1.
-                 apply NQintg_interv in Hcuv1. 2: {
-                   rewrite <- NQmul_assoc.
-                   now apply NQle_0_mul_r.
+                 unfold carry in Hpuv3.
+                 rewrite all_fA_ge_1_ε_NQintg_A' in Hpuv3; cycle 1. {
+                   apply Huv3.
+                 } {
+                   intros p.
+                   apply A_ge_1_add_r_true_if, Hauv.
                  }
-                 rewrite NQadd_0_l in Hcuv1.
-                 destruct Hcuv1 as (_, Hcuv1).
-                 unfold carry in Hcuv2.
-                 rewrite A_split_first in Hcuv2; [ | min_n_ge ].
-                 replace (S (i + 2)) with (i + 3) in Hcuv2 by easy.
-                 rewrite Huv33, Hr2, NQpair_diag in Hcuv2; [ | easy ].
-                 rewrite NQintg_add_nat_l in Hcuv2. 2: {
-                   now apply NQle_0_mul_r.
-                 }
-                 symmetry in Hcuv2.
-                 replace 2 with (1 + 1) in Hcuv2 at 1 by easy.
-                 apply Nat.add_cancel_l in Hcuv2.
-                 apply NQintg_interv in Hcuv2; [ | now apply NQle_0_mul_r ].
-Check A_upper_bound_for_adds.
-...
-                 destruct Hcuv2 as (_, H).
-                 apply NQnle_gt in H; apply H; clear H.
-...
+                 replace (i + 3) with (i + 2 + 1) in Hpuv3 at 2 by flia.
+                 rewrite min_n_add_l, Nat.mul_1_r in Hpuv3.
+                 symmetry in Hpuv3.
+                 apply NQintg_interv in Hpuv3; [ | easy ].
+                 rewrite Hr2, NQpair_diag in H6; [ | easy ].
                  destruct H6 as (H6, _).
-                 apply NQnlt_ge in H6; apply H6; clear H6.
-                 apply (NQmul_lt_mono_pos_r (rad // 1)%NQ). {
-                   now apply NQlt_0_pair.
-                 }
-                 rewrite NQmul_add_distr_r.
-                 apply NQlt_add_lt_sub_l.
-                 rewrite <- NQmul_assoc, NQmul_pair_den_num; [ | easy ].
-                 rewrite NQmul_1_r.
-                 eapply NQle_lt_trans. {
-                   apply (A_upper_bound_for_adds 3).
-                   intros p; rewrite <- Nat.add_assoc; apply Huv3.
-                 }
-                 rewrite NQmul_sub_distr_l, NQmul_1_r.
-                 eapply NQlt_le_trans; [ now apply NQsub_lt | ].
-                 rewrite <- NQpair_mul_l, Hr2.
-                 apply NQle_refl.
+                 replace 2%NQ with (1 + 1)%NQ in H6 by easy.
+                 apply NQadd_le_mono_l in H6.
+                 destruct Hpuv3 as (_, H).
+                 apply NQnle_gt in H; apply H; clear H.
+                 apply (NQmul_le_mono_pos_r 2%NQ) in H6; [ | easy ].
+                 rewrite <-  NQmul_assoc in H6.
+                 rewrite NQmul_pair_den_num in H6; [ | easy ].
+                 rewrite NQmul_1_l, NQmul_1_r in H6.
+                 now rewrite Hr2.
                }
-...
-               rewrite H6 in H1.
-
-               rewrite A_split_first in H1; [ | min_n_ge ].
-               replace (S (i + 2)) with (i + 3) in H1 by flia.
-               rewrite NQintg_add_cond in H1; [ | apply NQle_0_pair | ]. 2: {
-                 now apply NQle_0_mul_r.
-               }
-               destruct
-                 (NQlt_le_dec
-                    (NQfrac ((u ⊕ v) (i + 3) // rad) +
-                     NQfrac
-                       (A (i + 3) (min_n (i + 2) 0) (u ⊕ v) *
-                        (1 // rad)%NQ)) 1) as [H6| H6]. {
-                 rewrite Nat.add_0_r in H1.
-...
-               rewrite (NQintg_less_small 1) in H1. 2: {
-               rewrite NQintg_less_small in H1; [ easy | ].
-               split; [ easy | ].
-               rewrite A_split_first; [ | min_n_ge ].
-               replace (S (i + 1)) with (i + 2) by flia.
-               rewrite Huv21.
-...
-specialize (Vincent_Tourneur 3 (u ⊕ v) (i + 1) (Huv3 1) H42) as H1.
+               specialize (Huv3 0 3) as H.
+               rewrite Nat.add_0_r, Huv33, Hr2 in H.
+               flia Huv30 Huv31 Huv32 H.
+             }
+             specialize (Hc3 2) as H.
+             rewrite Hc2 in H.
+             destruct (Nat.eq_dec c2 1) as [Hc21| Hc21]. {
+               now rewrite Hc21 in Hcuv2.
+             }
+             flia H Hc20 Hc21 Hc22.
+           }
 ...
 specialize (Vincent_Tourneur 3 (u ⊕ v) (i + 1) (Huv3 1) H42) as H1.
 specialize (H1 0) as H10.
