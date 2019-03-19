@@ -2283,8 +2283,6 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                  }
                  rewrite NQadd_0_l in Hcuv1.
                  destruct Hcuv1 as (_, Hcuv1).
-                 (* aucun intérêt *)
-...
                  unfold carry in Hcuv2.
                  rewrite A_split_first in Hcuv2; [ | min_n_ge ].
                  replace (S (i + 2)) with (i + 3) in Hcuv2 by easy.
@@ -2292,10 +2290,12 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                  rewrite NQintg_add_nat_l in Hcuv2. 2: {
                    now apply NQle_0_mul_r.
                  }
-                 replace 2 with (1 + 1) in Hcuv2 by easy.
-                 apply Nat.add_cancel_l in Hcuv2.
                  symmetry in Hcuv2.
+                 replace 2 with (1 + 1) in Hcuv2 at 1 by easy.
+                 apply Nat.add_cancel_l in Hcuv2.
                  apply NQintg_interv in Hcuv2; [ | now apply NQle_0_mul_r ].
+Check A_upper_bound_for_adds.
+...
                  destruct Hcuv2 as (_, H).
                  apply NQnle_gt in H; apply H; clear H.
 ...
