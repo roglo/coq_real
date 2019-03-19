@@ -2209,53 +2209,11 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
    specialize (H1 H); clear H.
    destruct (lt_dec rad 3) as [H| Hr3]. {
      assert (Hr2 : rad = 2) by flia H Hr; clear H H1.
-     rewrite Hr2 in Hu, Hv, Hk(*, Hj*); cbn in Hu, Hv.
+     rewrite Hr2 in Hu, Hv, Hk; cbn in Hu, Hv.
      destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) 0) as [Huv0| Huv0]. {
-       apply NQnlt_ge in Hup; apply Hup; clear Hup.
-       generalize Huv0; intros H.
-       apply Nat.eq_add_0 in H.
-       destruct H as (Hu0, Hv0).
-       assert (Hik : i + 2 ≤ nk - 1). {
-         rewrite Hnk; unfold min_n; destruct rad; [ easy | cbn; flia ].
-       }
-       setoid_rewrite A_split_first; [ | flia Hik | flia Hik ].
-       rewrite <- Nat.add_1_r, Hu0, NQadd_0_l.
-       apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now rewrite Hr2 | ].
-       rewrite NQmul_add_distr_r, NQmul_1_l.
-       rewrite <- NQmul_assoc, NQmul_inv_pair, NQmul_1_r; [ | easy | easy ].
-       rewrite NQmul_add_distr_r.
-       rewrite <- NQmul_assoc, NQmul_inv_pair, NQmul_1_r; [ | easy | easy ].
-       rewrite NQmul_pair_den_num, NQadd_assoc, Hr2; [ | easy ].
-       move H5 at bottom.
-       setoid_rewrite A_split_first in H5; [ | flia Hik | flia Hik ].
-       rewrite <- Nat.add_1_r, Hu0, NQadd_0_l in H5.
-       apply (NQmul_lt_mono_pos_r (rad // 1)%NQ) in H5; [ | now rewrite Hr2 ].
-       rewrite NQmul_add_distr_r, NQmul_1_l in H5.
-       rewrite <- NQmul_assoc, NQmul_inv_pair in H5; [ | easy | easy ].
-       rewrite NQmul_1_r, NQmul_add_distr_r in H5.
-       rewrite <- NQmul_assoc, NQmul_inv_pair in H5; [ | easy | easy ].
-       rewrite NQmul_1_r in H5.
-       rewrite NQmul_pair_den_num, NQadd_assoc, Hr2 in H5; [ | easy ].
-       rewrite Hv0, NQadd_0_r in H5.
-       destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 0) as [Huv20| Huv20]. {
-         exfalso.
-         assert (Hu3' : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
-           intros p; replace (i + p) with (i + p + 0) by easy; apply Huv3.
-         }
-         assert (Huv1 : (u ⊕ v) (i + 1) = 0) by (unfold "⊕"; flia Hu0 Hv0).
-         now apply (rad_2_sum_3_all_9_not_0_0 (u ⊕ v) i).
-       }
-       assert (Hc3 : ∀ k, carry (u ⊕ v) (i + k) < 3). {
-         intros p.
-         apply carry_upper_bound_for_adds; [ easy | ].
-         intros q; apply Huv3.
-       }
+(*
+*)
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 1) as [Huv21| Huv21]. {
-         clear Huv20.
-         rewrite <- A_additive in H5.
-         rewrite A_split_first in H5; [ | flia Hik ].
-         replace (S (i + 1)) with (i + 2) in H5 by easy.
-         rewrite Huv21 in H5.
          (* normalement, ici, tout le reste des u⊕v, à partir de i+3, sont
             des 3 ; du coup, u n'aurait que des 1 et v que des 2, ce qui
             serait contradictoire avec Hj *)
@@ -2272,6 +2230,11 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                apply Nat.add_le_mono; [ apply Hu | apply Hv ].
              }
              now apply rad_2_sum_3_all_9_0_1_3.
+           }
+           assert (Hc3 : ∀ k, carry (u ⊕ v) (i + k) < 3). {
+             intros q.
+             apply carry_upper_bound_for_adds; [ easy | ].
+             intros s; apply Huv3.
            }
 ...
  }
