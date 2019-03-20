@@ -2053,6 +2053,68 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              rewrite NQintg_add_cond in HA; [ | apply NQle_0_pair | ]. 2: {
                now apply NQle_0_mul_r.
              }
+             replace (S (i + p + 3)) with (i + S p + 3) in HA by flia.
+rewrite A_split_first in Hcw.
+replace (S (i + p + 3)) with (i + S p + 3) in Hcw by flia.
+rewrite Hr2 in Hcw, HA.
+destruct (NQlt_le_dec (NQfrac (w (i + S p + 3) // 2) + NQfrac (A (i + S p + 3) nr w * (1 // 2)%NQ)) 1) as [H6| H6]. {
+  rewrite Nat.add_0_r in HA.
+  remember (w (i + S p + 3)) as x eqn:Hx.
+  symmetry in Hx.
+  destruct (Nat.eq_dec x 0) as [Hx0| Hx0]. {
+    exfalso.
+    move Hx0 at top; subst x.
+    rewrite NQadd_0_l in Hcw.
+    destruct Hcw as (H, _).
+    apply NQnlt_ge in H; apply H; clear H.
+    apply (NQmul_lt_mono_pos_r (4 // 1)%NQ); [ easy | ].
+    do 2 rewrite <- NQmul_assoc.
+    rewrite NQmul_pair; [ | easy | easy ].
+    rewrite NQmul_pair; [ | easy | easy ].
+    rewrite NQpair_diag; [ | easy ].
+    rewrite NQmul_1_r, NQmul_1_l.
+    eapply NQle_lt_trans. {
+      apply (A_upper_bound_for_adds 3).
+      intros; do 2 rewrite <- Nat.add_assoc; apply Huv3.
+    }
+    rewrite NQmul_sub_distr_l, NQmul_1_r.
+    eapply NQlt_trans; [ now apply NQsub_lt | ].
+    apply NQlt_pair_mono_r; pauto.
+  }
+  destruct (Nat.eq_dec x 1) as [Hx1| Hx1]. {
+    exfalso; clear Hx0.
+    move Hx1 at top; subst x.
+    rewrite NQintg_small in HA. 2: {
+      split; [ easy | ].
+      apply NQlt_pair_mono_l; pauto.
+    }
+    rewrite Nat.add_0_l in HA.
+    symmetry in HA.
+    apply NQintg_interv in HA; [ | now apply NQle_0_mul_r ].
+    destruct HA as (H, _).
+    apply NQnlt_ge in H; apply H; clear H.
+    apply (NQmul_lt_mono_pos_r 2%NQ); [ easy | ].
+    rewrite <- NQmul_assoc.
+    rewrite NQmul_pair; [ | easy | easy ].
+    rewrite NQpair_diag; [ | easy ].
+    rewrite NQmul_1_r.
+    eapply NQle_lt_trans. {
+      apply (A_upper_bound_for_adds 3).
+      intros; do 2 rewrite <- Nat.add_assoc; apply Huv3.
+    }
+    rewrite NQmul_sub_distr_l, NQmul_1_r.
+    eapply NQlt_trans; [ now apply NQsub_lt | ].
+    rewrite <- NQpair_mul_r.
+    apply NQlt_pair_mono_r; pauto.
+  }
+  destruct (Nat.eq_dec x 2) as [Hx2| Hx2]. {
+    exfalso; clear Hx0 Hx1.
+    move Hx2 at top; subst x.
+...
+    rewrite NQintg_small in HA. 2: {
+      split; [ easy | ].
+      apply NQlt_pair_mono_l; pauto.
+    }
 ...
 }
 ...
