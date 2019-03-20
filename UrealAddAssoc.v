@@ -596,7 +596,7 @@ Theorem rad_2_sum_3_all_9_0_1_3 {r : radix} : ∀ u i,
   → (∀ k, fA_ge_1_ε u i k = true)
   → u (i + 1) = 0
   → u (i + 2) = 1
-  → u (i + 3) = 3.
+  → u (i + 3) = 3 ∧ carry u (i + 2) = 2.
 Proof.
 intros * Hr2 Huv3 Hauv Huv10 Huv21.
 assert (Hc3 : ∀ k, carry u (i + k) < 3). {
@@ -680,6 +680,7 @@ destruct (Nat.eq_dec c2 0) as [Hc20| Hc20]. {
   apply NQle_pair_mono_r; flia Hr2.
 }
 destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
+  split; [ | easy ].
   move Hc22 at top; subst c2; clear Hc20 Hcuv2.
   rename Hc2 into Hcuv2.
   specialize (all_fA_ge_1_ε_carry u i Hauv 2) as H6.
@@ -785,6 +786,7 @@ destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
   rewrite Huv33, Hr2 in H.
   flia Huv30 Huv31 Huv32 H.
 }
+exfalso.
 specialize (Hc3 2) as H.
 rewrite Hc2 in H.
 destruct (Nat.eq_dec c2 1) as [Hc21| Hc21]; [ now rewrite Hc21 in Hcuv2 | ].
@@ -2273,13 +2275,14 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          (* normalement, ici, tout le reste des u⊕v, à partir de i+3, sont
             des 3 ; du coup, u n'aurait que des 1 et v que des 2, ce qui
             serait contradictoire avec Hj *)
-         assert (Huv33 : ∀ k, (u ⊕ v) (i + k + 3) = 3). {
+         remember (u ⊕ v) as w eqn:Hw.
+         assert (Huv33 : ∀ k, w (i + k + 3) = 3 ∧ carry w (i + k + 2) = 2). {
            intros p; clear Huv20.
            induction p as (p, IHp) using lt_wf_rec.
            destruct p. {
              rewrite Nat.add_0_r.
-             assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
-               intros p.
+             assert (H : ∀ k, w (i + k) ≤ 3 * (rad - 1)). {
+               intros p; rewrite Hw.
                unfold "⊕"; replace 3 with (1 + 2) by easy.
                rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
                rewrite Hr2.
@@ -2287,11 +2290,13 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              }
              now apply rad_2_sum_3_all_9_0_1_3.
            }
-           assert (Hc3 : ∀ k, carry (u ⊕ v) (i + k) < 3). {
+           assert (Hc3 : ∀ k, carry w (i + k) < 3). {
              intros q.
              apply carry_upper_bound_for_adds; [ easy | ].
              intros s; apply Huv3.
            }
+           specialize (IHp p (Nat.lt_succ_diag_r p)) as H1.
+           destruct H1 as (Hi, Hcw).
 ...
 }
 ...
