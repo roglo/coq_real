@@ -79,102 +79,6 @@ split.
  now apply NQlt_0_pair.
 Qed.
 
-(* generalizes NQintg_A_le_for_adds *)
-Theorem NQintg_A_le {r : radix} : ∀ m u i j,
-  (∀ k, u (i + k + 1) < m * rad)
-  → NQintg (A i (min_n i j) u) ≤ m - 1.
-Proof.
-intros * Hmr.
-specialize radix_ge_2 as Hr.
-remember (min_n i j) as n eqn:Hn.
-destruct (zerop m) as [Hm| Hm]. {
-  subst m.
-  now specialize (Hmr 0).
-}
-(**)
-...
-destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
-  unfold A.
-  rewrite summation_empty; [ apply Nat.le_0_l | easy ].
-}
-apply Nat.nlt_ge in Hin.
-rewrite A_num_den.
-rewrite NQintg_pair; [ | unfold den_A; pauto ].
-apply Nat.div_le_upper_bound; [ unfold den_A; pauto | ].
-unfold den_A.
-remember (n - i - 1) as s eqn:Hs.
-destruct s; [ flia Hin Hs | ].
-rewrite power_summation; [ | easy ].
-rewrite summation_mul_distr_l.
-rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-unfold num_A.
-rewrite summation_shift; [ | easy ].
-replace (n - 1 - (i + 1)) with s by flia Hs.
-rewrite summation_mul_distr_r.
-...
-Search (_ / _ ≤ _).
-...
-replace (m - 1) with (NQintg ((m - 1) // 1)). 2: {
-  rewrite NQintg_pair; [ | easy ].
-  apply Nat.div_1_r.
-}
-apply NQintg_le_mono; [ easy | ].
-rewrite NQpower_summation_inv.
-
-rewrite Nat.sub_1_r.
-apply Nat.lt_le_pred.
-...
-
-unfold A.
-rewrite summation_shift; [ | easy ].
-rewrite Nat.sub_add_distr.
-rewrite (Nat_sub_sub_swap _ 1).
-remember (n - i - 1) as s eqn:Hs.
-destruct s; [ flia Hin Hs | ].
-replace (S s - 1) with s by flia.
-Check NQpower_summation_inv.
-...
-remember (n - i - 1) as s eqn:Hs.
- destruct s; [ flia Hin Hs | ].
- rewrite NQpower_summation_inv; [ | flia Hr ].
- unfold A.
- rewrite summation_shift; [ | easy ].
- replace (n - 1 - (i + 1)) with s by flia Hs.
- do 2 rewrite summation_mul_distr_l.
- apply summation_le_compat.
- intros j Hj.
- replace (i + 1 + j - i) with (S j) by flia.
- apply (NQle_trans _ ((m * (rad - 1)) // (rad ^ S j))).
- +apply NQle_pair; [ pauto | pauto | ].
-  rewrite Nat.mul_comm, Nat.add_shuffle0.
-  apply Nat.mul_le_mono_l, Hur.
- +rewrite NQmul_assoc.
-  rewrite NQsub_pair_pos; [ | easy | easy | now apply Nat.mul_le_mono_l].
-  do 2 rewrite Nat.mul_1_l.
-  rewrite NQmul_pair; [ | easy | easy ].
-  rewrite Nat.mul_1_l.
-  rewrite NQmul_pair; [ | easy | pauto ].
-  rewrite Nat.mul_1_r.
-  apply NQle_refl.
-...
-specialize (A_upper_bound_for_adds m u i n Hmr) as H2.
-rewrite NQmul_sub_distr_l, NQmul_1_r in H2.
-apply NQintg_le_mono in H2; [ | easy ].
-eapply le_trans; [ apply H2 | ].
-rewrite (Nat.sub_1_r m).
-apply Nat.lt_le_pred.
-apply NQintg_sub_nat_l_lt.
-split.
--rewrite NQmul_comm.
- apply NQmul_pos_cancel_l; [ easy | ].
- now apply NQlt_0_pair.
--replace (m // 1)%NQ with (m // 1 * 1)%NQ at 2 by apply NQmul_1_r.
- apply NQmul_le_mono_pos_l. 2: {
-   apply NQle_pair_mono_l; split; [ pauto | now apply Nat_pow_ge_1 ].
- }
- now apply NQlt_0_pair.
-Qed.
-
 (* generalizes carry_upper_bound_for_add *)
 Theorem carry_upper_bound_for_adds {r : radix} : ∀ m u i,
   m ≠ 0
@@ -191,30 +95,6 @@ intros l.
 destruct m; [ easy | ].
 apply -> Nat.succ_le_mono.
 replace m with (S m - 1) by flia.
-apply NQintg_A_le_for_adds.
-intros j.
-replace (i + k + j + 1) with (i + (k + j) + 1) by flia.
-apply Hur.
-Qed.
-
-(* generalizes carry_upper_bound_for_adds *)
-Theorem carry_upper_bound {r : radix} : ∀ m u i,
-  m ≠ 0
-  → (∀ k, u (i + k + 1) < m * rad)
-  → ∀ k, carry u (i + k) < m.
-Proof.
-intros * Hm Hur *.
-specialize radix_ge_2 as Hr.
-unfold carry.
-enough (∀ l, NQintg (A (i + k) (min_n (i + k) l) u) < m). {
-  destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [| (j & Hj)]; apply H.
-}
-intros l.
-destruct m; [ easy | ].
-apply -> Nat.succ_le_mono.
-replace m with (S m - 1) by flia.
-Check NQintg_A_le_for_adds.
-...
 apply NQintg_A_le_for_adds.
 intros j.
 replace (i + k + j + 1) with (i + (k + j) + 1) by flia.

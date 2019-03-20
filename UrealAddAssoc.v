@@ -445,7 +445,7 @@ Qed.
    (∀ k, P u (i + k) = rad - 1), mais c'est compliqué
    du fait que c'est une somme de 3 *)
 Theorem lt_30_all_9_and_8_18_28_then_17_18_19 {r : radix} : ∀ u i,
-  (∀ k, u (i + k) < 3 * rad)
+  (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → u (i + 1) = rad - 2 ∨
     u (i + 1) = 2 * rad - 2 ∨
@@ -454,19 +454,19 @@ Theorem lt_30_all_9_and_8_18_28_then_17_18_19 {r : radix} : ∀ u i,
     u (i + 2) = 2 * rad - 2 ∨
     u (i + 2) = 2 * rad - 3.
 Proof.
-intros * Hu3 Haut.
+intros * Hu3 Haut Huuu.
 specialize (all_fA_ge_1_ε_P_999 _ _ Haut) as Hpu.
 assert (Hc3 : ∀ k, carry u (i + k) < 3). {
+  intros k.
   specialize (carry_upper_bound_for_adds 3 u i) as H6.
   assert (H : 3 ≠ 0) by easy.
   specialize (H6 H); clear H.
   assert (H : ∀ k, u (i + k + 1) ≤ 3 * (rad - 1)). {
-    intros p; rewrite <- Nat.add_assoc.
-...
-; apply Hu3.
+    intros p; rewrite <- Nat.add_assoc; apply Hu3.
   }
   now specialize (H6 H).
 }
+...
 rewrite Hr2 in Hpu.
 assert (H6 : carry u (i + 2) = 1). {
   specialize (Hpu 1) as H1.
