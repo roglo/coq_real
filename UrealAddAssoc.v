@@ -2110,6 +2110,14 @@ destruct (NQlt_le_dec (NQfrac (w (i + S p + 3) // 2) + NQfrac (A (i + S p + 3) n
   destruct (Nat.eq_dec x 2) as [Hx2| Hx2]. {
     exfalso; clear Hx0 Hx1.
     move Hx2 at top; subst x.
+    rewrite NQpair_diag, NQintg_1 in HA; [ | easy ].
+    symmetry in HA.
+    replace 2 with (1 + 1) in HA at 1 by easy.
+    apply Nat.add_cancel_l in HA.
+    apply NQintg_interv in HA; [ | now apply NQle_0_mul_r ].
+    rewrite (NQpair_diag 2) in Hcw; [ | easy ].
+    rewrite NQmul_add_distr_r, NQmul_1_l in Hcw.
+    clear H1 H6 Hcw.
 ...
     rewrite NQintg_small in HA. 2: {
       split; [ easy | ].
