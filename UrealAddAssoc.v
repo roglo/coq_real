@@ -449,8 +449,7 @@ Theorem rad_2_sum_3_all_9_not_0_0 {r : radix} : ∀ u i,
   → (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → u (i + 1) = 0
-  → u (i + 2) = 0
-  → False.
+  → u (i + 2) ≠ 0.
 Proof.
 intros * Hr2 Hu3 Hau Hu1 Hu2.
 specialize (all_fA_ge_1_ε_P_999 _ _ Hau) as Hpu.
@@ -2211,14 +2210,18 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
      assert (Hr2 : rad = 2) by flia H Hr; clear H H1.
      rewrite Hr2 in Hu, Hv, Hk; cbn in Hu, Hv.
      destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) 0) as [Huv0| Huv0]. {
-(*
-*)
+       destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 0) as [Huv20| Huv20]. {
+         revert Huv20.
+         apply rad_2_sum_3_all_9_not_0_0; try easy.
+         intros p; replace (i + p) with (i + p + 0) by easy.
+         apply Huv3.
+       }
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 1) as [Huv21| Huv21]. {
          (* normalement, ici, tout le reste des u⊕v, à partir de i+3, sont
             des 3 ; du coup, u n'aurait que des 1 et v que des 2, ce qui
             serait contradictoire avec Hj *)
          assert (Huv33 : ∀ k, (u ⊕ v) (i + k + 3) = 3). {
-           intros p.
+           intros p; clear Huv20.
            induction p as (p, IHp) using lt_wf_rec.
            destruct p. {
              rewrite Nat.add_0_r.
@@ -2236,6 +2239,8 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              apply carry_upper_bound_for_adds; [ easy | ].
              intros s; apply Huv3.
            }
+...
+}
 ...
 specialize (Hc3 (p + 2)) as H1.
 unfold carry in H1.
