@@ -444,106 +444,6 @@ Qed.
    (∀ k, fA_ge_1_ε u i k = true), j'avais
    (∀ k, P u (i + k) = rad - 1), mais c'est compliqué
    du fait que c'est une somme de 3 *)
-Theorem lt_30_all_9_and_8_18_28_then_17_18_19 {r : radix} : ∀ u i,
-  (∀ k, u (i + k) ≤ 3 * (rad - 1))
-  → (∀ k, fA_ge_1_ε u i k = true)
-  → u (i + 1) = rad - 2 ∨
-    u (i + 1) = 2 * rad - 2 ∨
-    u (i + 1) = 3 * rad - 2
-  → u (i + 2) = 2 * rad - 1 ∨
-    u (i + 2) = 2 * rad - 2 ∨
-    u (i + 2) = 2 * rad - 3.
-Proof.
-intros * Hu3 Haut Huuu.
-specialize (all_fA_ge_1_ε_P_999 _ _ Haut) as Hpu.
-assert (Hc3 : ∀ k, carry u (i + k) < 3). {
-  intros k.
-  specialize (carry_upper_bound_for_adds 3 u i) as H6.
-  assert (H : 3 ≠ 0) by easy.
-  specialize (H6 H); clear H.
-  assert (H : ∀ k, u (i + k + 1) ≤ 3 * (rad - 1)). {
-    intros p; rewrite <- Nat.add_assoc; apply Hu3.
-  }
-  now specialize (H6 H).
-}
-...
-rewrite Hr2 in Hpu.
-assert (H6 : carry u (i + 2) = 1). {
-  specialize (Hpu 1) as H1.
-  unfold P, d2n, prop_carr in H1; cbn in H1.
-  rewrite <- Nat.add_assoc in H1; replace (1 + 1) with 2 in H1 by easy.
-  rewrite Hu2, Nat.add_0_l, Hr2 in H1.
-  destruct (Nat.eq_dec (carry u (i + 2)) 2) as [H6| H6]. {
-    rewrite H6 in H1; easy.
-  }
-  specialize (Hc3 2) as H7.
-  rewrite Nat.mod_small in H1; [ easy | flia H6 H7 ].
-}
-assert (H1 : carry u (i + 1) mod rad = 1). {
-  specialize (Hpu 0) as H1.
-  rewrite Nat.add_0_r in H1.
-  unfold P, d2n, prop_carr, dig in H1.
-  now rewrite Hu1, Nat.add_0_l in H1.
-}
-unfold carry, carry_cases in H1.
-destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [HA| HA]. 2: {
-  destruct HA as (p & Hjp & Hp).
-  specialize (Hau (1 + p)).
-  now rewrite A_ge_1_add_r_true_if in Hp.
-}
-clear HA.
-unfold carry, carry_cases in H6.
-destruct (LPO_fst (fA_ge_1_ε u (i + 2))) as [HA| HA]. 2: {
-  destruct HA as (p & Hjp & Hp).
-  specialize (Hau (2 + p)).
-  now rewrite A_ge_1_add_r_true_if in Hp.
-}
-clear HA.
-replace (i + 2) with (i + 1 + 1) in H6 at 2 by flia.
-rewrite min_n_add_l, Hr2, Nat.mul_1_r in H6.
-remember (min_n (i + 1) 0) as nn eqn:Hnn.
-rewrite A_split_first in H1 by (rewrite Hnn; min_n_ge).
-replace (S (i + 1)) with (i + 2) in H1 by easy.
-rewrite Hu2, NQadd_0_l in H1.
-rewrite <- ApB_A in H6 by (rewrite Hnn; min_n_ge).
-remember (A (i + 2) nn u) as m eqn:Hm.
-symmetry in Hm.
-rewrite Nat.mod_small in H1. 2: {
-  destruct (NQlt_le_dec m 2) as [Hm2| Hm2]. {
-    rewrite NQintg_small; [ easy | ].
-    rewrite Hr2; split.
-    -apply NQle_0_mul_r; [ easy | now rewrite <- Hm ].
-    -apply (NQlt_le_trans _ (2 * 1 // 2)%NQ).
-     +now apply NQmul_lt_mono_pos_r.
-     +rewrite <- NQpair_mul_r, Nat.mul_1_r.
-      rewrite NQpair_diag; [ apply NQle_refl | easy ].
-  }
-  rewrite NQintg_add in H6; [ | now rewrite <- Hm | easy ].
-  move H6 at bottom.
-  assert (H : NQintg m ≥ 2). {
-    replace 2 with (NQintg 2) by easy.
-    now apply NQintg_le_mono.
-  }
-  flia H6 H.
-}
-assert (H : NQintg m ≥ 2). {
-  replace 2 with (NQintg 2) by easy.
-  apply NQintg_le_mono; [ easy | ].
-  apply NQnlt_ge; intros H.
-  rewrite NQintg_small in H1; [ easy | ].
-  rewrite Hr2; split.
-  -apply NQle_0_mul_r; [ easy | now rewrite <- Hm ].
-  -apply (NQlt_le_trans _ (2 * 1 // 2)%NQ).
-   +now apply NQmul_lt_mono_pos_r.
-   +rewrite <- NQpair_mul_r, Nat.mul_1_r.
-    rewrite NQpair_diag; [ apply NQle_refl | easy ].
-}
-rewrite NQintg_add in H6; [ | now rewrite <- Hm | easy ].
-flia H6 H.
-Qed.
-...
-
-(* special case of lt_30_all_9_and_8_18_28_then_17_18_19 *)
 Theorem rad_2_sum_3_all_9_not_0_0 {r : radix} : ∀ u i,
   rad = 2
   → (∀ k, u (i + k) ≤ 3 * (rad - 1))
@@ -551,19 +451,6 @@ Theorem rad_2_sum_3_all_9_not_0_0 {r : radix} : ∀ u i,
   → u (i + 1) = 0
   → u (i + 2) ≠ 0.
 Proof.
-(**)
-intros * Hr2 Hu3 Hau Hu1 Hu2.
-specialize (lt_30_all_9_and_8_18_28_then_17_18_19 u i) as H1.
-assert (H : ∀ k, u (i + k) < 3 * rad). {
-  intros p.
-  apply (le_lt_trans _ (3 * (rad - 1))); [ apply Hu3 | flia Hr2 ].
-}
-specialize (H1 H Hau); clear H.
-rewrite Hr2 in H1; cbn in H1.
-specialize (H1 (or_introl Hu1)).
-rewrite Hu2 in H1.
-now destruct H1 as [H1| [H1| H1]].
-...
 intros * Hr2 Hu3 Hau Hu1 Hu2.
 specialize (all_fA_ge_1_ε_P_999 _ _ Hau) as Hpu.
 assert (Hc3 : ∀ k, carry u (i + k) < 3). {
