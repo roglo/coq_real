@@ -2050,6 +2050,9 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              }
              split; [ | easy ].
              rewrite A_split_first in HA; [ | rewrite Hnr; min_n_ge ].
+             rewrite NQintg_add_cond in HA; [ | apply NQle_0_pair | ]. 2: {
+               now apply NQle_0_mul_r.
+             }
 ...
 }
 ...
