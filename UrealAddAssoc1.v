@@ -79,6 +79,37 @@ split.
  now apply NQlt_0_pair.
 Qed.
 
+(* generalizes NQintg_A_le_for_adds *)
+Theorem NQintg_A_le {r : radix} : ∀ m u i j,
+  (∀ k, u (i + k + 1) < m * rad)
+  → NQintg (A i (min_n i j) u) ≤ m - 1.
+Proof.
+intros * Hmr.
+specialize radix_ge_2 as Hr.
+remember (min_n i j) as n eqn:Hn.
+destruct (zerop m) as [Hm| Hm]. {
+  subst m.
+  now specialize (Hmr 0).
+}
+...
+specialize (A_upper_bound_for_adds m u i n Hmr) as H2.
+rewrite NQmul_sub_distr_l, NQmul_1_r in H2.
+apply NQintg_le_mono in H2; [ | easy ].
+eapply le_trans; [ apply H2 | ].
+rewrite (Nat.sub_1_r m).
+apply Nat.lt_le_pred.
+apply NQintg_sub_nat_l_lt.
+split.
+-rewrite NQmul_comm.
+ apply NQmul_pos_cancel_l; [ easy | ].
+ now apply NQlt_0_pair.
+-replace (m // 1)%NQ with (m // 1 * 1)%NQ at 2 by apply NQmul_1_r.
+ apply NQmul_le_mono_pos_l. 2: {
+   apply NQle_pair_mono_l; split; [ pauto | now apply Nat_pow_ge_1 ].
+ }
+ now apply NQlt_0_pair.
+Qed.
+
 (* generalizes carry_upper_bound_for_add *)
 Theorem carry_upper_bound_for_adds {r : radix} : ∀ m u i,
   m ≠ 0
@@ -95,6 +126,30 @@ intros l.
 destruct m; [ easy | ].
 apply -> Nat.succ_le_mono.
 replace m with (S m - 1) by flia.
+apply NQintg_A_le_for_adds.
+intros j.
+replace (i + k + j + 1) with (i + (k + j) + 1) by flia.
+apply Hur.
+Qed.
+
+(* generalizes carry_upper_bound_for_adds *)
+Theorem carry_upper_bound {r : radix} : ∀ m u i,
+  m ≠ 0
+  → (∀ k, u (i + k + 1) < m * rad)
+  → ∀ k, carry u (i + k) < m.
+Proof.
+intros * Hm Hur *.
+specialize radix_ge_2 as Hr.
+unfold carry.
+enough (∀ l, NQintg (A (i + k) (min_n (i + k) l) u) < m). {
+  destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [| (j & Hj)]; apply H.
+}
+intros l.
+destruct m; [ easy | ].
+apply -> Nat.succ_le_mono.
+replace m with (S m - 1) by flia.
+Check NQintg_A_le_for_adds.
+...
 apply NQintg_A_le_for_adds.
 intros j.
 replace (i + k + j + 1) with (i + (k + j) + 1) by flia.

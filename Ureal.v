@@ -1003,6 +1003,56 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
   apply NQle_refl.
 Qed.
 
+(* generalizes A_upper_bound_for_adds *)
+Theorem A_upper_bound {r : radix} (rg := nat_ord_ring) : ∀ m u i n,
+  (∀ k, u (i + k + 1) < m * rad)
+  → (A i n u ≤ (m // 1 * (1 - 1 // rad ^ (n - i - 1))))%NQ.
+Proof.
+intros * Hur.
+specialize radix_ge_2 as Hr.
+destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
+-unfold A.
+ rewrite summation_empty; [ | easy ].
+ remember (rad ^ (n - i - 1)) as s eqn:Hs.
+ change (0 ≤ m // 1 * (1 - 1 // s))%NQ.
+ rewrite <- (NQmul_0_r (m // 1)%NQ).
+ apply NQmul_le_mono_nonneg_l.
+ +replace 0%NQ with (0 // 1)%NQ by easy.
+  apply NQle_pair; [ easy | easy | flia ].
+ +apply (NQadd_le_r _ _ (1 // s)).
+  rewrite NQadd_0_l, NQsub_add.
+  destruct s. {
+    symmetry in Hs.
+    now apply Nat.pow_nonzero in Hs.
+  }
+  apply NQle_pair_mono_l; split; [ pauto | flia ].
+-apply Nat.nlt_ge in Hin.
+ remember (n - i - 1) as s eqn:Hs.
+ destruct s; [ flia Hin Hs | ].
+ rewrite NQpower_summation_inv; [ | flia Hr ].
+ unfold A.
+ rewrite summation_shift; [ | easy ].
+ replace (n - 1 - (i + 1)) with s by flia Hs.
+ do 2 rewrite summation_mul_distr_l.
+ apply summation_le_compat.
+ intros j Hj.
+ replace (i + 1 + j - i) with (S j) by flia.
+ apply (NQle_trans _ ((m * rad - 1) // rad ^ S j)).
+ +apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat.mul_comm, Nat.add_shuffle0.
+  apply Nat.mul_le_mono_l.
+  rewrite Nat.sub_1_r.
+  apply Nat.lt_le_pred, Hur.
+ +rewrite NQmul_assoc.
+  rewrite NQsub_pair_pos; [ | easy | easy | now apply Nat.mul_le_mono_l].
+  do 2 rewrite Nat.mul_1_l.
+  rewrite NQmul_pair; [ | easy | easy ].
+  rewrite Nat.mul_1_l.
+  rewrite NQmul_pair; [ | easy | pauto ].
+  rewrite Nat.mul_1_r.
+...
+Qed.
+
 Theorem B_gen_upper_bound_for_mul {r : radix} : ∀ u i n l,
   n ≠ 0
   → i < n
