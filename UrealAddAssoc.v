@@ -499,21 +499,25 @@ assert (Hci2 : carry u (i + 2) = 1). {
   specialize (Hc3 2) as H7.
   flia Hc20 Hc22 H7.
 }
-...
-unfold carry, carry_cases in H1.
+unfold carry, carry_cases in Hci1.
 destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [HA| HA]. 2: {
   destruct HA as (p & Hjp & Hp).
   specialize (Hau (1 + p)).
   now rewrite A_ge_1_add_r_true_if in Hp.
 }
 clear HA.
-unfold carry, carry_cases in H6.
+unfold carry, carry_cases in Hci2.
 destruct (LPO_fst (fA_ge_1_ε u (i + 2))) as [HA| HA]. 2: {
   destruct HA as (p & Hjp & Hp).
   specialize (Hau (2 + p)).
   now rewrite A_ge_1_add_r_true_if in Hp.
 }
 clear HA.
+rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in Hci1.
+...
+rewrite <- (all_fA_ge_1_ε_NQintg_A _ _ _ _ _ rad) in Hci1.
+Search (NQintg _ = NQintg _).
+...
 replace (i + 2) with (i + 1 + 1) in H6 at 2 by flia.
 rewrite min_n_add_l, Hr2, Nat.mul_1_r in H6.
 remember (min_n (i + 1) 0) as nn eqn:Hnn.
