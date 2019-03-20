@@ -2035,12 +2035,21 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              rewrite Nat.add_0_r in Hcw.
              symmetry in Hcw.
              apply NQintg_interv in Hcw; [ | now apply NQle_0_mul_r ].
-             split. 2: {
+             assert (HA : NQintg (A (i + p + 3) nr w) = 2). {
                symmetry.
                apply NQintg_interv; [ easy | ].
                split; [ now apply (NQmul_le_mono_pos_r (1 // 2)%NQ) | ].
-               apply (NQmul_lt_mono_pos_r (1 // 2)%NQ); [ easy | ].
-(* chiasse. Bon faut peut-être voir avec H1 aussi *)
+               rewrite <- NQpair_add_l.
+               replace (2 + 1) with 3 by easy.
+               eapply NQle_lt_trans. {
+                 apply (A_upper_bound_for_adds 3).
+                 intros; do 2 rewrite <- Nat.add_assoc; apply Huv3.
+               }
+               rewrite NQmul_sub_distr_l, NQmul_1_r.
+               now apply NQsub_lt.
+             }
+             split; [ | easy ].
+             rewrite A_split_first in HA; [ | rewrite Hnr; min_n_ge ].
 ...
 }
 ...
