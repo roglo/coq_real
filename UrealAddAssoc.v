@@ -513,7 +513,56 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 2))) as [HA| HA]. 2: {
   now rewrite A_ge_1_add_r_true_if in Hp.
 }
 clear HA.
-rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in Hci1.
+rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in Hci1; cycle 1. {
+  intros; rewrite <- Nat.add_assoc; apply Hu3.
+} {
+  now intros; apply A_ge_1_add_r_true_if.
+}
+replace (i + 2) with (i + 1 + 1) in Hci2 at 2 by flia.
+rewrite min_n_add_l, Nat.mul_1_r in Hci2.
+rewrite A_split_first in Hci1; [ | min_n_ge ].
+replace (S (i + 1)) with (i + 2) in Hci1 by easy.
+rewrite Hu2 in Hci1.
+rewrite NQintg_add_cond in Hci1; [ | apply NQle_0_pair | ]. 2: {
+  now apply NQle_0_mul_r.
+}
+rewrite NQintg_small in Hci1. 2: {
+  split; [ apply NQle_0_pair | ].
+  apply NQlt_pair; [ easy | easy | flia Hr ].
+}
+rewrite NQfrac_small in Hci1. 2: {
+  split; [ apply NQle_0_pair | ].
+  apply NQlt_pair; [ easy | easy | flia Hr ].
+}
+rewrite Nat.add_0_l in Hci1.
+rewrite NQfrac_small in Hci1. 2: {
+  symmetry in Hci2.
+  apply NQintg_interv in Hci2; [ | easy ].
+  split; [ now apply NQle_0_mul_r | ].
+  apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now apply NQlt_0_pair | ].
+  rewrite <- NQmul_assoc, NQmul_pair_den_num; [ | easy ].
+  rewrite NQmul_1_r, NQmul_1_l.
+  eapply NQlt_le_trans; [ apply Hci2 | ].
+  rewrite <- NQpair_add_l.
+  apply NQle_pair; [ easy | easy | flia Hr ].
+}
+remember (A (i + 2) (min_n (i + 1) 0 + rad) u) as a eqn:Ha.
+destruct (NQlt_le_dec (((rad - 2) // rad)%NQ + (a * 1 // rad)%NQ) 1)
+  as [H1| H1]. {
+  rewrite Nat.add_0_r in Hci1.
+  rewrite NQintg_small in Hci1; [ now rewrite Nat.mod_0_l in Hci1 | ].
+  symmetry in Hci2.
+  apply NQintg_interv in Hci2; [ | now rewrite Ha ].
+  rewrite Ha.
+  split; [ now apply NQle_0_mul_r | ].
+  rewrite <- Ha.
+  apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now apply NQlt_0_pair | ].
+  rewrite <- NQmul_assoc, NQmul_pair_den_num; [ | easy ].
+  rewrite NQmul_1_r, NQmul_1_l.
+  eapply NQlt_le_trans; [ apply Hci2 | ].
+  rewrite <- NQpair_add_l.
+  apply NQle_pair; [ easy | easy | flia Hr ].
+}
 ...
 rewrite <- (all_fA_ge_1_ε_NQintg_A _ _ _ _ _ rad) in Hci1.
 Search (NQintg _ = NQintg _).
