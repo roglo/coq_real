@@ -91,6 +91,71 @@ destruct (zerop m) as [Hm| Hm]. {
   subst m.
   now specialize (Hmr 0).
 }
+(**)
+...
+destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+  unfold A.
+  rewrite summation_empty; [ apply Nat.le_0_l | easy ].
+}
+apply Nat.nlt_ge in Hin.
+rewrite A_num_den.
+rewrite NQintg_pair; [ | unfold den_A; pauto ].
+apply Nat.div_le_upper_bound; [ unfold den_A; pauto | ].
+unfold den_A.
+remember (n - i - 1) as s eqn:Hs.
+destruct s; [ flia Hin Hs | ].
+rewrite power_summation; [ | easy ].
+rewrite summation_mul_distr_l.
+rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+unfold num_A.
+rewrite summation_shift; [ | easy ].
+replace (n - 1 - (i + 1)) with s by flia Hs.
+rewrite summation_mul_distr_r.
+...
+Search (_ / _ ≤ _).
+...
+replace (m - 1) with (NQintg ((m - 1) // 1)). 2: {
+  rewrite NQintg_pair; [ | easy ].
+  apply Nat.div_1_r.
+}
+apply NQintg_le_mono; [ easy | ].
+rewrite NQpower_summation_inv.
+
+rewrite Nat.sub_1_r.
+apply Nat.lt_le_pred.
+...
+
+unfold A.
+rewrite summation_shift; [ | easy ].
+rewrite Nat.sub_add_distr.
+rewrite (Nat_sub_sub_swap _ 1).
+remember (n - i - 1) as s eqn:Hs.
+destruct s; [ flia Hin Hs | ].
+replace (S s - 1) with s by flia.
+Check NQpower_summation_inv.
+...
+remember (n - i - 1) as s eqn:Hs.
+ destruct s; [ flia Hin Hs | ].
+ rewrite NQpower_summation_inv; [ | flia Hr ].
+ unfold A.
+ rewrite summation_shift; [ | easy ].
+ replace (n - 1 - (i + 1)) with s by flia Hs.
+ do 2 rewrite summation_mul_distr_l.
+ apply summation_le_compat.
+ intros j Hj.
+ replace (i + 1 + j - i) with (S j) by flia.
+ apply (NQle_trans _ ((m * (rad - 1)) // (rad ^ S j))).
+ +apply NQle_pair; [ pauto | pauto | ].
+  rewrite Nat.mul_comm, Nat.add_shuffle0.
+  apply Nat.mul_le_mono_l, Hur.
+ +rewrite NQmul_assoc.
+  rewrite NQsub_pair_pos; [ | easy | easy | now apply Nat.mul_le_mono_l].
+  do 2 rewrite Nat.mul_1_l.
+  rewrite NQmul_pair; [ | easy | easy ].
+  rewrite Nat.mul_1_l.
+  rewrite NQmul_pair; [ | easy | pauto ].
+  rewrite Nat.mul_1_r.
+  apply NQle_refl.
 ...
 specialize (A_upper_bound_for_adds m u i n Hmr) as H2.
 rewrite NQmul_sub_distr_l, NQmul_1_r in H2.
