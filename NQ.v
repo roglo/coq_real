@@ -2390,7 +2390,7 @@ rewrite <- (proj2 (Nat.div_exact _ c Hcz)).
 Qed.
 
 Theorem NQintg_interv : ∀ n x, (0 ≤ x)%NQ →
-  (n // 1 ≤ x < n // 1 + 1)%NQ ↔ n = NQintg x.
+  (n // 1 ≤ x < n // 1 + 1)%NQ ↔ NQintg x = n.
 Proof.
 intros * Hxz.
 split; intros Hx.
@@ -2405,6 +2405,7 @@ split; intros Hx.
  apply NQlt_pair in Hxn; [ | easy | easy ].
  rewrite Nat.mul_1_l in Hnx.
  rewrite Nat.mul_1_r, Nat.mul_comm in Hxn.
+ symmetry.
  now apply Nat_div_interv.
 -subst n.
  rewrite NQintg_of_frac; [ | easy ].
@@ -2481,7 +2482,7 @@ Theorem NQintg_add : ∀ x y, (0 ≤ x)%NQ → (0 ≤ y)%NQ →
 Proof.
 intros * Hxz Hyz.
 rewrite NQintg_add_frac.
-symmetry; apply NQintg_interv.
+apply NQintg_interv.
 -replace 0%NQ with (0 + 0)%NQ by easy.
  now apply NQadd_le_mono.
 -destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
