@@ -1985,15 +1985,9 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            }
            specialize (IHp p (Nat.lt_succ_diag_r p)) as H1.
            destruct H1 as (Hi, Hcw).
+generalize Hcw; intros Hcw'.
            unfold carry, d2n, prop_carr, dig in Hcw.
            rewrite all_fA_ge_1_ε_NQintg_A' in Hcw; cycle 1. {
-             intros; rewrite <- Nat.add_assoc; apply Huv3.
-           } {
-             intros; rewrite <- Nat.add_assoc.
-             apply A_ge_1_add_r_true_if, Hauv.
-           }
-           unfold carry, d2n, prop_carr, dig.
-           rewrite all_fA_ge_1_ε_NQintg_A'; cycle 1. {
              intros; rewrite <- Nat.add_assoc; apply Huv3.
            } {
              intros; rewrite <- Nat.add_assoc.
@@ -2007,8 +2001,6 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              apply A_ge_1_add_r_true_if, Hauv.
            }
            rewrite A_split_first in Hcw; [ | min_n_ge ].
-           replace (i + S p + 2) with (i + p + 2 + 1) at 2 by flia.
-           rewrite min_n_add_l, Nat.mul_1_r.
            remember (min_n (i + p + 2) 0 + rad) as nr eqn:Hnr.
            replace (S (i + p + 2)) with (i + p + 3) in Hcw by flia.
            rewrite Hi in Hcw.
@@ -2038,6 +2030,15 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                rewrite NQmul_sub_distr_l, NQmul_1_r.
                now apply NQsub_lt.
              }
+             unfold carry, d2n, prop_carr, dig.
+             rewrite all_fA_ge_1_ε_NQintg_A'; cycle 1. {
+               intros; rewrite <- Nat.add_assoc; apply Huv3.
+             } {
+               intros; rewrite <- Nat.add_assoc.
+               apply A_ge_1_add_r_true_if, Hauv.
+             }
+             replace (i + p + 3) with (i + p + 2 + 1) at 2 by flia.
+             rewrite min_n_add_l, Nat.mul_1_r, <- Hnr.
              split; [ | easy ].
              rewrite A_split_first in HA; [ | rewrite Hnr; min_n_ge ].
              rewrite NQintg_add_cond in HA; [ | apply NQle_0_pair | ]. 2: {
