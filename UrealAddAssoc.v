@@ -2325,32 +2325,27 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            apply (NQmul_lt_mono_pos_r 2%NQ) in Hcw; [ | easy ].
            rewrite <- NQmul_assoc, NQmul_pair_den_num in Hcw; [ | easy ].
            rewrite NQmul_1_r, NQmul_1_l in Hcw.
+           apply NQle_sub_le_add_l in H1.
+           rewrite NQsub_pair_pos in H1; [ | easy | easy | cbn; pauto ].
+           do 2 rewrite Nat.mul_1_l in H1.
+           replace (2 - 1) with 1 in H1 by easy.
+           assert (Hcuv3 : carry w (i + p + 3) < 2). {
+             unfold carry.
+             rewrite all_fA_ge_1_ε_NQintg_A'; cycle 1. {
+               intros; rewrite <- Nat.add_assoc; apply Huv3.
+             } {
+               intros; rewrite <- Nat.add_assoc.
+               apply A_ge_1_add_r_true_if, Hauv.
+             }
+             replace (i + p + 3) with (i + p + 2 + 1) at 2 by flia.
+             rewrite min_n_add_l, Nat.mul_1_r, <- Hnr.
+             apply Nat.lt_succ_r.
+             rewrite (NQintg_frac (A _ _ _)) in Hcw; [ | easy ].
+             eapply NQle_lt_trans in Hcw; [ | now apply NQle_add_r ].
+             apply NQlt_pair in Hcw; [ flia Hcw | easy | easy ].
+           }
+           move Hcuv3 before Hcuv2.
 ...
-unfold carry.
-               rewrite all_fA_ge_1_ε_NQintg_A'; cycle 1. {
-                 intros; rewrite <- Nat.add_assoc; apply Huv3.
-               } {
-                 intros; rewrite <- Nat.add_assoc.
-                 apply A_ge_1_add_r_true_if, Hauv.
-               }
-               replace (i + p + 3) with (i + p + 2 + 1) at 2 by flia.
-               rewrite min_n_add_l, Nat.mul_1_r, <- Hnr.
-
-               rewrite all_fA_ge_1_ε_NQintg_A' in H8; cycle 1. {
-                 intros; rewrite <- Nat.add_assoc; apply Huv3.
-               } {
-                 intros; rewrite <- Nat.add_assoc.
-                 apply A_ge_1_add_r_true_if, Hauv.
-               }
-               rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in H7;
-                                                                 cycle 1. {
-                 intros; rewrite <- Nat.add_assoc; apply Huv3.
-               } {
-                 intros; rewrite <- Nat.add_assoc.
-                 apply A_ge_1_add_r_true_if, Hauv.
-               }
-
- }
 ... suite
  assert (H1 : NQintg (A i n v) = 1) by flia Ha0 Hzn; clear Ha0 Hzn.
  rewrite H1 in H2, H3.
