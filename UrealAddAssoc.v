@@ -2318,7 +2318,6 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              rewrite Hx, Hr2 in H.
              flia Hx0 Hx1 Hx2 H.
            }
-           exfalso.
            replace 1 with (0 + 1) in Hcw at 5 by easy.
            apply Nat.add_cancel_r in Hcw.
            apply eq_NQintg_0 in Hcw; [ | now apply NQle_0_mul_r ].
@@ -2329,6 +2328,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            rewrite NQsub_pair_pos in H1; [ | easy | easy | cbn; pauto ].
            do 2 rewrite Nat.mul_1_l in H1.
            replace (2 - 1) with 1 in H1 by easy.
+...
            assert (Hcuv3x : carry w (i + p + 3) < 2). {
              unfold carry.
              rewrite all_fA_ge_1_ε_NQintg_A'; cycle 1. {
