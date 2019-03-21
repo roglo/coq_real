@@ -2105,7 +2105,7 @@ destruct (NQlt_le_dec (NQfrac (w (i + S p + 3) // 2) + NQfrac (A (i + S p + 3) n
     apply NQintg_interv in HA; [ | now apply NQle_0_mul_r ].
     rewrite (NQpair_diag 2) in Hcw; [ | easy ].
     rewrite NQmul_add_distr_r, NQmul_1_l in Hcw.
-    clear H1 H6 Hcw.
+    clear H6 Hcw.
 ...
 }
 ...
