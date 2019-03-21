@@ -2405,7 +2405,6 @@ split; intros Hx.
  apply NQlt_pair in Hxn; [ | easy | easy ].
  rewrite Nat.mul_1_l in Hnx.
  rewrite Nat.mul_1_r, Nat.mul_comm in Hxn.
- symmetry.
  now apply Nat_div_interv.
 -subst n.
  rewrite NQintg_of_frac; [ | easy ].

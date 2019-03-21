@@ -373,13 +373,13 @@ Qed.
 
 Theorem Nat_div_interv : ∀ n a b,
   n * b ≤ a < (n + 1) * b
-  → n = a / b.
+  → a / b = n.
 Proof.
 intros * Hn.
 revert a b Hn.
 induction n; intros.
 -rewrite Nat.mul_0_l, Nat.mul_1_l in Hn.
- now symmetry; apply Nat.div_small.
+ now apply Nat.div_small.
 -specialize (IHn (a - b) b) as H1.
  assert (H : n * b ≤ a - b < (n + 1) * b). {
    destruct Hn as (H2, H3).
@@ -409,7 +409,7 @@ induction n; intros.
     now rewrite Nat.add_comm, Nat.add_sub.
   }
   rewrite Nat_div_add_same_l; [ | easy ].
-  rewrite <- Nat.add_1_l.
+  rewrite Nat.add_1_l.
   now f_equal.
 Qed.
 
