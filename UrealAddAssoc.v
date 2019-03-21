@@ -2118,16 +2118,13 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                  apply NQlt_pair_mono_r; pauto.
                }
                destruct (Nat.eq_dec x 2) as [Hx2| Hx2]. {
-                 exfalso; clear Hx0 Hx1.
+                 exfalso; clear Hx0 Hx1 H6 Hcw.
                  move Hx2 at top; subst x.
+                 rename Hx into Huv42; move Huv42 before Huv33.
                  rewrite NQpair_diag, NQintg_1 in HA; [ | easy ].
                  replace 2 with (1 + 1) in HA at 3 by easy.
                  apply Nat.add_cancel_l in HA.
                  apply NQintg_interv in HA; [ | now apply NQle_0_mul_r ].
-                 rewrite (NQpair_diag 2) in Hcw; [ | easy ].
-                 rewrite NQmul_add_distr_r, NQmul_1_l in Hcw.
-                 clear H6 Hcw.
-                 rename Hx into Huv42; move Huv42 before Huv33.
                  replace (i + S p + 3) with (i + p + 4) in Huv42 by flia.
                  specialize (all_fA_ge_1_ε_P_999 _ _ Hauv (p + 3)) as H7.
                  unfold P, d2n, prop_carr, dig in H7.
@@ -2247,18 +2244,21 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                rewrite NQmul_pair_den_num; [ | easy ].
                apply NQle_refl.
              }
+             destruct (Nat.eq_dec x 2) as [Hx2| Hx2]. {
+               exfalso; clear Hx0 Hx1.
+               move Hx2 at top; subst x.
+               rename Hx into Huv42; move Huv42 before Huv33.
+               rewrite NQpair_diag, NQintg_1 in HA; [ | easy ].
+               replace 2 with (1 + 0 + 1) in HA at 3 by easy.
+               apply Nat.add_cancel_r in HA.
+               apply Nat.add_cancel_l in HA.
+               apply NQintg_interv in HA; [ | now apply NQle_0_mul_r ].
+               rewrite NQadd_0_l in HA.
+               destruct HA as (_, HA).
 ...
-               destruct (Nat.eq_dec x 2) as [Hx2| Hx2]. {
-                 exfalso; clear Hx0 Hx1.
-                 move Hx2 at top; subst x.
-                 rewrite NQpair_diag, NQintg_1 in HA; [ | easy ].
-                 replace 2 with (1 + 1) in HA at 3 by easy.
-                 apply Nat.add_cancel_l in HA.
-                 apply NQintg_interv in HA; [ | now apply NQle_0_mul_r ].
                  rewrite (NQpair_diag 2) in Hcw; [ | easy ].
                  rewrite NQmul_add_distr_r, NQmul_1_l in Hcw.
                  clear H6 Hcw.
-                 rename Hx into Huv42; move Huv42 before Huv33.
                  replace (i + S p + 3) with (i + p + 4) in Huv42 by flia.
                  specialize (all_fA_ge_1_ε_P_999 _ _ Hauv (p + 3)) as H7.
                  unfold P, d2n, prop_carr, dig in H7.
