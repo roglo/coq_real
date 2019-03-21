@@ -1984,8 +1984,10 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              intros s; apply Huv3.
            }
            specialize (IHp p (Nat.lt_succ_diag_r p)) as H1.
-           destruct H1 as (Hi, Hcw).
+           destruct H1 as (Huv33, Hcw).
+           move Huv33 before Huv21; move p after Huv0.
            generalize Hcw; intros Hcuv2.
+           move Hcuv2 before Huv33.
            unfold carry, d2n, prop_carr, dig in Hcw.
            rewrite all_fA_ge_1_ε_NQintg_A' in Hcw; cycle 1. {
              intros; rewrite <- Nat.add_assoc; apply Huv3.
@@ -2003,7 +2005,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            rewrite A_split_first in Hcw; [ | min_n_ge ].
            remember (min_n (i + p + 2) 0 + rad) as nr eqn:Hnr.
            replace (S (i + p + 2)) with (i + p + 3) in Hcw by flia.
-           rewrite Hi in Hcw.
+           rewrite Huv33 in Hcw.
            replace (i + S p + 2) with (i + p + 3) by flia.
            rewrite NQintg_add_cond in Hcw; [ | easy | ]. 2: {
              now apply NQle_0_mul_r.
@@ -2033,7 +2035,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                rewrite NQmul_sub_distr_l, NQmul_1_r.
                now apply NQsub_lt.
              }
-             assert (HA' : carry w (i + p + 3) = 2). {
+             assert (Hcuv3 : carry w (i + p + 3) = 2). {
                unfold carry.
                rewrite all_fA_ge_1_ε_NQintg_A'; cycle 1. {
                  intros; rewrite <- Nat.add_assoc; apply Huv3.
@@ -2044,6 +2046,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                replace (i + p + 3) with (i + p + 2 + 1) at 2 by flia.
                now rewrite min_n_add_l, Nat.mul_1_r, <- Hnr.
              }
+             move Hcuv3 before Hcuv2.
              unfold carry, d2n, prop_carr, dig.
              rewrite all_fA_ge_1_ε_NQintg_A'; cycle 1. {
                intros; rewrite <- Nat.add_assoc; apply Huv3.
@@ -2125,13 +2128,8 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                  rewrite (NQpair_diag 2) in Hcw; [ | easy ].
                  rewrite NQmul_add_distr_r, NQmul_1_l in Hcw.
                  clear H6 Hcw.
-                 rename Hi into Huv33; move Huv33 before Huv21.
-                 move p after Huv0.
                  rename Hx into Huv42; move Huv42 before Huv33.
-                 move Hcuv2 before Huv42.
                  replace (i + S p + 3) with (i + p + 4) in Huv42 by flia.
-                 rename HA' into Hcuv3.
-                 move Hcuv3 before Hcuv2.
                  specialize (all_fA_ge_1_ε_P_999 _ _ Hauv (p + 3)) as H7.
                  unfold P, d2n, prop_carr, dig in H7.
                  replace (i + (p + 3) + 1) with (i + p + 4) in H7 by flia.
@@ -2205,6 +2203,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                flia Hx0 Hx1 Hx2 H.
              }
 (* voir donc H6 et HA *)
+}
 ...
 specialize (Hc3 (p + 3)) as H7.
 rewrite Nat.add_assoc in H7.
