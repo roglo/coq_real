@@ -2065,34 +2065,33 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              rewrite A_split_first in Hcw; [ | rewrite Hnr; min_n_ge ].
              replace (S (i + p + 3)) with (i + S p + 3) in Hcw by flia.
              rewrite Hr2 in Hcw, HA.
+             remember (w (i + S p + 3)) as x eqn:Hx; symmetry in Hx.
+             destruct (Nat.eq_dec x 0) as [Hx0| Hx0]. {
+               exfalso.
+               move Hx0 at top; subst x.
+               rewrite NQadd_0_l in Hcw.
+               destruct Hcw as (H, _).
+               apply NQnlt_ge in H; apply H; clear H.
+               apply (NQmul_lt_mono_pos_r (4 // 1)%NQ); [ easy | ].
+               do 2 rewrite <- NQmul_assoc.
+               rewrite NQmul_pair; [ | easy | easy ].
+               rewrite NQmul_pair; [ | easy | easy ].
+               rewrite NQpair_diag; [ | easy ].
+               rewrite NQmul_1_r, NQmul_1_l.
+               eapply NQle_lt_trans. {
+                 apply (A_upper_bound_for_adds 3).
+                 intros; do 2 rewrite <- Nat.add_assoc; apply Huv3.
+               }
+               rewrite NQmul_sub_distr_l, NQmul_1_r.
+               eapply NQlt_trans; [ now apply NQsub_lt | ].
+               apply NQlt_pair_mono_r; pauto.
+             }
              destruct
                (NQlt_le_dec
-                  (NQfrac (w (i + S p + 3) // 2) +
+                  (NQfrac (x // 2) +
                    NQfrac (A (i + S p + 3) nr w * (1 // 2)%NQ)) 1)
                as [H6| H6]. {
                rewrite Nat.add_0_r in HA.
-               remember (w (i + S p + 3)) as x eqn:Hx.
-               symmetry in Hx.
-               destruct (Nat.eq_dec x 0) as [Hx0| Hx0]. {
-                 exfalso.
-                 move Hx0 at top; subst x.
-                 rewrite NQadd_0_l in Hcw.
-                 destruct Hcw as (H, _).
-                 apply NQnlt_ge in H; apply H; clear H.
-                 apply (NQmul_lt_mono_pos_r (4 // 1)%NQ); [ easy | ].
-                 do 2 rewrite <- NQmul_assoc.
-                 rewrite NQmul_pair; [ | easy | easy ].
-                 rewrite NQmul_pair; [ | easy | easy ].
-                 rewrite NQpair_diag; [ | easy ].
-                 rewrite NQmul_1_r, NQmul_1_l.
-                 eapply NQle_lt_trans. {
-                   apply (A_upper_bound_for_adds 3).
-                   intros; do 2 rewrite <- Nat.add_assoc; apply Huv3.
-                 }
-                 rewrite NQmul_sub_distr_l, NQmul_1_r.
-                 eapply NQlt_trans; [ now apply NQsub_lt | ].
-                 apply NQlt_pair_mono_r; pauto.
-               }
                destruct (Nat.eq_dec x 1) as [Hx1| Hx1]. {
                  exfalso; clear Hx0.
                  move Hx1 at top; subst x.
@@ -2202,7 +2201,114 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                rewrite Hx, Hr2 in H.
                flia Hx0 Hx1 Hx2 H.
              }
-(* voir donc H6 et HA *)
+...
+               destruct (Nat.eq_dec x 1) as [Hx1| Hx1]. {
+                 exfalso; clear Hx0.
+                 move Hx1 at top; subst x.
+                 rewrite NQintg_small in HA. 2: {
+                   split; [ easy | ].
+                   apply NQlt_pair_mono_l; pauto.
+                 }
+                 rewrite Nat.add_0_l in HA.
+                 apply NQintg_interv in HA; [ | now apply NQle_0_mul_r ].
+                 destruct HA as (H, _).
+                 apply NQnlt_ge in H; apply H; clear H.
+                 apply (NQmul_lt_mono_pos_r 2%NQ); [ easy | ].
+                 rewrite <- NQmul_assoc.
+                 rewrite NQmul_pair; [ | easy | easy ].
+                 rewrite NQpair_diag; [ | easy ].
+                 rewrite NQmul_1_r.
+                 eapply NQle_lt_trans. {
+                   apply (A_upper_bound_for_adds 3).
+                   intros; do 2 rewrite <- Nat.add_assoc; apply Huv3.
+                 }
+                 rewrite NQmul_sub_distr_l, NQmul_1_r.
+                 eapply NQlt_trans; [ now apply NQsub_lt | ].
+                 rewrite <- NQpair_mul_r.
+                 apply NQlt_pair_mono_r; pauto.
+               }
+               destruct (Nat.eq_dec x 2) as [Hx2| Hx2]. {
+                 exfalso; clear Hx0 Hx1.
+                 move Hx2 at top; subst x.
+                 rewrite NQpair_diag, NQintg_1 in HA; [ | easy ].
+                 replace 2 with (1 + 1) in HA at 3 by easy.
+                 apply Nat.add_cancel_l in HA.
+                 apply NQintg_interv in HA; [ | now apply NQle_0_mul_r ].
+                 rewrite (NQpair_diag 2) in Hcw; [ | easy ].
+                 rewrite NQmul_add_distr_r, NQmul_1_l in Hcw.
+                 clear H6 Hcw.
+                 rename Hx into Huv42; move Huv42 before Huv33.
+                 replace (i + S p + 3) with (i + p + 4) in Huv42 by flia.
+                 specialize (all_fA_ge_1_ε_P_999 _ _ Hauv (p + 3)) as H7.
+                 unfold P, d2n, prop_carr, dig in H7.
+                 replace (i + (p + 3) + 1) with (i + p + 4) in H7 by flia.
+                 rewrite Huv42 in H7.
+                 rewrite Hr2 in H7.
+                 rewrite Nat_mod_add_same_l in H7; [ | easy ].
+                 rewrite Nat.mod_small in H7. 2: {
+                   remember (carry w (i + p + 4)) as x eqn:Hx.
+                   symmetry in Hx.
+                   destruct x; [ now rewrite Nat.mod_0_l in H7 | ].
+                   destruct x; [ pauto | exfalso ].
+                   replace (S (S x)) with (2 + x) in H7 by easy.
+                   rewrite Nat_mod_add_same_l in H7; [ | easy ].
+                   destruct x; [ now rewrite Nat.mod_0_l in H7 | ].
+                   specialize (Hc3 (p + 4)) as H.
+                   rewrite Nat.add_assoc in H.
+                   flia Hx H.
+                 }
+                 cbn in H7.
+                 rename H7 into Hcuv4.
+                 move Hcuv4 before Hcuv3.
+                 generalize Hcuv3; intros H7.
+                 generalize Hcuv4; intros H8.
+                 unfold carry in H7, H8.
+                 rewrite all_fA_ge_1_ε_NQintg_A' in H7; cycle 1. {
+                   intros; rewrite <- Nat.add_assoc; apply Huv3.
+                 } {
+                   intros; rewrite <- Nat.add_assoc.
+                   apply A_ge_1_add_r_true_if, Hauv.
+                 }
+                 rewrite all_fA_ge_1_ε_NQintg_A' in H8; cycle 1. {
+                   intros; rewrite <- Nat.add_assoc; apply Huv3.
+                 } {
+                   intros; rewrite <- Nat.add_assoc.
+                   apply A_ge_1_add_r_true_if, Hauv.
+                 }
+                 rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in H7;
+                                                                   cycle 1. {
+                   intros; rewrite <- Nat.add_assoc; apply Huv3.
+                 } {
+                   intros; rewrite <- Nat.add_assoc.
+                   apply A_ge_1_add_r_true_if, Hauv.
+                 }
+                 replace (i + p + 4) with (i + p + 3 + 1) in H8 at 2 by flia.
+                 rewrite min_n_add_l, Nat.mul_1_r in H8.
+                 rewrite A_split_first in H7; [ | min_n_ge ].
+                 replace (S (i + p + 3)) with (i + p + 4) in H7 by flia.
+                 rewrite Huv42 in H7.
+                 rewrite Hr2 in H7 at 1.
+                 rewrite NQpair_diag in H7; [ | easy ].
+                 rewrite NQintg_add_nat_l in H7; [ | now apply NQle_0_mul_r ].
+                 replace 2 with (1 + 1) in H7 at 3 by easy.
+                 apply Nat.add_cancel_l in H7.
+                 remember (A (i + p + 4) (min_n (i + p + 3) 0 + rad) w) as x eqn:Hx.
+                 rewrite Hr2 in H7.
+                 apply NQintg_interv in H7; [ | now apply NQle_0_mul_r; subst x ].
+                 apply NQintg_interv in H8; [ | now subst x ].
+                 destruct H7 as (H7, _).
+                 destruct H8 as (_, H8).
+                 apply (NQmul_le_mono_pos_r 2%NQ) in H7; [ | easy ].
+                 rewrite <- NQmul_assoc in H7.
+                 rewrite NQmul_pair in H7; [ | easy | easy ].
+                 do 2 rewrite Nat.mul_1_l in H7.
+                 replace (1 + 1)%NQ with 2%NQ in H8 by easy.
+                 rewrite NQmul_pair_den_num in H7; [ | easy ].
+                 rewrite NQmul_1_r in H7.
+                 now apply NQnlt_ge in H7.
+               }
+               specialize (Huv3 (S p) 3) as H.
+...
 }
 ...
 specialize (Hc3 (p + 3)) as H7.
