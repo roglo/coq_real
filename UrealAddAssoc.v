@@ -2107,11 +2107,6 @@ destruct (NQlt_le_dec (NQfrac (w (i + S p + 3) // 2) + NQfrac (A (i + S p + 3) n
     rewrite NQmul_add_distr_r, NQmul_1_l in Hcw.
     clear H1 H6 Hcw.
 ...
-    rewrite NQintg_small in HA. 2: {
-      split; [ easy | ].
-      apply NQlt_pair_mono_l; pauto.
-    }
-...
 }
 ...
 specialize (Hc3 (p + 2)) as H1.
