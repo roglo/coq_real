@@ -2329,7 +2329,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            rewrite NQsub_pair_pos in H1; [ | easy | easy | cbn; pauto ].
            do 2 rewrite Nat.mul_1_l in H1.
            replace (2 - 1) with 1 in H1 by easy.
-           assert (Hcuv3 : carry w (i + p + 3) < 2). {
+           assert (Hcuv3x : carry w (i + p + 3) < 2). {
              unfold carry.
              rewrite all_fA_ge_1_ε_NQintg_A'; cycle 1. {
                intros; rewrite <- Nat.add_assoc; apply Huv3.
@@ -2344,7 +2344,13 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              eapply NQle_lt_trans in Hcw; [ | now apply NQle_add_r ].
              apply NQlt_pair in Hcw; [ flia Hcw | easy | easy ].
            }
-           move Hcuv3 before Hcuv2.
+           remember (carry w (i + p + 3)) as ci eqn:Hcuv3.
+           symmetry in Hcuv3; move Hcuv3 before Hcuv2.
+           move ci before p.
+           destruct (Nat.eq_dec ci 0) as [Hci0| Hci0]. {
+             move Hci0 at top; subst ci; clear Hcuv3x.
+             generalize Hcuv3; intros H6.
+             unfold carry in H6.
 ...
 ... suite
  assert (H1 : NQintg (A i n v) = 1) by flia Ha0 Hzn; clear Ha0 Hzn.
