@@ -2215,13 +2215,25 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                replace 2 with (1 + 1) in HA at 3 by easy.
                apply Nat.add_cancel_r in HA.
                apply NQintg_interv in HA; [ | now apply NQle_0_mul_r ].
-...
-               destruct HA as (H, _).
+               generalize Hcuv3; intros Hc3'.
+               unfold carry in Hc3'.
+               rewrite all_fA_ge_1_ε_NQintg_A' in Hc3'; cycle 1. {
+                 intros; rewrite <- Nat.add_assoc; apply Huv3.
+               } {
+                 intros; rewrite <- Nat.add_assoc.
+                 apply A_ge_1_add_r_true_if, Hauv.
+               }
+               rewrite A_split_first in Hc3'; [ | min_n_ge ].
+               replace (S (i + p + 3)) with (i + p + 4) in Hc3' by flia.
+               rewrite Huv41 in Hc3'.
+               apply NQintg_interv in Hc3'. 2: {
+                 apply NQle_0_add; [ easy | now apply NQle_0_mul_r ].
+               }
+               destruct Hc3' as (H, _).
                apply NQnlt_ge in H; apply H; clear H.
+               apply NQlt_add_lt_sub_l; rewrite Hr2.
                apply (NQmul_lt_mono_pos_r 2%NQ); [ easy | ].
-               rewrite <- NQmul_assoc.
-               rewrite NQmul_pair; [ | easy | easy ].
-               rewrite NQpair_diag; [ | easy ].
+               rewrite <- NQmul_assoc, NQmul_pair_den_num; [ | easy ].
                rewrite NQmul_1_r.
                eapply NQle_lt_trans. {
                  apply (A_upper_bound_for_adds 3).
@@ -2229,9 +2241,13 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                }
                rewrite NQmul_sub_distr_l, NQmul_1_r.
                eapply NQlt_le_trans; [ now apply NQsub_lt | ].
-               rewrite <- NQpair_mul_r.
-               apply NQle_pair_mono_r.
+               rewrite NQsub_pair_pos; [ | easy | easy | flia ].
+               do 2 rewrite Nat.mul_1_l.
+               replace (2 * 2 - 1) with 3 by easy.
+               rewrite NQmul_pair_den_num; [ | easy ].
+               apply NQle_refl.
              }
+...
                destruct (Nat.eq_dec x 2) as [Hx2| Hx2]. {
                  exfalso; clear Hx0 Hx1.
                  move Hx2 at top; subst x.
