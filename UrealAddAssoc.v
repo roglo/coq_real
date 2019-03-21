@@ -2204,6 +2204,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                rewrite Hx, Hr2 in H.
                flia Hx0 Hx1 Hx2 H.
              }
+(* voir donc H6 et HA *)
 ...
 specialize (Hc3 (p + 3)) as H7.
 rewrite Nat.add_assoc in H7.
