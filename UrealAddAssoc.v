@@ -2252,9 +2252,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                replace 2 with (1 + 0 + 1) in HA at 3 by easy.
                apply Nat.add_cancel_r in HA.
                apply Nat.add_cancel_l in HA.
-               apply NQintg_interv in HA; [ | now apply NQle_0_mul_r ].
-               rewrite NQadd_0_l in HA.
-               destruct HA as (_, HA).
+               apply eq_NQintg_0 in HA.
 ...
                  rewrite (NQpair_diag 2) in Hcw; [ | easy ].
                  rewrite NQmul_add_distr_r, NQmul_1_l in Hcw.
