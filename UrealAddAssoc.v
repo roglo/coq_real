@@ -2437,6 +2437,10 @@ destruct pv. {
   now apply NQsub_lt.
 }
 destruct pv. {
+  apply NQlt_add_lt_sub_r.
+  rewrite Hr2.
+  replace (1 - 1 // 2)%NQ with (1 * 1 // 2)%NQ by easy.
+  apply NQmul_lt_mono_pos_r; [ easy | ].
 ...
          apply NQnlt_ge in Hup; apply Hup; clear Hup.
          rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
