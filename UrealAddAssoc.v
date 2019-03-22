@@ -2405,29 +2405,29 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            replace (i + q) with (i + q + 0) by easy.
            apply Huv3.
          }
-apply NQnlt_ge in Hup; apply Hup; clear Hup.
-rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
-rewrite <-  Nat.add_1_r.
-replace (u (i + 1)) with 0. 2: {
-rewrite Hw in Huv0.
-unfold "⊕" in Huv0.
-now apply Nat.eq_add_0 in Huv0.
-}
-rewrite NQadd_0_l.
-rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
-rewrite <- (Nat.add_1_r i).
-replace (P v (i + 1)) with 0. 2: {
-  unfold P, d2n, prop_carr, dig.
-  replace (v (i + 1)) with 0. 2: {
-rewrite Hw in Huv0.
-unfold "⊕" in Huv0.
-apply Nat.eq_add_0 in Huv0.
-now rewrite <-  Nat.add_1_r.
-}
-  rewrite Nat.add_0_l.
-unfold carry.
 ...
-Search (NQintg _ = NQintg _).
+         apply NQnlt_ge in Hup; apply Hup; clear Hup.
+         rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
+         rewrite <-  Nat.add_1_r.
+         replace (u (i + 1)) with 0. 2: {
+           rewrite Hw in Huv0.
+           unfold "⊕" in Huv0.
+           now apply Nat.eq_add_0 in Huv0.
+         }
+         rewrite NQadd_0_l.
+...
+         rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
+         rewrite <- (Nat.add_1_r i).
+         replace (P v (i + 1)) with 0. 2: {
+           unfold P, d2n, prop_carr, dig.
+           replace (v (i + 1)) with 0. 2: {
+             rewrite Hw in Huv0.
+             unfold "⊕" in Huv0.
+             apply Nat.eq_add_0 in Huv0.
+             now rewrite <-  Nat.add_1_r.
+           }
+           rewrite Nat.add_0_l.
+unfold carry.
     rewrite (fA_lt_1_ε_NQintg_A _ _ j).
       intros p; rewrite <- Nat.add_assoc.
 eapply Nat.le_trans; [ apply Hv | ].
