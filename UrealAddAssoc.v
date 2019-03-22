@@ -2418,16 +2418,32 @@ replace (S (i + p + 3)) with (i + p + 4) in H7 by easy.
              destruct (Nat.eq_dec x 0) as [Hx0| Hx0]. {
                move Hx0 at top; subst x.
                rewrite NQadd_0_l in H7.
-...
-               assert (Hcuv4 : carry w (i + p + 4) = 2). {
-                 unfold carry.
-                 rewrite all_fA_ge_1_ε_NQintg_A'; cycle 1. {
-                   intros; rewrite <- Nat.add_assoc; apply Huv3.
-                 } {
-                   intros; rewrite <- Nat.add_assoc.
-                   apply A_ge_1_add_r_true_if, Hauv.
-                 }
-Check all_fA_ge_1_ε_NQintg_A.
+               generalize Hcuv2; intros H6.
+             unfold carry in H6.
+             rewrite all_fA_ge_1_ε_NQintg_A' in H6; cycle 1. {
+               intros; rewrite <- Nat.add_assoc; apply Huv3.
+             } {
+               intros; rewrite <- Nat.add_assoc.
+               apply A_ge_1_add_r_true_if, Hauv.
+             }
+             rewrite A_split_first in H6; [ | min_n_ge ].
+             replace (S (i + p + 2)) with (i + p + 3) in H6 by flia.
+             rewrite Huv33, Hr2 in H6.
+             rewrite NQintg_add_cond in H6; [ | easy | ]. 2: {
+               now apply NQle_0_mul_r.
+             }
+             rewrite (NQintg_less_small 1) in H6. 2: {
+               rewrite NQadd_pair; [ | easy | easy ].
+               split.
+               -apply NQle_pair; [ easy | easy | cbn; flia ].
+               -apply NQlt_pair; [ easy | easy | cbn; flia ].
+             }
+             rewrite (NQfrac_less_small 1) in H6. 2: {
+               rewrite NQadd_pair; [ | easy | easy ].
+               split.
+               -apply NQle_pair; [ easy | easy | cbn; flia ].
+               -apply NQlt_pair; [ easy | easy | cbn; flia ].
+             }
 ...
                  replace (i + p + 4) with (i + p + 2 + 2) at 2 by flia.
                  rewrite min_n_add_l.
