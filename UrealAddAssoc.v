@@ -2405,6 +2405,11 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            replace (i + q) with (i + q + 0) by easy.
            apply Huv3.
          }
+         move Hj at bottom.
+         apply A_ge_1_false_iff in Hj.
+...
+         rewrite A_split_first in Hj; [ | min_n_ge ].
+         replace (S i) with (i + 1) in Hj by flia.
 ... suite
  assert (H1 : NQintg (A i n v) = 1) by flia Ha0 Hzn; clear Ha0 Hzn.
  rewrite H1 in H2, H3.
