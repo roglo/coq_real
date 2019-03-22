@@ -2418,6 +2418,12 @@ replace (S (i + p + 3)) with (i + p + 4) in H7 by easy.
              destruct (Nat.eq_dec x 0) as [Hx0| Hx0]. {
                move Hx0 at top; subst x.
                rewrite NQadd_0_l in H7.
+               specialize (all_fA_ge_1_ε_P_999 _ _ Hauv (p + 3)) as H6.
+               unfold P, d2n, prop_carr, dig in H6.
+               replace (i + (p + 3) + 1) with (i + p + 4) in H6 by flia.
+               rewrite Hx, Hr2, Nat.add_0_l in H6.
+...
+(* ne sert à rien
                generalize Hcuv2; intros H6.
              unfold carry in H6.
              rewrite all_fA_ge_1_ε_NQintg_A' in H6; cycle 1. {
@@ -2426,9 +2432,28 @@ replace (S (i + p + 3)) with (i + p + 4) in H7 by easy.
                intros; rewrite <- Nat.add_assoc.
                apply A_ge_1_add_r_true_if, Hauv.
              }
+             rewrite <- all_fA_ge_1_ε_NQintg_A' with (k0 := 0 + 1) in H6; cycle 1. {
+               intros; rewrite <- Nat.add_assoc; apply Huv3.
+             } {
+               intros; rewrite <- Nat.add_assoc.
+               apply A_ge_1_add_r_true_if, Hauv.
+             }
              rewrite A_split_first in H6; [ | min_n_ge ].
+             rewrite min_n_add, Nat.mul_1_r, <- Hnr in H6.
              replace (S (i + p + 2)) with (i + p + 3) in H6 by flia.
              rewrite Huv33, Hr2 in H6.
+             replace (3 // 2)%NQ with (1 + 1 // 2)%NQ in H6 by easy.
+             rewrite <- NQadd_assoc in H6.
+             rewrite NQintg_add_nat_l in H6. 2: {
+               apply NQle_0_add; [ easy | now apply NQle_0_mul_r ].
+             }
+             replace 2 with (1 + 1) in H6 at 5 by easy.
+             apply Nat.add_cancel_l in H6.
+             apply NQintg_interv in H6. 2: {
+             ...
+             }
+*)
+...
              rewrite NQintg_add_cond in H6; [ | easy | ]. 2: {
                now apply NQle_0_mul_r.
              }
