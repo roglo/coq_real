@@ -2393,9 +2393,6 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          apply Huv3.
        }
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 1) as [Huv21| Huv21]. {
-         (* normalement, ici, tout le reste des u⊕v, à partir de i+3, sont
-            des 3 ; du coup, u n'aurait que des 1 et v que des 2, ce qui
-            serait contradictoire avec Hj *)
          clear Huv20.
          remember (u ⊕ v) as w eqn:Hw.
          assert (Huv33 : ∀ k, w (i + k + 3) = 3 ∧ carry w (i + k + 2) = 2). {
@@ -2405,42 +2402,52 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            replace (i + q) with (i + q + 0) by easy.
            apply Huv3.
          }
-apply NQnlt_ge in Hup; apply Hup; clear Hup.
-rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
-rewrite <- Nat.add_1_r.
-replace (u (i + 1)) with 0. 2: {
-  rewrite Hw in Huv0.
-  now apply Nat.eq_add_0 in Huv0.
-}
-rewrite NQadd_0_l.
-rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
-rewrite <- (Nat.add_1_r i).
-rewrite NQadd_assoc, NQadd_add_swap, <- NQmul_add_distr_r.
-rewrite <- A_additive.
-remember (P v (i + 1)) as pv eqn:Hpv.
-destruct pv. {
-  rewrite NQadd_0_r.
-  apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now rewrite Hr2 | ].
-  rewrite <- NQmul_assoc.
-  rewrite NQmul_pair_den_num; [ | easy ].
-  rewrite NQmul_1_r, NQmul_1_l, Hr2.
-  eapply NQle_lt_trans. {
-    apply (A_upper_bound_for_adds 2).
-    intros p.
-    do 2 rewrite <- Nat.add_assoc.
-    cbn; rewrite Nat.add_0_r.
-    unfold "⊕".
-    apply Nat.add_le_mono; [ rewrite Hr2; apply Hu | ].
-    apply P_le.
-  }
-  rewrite NQmul_sub_distr_l, NQmul_1_r.
-  now apply NQsub_lt.
-}
-destruct pv. {
-  apply NQlt_add_lt_sub_r.
-  rewrite Hr2.
-  replace (1 - 1 // 2)%NQ with (1 * 1 // 2)%NQ by easy.
-  apply NQmul_lt_mono_pos_r; [ easy | ].
+         apply NQnlt_ge in Hup; apply Hup; clear Hup.
+         rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
+         rewrite <- Nat.add_1_r.
+         replace (u (i + 1)) with 0. 2: {
+           rewrite Hw in Huv0.
+           now apply Nat.eq_add_0 in Huv0.
+         }
+         rewrite NQadd_0_l.
+         rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
+         rewrite <- (Nat.add_1_r i).
+         rewrite NQadd_assoc, NQadd_add_swap, <- NQmul_add_distr_r.
+         rewrite <- A_additive.
+         remember (P v (i + 1)) as pv eqn:Hpv.
+         destruct pv. {
+           rewrite NQadd_0_r.
+           apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now rewrite Hr2 | ].
+           rewrite <- NQmul_assoc.
+           rewrite NQmul_pair_den_num; [ | easy ].
+           rewrite NQmul_1_r, NQmul_1_l, Hr2.
+           eapply NQle_lt_trans. {
+             apply (A_upper_bound_for_adds 2).
+             intros p.
+             do 2 rewrite <- Nat.add_assoc.
+             cbn; rewrite Nat.add_0_r.
+             unfold "⊕".
+             apply Nat.add_le_mono; [ rewrite Hr2; apply Hu | ].
+             apply P_le.
+           }
+           rewrite NQmul_sub_distr_l, NQmul_1_r.
+           now apply NQsub_lt.
+         }
+         destruct pv. {
+           apply NQlt_add_lt_sub_r.
+           rewrite Hr2.
+           replace (1 - 1 // 2)%NQ with (1 * 1 // 2)%NQ by easy.
+           apply NQmul_lt_mono_pos_r; [ easy | ].
+           rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
+           replace (S (i + 1)) with (i + 2) by flia.
+           generalize Huv21; intros H1.
+           rewrite Hw in H1; unfold "⊕" in H1.
+           apply Nat.eq_add_1 in H1.
+           destruct H1 as [H1| H1]. {
+             unfold "⊕" at 1; rewrite (proj1 H1).
+             remember (P v (i + 2)) as x eqn:Hx.
+             destruct x. {
+               rewrite Nat.add_0_r, Hr2.
 ...
          apply NQnlt_ge in Hup; apply Hup; clear Hup.
          rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
