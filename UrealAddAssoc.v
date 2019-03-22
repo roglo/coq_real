@@ -2407,6 +2407,9 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          }
          move Hj at bottom.
          apply A_ge_1_false_iff in Hj.
+         (* ah bin non, chuis con, c'est faux ce que je dis plus haut *)
+         (* enfin je crois *)
+         (* t'façons, c'est l'heure de la sieste *)
 ...
          rewrite A_split_first in Hj; [ | min_n_ge ].
          replace (S i) with (i + 1) in Hj by flia.
