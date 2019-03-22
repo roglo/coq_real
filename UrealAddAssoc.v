@@ -2476,7 +2476,7 @@ replace (v (i + 3)) with 2 in Hx. 2: {
 flia H6 H7 H8.
 }
 rewrite Hr2, NQpair_diag in Hx; [ | easy ].
-rewrite NQintg_add_cond in Hx.
+rewrite NQintg_add_cond in Hx; [ | easy | now apply NQle_0_mul_r ].
 rewrite NQintg_1 in Hx.
 rewrite NQfrac_1, NQadd_0_l in Hx.
 destruct (NQlt_le_dec
@@ -2501,6 +2501,52 @@ eapply NQle_lt_trans. {
 }
 rewrite NQmul_sub_distr_l, NQmul_1_r.
 now apply NQsub_lt.
+}
+destruct x. {
+unfold P, d2n, prop_carr, dig in Hx.
+rewrite (proj2 H1), Nat.add_0_l in Hx.
+unfold carry in Hx.
+specialize (Huv33 0) as H6.
+rewrite Nat.add_0_r in H6.
+destruct H6 as (H6, _).
+rewrite Hw in H6.
+unfold "⊕" in H6.
+rewrite A_split_first in Hx; [ | min_n_ge ].
+replace (S (i + 2)) with (i + 3) in Hx by easy.
+replace (v (i + 3)) with 2 in Hx. 2: {
+  specialize (Hu 3) as H7.
+  specialize (Hv 3) as H8.
+flia H6 H7 H8.
+}
+rewrite Hr2, NQpair_diag in Hx; [ | easy ].
+rewrite NQintg_add_cond in Hx; [ | easy | now apply NQle_0_mul_r ].
+rewrite NQintg_1 in Hx.
+rewrite NQfrac_1, NQadd_0_l in Hx.
+destruct (NQlt_le_dec
+            (NQfrac
+               (A (i + 3) (min_n (i + 2) (carry_cases v (i + 2))) v *
+                (1 // 2)%NQ)) 1) as [H7| H7]. 2: {
+exfalso.
+apply NQnlt_ge in H7; apply H7; clear H7.
+apply NQfrac_lt_1.
+}
+rewrite Nat.add_0_r in Hx.
+...
+rewrite NQintg_small in Hx; [ easy | ].
+split; [ now apply NQle_0_mul_r | ].
+apply (NQmul_lt_mono_pos_r 2%NQ); [ easy | ].
+rewrite <- NQmul_assoc.
+rewrite NQmul_pair_den_num; [ | easy ].
+rewrite NQmul_1_r, NQmul_1_l.
+eapply NQle_lt_trans. {
+  apply (A_upper_bound_for_adds 2).
+  rewrite Hr2.
+  intros; do 2 rewrite <- Nat.add_assoc; apply Hv.
+}
+rewrite NQmul_sub_distr_l, NQmul_1_r.
+now apply NQsub_lt.
+}
+destruct x. {
 ...
       rewrite <- NQpair_add_l.
       replace (2 + 1) with 3 by easy.
