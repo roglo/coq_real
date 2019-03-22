@@ -2448,6 +2448,21 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              remember (P v (i + 2)) as x eqn:Hx.
              destruct x. {
                rewrite Nat.add_0_r, Hr2.
+               apply NQlt_add_lt_sub_l.
+               replace (1 - 1 // 2)%NQ with (1 * 1 // 2)%NQ by easy.
+               apply NQmul_lt_mono_pos_r; [ easy | ].
+unfold P, d2n, prop_carr, dig in Hx.
+rewrite (proj2 H1), Nat.add_0_l in Hx.
+rewrite A_split_first. 2: {
+  rewrite Hnk; unfold min_n.
+  rewrite Hr2; cbn; flia.
+}
+replace (S (i + 2)) with (i + 3) by easy.
+specialize (Huv33 0) as H6.
+rewrite Nat.add_0_r in H6.
+destruct H6 as (H6, _).
+rewrite Hw in H6.
+unfold "⊕" in H6.
 ...
          apply NQnlt_ge in Hup; apply Hup; clear Hup.
          rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
