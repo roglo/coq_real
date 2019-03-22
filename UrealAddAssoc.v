@@ -2414,14 +2414,20 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              clear H1 Hcw; subst x.
 rewrite A_split_first in H7; [ | rewrite Hnr; min_n_ge ].
 replace (S (i + p + 3)) with (i + p + 4) in H7 by easy.
+               specialize (all_fA_ge_1_ε_P_999 _ _ Hauv (p + 3)) as H6.
+               unfold P, d2n, prop_carr, dig in H6.
+               replace (i + (p + 3) + 1) with (i + p + 4) in H6 by flia.
+               rewrite Hr2 in H6.
              remember (w (i + p + 4)) as x eqn:Hx; symmetry in Hx.
              destruct (Nat.eq_dec x 0) as [Hx0| Hx0]. {
                move Hx0 at top; subst x.
                rewrite NQadd_0_l in H7.
-               specialize (all_fA_ge_1_ε_P_999 _ _ Hauv (p + 3)) as H6.
-               unfold P, d2n, prop_carr, dig in H6.
-               replace (i + (p + 3) + 1) with (i + p + 4) in H6 by flia.
-               rewrite Hx, Hr2, Nat.add_0_l in H6.
+               rewrite Nat.add_0_l in H6.
+               remember (carry w (i + p + 4)) as c eqn:Hc.
+               symmetry in Hc.
+               destruct c; [ easy | ].
+               destruct c. {
+                 rename Hc into Hcuv4; move Hcuv4 before Hcuv3; clear H6.
 ...
 (* ne sert à rien
                generalize Hcuv2; intros H6.
