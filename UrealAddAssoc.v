@@ -2405,6 +2405,33 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            replace (i + q) with (i + q + 0) by easy.
            apply Huv3.
          }
+(*
+specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 1) as H.
+replace (i + 1 + 1) with (i + 2) in H by flia.
+unfold P, d2n, prop_carr, dig in H.
+rewrite Huv21, Hr2 in H.
+replace (i + 2) with (i + 0 + 2) in H by flia.
+rewrite (proj2 (Huv33 0)) in H.
+*)
+specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as H.
+rewrite Nat.add_0_r in H.
+unfold P, d2n, prop_carr, dig in H.
+rewrite Huv0, Hr2 in H.
+rewrite Nat.add_0_l in H.
+remember (carry w (i + 1)) as c.
+destruct c; [ easy | ].
+destruct c. {
+  clear H.
+...
+replace (i + 2) with (i + 0 + 2) in H by flia.
+rewrite (proj2 (Huv33 0)) in H.
+cbn in H.
+
+replace (2 - 1) with 1 in H by easy.
+replace (
+...
+Search (∀ _, fA_ge_1_ε _ _ _ = true).
+all_fA_ge_1_ε_P_999:
 ...
          apply NQnlt_ge in Hup; apply Hup; clear Hup.
          rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
