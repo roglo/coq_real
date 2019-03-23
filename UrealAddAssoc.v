@@ -2393,7 +2393,8 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          apply Huv3.
        }
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 1) as [Huv21| Huv21]. {
-         clear Huv20.
+         apply NQnlt_ge in Hup; apply Hup; clear Hup.
+         clear - Hauv Huv0 Huv21 Hr2 Huv3 Hnk Hu Hv.
          remember (u ⊕ v) as w eqn:Hw.
          assert (Huv33 : ∀ k, w (i + k + 3) = 3 ∧ carry w (i + k + 2) = 2). {
            intros p.
@@ -2402,7 +2403,6 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            replace (i + q) with (i + q + 0) by easy.
            apply Huv3.
          }
-         apply NQnlt_ge in Hup; apply Hup; clear Hup.
          rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
          rewrite <- Nat.add_1_r.
          replace (u (i + 1)) with 0. 2: {
