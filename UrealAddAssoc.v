@@ -2621,6 +2621,14 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              rewrite NQmul_sub_distr_l, NQmul_1_r.
              now apply NQsub_lt.
            }
+           specialize (P_le v (i + 2)) as H.
+           rewrite <- Hx, Hr2 in H.
+           flia H.
+         }
+         specialize (P_le v (i + 1)) as H.
+         rewrite <- Hpv, Hr2 in H.
+         flia H.
+       }
 ...
 rewrite (proj2 H1), Nat.add_0_l in Hpv.
 unfold carry in Hx.
