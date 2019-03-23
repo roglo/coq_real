@@ -2395,7 +2395,13 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
        }
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 1) as [Huv21| Huv21]. {
          apply NQnlt_ge in Hup; apply Hup; clear Hup.
-         clear - Hauv Huv0 Huv21 Hr2 Huv3 Hnk Hu Hv.
+         clear - Hauv Huv0 Huv21 Hr2 Hnk Hu Hv.
+         assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+           intros p.
+           unfold "⊕"; replace 3 with (1 + 2) by easy.
+           rewrite Nat.mul_add_distr_r, Nat.mul_1_l, Hr2.
+           apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+         }
          remember (u ⊕ v) as w eqn:Hw.
          assert (Huv33 : ∀ k, w (i + k + 3) = 3 ∧ carry w (i + k + 2) = 2). {
            intros p.
