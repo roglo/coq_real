@@ -2397,6 +2397,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          apply NQnlt_ge in Hup; apply Hup; clear Hup.
          rewrite <- A_additive.
          clear - Hauv Huv0 Huv21 Hr2 Hnk Hu Hv.
+         rename nk into n.
          assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
            intros p.
            unfold "⊕"; replace 3 with (1 + 2) by easy.
