@@ -2629,6 +2629,8 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          rewrite <- Hpv, Hr2 in H.
          flia H.
        }
+       destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 2) as [Huv22| Huv22]. {
+         clear Huv20 Huv21.
 ...
 rewrite (proj2 H1), Nat.add_0_l in Hpv.
 unfold carry in Hx.
