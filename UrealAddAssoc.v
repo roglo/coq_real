@@ -2495,12 +2495,14 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                now apply NQsub_lt.
              }
              destruct x. {
+               exfalso.
+               specialize (Huv33 0) as H6.
+               destruct H6 as (H6, _).
+               rewrite Nat.add_0_r in H6.
+               clear - Hx H1 Hw Hu Hv Hr2 Hpv Huv0 H6.
                unfold P, d2n, prop_carr, dig in Hx.
                rewrite (proj2 H1), Nat.add_0_l in Hx.
                unfold carry in Hx.
-               specialize (Huv33 0) as H6.
-               rewrite Nat.add_0_r in H6.
-               destruct H6 as (H6, _).
                rewrite Hw in H6.
                unfold "⊕" in H6.
                rewrite A_split_first in Hx; [ | min_n_ge ].
@@ -2553,6 +2555,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
                rewrite NQmul_sub_distr_l, NQmul_1_r.
                now apply NQsub_lt.
              }
+...
              specialize (P_le v (i + 2)) as H.
              rewrite <- Hx, Hr2 in H.
              flia H.
@@ -2562,6 +2565,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            remember (P v (i + 2)) as x eqn:Hx.
            destruct x. {
              rewrite NQadd_0_l.
+             clear - Hr2 Hu.
              apply (NQmul_lt_mono_pos_r 2%NQ); [ easy | ].
              rewrite <- NQmul_assoc, Hr2.
              rewrite NQmul_pair_den_num; [ | easy ].
@@ -2577,7 +2581,6 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
              rewrite NQmul_sub_distr_l, NQmul_1_r.
              now apply NQsub_lt.
            }
-...
            destruct x. {
              idtac.
 ...
