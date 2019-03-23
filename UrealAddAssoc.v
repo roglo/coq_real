@@ -2562,22 +2562,22 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            remember (P v (i + 2)) as x eqn:Hx.
            destruct x. {
              rewrite NQadd_0_l.
-             apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now rewrite Hr2 | ].
-             rewrite <- NQmul_assoc.
+             apply (NQmul_lt_mono_pos_r 2%NQ); [ easy | ].
+             rewrite <- NQmul_assoc, Hr2.
              rewrite NQmul_pair_den_num; [ | easy ].
-             rewrite NQmul_1_r, NQmul_1_l, Hr2.
+             rewrite NQmul_1_r, NQmul_1_l.
              eapply NQle_lt_trans. {
                apply (A_upper_bound_for_adds 2).
                intros p.
                do 2 rewrite <- Nat.add_assoc.
-               cbn; rewrite Nat.add_0_r.
                unfold "⊕".
                apply Nat.add_le_mono; [ rewrite Hr2; apply Hu | ].
-               apply P_le.
+               rewrite Nat.add_0_r; apply P_le.
              }
              rewrite NQmul_sub_distr_l, NQmul_1_r.
              now apply NQsub_lt.
            }
+...
            destruct x. {
              idtac.
 ...
