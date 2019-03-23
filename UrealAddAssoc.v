@@ -2369,14 +2369,17 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
    rewrite NQfrac_small in H4; [ | split; [ easy | now apply eq_NQintg_0 ] ].
    rewrite NQfrac_small in H5; [ | split; [ easy | now apply eq_NQintg_0 ] ].
    rewrite NQfrac_small in Huv; [ | split; [ easy | now apply eq_NQintg_0 ] ].
-   assert (Huv3 : ∀ k l, (u ⊕ v) (i + k + l) ≤ 3 * (rad - 1)). {
-     intros p q.
+   assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+     intros p.
      unfold "⊕"; replace 3 with (1 + 2) by easy.
      rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-     rewrite <- Nat.add_assoc.
      apply Nat.add_le_mono; [ apply Hu | apply Hv ].
    }
-   specialize (P_999_start (u ⊕ v) (i + 1) 3 (Huv3 _)) as H1.
+   specialize (P_999_start (u ⊕ v) (i + 1) 3) as H1.
+   assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
+     intros; rewrite <- Nat.add_assoc; apply Huv3.
+   }
+   specialize (H1 H); clear H.
    assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
      specialize (all_fA_ge_1_ε_P_999 _ _ Hauv) as H.
      intros; rewrite Nat.add_shuffle0; apply H.
@@ -2388,9 +2391,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
      destruct (Nat.eq_dec ((u ⊕ v) (i + 1)) 0) as [Huv0| Huv0]. {
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 0) as [Huv20| Huv20]. {
          revert Huv20.
-         apply rad_2_sum_3_all_9_not_0_0; try easy.
-         intros p; replace (i + p) with (i + p + 0) by easy.
-         apply Huv3.
+         now apply rad_2_sum_3_all_9_not_0_0.
        }
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 1) as [Huv21| Huv21]. {
          apply NQnlt_ge in Hup; apply Hup; clear Hup.
@@ -2398,10 +2399,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          remember (u ⊕ v) as w eqn:Hw.
          assert (Huv33 : ∀ k, w (i + k + 3) = 3 ∧ carry w (i + k + 2) = 2). {
            intros p.
-           apply rad_2_sum_3_all_9_0_1_333; try easy.
-           intros q.
-           replace (i + q) with (i + q + 0) by easy.
-           apply Huv3.
+           now apply rad_2_sum_3_all_9_0_1_333.
          }
          rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
          rewrite <- Nat.add_1_r.
