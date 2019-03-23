@@ -883,128 +883,16 @@ assert (H : u (i + 3) ≠ 0). {
   }
   move H at top; subst c.
   clear Hc2; rename Hc into Hcu3.
-...
-split; [ | easy ].
-remember (u (i + 3)) as u3 eqn:Hu3.
-symmetry in Hu3.
-destruct (Nat.eq_dec u3 0) as [Hu30| Hu30]. {
-  exfalso; move Hu30 at top; subst u3.
-(* i+1 i+2 i+3
-    0   2   0
-     <-1 <-1
-pour que c_2 vaille 1, il faut que c_3 vaille au moins 2, ce qui est donné
-par une infinité de 3
-*)
-...
-specialize (all_fA_ge_1_ε_carry u i Hau 2) as H6.
-rewrite Hcu2 in H6; symmetry in H6.
-rewrite <- all_fA_ge_1_ε_NQintg_A' with (k := 0 + 1) in H6; cycle 1. {
-  intros p.
-  rewrite <- Nat.add_assoc; apply Hu3r.
-} {
-  intros p.
-  apply A_ge_1_add_r_true_if, Hau.
+  specialize (all_fA_ge_1_ε_P_999 _ _ Hau 2) as Hpu3.
+  replace (i + 2 + 1) with (i + 3) in Hpu3 by flia.
+  unfold P, d2n, prop_carr, dig in Hpu3.
+  rewrite Hu30, Hr2, Nat.add_0_l in Hpu3.
+  now rewrite Hcu3 in Hpu3.
 }
-rewrite min_n_add, Nat.mul_1_r in H6.
-apply NQintg_interv in H6; [ | easy ].
-rewrite A_split_first in H6; [ | min_n_ge ].
-replace (S (i + 2)) with (i + 3) in H6 by easy.
-remember (u (i + 3)) as u3 eqn:Hu3.
-symmetry in Hu3.
-destruct (Nat.eq_dec u3 0) as [Hu30| Hu30]. {
-  exfalso; move Hu30 at top; subst u3.
-  rewrite NQadd_0_l in H6.
-...
-  destruct H6 as (H6, _).
-  apply NQnlt_ge in H6; apply H6; clear H6.
-  apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now apply NQlt_0_pair | ].
-  rewrite <- NQmul_assoc, NQmul_pair_den_num; [ | easy ].
-  rewrite NQmul_1_r.
-...
-  eapply NQle_lt_trans. {
-    apply (A_upper_bound_for_adds 3).
-    intros p; do 2 rewrite <- Nat.add_assoc; apply Hu3r.
-  }
-  rewrite NQmul_sub_distr_l, NQmul_1_r.
-
-  eapply NQlt_le_trans; [ now apply NQsub_lt | ].
-  rewrite <- NQpair_mul_l, Hr2.
-  apply NQle_pair_mono_r; cbn; pauto.
-  }
-  destruct (Nat.eq_dec u3 1) as [Hu31| Hu31]. {
-    exfalso; move Hu31 at top; subst u3.
-    clear Hu30.
-    destruct H6 as (H6, _).
-    apply NQnlt_ge in H6; apply H6; clear H6.
-    apply (NQmul_lt_mono_pos_r (rad // 1)%NQ). {
-      now apply NQlt_0_pair.
-    }
-    rewrite NQmul_add_distr_r.
-    apply NQlt_add_lt_sub_l.
-    rewrite <- NQmul_assoc, NQmul_pair_den_num; [ | easy ].
-    rewrite NQmul_1_r.
-    eapply NQle_lt_trans. {
-      apply (A_upper_bound_for_adds 3).
-      intros p; do 2 rewrite <- Nat.add_assoc; apply Hu3r.
-    }
-    rewrite NQmul_sub_distr_l, NQmul_1_r.
-    eapply NQlt_le_trans; [ now apply NQsub_lt | ].
-    rewrite <- NQpair_mul_l, Hr2.
-    apply NQle_refl.
-  }
-  destruct (Nat.eq_dec u3 2) as [Hu32| Hu32]. {
-    exfalso; move Hu32 at top; subst u3.
-    clear Hu30 Hu31.
-    specialize (all_fA_ge_1_ε_P_999 _ _ Hau 2) as Hpu3.
-    replace (i + 2 + 1) with (i + 3) in Hpu3 by flia.
-    unfold P, d2n, prop_carr, dig in Hpu3.
-    rewrite Hu3, Hr2 in Hpu3.
-    rewrite Nat_mod_add_same_l in Hpu3; [ | easy ].
-    replace (2 - 1) with 1 in Hpu3 by easy.
-    rewrite Nat.mod_small in Hpu3. 2: {
-      remember (carry u (i + 3)) as c eqn:Hc.
-      destruct c; [ easy | ].
-      destruct c; [ pauto | exfalso ].
-      replace (S (S c)) with (2 + c) in Hpu3 by easy.
-      rewrite Nat_mod_add_same_l in Hpu3; [ | easy ].
-      destruct c; [ easy | ].
-      specialize (Hcu 3) as H7.
-      rewrite <- Hc in H7; flia H7.
-    }
-    unfold carry in Hpu3.
-    rewrite all_fA_ge_1_ε_NQintg_A' in Hpu3; cycle 1. {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
-    } {
-      intros p.
-      apply A_ge_1_add_r_true_if, Hau.
-    }
-    replace (i + 3) with (i + 2 + 1) in Hpu3 at 2 by flia.
-    rewrite min_n_add_l, Nat.mul_1_r in Hpu3.
-    apply NQintg_interv in Hpu3; [ | easy ].
-    rewrite Hr2, NQpair_diag in H6; [ | easy ].
-    destruct H6 as (H6, _).
-    replace 2%NQ with (1 + 1)%NQ in H6 by easy.
-    apply NQadd_le_mono_l in H6.
-    destruct Hpu3 as (_, H).
-    apply NQnle_gt in H; apply H; clear H.
-    apply (NQmul_le_mono_pos_r 2%NQ) in H6; [ | easy ].
-    rewrite <-  NQmul_assoc in H6.
-    rewrite NQmul_pair_den_num in H6; [ | easy ].
-    rewrite NQmul_1_l, NQmul_1_r in H6.
-    now rewrite Hr2.
-  }
-  specialize (Hu3r 3) as H.
-  rewrite Hu3, Hr2 in H.
-  flia Hu30 Hu31 Hu32 H.
-}
-exfalso.
-specialize (Hcu 2) as H.
-rewrite Hc2 in H.
-destruct (Nat.eq_dec c2 1) as [Hc21| Hc21]; [ now rewrite Hc21 in Hcu2 | ].
-flia H Hc20 Hc21 Hc22.
+specialize (Hu3r 3) as H1.
+rewrite Hr2 in H1.
+flia H H1.
 Qed.
-
-...
 
 Theorem rad_2_sum_3_all_9_0_1_333 {r : radix} : ∀ u i,
   rad = 2
@@ -2873,9 +2761,10 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 2) as [Huv22| Huv22]. {
          clear Huv20 Huv21.
          remember (u ⊕ v) as w eqn:Hw.
-...
          specialize (rad_2_sum_3_all_9_0_123 w i Hr2 Huv3 Hauv) as H.
          specialize (H Huv0 Huv22).
+         destruct H as [Huv31| [Huv32| Huv33]].
+         -idtac.
 ...
 rewrite (proj2 H1), Nat.add_0_l in Hpv.
 unfold carry in Hx.
