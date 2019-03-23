@@ -2395,6 +2395,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
        }
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 1) as [Huv21| Huv21]. {
          apply NQnlt_ge in Hup; apply Hup; clear Hup.
+         rewrite <- A_additive.
          clear - Hauv Huv0 Huv21 Hr2 Hnk Hu Hv.
          assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
            intros p.
@@ -2407,6 +2408,8 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
            intros p.
            now apply rad_2_sum_3_all_9_0_1_333.
          }
+         move Huv3 before Hv; move w before v; move Hw after Hu.
+         rewrite A_additive.
          rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
          rewrite <- Nat.add_1_r.
          replace (u (i + 1)) with 0. 2: {
