@@ -2765,6 +2765,7 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          specialize (H Huv0 Huv22).
          destruct H as [Huv31| [Huv32| Huv33]].
          -idtac.
+(* 0 2 1, c'est sur l'automate, la même chose que 0 1 *)
 ...
 rewrite (proj2 H1), Nat.add_0_l in Hpv.
 unfold carry in Hx.
