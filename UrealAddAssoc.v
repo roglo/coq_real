@@ -827,6 +827,20 @@ assert (Hcu2 : carry u (i + 2) = 1). {
   }
   specialize (Hcu 2); flia Hcu Hc2.
 }
+assert (H : u (i + 3) ≠ 0). {
+  intros Hu30; move Hu30 before Hu21.
+  generalize Hcu2; intros H1.
+  unfold carry in H1.
+  rewrite all_fA_ge_1_ε_NQintg_A' in H1; cycle 1. {
+    intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+  } {
+    intros p.
+    apply A_ge_1_add_r_true_if, Hau.
+  }
+  rewrite A_split_first in H1; [ | min_n_ge ].
+  replace (S (i + 2)) with (i + 3) in H1 by easy.
+  rewrite Hu30, NQadd_0_l, Hr2 in H1.
+  apply NQintg_interv in H1; [ | now apply NQle_0_mul_r ].
 ...
 split; [ | easy ].
 remember (u (i + 3)) as u3 eqn:Hu3.
