@@ -2651,6 +2651,9 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
        }
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 2) as [Huv22| Huv22]. {
          clear Huv20 Huv21.
+         assert (H : ∀ k, u (i + k + 3) = 2 ∧ carry u (i + k + 2) = 1). {
+           intros p.
+           assert (H : u (i + 3) = 2 ∧ carry u (i + 2) = 1). {
 ...
 rewrite (proj2 H1), Nat.add_0_l in Hpv.
 unfold carry in Hx.
