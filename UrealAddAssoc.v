@@ -785,16 +785,13 @@ destruct (Nat.eq_dec c2 1) as [Hc21| Hc21]; [ now rewrite Hc21 in Hcu2 | ].
 flia H Hc20 Hc21 Hc22.
 Qed.
 
-(* ah non : 0 2, c'est comme 0 tout court : le théorème ci-dessous est
-   faux *)
-...
-Theorem rad_2_sum_3_all_9_0_2_2 {r : radix} : ∀ u i,
+Theorem rad_2_sum_3_all_9_0_123 {r : radix} : ∀ u i,
   rad = 2
   → (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → u (i + 1) = 0
   → u (i + 2) = 2
-  → u (i + 3) = 2 ∧ carry u (i + 2) = 1.
+  → u (i + 3) = 1 ∨ u (i + 3) = 2 ∨ u (i + 3) = 3.
 Proof.
 intros * Hr2 Hu3r Hau Hu10 Hu21.
 assert (Hcu : ∀ k, carry u (i + k) < 3). {
@@ -830,6 +827,7 @@ assert (Hcu2 : carry u (i + 2) = 1). {
   }
   specialize (Hcu 2); flia Hcu Hc2.
 }
+...
 split; [ | easy ].
 remember (u (i + 3)) as u3 eqn:Hu3.
 symmetry in Hu3.
@@ -2819,14 +2817,9 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 2) as [Huv22| Huv22]. {
          clear Huv20 Huv21.
          remember (u ⊕ v) as w eqn:Hw.
-         assert (Huvc : w (i + 3) = 2 ∧ carry w (i + 2) = 1). {
 ...
-           now apply rad_2_sum_3_all_9_0_2_2.
-         }
-...
-         }
-         assert (H : ∀ k, w (i + k + 3) = 2 ∧ carry w (i + k + 2) = 1). {
-           intros p.
+         specialize (rad_2_sum_3_all_9_0_123 w i Hr2 Huv3 Hauv) as H.
+         specialize (H Huv0 Huv22).
 ...
 rewrite (proj2 H1), Nat.add_0_l in Hpv.
 unfold carry in Hx.
