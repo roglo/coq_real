@@ -587,11 +587,11 @@ replace 0 with (rad - 2) in Hu1 at 2 |-* at 2 by flia Hr2.
 now apply sum_3_all_fA_true_8_not_8.
 Qed.
 
-Theorem rad_2_sum_3_all_9_0_1_3 {r : radix} : ∀ u i,
+Theorem rad_2_sum_3_all_9_02_1_3 {r : radix} : ∀ u i,
   rad = 2
   → (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
-  → u (i + 1) = 0
+  → u (i + 1) = 0 ∨ u (i + 1) = 2
   → u (i + 2) = 1
   → u (i + 3) = 3 ∧ carry u (i + 2) = 2.
 Proof.
@@ -605,8 +605,12 @@ assert (Hcu1 : carry u (i + 1) = 1). {
   specialize (all_fA_ge_1_ε_P_999 _ _ Hau 0) as Hpu1.
   rewrite Nat.add_0_r in Hpu1.
   unfold P, d2n, prop_carr, dig in Hpu1.
-  rewrite Hu10, Nat.add_0_l, Hr2 in Hpu1.
-  replace (2 - 1) with 1 in Hpu1 by easy.
+  assert (H : carry u (i + 1) mod 2 = 1). {
+    destruct Hu10 as [Hu10| Hu12].
+    -now rewrite Hu10, Hr2, Nat.add_0_l in Hpu1.
+    -now rewrite Hu12, Hr2, Nat_mod_add_same_l in Hpu1.
+  }
+  clear Hpu1; rename H into Hpu1.
   specialize (Nat.div_mod (carry u (i + 1)) 2) as H1.
   assert (H : 2 ≠ 0) by easy.
   specialize (H1 H); clear H; rewrite Hpu1 in H1.
@@ -1217,7 +1221,8 @@ Proof.
 intros * Hr2 Hu3r Hau Hu1 Hubef Huj.
 destruct j. {
   rewrite Nat.add_0_r in Huj |-*; clear Hubef.
-  now apply rad_2_sum_3_all_9_0_1_3.
+  apply rad_2_sum_3_all_9_02_1_3; try easy.
+  now left.
 }
 destruct j. {
   specialize (Hubef 0 Nat.lt_0_1) as Hu2.
@@ -1414,8 +1419,14 @@ Proof.
 intros * Hr2 Hu3r Hau Hu1 Hubef Huvj p.
 induction p. {
   rewrite Nat.add_0_r.
+  apply rad_2_sum_3_all_9_02_1_3; try easy; [ now left | ].
+  destruct (zerop j) as [Hj| Hj]. {
+    now subst j; rewrite Nat.add_0_r in Huvj.
+  }
+  specialize (Hubef _ Hj) as H1.
+  rewrite Nat.add_0_r in H1.
 Abort. (*
-  now apply rad_2_sum_3_all_9_0_1_3.
+...
 }
 replace (i + S p + 3) with (i + p + 4) by flia.
 replace (i + S p + 2) with (i + p + 3) by flia.
@@ -1456,10 +1467,9 @@ Proof.
 intros * Hr2 Hu3r Hau Hu10 Hu21 p.
 induction p. {
   rewrite Nat.add_0_r.
-  now apply rad_2_sum_3_all_9_0_1_3.
+  apply rad_2_sum_3_all_9_02_1_3; try easy; now left.
 }
 clear - Hr2 Hu3r IHp Hau.
-Check rad_2_sum_3_all_9_3r2_3r2.
 replace (i + S p + 3) with (i + (p + 2) + 2) by flia.
 replace (i + S p + 2) with (i + (p + 2) + 1) by flia.
 replace (i + p + 3) with (i + (p + 2) + 1) in IHp by flia.
@@ -3153,9 +3163,8 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          destruct H as [Huv31| [Huv32| Huv33]].
          -idtac.
 (* 0 2 1, c'est sur l'automate, la même chose que 0 1 *)
-Check rad_2_sum_3_all_9_0_1_A_lt_1.
-Check rad_2_sum_3_all_9_0_1_333.
-Check rad_2_sum_3_all_9_0_1_3.
+specialize (rad_2_sum_3_all_9_02_1_3 w i Hr2 Huv3 Hauv) as H.
+specialize (H (or_introl Huv0)).
 ...
 rewrite (proj2 H1), Nat.add_0_l in Hpv.
 unfold carry in Hx.
