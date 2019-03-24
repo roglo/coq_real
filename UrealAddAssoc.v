@@ -858,6 +858,7 @@ destruct j. {
   }
   destruct c3. {
     exfalso.
+...
     specialize (all_fA_ge_1_ε_P_999 _ _ Hau 1) as Hpu2.
     unfold P, d2n, prop_carr, dig in Hpu2.
     replace (i + 1 + 1) with (i + 2) in Hpu2 by flia.
