@@ -785,213 +785,14 @@ destruct (Nat.eq_dec c2 1) as [Hc21| Hc21]; [ now rewrite Hc21 in Hcu2 | ].
 flia H Hc20 Hc21 Hc22.
 Qed.
 
-Theorem rad_2_sum_3_all_9_0_1_22_3 {r : radix} : ∀ u i j,
+Theorem rad_2_sum_3_all_9_3r2_3r2 {r : radix} : ∀ u i p,
   rad = 2
   → (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
-  → u (i + 1) = 0
-  → (∀ k, k < j → u (i + k + 2) = 2)
-  → u (i + j + 2) = 1
-  → u (i + j + 3) = 3 ∧ carry u (i + j + 2) = 2.
+  → u (i + p + 3) = 3 ∧ carry u (i + p + 2) = 2
+  → u (i + S p + 3) = 3 ∧ carry u (i + S p + 2) = 2.
 Proof.
-intros * Hr2 Hu3r Hau Hu1 Hubef Huj.
-destruct j. {
-  rewrite Nat.add_0_r in Huj |-*; clear Hubef.
-  now apply rad_2_sum_3_all_9_0_1_3.
-}
-destruct j. {
-  specialize (Hubef 0 Nat.lt_0_1) as Hu2.
-  rewrite Nat.add_0_r in Hu2.
-  replace (i + 1 + 3) with (i + 4) by flia.
-  replace (i + 1 + 2) with (i + 3) in Huj |-* by flia.
-  clear Hubef; move Hu2 before Hu1.
-  remember (carry u (i + 3)) as c3 eqn:Hc3.
-  symmetry in Hc3.
-  destruct c3. {
-    exfalso.
-    specialize (all_fA_ge_1_ε_P_999 _ _ Hau 1) as Hpu2.
-    unfold P, d2n, prop_carr, dig in Hpu2.
-    replace (i + 1 + 1) with (i + 2) in Hpu2 by flia.
-    rewrite Hu2, Hr2, Nat_mod_add_same_l in Hpu2; [ | easy ].
-    rewrite Nat.mod_small in Hpu2. 2: {
-      specialize (carry_upper_bound_for_adds 3 u i) as H1.
-      specialize (H1 (Nat.neq_succ_0 2)).
-      assert (H : ∀ k, u (i + k + 1) ≤ 3 * (rad - 1)). {
-        now intros; rewrite <- Nat.add_assoc.
-      }
-      specialize (H1 H 2); clear H.
-      destruct (Nat.eq_dec (carry u (i + 2)) 2) as [Hc2| Hc2]. {
-        now rewrite Hc2 in Hpu2.
-      }
-      flia H1 Hc2.
-    }
-    unfold carry in Hpu2.
-    rewrite all_fA_ge_1_ε_NQintg_A' in Hpu2; cycle 1. {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
-    } {
-      intros p; apply A_ge_1_add_r_true_if, Hau.
-    }
-    unfold carry in Hc3.
-    rewrite all_fA_ge_1_ε_NQintg_A' in Hc3; cycle 1. {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
-    } {
-      intros p; apply A_ge_1_add_r_true_if, Hau.
-    }
-    rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in Hpu2; cycle 1. {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
-    } {
-      intros p; apply A_ge_1_add_r_true_if, Hau.
-    }
-    replace (i + 3) with (i + 2 + 1) in Hc3 at 2 by flia.
-    rewrite min_n_add_l, Nat.mul_1_r, Hr2 in Hc3.
-    apply eq_NQintg_0 in Hc3; [ | easy ].
-    apply NQintg_interv in Hpu2; [ | easy ].
-    replace (2 - 1) with 1 in Hpu2 by easy.
-    rewrite A_split_first in Hpu2; [ | min_n_ge ].
-    replace (S (i + 2)) with (i + 3) in Hpu2 by easy.
-    rewrite Huj, Hr2 in Hpu2.
-    destruct Hpu2 as (Hpu2, _).
-    apply NQle_sub_le_add_l in Hpu2.
-    replace (1 - 1 // 2)%NQ with (1 * 1 // 2)%NQ in Hpu2 by easy.
-    apply NQmul_le_mono_pos_r in Hpu2; [ | easy ].
-    now apply NQnle_gt in Hc3.
-  }
-  destruct c3. {
-    exfalso.
-    specialize (all_fA_ge_1_ε_P_999 _ _ Hau 2) as Hpu2.
-    unfold P, d2n, prop_carr, dig in Hpu2.
-    replace (i + 2 + 1) with (i + 3) in Hpu2 by flia.
-    now rewrite Huj, Hr2, Hc3 in Hpu2.
-  }
-  destruct c3. {
-(* si la retenue vaut 2, c'est forcément une infinité de 3 ; j'ai dû
-   prouver ça déjà, enfin je crois, faudrait alors en faire un lemme *)
-...
-    apply eq_NQintg_0 in Hc3; [ | easy ].
-    now apply NQnle_gt in Hc3.
-...
-
-Theorem rad_2_sum_3_all_9_0_123 {r : radix} : ∀ u i,
-  rad = 2
-  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
-  → (∀ k, fA_ge_1_ε u i k = true)
-  → u (i + 1) = 0
-  → u (i + 2) = 2
-  → u (i + 3) = 1 ∨ u (i + 3) = 2 ∨ u (i + 3) = 3.
-Proof.
-intros * Hr2 Hu3r Hau Hu10 Hu21.
-assert (Hcu : ∀ k, carry u (i + k) < 3). {
-  intros p.
-  apply carry_upper_bound_for_adds; [ easy | ].
-  intros q; rewrite <- Nat.add_assoc; apply Hu3r.
-}
-assert (Hcu1 : carry u (i + 1) = 1). {
-  specialize (all_fA_ge_1_ε_P_999 _ _ Hau 0) as Hpu1.
-  rewrite Nat.add_0_r in Hpu1.
-  unfold P, d2n, prop_carr, dig in Hpu1.
-  rewrite Hu10, Nat.add_0_l, Hr2 in Hpu1.
-  replace (2 - 1) with 1 in Hpu1 by easy.
-  specialize (Nat.div_mod (carry u (i + 1)) 2) as H1.
-  assert (H : 2 ≠ 0) by easy.
-  specialize (H1 H); clear H; rewrite Hpu1 in H1.
-  rewrite H1, <- Nat.add_0_l; f_equal.
-  specialize (Hcu 1).
-  remember (carry u (i + 1)) as c eqn:Hc.
-  destruct c; [ easy | ].
-  destruct c; [ easy | exfalso ].
-  destruct c; [ flia H1 | flia Hcu ].
-}
-assert (Hcu2 : carry u (i + 2) = 1). {
-  specialize (all_fA_ge_1_ε_P_999 _ _ Hau 1) as Hpu2.
-  replace (i + 1 + 1) with (i + 2) in Hpu2 by flia.
-  unfold P, d2n, prop_carr, dig in Hpu2.
-  rewrite Hu21, Hr2 in Hpu2.
-  rewrite Nat_mod_add_same_l in Hpu2; [ | easy ].
-  rewrite Nat.mod_small in Hpu2; [ easy | ].
-  destruct (Nat.eq_dec (carry u (i + 2)) 2) as [Hc2| Hc2]. {
-    now rewrite Hc2 in Hpu2.
-  }
-  specialize (Hcu 2); flia Hcu Hc2.
-}
-assert (H : u (i + 3) ≠ 0). {
-  intros Hu30; move Hu30 before Hu21.
-  remember (carry u (i + 3)) as c eqn:Hc.
-  symmetry in Hc.
-  destruct (lt_dec c 2) as [Hc2| Hc2]. {
-    generalize Hc; intros Hcu3; move Hcu3 before Hcu2.
-    unfold carry in Hc.
-    rewrite all_fA_ge_1_ε_NQintg_A' in Hc; cycle 1. {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
-    } {
-      intros p.
-      apply A_ge_1_add_r_true_if, Hau.
-    }
-    generalize Hcu2; intros H1.
-    unfold carry in H1.
-    rewrite all_fA_ge_1_ε_NQintg_A' in H1; cycle 1. {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
-    } {
-      intros p.
-      apply A_ge_1_add_r_true_if, Hau.
-    }
-    rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in H1; cycle 1. {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
-    } {
-      intros p.
-      apply A_ge_1_add_r_true_if, Hau.
-    }
-    rewrite A_split_first in H1; [ | min_n_ge ].
-    replace (S (i + 2)) with (i + 3) in H1 by easy.
-    rewrite Hu30, NQadd_0_l, Hr2 in H1.
-    replace (i + 3) with (i + 2 + 1) in Hc at 2 by flia.
-    rewrite min_n_add_l, Nat.mul_1_r in Hc.
-    apply NQintg_interv in H1; [ | now apply NQle_0_mul_r ].
-    apply NQintg_interv in Hc; [ | easy ].
-    destruct Hc as (_, Hc); rewrite Hr2 in Hc.
-    apply NQnle_gt in Hc; apply Hc; clear Hc.
-    destruct H1 as (H1, _).
-    apply (NQmul_le_mono_pos_r 2%NQ) in H1; [ | easy ].
-    rewrite <- NQmul_assoc in H1.
-    rewrite NQmul_pair_den_num in H1; [ | easy ].
-    rewrite NQmul_1_l, NQmul_1_r in H1.
-    eapply NQle_trans; [ | apply H1 ].
-    rewrite <- NQpair_add_l.
-    apply NQle_pair; [ easy | easy | flia Hc2 ].
-  }
-  apply Nat.nlt_ge in Hc2.
-  destruct (Nat.eq_dec c 2) as [H| H]. 2: {
-    rewrite <- Hc in Hc2; apply H; clear H; rewrite <- Hc.
-    specialize (Hcu 3).
-    flia Hcu Hc2.
-  }
-  move H at top; subst c.
-  clear Hc2; rename Hc into Hcu3.
-  specialize (all_fA_ge_1_ε_P_999 _ _ Hau 2) as Hpu3.
-  replace (i + 2 + 1) with (i + 3) in Hpu3 by flia.
-  unfold P, d2n, prop_carr, dig in Hpu3.
-  rewrite Hu30, Hr2, Nat.add_0_l in Hpu3.
-  now rewrite Hcu3 in Hpu3.
-}
-specialize (Hu3r 3) as H1.
-rewrite Hr2 in H1.
-flia H H1.
-Qed.
-
-Theorem rad_2_sum_3_all_9_0_1_22_333 {r : radix} : ∀ u i j,
-  rad = 2
-  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
-  → (∀ k, fA_ge_1_ε u i k = true)
-  → u (i + 1) = 0
-  → (∀ k, k < j → u (i + k + 2) = 2)
-  → u (i + j + 2) = 1
-  → ∀ k, u (i + k + 3) = 3 ∧ carry u (i + k + 2) = 2.
-Proof.
-intros * Hr2 Hu3r Hau Hu1 Hubef Huvj p.
-induction p. {
-  rewrite Nat.add_0_r.
-...
-  now apply rad_2_sum_3_all_9_0_1_3.
-}
+intros * Hr2 Hu3r Hau IHp.
 replace (i + S p + 3) with (i + p + 4) by flia.
 replace (i + S p + 2) with (i + p + 3) by flia.
 assert (Hc3 : ∀ k, carry u (i + k) < 3). {
@@ -1001,47 +802,6 @@ assert (Hc3 : ∀ k, carry u (i + k) < 3). {
 }
 generalize IHp; intros H1.
 destruct H1 as (Huv33, Hcw).
-move Huv33 before Hu21; move p after Hu10.
-generalize Hcw; intros Hcuv2.
-move Hcuv2 before Huv33.
-unfold carry, d2n, prop_carr, dig in Hcw.
-rewrite all_fA_ge_1_ε_NQintg_A' in Hcw; cycle 1. {
-  intros; do 2 rewrite <- Nat.add_assoc; apply Hu3r.
-} {
-  intros; rewrite <- Nat.add_assoc.
-  apply A_ge_1_add_r_true_if, Hau.
-}
-rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in Hcw; cycle 1. {
-  intros; do 2 rewrite <- Nat.add_assoc; apply Hu3r.
-} {
-  intros; rewrite <- Nat.add_assoc.
-  apply A_ge_1_add_r_true_if, Hau.
-}
-...
-
-Theorem rad_2_sum_3_all_9_0_1_333 {r : radix} : ∀ u i,
-  rad = 2
-  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
-  → (∀ k, fA_ge_1_ε u i k = true)
-  → u (i + 1) = 0
-  → u (i + 2) = 1
-  → ∀ k, u (i + k + 3) = 3 ∧ carry u (i + k + 2) = 2.
-Proof.
-intros * Hr2 Hu3r Hau Hu10 Hu21 p.
-induction p. {
-  rewrite Nat.add_0_r.
-  now apply rad_2_sum_3_all_9_0_1_3.
-}
-replace (i + S p + 3) with (i + p + 4) by flia.
-replace (i + S p + 2) with (i + p + 3) by flia.
-assert (Hc3 : ∀ k, carry u (i + k) < 3). {
-  intros q.
-  apply carry_upper_bound_for_adds; [ easy | ].
-  intros s; rewrite <- Nat.add_assoc; apply Hu3r.
-}
-generalize IHp; intros H1.
-destruct H1 as (Huv33, Hcw).
-move Huv33 before Hu21; move p after Hu10.
 generalize Hcw; intros Hcuv2.
 move Hcuv2 before Huv33.
 unfold carry, d2n, prop_carr, dig in Hcw.
@@ -1457,6 +1217,257 @@ destruct (Nat.eq_dec ci 1) as [Hci1| Hci1]. {
   now rewrite Huv33, Hcuv3, Hr2 in H6.
 }
 flia Hcuv3x Hci0 Hci1.
+Qed.
+
+Theorem rad_2_sum_3_all_9_0_1_22_3 {r : radix} : ∀ u i j,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → u (i + 1) = 0
+  → (∀ k, k < j → u (i + k + 2) = 2)
+  → u (i + j + 2) = 1
+  → u (i + j + 3) = 3 ∧ carry u (i + j + 2) = 2.
+Proof.
+intros * Hr2 Hu3r Hau Hu1 Hubef Huj.
+destruct j. {
+  rewrite Nat.add_0_r in Huj |-*; clear Hubef.
+  now apply rad_2_sum_3_all_9_0_1_3.
+}
+destruct j. {
+  specialize (Hubef 0 Nat.lt_0_1) as Hu2.
+  rewrite Nat.add_0_r in Hu2.
+  replace (i + 1 + 3) with (i + 4) by flia.
+  replace (i + 1 + 2) with (i + 3) in Huj |-* by flia.
+  clear Hubef; move Hu2 before Hu1.
+  remember (carry u (i + 3)) as c3 eqn:Hc3.
+  symmetry in Hc3.
+  destruct c3. {
+    exfalso.
+    specialize (all_fA_ge_1_ε_P_999 _ _ Hau 1) as Hpu2.
+    unfold P, d2n, prop_carr, dig in Hpu2.
+    replace (i + 1 + 1) with (i + 2) in Hpu2 by flia.
+    rewrite Hu2, Hr2, Nat_mod_add_same_l in Hpu2; [ | easy ].
+    rewrite Nat.mod_small in Hpu2. 2: {
+      specialize (carry_upper_bound_for_adds 3 u i) as H1.
+      specialize (H1 (Nat.neq_succ_0 2)).
+      assert (H : ∀ k, u (i + k + 1) ≤ 3 * (rad - 1)). {
+        now intros; rewrite <- Nat.add_assoc.
+      }
+      specialize (H1 H 2); clear H.
+      destruct (Nat.eq_dec (carry u (i + 2)) 2) as [Hc2| Hc2]. {
+        now rewrite Hc2 in Hpu2.
+      }
+      flia H1 Hc2.
+    }
+    unfold carry in Hpu2.
+    rewrite all_fA_ge_1_ε_NQintg_A' in Hpu2; cycle 1. {
+      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+    } {
+      intros p; apply A_ge_1_add_r_true_if, Hau.
+    }
+    unfold carry in Hc3.
+    rewrite all_fA_ge_1_ε_NQintg_A' in Hc3; cycle 1. {
+      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+    } {
+      intros p; apply A_ge_1_add_r_true_if, Hau.
+    }
+    rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in Hpu2; cycle 1. {
+      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+    } {
+      intros p; apply A_ge_1_add_r_true_if, Hau.
+    }
+    replace (i + 3) with (i + 2 + 1) in Hc3 at 2 by flia.
+    rewrite min_n_add_l, Nat.mul_1_r, Hr2 in Hc3.
+    apply eq_NQintg_0 in Hc3; [ | easy ].
+    apply NQintg_interv in Hpu2; [ | easy ].
+    replace (2 - 1) with 1 in Hpu2 by easy.
+    rewrite A_split_first in Hpu2; [ | min_n_ge ].
+    replace (S (i + 2)) with (i + 3) in Hpu2 by easy.
+    rewrite Huj, Hr2 in Hpu2.
+    destruct Hpu2 as (Hpu2, _).
+    apply NQle_sub_le_add_l in Hpu2.
+    replace (1 - 1 // 2)%NQ with (1 * 1 // 2)%NQ in Hpu2 by easy.
+    apply NQmul_le_mono_pos_r in Hpu2; [ | easy ].
+    now apply NQnle_gt in Hc3.
+  }
+  destruct c3. {
+    exfalso.
+    specialize (all_fA_ge_1_ε_P_999 _ _ Hau 2) as Hpu2.
+    unfold P, d2n, prop_carr, dig in Hpu2.
+    replace (i + 2 + 1) with (i + 3) in Hpu2 by flia.
+    now rewrite Huj, Hr2, Hc3 in Hpu2.
+  }
+  destruct c3. {
+(* si la retenue vaut 2, c'est forcément une infinité de 3 ; j'ai dû
+   prouver ça déjà, enfin je crois, faudrait alors en faire un lemme *)
+...
+    apply eq_NQintg_0 in Hc3; [ | easy ].
+    now apply NQnle_gt in Hc3.
+...
+
+Theorem rad_2_sum_3_all_9_0_123 {r : radix} : ∀ u i,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → u (i + 1) = 0
+  → u (i + 2) = 2
+  → u (i + 3) = 1 ∨ u (i + 3) = 2 ∨ u (i + 3) = 3.
+Proof.
+intros * Hr2 Hu3r Hau Hu10 Hu21.
+assert (Hcu : ∀ k, carry u (i + k) < 3). {
+  intros p.
+  apply carry_upper_bound_for_adds; [ easy | ].
+  intros q; rewrite <- Nat.add_assoc; apply Hu3r.
+}
+assert (Hcu1 : carry u (i + 1) = 1). {
+  specialize (all_fA_ge_1_ε_P_999 _ _ Hau 0) as Hpu1.
+  rewrite Nat.add_0_r in Hpu1.
+  unfold P, d2n, prop_carr, dig in Hpu1.
+  rewrite Hu10, Nat.add_0_l, Hr2 in Hpu1.
+  replace (2 - 1) with 1 in Hpu1 by easy.
+  specialize (Nat.div_mod (carry u (i + 1)) 2) as H1.
+  assert (H : 2 ≠ 0) by easy.
+  specialize (H1 H); clear H; rewrite Hpu1 in H1.
+  rewrite H1, <- Nat.add_0_l; f_equal.
+  specialize (Hcu 1).
+  remember (carry u (i + 1)) as c eqn:Hc.
+  destruct c; [ easy | ].
+  destruct c; [ easy | exfalso ].
+  destruct c; [ flia H1 | flia Hcu ].
+}
+assert (Hcu2 : carry u (i + 2) = 1). {
+  specialize (all_fA_ge_1_ε_P_999 _ _ Hau 1) as Hpu2.
+  replace (i + 1 + 1) with (i + 2) in Hpu2 by flia.
+  unfold P, d2n, prop_carr, dig in Hpu2.
+  rewrite Hu21, Hr2 in Hpu2.
+  rewrite Nat_mod_add_same_l in Hpu2; [ | easy ].
+  rewrite Nat.mod_small in Hpu2; [ easy | ].
+  destruct (Nat.eq_dec (carry u (i + 2)) 2) as [Hc2| Hc2]. {
+    now rewrite Hc2 in Hpu2.
+  }
+  specialize (Hcu 2); flia Hcu Hc2.
+}
+assert (H : u (i + 3) ≠ 0). {
+  intros Hu30; move Hu30 before Hu21.
+  remember (carry u (i + 3)) as c eqn:Hc.
+  symmetry in Hc.
+  destruct (lt_dec c 2) as [Hc2| Hc2]. {
+    generalize Hc; intros Hcu3; move Hcu3 before Hcu2.
+    unfold carry in Hc.
+    rewrite all_fA_ge_1_ε_NQintg_A' in Hc; cycle 1. {
+      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+    } {
+      intros p.
+      apply A_ge_1_add_r_true_if, Hau.
+    }
+    generalize Hcu2; intros H1.
+    unfold carry in H1.
+    rewrite all_fA_ge_1_ε_NQintg_A' in H1; cycle 1. {
+      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+    } {
+      intros p.
+      apply A_ge_1_add_r_true_if, Hau.
+    }
+    rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in H1; cycle 1. {
+      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+    } {
+      intros p.
+      apply A_ge_1_add_r_true_if, Hau.
+    }
+    rewrite A_split_first in H1; [ | min_n_ge ].
+    replace (S (i + 2)) with (i + 3) in H1 by easy.
+    rewrite Hu30, NQadd_0_l, Hr2 in H1.
+    replace (i + 3) with (i + 2 + 1) in Hc at 2 by flia.
+    rewrite min_n_add_l, Nat.mul_1_r in Hc.
+    apply NQintg_interv in H1; [ | now apply NQle_0_mul_r ].
+    apply NQintg_interv in Hc; [ | easy ].
+    destruct Hc as (_, Hc); rewrite Hr2 in Hc.
+    apply NQnle_gt in Hc; apply Hc; clear Hc.
+    destruct H1 as (H1, _).
+    apply (NQmul_le_mono_pos_r 2%NQ) in H1; [ | easy ].
+    rewrite <- NQmul_assoc in H1.
+    rewrite NQmul_pair_den_num in H1; [ | easy ].
+    rewrite NQmul_1_l, NQmul_1_r in H1.
+    eapply NQle_trans; [ | apply H1 ].
+    rewrite <- NQpair_add_l.
+    apply NQle_pair; [ easy | easy | flia Hc2 ].
+  }
+  apply Nat.nlt_ge in Hc2.
+  destruct (Nat.eq_dec c 2) as [H| H]. 2: {
+    rewrite <- Hc in Hc2; apply H; clear H; rewrite <- Hc.
+    specialize (Hcu 3).
+    flia Hcu Hc2.
+  }
+  move H at top; subst c.
+  clear Hc2; rename Hc into Hcu3.
+  specialize (all_fA_ge_1_ε_P_999 _ _ Hau 2) as Hpu3.
+  replace (i + 2 + 1) with (i + 3) in Hpu3 by flia.
+  unfold P, d2n, prop_carr, dig in Hpu3.
+  rewrite Hu30, Hr2, Nat.add_0_l in Hpu3.
+  now rewrite Hcu3 in Hpu3.
+}
+specialize (Hu3r 3) as H1.
+rewrite Hr2 in H1.
+flia H H1.
+Qed.
+
+Theorem rad_2_sum_3_all_9_0_1_22_333 {r : radix} : ∀ u i j,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → u (i + 1) = 0
+  → (∀ k, k < j → u (i + k + 2) = 2)
+  → u (i + j + 2) = 1
+  → ∀ k, u (i + k + 3) = 3 ∧ carry u (i + k + 2) = 2.
+Proof.
+intros * Hr2 Hu3r Hau Hu1 Hubef Huvj p.
+induction p. {
+  rewrite Nat.add_0_r.
+...
+  now apply rad_2_sum_3_all_9_0_1_3.
+}
+replace (i + S p + 3) with (i + p + 4) by flia.
+replace (i + S p + 2) with (i + p + 3) by flia.
+assert (Hc3 : ∀ k, carry u (i + k) < 3). {
+  intros q.
+  apply carry_upper_bound_for_adds; [ easy | ].
+  intros s; rewrite <- Nat.add_assoc; apply Hu3r.
+}
+generalize IHp; intros H1.
+destruct H1 as (Huv33, Hcw).
+move Huv33 before Hu21; move p after Hu10.
+generalize Hcw; intros Hcuv2.
+move Hcuv2 before Huv33.
+unfold carry, d2n, prop_carr, dig in Hcw.
+rewrite all_fA_ge_1_ε_NQintg_A' in Hcw; cycle 1. {
+  intros; do 2 rewrite <- Nat.add_assoc; apply Hu3r.
+} {
+  intros; rewrite <- Nat.add_assoc.
+  apply A_ge_1_add_r_true_if, Hau.
+}
+rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in Hcw; cycle 1. {
+  intros; do 2 rewrite <- Nat.add_assoc; apply Hu3r.
+} {
+  intros; rewrite <- Nat.add_assoc.
+  apply A_ge_1_add_r_true_if, Hau.
+}
+...
+
+Theorem rad_2_sum_3_all_9_0_1_333 {r : radix} : ∀ u i,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → u (i + 1) = 0
+  → u (i + 2) = 1
+  → ∀ k, u (i + k + 3) = 3 ∧ carry u (i + k + 2) = 2.
+Proof.
+intros * Hr2 Hu3r Hau Hu10 Hu21 p.
+induction p. {
+  rewrite Nat.add_0_r.
+  now apply rad_2_sum_3_all_9_0_1_3.
+}
+clear - Hr2 Hu3r IHp Hau.
+now apply rad_2_sum_3_all_9_3r2_3r2.
 Qed.
 
 Theorem rad_2_sum_3_all_9_0_22_1_A_lt_1 {r : radix} : ∀ u v i j,
