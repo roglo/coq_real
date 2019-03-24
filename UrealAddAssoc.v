@@ -1289,10 +1289,12 @@ rewrite <- Hc3 at 3.
 replace (i + 4) with (i + 2 + 2) by flia.
 replace (i + 3) with (i + 2 + 1) by flia.
 apply rad_2_sum_3_all_9_3r2_3r2; [ easy | easy | easy | ].
+Abort. (*
 ...
     apply eq_NQintg_0 in Hc3; [ | easy ].
     now apply NQnle_gt in Hc3.
 ...
+*)
 
 Theorem rad_2_sum_3_all_9_0_123 {r : radix} : ∀ u i,
   rad = 2
@@ -1412,7 +1414,7 @@ Proof.
 intros * Hr2 Hu3r Hau Hu1 Hubef Huvj p.
 induction p. {
   rewrite Nat.add_0_r.
-...
+Abort. (*
   now apply rad_2_sum_3_all_9_0_1_3.
 }
 replace (i + S p + 3) with (i + p + 4) by flia.
@@ -1441,6 +1443,7 @@ rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in Hcw; cycle 1. {
   apply A_ge_1_add_r_true_if, Hau.
 }
 ...
+*)
 
 Theorem rad_2_sum_3_all_9_0_1_333 {r : radix} : ∀ u i,
   rad = 2
@@ -1485,7 +1488,7 @@ assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
 remember (u ⊕ v) as w eqn:Hw.
 assert (Huv33 : ∀ k, w (i + k + 3) = 3 ∧ carry w (i + k + 2) = 2). {
   intros p.
-...
+Abort. (*
   now apply rad_2_sum_3_all_9_0_1_333.
 }
 move Huv3 before Hv; move w before v; move Hw after Hu.
@@ -1717,6 +1720,7 @@ rewrite <- Hpv, Hr2 in H.
 flia H.
 Qed.
 ...
+*)
 
 Theorem rad_2_sum_3_all_9_0_1_A_lt_1 {r : radix} : ∀ u v i,
   rad = 2
