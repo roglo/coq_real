@@ -1498,6 +1498,19 @@ assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
 remember (u ⊕ v) as w eqn:Hw.
 assert (Huv33 : ∀ k, w (i + k + 3) = 3 ∧ carry w (i + k + 2) = 2). {
   intros p.
+  destruct (zerop j) as [Hj| Hj]. {
+    subst j; rewrite Nat.add_0_r in Huvj.
+    now apply rad_2_sum_3_all_9_0_1_333.
+  }
+  specialize (Huvbef _ Hj) as Huv2.
+  move Huv2 before Huv1.
+  rewrite Nat.add_0_r in Huv2.
+  replace (i + p + 3) with (i + (p + 1) + 2) by flia.
+  replace (i + p + 2) with (i + (p + 1) + 1) by flia.
+  apply rad_2_sum_3_all_9_3r2_3r2; [ easy | easy | easy | ].
+Check rad_2_sum_3_all_9_0_1_333.
+...
+
 Abort. (*
   now apply rad_2_sum_3_all_9_0_1_333.
 }
@@ -3161,10 +3174,19 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          specialize (rad_2_sum_3_all_9_0_123 w i Hr2 Huv3 Hauv) as H.
          specialize (H Huv0 Huv22).
          destruct H as [Huv31| [Huv32| Huv33]].
-         -idtac.
-(* 0 2 1, c'est sur l'automate, la même chose que 0 1 *)
-specialize (rad_2_sum_3_all_9_02_1_3 w i Hr2 Huv3 Hauv) as H.
-specialize (H (or_introl Huv0)).
+         -specialize (rad_2_sum_3_all_9_02_1_3 w (i + 1) Hr2) as H1.
+          replace (i + 1 + 1) with (i + 2) in H1 by flia.
+          replace (i + 1 + 2) with (i + 3) in H1 by flia.
+          replace (i + 1 + 3) with (i + 4) in H1 by flia.
+          assert (H : ∀ k, w (i + 1 + k) ≤ 3 * (rad - 1)). {
+            now intros; rewrite <- Nat.add_assoc.
+          }
+          specialize (H1 H); clear H.
+          assert (H : ∀ k, fA_ge_1_ε w (i + 1) k = true). {
+            now intros; apply A_ge_1_add_r_true_if.
+          }
+          specialize (H1 H (or_intror Huv22) Huv31); clear H.
+          destruct H1 as (Huv43, Hc32).
 ...
 rewrite (proj2 H1), Nat.add_0_l in Hpv.
 unfold carry in Hx.
