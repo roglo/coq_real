@@ -793,6 +793,8 @@ Theorem rad_2_sum_3_all_9_3r2_3r2 {r : radix} : ∀ u i p,
   → u (i + S p + 3) = 3 ∧ carry u (i + S p + 2) = 2.
 Proof.
 intros * Hr2 Hu3r Hau IHp.
+(* en faire une version avec (i + p) au lieu de (i + (p + 3)) *)
+...
 replace (i + S p + 3) with (i + p + 4) by flia.
 replace (i + S p + 2) with (i + p + 3) by flia.
 assert (Hc3 : ∀ k, carry u (i + k) < 3). {
