@@ -864,6 +864,8 @@ destruct j. {
     now rewrite Huj, Hr2, Hc3 in Hpu2.
   }
   destruct c3. {
+(* si la retenue vaut 2, c'est forcément une infinité de 3 ; j'ai dû
+   prouver ça déjà, enfin je crois, faudrait alors en faire un lemme *)
 ...
     apply eq_NQintg_0 in Hc3; [ | easy ].
     now apply NQnle_gt in Hc3.
