@@ -1285,7 +1285,10 @@ destruct j. {
   }
   destruct c3. {
     (* si la retenue vaut 2, c'est forcément une infinité de 3 *)
-Check rad_2_sum_3_all_9_3r2_3r2.
+rewrite <- Hc3 at 3.
+replace (i + 4) with (i + 2 + 2) by flia.
+replace (i + 3) with (i + 2 + 1) by flia.
+apply rad_2_sum_3_all_9_3r2_3r2; [ easy | easy | easy | ].
 ...
     apply eq_NQintg_0 in Hc3; [ | easy ].
     now apply NQnle_gt in Hc3.
