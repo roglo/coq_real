@@ -1794,6 +1794,71 @@ assert (H1 : ∀ k, (u ⊕ v) (i + j + k + 4) = 3 ∧ carry (u ⊕ v) (i + j + k
   easy.
 }
 ...
+rewrite A_split_first; [ | min_n_ge ].
+replace (S i) with (i + 1) by flia.
+unfold "⊕" at 1.
+replace (u (i + 1)) with 0. 2: {
+  unfold "⊕" in Huv1.
+  now apply Nat.eq_add_0 in Huv1.
+}
+rewrite Nat.add_0_l.
+remember (P v (i + 1)) as p1 eqn:Hp1; symmetry in Hp1.
+destruct p1. {
+  rewrite NQadd_0_l.
+  apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now rewrite Hr2 | ].
+  rewrite <- NQmul_assoc.
+  rewrite NQmul_pair_den_num; [ | easy ].
+  rewrite NQmul_1_r, NQmul_1_l, Hr2.
+  eapply NQle_lt_trans. {
+    apply (A_upper_bound_for_adds 2).
+    intros p; do 2 rewrite <- Nat.add_assoc.
+    cbn; rewrite Nat.add_0_r.
+    unfold "⊕".
+    apply Nat.add_le_mono; [ rewrite Hr2; apply Hu | apply P_le ].
+  }
+  rewrite NQmul_sub_distr_l, NQmul_1_r.
+  now apply NQsub_lt.
+}
+destruct p1. {
+  apply NQlt_add_lt_sub_l.
+  rewrite Hr2.
+  replace (1 - 1 // 2)%NQ with (1 * 1 // 2)%NQ by easy.
+  apply NQmul_lt_mono_pos_r; [ easy | ].
+  rewrite A_split_first; [ | min_n_ge ].
+  replace (S (i + 1)) with (i + 2) by flia.
+  unfold "⊕" at 1.
+  remember (u (i + 2)) as u2 eqn:Hu2; symmetry in Hu2.
+  destruct u2. {
+    rewrite Nat.add_0_l.
+    remember (P v (i + 2)) as p2 eqn:Hp2; symmetry in Hp2.
+    destruct p2. {
+      rewrite NQadd_0_l.
+      apply (NQmul_lt_mono_pos_r (rad // 1)%NQ); [ now rewrite Hr2 | ].
+      rewrite <- NQmul_assoc.
+      rewrite NQmul_pair_den_num; [ | easy ].
+      rewrite NQmul_1_r, NQmul_1_l, Hr2.
+      eapply NQle_lt_trans. {
+        apply (A_upper_bound_for_adds 2).
+        intros p; do 2 rewrite <- Nat.add_assoc.
+        cbn; rewrite Nat.add_0_r.
+        unfold "⊕".
+        apply Nat.add_le_mono; [ rewrite Hr2; apply Hu | apply P_le ].
+      }
+      rewrite NQmul_sub_distr_l, NQmul_1_r.
+      now apply NQsub_lt.
+    }
+    destruct p2.
+...
+
+rewrite A_split_first; [ | min_n_ge ].
+replace (S (i + 1)) with (i + 2) by flia.
+unfold "⊕" at 1.
+replace (u (i + 2)) with 0. 2: {
+  unfold "⊕" in Huv1.
+  now apply Nat.eq_add_0 in Huv1.
+}
+rewrite Nat.add_0_l.
+...
 
 Theorem P_999_after_9 {r : radix} : ∀ u i m,
   m ≤ rad
