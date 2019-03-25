@@ -1521,6 +1521,9 @@ assert (Huv33 : ∀ k, w (i + k + 3) = 3 ∧ carry w (i + k + 2) = 2). {
   now apply rad_2_sum_3_all_9_0_1_333.
 }
 move Huv3 before Hv; move w before v; move Hw after Hu.
+(**)
+clear - Hr2 Hnk Hw Huv10 Hu Huv21 Huv33 Hv.
+(**)
 rewrite A_additive.
 rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
 rewrite <- Nat.add_1_r.
