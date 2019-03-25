@@ -1928,7 +1928,10 @@ destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
       rewrite Hr2, NQpair_diag; [ | easy ].
       rewrite NQintg_add_nat_l; [ | now apply NQle_0_mul_r ].
       rewrite Nat.add_assoc, Nat_mod_add_same_l; [ | easy ].
-      assert (HA : (0 ≤ A (i + 4) (min_n (i + 3) (carry_cases v (i + 3))) v * 1 // 2 < 1)%NQ). {
+      assert
+        (HA :
+           (0 ≤ A (i + 4) (min_n (i + 3) (carry_cases v (i + 3))) v * 1 // 2
+            < 1)%NQ). {
         split; [ now apply NQle_0_mul_r | ].
         apply (NQmul_lt_mono_pos_r (2 // 1)%NQ); [ easy | ].
         rewrite <- NQmul_assoc.
