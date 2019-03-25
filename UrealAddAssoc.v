@@ -1773,7 +1773,10 @@ specialize (Huvbef j (Nat.lt_succ_diag_r _)) as Huvj2.
 replace (i + S j + 2) with (i + j + 3) in Huvj by flia.
 rename Huvj into Huvj3.
 move Huvj2 after Huvj3.
-assert (H1 : ∀ k, (u ⊕ v) (i + j + k + 4) = 3 ∧ carry (u ⊕ v) (i + j + k + 3) = 2). {
+assert
+  (H1 :
+     ∀ k,
+       (u ⊕ v) (i + j + k + 4) = 3 ∧ carry (u ⊕ v) (i + j + k + 3) = 2). {
   specialize (rad_2_sum_3_all_9_02_1_333 (u ⊕ v) (i + j + 1) Hr2) as H1.
   replace (i + j + 1 + 1) with (i + j + 2) in H1 by flia.
   replace (i + j + 1 + 2) with (i + j + 3) in H1 by flia.
@@ -1856,7 +1859,10 @@ destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
         rewrite A_split_first; [ | min_n_ge ].
         replace (S (i + 2)) with (i + 3) by easy.
         rewrite Hv3, Hr2, NQadd_0_l.
-        assert (HA : (0 ≤ A (i + 3) (min_n (i + 2) (carry_cases v (i + 2))) v * 1 // 2 < 1)%NQ). {
+        assert
+          (HA :
+             (0 ≤ A (i + 3) (min_n (i + 2) (carry_cases v (i + 2))) v * 1 // 2
+              < 1)%NQ). {
           split; [ now apply NQle_0_mul_r | ].
           apply (NQmul_lt_mono_pos_r (2 // 1)%NQ); [ easy | ].
           rewrite <- NQmul_assoc.
