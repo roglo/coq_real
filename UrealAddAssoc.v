@@ -1577,6 +1577,7 @@ destruct pv. {
       apply NQlt_add_lt_sub_l.
       replace (1 - 1 // 2)%NQ with (1 * 1 // 2)%NQ by easy.
       apply NQmul_lt_mono_pos_r; [ easy | ].
+      symmetry in Hx.
       clear - Hr2 Hx H1 H6 Hu Hv.
       unfold P, d2n, prop_carr, dig in Hx.
       rewrite (proj2 H1), Nat.add_0_l in Hx.
@@ -1622,6 +1623,7 @@ destruct pv. {
       specialize (Huv33 0) as H6.
       destruct H6 as (H6, _).
       rewrite Nat.add_0_r in H6.
+      symmetry in Hpv, Hx.
       clear - Hx H1 Hw Hu Hv Hr2 Hpv Huv10 H6.
       unfold P, d2n, prop_carr, dig in Hx.
       rewrite (proj2 H1), Nat.add_0_l in Hx.
