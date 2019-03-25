@@ -1765,6 +1765,29 @@ Theorem rad_2_sum_3_all_9_0_22_1_A_lt_1 {r : radix} : ∀ u v i j,
   → ∀ k, (A i (min_n i k) (u ⊕ P v) < 1)%NQ.
 Proof.
 intros * Hr2 Hu Hv Hauv Huv1 Huvbef Huvj *.
+assert
+  (H1 :
+     ∀ k,
+       (u ⊕ v) (i + j + k + 3) = 3 ∧ carry (u ⊕ v) (i + j + k + 2) = 2). {
+  specialize (rad_2_sum_3_all_9_02_1_333 (u ⊕ v) (i + j) Hr2) as H1.
+  assert (H : ∀ k, (u ⊕ v) (i + j + k) ≤ 3 * (rad - 1)). {
+    intros p; rewrite <- Nat.add_assoc.
+    unfold "⊕"; replace 3 with (1 + 2) by easy.
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l, Hr2.
+    apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+  }
+  specialize (H1 H); clear H.
+  assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + j) k = true). {
+    now intros; apply A_ge_1_add_r_true_if.
+  }
+  specialize (H1 H); clear H.
+  assert (H : (u ⊕ v) (i + j + 1) = 0 ∨ (u ⊕ v) (i + j + 1) = 2). {
+    destruct j; [ now left; rewrite Nat.add_0_r | ].
+    right; replace (i + S j + 1) with (i + j + 2) by flia.
+    now specialize (Huvbef j (Nat.lt_succ_diag_r _)).
+  }
+  now specialize (H1 H Huvj).
+}
 destruct j. {
   rewrite Nat.add_0_r in Huvj.
   now apply rad_2_sum_3_all_9_0_1_A_lt_1.
@@ -1773,29 +1796,6 @@ specialize (Huvbef j (Nat.lt_succ_diag_r _)) as Huvj2.
 replace (i + S j + 2) with (i + j + 3) in Huvj by flia.
 rename Huvj into Huvj3.
 move Huvj2 after Huvj3.
-assert
-  (H1 :
-     ∀ k,
-       (u ⊕ v) (i + j + k + 4) = 3 ∧ carry (u ⊕ v) (i + j + k + 3) = 2). {
-  specialize (rad_2_sum_3_all_9_02_1_333 (u ⊕ v) (i + j + 1) Hr2) as H1.
-  replace (i + j + 1 + 1) with (i + j + 2) in H1 by flia.
-  replace (i + j + 1 + 2) with (i + j + 3) in H1 by flia.
-  assert (H : ∀ k, (u ⊕ v) (i + j + 1 + k) ≤ 3 * (rad - 1)). {
-    intros p; do 2 rewrite <- Nat.add_assoc.
-    unfold "⊕"; replace 3 with (1 + 2) by easy.
-    rewrite Nat.mul_add_distr_r, Nat.mul_1_l, Hr2.
-    apply Nat.add_le_mono; [ apply Hu | apply Hv ].
-  }
-  specialize (H1 H); clear H.
-  assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + j + 1) k = true). {
-    now intros; rewrite <- Nat.add_assoc; apply A_ge_1_add_r_true_if.
-  }
-  specialize (H1 H (or_intror Huvj2) Huvj3); clear H.
-  intros p; specialize (H1 p).
-  replace (i + j + 1 + p + 3) with (i + j + p + 4) in H1 by flia.
-  replace (i + j + 1 + p + 2) with (i + j + p + 3) in H1 by flia.
-  easy.
-}
 specialize (Huvbef 0 (Nat.lt_0_succ _)) as Huv2.
 rewrite Nat.add_0_r in Huv2; move Huv2 before Huv1.
 assert (Hu1 : u (i + 1) = 0) by (unfold "⊕" in Huv1; flia Huv1).
@@ -1804,7 +1804,6 @@ destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
   assert (Hv2 : v (i + 2) = 2) by (unfold "⊕" in Huv2; flia Huv2 Hu2).
   destruct j. {
     rewrite Nat.add_0_r in Huvj3.
-    rewrite Nat.add_0_r in H1.
     apply Nat.eq_add_1 in Huvj3.
     destruct Huvj3 as [(Hu3, Hv3)| (Hu3, Hv3)]. {
       move Hu3 after Hv2; move Hv3 after Hu3.
@@ -1926,6 +1925,7 @@ destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
       replace (v (i + 4)) with 2. 2: {
         specialize (H1 0) as (H2, H3).
         rewrite Nat.add_0_r in H2.
+        replace (i + 1 + 3) with (i + 4) in H2 by flia.
         unfold "⊕" in H2.
         specialize (Hu 4) as H4.
         specialize (Hv 4) as H5.
