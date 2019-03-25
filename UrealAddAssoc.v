@@ -1456,27 +1456,6 @@ rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in Hcw; cycle 1. {
 ...
 *)
 
-Theorem rad_2_sum_3_all_9_0_1_333 {r : radix} : ∀ u i,
-  rad = 2
-  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
-  → (∀ k, fA_ge_1_ε u i k = true)
-  → u (i + 1) = 0
-  → u (i + 2) = 1
-  → ∀ k, u (i + k + 3) = 3 ∧ carry u (i + k + 2) = 2.
-Proof.
-intros * Hr2 Hu3r Hau Hu10 Hu21 p.
-induction p. {
-  rewrite Nat.add_0_r.
-  apply rad_2_sum_3_all_9_02_1_3; try easy; now left.
-}
-clear - Hr2 Hu3r IHp Hau.
-replace (i + S p + 3) with (i + (p + 2) + 2) by flia.
-replace (i + S p + 2) with (i + (p + 2) + 1) by flia.
-replace (i + p + 3) with (i + (p + 2) + 1) in IHp by flia.
-replace (i + p + 2) with (i + (p + 2)) in IHp by flia.
-now apply rad_2_sum_3_all_9_3r2_3r2.
-Qed.
-
 Theorem rad_2_sum_3_all_9_02_1_333 {r : radix} : ∀ u i,
   rad = 2
   → (∀ k, u (i + k) ≤ 3 * (rad - 1))
@@ -1518,7 +1497,7 @@ assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
 remember (u ⊕ v) as w eqn:Hw.
 assert (Huv33 : ∀ k, w (i + k + 3) = 3 ∧ carry w (i + k + 2) = 2). {
   intros p.
-  now apply rad_2_sum_3_all_9_0_1_333.
+  apply rad_2_sum_3_all_9_02_1_333; try easy; now left.
 }
 move Huv3 before Hv; move w before v; move Hw after Hu.
 (**)
@@ -1754,7 +1733,7 @@ rewrite <- Hpv, Hr2 in H.
 flia H.
 Qed.
 
-Theorem rad_2_sum_3_all_9_0_22_1_A_lt_1 {r : radix} : ∀ u v i j,
+Theorem rad_2_sum_3_all_9_0_2_1_A_lt_1 {r : radix} : ∀ u v i j,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
   → (∀ k, v (i + k) ≤ 2)
@@ -1782,7 +1761,7 @@ assert
   }
   specialize (H1 H); clear H.
   assert (H : (u ⊕ v) (i + j + 1) = 0 ∨ (u ⊕ v) (i + j + 1) = 2). {
-    destruct j; [ now left; rewrite Nat.add_0_r | ].
+    destruct j; [ left; now rewrite Nat.add_0_r | ].
     right; replace (i + S j + 1) with (i + j + 2) by flia.
     now specialize (Huvbef j (Nat.lt_succ_diag_r _)).
   }
@@ -1790,7 +1769,7 @@ assert
 }
 destruct j. {
   rewrite Nat.add_0_r in Huvj.
-  now apply rad_2_sum_3_all_9_0_1_A_lt_1.
+  apply rad_2_sum_3_all_9_0_1_A_lt_1; try easy.
 }
 specialize (Huvbef j (Nat.lt_succ_diag_r _)) as Huvj2.
 replace (i + S j + 2) with (i + j + 3) in Huvj by flia.
