@@ -1477,45 +1477,6 @@ replace (i + p + 2) with (i + (p + 2)) in IHp by flia.
 now apply rad_2_sum_3_all_9_3r2_3r2.
 Qed.
 
-(*
-Theorem rad_2_sum_3_all_9_0_22_1_A_lt_1 {r : radix} : ∀ u v i j,
-  rad = 2
-  → (∀ k, u (i + k) ≤ 1)
-  → (∀ k, v (i + k) ≤ 2)
-  → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
-  → (u ⊕ v) (i + 1) = 0
-  → (∀ k, k < j → (u ⊕ v) (i + k + 2) = 2)
-  → (u ⊕ v) (i + j + 2) = 1
-  → ∀ k, (A i (min_n i k) (u ⊕ P v) < 1)%NQ.
-Proof.
-intros * Hr2 Hu Hv Hauv Huv1 Huvbef Huvj *.
-remember (min_n i k) as nk eqn:Hnk.
-assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
-  intros p.
-  unfold "⊕"; replace 3 with (1 + 2) by easy.
-  rewrite Nat.mul_add_distr_r, Nat.mul_1_l, Hr2.
-  apply Nat.add_le_mono; [ apply Hu | apply Hv ].
-}
-remember (u ⊕ v) as w eqn:Hw.
-assert (Huv33 : ∀ k, w (i + k + 3) = 3 ∧ carry w (i + k + 2) = 2). {
-  intros p.
-  destruct (zerop j) as [Hj| Hj]. {
-    subst j; rewrite Nat.add_0_r in Huvj.
-    now apply rad_2_sum_3_all_9_0_1_333.
-  }
-  specialize (Huvbef _ Hj) as Huv2.
-  move Huv2 before Huv1.
-  rewrite Nat.add_0_r in Huv2.
-  replace (i + p + 3) with (i + (p + 1) + 2) by flia.
-  replace (i + p + 2) with (i + (p + 1) + 1) by flia.
-  apply rad_2_sum_3_all_9_3r2_3r2; [ easy | easy | easy | ].
-  replace (i + (p + 1) + 1) with (i + p + 2) by flia.
-  replace (i + (p + 1)) with (i + p + 1) by flia.
-  apply rad_2_sum_3_all_9_3r2_3r2; [ easy | easy | easy | ].
-Check rad_2_sum_3_all_9_0_1_333.
-...
-*)
-
 Theorem rad_2_sum_3_all_9_0_1_A_lt_1 {r : radix} : ∀ u v i,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -1766,6 +1727,23 @@ specialize (P_le v (i + 1)) as H.
 rewrite <- Hpv, Hr2 in H.
 flia H.
 Qed.
+
+Theorem rad_2_sum_3_all_9_0_22_1_A_lt_1 {r : radix} : ∀ u v i j,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 1)
+  → (∀ k, v (i + k) ≤ 2)
+  → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
+  → (u ⊕ v) (i + 1) = 0
+  → (∀ k, k < j → (u ⊕ v) (i + k + 2) = 2)
+  → (u ⊕ v) (i + j + 2) = 1
+  → ∀ k, (A i (min_n i k) (u ⊕ P v) < 1)%NQ.
+Proof.
+intros * Hr2 Hu Hv Hauv Huv1 Huvbef Huvj *.
+destruct j. {
+  rewrite Nat.add_0_r in Huvj.
+  now apply rad_2_sum_3_all_9_0_1_A_lt_1.
+}
+...
 
 Theorem P_999_after_9 {r : radix} : ∀ u i m,
   m ≤ rad
