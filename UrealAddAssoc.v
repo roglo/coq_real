@@ -1793,6 +1793,102 @@ assert (H1 : ∀ k, (u ⊕ v) (i + j + k + 4) = 3 ∧ carry (u ⊕ v) (i + j + k
   replace (i + j + 1 + p + 2) with (i + j + p + 3) in H1 by flia.
   easy.
 }
+specialize (Huvbef 0 (Nat.lt_0_succ _)) as Huv2.
+rewrite Nat.add_0_r in Huv2; move Huv2 before Huv1.
+assert (Hu1 : u (i + 1) = 0) by (unfold "⊕" in Huv1; flia Huv1).
+assert (Hv1 : v (i + 1) = 0) by (unfold "⊕" in Huv1; flia Huv1).
+destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
+  assert (Hv2 : v (i + 2) = 2) by (unfold "⊕" in Huv2; flia Huv2 Hu2).
+  destruct j. {
+    rewrite Nat.add_0_r in Huvj3.
+    rewrite Nat.add_0_r in H1.
+    apply Nat.eq_add_1 in Huvj3.
+    destruct Huvj3 as [(Hu3, Hv3)| (Hu3, Hv3)]. {
+      move Hu3 after Hv2; move Hv3 after Hu3.
+      specialize (H1 0) as H.
+      rewrite Nat.add_0_r in H.
+      destruct H as (Huv4, Hc3).
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S i) with (i + 1) by flia.
+      unfold "⊕" at 1.
+      rewrite Hu1, Nat.add_0_l.
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S (i + 1)) with (i + 2) by flia.
+      unfold "⊕" at 1.
+      rewrite Hu2, Nat.add_0_l.
+      replace (P v (i + 1)) with 1. 2: {
+        symmetry.
+        unfold P, d2n, prop_carr, dig.
+        rewrite Hv1, Nat.add_0_l.
+        unfold carry.
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + 1)) with (i + 2) by easy.
+        rewrite Hv2, Hr2, NQpair_diag; [ | easy ].
+        rewrite NQintg_add_nat_l; [ | now apply NQle_0_mul_r ].
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + 2)) with (i + 3) by easy.
+        rewrite Hv3, NQadd_0_l.
+        rewrite NQintg_small; [ easy | ].
+        split. {
+          apply NQle_0_mul_r; [ easy | now apply NQle_0_mul_r ].
+        }
+        rewrite <- NQmul_assoc, Hr2.
+        apply (NQmul_lt_mono_pos_r (4 // 1)%NQ); [ easy | ].
+        rewrite <- NQmul_assoc.
+        replace (1 // 2 * 1 // 2 * 4 // 1)%NQ with 1%NQ. 2: {
+          rewrite NQmul_pair; [ | easy | easy ].
+          now rewrite NQmul_pair_den_num.
+        }
+        rewrite NQmul_1_r, NQmul_1_l.
+        eapply NQle_lt_trans. {
+          apply (A_upper_bound_for_adds 2); rewrite Hr2.
+          intros; do 2 rewrite <- Nat.add_assoc; easy.
+        }
+        rewrite NQmul_sub_distr_l, NQmul_1_r.
+        eapply NQlt_le_trans; [ now apply NQsub_lt | ].
+        apply NQle_pair; [ easy | easy | flia ].
+      }
+      replace (P v (i + 2)) with 0. 2: {
+        symmetry.
+        unfold P, d2n, prop_carr, dig.
+        rewrite Hv2, Hr2, Nat_mod_add_same_l; [ | easy ].
+...
+        unfold carry.
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + 2)) with (i + 3) by easy.
+        rewrite Hv3, Hr2.
+        rewrite NQintg_add_nat_l; [ | now apply NQle_0_mul_r ].
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + 2)) with (i + 3) by easy.
+        rewrite Hv3, NQadd_0_l.
+        rewrite NQintg_small; [ easy | ].
+        split. {
+          apply NQle_0_mul_r; [ easy | now apply NQle_0_mul_r ].
+        }
+        rewrite <- NQmul_assoc, Hr2.
+        apply (NQmul_lt_mono_pos_r (4 // 1)%NQ); [ easy | ].
+        rewrite <- NQmul_assoc.
+        replace (1 // 2 * 1 // 2 * 4 // 1)%NQ with 1%NQ. 2: {
+          rewrite NQmul_pair; [ | easy | easy ].
+          now rewrite NQmul_pair_den_num.
+        }
+        rewrite NQmul_1_r, NQmul_1_l.
+        eapply NQle_lt_trans. {
+          apply (A_upper_bound_for_adds 2); rewrite Hr2.
+          intros; do 2 rewrite <- Nat.add_assoc; easy.
+        }
+        rewrite NQmul_sub_distr_l, NQmul_1_r.
+        eapply NQlt_le_trans; [ now apply NQsub_lt | ].
+        apply NQle_pair; [ easy | easy | flia ].
+      }
+      replace (P v (i + 2)) with 0. 2: {
+...
+
+replace (u (i + 1)) with 0. 2: {
+  unfold "⊕" in Huv1.
+  now apply Nat.eq_add_0 in Huv1.
+}
+...
 rewrite A_split_first; [ | min_n_ge ].
 replace (S i) with (i + 1) by flia.
 unfold "⊕" at 1.
