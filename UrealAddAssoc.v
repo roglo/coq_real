@@ -2946,7 +2946,8 @@ destruct (NQlt_le_dec (A i nk u + NQfrac (A i nk v)) 1) as [H5| H5].
          specialize (H Huv0 Huv22).
          destruct H as [Huv31| [Huv32| Huv33]].
          -idtac.
-Check rad_2_sum_3_all_9_02_1_3.
+Check rad_2_sum_3_all_9_0_1_A_lt_1.
+(* 0 2 1, c'est pareil que 0 1 : à démontrer *)
 ...
           specialize (rad_2_sum_3_all_9_02_1_3 w (i + 1) Hr2) as H1.
           replace (i + 1 + 1) with (i + 2) in H1 by flia.
