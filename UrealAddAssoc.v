@@ -1477,6 +1477,27 @@ replace (i + p + 2) with (i + (p + 2)) in IHp by flia.
 now apply rad_2_sum_3_all_9_3r2_3r2.
 Qed.
 
+Theorem rad_2_sum_3_all_9_02_1_333 {r : radix} : ∀ u i,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → u (i + 1) = 0 ∨ u (i + 1) = 2
+  → u (i + 2) = 1
+  → ∀ k, u (i + k + 3) = 3 ∧ carry u (i + k + 2) = 2.
+Proof.
+intros * Hr2 Hu3r Hau Hu10 Hu21 p.
+induction p. {
+  rewrite Nat.add_0_r.
+  now apply rad_2_sum_3_all_9_02_1_3.
+}
+clear - Hr2 Hu3r IHp Hau.
+replace (i + S p + 3) with (i + (p + 2) + 2) by flia.
+replace (i + S p + 2) with (i + (p + 2) + 1) by flia.
+replace (i + p + 3) with (i + (p + 2) + 1) in IHp by flia.
+replace (i + p + 2) with (i + (p + 2)) in IHp by flia.
+now apply rad_2_sum_3_all_9_3r2_3r2.
+Qed.
+
 Theorem rad_2_sum_3_all_9_0_1_A_lt_1 {r : radix} : ∀ u v i,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -1747,8 +1768,26 @@ specialize (Huvbef j (Nat.lt_succ_diag_r _)) as Huvj2.
 replace (i + S j + 2) with (i + j + 3) in Huvj by flia.
 rename Huvj into Huvj3.
 move Huvj2 after Huvj3.
-specialize (rad_2_sum_3_all_9_02_1_3 (u ⊕ v) (i + j + 1) Hr2) as H1.
-Check rad_2_sum_3_all_9_0_1_333.
+assert (H1 : ∀ k, (u ⊕ v) (i + j + k + 4) = 3 ∧ carry (u ⊕ v) (i + j + k + 3) = 2). {
+  specialize (rad_2_sum_3_all_9_02_1_333 (u ⊕ v) (i + j + 1) Hr2) as H1.
+  replace (i + j + 1 + 1) with (i + j + 2) in H1 by flia.
+  replace (i + j + 1 + 2) with (i + j + 3) in H1 by flia.
+  assert (H : ∀ k, (u ⊕ v) (i + j + 1 + k) ≤ 3 * (rad - 1)). {
+    intros p; do 2 rewrite <- Nat.add_assoc.
+    unfold "⊕"; replace 3 with (1 + 2) by easy.
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l, Hr2.
+    apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+  }
+  specialize (H1 H); clear H.
+  assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + j + 1) k = true). {
+    now intros; rewrite <- Nat.add_assoc; apply A_ge_1_add_r_true_if.
+  }
+  specialize (H1 H (or_intror Huvj2) Huvj3); clear H.
+  intros p; specialize (H1 p).
+  replace (i + j + 1 + p + 3) with (i + j + p + 4) in H1 by flia.
+  replace (i + j + 1 + p + 2) with (i + j + p + 3) in H1 by flia.
+  easy.
+}
 ...
 
 Theorem P_999_after_9 {r : radix} : ∀ u i m,
