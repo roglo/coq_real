@@ -1894,9 +1894,28 @@ destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
       now apply NQsub_lt.
     }
     move Hu3 after Hv2; move Hv3 after Hu3.
-    (* nouveau cas : bon, faut voir *)
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S i) with (i + 1) by flia.
+    unfold "⊕" at 1.
+    rewrite Hu1, Nat.add_0_l.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 1)) with (i + 2) by flia.
+    unfold "⊕" at 1.
+    rewrite Hu2, Nat.add_0_l.
+    rewrite A_split_first. 2: {
+      unfold min_n.
+      destruct rad as [ | rr]; [ easy | ].
+      destruct rr; [ easy | cbn; flia ].
+    }
+    replace (S (i + 2)) with (i + 3) by flia.
+    unfold "⊕" at 1.
+    rewrite Hu3, Nat.add_0_l.
+    replace (P v (i + 3)) with 0. 2: {
+      symmetry.
+      unfold P, d2n, prop_carr, dig.
+      rewrite Hv3, Hr2.
+      unfold carry.
 ...
-
 replace (u (i + 1)) with 0. 2: {
   unfold "⊕" in Huv1.
   now apply Nat.eq_add_0 in Huv1.
