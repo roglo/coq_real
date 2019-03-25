@@ -1743,6 +1743,12 @@ destruct j. {
   rewrite Nat.add_0_r in Huvj.
   now apply rad_2_sum_3_all_9_0_1_A_lt_1.
 }
+specialize (Huvbef j (Nat.lt_succ_diag_r _)) as Huvj2.
+replace (i + S j + 2) with (i + j + 3) in Huvj by flia.
+rename Huvj into Huvj3.
+move Huvj2 after Huvj3.
+specialize (rad_2_sum_3_all_9_02_1_3 (u ⊕ v) (i + j + 1) Hr2) as H1.
+Check rad_2_sum_3_all_9_0_1_333.
 ...
 
 Theorem P_999_after_9 {r : radix} : ∀ u i m,
