@@ -1788,9 +1788,6 @@ destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
     rewrite Nat.add_0_r in Huvj3.
     destruct Huvj3 as [(Hu3, Hv3)| (Hu3, Hv3)]. {
       move Hu3 after Hv2; move Hv3 after Hu3.
-      specialize (H1 0) as H.
-      rewrite Nat.add_0_r in H.
-      destruct H as (Huv4, Hc3).
       rewrite A_split_first; [ | min_n_ge ].
       replace (S i) with (i + 1) by flia.
       unfold "⊕" at 1.
@@ -1799,38 +1796,9 @@ destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
       replace (S (i + 1)) with (i + 2) by flia.
       unfold "⊕" at 1.
       rewrite Hu2, Nat.add_0_l.
-      replace (P v (i + 1)) with 1. 2: {
-        symmetry.
-        unfold P, d2n, prop_carr, dig.
-        rewrite Hv1, Nat.add_0_l.
-        unfold carry.
-        rewrite A_split_first; [ | min_n_ge ].
-        replace (S (i + 1)) with (i + 2) by easy.
-        rewrite Hv2, Hr2, NQpair_diag; [ | easy ].
-        rewrite NQintg_add_nat_l; [ | now apply NQle_0_mul_r ].
-        rewrite A_split_first; [ | min_n_ge ].
-        replace (S (i + 2)) with (i + 3) by easy.
-        rewrite Hv3, NQadd_0_l.
-        rewrite NQintg_small; [ easy | ].
-        split. {
-          apply NQle_0_mul_r; [ easy | now apply NQle_0_mul_r ].
-        }
-        rewrite <- NQmul_assoc, Hr2.
-        apply (NQmul_lt_mono_pos_r (4 // 1)%NQ); [ easy | ].
-        rewrite <- NQmul_assoc.
-        replace (1 // 2 * 1 // 2 * 4 // 1)%NQ with 1%NQ. 2: {
-          rewrite NQmul_pair; [ | easy | easy ].
-          now rewrite NQmul_pair_den_num.
-        }
-        rewrite NQmul_1_r, NQmul_1_l.
-        eapply NQle_lt_trans. {
-          apply (A_upper_bound_for_adds 2); rewrite Hr2.
-          intros; do 2 rewrite <- Nat.add_assoc; easy.
-        }
-        rewrite NQmul_sub_distr_l, NQmul_1_r.
-        eapply NQlt_le_trans; [ now apply NQsub_lt | ].
-        apply NQle_pair; [ easy | easy | flia ].
-      }
+      specialize (H1 0) as H.
+      rewrite Nat.add_0_r in H.
+      destruct H as (Huv4, Hc3).
       replace (P v (i + 2)) with 0. 2: {
         symmetry.
         unfold P, d2n, prop_carr, dig.
@@ -1863,6 +1831,12 @@ destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
       }
       rewrite NQadd_0_l, Hr2.
       apply NQlt_add_lt_sub_l.
+      eapply (NQlt_le_trans _ (1 - 1 // 2)%NQ). 2: {
+        apply NQsub_le_mono; [ apply NQle_refl | ].
+        apply NQle_pair_mono_r.
+        specialize (P_le v (i + 1)) as H.
+        now rewrite Hr2 in H.
+      }
       replace (1 - 1 // 2)%NQ with (1 * 1 // 2)%NQ by easy.
       apply NQmul_lt_mono_pos_r; [ easy | ].
       apply (NQmul_lt_mono_pos_r (2 // 1)%NQ); [ easy | ].
