@@ -1374,9 +1374,9 @@ assert (HB : ∀ l, (0 ≤ B i n u l < 1)%Q). {
    do 2 rewrite Nat.mul_1_r.
    now apply Nat_pow_ge_1.
 }
-rewrite (Q.NQfrac_small (B _ _ _ _)) in H2; [ | easy ].
+rewrite (Q.frac_small (B _ _ _ _)) in H2; [ | easy ].
 destruct (Q.NQlt_le_dec (Q.NQfrac (A i n u) + B i n u l) 1) as [H4| H4].
--rewrite Q.NQfrac_small in H2. 2: {
+-rewrite Q.frac_small in H2. 2: {
    split; [ | easy ].
    replace 0%Q with (0 + 0)%Q by easy.
    apply Q.NQadd_le_mono; [ easy | apply HB ].
@@ -1389,9 +1389,9 @@ destruct (Q.NQlt_le_dec (Q.NQfrac (A i n u) + B i n u l) 1) as [H4| H4].
  rewrite <- Hn in H5.
  rewrite <- ApB_A in H5; [ | easy ].
  rewrite Q.NQfrac_add in H5; [ | easy | easy ].
- rewrite (Q.NQfrac_small (B _ _ _ _)) in H5; [ | easy ].
+ rewrite (Q.frac_small (B _ _ _ _)) in H5; [ | easy ].
  destruct (Q.NQlt_le_dec (Q.NQfrac (A i n u) + B i n u rad) 1) as [H6| H6].
- +rewrite Q.NQfrac_small in H5. 2: {
+ +rewrite Q.frac_small in H5. 2: {
     split; [ | easy ].
     replace 0%Q with (0 + 0)%Q by easy.
     apply Q.NQadd_le_mono; [ easy | apply HB ].
@@ -1417,7 +1417,7 @@ destruct (Q.NQlt_le_dec (Q.NQfrac (A i n u) + B i n u l) 1) as [H4| H4].
     eapply Q.NQlt_trans; [ apply Q.NQadd_lt_mono_l, H7 | ].
     apply Q.NQadd_lt_mono_r, Q.NQfrac_lt_1.
   }
-  rewrite (Q.NQfrac_less_small 1). 2: {
+  rewrite (Q.frac_less_small 1). 2: {
     split; [ easy | ].
     eapply Q.NQlt_le_trans; [ apply H8 | ].
     replace 2%Q with (1 + 1)%Q by easy.
@@ -3258,14 +3258,14 @@ destruct (Q.NQeq_dec (A (i + j) n u) 0) as [HAz| HAz].
   now apply Nat_pow_ge_1.
 -destruct (Q.NQlt_le_dec (A (i + j) n u) 1) as [HAn| HAp].
  +apply Q.NQnlt_ge; intros H1.
-  rewrite Q.NQfrac_small in H1; cycle 1. {
+  rewrite Q.frac_small in H1; cycle 1. {
     split; [ apply A_ge_0 | easy ].
   }
   apply Q.NQnlt_ge in H5; apply H5; clear H5.
   rewrite <- Q.NQsub_opp_r, <- Q.NQmul_opp_l.
   rewrite Q.NQopp_sub_distr.
   rewrite Q.NQadd_opp_l.
-  rewrite Q.NQfrac_small; cycle 1. {
+  rewrite Q.frac_small; cycle 1. {
     split.
     -apply Q.NQle_0_sub.
      rewrite Q.NQmul_sub_distr_r, Q.NQmul_1_l.

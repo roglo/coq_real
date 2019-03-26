@@ -23,7 +23,7 @@ intros * Hur *.
 specialize radix_ge_2 as Hr.
 apply A_ge_1_true_iff.
 rewrite A_all_9; [ | intros j Hj; apply Hur ].
-rewrite Q.NQfrac_small. 2: {
+rewrite Q.frac_small. 2: {
   split.
   -apply Q.NQle_add_le_sub_l.
    rewrite Q.NQadd_0_l.
@@ -38,14 +38,14 @@ Qed.
 Theorem NQintg_A_M {r : radix} : ∀ i n u, Q.NQintg (A i n (M u)) = 0.
 Proof.
 intros.
-apply Q.NQintg_small.
+apply Q.intg_small.
 split; [ easy | apply A_M_upper_bound ].
 Qed.
 
 Theorem NQfrac_A_M {r : radix} : ∀ i n u, Q.NQfrac (A i n (M u)) = A i n (M u).
 Proof.
 intros.
-apply Q.NQfrac_small.
+apply Q.frac_small.
 split; [ easy | ].
 apply A_M_upper_bound.
 Qed.
@@ -53,7 +53,7 @@ Qed.
 Theorem NQfrac_P_M {r : radix} : ∀ i n u, Q.NQfrac (A i n (P u)) = A i n (P u).
 Proof.
 intros.
-apply Q.NQfrac_small.
+apply Q.frac_small.
 split; [ easy | ].
 apply A_M_upper_bound.
 Qed.
@@ -79,7 +79,7 @@ assert (H4 : (0 ≤ 1 - 2 // rad ^ (n - i - 1))%Q). {
 set (s := n - i - 1) in H4 |-*.
 remember (Q.NQfrac (A i n u)) as x eqn:Hx.
 destruct (Q.NQlt_le_dec x (1 // rad ^ s)%Q) as [H5| H5].
--rewrite Q.NQintg_small. 2: {
+-rewrite Q.intg_small. 2: {
    split.
    -apply Q.NQle_0_add; [ now subst x | apply Q.NQle_0_sub ].
     apply Q.NQle_pair_mono_l; split; [ pauto | ].
@@ -88,7 +88,7 @@ destruct (Q.NQlt_le_dec x (1 // rad ^ s)%Q) as [H5| H5].
     apply Q.NQsub_lt, Q.NQlt_add_lt_sub_l.
     now rewrite Q.NQadd_0_r.
  }
- rewrite Q.NQintg_small; [ easy | ]. {
+ rewrite Q.intg_small; [ easy | ]. {
    split.
    -apply Q.NQle_0_add; [ now subst x | easy ].
    -rewrite Q.NQadd_comm, <- Q.NQsub_sub_distr.
@@ -106,12 +106,12 @@ destruct (Q.NQlt_le_dec x (1 // rad ^ s)%Q) as [H5| H5].
   do 2 rewrite <- Q.NQadd_sub_assoc.
   rewrite Q.NQintg_add_nat_l; [ | now apply Q.NQle_add_le_sub_l ].
   rewrite Q.NQintg_add_nat_l; [ | now apply Q.NQle_add_le_sub_l ].
-  rewrite Q.NQintg_small. 2: {
+  rewrite Q.intg_small. 2: {
     split; [ now apply Q.NQle_add_le_sub_l | ].
     apply (Q.NQlt_trans _ x); [ | subst x; apply Q.NQfrac_lt_1 ].
     apply Q.NQsub_lt, Q.NQlt_0_pair; pauto.
   }
-  rewrite Q.NQintg_small; [ easy | ]. {
+  rewrite Q.intg_small; [ easy | ]. {
     split; [ now apply Q.NQle_add_le_sub_l | ].
     apply (Q.NQlt_trans _ x); [ | subst x; apply Q.NQfrac_lt_1 ].
     apply Q.NQsub_lt, Q.NQlt_0_pair; pauto.
@@ -136,7 +136,7 @@ destruct (Q.NQlt_le_dec x (1 // rad ^ s)%Q) as [H5| H5].
   rewrite H7 in AA1.
   rewrite A_all_9 in AA1; [ | easy ].
   fold s in AA1.
-  rewrite (Q.NQfrac_small (1 - 1 // rad ^ s)%Q) in AA1. 2: {
+  rewrite (Q.frac_small (1 - 1 // rad ^ s)%Q) in AA1. 2: {
     split.
     -eapply Q.NQle_trans; [ apply H4 | ].
      apply Q.NQsub_le_mono; [ apply Q.NQle_refl | ].
@@ -173,7 +173,7 @@ assert (H3 : (0 ≤ 1 - 2 * 1 // rad ^ (n - i - 1))%Q). {
   rewrite Hn; apply rad_pow_min_n.
 }
 rewrite Q.NQintg_add_nat_l; [ | easy ].
-rewrite Q.NQintg_small; [ easy | ].
+rewrite Q.intg_small; [ easy | ].
 split; [ easy | ].
 apply Q.NQlt_sub_lt_add_r.
 replace 1%Q with (1 + 0)%Q at 1 by easy.
@@ -526,16 +526,16 @@ rewrite Hu2 in Hci1.
 rewrite Q.NQintg_add_cond in Hci1; [ | apply Q.NQle_0_pair | ]. 2: {
   now apply Q.NQle_0_mul_r.
 }
-rewrite Q.NQintg_small in Hci1. 2: {
+rewrite Q.intg_small in Hci1. 2: {
   split; [ apply Q.NQle_0_pair | ].
   apply Q.NQlt_pair; [ easy | easy | flia Hr ].
 }
-rewrite Q.NQfrac_small in Hci1. 2: {
+rewrite Q.frac_small in Hci1. 2: {
   split; [ apply Q.NQle_0_pair | ].
   apply Q.NQlt_pair; [ easy | easy | flia Hr ].
 }
 rewrite Nat.add_0_l in Hci1.
-rewrite Q.NQfrac_small in Hci1. 2: {
+rewrite Q.frac_small in Hci1. 2: {
   apply Q.NQintg_interv in Hci2; [ | easy ].
   split; [ now apply Q.NQle_0_mul_r | ].
   apply (Q.NQmul_lt_mono_pos_r (rad // 1)%Q); [ now apply Q.NQlt_0_pair | ].
@@ -549,7 +549,7 @@ remember (A (i + 2) (min_n (i + 1) 0 + rad) u) as a eqn:Ha.
 destruct (Q.NQlt_le_dec (((rad - 2) // rad)%Q + (a * 1 // rad)%Q) 1)
   as [H1| H1]. {
   rewrite Nat.add_0_r in Hci1.
-  rewrite Q.NQintg_small in Hci1; [ now rewrite Nat.mod_0_l in Hci1 | ].
+  rewrite Q.intg_small in Hci1; [ now rewrite Nat.mod_0_l in Hci1 | ].
   apply Q.NQintg_interv in Hci2; [ | now rewrite Ha ].
   rewrite Ha.
   split; [ now apply Q.NQle_0_mul_r | ].
@@ -644,11 +644,11 @@ destruct (Nat.eq_dec c2 0) as [Hc20| Hc20]. {
   rewrite Q.NQintg_add_cond in H1; [ | easy | ]. 2: {
     now apply Q.NQle_0_mul_r.
   }
-  rewrite Q.NQintg_small in H1. 2: {
+  rewrite Q.intg_small in H1. 2: {
     split; [ easy | ].
     apply Q.NQlt_pair_mono_l; [ flia Hr2 | pauto ].
   }
-  rewrite (Q.NQfrac_small (_ // _)%Q) in H1. 2: {
+  rewrite (Q.frac_small (_ // _)%Q) in H1. 2: {
     split; [ easy | apply Q.NQlt_pair_mono_l; flia Hr2 ].
   }
   rewrite Nat.add_0_l in H1.
@@ -663,8 +663,8 @@ destruct (Nat.eq_dec c2 0) as [Hc20| Hc20]. {
     eapply Q.NQlt_trans; [ apply Q.NQfrac_lt_1 | ].
     apply Q.NQlt_pair_mono_r; flia Hr2.
   }
-  rewrite Q.NQintg_small in H1; [ | easy ].
-  rewrite Q.NQfrac_small in H1; [ | easy ].
+  rewrite Q.intg_small in H1; [ | easy ].
+  rewrite Q.frac_small in H1; [ | easy ].
   rewrite Nat.add_0_l in H1.
   destruct
     (Q.NQlt_le_dec
@@ -904,7 +904,7 @@ destruct
     destruct (Nat.eq_dec x 1) as [Hx1| Hx1]. {
       exfalso; clear Hx0.
       move Hx1 at top; subst x.
-      rewrite Q.NQintg_small in HA. 2: {
+      rewrite Q.intg_small in HA. 2: {
         split; [ easy | ].
         apply Q.NQlt_pair_mono_l; pauto.
       }
@@ -1010,7 +1010,7 @@ destruct
     exfalso; clear Hx0.
     move Hx1 at top; subst x.
     rename Hx into Huv41; move Huv41 before Huv33.
-    rewrite Q.NQintg_small in HA. 2: {
+    rewrite Q.intg_small in HA. 2: {
       split; [ easy | ].
       apply Q.NQlt_pair_mono_l; pauto.
     }
@@ -1583,7 +1583,7 @@ destruct pv. {
         apply Q.NQfrac_lt_1.
       }
       rewrite Nat.add_0_r in Hx.
-      rewrite Q.NQintg_small in Hx; [ easy | ].
+      rewrite Q.intg_small in Hx; [ easy | ].
       split; [ now apply Q.NQle_0_mul_r | ].
       apply (Q.NQmul_lt_mono_pos_r 2%Q); [ easy | ].
       rewrite <- Q.NQmul_assoc.
@@ -1643,7 +1643,7 @@ destruct pv. {
       rewrite A_split_first in Hpv; [ | min_n_ge ].
       replace (S (i + 1)) with (i + 2) in Hpv by easy.
       rewrite (proj2 H1), Q.NQadd_0_l in Hpv.
-      rewrite Q.NQintg_small in Hpv; [ now rewrite Nat.mod_0_l in Hpv | ].
+      rewrite Q.intg_small in Hpv; [ now rewrite Nat.mod_0_l in Hpv | ].
       split; [ now apply Q.NQle_0_mul_r | ].
       apply (Q.NQmul_lt_mono_pos_r (rad // 1)%Q); [ now rewrite Hr2 | ].
       rewrite <- Q.NQmul_assoc.
@@ -1708,7 +1708,7 @@ destruct pv. {
     rewrite Q.NQintg_add_nat_l in Hx; [ | now apply Q.NQle_0_mul_r ].
     rewrite Nat.add_assoc in Hx.
     rewrite Nat_mod_add_same_l in Hx; [ | easy ].
-    rewrite Q.NQintg_small in Hx; [ easy | ].
+    rewrite Q.intg_small in Hx; [ easy | ].
     split; [ now apply Q.NQle_0_mul_r | ].
     apply (Q.NQmul_lt_mono_pos_r (2 // 1)%Q); [ easy | ].
     rewrite <- Q.NQmul_assoc.
@@ -1826,9 +1826,9 @@ destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
           now apply Q.NQsub_lt.
         }
         rewrite Nat.mod_small. 2: {
-          rewrite Q.NQintg_small; [ pauto | easy ].
+          rewrite Q.intg_small; [ pauto | easy ].
         }
-        now rewrite Q.NQintg_small.
+        now rewrite Q.intg_small.
       }
       rewrite Q.NQadd_0_l, Hr2.
       apply Q.NQlt_add_lt_sub_l.
@@ -1912,9 +1912,9 @@ destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
         now apply Q.NQsub_lt.
       }
       rewrite Nat.mod_small. 2: {
-        rewrite Q.NQintg_small; [ pauto | easy ].
+        rewrite Q.intg_small; [ pauto | easy ].
       }
-      now rewrite Q.NQintg_small.
+      now rewrite Q.intg_small.
     }
     rewrite Q.NQadd_0_l, Hr2.
     rewrite Q.NQmul_add_distr_r, Q.NQadd_assoc.
@@ -2226,13 +2226,13 @@ destruct (zerop (carry u (i + k))) as [H2| H2].
  +split; [ easy | ].
   apply Nat.nlt_ge.
   intros H3; apply H2; clear H2.
-  apply Nat.lt_1_r, Q.NQintg_small.
+  apply Nat.lt_1_r, Q.intg_small.
   split; [ easy | ].
   now apply A_upper_bound_for_add_1st_lt_9.
  +split; [ easy | ].
   apply Nat.nlt_ge.
   intros H3; apply H2; clear H2.
-  apply Nat.lt_1_r, Q.NQintg_small.
+  apply Nat.lt_1_r, Q.intg_small.
   split; [ easy | ].
   now apply A_upper_bound_for_add_1st_lt_9.
 Qed.
@@ -2280,7 +2280,7 @@ destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
    rewrite Q.NQpair_sub_l in Hia; [ | easy ].
    rewrite Q.NQpair_diag in Hia; [ | easy ].
    rewrite <- Q.NQsub_sub_distr in Hia.
-   rewrite Q.NQintg_small in Hia; [ easy | ].
+   rewrite Q.intg_small in Hia; [ easy | ].
    split.
   --apply Q.NQle_0_sub.
     replace (2 // rad)%Q with (2 * 1 // rad)%Q. 2: {
@@ -2340,7 +2340,7 @@ destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
    rewrite Q.NQpair_diag in Hia; [ | easy ].
    destruct (Q.NQlt_le_dec (A (i + 1) n u) 1) as [H5| H5].
   --exfalso.
-    rewrite Q.NQintg_small in Hia; [ easy | ].
+    rewrite Q.intg_small in Hia; [ easy | ].
     split.
    ++rewrite <- Q.NQadd_sub_swap.
      apply Q.NQle_0_sub.
@@ -2359,7 +2359,7 @@ destruct (LPO_fst (is_num_9 u (i + 1))) as [H1| H1]; cycle 1.
 -exfalso.
  specialize (is_num_9_all_9 _ _ H1) as H2.
  (* contradictoire entre Hia et H2 *)
- rewrite Q.NQintg_small in Hia; [ easy | ].
+ rewrite Q.intg_small in Hia; [ easy | ].
  split; [ easy | ].
  apply A_upper_bound_for_dig.
  intros k Hk.
@@ -2633,7 +2633,7 @@ assert (H : ∀ k, P u (i + 1 + k) = rad - 1). {
 specialize (H1 H); clear H.
 destruct H1 as [H1| [H1| H1]].
 -rewrite A_all_9 by (intros j Hj; rewrite Nat.add_shuffle0; apply H1).
- rewrite Q.NQfrac_small. 2: {
+ rewrite Q.frac_small. 2: {
    split.
    -apply Q.NQle_0_sub.
     apply Q.NQle_pair; [ pauto | easy | ].
@@ -2648,7 +2648,7 @@ destruct H1 as [H1| [H1| H1]].
  replace 2%Q with (1 + 1)%Q by easy.
  rewrite <- Q.NQadd_sub_assoc.
  rewrite Q.NQfrac_add_nat_l.
- +rewrite Q.NQfrac_small. 2: {
+ +rewrite Q.frac_small. 2: {
     split.
     -apply Q.NQle_0_sub.
      apply Q.NQle_pair; [ pauto | easy | ].
@@ -2668,7 +2668,7 @@ destruct H1 as [H1| [H1| H1]].
 -destruct H1 as (j & Hjj & Hj).
  rewrite Nat.add_shuffle0 in Hj.
  rewrite (A_9_8_all_18 j); [ | | easy | ].
- +rewrite Q.NQfrac_small. 2: {
+ +rewrite Q.frac_small. 2: {
     split.
     -apply Q.NQle_0_sub.
      apply Q.NQle_pair; [ pauto | easy | ].
@@ -2754,7 +2754,7 @@ destruct H'3 as [H'3| [H'3| H'3]].
  rewrite <- Q.NQadd_sub_assoc.
  rewrite Q.NQfrac_add_nat_l; [ | easy ].
  set (s := n - i - 1) in H4 |-*.
- rewrite Q.NQfrac_small. 2: {
+ rewrite Q.frac_small. 2: {
    split; [ easy | ].
    apply Q.NQsub_lt, Q.NQlt_0_pair; pauto.
  }
@@ -2767,7 +2767,7 @@ destruct H'3 as [H'3| [H'3| H'3]].
  rewrite A_all_9; [ | intros; apply A3 ].
  rewrite (A_9_8_all_18 j); [ | easy | easy | easy ].
  destruct (le_dec (i + j + 1) (n - 1)) as [H5| H5]. 2: {
-   rewrite Q.NQfrac_small; [ easy | ].
+   rewrite Q.frac_small; [ easy | ].
    split.
    -apply Q.NQle_add_le_sub_l.
     rewrite Q.NQadd_0_l.
@@ -2777,7 +2777,7 @@ destruct H'3 as [H'3| [H'3| H'3]].
    -apply Q.NQsub_lt, Q.NQlt_0_pair; pauto.
  }
  set (s := n - i - 1) in H4 |-*.
- rewrite Q.NQfrac_small. 2: {
+ rewrite Q.frac_small. 2: {
    split; [ easy | ].
    apply Q.NQsub_lt, Q.NQlt_0_pair; pauto.
  }
@@ -2847,7 +2847,7 @@ Theorem NQintg_A_for_dig {r : radix} : ∀ i n u,
   → Q.NQintg (A i n u) = 0.
 Proof.
 intros * Hur.
-apply Q.NQintg_small.
+apply Q.intg_small.
 split; [ easy | ].
 now apply A_upper_bound_for_dig.
 Qed.
@@ -2943,7 +2943,7 @@ destruct H4 as [H4| [H4| H4]].
   exfalso; apply Huv; clear Huv.
   rewrite A_all_9; [ | easy ].
   rewrite A_all_9; [ | easy ].
-  rewrite Q.NQfrac_small; [ | easy ].
+  rewrite Q.frac_small; [ | easy ].
   rewrite Q.NQadd_sub_assoc, <- Q.NQadd_sub_swap.
   rewrite <- Q.NQsub_add_distr.
   apply Q.NQle_add_le_sub_r.
@@ -2973,7 +2973,7 @@ destruct H4 as [H4| [H4| H4]].
   exfalso; apply Huv; clear Huv.
   rewrite A_all_9; [ | easy ].
   rewrite (A_9_8_all_18 k); [ | easy | easy | easy ].
-  rewrite Q.NQfrac_small.
+  rewrite Q.frac_small.
   *rewrite Q.NQadd_sub_assoc, <- Q.NQadd_sub_swap.
    rewrite <- Q.NQsub_add_distr.
    apply Q.NQle_add_le_sub_r.
@@ -3001,7 +3001,7 @@ destruct H4 as [H4| [H4| H4]].
  }
  rewrite <- A_additive in H1.
  rewrite (A_9_8_all_18 k) in H1; [ | easy | easy | easy ].
- rewrite Q.NQintg_small in H1; [ easy | ].
+ rewrite Q.intg_small in H1; [ easy | ].
  split.
  +apply Q.NQle_0_sub.
   destruct (le_dec (i + k + 1) (nj - 1)) as [H4| H4].
@@ -3086,7 +3086,7 @@ assert (HAu : ∀ n, (0 ≤ A i n u < 1)%Q). {
 apply A_ge_1_false_iff in Hk; rewrite <- Hnk in Hk.
 rewrite A_additive in Hk.
 rewrite Q.NQfrac_add_cond in Hk; [ | easy | easy ].
-rewrite (Q.NQfrac_small (A _ _ u)) in Hk; [ | easy ].
+rewrite (Q.frac_small (A _ _ u)) in Hk; [ | easy ].
 rewrite NQfrac_P_M in Hk.
 destruct (Q.NQlt_le_dec (A i nk u + A i nk (P v)) 1) as [H1| H1]. {
   exfalso; rewrite Q.NQsub_0_r in Hk.
@@ -3100,10 +3100,10 @@ specialize (Hiuv k) as H2; rewrite <- Hnk in H2.
 do 2 rewrite A_additive in H2.
 rewrite Q.NQintg_add_cond in H2; [ | easy | easy ].
 rewrite Q.NQintg_add_cond in H2; [ | easy | easy ].
-rewrite (Q.NQintg_small (A _ _ u)) in H2; [ | easy ].
-rewrite (Q.NQintg_small (A _ _ u)) in H2; [ | easy ].
-rewrite (Q.NQfrac_small (A _ _ u)) in H2; [ | easy ].
-rewrite (Q.NQfrac_small (A _ _ u)) in H2; [ | easy ].
+rewrite (Q.intg_small (A _ _ u)) in H2; [ | easy ].
+rewrite (Q.intg_small (A _ _ u)) in H2; [ | easy ].
+rewrite (Q.frac_small (A _ _ u)) in H2; [ | easy ].
+rewrite (Q.frac_small (A _ _ u)) in H2; [ | easy ].
 do 2 rewrite Nat.add_0_l in H2.
 apply Q.NQnle_gt in Huv.
 destruct (Q.NQlt_le_dec (A i n u + Q.NQfrac (A i n v)) 1) as [H3| ]; [ | easy ].
@@ -3112,10 +3112,10 @@ specialize (Hiuv j) as H3; rewrite <- Hnj in H3.
 do 2 rewrite A_additive in H3.
 rewrite Q.NQintg_add_cond in H3; [ | easy | easy ].
 rewrite Q.NQintg_add_cond in H3; [ | easy | easy ].
-rewrite (Q.NQintg_small (A _ _ u)) in H3; [ | easy ].
-rewrite (Q.NQintg_small (A _ _ u)) in H3; [ | easy ].
-rewrite (Q.NQfrac_small (A _ _ u)) in H3; [ | easy ].
-rewrite (Q.NQfrac_small (A _ _ u)) in H3; [ | easy ].
+rewrite (Q.intg_small (A _ _ u)) in H3; [ | easy ].
+rewrite (Q.intg_small (A _ _ u)) in H3; [ | easy ].
+rewrite (Q.frac_small (A _ _ u)) in H3; [ | easy ].
+rewrite (Q.frac_small (A _ _ u)) in H3; [ | easy ].
 do 2 rewrite Nat.add_0_l in H3.
 apply Q.NQnle_gt in Huv.
 destruct (Q.NQlt_le_dec (A i n u + Q.NQfrac (A i n v)) 1) as [H4| ]; [ | easy ].
@@ -3132,9 +3132,9 @@ destruct (Q.NQlt_le_dec (A i nk u + Q.NQfrac (A i nk v)) 1) as [H5| H5].
 -rewrite Nat.add_0_r in H2; move H5 before H4.
  destruct (zerop (Q.NQintg (A i n v))) as [Hzn| Hzn]. {
    rewrite Hzn in H2, H3; clear Ha0.
-   rewrite Q.NQfrac_small in H4; [ | split; [ easy | now apply Q.eq_NQintg_0 ] ].
-   rewrite Q.NQfrac_small in H5; [ | split; [ easy | now apply Q.eq_NQintg_0 ] ].
-   rewrite Q.NQfrac_small in Huv; [ | split; [ easy | now apply Q.eq_NQintg_0 ] ].
+   rewrite Q.frac_small in H4; [ | split; [ easy | now apply Q.eq_NQintg_0 ] ].
+   rewrite Q.frac_small in H5; [ | split; [ easy | now apply Q.eq_NQintg_0 ] ].
+   rewrite Q.frac_small in Huv; [ | split; [ easy | now apply Q.eq_NQintg_0 ] ].
    assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
      intros p.
      unfold "⊕"; replace 3 with (1 + 2) by easy.
@@ -3213,7 +3213,7 @@ unfold carry in Hx.
 specialize (Huv33 0) as H6.
 rewrite Nat.add_0_r in H6.
 ...
-rewrite Q.NQintg_small in Hx; [ easy | ].
+rewrite Q.intg_small in Hx; [ easy | ].
 split; [ now apply Q.NQle_0_mul_r | ].
 apply (Q.NQmul_lt_mono_pos_r 2%Q); [ easy | ].
 rewrite <- Q.NQmul_assoc.
@@ -3387,16 +3387,16 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
     apply A_upper_bound_for_dig; intros p Hp.
     apply P_le.
   }
-  rewrite Q.NQfrac_small; [ | easy ].
-  rewrite (Q.NQfrac_small (A _ _ (P _))); [ | easy ].
-  rewrite (Q.NQintg_small (A _ _ (P _))); [ | easy ].
+  rewrite Q.frac_small; [ | easy ].
+  rewrite (Q.frac_small (A _ _ (P _))); [ | easy ].
+  rewrite (Q.intg_small (A _ _ (P _))); [ | easy ].
   rewrite Nat.add_0_l.
   rewrite Q.NQintg_add_cond; [ symmetry | easy | easy ].
   rewrite Q.NQintg_add_cond; [ symmetry | easy | easy ].
   rewrite Q.NQintg_NQfrac, Q.NQfrac_idemp; [ | easy ].
-  rewrite (Q.NQintg_small (A _ _ (P _))); [ | easy ].
-  rewrite (Q.NQfrac_small (A _ _ (P _))); [ | easy ].
-  rewrite Q.NQfrac_small; [ | easy ].
+  rewrite (Q.intg_small (A _ _ (P _))); [ | easy ].
+  rewrite (Q.frac_small (A _ _ (P _))); [ | easy ].
+  rewrite Q.frac_small; [ | easy ].
   rewrite Nat.add_0_r.
   f_equal; f_equal.
   destruct (Q.NQlt_le_dec (A i nuv u + Q.NQfrac (A i nuv v)) 1) as [H1| H1].
@@ -3411,7 +3411,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
    specialize (H2 H H3); clear H.
    destruct H2 as [H2| [H2| H2]].
   ++rewrite (A_all_9 v) in H1; [ | intros; apply H2 ].
-    rewrite Q.NQfrac_small in H1; [ easy | ].
+    rewrite Q.frac_small in H1; [ easy | ].
     split; [ | now apply Q.NQsub_lt ].
     apply Q.NQle_0_sub, Q.NQle_pair_mono_l.
     split; [ pauto | now apply Nat_pow_ge_1 ].
@@ -3455,7 +3455,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      apply Q.NQnlt_ge in H6; apply H6; clear H6.
      rewrite <- Hnv, Nat.pow_1_r, A_additive.
      rewrite Q.NQfrac_add_cond; [ | easy | easy ].
-     rewrite Q.NQfrac_small; [ | easy ].
+     rewrite Q.frac_small; [ | easy ].
      rewrite Q.NQfrac_less_small. 2: {
        rewrite A_all_18, <- Hs; [ | easy ].
        split; [ | now apply Q.NQsub_lt ].
@@ -3532,12 +3532,12 @@ assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
 }
 specialize (H1 H); specialize (H2 H); clear H.
 do 2 rewrite Q.NQintg_add_frac.
-rewrite (Q.NQfrac_small (A i nup u)). 2: {
+rewrite (Q.frac_small (A i nup u)). 2: {
   split; [ easy | ].
   apply A_upper_bound_for_dig.
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
 }
-rewrite (Q.NQfrac_small (A i nuv u)). 2: {
+rewrite (Q.frac_small (A i nuv u)). 2: {
   split; [ easy | ].
   apply A_upper_bound_for_dig.
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
@@ -3560,7 +3560,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
  symmetry in Hm.
  destruct m.
  +clear H2.
-  rewrite Q.NQfrac_small. 2: {
+  rewrite Q.frac_small. 2: {
     split; [ easy | ].
     now apply Q.eq_NQintg_0 in Hm.
   }

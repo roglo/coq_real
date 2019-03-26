@@ -2097,7 +2097,7 @@ rewrite (NQintg_frac x) at 2; [ | easy ].
 now rewrite NQadd_sub.
 Qed.
 
-Theorem NQfrac_small : ∀ x, (0 ≤ x < 1)%Q → NQfrac x = x.
+Theorem frac_small : ∀ x, (0 ≤ x < 1)%Q → NQfrac x = x.
 Proof.
 intros * Hx.
 destruct x as [| px| px]; [ easy | | easy ].
@@ -2117,7 +2117,7 @@ destruct dx; [ now apply GQden_neq_0 in Hdx | ].
 now rewrite (GQnum_den px), Hnx, Hdx.
 Qed.
 
-Theorem NQfrac_less_small : ∀ n x,
+Theorem frac_less_small : ∀ n x,
   (n // 1 ≤ x < n // 1 + 1)%Q → NQfrac x = (x - n // 1)%Q.
 Proof.
 intros * Hx.
@@ -2129,7 +2129,7 @@ destruct x as [| px| px].
  apply Nat.mul_le_mono_pos_l in H; [ | pauto ].
  now apply Nat.le_0_r in H; subst n.
 -cbn in Hx; destruct Hx as (H1, H2).
- destruct n; [ now apply NQfrac_small | ].
+ destruct n; [ now apply frac_small | ].
  rewrite (GQnum_den px) in H1, H2; cbn in H1, H2.
  apply GQpair_le_nat_l in H1; [ | easy | easy | easy ].
  rewrite <- GQpair_add_l in H2; [ | easy | easy | easy ].
@@ -2233,7 +2233,7 @@ cbn; rewrite Nat.mul_comm.
 apply Nat.mul_le_mono_l, Nat.mod_le, GQden_neq_0.
 Qed.
 
-Theorem NQintg_small : ∀ x, (0 ≤ x < 1)%Q → NQintg x = 0.
+Theorem intg_small : ∀ x, (0 ≤ x < 1)%Q → NQintg x = 0.
 Proof.
 intros * (Hx1, Hx2).
 destruct x as [| xp| xp]; [ easy | | easy ].
@@ -2245,13 +2245,13 @@ unfold PQ.PQlt, PQ.nd in Hx2; cbn in Hx2.
 now rewrite Nat.mul_1_r, Nat.add_0_r in Hx2.
 Qed.
 
-Theorem NQintg_less_small : ∀ n x,
+Theorem intg_less_small : ∀ n x,
   (n // 1 ≤ x < n // 1 + 1)%Q → NQintg x = n.
 Proof.
 intros * Hx.
 apply (NQpair_eq_r _ _ 1).
 rewrite NQintg_of_frac.
--rewrite (NQfrac_less_small n); [ | easy ].
+-rewrite (frac_less_small n); [ | easy ].
  now rewrite NQsub_sub_distr, NQsub_diag.
 -eapply NQle_trans; [ | apply Hx ].
  replace 0%Q with (0 // 1)%Q by easy.
@@ -2272,7 +2272,7 @@ Qed.
 Theorem NQintg_NQfrac : ∀ x, NQintg (NQfrac x) = 0.
 Proof.
 intros.
-apply NQintg_small.
+apply intg_small.
 split; [ easy | apply NQfrac_lt_1 ].
 Qed.
 
