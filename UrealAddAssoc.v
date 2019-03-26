@@ -1779,8 +1779,65 @@ assert
 }
 replace (i + S j + 2) with (i + j + 3) in Huvj by flia.
 destruct (zerop j) as [Hj| Hj]. {
-  (* en principe fait ci-dessous plus loin *)
-  ...
+  subst j.
+  specialize (Huvbef 0 Nat.lt_0_1) as Huv2.
+  rewrite Nat.add_0_r in H1, Huvj, Huv2.
+  rename Huvj into Huv3; clear Huvbef.
+  move Huv2 before Huv1; move Huv3 before Huv2.
+  unfold "⊕" in Huv1; apply Nat.eq_add_0 in Huv1.
+  destruct Huv1 as (Hu1, Hv1).
+  rewrite A_split_first; [ | min_n_ge ].
+  replace (S i) with (i + 1) by flia.
+  unfold "⊕" at 1; rewrite Hu1, Nat.add_0_l, Hr2.
+  apply Q.lt_add_lt_sub_l.
+  apply (Q.lt_le_trans _ (1 * 1 // 2)%Q). 2: {
+    rewrite Q.mul_1_l.
+    remember (P v (i + 1)) as p1 eqn:Hp1.
+    destruct p1; [ rewrite Q.sub_0_r; apply Q.le_pair_mono_l; flia | ].
+    destruct p1; [ apply Q.le_refl | ].
+    specialize (P_le v (i + 1)) as H2.
+    flia Hr2 Hp1 H2.
+  }
+  apply Q.mul_lt_mono_pos_r; [ easy | ].
+  unfold "⊕" in Huv2.
+  remember (u (i + 2)) as u2 eqn:Hu2; symmetry in Hu2.
+  destruct u2. {
+    rewrite Nat.add_0_l in Huv2.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 1)) with (i + 2) by flia.
+    unfold "⊕" at 1; rewrite Hu2, Nat.add_0_l.
+    unfold "⊕" in Huv3; apply Nat.eq_add_1 in Huv3.
+    destruct Huv3 as [(Hu3, Hv3)| (Hu3, Hv3)]. {
+      replace (P v (i + 2)) with 0. 2: {
+        symmetry; unfold P, d2n, prop_carr, dig.
+        rewrite Huv2, Hr2, Nat_mod_add_same_l; [ | easy ].
+...
+    apply Q.lt_add_lt_sub_l.
+    apply (Q.lt_le_trans _ (1 * 1 // 2)%Q). 2: {
+      rewrite Q.mul_1_l, Hr2.
+      remember (P v (i + 2)) as p1 eqn:Hp1.
+      destruct p1; [ rewrite Q.sub_0_r; apply Q.le_pair_mono_l; flia | ].
+      destruct p1; [ apply Q.le_refl | ].
+      specialize (P_le v (i + 2)) as H2.
+      flia Hr2 Hp1 H2.
+    }
+    remember (u (i + 2)) as u2 eqn:Hu2; symmetry in Hu2.
+...
+    apply Q.lt_add_lt_sub_l.
+    apply (Q.lt_le_trans _ (1 * 1 // 2)%Q). 2: {
+      rewrite Q.mul_1_l.
+      remember (P v (i + 2)) as p1 eqn:Hp1.
+      destruct p1; [ rewrite Q.sub_0_r; apply Q.le_pair_mono_l; flia | ].
+      destruct p1; [ apply Q.le_refl | ].
+      specialize (P_le v (i + 2)) as H2.
+      flia Hr2 Hp1 H2.
+    }
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
+...
+
+  unfold "⊕" at 1; unfold "⊕" in Huv2.
+  remember (u (i + 2)) as u2 eqn:Hu2; symmetry in Hu2.
+...
 }
 set (u' := λ k, if le_dec k (i + j) then u k else u (k + 1)).
 set (v' := λ k, if le_dec k (i + j) then v k else v (k + 1)).
