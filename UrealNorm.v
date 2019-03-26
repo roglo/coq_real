@@ -116,17 +116,17 @@ Qed.
 
 Theorem NQintg_2_sub_2_ov_pow {r : radix} : ∀ s1,
   2 ≤ rad ^ s1
-  → NQintg (2 - (2 // rad ^ s1))%NQ = 1.
+  → Q.NQintg (2 - (2 // rad ^ s1))%Q = 1.
 Proof.
 intros * Hs12.
-unfold NQintg.
+unfold Q.NQintg.
 apply Nat_div_less_small.
-rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
+rewrite Q.NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
   rewrite Nat.mul_comm; apply Nat.mul_le_mono_l.
   now apply Nat_pow_ge_1.
 }
 do 2 rewrite Nat.mul_1_l.
-rewrite NQden_pair, NQnum_pair.
+rewrite Q.den_pair, Q.num_pair.
 rewrite Nat.max_r; cycle 1. {
   apply Nat.nlt_ge; intros H.
   apply Nat.lt_1_r in H.
@@ -171,7 +171,7 @@ Qed.
 Theorem not_prop_carr_all_9_all_ge_1 {r : radix} : ∀ u i,
   (∀ k : nat, u (i + k + 1) ≤ 2 * (rad - 1))
   → (∀ k : nat, fA_ge_1_ε u i k = true)
-  → (u i + NQintg (A i (rad * (i + 3)) u) + 1) mod rad = rad - 1
+  → (u i + Q.NQintg (A i (rad * (i + 3)) u) + 1) mod rad = rad - 1
   → ¬ (∀ k, d2n (prop_carr u) (i + k) = rad - 1).
 Proof.
 intros *.
@@ -179,14 +179,14 @@ specialize radix_ge_2 as Hr.
 intros Hur H2 H1 Hi.
 specialize (A_ge_1_add_all_true_if _ _ Hur H2) as H3.
 destruct H3 as [H3| [H3| H3]].
--unfold NQintg in H1.
+-unfold Q.NQintg in H1.
  rewrite Nat.div_small in H1.
  +rewrite Nat.add_0_r in H1.
   specialize (Hi 1) as H4.
   unfold prop_carr, d2n in H4; simpl in H4.
   unfold carry in H4.
   destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H5| H5].
-  *unfold NQintg in H4.
+  *unfold Q.NQintg in H4.
    rewrite Nat.div_small in H4.
    --rewrite Nat.add_0_l in H4.
      specialize (H3 0); rewrite Nat.add_0_r in H3.
@@ -209,13 +209,13 @@ destruct H3 as [H3| [H3| H3]].
      remember (n - (i + 1) - 1) as s eqn:Hs.
      move s before n.
      remember (A (i + 1) n u) as x eqn:Hx in H6.
-     rewrite NQnum_den in Hx; [ | apply A_ge_0 ].
+     rewrite Q.NQnum_den in Hx; [ | apply A_ge_0 ].
      rewrite Hx in H6.
-     rewrite NQsub_pair_pos in H6; [ | easy | pauto | ]; cycle 1. {
+     rewrite Q.NQsub_pair_pos in H6; [ | easy | pauto | ]; cycle 1. {
        now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
      }
      do 2 rewrite Nat.mul_1_l in H6.
-     apply NQle_pair in H6; [ | easy | pauto ].
+     apply Q.NQle_pair in H6; [ | easy | pauto ].
      apply (Nat.mul_lt_mono_pos_r (rad ^ s)); [ apply Nat.neq_0_lt_0; pauto | ].
      eapply le_lt_trans; [ apply H6 | ].
      rewrite Nat.mul_sub_distr_l.
@@ -223,10 +223,10 @@ destruct H3 as [H3| [H3| H3]].
      now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
   *destruct H5 as (j & Hjj & Hj); clear H4.
    apply A_ge_1_false_iff in Hj.
-   apply NQnle_gt in Hj; apply Hj; clear Hj.
-   unfold NQfrac.
+   apply Q.NQnle_gt in Hj; apply Hj; clear Hj.
+   unfold Q.NQfrac.
    rewrite Nat.mod_small.
-   --rewrite <- NQnum_den; [ | apply A_ge_0 ].
+   --rewrite <- Q.NQnum_den; [ | apply A_ge_0 ].
      apply A_ge_999000.
      intros k.
      replace (i + 1 + k + 1) with (i + (1 + k) + 1) by flia.
@@ -245,23 +245,23 @@ destruct H3 as [H3| [H3| H3]].
      }
      specialize (H4 H); clear H.
      remember (A (i + 1) (min_n (i + 1) j) u) as x eqn:Hx.
-     replace x with (NQnum x // NQden x)%NQ in H4; cycle 1. {
-       rewrite NQnum_den; [ easy | rewrite Hx; apply A_ge_0 ].
+     replace x with (Q.NQnum x // Q.NQden x)%Q in H4; cycle 1. {
+       rewrite Q.NQnum_den; [ easy | rewrite Hx; apply A_ge_0 ].
      }
-     apply (NQmul_le_mono_pos_r (NQden x // 1)%NQ) in H4; cycle 1. {
-       replace 0%NQ with (0 // 1)%NQ by easy.
-       apply NQlt_pair; [ easy | pauto | cbn ].
+     apply (Q.NQmul_le_mono_pos_r (Q.NQden x // 1)%Q) in H4; cycle 1. {
+       replace 0%Q with (0 // 1)%Q by easy.
+       apply Q.NQlt_pair; [ easy | pauto | cbn ].
        now rewrite Nat.add_0_r; apply Nat.neq_0_lt_0.
      }
-     rewrite NQmul_pair_den_num in H4; [ | easy ].
-     rewrite NQsub_pair_pos in H4; [ | easy | pauto | ]; cycle 1. {
+     rewrite Q.NQmul_pair_den_num in H4; [ | easy ].
+     rewrite Q.NQsub_pair_pos in H4; [ | easy | pauto | ]; cycle 1. {
        do 2 rewrite Nat.mul_1_l.
        now apply Nat_pow_ge_1.
      }
      do 2 rewrite Nat.mul_1_l in H4.
-     rewrite NQmul_pair in H4; [ | pauto | easy ].
+     rewrite Q.NQmul_pair in H4; [ | pauto | easy ].
      rewrite Nat.mul_1_r in H4.
-     apply NQle_pair in H4; [ | easy | pauto ].
+     apply Q.NQle_pair in H4; [ | easy | pauto ].
      rewrite Nat.mul_1_l, Nat.mul_comm in H4.
      rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in H4.
      remember (min_n (i + 1) j - (i + 1) - 1) as n eqn:Hn.
@@ -270,7 +270,7 @@ destruct H3 as [H3| [H3| H3]].
      }
      eapply le_lt_trans; [ apply H4 | ].
      apply Nat.sub_lt; [ | apply Nat.neq_0_lt_0; pauto ].
-     replace (NQden x) with (1 * NQden x) at 1 by flia.
+     replace (Q.NQden x) with (1 * Q.NQden x) at 1 by flia.
      now apply Nat.mul_le_mono_r, Nat_pow_ge_1.
  +specialize (A_dig_seq_ub u (rad * (i + 3)) i) as H4.
   assert (H : ∀ j, i < j < rad * (i + 3) → u j < rad). {
@@ -285,27 +285,27 @@ destruct H3 as [H3| [H3| H3]].
   }
   specialize (H4 H); clear H.
   remember (A i (rad * (i + 3)) u) as x eqn:Hx.
-  replace x with (NQnum x // NQden x)%NQ in H4; cycle 1. {
-    symmetry; apply NQnum_den.
+  replace x with (Q.NQnum x // Q.NQden x)%Q in H4; cycle 1. {
+    symmetry; apply Q.NQnum_den.
     rewrite Hx; apply A_ge_0.
   }
-  apply (NQmul_le_mono_pos_r (NQden x // 1)%NQ) in H4; cycle 1. {
-    replace 0%NQ with (0 // 1)%NQ by easy.
-    apply NQlt_pair; [ easy | easy | ].
+  apply (Q.NQmul_le_mono_pos_r (Q.NQden x // 1)%Q) in H4; cycle 1. {
+    replace 0%Q with (0 // 1)%Q by easy.
+    apply Q.NQlt_pair; [ easy | easy | ].
     rewrite Nat.mul_1_l; cbn.
     now apply Nat.neq_0_lt_0.
   }
-  rewrite NQmul_pair_den_num in H4; [ | easy ].
-  enough (H : (NQnum x // 1 < NQden x // 1)%NQ). {
-    apply NQlt_pair in H; [ | easy | easy ].
+  rewrite Q.NQmul_pair_den_num in H4; [ | easy ].
+  enough (H : (Q.NQnum x // 1 < Q.NQden x // 1)%Q). {
+    apply Q.NQlt_pair in H; [ | easy | easy ].
     now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
   }
-  eapply NQle_lt_trans; [ apply H4 | ].
-  rewrite NQmul_sub_distr_r, NQmul_1_l.
-  apply NQsub_lt.
-  rewrite NQmul_comm, NQmul_pair_den_num; [ | easy ].
-  replace 0%NQ with (0 // 1)%NQ by easy.
-  apply NQlt_pair; [ easy | | ].
+  eapply Q.NQle_lt_trans; [ apply H4 | ].
+  rewrite Q.NQmul_sub_distr_r, Q.NQmul_1_l.
+  apply Q.NQsub_lt.
+  rewrite Q.NQmul_comm, Q.NQmul_pair_den_num; [ | easy ].
+  replace 0%Q with (0 // 1)%Q by easy.
+  apply Q.NQlt_pair; [ easy | | ].
   *now apply Nat.neq_0_lt_0, Nat_pow_ge_1.
   *rewrite Nat.mul_0_l, Nat.mul_1_l.
    now apply Nat.neq_0_lt_0.
@@ -331,7 +331,7 @@ destruct H3 as [H3| [H3| H3]].
    remember (min_n (i + 1) 0) as n1 eqn:Hn1.
    remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
    move s1 before n1.
-   rewrite NQintg_2_sub_2_ov_pow in H4; cycle 1. {
+   rewrite Q.NQintg_2_sub_2_ov_pow in H4; cycle 1. {
      destruct s1.
      -rewrite Hn1 in Hs1; unfold min_n in Hs1.
       destruct rad; [ easy | cbn in Hs1; flia Hs1 ].
@@ -359,18 +359,18 @@ destruct H3 as [H3| [H3| H3]].
      apply Nat.mul_le_mono; [ easy | ].
      now apply Nat_pow_ge_1.
   }
-  apply NQnle_gt in Hj; apply Hj; clear Hj.
-  rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
+  apply Q.NQnle_gt in Hj; apply Hj; clear Hj.
+  rewrite Q.NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
     now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
   }
   do 2 rewrite Nat.mul_1_l.
-  rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
+  rewrite Q.NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
     rewrite Nat.mul_comm; apply Nat.mul_le_mono_l.
     now apply Nat_pow_ge_1.
   }
   do 2 rewrite Nat.mul_1_l.
-  rewrite NQfrac_pair.
-  apply NQle_pair; [ pauto | pauto | ].
+  rewrite Q.NQfrac_pair.
+  apply Q.NQle_pair; [ pauto | pauto | ].
   rewrite Nat_mod_less_small; [ | flia Hs12 ].
   rewrite Nat_sub_sub_swap.
   replace (2 * rad ^ s1 - rad ^ s1) with (rad ^ s1) by flia.
@@ -401,7 +401,7 @@ destruct H3 as [H3| [H3| H3]].
   }
   remember (rad * (i + j + 1 + 3)) as n1 eqn:Hn1.
   remember (n1 - (i + j + 1) - 1) as s1 eqn:Hs1.
-  rewrite NQintg_2_sub_2_ov_pow in H3; cycle 1. {
+  rewrite Q.NQintg_2_sub_2_ov_pow in H3; cycle 1. {
     destruct s1.
     -rewrite Hn1 in Hs1; unfold min_n in Hs1.
      destruct rad; [ easy | cbn in Hs1; flia Hs1 ].
