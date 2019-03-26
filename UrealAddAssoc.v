@@ -1911,27 +1911,12 @@ destruct (zerop j) as [Hj| Hj]. {
     now apply Q.sub_lt.
   }
   destruct u2. {
+...
     replace (P v (i + 2)) with 0. 2: {
       symmetry; unfold P, d2n, prop_carr, dig.
       replace (v (i + 2)) with 1 by flia Huv2.
       replace (carry v (i + 2)) with 1; [ now rewrite Hr2 | ].
       symmetry; unfold carry.
-...
-      apply Q.intg_small; split; [ easy | ].
-      rewrite A_split_first; [ | min_n_ge ].
-      replace (S (i + 2)) with (i + 3) by easy.
-      rewrite Hv3, Q.add_0_l.
-        apply (Q.mul_lt_mono_pos_r (2 // 1)%Q); [ easy | ].
-        rewrite <- Q.mul_assoc.
-        rewrite Q.mul_pair; [ | easy | easy ].
-        rewrite Hr2, Q.pair_diag; [ | easy ].
-        rewrite Q.mul_1_r, Q.mul_1_l.
-        eapply Q.le_lt_trans. {
-          apply (A_upper_bound_for_adds 2); rewrite Hr2.
-          intros; do 2 rewrite <- Nat.add_assoc; easy.
-        }
-        rewrite Q.mul_sub_distr_l, Q.mul_1_r.
-        now apply Q.sub_lt.
 ...
 }
 set (u' := λ k, if le_dec k (i + j) then u k else u (k + 1)).
