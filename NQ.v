@@ -107,7 +107,7 @@ destruct x as [| px| px], y as [| py| py]; try now right.
 Qed.
 Arguments NQeq_dec x%Q y%Q.
 
-Theorem NQlt_le_dec : ∀ x y : ty, {(x < y)%Q} + {(y ≤ x)%Q}.
+Theorem lt_le_dec : ∀ x y : ty, {(x < y)%Q} + {(y ≤ x)%Q}.
 Proof.
 intros.
 destruct x as [| px| px].
@@ -117,7 +117,7 @@ destruct x as [| px| px].
 -destruct y as [| py| py]; [ now left | now left | ].
  apply GQlt_le_dec.
 Qed.
-Arguments NQlt_le_dec x%Q y%Q.
+Arguments lt_le_dec x%Q y%Q.
 
 Theorem NQle_lt_dec : ∀ x y : ty, {(x ≤ y)%Q} + {(y < x)%Q}.
 Proof.
@@ -130,7 +130,7 @@ destruct x as [| px| px].
 Qed.
 Arguments NQle_lt_dec x%Q y%Q.
 
-Theorem NQle_refl : ∀ x, (x ≤ x)%Q.
+Theorem le_refl : ∀ x, (x ≤ x)%Q.
 Proof.
 intros.
 destruct x as [| px| px]; [ easy | apply GQle_refl | apply GQle_refl ].
@@ -260,7 +260,7 @@ Theorem NQmatch_opp_comp : ∀ c eq lt gt,
    - match c with Eq => - eq | Lt => - lt | Gt => - gt end)%Q.
 Proof. now intros; destruct c; rewrite NQopp_involutive. Qed.
 
-Theorem NQadd_comm : ∀ x y, (x + y = y + x)%Q.
+Theorem add_comm : ∀ x y, (x + y = y + x)%Q.
 Proof.
 intros.
 unfold "+".
@@ -271,11 +271,11 @@ destruct x as [| px| px], y as [| py| py]; try easy; simpl.
 -f_equal; apply GQadd_comm.
 Qed.
 
-Theorem NQadd_0_l : ∀ x, (0 + x = x)%Q.
+Theorem add_0_l : ∀ x, (0 + x = x)%Q.
 Proof. easy. Qed.
 
-Theorem NQadd_0_r : ∀ x, (x + 0 = x)%Q.
-Proof. intros; now rewrite NQadd_comm. Qed.
+Theorem add_0_r : ∀ x, (x + 0 = x)%Q.
+Proof. intros; now rewrite add_comm. Qed.
 
 Theorem NQsub_0_l : ∀ x, (0 - x = - x)%Q.
 Proof. easy. Qed.
@@ -537,19 +537,19 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -now rewrite GQadd_add_swap.
 Qed.
 
-Theorem NQadd_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%Q.
+Theorem add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%Q.
 Proof.
 intros.
 symmetry.
-rewrite NQadd_comm.
+rewrite add_comm.
 remember (x + y)%Q as t eqn:Ht.
-rewrite NQadd_comm in Ht; rewrite Ht.
-setoid_rewrite NQadd_comm.
+rewrite add_comm in Ht; rewrite Ht.
+setoid_rewrite add_comm.
 apply NQadd_add_swap.
 Qed.
 
 Theorem NQadd_sub_assoc : ∀ x y z, (x + (y - z) = (x + y) - z)%Q.
-Proof. intros; apply NQadd_assoc. Qed.
+Proof. intros; apply add_assoc. Qed.
 
 Theorem NQadd_sub_swap : ∀ x y z, (x + y - z)%Q = (x - z + y)%Q.
 Proof.
@@ -574,7 +574,7 @@ destruct x as [| px| px]; [ easy | | ]; simpl.
 Qed.
 
 Theorem NQadd_opp_l : ∀ x y, (- x + y)%Q = (y - x)%Q.
-Proof. intros; apply NQadd_comm. Qed.
+Proof. intros; apply add_comm. Qed.
 
 Theorem NQadd_opp_r : ∀ x y, (x + - y)%Q = (x - y)%Q.
 Proof. easy. Qed.
@@ -583,16 +583,16 @@ Theorem NQsub_add : ∀ a b, (a - b + b)%Q = a.
 Proof.
 intros.
 unfold sub.
-rewrite NQadd_add_swap, <- NQadd_assoc.
-now rewrite NQadd_opp_r, NQsub_diag, NQadd_0_r.
+rewrite NQadd_add_swap, <- add_assoc.
+now rewrite NQadd_opp_r, NQsub_diag, add_0_r.
 Qed.
 
 Theorem NQadd_sub : ∀ a b, (a + b - b)%Q = a.
 Proof.
 intros.
 unfold sub.
-rewrite <- NQadd_assoc.
-now rewrite NQadd_opp_r, NQsub_diag, NQadd_0_r.
+rewrite <- add_assoc.
+now rewrite NQadd_opp_r, NQsub_diag, add_0_r.
 Qed.
 
 Theorem NQlt_trans: ∀ x y z, (x < y)%Q → (y < z)%Q → (x < z)%Q.
@@ -615,7 +615,7 @@ destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
 Qed.
 Arguments NQle_trans x%Q y%Q z%Q.
 
-Theorem NQle_lt_trans: ∀ x y z, (x ≤ y)%Q → (y < z)%Q → (x < z)%Q.
+Theorem le_lt_trans: ∀ x y z, (x ≤ y)%Q → (y < z)%Q → (x < z)%Q.
 Proof.
 intros * Hxy Hyz.
 unfold "≤"%Q, "<"%Q in *.
@@ -623,9 +623,9 @@ destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
 -eapply GQle_lt_trans; [ apply Hxy | apply Hyz ].
 -eapply GQlt_le_trans; [ apply Hyz | apply Hxy ].
 Qed.
-Arguments NQle_lt_trans x%Q y%Q z%Q.
+Arguments le_lt_trans x%Q y%Q z%Q.
 
-Theorem NQlt_le_trans: ∀ x y z, (x < y)%Q → (y ≤ z)%Q → (x < z)%Q.
+Theorem lt_le_trans: ∀ x y z, (x < y)%Q → (y ≤ z)%Q → (x < z)%Q.
 Proof.
 intros * Hxy Hyz.
 unfold "≤"%Q, "<"%Q in *.
@@ -633,12 +633,12 @@ destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
 -eapply GQlt_le_trans; [ apply Hxy | apply Hyz ].
 -eapply GQle_lt_trans; [ apply Hyz | apply Hxy ].
 Qed.
-Arguments NQlt_le_trans x%Q y%Q z%Q.
+Arguments lt_le_trans x%Q y%Q z%Q.
 
-Theorem NQle_add_l : ∀ x y, (0 ≤ y)%Q → (x ≤ y + x)%Q.
+Theorem le_add_l : ∀ x y, (0 ≤ y)%Q → (x ≤ y + x)%Q.
 Proof.
 intros * Hy.
-destruct y as [| py| py]; [ apply NQle_refl | | easy ].
+destruct y as [| py| py]; [ apply le_refl | | easy ].
 simpl; unfold NQadd_pos_l.
 destruct x as [| px| px]; [ easy | apply GQle_add_l | simpl ].
 remember (GQcompare py px) as b eqn:Hb; symmetry in Hb.
@@ -647,10 +647,10 @@ apply GQlt_le_incl.
 now apply GQsub_lt.
 Qed.
 
-Theorem NQle_add_r : ∀ x y, (0 ≤ y)%Q → (x ≤ x + y)%Q.
+Theorem le_add_r : ∀ x y, (0 ≤ y)%Q → (x ≤ x + y)%Q.
 Proof.
 intros.
-now rewrite NQadd_comm; apply NQle_add_l.
+now rewrite add_comm; apply le_add_l.
 Qed.
 
 Theorem NQadd_lt_mono_l : ∀ x y z, (y < z)%Q ↔ (x + y < x + z)%Q.
@@ -798,12 +798,12 @@ Arguments NQadd_lt_mono_l x%Q y%Q z%Q.
 Theorem NQadd_lt_mono_r : ∀ x y z, (x < y)%Q ↔ (x + z < y + z)%Q.
 Proof.
 intros *.
-setoid_rewrite NQadd_comm.
+setoid_rewrite add_comm.
 apply NQadd_lt_mono_l.
 Qed.
 Arguments NQadd_lt_mono_r x%Q y%Q z%Q.
 
-Theorem NQlt_le_incl : ∀ x y, (x < y)%Q → (x ≤ y)%Q.
+Theorem lt_le_incl : ∀ x y, (x < y)%Q → (x ≤ y)%Q.
 Proof.
 intros * Hxy.
 destruct x as [| xp| xp], y as [| yp| yp]; try easy.
@@ -818,17 +818,17 @@ intros * Hxy Hzt.
 destruct (NQeq_dec x y) as [H1| H1].
 -subst x.
  destruct (NQeq_dec z t) as [H2| H2].
- +subst z; apply NQle_refl.
- +apply NQlt_le_incl, NQadd_lt_mono_l, NQnle_gt.
+ +subst z; apply le_refl.
+ +apply lt_le_incl, NQadd_lt_mono_l, NQnle_gt.
   now intros H; apply H2, NQle_antisymm.
 -destruct (NQeq_dec z t) as [H2| H2].
  +subst z.
-  apply NQlt_le_incl, NQadd_lt_mono_r, NQnle_gt.
+  apply lt_le_incl, NQadd_lt_mono_r, NQnle_gt.
   now intros H; apply H1, NQle_antisymm.
  +apply (NQle_trans _ (x + t)).
-  *apply NQlt_le_incl, NQadd_lt_mono_l, NQnle_gt.
+  *apply lt_le_incl, NQadd_lt_mono_l, NQnle_gt.
    now intros H; apply H2, NQle_antisymm.
-  *apply NQlt_le_incl, NQadd_lt_mono_r, NQnle_gt.
+  *apply lt_le_incl, NQadd_lt_mono_r, NQnle_gt.
    now intros H; apply H1, NQle_antisymm.
 Qed.
 Arguments NQadd_le_mono x%Q y%Q z%Q t%Q.
@@ -837,10 +837,10 @@ Theorem NQadd_le_mono_l : ∀ x y z, (x ≤ y)%Q ↔ (z + x ≤ z + y)%Q.
 Proof.
 intros.
 split; intros Hxy.
--apply NQadd_le_mono; [ apply NQle_refl | easy ].
--apply (NQadd_le_mono _ _ (- z) (- z)) in Hxy; [ | apply NQle_refl ].
- replace (z + x)%Q with (x + z)%Q in Hxy by apply NQadd_comm.
- replace (z + y)%Q with (y + z)%Q in Hxy by apply NQadd_comm.
+-apply NQadd_le_mono; [ apply le_refl | easy ].
+-apply (NQadd_le_mono _ _ (- z) (- z)) in Hxy; [ | apply le_refl ].
+ replace (z + x)%Q with (x + z)%Q in Hxy by apply add_comm.
+ replace (z + y)%Q with (y + z)%Q in Hxy by apply add_comm.
  now do 2 rewrite NQadd_opp_r, NQadd_sub in Hxy.
 Qed.
 Arguments NQadd_le_mono_l x%Q y%Q z%Q.
@@ -848,7 +848,7 @@ Arguments NQadd_le_mono_l x%Q y%Q z%Q.
 Theorem NQadd_le_mono_r : ∀ x y z, (x ≤ y)%Q ↔ (x + z ≤ y + z)%Q.
 Proof.
 intros.
-setoid_rewrite NQadd_comm.
+setoid_rewrite add_comm.
 apply NQadd_le_mono_l.
 Qed.
 Arguments NQadd_le_mono_r x%Q y%Q z%Q.
@@ -865,9 +865,9 @@ destruct (NQeq_dec x y) as [H1| H1].
  +subst z.
   apply NQadd_lt_mono_r, NQnle_gt.
   now intros H; apply H1, NQle_antisymm.
- +apply (NQle_lt_trans _ (x + t)).
-  *apply NQadd_le_mono; [ apply NQle_refl | ].
-   now apply NQlt_le_incl.
+ +apply (le_lt_trans _ (x + t)).
+  *apply NQadd_le_mono; [ apply le_refl | ].
+   now apply lt_le_incl.
   *apply NQadd_lt_mono_r, NQnle_gt.
    now intros H; apply H1, NQle_antisymm.
 Qed.
@@ -876,7 +876,7 @@ Arguments NQadd_le_lt_mono x%Q y%Q z%Q t%Q.
 Theorem NQadd_lt_le_mono : ∀ x y z t, (x < y → z ≤ t → x + z < y + t)%Q.
 Proof.
 intros * Hxy Hzt.
-setoid_rewrite NQadd_comm.
+setoid_rewrite add_comm.
 now apply NQadd_le_lt_mono.
 Qed.
 Arguments NQadd_lt_le_mono x%Q y%Q z%Q t%Q.
@@ -885,7 +885,7 @@ Theorem NQadd_lt_mono : ∀ x y z t, (x < y → z < t → x + z < y + t)%Q.
 Proof.
 intros.
 apply NQadd_le_lt_mono; [ | easy ].
-now apply NQlt_le_incl.
+now apply lt_le_incl.
 Qed.
 
 Theorem NQle_sub_le_add_l : ∀ x y z, (x - y ≤ z)%Q ↔ (x ≤ y + z)%Q.
@@ -893,18 +893,18 @@ Proof.
 intros.
 split; intros H.
 -apply (NQadd_le_mono_r _ _ y) in H.
- now rewrite NQsub_add, NQadd_comm in H.
+ now rewrite NQsub_add, add_comm in H.
 -apply (NQadd_le_mono_r _ _ y).
- now rewrite NQsub_add, NQadd_comm.
+ now rewrite NQsub_add, add_comm.
 Qed.
 
 Theorem NQle_sub_le_add_r : ∀ x y z, (x - y ≤ z)%Q ↔ (x ≤ z + y)%Q.
 Proof.
 intros.
-rewrite NQadd_comm; apply NQle_sub_le_add_l.
+rewrite add_comm; apply NQle_sub_le_add_l.
 Qed.
 
-Theorem NQle_add_le_sub_l : ∀ x y z, (x + y ≤ z)%Q ↔ (x ≤ z - y)%Q.
+Theorem le_add_le_sub_l : ∀ x y z, (x + y ≤ z)%Q ↔ (x ≤ z - y)%Q.
 Proof.
 intros.
 split; intros H.
@@ -914,10 +914,10 @@ split; intros H.
  now rewrite NQsub_add in H.
 Qed.
 
-Theorem NQle_add_le_sub_r : ∀ x y z, (x + y ≤ z)%Q ↔ (y ≤ z - x)%Q.
+Theorem le_add_le_sub_r : ∀ x y z, (x + y ≤ z)%Q ↔ (y ≤ z - x)%Q.
 Proof.
 intros.
-rewrite NQadd_comm; apply NQle_add_le_sub_l.
+rewrite add_comm; apply le_add_le_sub_l.
 Qed.
 
 Theorem NQlt_sub_lt_add_l : ∀ x y z, (x - y < z)%Q ↔ (x < y + z)%Q.
@@ -925,40 +925,40 @@ Proof.
 intros.
 split; intros H.
 -apply (NQadd_lt_mono_r _ _ y) in H.
- now rewrite NQsub_add, NQadd_comm in H.
+ now rewrite NQsub_add, add_comm in H.
 -apply (NQadd_lt_mono_r _ _ y).
- now rewrite NQsub_add, NQadd_comm.
+ now rewrite NQsub_add, add_comm.
 Qed.
 
 Theorem NQlt_sub_lt_add_r : ∀ x y z, (x - y < z)%Q ↔ (x < z + y)%Q.
 Proof.
 intros.
-rewrite NQadd_comm; apply NQlt_sub_lt_add_l.
+rewrite add_comm; apply NQlt_sub_lt_add_l.
 Qed.
 
-Theorem NQlt_add_lt_sub_l : ∀ x y z, (x + y < z)%Q ↔ (y < z - x)%Q.
+Theorem lt_add_lt_sub_l : ∀ x y z, (x + y < z)%Q ↔ (y < z - x)%Q.
 Proof.
 intros.
 split; intros H.
 -apply (NQadd_lt_mono_r _ _ x).
- now rewrite NQadd_comm, NQsub_add.
+ now rewrite add_comm, NQsub_add.
 -apply (NQadd_lt_mono_r _ _ x) in H.
- now rewrite NQadd_comm, NQsub_add in H.
+ now rewrite add_comm, NQsub_add in H.
 Qed.
 
-Theorem NQlt_add_lt_sub_r : ∀ x y z, (x + y < z)%Q ↔ (x < z - y)%Q.
+Theorem lt_add_lt_sub_r : ∀ x y z, (x + y < z)%Q ↔ (x < z - y)%Q.
 Proof.
 intros.
-rewrite NQadd_comm; apply NQlt_add_lt_sub_l.
+rewrite add_comm; apply lt_add_lt_sub_l.
 Qed.
 
 Theorem NQadd_le_r : ∀ x y z, (x + z ≤ y + z ↔ x ≤ y)%Q.
 Proof.
 intros.
 split; intros H.
--apply (NQadd_le_mono _ _ (- z) (- z)) in H; [ | apply NQle_refl ].
+-apply (NQadd_le_mono _ _ (- z) (- z)) in H; [ | apply le_refl ].
  now do 2 rewrite NQadd_opp_r, NQadd_sub in H.
--apply NQadd_le_mono; [ easy | apply NQle_refl ].
+-apply NQadd_le_mono; [ easy | apply le_refl ].
 Qed.
 Arguments NQadd_le_r x%Q y%Q z%Q.
 
@@ -968,32 +968,32 @@ Proof. intros; now destruct x, y. Qed.
 Theorem NQopp_le_mono : ∀ x y, (x ≤ y)%Q ↔ (- y ≤ - x)%Q.
 Proof. intros; now destruct x, y. Qed.
 
-Theorem NQsub_le_mono : ∀ x y z t,
+Theorem sub_le_mono : ∀ x y z t,
   (x ≤ y)%Q → (z ≤ t)%Q → (x - t ≤ y - z)%Q.
 Proof.
 intros * Hxy Hzt.
 destruct (NQeq_dec x y) as [H1| H1].
 -subst x.
  destruct (NQeq_dec z t) as [H2| H2].
- +subst z; apply NQle_refl.
- +apply NQlt_le_incl, NQadd_lt_mono_l, NQnle_gt.
+ +subst z; apply le_refl.
+ +apply lt_le_incl, NQadd_lt_mono_l, NQnle_gt.
   intros H; apply H2.
   apply NQle_antisymm; [ easy | ].
   now apply NQopp_le_mono.
 -destruct (NQeq_dec z t) as [H2| H2].
  +subst z.
-  apply NQlt_le_incl, NQadd_lt_mono_r, NQnle_gt.
+  apply lt_le_incl, NQadd_lt_mono_r, NQnle_gt.
   now intros H; apply H1, NQle_antisymm.
  +apply (NQle_trans _ (y - t)).
-  *apply NQlt_le_incl, NQadd_lt_mono_r, NQnle_gt.
+  *apply lt_le_incl, NQadd_lt_mono_r, NQnle_gt.
    now intros H; apply H1, NQle_antisymm.
-  *apply NQlt_le_incl, NQadd_lt_mono_l, NQnle_gt.
+  *apply lt_le_incl, NQadd_lt_mono_l, NQnle_gt.
    intros H; apply H2, NQle_antisymm; [ easy | ].
    now apply NQopp_le_mono.
 Qed.
-Arguments NQsub_le_mono x%Q y%Q z%Q t%Q.
+Arguments sub_le_mono x%Q y%Q z%Q t%Q.
 
-Theorem NQsub_lt_mono : ∀ x y z t,
+Theorem sub_lt_mono : ∀ x y z t,
   (x < y)%Q → (z < t)%Q → (x - t < y - z)%Q.
 Proof.
 intros * Hxy Hzt.
@@ -1002,9 +1002,9 @@ apply (NQlt_trans _ (y - t)).
 -apply NQadd_lt_mono_l.
  now apply -> NQopp_lt_mono.
 Qed.
-Arguments NQsub_lt_mono x%Q y%Q z%Q t%Q.
+Arguments sub_lt_mono x%Q y%Q z%Q t%Q.
 
-Theorem NQsub_le_lt_mono : ∀ x y z t,
+Theorem sub_le_lt_mono : ∀ x y z t,
   (x ≤ y)%Q → (z < t)%Q → (x - t < y - z)%Q.
 Proof.
 intros * Hxy Hzt.
@@ -1012,24 +1012,24 @@ destruct (NQeq_dec x y) as [H1| H1].
 -subst x.
  apply NQadd_lt_mono_l.
  now apply -> NQopp_lt_mono.
--apply NQsub_lt_mono; [ | easy ].
+-apply sub_lt_mono; [ | easy ].
  apply NQnle_gt; intros H2; apply H1; clear H1.
  now apply NQle_antisymm.
 Qed.
-Arguments NQsub_le_lt_mono x%Q y%Q z%Q t%Q.
+Arguments sub_le_lt_mono x%Q y%Q z%Q t%Q.
 
-Theorem NQsub_lt_le_mono : ∀ x y z t,
+Theorem sub_lt_le_mono : ∀ x y z t,
   (x < y)%Q → (z ≤ t)%Q → (x - t < y - z)%Q.
 Proof.
 intros * Hxy Hzt.
 destruct (NQeq_dec z t) as [H1| H1].
 -subst z.
  now apply NQadd_lt_mono_r.
--apply NQsub_lt_mono; [ easy | ].
+-apply sub_lt_mono; [ easy | ].
  apply NQnle_gt; intros H2; apply H1; clear H1.
  now apply NQle_antisymm.
 Qed.
-Arguments NQsub_lt_le_mono x%Q y%Q z%Q t%Q.
+Arguments sub_lt_le_mono x%Q y%Q z%Q t%Q.
 
 Theorem NQlt_0_sub : ∀ x y, (0 < y - x)%Q ↔ (x < y)%Q.
 Proof.
@@ -1048,7 +1048,7 @@ destruct x as [| xp| xp].
  +split; [ easy | now apply GQnlt_ge, GQlt_le_incl ].
 Qed.
 
-Theorem NQle_0_sub : ∀ x y, (0 ≤ y - x)%Q ↔ (x ≤ y)%Q.
+Theorem le_0_sub : ∀ x y, (0 ≤ y - x)%Q ↔ (x ≤ y)%Q.
 Proof.
 intros.
 destruct x as [| xp| xp].
@@ -1067,12 +1067,12 @@ destruct x as [| xp| xp].
  +split; [ easy | intros H; now apply GQnlt_ge in H ].
 Qed.
 
-Theorem NQsub_lt : ∀ x y, (0 < x)%Q → (y - x < y)%Q.
+Theorem sub_lt : ∀ x y, (0 < x)%Q → (y - x < y)%Q.
 Proof.
 intros * Hxy.
 apply (NQadd_lt_mono_r _ _ x).
 rewrite NQsub_add.
-replace y with (y + 0)%Q at 1 by apply NQadd_0_r.
+replace y with (y + 0)%Q at 1 by apply add_0_r.
 now apply NQadd_lt_mono_l.
 Qed.
 
@@ -1089,15 +1089,15 @@ Proof.
 intros.
 split; intros Hxy; [ | now subst y ].
 destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
--rewrite NQadd_0_r in Hxy; cbn in Hxy.
+-rewrite add_0_r in Hxy; cbn in Hxy.
  injection Hxy as H; symmetry in H; rewrite GQadd_comm in H.
  now apply GQadd_no_neutral in H.
--rewrite NQadd_0_r in Hxy; cbn in Hxy.
+-rewrite add_0_r in Hxy; cbn in Hxy.
  remember (GQcompare xp zp) as b eqn:Hb; symmetry in Hb.
  destruct b; [ easy | easy | GQcompare_iff ].
  injection Hxy as H; symmetry in H.
  now apply GQsub_no_neutral in H.
--rewrite NQadd_0_r in Hxy; cbn in Hxy.
+-rewrite add_0_r in Hxy; cbn in Hxy.
  injection Hxy as H; rewrite GQadd_comm in H.
  now apply GQadd_no_neutral in H.
 -cbn in Hxy.
@@ -1111,7 +1111,7 @@ destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
  rewrite GQsub_add in H; [ | easy ].
  rewrite <- GQadd_assoc, GQadd_comm in H.
  now apply GQadd_no_neutral in H.
--rewrite NQadd_0_r in Hxy; cbn in Hxy.
+-rewrite add_0_r in Hxy; cbn in Hxy.
  remember (GQcompare xp yp) as b eqn:Hb; symmetry in Hb.
  destruct b; [ easy | easy | GQcompare_iff ].
  injection Hxy as H.
@@ -1142,16 +1142,16 @@ destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
   rewrite GQadd_add_swap in H.
   rewrite GQsub_add in H; [ | easy ].
   now apply GQadd_cancel_l in H.
--rewrite NQadd_0_r in Hxy; cbn in Hxy.
+-rewrite add_0_r in Hxy; cbn in Hxy.
  remember (GQcompare xp zp) as b eqn:Hb; symmetry in Hb.
  destruct b; [ easy | easy | GQcompare_iff ].
  injection Hxy as H; symmetry in H.
  now apply GQsub_no_neutral in H.
--rewrite NQadd_0_r in Hxy; cbn in Hxy.
+-rewrite add_0_r in Hxy; cbn in Hxy.
  injection Hxy as H; symmetry in H.
  rewrite GQadd_comm in H.
  now apply GQadd_no_neutral in H.
--rewrite NQadd_0_r in Hxy; cbn in Hxy.
+-rewrite add_0_r in Hxy; cbn in Hxy.
  remember (GQcompare xp yp) as b eqn:Hb; symmetry in Hb.
  destruct b; [ easy | easy | GQcompare_iff ].
  injection Hxy as H.
@@ -1184,7 +1184,7 @@ destruct x as [| xp| xp], y as [| yp| yp], z as [| zp| zp]; try easy.
  symmetry in H.
  now apply GQadd_no_neutral in H.
 -(* déjà vu *)
- rewrite NQadd_0_r in Hxy; cbn in Hxy.
+ rewrite add_0_r in Hxy; cbn in Hxy.
  injection Hxy as H; rewrite GQadd_comm in H.
  now apply GQadd_no_neutral in H.
 -cbn in Hxy.
@@ -1203,7 +1203,7 @@ Qed.
 Theorem NQadd_cancel_r : ∀ x y z, (x + z = y + z)%Q ↔ (x = y)%Q.
 Proof.
 intros.
-setoid_rewrite NQadd_comm.
+setoid_rewrite add_comm.
 apply NQadd_cancel_l.
 Qed.
 
@@ -1234,15 +1234,15 @@ Proof.
 intros.
 split; intros Hxy.
 -apply (NQsub_cancel_r _ _ x) in Hxy.
- now rewrite NQadd_comm, NQadd_sub in Hxy.
+ now rewrite add_comm, NQadd_sub in Hxy.
 -apply (NQadd_cancel_r _ _ x) in Hxy.
- now rewrite NQsub_add, NQadd_comm in Hxy.
+ now rewrite NQsub_add, add_comm in Hxy.
 Qed.
 
 Theorem NQadd_move_r : ∀ x y z, (x + y)%Q = z ↔ x = (z - y)%Q.
 Proof.
 intros.
-rewrite NQadd_comm.
+rewrite add_comm.
 apply NQadd_move_l.
 Qed.
 
@@ -1257,7 +1257,7 @@ Qed.
 Theorem NQadd_move_0_r : ∀ x y, (x + y)%Q = 0%Q ↔ x = (- y)%Q.
 Proof.
 intros.
-rewrite NQadd_comm.
+rewrite add_comm.
 apply NQadd_move_0_l.
 Qed.
 
@@ -1285,7 +1285,7 @@ Proof.
 intros.
 unfold sub.
 rewrite NQopp_add_distr.
-apply NQadd_assoc.
+apply add_assoc.
 Qed.
 
 Theorem NQsub_sub_distr : ∀ x y z, (x - (y - z))%Q = (x - y + z)%Q.
@@ -1296,28 +1296,28 @@ rewrite NQsub_add_distr.
 now rewrite NQsub_opp_r.
 Qed.
 
-Theorem NQsub_lt_mono_l : ∀ x y z, (x < y)%Q ↔ (z - y < z - x)%Q.
+Theorem sub_lt_mono_l : ∀ x y z, (x < y)%Q ↔ (z - y < z - x)%Q.
 Proof.
 intros.
 split; intros Hxy.
--apply NQsub_le_lt_mono; [ apply NQle_refl | easy ].
--apply (NQsub_le_lt_mono z z) in Hxy; [ | apply NQle_refl ].
+-apply sub_le_lt_mono; [ apply le_refl | easy ].
+-apply (sub_le_lt_mono z z) in Hxy; [ | apply le_refl ].
  do 2 rewrite NQsub_sub_distr in Hxy.
  now rewrite NQsub_diag in Hxy.
 Qed.
-Arguments NQsub_lt_mono_l x%Q y%Q z%Q.
+Arguments sub_lt_mono_l x%Q y%Q z%Q.
 
-Theorem NQsub_lt_mono_r : ∀ x y z, (x < y)%Q ↔ (x - z < y - z)%Q.
+Theorem sub_lt_mono_r : ∀ x y z, (x < y)%Q ↔ (x - z < y - z)%Q.
 Proof.
 intros.
 split; intros Hxy.
--apply NQsub_lt_le_mono; [ easy | apply NQle_refl ].
+-apply sub_lt_le_mono; [ easy | apply le_refl ].
 -apply (NQadd_lt_mono_r (x - z) (y - z) z) in Hxy.
  now do 2 rewrite NQsub_add in Hxy.
 Qed.
-Arguments NQsub_lt_mono_r x%Q y%Q z%Q.
+Arguments sub_lt_mono_r x%Q y%Q z%Q.
 
-Theorem NQmul_pair : ∀ x y z t,
+Theorem mul_pair : ∀ x y z t,
   y ≠ 0 → t ≠ 0 → ((x // y) * (z // t) = (x * z) // (y * t))%Q.
 Proof.
 intros * Hy Ht; simpl.
@@ -1328,7 +1328,7 @@ f_equal.
 now apply GQmul_pair.
 Qed.
 
-Theorem NQmul_comm : ∀ x y, (x * y = y * x)%Q.
+Theorem mul_comm : ∀ x y, (x * y = y * x)%Q.
 Proof.
 intros.
 unfold "*".
@@ -1344,18 +1344,18 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl;
 f_equal; apply GQmul_mul_swap.
 Qed.
 
-Theorem NQmul_assoc : ∀ x y z, (x * (y * z) = (x * y) * z)%Q.
+Theorem mul_assoc : ∀ x y z, (x * (y * z) = (x * y) * z)%Q.
 Proof.
 intros.
 symmetry.
-rewrite NQmul_comm.
+rewrite mul_comm.
 remember (x * y)%Q as t eqn:Ht.
-rewrite NQmul_comm in Ht; rewrite Ht.
-setoid_rewrite NQmul_comm.
+rewrite mul_comm in Ht; rewrite Ht.
+setoid_rewrite mul_comm.
 apply NQmul_mul_swap.
 Qed.
 
-Theorem NQmul_add_distr_l : ∀ x y z, (x * (y + z) = x * y + x * z)%Q.
+Theorem mul_add_distr_l : ∀ x y z, (x * (y + z) = x * y + x * z)%Q.
 Proof.
 intros.
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
@@ -1389,14 +1389,14 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -f_equal; apply GQmul_add_distr_l.
 Qed.
 
-Theorem NQmul_add_distr_r : ∀ x y z, ((x + y) * z = x * z + y * z)%Q.
+Theorem mul_add_distr_r : ∀ x y z, ((x + y) * z = x * z + y * z)%Q.
 Proof.
 intros.
-setoid_rewrite NQmul_comm.
-apply NQmul_add_distr_l.
+setoid_rewrite mul_comm.
+apply mul_add_distr_l.
 Qed.
 
-Theorem NQmul_sub_distr_l : ∀ x y z, (x * (y - z) = x * y - x * z)%Q.
+Theorem mul_sub_distr_l : ∀ x y z, (x * (y - z) = x * y - x * z)%Q.
 Proof.
 intros.
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
@@ -1430,11 +1430,11 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
  +now f_equal; apply GQmul_sub_distr_l.
 Qed.
 
-Theorem NQmul_sub_distr_r : ∀ x y z, ((x - y) * z = x * z - y * z)%Q.
+Theorem mul_sub_distr_r : ∀ x y z, ((x - y) * z = x * z - y * z)%Q.
 Proof.
 intros.
-setoid_rewrite NQmul_comm.
-apply NQmul_sub_distr_l.
+setoid_rewrite mul_comm.
+apply mul_sub_distr_l.
 Qed.
 
 Theorem NQeq_mul_0 : ∀ x y, (x * y = 0 → x = 0 ∨ y = 0)%Q.
@@ -1466,11 +1466,11 @@ Qed.
 
 Theorem NQmul_le_mono_nonneg_r : ∀ x y z, (0 ≤ x → y ≤ z → y * x ≤ z * x)%Q.
 Proof.
-setoid_rewrite NQmul_comm.
+setoid_rewrite mul_comm.
 apply NQmul_le_mono_nonneg_l.
 Qed.
 
-Theorem NQmul_lt_mono_pos_l : ∀ x y z,
+Theorem mul_lt_mono_pos_l : ∀ x y z,
   (0 < x)%Q → (y < z)%Q ↔ (x * y < x * z)%Q.
 Proof.
 intros * Hx.
@@ -1482,11 +1482,11 @@ destruct y as [| yp| yp]; [ now destruct z | | ].
  apply GQmul_lt_mono_l.
 Qed.
 
-Theorem NQmul_lt_mono_pos_r : ∀ x y z,
+Theorem mul_lt_mono_pos_r : ∀ x y z,
   (0 < x)%Q → (y < z)%Q ↔ (y * x < z * x)%Q.
 Proof.
-setoid_rewrite NQmul_comm.
-apply NQmul_lt_mono_pos_l.
+setoid_rewrite mul_comm.
+apply mul_lt_mono_pos_l.
 Qed.
 
 Theorem NQmul_le_mono_pos_l : ∀ x y z,
@@ -1504,7 +1504,7 @@ Qed.
 Theorem NQmul_le_mono_pos_r : ∀ x y z,
   (0 < x)%Q → (y ≤ z)%Q ↔ (y * x ≤ z * x)%Q.
 Proof.
-setoid_rewrite NQmul_comm.
+setoid_rewrite mul_comm.
 apply NQmul_le_mono_pos_l.
 Qed.
 
@@ -1536,11 +1536,11 @@ Qed.
 Theorem NQmul_cancel_r : ∀ x y z, z ≠ 0%Q → (x * z)%Q = (y * z)%Q ↔ x = y.
 Proof.
 intros *.
-setoid_rewrite NQmul_comm.
+setoid_rewrite mul_comm.
 apply NQmul_cancel_l.
 Qed.
 
-Theorem NQle_pair : ∀ x y z t,
+Theorem le_pair : ∀ x y z t,
   y ≠ 0 → t ≠ 0 → (x // y ≤ z // t)%Q ↔ x * t ≤ y * z.
 Proof.
 intros * Hy Ht.
@@ -1632,7 +1632,7 @@ destruct c.
  now apply Nat.mul_cancel_l in H.
 Qed.
 
-Theorem NQpair_diag : ∀ a, a ≠ 0 → (a // a = 1)%Q.
+Theorem pair_diag : ∀ a, a ≠ 0 → (a // a = 1)%Q.
 Proof.
 intros.
 unfold "//"%Q.
@@ -1643,30 +1643,30 @@ Qed.
 Theorem NQmul_inv_pair : ∀ a b, a ≠ 0 → b ≠ 0 → (a // b * b // a = 1)%Q.
 Proof.
 intros * Ha Hb.
-rewrite NQmul_pair; [ | easy | easy ].
+rewrite mul_pair; [ | easy | easy ].
 rewrite Nat.mul_comm.
-apply NQpair_diag.
+apply pair_diag.
 intros H; apply Nat.eq_mul_0 in H.
 now destruct H.
 Qed.
 
-Theorem NQle_pair_mono_l : ∀ a b c, 0 < a ≤ b → (c // b ≤ c // a)%Q.
+Theorem le_pair_mono_l : ∀ a b c, 0 < a ≤ b → (c // b ≤ c // a)%Q.
 Proof.
 intros * Hab.
-apply NQle_pair; [ flia Hab | flia Hab | ].
+apply le_pair; [ flia Hab | flia Hab | ].
 rewrite Nat.mul_comm.
 now apply Nat.mul_le_mono_r.
 Qed.
 
-Theorem NQle_pair_mono_r : ∀ a b c, a ≤ b → (a // c ≤ b // c)%Q.
+Theorem le_pair_mono_r : ∀ a b c, a ≤ b → (a // c ≤ b // c)%Q.
 Proof.
 intros * Hab.
 destruct c.
 -do 2 rewrite den_0.
- apply NQle_pair; [ easy | easy | ].
+ apply le_pair; [ easy | easy | ].
  rewrite Nat.mul_comm.
  now apply Nat.mul_le_mono_l.
--apply NQle_pair; [ easy | easy | ].
+-apply le_pair; [ easy | easy | ].
  rewrite Nat.mul_comm.
  now apply Nat.mul_le_mono_l.
 Qed.
@@ -1697,11 +1697,11 @@ Theorem NQpair_inv_mul : ∀ a b c, b ≠ 0 → c ≠ 0 →
   (a // (b * c))%Q = (a // b * 1 // c)%Q.
 Proof.
 intros * Hb Hc.
-rewrite NQmul_pair; [ | easy | easy ].
+rewrite mul_pair; [ | easy | easy ].
 now rewrite Nat.mul_1_r.
 Qed.
 
-Theorem NQmul_1_l : ∀ a, (1 * a)%Q = a.
+Theorem mul_1_l : ∀ a, (1 * a)%Q = a.
 Proof.
 intros.
 unfold "*"%Q; simpl.
@@ -1710,34 +1710,34 @@ unfold NQmul_pos_l.
 destruct a; [ easy | | ]; now rewrite GQmul_1_l.
 Qed.
 
-Theorem NQmul_1_r : ∀ a, (a * 1)%Q = a.
+Theorem mul_1_r : ∀ a, (a * 1)%Q = a.
 Proof.
 intros.
-rewrite NQmul_comm.
-apply NQmul_1_l.
+rewrite mul_comm.
+apply mul_1_l.
 Qed.
 
-Theorem NQmul_pair_mono_l : ∀ a b c,
+Theorem mul_pair_mono_l : ∀ a b c,
   a ≠ 0 → c ≠ 0 → ((a * b) // (a * c) = b // c)%Q.
 Proof.
 intros * Ha Hc.
-rewrite <- NQmul_pair; [ | easy | easy ].
-now rewrite NQpair_diag, NQmul_1_l.
+rewrite <- mul_pair; [ | easy | easy ].
+now rewrite pair_diag, mul_1_l.
 Qed.
 
-Theorem NQmul_pair_mono_r : ∀ a b c,
+Theorem mul_pair_mono_r : ∀ a b c,
   b ≠ 0 → c ≠ 0 → ((a * c) // (b * c) = a // b)%Q.
 Proof.
 intros * Hb Hc.
-rewrite <- NQmul_pair; [ | easy | easy ].
-now rewrite NQpair_diag, NQmul_1_r.
+rewrite <- mul_pair; [ | easy | easy ].
+now rewrite pair_diag, mul_1_r.
 Qed.
 
 Theorem NQmul_0_l : ∀ a, (0 * a)%Q = 0%Q.
 Proof. easy. Qed.
 
 Theorem NQmul_0_r : ∀ a, (a * 0)%Q = 0%Q.
-Proof. intros; now rewrite NQmul_comm. Qed.
+Proof. intros; now rewrite mul_comm. Qed.
 
 Theorem NQmul_opp_l : ∀ x y, (- x * y)%Q = (- (x * y))%Q.
 Proof. intros; now destruct x, y. Qed.
@@ -1746,13 +1746,13 @@ Theorem NQmul_lt_le_mono_pos : ∀ x y z t,
   (0 ≤ x)%Q → (x < y)%Q → (0 < z)%Q → (z ≤ t)%Q → (x * z < y * t)%Q.
 Proof.
 intros * Hx Hxy Hz Hzt.
-eapply NQlt_le_trans.
--apply NQmul_lt_mono_pos_r; [ easy | apply Hxy ].
+eapply lt_le_trans.
+-apply mul_lt_mono_pos_r; [ easy | apply Hxy ].
 -apply NQmul_le_mono_pos_l; [ | easy ].
- eapply NQle_lt_trans; [ apply Hx | apply Hxy ].
+ eapply le_lt_trans; [ apply Hx | apply Hxy ].
 Qed.
 
-Theorem NQadd_pair : ∀ a b c d,
+Theorem add_pair : ∀ a b c d,
   b ≠ 0 → d ≠ 0 → (a // b + c // d = (a * d + b * c) // (b * d))%Q.
 Proof.
 intros * Hb Hd.
@@ -1761,18 +1761,18 @@ remember (a // b)%Q as ab eqn:Hab; symmetry in Hab.
 destruct ab as [| pab| pab]; [ | | now destruct a ].
 -unfold "//"%Q in Hab.
  destruct a; [ simpl | easy ].
- rewrite <- NQmul_pair; [ | easy | easy ].
- rewrite NQpair_diag; [ | easy ].
- now rewrite NQmul_1_l.
+ rewrite <- mul_pair; [ | easy | easy ].
+ rewrite pair_diag; [ | easy ].
+ now rewrite mul_1_l.
 -remember (c // d)%Q as cd eqn:Hcd; symmetry in Hcd.
  move cd before pab.
  destruct cd as [| pcd| pcd]; [ | | now destruct c ].
  +unfold "//"%Q in Hcd.
   destruct c; [ | easy ].
   rewrite Nat.mul_0_r, Nat.add_0_r; simpl.
-  rewrite <- NQmul_pair; [ | easy | easy ].
-  rewrite NQpair_diag; [ | easy ].
-  now rewrite NQmul_1_r.
+  rewrite <- mul_pair; [ | easy | easy ].
+  rewrite pair_diag; [ | easy ].
+  now rewrite mul_1_r.
  +unfold NQadd_pos_l.
   unfold "//"%Q.
   remember (a * d + b * c) as e eqn:He; symmetry in He.
@@ -1811,9 +1811,9 @@ injection Hab; clear Hab; intros Hab; subst pab.
  injection Hab; clear Hab; intros Hab; subst pab.
  destruct c.
  +rewrite Nat.mul_0_r, Nat.sub_0_r.
-  rewrite <- NQmul_pair; [ | easy | easy ].
-  rewrite NQpair_diag; [ | easy ].
-  now rewrite NQmul_1_r.
+  rewrite <- mul_pair; [ | easy | easy ].
+  rewrite pair_diag; [ | easy ].
+  now rewrite mul_1_r.
  +remember (S a) as sa; remember (S b) as sb; simpl; subst sa sb.
   unfold "//"%Q.
   remember (S a * S d - S b * S c) as x eqn:Hx; symmetry in Hx.
@@ -1852,9 +1852,9 @@ destruct a.
  rewrite Nat.sub_0_r.
  remember (S b * S c) as bc eqn:Hbc; symmetry in Hbc.
  destruct bc; [ easy | rewrite <- Hbc ].
- rewrite <- NQmul_pair; [ | easy | easy ].
- rewrite NQpair_diag; [ | easy ].
- now rewrite NQmul_1_l.
+ rewrite <- mul_pair; [ | easy | easy ].
+ rewrite pair_diag; [ | easy ].
+ now rewrite mul_1_l.
 -remember (S a // S b)%Q as ab eqn:Hab; symmetry in Hab.
  destruct ab as [| pab| pab]; [ easy | | easy ].
  injection Hab; clear Hab; intros Hab; subst pab.
@@ -1884,14 +1884,14 @@ Proof.
 intros.
 destruct c. {
   do 3 rewrite den_0.
-  rewrite NQadd_pair; [ | easy | easy ].
+  rewrite add_pair; [ | easy | easy ].
   now rewrite Nat.mul_1_l, Nat.mul_1_r.
 }
-rewrite NQadd_pair; [ | easy | easy ].
+rewrite add_pair; [ | easy | easy ].
 rewrite Nat.mul_comm, <- Nat.mul_add_distr_l.
-rewrite <- NQmul_pair; [ | easy | easy ].
-rewrite NQpair_diag; [ | easy ].
-now rewrite NQmul_1_l.
+rewrite <- mul_pair; [ | easy | easy ].
+rewrite pair_diag; [ | easy ].
+now rewrite mul_1_l.
 Qed.
 
 Theorem NQpair_sub_l : ∀ a b c,
@@ -1908,9 +1908,9 @@ rewrite NQsub_pair_pos; [ | easy | easy | ]; cycle 1. {
   now rewrite Nat.mul_comm; apply Nat.mul_le_mono_r.
 }
 rewrite Nat.mul_comm, <- Nat.mul_sub_distr_l.
-rewrite <- NQmul_pair; [ | easy | easy ].
-rewrite NQpair_diag; [ | easy ].
-now rewrite NQmul_1_l.
+rewrite <- mul_pair; [ | easy | easy ].
+rewrite pair_diag; [ | easy ].
+now rewrite mul_1_l.
 Qed.
 
 Theorem NQpair_mul_l : ∀ a b c, ((a * b) // c)%Q = (a // c * b // 1)%Q.
@@ -1919,30 +1919,30 @@ intros.
 destruct (zerop c) as [Hc| Hc].
 -subst c; do 2 rewrite den_0.
  replace 1 with (1 * 1) at 1 by easy.
- rewrite NQmul_pair; [ easy | easy | flia ].
+ rewrite mul_pair; [ easy | easy | flia ].
 -replace c with (c * 1) at 1 by flia.
- rewrite NQmul_pair; [ easy | flia Hc | flia ].
+ rewrite mul_pair; [ easy | flia Hc | flia ].
 Qed.
 
 Theorem NQpair_mul_r : ∀ a b c, ((a * b) // c)%Q = (a // 1 * b // c)%Q.
 Proof.
 intros.
-rewrite Nat.mul_comm, NQmul_comm.
+rewrite Nat.mul_comm, mul_comm.
 apply NQpair_mul_l.
 Qed.
 
-Theorem NQmul_pair_den_num : ∀ a b c, b ≠ 0 → (a // b * b // c = a // c)%Q.
+Theorem mul_pair_den_num : ∀ a b c, b ≠ 0 → (a // b * b // c = a // c)%Q.
 Proof.
 intros * Hb.
 destruct (zerop c) as [Hc| Hc].
 -subst c; do 2 rewrite den_0.
- rewrite NQmul_pair; [ | easy | easy ].
+ rewrite mul_pair; [ | easy | easy ].
  rewrite Nat.mul_1_r, NQpair_mul_r.
- rewrite NQpair_diag; [ now rewrite NQmul_1_r | easy ].
--rewrite NQmul_pair; [ | easy | flia Hc ].
+ rewrite pair_diag; [ now rewrite mul_1_r | easy ].
+-rewrite mul_pair; [ | easy | flia Hc ].
  rewrite Nat.mul_comm.
- rewrite <- NQmul_pair; [ | easy | flia Hc ].
- now rewrite NQpair_diag, NQmul_1_l.
+ rewrite <- mul_pair; [ | easy | flia Hc ].
+ now rewrite pair_diag, mul_1_l.
 Qed.
 
 Definition NQfrac x := ((num x mod den x) // den x)%Q.
@@ -1978,9 +1978,9 @@ destruct (zerop a) as [Ha| Ha].
   rewrite Nat.div_mul; [ | easy ].
   assert (Hbb : bb ≠ 0) by now intros H; subst bb; rewrite Nat.mul_0_r in Hb.
   rewrite Nat.mul_mod_distr_r; [ | easy | easy ].
-  rewrite <- NQmul_pair; [ | easy | easy ].
-  rewrite NQpair_diag; [ | easy ].
-  now rewrite NQmul_1_r.
+  rewrite <- mul_pair; [ | easy | easy ].
+  rewrite pair_diag; [ | easy ].
+  now rewrite mul_1_r.
 Qed.
 
 Theorem den_neq_0 : ∀ x, den x ≠ 0.
@@ -2076,7 +2076,7 @@ Theorem NQintg_frac : ∀ x, (0 ≤ x)%Q → x = (NQintg x // 1 + NQfrac x)%Q.
 Proof.
 intros * Hx.
 unfold NQintg, NQfrac.
-rewrite NQadd_pair; [ | easy | pauto ].
+rewrite add_pair; [ | easy | pauto ].
 do 2 rewrite Nat.mul_1_l.
 rewrite Nat.mul_comm.
 rewrite <- Nat.div_mod; [ | pauto ].
@@ -2087,7 +2087,7 @@ Theorem NQfrac_of_intg : ∀ x, (0 ≤ x)%Q → NQfrac x = (x - NQintg x // 1)%Q
 Proof.
 intros * Hx.
 rewrite (NQintg_frac x) at 2; [ | easy ].
-now rewrite NQadd_comm, NQadd_sub.
+now rewrite add_comm, NQadd_sub.
 Qed.
 
 Theorem NQintg_of_frac : ∀ x, (0 ≤ x)%Q → (NQintg x // 1 = x - NQfrac x)%Q.
@@ -2124,7 +2124,7 @@ intros * Hx.
 destruct x as [| px| px].
 -destruct Hx as (H, _).
  replace 0%Q with (0 // 1)%Q in H by easy.
- apply NQle_pair in H; [ | easy | easy ].
+ apply le_pair in H; [ | easy | easy ].
  rewrite Nat.mul_comm in H.
  apply Nat.mul_le_mono_pos_l in H; [ | pauto ].
  now apply Nat.le_0_r in H; subst n.
@@ -2206,7 +2206,7 @@ Proof.
 intros.
 unfold NQfrac.
 replace 0%Q with (0 // 1)%Q by easy.
-apply NQle_pair; [ easy | easy | ].
+apply le_pair; [ easy | easy | ].
 rewrite Nat.mul_1_l; cbn; flia.
 Qed.
 
@@ -2228,7 +2228,7 @@ unfold NQfrac.
 destruct x as [| xp| xp]; [ easy | | easy ].
 cbn.
 rewrite num_den; [ | easy ].
-apply NQle_pair; [ apply GQden_neq_0 | pauto | ].
+apply le_pair; [ apply GQden_neq_0 | pauto | ].
 cbn; rewrite Nat.mul_comm.
 apply Nat.mul_le_mono_l, Nat.mod_le, GQden_neq_0.
 Qed.
@@ -2255,7 +2255,7 @@ rewrite NQintg_of_frac.
  now rewrite NQsub_sub_distr, NQsub_diag.
 -eapply NQle_trans; [ | apply Hx ].
  replace 0%Q with (0 // 1)%Q by easy.
- apply NQle_pair_mono_r, Nat.le_0_l.
+ apply le_pair_mono_r, Nat.le_0_l.
 Qed.
 
 Theorem eq_NQintg_0 : ∀ x, (0 ≤ x)%Q → NQintg x = 0 → (x < 1)%Q.
@@ -2288,7 +2288,7 @@ apply Nat.succ_le_mono in Hab.
 apply (Nat.mul_le_mono_l _ _ (den a)) in Hab.
 apply (Nat.add_le_mono_r _ _ (den a)) in Hab.
 rewrite <- Nat.add_1_r, Nat.mul_add_distr_l, Nat.mul_1_r.
-eapply lt_le_trans; [ | apply Hab ].
+eapply Nat.lt_le_trans; [ | apply Hab ].
 specialize (Nat.div_mod (num a) (den a) (den_neq_0 _)) as H1.
 rewrite H1 at 1.
 apply Nat.add_lt_mono_l.
@@ -2302,7 +2302,7 @@ intros * Hx.
 unfold NQfrac.
 apply NQeq_pair; [ pauto | pauto | ].
 rewrite (num_den x); [ | easy ].
-rewrite NQadd_pair; [ | easy | pauto ].
+rewrite add_pair; [ | easy | pauto ].
 do 2 rewrite Nat.mul_1_l.
 rewrite num_pair.
 rewrite Nat.max_r; [ | apply Nat.neq_0_lt_0; pauto ].
@@ -2349,7 +2349,7 @@ apply NQeq_pair; [ pauto | pauto | ].
 rewrite (num_den x); [ | easy ].
 assert (Haxl : a * den x ≤ num x). {
   rewrite (num_den x) in Hax; [ | easy ].
-  apply NQle_pair in Hax; [ | easy | easy ].
+  apply le_pair in Hax; [ | easy | easy ].
   now rewrite Nat.mul_1_l in Hax.
 }
 rewrite NQsub_pair_pos; [ | easy | pauto | ]; cycle 1. {
@@ -2402,10 +2402,10 @@ split; intros Hx.
  replace x with (num x // den x)%Q in Hx; cycle 1. {
    now symmetry; apply num_den.
  }
- rewrite NQadd_pair in Hx; [ | easy | easy ].
+ rewrite add_pair in Hx; [ | easy | easy ].
  do 2 rewrite Nat.mul_1_r in Hx.
  destruct Hx as (Hnx, Hxn).
- apply NQle_pair in Hnx; [ | easy | easy ].
+ apply le_pair in Hnx; [ | easy | easy ].
  apply NQlt_pair in Hxn; [ | easy | easy ].
  rewrite Nat.mul_1_l in Hnx.
  rewrite Nat.mul_1_r, Nat.mul_comm in Hxn.
@@ -2414,7 +2414,7 @@ split; intros Hx.
  rewrite NQintg_of_frac; [ | easy ].
  split; [ apply NQle_sub_l, NQfrac_ge_0 | ].
  rewrite <- NQadd_sub_swap.
- apply NQlt_add_lt_sub_r, NQadd_lt_mono_l, NQfrac_lt_1.
+ apply lt_add_lt_sub_r, NQadd_lt_mono_l, NQfrac_lt_1.
 Qed.
 
 Theorem NQfrac_idemp : ∀ x, (0 ≤ x)%Q → NQfrac (NQfrac x) = NQfrac x.
@@ -2425,12 +2425,12 @@ rewrite NQfrac_sub_nat_r; [ | easy | now apply NQintg_interv ].
 now apply NQfrac_of_intg.
 Qed.
 
-Theorem NQintg_add_frac : ∀ x y,
+Theorem intg_add_frac : ∀ x y,
   NQintg (NQfrac x + NQfrac y) =
-  if NQlt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
+  if lt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
 Proof.
 intros.
-destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
+destruct (lt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
 -unfold NQintg.
  rewrite Nat.div_small; [ easy | ].
  unfold "<"%Q in H1.
@@ -2480,15 +2480,15 @@ destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
  now rewrite Nat.mul_comm in H.
 Qed.
 
-Theorem NQintg_add : ∀ x y, (0 ≤ x)%Q → (0 ≤ y)%Q →
+Theorem intg_add : ∀ x y, (0 ≤ x)%Q → (0 ≤ y)%Q →
   NQintg (x + y) = NQintg x + NQintg y + NQintg (NQfrac x + NQfrac y).
 Proof.
 intros * Hxz Hyz.
-rewrite NQintg_add_frac.
+rewrite intg_add_frac.
 apply NQintg_interv.
 -replace 0%Q with (0 + 0)%Q by easy.
  now apply NQadd_le_mono.
--destruct (NQlt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
+-destruct (lt_le_dec (NQfrac x + NQfrac y) 1) as [H1| H1].
  +rewrite Nat.add_0_r.
   split.
   *rewrite NQpair_add_l.
@@ -2496,25 +2496,25 @@ apply NQintg_interv.
   *rewrite (NQintg_frac x) at 1; [ | easy ].
    rewrite (NQintg_frac y) at 1; [ | easy ].
    rewrite NQpair_add_l.
-   do 2 rewrite <- NQadd_assoc.
+   do 2 rewrite <- add_assoc.
    apply NQadd_lt_mono_l.
-   rewrite NQadd_comm, <- NQadd_assoc.
+   rewrite add_comm, <- add_assoc.
    apply NQadd_lt_mono_l.
-   now rewrite NQadd_comm.
+   now rewrite add_comm.
  +split.
   *rewrite (NQintg_frac x) at 2; [ | easy ].
    rewrite (NQintg_frac y) at 2; [ | easy ].
    do 2 rewrite NQpair_add_l.
-   do 2 rewrite <- NQadd_assoc.
+   do 2 rewrite <- add_assoc.
    apply NQadd_le_mono_l.
-   rewrite NQadd_assoc, NQadd_comm, NQadd_add_swap.
+   rewrite add_assoc, add_comm, NQadd_add_swap.
    now apply NQadd_le_mono_r.
-  *setoid_rewrite NQadd_comm.
+  *setoid_rewrite add_comm.
    do 2 rewrite NQpair_add_l.
-   do 2 rewrite NQadd_assoc.
-   rewrite NQadd_comm, <- NQadd_assoc.
+   do 2 rewrite add_assoc.
+   rewrite add_comm, <- add_assoc.
    apply NQadd_le_lt_mono.
-   --apply NQlt_le_incl; rewrite NQadd_comm.
+   --apply lt_le_incl; rewrite add_comm.
      now apply NQintg_interv.
    --now apply NQintg_interv.
 Qed.
@@ -2525,15 +2525,15 @@ Proof.
 intros * Hxz Hyz.
 rewrite (NQintg_frac x Hxz) at 1.
 rewrite (NQintg_frac y Hyz) at 1.
-rewrite NQadd_comm, <- NQadd_assoc, NQfrac_add_nat_l; cycle 1. {
+rewrite add_comm, <- add_assoc, NQfrac_add_nat_l; cycle 1. {
   replace 0%Q with (0 + (0 // 1 + 0))%Q by easy.
   apply NQadd_le_mono; [ apply NQfrac_ge_0 | ].
   apply NQadd_le_mono; [ | apply NQfrac_ge_0 ].
-  apply NQle_pair; [ easy | easy | ].
+  apply le_pair; [ easy | easy | ].
   rewrite Nat.mul_0_l, Nat.mul_1_l.
   apply Nat.le_0_l.
 }
-rewrite NQadd_comm, <- NQadd_assoc, NQfrac_add_nat_l; cycle 1. {
+rewrite add_comm, <- add_assoc, NQfrac_add_nat_l; cycle 1. {
   replace 0%Q with (0 + 0)%Q by easy.
   apply NQadd_le_mono; apply NQfrac_ge_0.
 }
@@ -2543,16 +2543,16 @@ Qed.
 Theorem NQfrac_add_cond : ∀ x y, (0 ≤ x)%Q → (0 ≤ y)%Q →
   NQfrac (x + y) =
     (NQfrac x + NQfrac y -
-     if NQlt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1)%Q.
+     if lt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1)%Q.
 Proof.
 intros * Hxz Hyz.
 rewrite NQfrac_of_intg. 2: {
   replace 0%Q with (0 + 0)%Q by easy.
   now apply NQadd_le_mono.
 }
-rewrite NQintg_add; [ | easy | easy ].
-rewrite NQintg_add_frac.
-destruct (NQlt_le_dec (NQfrac x + NQfrac y)) as [H1| H1].
+rewrite intg_add; [ | easy | easy ].
+rewrite intg_add_frac.
+destruct (lt_le_dec (NQfrac x + NQfrac y)) as [H1| H1].
 -rewrite Nat.add_0_r, NQsub_0_r.
  rewrite NQpair_add_l, NQsub_add_distr.
  rewrite NQadd_sub_swap, <- NQadd_sub_assoc.
@@ -2564,14 +2564,14 @@ destruct (NQlt_le_dec (NQfrac x + NQfrac y)) as [H1| H1].
  now f_equal; symmetry; apply NQfrac_of_intg.
 Qed.
 
-Theorem NQintg_add_cond : ∀ x y, (0 ≤ x)%Q → (0 ≤ y)%Q →
+Theorem intg_add_cond : ∀ x y, (0 ≤ x)%Q → (0 ≤ y)%Q →
   NQintg (x + y) =
     NQintg x + NQintg y +
-    if NQlt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
+    if lt_le_dec (NQfrac x + NQfrac y) 1 then 0 else 1.
 Proof.
 intros * Hxz Hyz.
-rewrite NQintg_add; [ | easy | easy ].
-now rewrite NQintg_add_frac.
+rewrite intg_add; [ | easy | easy ].
+now rewrite intg_add_frac.
 Qed.
 
 Theorem NQintg_pair : ∀ a b, b ≠ 0 → NQintg (a // b) = a / b.
@@ -2614,23 +2614,23 @@ rewrite <- Nat.add_1_r.
 setoid_rewrite <- Nat.mul_1_l.
 rewrite Nat.mul_comm.
 apply NQlt_pair; [ easy | easy | ].
-eapply NQle_lt_trans; [ apply H1 | ].
-eapply NQle_lt_trans; [ apply Hxy | ].
+eapply le_lt_trans; [ apply H1 | ].
+eapply le_lt_trans; [ apply Hxy | ].
 now rewrite NQpair_add_l.
 Qed.
 
-Theorem NQintg_add_nat_l : ∀ a x, (0 ≤ x)%Q →
+Theorem intg_add_nat_l : ∀ a x, (0 ≤ x)%Q →
   NQintg (a // 1 + x)%Q = a + NQintg x.
 Proof.
 intros * Hx.
-rewrite NQintg_add; [ | | easy ]. 2: {
+rewrite intg_add; [ | | easy ]. 2: {
   replace 0%Q with (0 // 1)%Q by easy.
-  apply NQle_pair; [ easy | easy | cbn; flia ].
+  apply le_pair; [ easy | easy | cbn; flia ].
 }
 rewrite Nat.add_shuffle0; f_equal.
 rewrite NQintg_pair; [ | easy ].
 rewrite Nat.div_1_r.
-rewrite NQfrac_of_nat, NQadd_0_l.
+rewrite NQfrac_of_nat, add_0_l.
 now rewrite NQintg_NQfrac, Nat.add_0_r.
 Qed.
 
@@ -2668,7 +2668,7 @@ destruct x as [| xp| xp], y as [| yp| yp]; (try now left); (try now right).
 -apply GQle_decidable.
 Qed.
 
-Theorem NQle_0_add : ∀ x y, (0 ≤ x)%Q → (0 ≤ y)%Q → (0 ≤ x + y)%Q.
+Theorem le_0_add : ∀ x y, (0 ≤ x)%Q → (0 ≤ y)%Q → (0 ≤ x + y)%Q.
 Proof.
 intros * Hx Hy.
 replace 0%Q with (0 + 0)%Q by easy.
@@ -2687,7 +2687,7 @@ split.
   now rewrite Hxy.
  +apply NQle_antisymm in Hy; [ easy | ].
   apply (NQadd_le_mono_r _ _ x).
-  now rewrite NQadd_comm, Hxy.
+  now rewrite add_comm, Hxy.
 -now intros (H1, H2); subst x y.
 Qed.
 
@@ -2696,16 +2696,16 @@ Theorem NQintg_sub_nat_l_lt : ∀ n x,
   → NQintg (n // 1 - x)%Q < n.
 Proof.
 intros * (Hx, Hxn).
-rewrite (num_den x); [ | now apply NQlt_le_incl ].
-rewrite (num_den x) in Hxn; [ | now apply NQlt_le_incl ].
+rewrite (num_den x); [ | now apply lt_le_incl ].
+rewrite (num_den x) in Hxn; [ | now apply lt_le_incl ].
 rewrite NQsub_pair_pos; [ | easy | easy | ]. 2: {
-  apply NQle_pair in Hxn; [ | easy | easy ].
+  apply le_pair in Hxn; [ | easy | easy ].
   rewrite Nat.mul_1_r in Hxn.
   now rewrite Nat.mul_1_l, Nat.mul_comm.
 }
 do 2 rewrite Nat.mul_1_l.
 rewrite NQintg_pair; [ | easy ].
-rewrite NQle_pair in Hxn; [ | easy | easy ].
+rewrite le_pair in Hxn; [ | easy | easy ].
 rewrite Nat.mul_1_r in Hxn.
 remember (num x) as xn eqn:Hn.
 remember (den x) as xd eqn:Hd.
@@ -2737,15 +2737,15 @@ symmetry in H4; rewrite Nat.sub_diag in H4.
 now apply Nat.eq_add_0 in H4.
 Qed.
 
-Theorem NQle_0_pair : ∀ a b, (0 ≤ a // b)%Q.
+Theorem le_0_pair : ∀ a b, (0 ≤ a // b)%Q.
 Proof.
 intros.
 replace 0%Q with (0 // 1)%Q by easy.
 destruct b. {
   rewrite den_0.
-  apply NQle_pair; [ easy | easy | apply Nat.le_0_l ].
+  apply le_pair; [ easy | easy | apply Nat.le_0_l ].
 }
-apply NQle_pair; [ easy | easy | apply Nat.le_0_l ].
+apply le_pair; [ easy | easy | apply Nat.le_0_l ].
 Qed.
 
 Theorem NQlt_0_pair : ∀ a b, (0 < a // b)%Q ↔ 0 < a.
@@ -2764,23 +2764,23 @@ split; intros Ha.
  now rewrite Nat.mul_1_l.
 Qed.
 
-Theorem NQle_0_mul_l : ∀ a b, (0 < a → 0 ≤ a * b ↔ 0 ≤ b)%Q.
+Theorem le_0_mul_l : ∀ a b, (0 < a → 0 ≤ a * b ↔ 0 ≤ b)%Q.
 Proof.
 intros * Ha.
 split.
 -intros Hab.
  apply (NQmul_le_mono_pos_l a); [ easy | ].
- now rewrite NQmul_comm.
+ now rewrite mul_comm.
 -intros Hb.
  replace 0%Q with (a * 0)%Q by apply NQmul_0_r.
  now apply NQmul_le_mono_pos_l.
 Qed.
 
-Theorem NQle_0_mul_r : ∀ a b, (0 < b → 0 ≤ a * b ↔ 0 ≤ a)%Q.
+Theorem le_0_mul_r : ∀ a b, (0 < b → 0 ≤ a * b ↔ 0 ≤ a)%Q.
 Proof.
 intros.
-rewrite NQmul_comm.
-now apply NQle_0_mul_l.
+rewrite mul_comm.
+now apply le_0_mul_l.
 Qed.
 
 Theorem NQmul_pos_cancel_l : ∀ a b, (0 < a → 0 < a * b ↔ 0 < b)%Q.
@@ -2788,17 +2788,17 @@ Proof.
 intros * Ha.
 split.
 -intros Hab.
- apply (NQmul_lt_mono_pos_l a); [ easy | ].
- now rewrite NQmul_comm.
+ apply (mul_lt_mono_pos_l a); [ easy | ].
+ now rewrite mul_comm.
 -intros Hb.
  replace 0%Q with (a * 0)%Q by apply NQmul_0_r.
- now apply NQmul_lt_mono_pos_l.
+ now apply mul_lt_mono_pos_l.
 Qed.
 
 Theorem NQmul_pos_cancel_r: ∀ a b, (0 < b → 0 < a * b ↔ 0 < a)%Q.
 Proof.
 intros.
-rewrite NQmul_comm.
+rewrite mul_comm.
 now apply NQmul_pos_cancel_l.
 Qed.
 
@@ -2813,15 +2813,15 @@ Definition ord_ring_def :=
 Canonical Structure ord_ring_def.
 
 Definition ord_ring :=
-  {| rng_add_0_l := NQadd_0_l;
-     rng_add_comm := NQadd_comm;
-     rng_add_assoc := NQadd_assoc;
+  {| rng_add_0_l := add_0_l;
+     rng_add_comm := add_comm;
+     rng_add_assoc := add_assoc;
      rng_sub_diag := NQsub_diag;
-     rng_mul_comm := NQmul_comm;
-     rng_mul_assoc := NQmul_assoc;
-     rng_mul_add_distr_l := NQmul_add_distr_l;
-     rng_mul_sub_distr_l := NQmul_sub_distr_l;
-     rng_le_refl := NQle_refl;
+     rng_mul_comm := mul_comm;
+     rng_mul_assoc := mul_assoc;
+     rng_mul_add_distr_l := mul_add_distr_l;
+     rng_mul_sub_distr_l := mul_sub_distr_l;
+     rng_le_refl := le_refl;
      rng_le_antisymm := NQle_antisymm;
      rng_add_le_compat := NQadd_le_mono |}.
 
@@ -2862,9 +2862,9 @@ rewrite summation_eq_compat with (h := λ i, (a // 1 * 1 // g i)%Q). 2: {
   destruct (eq_nat_dec (g i) 0) as [H1| H1]. {
     rewrite H1.
     do 2 rewrite den_0.
-    now rewrite NQmul_1_r.
+    now rewrite mul_1_r.
   }
-  rewrite NQmul_pair; [ | easy | easy ].
+  rewrite mul_pair; [ | easy | easy ].
   now rewrite Nat.mul_1_r, Nat.mul_1_l.
 }
 now rewrite <- summation_mul_distr_l.
@@ -2903,11 +2903,11 @@ intros * Ha.
 induction n.
 -rewrite summation_only_one.
  rewrite Nat.pow_0_r, Nat.pow_1_r, Nat.mul_1_l.
- symmetry; apply NQpair_diag; flia Ha.
+ symmetry; apply pair_diag; flia Ha.
 -rewrite summation_split_last; [ | flia ].
  rewrite IHn.
  remember of_pair as f; remember S as g; cbn; subst f g.
- rewrite NQadd_pair; [ | | apply Nat.pow_nonzero; flia Ha ]; cycle 1. {
+ rewrite add_pair; [ | | apply Nat.pow_nonzero; flia Ha ]; cycle 1. {
    intros H.
    apply Nat.eq_mul_0 in H.
    destruct H as [H| H]; [ | flia Ha H ].
@@ -2957,23 +2957,23 @@ rewrite NQpower_summation; [ | flia Haa ].
 symmetry.
 rewrite NQsub_pair_pos; [ | easy | flia Haa | flia Haa ].
 do 2 rewrite Nat.mul_1_l.
-rewrite NQmul_pair; [ | flia Haa | ]; cycle 1. {
+rewrite mul_pair; [ | flia Haa | ]; cycle 1. {
   intros H; apply Nat.eq_mul_0 in H.
   destruct H as [H| H]; [ | flia Haa H ].
   apply Nat.pow_nonzero in H; [ easy | flia Haa ].
 }
 rewrite Nat.mul_comm, Nat.mul_assoc.
-rewrite <- NQmul_pair; [ | | flia Haa ]; cycle 1. {
+rewrite <- mul_pair; [ | | flia Haa ]; cycle 1. {
   intros H; apply Nat.eq_mul_0 in H.
   destruct H as [H| H]; [ flia Haa H | ].
   apply Nat.pow_nonzero in H; [ easy | flia Haa ].
 }
-rewrite NQpair_diag; [ | flia Haa ].
-rewrite NQmul_1_r, <- Nat.pow_succ_r'.
+rewrite pair_diag; [ | flia Haa ].
+rewrite mul_1_r, <- Nat.pow_succ_r'.
 destruct Haa as (Ha, Ha1).
 rewrite NQsub_pair_pos; [ | flia | now apply Nat.pow_nonzero | ]; cycle 1. {
   apply Nat.mul_le_mono_l.
-  apply (lt_le_trans _ 2); [ flia | cbn ].
+  apply (Nat.lt_le_trans _ 2); [ flia | cbn ].
   replace 2 with (2 * 1) by flia.
   apply Nat.mul_le_mono; [ flia Ha Ha1 | ].
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.

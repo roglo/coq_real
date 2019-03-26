@@ -215,7 +215,7 @@ destruct H3 as [H3| [H3| H3]].
        now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
      }
      do 2 rewrite Nat.mul_1_l in H6.
-     apply Q.NQle_pair in H6; [ | easy | pauto ].
+     apply Q.le_pair in H6; [ | easy | pauto ].
      apply (Nat.mul_lt_mono_pos_r (rad ^ s)); [ apply Nat.neq_0_lt_0; pauto | ].
      eapply le_lt_trans; [ apply H6 | ].
      rewrite Nat.mul_sub_distr_l.
@@ -253,15 +253,15 @@ destruct H3 as [H3| [H3| H3]].
        apply Q.NQlt_pair; [ easy | pauto | cbn ].
        now rewrite Nat.add_0_r; apply Nat.neq_0_lt_0.
      }
-     rewrite Q.NQmul_pair_den_num in H4; [ | easy ].
+     rewrite Q.mul_pair_den_num in H4; [ | easy ].
      rewrite Q.NQsub_pair_pos in H4; [ | easy | pauto | ]; cycle 1. {
        do 2 rewrite Nat.mul_1_l.
        now apply Nat_pow_ge_1.
      }
      do 2 rewrite Nat.mul_1_l in H4.
-     rewrite Q.NQmul_pair in H4; [ | pauto | easy ].
+     rewrite Q.mul_pair in H4; [ | pauto | easy ].
      rewrite Nat.mul_1_r in H4.
-     apply Q.NQle_pair in H4; [ | easy | pauto ].
+     apply Q.le_pair in H4; [ | easy | pauto ].
      rewrite Nat.mul_1_l, Nat.mul_comm in H4.
      rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in H4.
      remember (min_n (i + 1) j - (i + 1) - 1) as n eqn:Hn.
@@ -295,15 +295,15 @@ destruct H3 as [H3| [H3| H3]].
     rewrite Nat.mul_1_l; cbn.
     now apply Nat.neq_0_lt_0.
   }
-  rewrite Q.NQmul_pair_den_num in H4; [ | easy ].
+  rewrite Q.mul_pair_den_num in H4; [ | easy ].
   enough (H : (Q.NQnum x // 1 < Q.NQden x // 1)%Q). {
     apply Q.NQlt_pair in H; [ | easy | easy ].
     now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
   }
-  eapply Q.NQle_lt_trans; [ apply H4 | ].
-  rewrite Q.NQmul_sub_distr_r, Q.NQmul_1_l.
-  apply Q.NQsub_lt.
-  rewrite Q.NQmul_comm, Q.NQmul_pair_den_num; [ | easy ].
+  eapply Q.le_lt_trans; [ apply H4 | ].
+  rewrite Q.mul_sub_distr_r, Q.mul_1_l.
+  apply Q.sub_lt.
+  rewrite Q.mul_comm, Q.mul_pair_den_num; [ | easy ].
   replace 0%Q with (0 // 1)%Q by easy.
   apply Q.NQlt_pair; [ easy | | ].
   *now apply Nat.neq_0_lt_0, Nat_pow_ge_1.
@@ -370,7 +370,7 @@ destruct H3 as [H3| [H3| H3]].
   }
   do 2 rewrite Nat.mul_1_l.
   rewrite Q.NQfrac_pair.
-  apply Q.NQle_pair; [ pauto | pauto | ].
+  apply Q.le_pair; [ pauto | pauto | ].
   rewrite Nat_mod_less_small; [ | flia Hs12 ].
   rewrite Nat_sub_sub_swap.
   replace (2 * rad ^ s1 - rad ^ s1) with (rad ^ s1) by flia.
