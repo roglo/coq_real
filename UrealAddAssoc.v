@@ -1781,9 +1781,9 @@ assert (Hu1 : u (i + 1) = 0) by (unfold "⊕" in Huv1; flia Huv1).
 assert (Hv1 : v (i + 1) = 0) by (unfold "⊕" in Huv1; flia Huv1).
 destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
   assert (Hv2 : v (i + 2) = 2) by (unfold "⊕" in Huv2; flia Huv2 Hu2).
+  apply Nat.eq_add_1 in Huvj3.
   destruct j. {
     rewrite Nat.add_0_r in Huvj3.
-    apply Nat.eq_add_1 in Huvj3.
     destruct Huvj3 as [(Hu3, Hv3)| (Hu3, Hv3)]. {
       move Hu3 after Hv2; move Hv3 after Hu3.
       specialize (H1 0) as H.
@@ -2002,6 +2002,38 @@ destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
     cbn; f_equal.
     now apply GQ.GQeq_eq.
   }
+  destruct j. {
+    replace (i + 1 + 2) with (i + 3) in Huvj2 by flia.
+    replace (i + 1 + 3) with (i + 4) in Huvj3 by flia.
+    specialize (Huvbef 1 Nat.lt_1_2) as Huv3.
+    replace (i + 1 + 2) with (i + 3) in Huv3 by flia.
+    unfold "⊕" in Huv3.
+    destruct Huvj3 as [(Hu4, Hv4)| (Hu4, Hv4)]. {
+      move Hu4 after Huv3; move Hv4 after Hu4.
+...
+      specialize (H1 0) as H.
+      rewrite Nat.add_0_r in H.
+      destruct H as (Huv4, Hc3).
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S i) with (i + 1) by flia.
+      unfold "⊕" at 1.
+      rewrite Hu1, Nat.add_0_l.
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S (i + 1)) with (i + 2) by flia.
+      unfold "⊕" at 1.
+      rewrite Hu2, Nat.add_0_l.
+      replace (P v (i + 1)) with 1. 2: {
+        symmetry.
+        unfold P, d2n, prop_carr, dig.
+        rewrite Hv1, Nat.add_0_l.
+        unfold carry.
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + 1)) with (i + 2) by easy.
+        rewrite Hv2, Hr2, NQpair_diag; [ | easy ].
+        rewrite NQintg_add_nat_l; [ | now apply NQle_0_mul_r ].
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + 2)) with (i + 3) by easy.
+        rewrite Hv3, NQadd_0_l.
 ...
 replace (u (i + 1)) with 0. 2: {
   unfold "⊕" in Huv1.
