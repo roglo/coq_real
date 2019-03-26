@@ -1778,6 +1778,10 @@ assert
   apply H1.
 }
 replace (i + S j + 2) with (i + j + 3) in Huvj by flia.
+destruct (zerop j) as [Hj| Hj]. {
+  (* en principe fait ci-dessous plus loin *)
+  ...
+}
 set (u' := λ k, if le_dec k (i + j) then u k else u (k + 1)).
 set (v' := λ k, if le_dec k (i + j) then v k else v (k + 1)).
 specialize (IHj u' v').
@@ -1795,8 +1799,17 @@ assert (H : ∀ k, v' (i + k) ≤ 2). {
 specialize (IHj H); clear H.
 assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
   intros p.
-...
-assert (Huvbef' : ∀ k : nat, k < j → (u' ⊕ v') (i + k + 2) = 2). {
+  admit.
+}
+specialize (IHj H); clear H.
+assert (H : (u' ⊕ v') (i + 1) = 0). {
+  unfold u', v'; cbn.
+  destruct (le_dec (i + 1) (i + j)) as [H2| H2]; [ apply Huv1 | ].
+  apply Nat.nle_gt in H2.
+  destruct j; [ flia Hj | flia H2 ].
+}
+specialize (IHj H); clear H.
+assert (H : ∀ k : nat, k < j → (u' ⊕ v') (i + k + 2) = 2). {
   intros p Hp.
   unfold u', v'; cbn.
   destruct (le_dec (i + p + 2) (i + j)) as [Hpj| Hpj]. {
@@ -1806,11 +1819,13 @@ assert (Huvbef' : ∀ k : nat, k < j → (u' ⊕ v') (i + k + 2) = 2). {
   replace (i + p + 2 + 1) with (i + (p + 1) + 2) by flia.
   apply Huvbef; flia Hp.
 }
-assert (Huvj' : (u' ⊕ v') (i + j + 2) = 1). {
+specialize (IHj H); clear H.
+assert (H : (u' ⊕ v') (i + j + 2) = 1). {
   unfold u', v'; cbn.
   destruct (le_dec (i + j + 2) (i + j)) as [Hpj| Hpj]; [ flia Hpj | ].
   now replace (i + j + 2 + 1) with (i + j + 3) by flia.
 }
+specialize (IHj H); clear H.
 ...
 specialize (Huvbef j (Nat.lt_succ_diag_r _)) as Huvj2.
 replace (i + S j + 2) with (i + j + 3) in Huvj by flia.
