@@ -1767,10 +1767,39 @@ assert
   }
   now specialize (H1 H Huvj).
 }
-destruct j. {
+revert u v Hu Hv Hauv Huv1 Huvbef Huvj H1.
+induction j; intros. {
   rewrite Nat.add_0_r in Huvj.
-  apply rad_2_sum_3_all_9_0_1_A_lt_1; try easy.
+  now apply rad_2_sum_3_all_9_0_1_A_lt_1.
 }
+set (u' := λ k, if le_dec k (i + j + 1) then u k else u (k + 1)).
+set (v' := λ k, if le_dec k (i + j + 1) then v k else v (k + 1)).
+specialize (IHj u' v').
+assert (Huvbef' : ∀ k : nat, k < j → (u' ⊕ v') (i + k + 2) = 2). {
+  intros p Hp.
+  unfold u', v'; cbn.
+  destruct (le_dec (i + p + 2) (i + j + 1)) as [Hpj| Hpj]. {
+    apply Huvbef.
+    flia Hp.
+  }
+  apply Nat.nle_gt in Hpj.
+  replace (i + p + 2 + 1) with (i + (p + 1) + 2) by flia.
+  apply Huvbef; flia Hp.
+}
+assert (Huvj' : (u' ⊕ v') (i + j + 2) = 1). {
+  unfold u', v'; cbn.
+  destruct (le_dec (i + j + 2) (i + j + 1)) as [Hpj| Hpj]. {
+...
+    replace (i + j + 2) with (i + S j + 1)
+    apply Huvj.
+    flia Hp.
+  }
+  apply Nat.nlt_ge in Hpj.
+  replace (i + p + 2 + 1) with (i + (p + 1) + 2) by flia.
+  apply Huvbef; flia Hp.
+
+...
+
 specialize (Huvbef j (Nat.lt_succ_diag_r _)) as Huvj2.
 replace (i + S j + 2) with (i + j + 3) in Huvj by flia.
 rename Huvj into Huvj3.
@@ -2814,7 +2843,7 @@ rewrite summation_eq_compat with
   now rewrite Nat.add_comm.
 }
 rewrite <- summation_mul_distr_l.
-remember Q.NQ_of_pair as f; simpl; subst f.
+remember Q.of_pair as f; simpl; subst f.
 rewrite Q.power_summation; [ | flia Hr ].
 replace (n - 1 - (i + 1)) with (n - i - 1 - 1) by flia Hin.
 remember (n - i - 1) as s eqn:Hs.
