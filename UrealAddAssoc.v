@@ -1779,8 +1779,10 @@ specialize (Huvbef 0 (Nat.lt_0_succ _)) as Huv2.
 rewrite Nat.add_0_r in Huv2; move Huv2 before Huv1.
 assert (Hu1 : u (i + 1) = 0) by (unfold "⊕" in Huv1; flia Huv1).
 assert (Hv1 : v (i + 1) = 0) by (unfold "⊕" in Huv1; flia Huv1).
+clear Huv1.
 destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
   assert (Hv2 : v (i + 2) = 2) by (unfold "⊕" in Huv2; flia Huv2 Hu2).
+  clear Huv2.
   apply Nat.eq_add_1 in Huvj3.
   destruct j. {
     rewrite Nat.add_0_r in Huvj3.
@@ -2005,9 +2007,8 @@ destruct (Nat.eq_dec (u (i + 2)) 0) as [Hu2| Hu2]. {
   destruct j. {
     replace (i + 1 + 2) with (i + 3) in Huvj2 by flia.
     replace (i + 1 + 3) with (i + 4) in Huvj3 by flia.
-    specialize (Huvbef 1 Nat.lt_1_2) as Huv3.
-    replace (i + 1 + 2) with (i + 3) in Huv3 by flia.
-    unfold "⊕" in Huv3.
+    rename Huvj2 into Huv3.
+    move Huv3 after Hv2.
     destruct Huvj3 as [(Hu4, Hv4)| (Hu4, Hv4)]. {
       move Hu4 after Huv3; move Hv4 after Hu4.
 ...
