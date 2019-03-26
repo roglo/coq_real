@@ -1811,7 +1811,42 @@ destruct (zerop j) as [Hj| Hj]. {
       replace (P v (i + 2)) with 0. 2: {
         symmetry; unfold P, d2n, prop_carr, dig.
         rewrite Huv2, Hr2, Nat_mod_add_same_l; [ | easy ].
-...
+        replace (carry v (i + 2)) with 0; [ easy | ].
+        symmetry; unfold carry.
+        apply Q.intg_small; split; [ easy | ].
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + 2)) with (i + 3) by easy.
+        rewrite Hv3, Q.add_0_l.
+        apply (Q.mul_lt_mono_pos_r (2 // 1)%Q); [ easy | ].
+        rewrite <- Q.mul_assoc.
+        rewrite Q.mul_pair; [ | easy | easy ].
+        rewrite Hr2, Q.pair_diag; [ | easy ].
+        rewrite Q.mul_1_r, Q.mul_1_l.
+        eapply Q.le_lt_trans. {
+          apply (A_upper_bound_for_adds 2); rewrite Hr2.
+          intros; do 2 rewrite <- Nat.add_assoc; easy.
+        }
+        rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+        now apply Q.sub_lt.
+      }
+      rewrite Q.add_0_l.
+      apply (Q.mul_lt_mono_pos_r (2 // 1)%Q); [ easy | ].
+      rewrite <- Q.mul_assoc.
+      rewrite Q.mul_pair; [ | easy | easy ].
+      rewrite Hr2, Q.pair_diag; [ | easy ].
+      rewrite Q.mul_1_r, Q.mul_1_l.
+      eapply Q.le_lt_trans. {
+        apply (A_upper_bound_for_adds 2); rewrite Hr2.
+        intros; do 2 rewrite <- Nat.add_assoc; cbn.
+        replace 2 with (1 + 1) by easy.
+        unfold "⊕".
+        apply Nat.add_le_mono; [ easy | ].
+        replace 1 with (rad - 1) by flia Hr2.
+        apply P_le.
+      }
+      rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+      now apply Q.sub_lt.
+    }
     apply Q.lt_add_lt_sub_l.
     apply (Q.lt_le_trans _ (1 * 1 // 2)%Q). 2: {
       rewrite Q.mul_1_l, Hr2.
@@ -1821,8 +1856,10 @@ destruct (zerop j) as [Hj| Hj]. {
       specialize (P_le v (i + 2)) as H2.
       flia Hr2 Hp1 H2.
     }
-    remember (u (i + 2)) as u2 eqn:Hu2; symmetry in Hu2.
+    rewrite Hr2.
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
 ...
+    remember (u (i + 2)) as u2 eqn:Hu2; symmetry in Hu2.
     apply Q.lt_add_lt_sub_l.
     apply (Q.lt_le_trans _ (1 * 1 // 2)%Q). 2: {
       rewrite Q.mul_1_l.
@@ -1834,7 +1871,6 @@ destruct (zerop j) as [Hj| Hj]. {
     }
     apply Q.mul_lt_mono_pos_r; [ easy | ].
 ...
-
   unfold "⊕" at 1; unfold "⊕" in Huv2.
   remember (u (i + 2)) as u2 eqn:Hu2; symmetry in Hu2.
 ...
