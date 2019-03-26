@@ -30,13 +30,13 @@ Definition of_nat n :=
   | S _ => NQpos (GQ_of_nat n)
   end.
 
-Definition NQ_of_pair n d :=
+Definition of_pair n d :=
   match n with
   | 0 => NQ0
   | _ => NQpos (GQ_of_pair n d)
   end.
 
-Notation "a // b" := (NQ_of_pair a b) : NQ_scope.
+Notation "a // b" := (of_pair a b) : NQ_scope.
 
 Notation "0" := NQ0 : NQ_scope.
 Notation "1" := (1 // 1)%Q : NQ_scope.
@@ -58,40 +58,40 @@ Definition den x :=
 Arguments num x%Q.
 Arguments den x%Q.
 
-Definition NQcompare x y :=
+Definition compare x y :=
   match x with
   | NQ0 => match y with NQ0 => Eq | NQpos _ => Lt | NQneg _ => Gt end
   | NQpos px => match y with NQpos py => GQcompare px py | _ => Gt end
   | NQneg px => match y with NQneg py => GQcompare py px | _ => Lt end
   end.
 
-Definition NQlt x y :=
+Definition lt x y :=
   match x with
   | NQ0 => match y with NQpos _ => True | _ => False end
   | NQpos px => match y with NQpos py => GQlt px py | _ => False end
   | NQneg px => match y with NQneg py => GQlt py px | _ => True end
   end.
-Arguments NQlt x%Q y%Q.
+Arguments lt x%Q y%Q.
 
-Definition NQle x y :=
+Definition le x y :=
   match x with
   | NQ0 => match y with NQ0 | NQpos _ => True | _ => False end
   | NQpos px => match y with NQpos py => GQle px py | _ => False end
   | NQneg px => match y with NQneg py => GQle py px | _ => True end
   end.
-Arguments NQle x%Q y%Q.
+Arguments le x%Q y%Q.
 
-Definition NQgt x y := NQlt y x.
-Definition NQge x y := NQle y x.
+Definition gt x y := lt y x.
+Definition ge x y := le y x.
 
-Notation "x < y" := (NQlt x y) : NQ_scope.
-Notation "x ≤ y" := (NQle x y) : NQ_scope.
-Notation "x > y" := (NQgt x y) : NQ_scope.
-Notation "x ≥ y" := (NQge x y) : NQ_scope.
-Notation "x < y < z" := (NQlt x y ∧ NQlt y z) : NQ_scope.
-Notation "x ≤ y < z" := (NQle x y ∧ NQlt y z) : NQ_scope.
-Notation "x < y ≤ z" := (NQlt x y ∧ NQle y z) : NQ_scope.
-Notation "x ≤ y ≤ z" := (NQle x y ∧ NQle y z) : NQ_scope.
+Notation "x < y" := (lt x y) : NQ_scope.
+Notation "x ≤ y" := (le x y) : NQ_scope.
+Notation "x > y" := (gt x y) : NQ_scope.
+Notation "x ≥ y" := (ge x y) : NQ_scope.
+Notation "x < y < z" := (lt x y ∧ lt y z) : NQ_scope.
+Notation "x ≤ y < z" := (le x y ∧ lt y z) : NQ_scope.
+Notation "x < y ≤ z" := (lt x y ∧ le y z) : NQ_scope.
+Notation "x ≤ y ≤ z" := (le x y ∧ le y z) : NQ_scope.
 
 Theorem NQeq_dec : ∀ x y : ty, {x = y} + {x ≠ y}.
 Proof.
@@ -169,32 +169,32 @@ Definition NQadd_neg_l px y :=
   | NQneg py => NQneg (px + py)
   end.
 
-Definition NQadd x y :=
+Definition add x y :=
   match x with
   | NQ0 => y
   | NQpos px => NQadd_pos_l px y
   | NQneg px => NQadd_neg_l px y
   end.
 
-Definition NQopp x :=
+Definition opp x :=
   match x with
   | NQ0 => NQ0
   | NQpos px => NQneg px
   | NQneg px => NQpos px
   end.
 
-Definition NQsub x y := NQadd x (NQopp y).
+Definition sub x y := add x (opp y).
 
-Definition NQabs x :=
+Definition abs x :=
   match x with
   | NQneg px => NQpos px
   | _ => x
   end.
 
-Notation "- x" := (NQopp x) : NQ_scope.
-Notation "x + y" := (NQadd x y) : NQ_scope.
-Notation "x - y" := (NQsub x y) : NQ_scope.
-Notation "‖ x ‖" := (NQabs x) (at level 60) : NQ_scope.
+Notation "- x" := (opp x) : NQ_scope.
+Notation "x + y" := (add x y) : NQ_scope.
+Notation "x - y" := (sub x y) : NQ_scope.
+Notation "‖ x ‖" := (abs x) (at level 60) : NQ_scope.
 
 Definition NQmul_pos_l px y :=
   match y with
@@ -210,23 +210,23 @@ Definition NQmul_neg_l px y :=
   | NQneg py => NQpos (px * py)
   end.
 
-Definition NQmul x y :=
+Definition mul x y :=
   match x with
   | NQ0 => NQ0
   | NQpos px => NQmul_pos_l px y
   | NQneg px => NQmul_neg_l px y
   end.
 
-Definition NQinv x :=
+Definition inv x :=
   match x with
   | NQ0 => NQ0
   | NQpos px => NQpos (/ px)
   | NQneg px => NQneg (/ px)
   end.
 
-Notation "x * y" := (NQmul x y) : NQ_scope.
-Notation "x / y" := (NQmul x (NQinv y)) : NQ_scope.
-Notation "/ x" := (NQinv x) : NQ_scope.
+Notation "x * y" := (mul x y) : NQ_scope.
+Notation "x / y" := (mul x (inv y)) : NQ_scope.
+Notation "/ x" := (inv x) : NQ_scope.
 
 Theorem NQmatch_match_comp : ∀ A c p q (f0 : A) fp fn,
   match
@@ -554,14 +554,14 @@ Proof. intros; apply NQadd_assoc. Qed.
 Theorem NQadd_sub_swap : ∀ x y z, (x + y - z)%Q = (x - z + y)%Q.
 Proof.
 intros.
-unfold NQsub.
+unfold sub.
 apply NQadd_add_swap.
 Qed.
 
 Theorem NQsub_sub_swap : ∀ x y z, (x - y - z = x - z - y)%Q.
 Proof.
 intros.
-unfold NQsub.
+unfold sub.
 apply NQadd_add_swap.
 Qed.
 
@@ -582,7 +582,7 @@ Proof. easy. Qed.
 Theorem NQsub_add : ∀ a b, (a - b + b)%Q = a.
 Proof.
 intros.
-unfold NQsub.
+unfold sub.
 rewrite NQadd_add_swap, <- NQadd_assoc.
 now rewrite NQadd_opp_r, NQsub_diag, NQadd_0_r.
 Qed.
@@ -590,7 +590,7 @@ Qed.
 Theorem NQadd_sub : ∀ a b, (a + b - b)%Q = a.
 Proof.
 intros.
-unfold NQsub.
+unfold sub.
 rewrite <- NQadd_assoc.
 now rewrite NQadd_opp_r, NQsub_diag, NQadd_0_r.
 Qed.
@@ -1217,14 +1217,14 @@ Qed.
 
 Theorem NQsub_cancel_l : ∀ x y z, (x - y = x - z)%Q ↔ (y = z)%Q.
 Proof.
-unfold NQsub.
+unfold sub.
 split; intros H; [ | now subst y ].
 now apply NQadd_cancel_l, NQopp_inj in H.
 Qed.
 
 Theorem NQsub_cancel_r : ∀ x y z, (x - z = y - z)%Q ↔ (x = y)%Q.
 Proof.
-unfold NQsub.
+unfold sub.
 split; intros H; [ | now subst y ].
 now apply NQadd_cancel_r in H.
 Qed.
@@ -1275,7 +1275,7 @@ Qed.
 Theorem NQopp_sub_distr : ∀ x y, (- (x - y))%Q = (- x + y)%Q.
 Proof.
 intros.
-unfold NQsub.
+unfold sub.
 rewrite NQopp_add_distr.
 apply NQsub_opp_r.
 Qed.
@@ -1283,7 +1283,7 @@ Qed.
 Theorem NQsub_add_distr : ∀ x y z, (x - (y + z))%Q = (x - y - z)%Q.
 Proof.
 intros.
-unfold NQsub.
+unfold sub.
 rewrite NQopp_add_distr.
 apply NQadd_assoc.
 Qed.
@@ -1291,7 +1291,7 @@ Qed.
 Theorem NQsub_sub_distr : ∀ x y z, (x - (y - z))%Q = (x - y + z)%Q.
 Proof.
 intros.
-unfold NQsub at 2.
+unfold sub at 2.
 rewrite NQsub_add_distr.
 now rewrite NQsub_opp_r.
 Qed.
@@ -1799,7 +1799,7 @@ Proof.
 intros * Hb Hd Hle.
 destruct b; [ flia Hb | ].
 destruct d; [ flia Hd | ].
-unfold NQsub.
+unfold sub.
 destruct a. {
   destruct c; [ easy | cbn in Hle; flia Hle ].
 }
@@ -1845,7 +1845,7 @@ Proof.
 intros * Hb Hd Hlt.
 destruct b; [ flia Hb | ].
 destruct d; [ flia Hd | ].
-unfold NQsub.
+unfold sub.
 destruct a.
 -destruct c; [ now rewrite Nat.mul_0_r | ].
  remember (S b) as x; simpl; subst x.
@@ -2805,10 +2805,10 @@ Qed.
 Definition ord_ring_def :=
   {| rng_t := ty;
      rng_zero := 0%Q;
-     rng_add := NQadd;
-     rng_sub := NQsub;
-     rng_mul := NQmul;
-     rng_le := NQle |}.
+     rng_add := add;
+     rng_sub := sub;
+     rng_mul := mul;
+     rng_le := le |}.
 
 Canonical Structure ord_ring_def.
 
@@ -2906,7 +2906,7 @@ induction n.
  symmetry; apply NQpair_diag; flia Ha.
 -rewrite summation_split_last; [ | flia ].
  rewrite IHn.
- remember NQ_of_pair as f; remember S as g; cbn; subst f g.
+ remember of_pair as f; remember S as g; cbn; subst f g.
  rewrite NQadd_pair; [ | | apply Nat.pow_nonzero; flia Ha ]; cycle 1. {
    intros H.
    apply Nat.eq_mul_0 in H.
@@ -2983,25 +2983,25 @@ Qed.
 
 End Q.
 
-Notation "a // b" := (Q.NQ_of_pair a b) : NQ_scope.
+Notation "a // b" := (Q.of_pair a b) : NQ_scope.
 Notation "0" := Q.NQ0 : NQ_scope.
 Notation "1" := (1 // 1)%Q : NQ_scope.
 Notation "2" := (2 // 1)%Q : NQ_scope.
 Notation "3" := (3 // 1)%Q : NQ_scope.
-Notation "x < y" := (Q.NQlt x y) : NQ_scope.
-Notation "x ≤ y" := (Q.NQle x y) : NQ_scope.
-Notation "x > y" := (Q.NQgt x y) : NQ_scope.
-Notation "x ≥ y" := (Q.NQge x y) : NQ_scope.
-Notation "x < y < z" := (Q.NQlt x y ∧ Q.NQlt y z) : NQ_scope.
-Notation "x ≤ y < z" := (Q.NQle x y ∧ Q.NQlt y z) : NQ_scope.
-Notation "x < y ≤ z" := (Q.NQlt x y ∧ Q.NQle y z) : NQ_scope.
-Notation "x ≤ y ≤ z" := (Q.NQle x y ∧ Q.NQle y z) : NQ_scope.
-Notation "- x" := (Q.NQopp x) : NQ_scope.
-Notation "x + y" := (Q.NQadd x y) : NQ_scope.
-Notation "x - y" := (Q.NQsub x y) : NQ_scope.
-Notation "‖ x ‖" := (Q.NQabs x) (at level 60) : NQ_scope.
-Notation "x * y" := (Q.NQmul x y) : NQ_scope.
-Notation "x / y" := (Q.NQmul x (Q.NQinv y)) : NQ_scope.
-Notation "/ x" := (Q.NQinv x) : NQ_scope.
+Notation "x < y" := (Q.lt x y) : NQ_scope.
+Notation "x ≤ y" := (Q.le x y) : NQ_scope.
+Notation "x > y" := (Q.gt x y) : NQ_scope.
+Notation "x ≥ y" := (Q.ge x y) : NQ_scope.
+Notation "x < y < z" := (Q.lt x y ∧ Q.lt y z) : NQ_scope.
+Notation "x ≤ y < z" := (Q.le x y ∧ Q.lt y z) : NQ_scope.
+Notation "x < y ≤ z" := (Q.lt x y ∧ Q.le y z) : NQ_scope.
+Notation "x ≤ y ≤ z" := (Q.le x y ∧ Q.le y z) : NQ_scope.
+Notation "- x" := (Q.opp x) : NQ_scope.
+Notation "x + y" := (Q.add x y) : NQ_scope.
+Notation "x - y" := (Q.sub x y) : NQ_scope.
+Notation "‖ x ‖" := (Q.abs x) (at level 60) : NQ_scope.
+Notation "x * y" := (Q.mul x y) : NQ_scope.
+Notation "x / y" := (Q.mul x (Q.inv y)) : NQ_scope.
+Notation "/ x" := (Q.inv x) : NQ_scope.
 
 Canonical Structure Q.ord_ring_def.
