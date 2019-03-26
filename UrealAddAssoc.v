@@ -1858,6 +1858,45 @@ destruct (zerop j) as [Hj| Hj]. {
     }
     rewrite Hr2.
     apply Q.mul_lt_mono_pos_r; [ easy | ].
+    rewrite A_split_first; [ | unfold min_n; rewrite Hr2; flia ].
+    replace (S (i + 2)) with (i + 3) by easy.
+    unfold "⊕" at 1.
+    rewrite Hu3, Nat.add_0_l.
+    apply Q.lt_add_lt_sub_l.
+    specialize (H1 0) as H2; destruct H2 as (H2, H3).
+    rewrite Nat.add_0_r in H2, H3.
+    replace (P v (i + 3)) with 0. 2: {
+      symmetry; unfold P, d2n, prop_carr, dig.
+      rewrite Hv3; unfold carry.
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S (i + 3)) with (i + 4) by easy.
+      replace (v (i + 4)) with 2. 2: {
+        symmetry; unfold "⊕" in H2.
+        specialize (Hu 4); specialize (Hv 4); flia Hu Hv H2.
+      }
+      rewrite Hr2, Q.pair_diag; [ | easy ].
+      rewrite Q.intg_add_nat_l.
+...
+    apply (Q.lt_le_trans _ (1 * 1 // 2)%Q). 2: {
+    rewrite Q.mul_1_l.
+    remember (P v (i + 1)) as p1 eqn:Hp1.
+    destruct p1; [ rewrite Q.sub_0_r; apply Q.le_pair_mono_l; flia | ].
+    destruct p1; [ apply Q.le_refl | ].
+    specialize (P_le v (i + 1)) as H2.
+    flia Hr2 Hp1 H2.
+  }
+...
+    apply (Q.mul_lt_mono_pos_r (2 // 1)%Q); [ easy | ].
+        rewrite <- Q.mul_assoc.
+        rewrite Q.mul_pair; [ | easy | easy ].
+        rewrite Hr2, Q.pair_diag; [ | easy ].
+        rewrite Q.mul_1_r, Q.mul_1_l.
+        eapply Q.le_lt_trans. {
+          apply (A_upper_bound_for_adds 2); rewrite Hr2.
+          intros; do 2 rewrite <- Nat.add_assoc; easy.
+        }
+        rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+        now apply Q.sub_lt.
 ...
     remember (u (i + 2)) as u2 eqn:Hu2; symmetry in Hu2.
     apply Q.lt_add_lt_sub_l.
