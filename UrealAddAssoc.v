@@ -1790,6 +1790,9 @@ destruct (zerop j) as [Hj| Hj]. {
   replace (S i) with (i + 1) by flia.
   unfold "⊕" at 1; rewrite Hu1, Nat.add_0_l, Hr2.
   apply Q.lt_add_lt_sub_l.
+...
+(* attention parce que ici, P v (i + 1) peut valoir 0 ; du coup, cette
+   transitivité, trop lourde, fait échouer la démonstration plus bas *)
   apply (Q.lt_le_trans _ (1 * 1 // 2)%Q). 2: {
     rewrite Q.mul_1_l.
     remember (P v (i + 1)) as p1 eqn:Hp1.
@@ -1911,12 +1914,13 @@ destruct (zerop j) as [Hj| Hj]. {
     now apply Q.sub_lt.
   }
   destruct u2. {
-...
-    replace (P v (i + 2)) with 0. 2: {
-      symmetry; unfold P, d2n, prop_carr, dig.
-      replace (v (i + 2)) with 1 by flia Huv2.
-      replace (carry v (i + 2)) with 1; [ now rewrite Hr2 | ].
-      symmetry; unfold carry.
+(* ça ne marche pas. Si v(i+3)=0, alors P v (i+2) vaut 1, d'après mes
+   calculs
+      v = 0 1 0 2 2 2 2 ...
+   P(v) = 0 1 1 1 1 1 1 ...
+      u = 0 1 1 1 1 1 1 ...
+ u+P(v) = 0 2 2 2 2 2 2 ...
+    u+v = 0 2 1 3 3 3 3 ... *)
 ...
 }
 set (u' := λ k, if le_dec k (i + j) then u k else u (k + 1)).
@@ -3366,6 +3370,10 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
          -idtac.
 Check rad_2_sum_3_all_9_0_1_A_lt_1.
 (* 0 2 1, c'est pareil que 0 1 : à démontrer *)
+         apply Q.nlt_ge in Hup; apply Hup; clear Hup.
+         rewrite <- A_additive; subst nk.
+...
+Check rad_2_sum_3_all_9_0_2_1_A_lt_1.
 ...
           specialize (rad_2_sum_3_all_9_02_1_3 w (i + 1) Hr2) as H1.
           replace (i + 1 + 1) with (i + 2) in H1 by flia.
