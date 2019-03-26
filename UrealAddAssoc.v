@@ -1744,38 +1744,58 @@ Theorem rad_2_sum_3_all_9_0_2_1_A_lt_1 {r : radix} : ∀ u v i j,
   → ∀ k, (A i (min_n i k) (u ⊕ P v) < 1)%Q.
 Proof.
 intros * Hr2 Hu Hv Hauv Huv1 Huvbef Huvj *.
+revert u v Hu Hv Hauv Huv1 Huvbef Huvj.
+induction j; intros. {
+  rewrite Nat.add_0_r in Huvj.
+  now apply rad_2_sum_3_all_9_0_1_A_lt_1.
+}
 assert
   (H1 :
      ∀ k,
-       (u ⊕ v) (i + j + k + 3) = 3 ∧ carry (u ⊕ v) (i + j + k + 2) = 2). {
-  specialize (rad_2_sum_3_all_9_02_1_333 (u ⊕ v) (i + j) Hr2) as H1.
-  assert (H : ∀ k, (u ⊕ v) (i + j + k) ≤ 3 * (rad - 1)). {
-    intros p; rewrite <- Nat.add_assoc.
+       (u ⊕ v) (i + j + k + 4) = 3 ∧ carry (u ⊕ v) (i + j + k + 3) = 2). {
+  specialize (rad_2_sum_3_all_9_02_1_333 (u ⊕ v) (i + j + 1) Hr2) as H1.
+  assert (H : ∀ k, (u ⊕ v) (i + j + 1 + k) ≤ 3 * (rad - 1)). {
+    intros p; do 2 rewrite <- Nat.add_assoc.
     unfold "⊕"; replace 3 with (1 + 2) by easy.
     rewrite Nat.mul_add_distr_r, Nat.mul_1_l, Hr2.
     apply Nat.add_le_mono; [ apply Hu | apply Hv ].
   }
   specialize (H1 H); clear H.
-  assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + j) k = true). {
-    now intros; apply A_ge_1_add_r_true_if.
+  assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + j + 1) k = true). {
+    now intros; rewrite <- Nat.add_assoc; apply A_ge_1_add_r_true_if.
   }
   specialize (H1 H); clear H.
-  assert (H : (u ⊕ v) (i + j + 1) = 0 ∨ (u ⊕ v) (i + j + 1) = 2). {
-    destruct j; [ left; now rewrite Nat.add_0_r | ].
-    right; replace (i + S j + 1) with (i + j + 2) by flia.
-    now specialize (Huvbef j (Nat.lt_succ_diag_r _)).
+  assert (H : (u ⊕ v) (i + j + 1 + 1) = 0 ∨ (u ⊕ v) (i + j + 1 + 1) = 2). {
+    specialize (Huvbef j (Nat.lt_succ_diag_r _)).
+    right; rewrite <- Huvbef; f_equal; flia.
   }
-  now specialize (H1 H Huvj).
-}
-revert u v Hu Hv Hauv Huv1 Huvbef Huvj H1.
-induction j; intros. {
-  rewrite Nat.add_0_r in Huvj.
-  now apply rad_2_sum_3_all_9_0_1_A_lt_1.
+  specialize (H1 H).
+  replace (i + j + 1) with (i + S j) in H1 by flia.
+  specialize (H1 Huvj).
+  intros p.
+  replace (i + j + p + 4) with (i + S j + p + 3) by flia.
+  replace (i + j + p + 3) with (i + S j + p + 2) by flia.
+  apply H1.
 }
 replace (i + S j + 2) with (i + j + 3) in Huvj by flia.
 set (u' := λ k, if le_dec k (i + j) then u k else u (k + 1)).
 set (v' := λ k, if le_dec k (i + j) then v k else v (k + 1)).
 specialize (IHj u' v').
+assert (H : ∀ k, u' (i + k) ≤ 1). {
+  intros p; unfold u'.
+  destruct (le_dec (i + p) (i + j)); [ apply Hu | ].
+  now rewrite <- Nat.add_assoc.
+}
+specialize (IHj H); clear H.
+assert (H : ∀ k, v' (i + k) ≤ 2). {
+  intros p; unfold v'.
+  destruct (le_dec (i + p) (i + j)); [ apply Hv | ].
+  now rewrite <- Nat.add_assoc.
+}
+specialize (IHj H); clear H.
+assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
+  intros p.
+...
 assert (Huvbef' : ∀ k : nat, k < j → (u' ⊕ v') (i + k + 2) = 2). {
   intros p Hp.
   unfold u', v'; cbn.
@@ -1791,51 +1811,6 @@ assert (Huvj' : (u' ⊕ v') (i + j + 2) = 1). {
   destruct (le_dec (i + j + 2) (i + j)) as [Hpj| Hpj]; [ flia Hpj | ].
   now replace (i + j + 2 + 1) with (i + j + 3) by flia.
 }
-assert
-  (H1' :
-     ∀ k,
-     (u' ⊕ v') (i + j + k + 3) = 3 ∧ carry (u' ⊕ v') (i + j + k + 2) = 2). {
-  intros p.
-  unfold u' at 1, v' at 1; cbn.
-  destruct (le_dec (i + j + p + 3) (i + j)) as [H2| H2]; [ flia H2 | ].
-  clear H2.
-  specialize (H1 p) as (H2, H3).
-  replace (i + S j + p + 3) with (i + j + p + 3 + 1) in H2 by flia.
-  unfold "⊕" at 1 in H2; rewrite H2.
-  split; [ easy | ].
-  unfold carry in H3.
-  rewrite all_fA_ge_1_ε_NQintg_A' in H3; cycle 1. {
-    intros q; do 3 rewrite <- Nat.add_assoc.
-    cbn; rewrite Hr2.
-    unfold "⊕".
-    apply Nat.add_le_mono; [ apply Hu | apply Hv ].
-  } {
-    intros q; do 2 rewrite <- Nat.add_assoc.
-    now apply A_ge_1_add_r_true_if.
-  }
-  unfold carry.
-  rewrite all_fA_ge_1_ε_NQintg_A'; cycle 1. {
-    intros q; do 2 rewrite <- Nat.add_assoc.
-    unfold u', v'; cbn.
-    rewrite <- Nat.add_assoc.
-    destruct (le_dec (i + (j + (p + S (S q)))) (i + j)) as [H4| H4]. {
-      rewrite Hr2.
-      apply Nat.add_le_mono; [ apply Hu | apply Hv ].
-    }
-    rewrite <- Nat.add_assoc.
-    rewrite Hr2.
-    apply Nat.add_le_mono; [ apply Hu | apply Hv ].
-  } {
-    intros q; do 2 rewrite <- Nat.add_assoc.
-    apply A_ge_1_add_r_true_if.
-    rewrite Nat.add_assoc, Nat.add_shuffle0.
-    specialize (Hauv (j + p + q + 2)) as H4.
-    apply A_ge_1_true_iff in H4.
-    apply A_ge_1_true_iff.
-    eapply Q.le_trans; [ apply H4 | ].
-(* mouais, non, ça va pas *)
-...
-  }
 ...
 specialize (Huvbef j (Nat.lt_succ_diag_r _)) as Huvj2.
 replace (i + S j + 2) with (i + j + 3) in Huvj by flia.
