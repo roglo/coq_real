@@ -2039,6 +2039,21 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
       destruct (le_dec (min_n i p - 1) (i + j)) as [H| H]; [ flia H Hip | ].
       now rewrite Nat.sub_add; flia Hip.
     }
+    rewrite Q.mul_add_distr_r, Q.add_assoc.
+    rewrite Q.mul_add_distr_r, Q.add_assoc, Q.add_add_swap in H2.
+...
+    destruct j. {
+      rewrite Nat.add_0_r, Huv1, Q.add_0_l, Nat.pow_0_r, Q.mul_1_r in H2.
+      rewrite Nat.add_0_r, Nat.pow_0_r, Q.mul_1_r.
+      rewrite Nat.add_0_r in H1, Hip, Huvj, Ha1, Ha2.
+      rewrite Q.add_assoc.
+      eapply Q.le_trans; [ apply H2 | ].
+...
+      rewrite (Q.frac_small
+...
+      replace ((u ⊕ v) (min_n i p)) with 3. 2: {
+        specialize (H1 (min_n i p - i - 4)) as H3.
+        replace (i + (min_n i p - i - 4) + 4) with (min_n i p) in H3 by flia Hip.
 ...
 }
 specialize (IHj H); clear H.
