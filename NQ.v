@@ -174,17 +174,32 @@ Definition to_decimal_uint (gq : GQ) : Decimal.uint :=
   let (num, den) := PQ_of_GQ gq in
   Nat.to_uint (num + 1).
 
+Definition to_decimal_int (q : ty) : option Decimal.int :=
+  match q with
+  | Q.Zero => Some (Pos Nil)
+  | Q.Pos gq => Some (Pos (to_decimal_uint gq))
+  | Q.Neg gq => Some (Neg (to_decimal_uint gq))
+  end.
+
+(*
 Definition to_decimal_int (q : ty) : Decimal.int :=
   match q with
   | Q.Zero => Pos Nil
   | Q.Pos gq => Pos (to_decimal_uint gq)
   | Q.Neg gq => Neg (to_decimal_uint gq)
   end.
+*)
 
-Numeral Notation ty of_decimal_int to_decimal_int : Q_scope.
+Numeral Notation Q.ty of_decimal_int to_decimal_int : Q_scope.
 
 Check 5%Q.
+Compute (to_decimal_int 5%Q).
+Compute (Nat.to_int 5).
+
 Compute (Nat.to_uint 5).
+Print Nat.to_uint.
+Print Nat.to_little_uint.
+
 Check 6%Q.
 
 Print Decimal.uint.
