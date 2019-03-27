@@ -1790,18 +1790,45 @@ destruct (zerop j) as [Hj| Hj]. {
   replace (S i) with (i + 1) by flia.
   unfold "⊕" at 1; rewrite Hu1, Nat.add_0_l, Hr2.
   apply Q.lt_add_lt_sub_l.
-...
-(* attention parce que ici, P v (i + 1) peut valoir 0 ; du coup, cette
-   transitivité, trop lourde, fait échouer la démonstration plus bas *)
-  apply (Q.lt_le_trans _ (1 * 1 // 2)%Q). 2: {
-    rewrite Q.mul_1_l.
-    remember (P v (i + 1)) as p1 eqn:Hp1.
-    destruct p1; [ rewrite Q.sub_0_r; apply Q.le_pair_mono_l; flia | ].
-    destruct p1; [ apply Q.le_refl | ].
-    specialize (P_le v (i + 1)) as H2.
-    flia Hr2 Hp1 H2.
+  destruct (zerop (P v (i + 1))) as [Hp1| Hzp1]. {
+    rewrite Hp1, Q.sub_0_r.
+    apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
+    rewrite <- Q.mul_assoc.
+    rewrite Q.mul_pair; [ | easy | easy ].
+    rewrite Q.pair_diag; [ | easy ].
+    rewrite Q.mul_1_r, Q.mul_1_l.
+    eapply Q.le_lt_trans. {
+      apply (A_upper_bound_for_adds 2); rewrite Hr2.
+      intros; do 2 rewrite <- Nat.add_assoc; cbn.
+      replace 2 with (1 + 1) by easy; unfold "⊕".
+      apply Nat.add_le_mono; [ easy | ].
+      replace 1 with (rad - 1) by flia Hr2.
+      apply P_le.
+    }
+    rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+    now apply Q.sub_lt.
   }
+  assert (Hp1 : P v (i + 1) = 1). {
+    specialize (P_le v (i + 1)) as H.
+    rewrite Hr2 in H; flia Hzp1 H.
+  }
+  clear Hzp1.
+  rewrite Hp1.
+  replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
   apply Q.mul_lt_mono_pos_r; [ easy | ].
+  unfold P, d2n, prop_carr, dig in Hp1.
+  rewrite Hv1, Nat.add_0_l in Hp1.
+  rewrite Nat.mod_small in Hp1. 2: {
+    specialize (carry_upper_bound_for_adds 2 v i) as H2.
+    assert (H : 2 ≠ 0) by easy.
+    specialize (H2 H); clear H.
+    assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+      intros; rewrite <- Nat.add_assoc, Hr2; apply Hv.
+    }
+    specialize (H2 H); clear H.
+    now rewrite Hr2.
+  }
+  rename Hp1 into Hc1.
   unfold "⊕" in Huv2.
   remember (u (i + 2)) as u2 eqn:Hu2; symmetry in Hu2.
   rewrite A_split_first; [ | min_n_ge ].
@@ -1820,7 +1847,7 @@ destruct (zerop j) as [Hj| Hj]. {
         rewrite A_split_first; [ | min_n_ge ].
         replace (S (i + 2)) with (i + 3) by easy.
         rewrite Hv3, Q.add_0_l.
-        apply (Q.mul_lt_mono_pos_r (2 // 1)%Q); [ easy | ].
+        apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
         rewrite <- Q.mul_assoc.
         rewrite Q.mul_pair; [ | easy | easy ].
         rewrite Hr2, Q.pair_diag; [ | easy ].
@@ -1841,8 +1868,7 @@ destruct (zerop j) as [Hj| Hj]. {
       eapply Q.le_lt_trans. {
         apply (A_upper_bound_for_adds 2); rewrite Hr2.
         intros; do 2 rewrite <- Nat.add_assoc; cbn.
-        replace 2 with (1 + 1) by easy.
-        unfold "⊕".
+        replace 2 with (1 + 1) by easy; unfold "⊕".
         apply Nat.add_le_mono; [ easy | ].
         replace 1 with (rad - 1) by flia Hr2.
         apply P_le.
@@ -1914,13 +1940,10 @@ destruct (zerop j) as [Hj| Hj]. {
     now apply Q.sub_lt.
   }
   destruct u2. {
-(* ça ne marche pas. Si v(i+3)=0, alors P v (i+2) vaut 1, d'après mes
-   calculs
-      v = 0 1 0 2 2 2 2 ...
-   P(v) = 0 1 1 1 1 1 1 ...
-      u = 0 1 1 1 1 1 1 ...
- u+P(v) = 0 2 2 2 2 2 2 ...
-    u+v = 0 2 1 3 3 3 3 ... *)
+    unfold "⊕" in Huv3.
+    apply Nat.eq_add_1 in Huv3.
+    destruct Huv3 as [(Hu3, Hv3)| (Hu3, Hv3)]. {
+      (* normalement, pas compatible avec Hc1 *)
 ...
 }
 set (u' := λ k, if le_dec k (i + j) then u k else u (k + 1)).
