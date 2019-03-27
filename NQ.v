@@ -148,120 +148,48 @@ Notation "x * y" := (mul x y) : Q_scope.
 Notation "x / y" := (mul x (inv y)) : Q_scope.
 Notation "/ x" := (inv x) : Q_scope.
 
-End Notations.
-
 (*
-
-End Q.
-Import Q.Notations.
-Import Decimal.
-
-Definition of_decimal_uint (n : Decimal.uint) : Q.ty :=
+Definition of_decimal_uint (n : Decimal.uint) : Q :=
   match n with
-  | Nil => Q.Zero
-  | D0 d => Q.Zero
-  | D1 d => Q.Zero
-  | D2 d => Q.Zero
-  | D3 d => Q.Zero
-  | D4 d => Q.Zero
-  | D5 d => (5 // 1)%Q
-  | D6 d => Q.Zero
-  | D7 d => Q.Zero
-  | D8 d => Q.Zero
-  | D9 d => Q.Zero
+  | Decimal.Nil => Zero
+  | Decimal.D0 d => Zero
+  | Decimal.D1 d => Zero
+  | Decimal.D2 d => Zero
+  | Decimal.D3 d => Zero
+  | Decimal.D4 d => Zero
+  | Decimal.D5 d => (5 // 1)%Q
+  | Decimal.D6 d => Zero
+  | Decimal.D7 d => Zero
+  | Decimal.D8 d => Zero
+  | Decimal.D9 d => Zero
   end.
 
-Definition of_decimal_int (n : Decimal.int) : Q.ty :=
+Definition of_decimal_int (n : Decimal.int) : Q :=
   match n with
-  | Pos ui => of_decimal_uint ui
-  | Neg ui => of_decimal_uint ui
+  | Decimal.Pos ui => of_decimal_uint ui
+  | Decimal.Neg ui => of_decimal_uint ui
   end.
 
 Definition to_decimal_uint (gq : GQ) : Decimal.uint :=
   let (num, den) := PQ_of_GQ gq in
   Nat.to_uint (num + 1).
 
-Definition to_decimal_int (q : Q.ty) : option Decimal.int :=
+Definition to_decimal_int (q : Q) : Decimal.int :=
   match q with
-  | Q.Zero => Some (Pos Nil)
-  | Q.Pos gq => Some (Pos (to_decimal_uint gq))
-  | Q.Neg gq => Some (Neg (to_decimal_uint gq))
+  | Zero => Decimal.Pos Decimal.Nil
+  | Pos gq => Decimal.Pos (to_decimal_uint gq)
+  | Neg gq => Decimal.Neg (to_decimal_uint gq)
   end.
 
-(*
-Definition to_decimal_int (q : ty) : Decimal.int :=
-  match q with
-  | Q.Zero => Pos Nil
-  | Q.Pos gq => Pos (to_decimal_uint gq)
-  | Q.Neg gq => Neg (to_decimal_uint gq)
-  end.
-*)
-
-Numeral Notation Q.ty of_decimal_int to_decimal_int : Q_scope
-  (abstract after 5000).
-
-Definition GQ_of_decimal_int (d : Decimal.int) : GQ :=
-  match d with
-  | Pos ui | Neg ui =>
-      match (of_decimal_uint ui) with
-      | Q.Zero => 1%GQ
-      | Q.Pos gq => gq
-      | Q.Neg gq => gq
-      end
-  end.
-
-Definition GQ_to_decimal_int (gq : GQ) : Decimal.int :=
-  Pos (to_decimal_uint gq).
-
-Numeral Notation GQ GQ_of_decimal_int GQ_to_decimal_int : GQ_scope.
-
-Require Import PQ.
-
-Definition PQ_of_decimal_int (d : Decimal.int) : PQ :=
-  match d with
-  | Pos ui | Neg ui =>
-      match (of_decimal_uint ui) with
-      | Q.Zero => 1%PQ
-      | Q.Pos gq => PQ_of_GQ gq
-      | Q.Neg gq => PQ_of_GQ gq
-      end
-  end.
-
-Definition PQ_to_decimal_int (pq : PQ) : Decimal.int :=
-  Pos (to_decimal_uint (GQ_of_PQ pq)).
+Numeral Notation Q of_decimal_int to_decimal_int : Q_scope.
 
 Check 5%Q.
-Check 5%GQ.
-
-Numeral Notation PQ PQ_of_decimal_int PQ_to_decimal_int : PQ_scope
-  (abstract after 5000).
-
-Check 5%Q.
-Check 5%GQ.
-
-Check 5%PQ.
-Check 6%PQ.
-Compute (to_decimal_int 5%Q).
-Compute (Nat.to_int 5).
-Compute (Nat.to_uint 5).
-Print Nat.to_uint.
-Print Nat.to_little_uint.
-
 Check 6%Q.
-
-Print Decimal.uint.
-
-Print Nat.to_uint.
-
-...
+*)
 
 End Notations.
-*)
 
 Import Notations.
-
-Check 5%Q.
-Check 6%Q.
 
 Definition of_nat n :=
   match n with

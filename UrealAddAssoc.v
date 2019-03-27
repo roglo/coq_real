@@ -1995,7 +1995,30 @@ assert (H : ∀ k, v' (i + k) ≤ 2). {
 specialize (IHj H); clear H.
 assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
   intros p.
+  apply A_ge_1_true_iff.
+  specialize (Hauv p) as H2.
+  apply A_ge_1_true_iff in H2.
+  destruct (lt_dec (i + j + 1) (min_n i p)) as [Hip| Hip]. {
+    rewrite (A_split (i + j + 1)); [ | flia Hip ].
+    rewrite Nat.add_sub, Nat_sub_sub_swap, Nat.add_sub.
+    rewrite (Nat.add_comm i j), Nat.add_sub, (Nat.add_comm j i).
+    rewrite (A_split (i + j + 1)) in H2; [ | flia Hip ].
+    rewrite Nat.add_sub, Nat_sub_sub_swap, Nat.add_sub in H2.
+    rewrite (Nat.add_comm i j), Nat.add_sub, (Nat.add_comm j i) in H2.
+    remember (A i (i + j + 1) (u ⊕ v)) as a1 eqn:Ha1.
+    replace (A i (i + j + 1) (u' ⊕ v')) with a1. 2: {
+      rewrite Ha1; apply A_eq_compat; intros q Hq.
+      unfold "⊕", u', v'.
+      destruct (le_dec q (i + j)) as [| Hqq]; [ easy | flia Hq Hqq ].
+    }
+    rewrite A_split_first in H2; [ | flia Hip ].
+    replace (S (i + j)) with (i + j + 1) in H2 by flia.
+    remember (A (i + j + 1) (min_n i p) (u ⊕ v)) as a2 eqn:Ha2.
+    move a2 before a1.
+    replace (A (i + j) (min_n i p) (u' ⊕ v')) with a2. 2: {
+      rewrite Ha2; unfold A.
 ...
+
 }
 specialize (IHj H); clear H.
 assert (H : (u' ⊕ v') (i + 1) = 0). {
