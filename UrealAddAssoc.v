@@ -2,6 +2,8 @@
 
 Require Import Utf8 Arith NPeano Psatz PeanoNat.
 Require Import Misc Summation Ureal UrealNorm NQ UrealAddAssoc1.
+Import Q.Notations.
+
 Set Nested Proofs Allowed.
 
 Theorem pred_rad_lt_rad {r : radix} : rad - 1 < rad.

@@ -1,6 +1,8 @@
-Set Nested Proofs Allowed.
 Require Import Utf8 Arith PeanoNat.
 Require Import Misc Summation NQ Ureal.
+Import Q.Notations.
+
+Set Nested Proofs Allowed.
 
 Definition P {r : radix} u := d2n (prop_carr u).
 Definition add_series (u v : nat → nat) i := u i + v i.

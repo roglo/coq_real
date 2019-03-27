@@ -1,6 +1,8 @@
-Set Nested Proofs Allowed.
 Require Import Utf8 Arith Psatz NPeano.
 Require Import Misc Summation Ureal NQ.
+Import Q.Notations.
+
+Set Nested Proofs Allowed.
 
 Hint Resolve Nat.neq_0_lt_0.
 

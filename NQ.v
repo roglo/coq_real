@@ -24,24 +24,137 @@ Inductive ty :=
 Arguments Pos p%GQ.
 Arguments Neg p%GQ.
 
-Definition of_nat n :=
-  match n with
-  | 0 => Zero
-  | S _ => Pos (GQ_of_nat n)
-  end.
-
 Definition of_pair n d :=
   match n with
   | 0 => Zero
   | _ => Pos (GQ_of_pair n d)
   end.
 
-Notation "a // b" := (of_pair a b) : Q_scope.
+Definition opp x :=
+  match x with
+  | Zero => Zero
+  | Pos px => Neg px
+  | Neg px => Pos px
+  end.
 
+Definition abs x :=
+  match x with
+  | Neg px => Pos px
+  | _ => x
+  end.
+
+Definition inv x :=
+  match x with
+  | Zero => Zero
+  | Pos px => Pos (/ px)
+  | Neg px => Neg (/ px)
+  end.
+
+Definition lt x y :=
+  match x with
+  | Zero => match y with Pos _ => True | _ => False end
+  | Pos px => match y with Pos py => GQlt px py | _ => False end
+  | Neg px => match y with Neg py => GQlt py px | _ => True end
+  end.
+Arguments lt x%Q y%Q.
+
+Definition le x y :=
+  match x with
+  | Zero => match y with Zero | Pos _ => True | _ => False end
+  | Pos px => match y with Pos py => GQle px py | _ => False end
+  | Neg px => match y with Neg py => GQle py px | _ => True end
+  end.
+Arguments le x%Q y%Q.
+
+Definition gt x y := lt y x.
+Definition ge x y := le y x.
+
+Definition NQadd_pos_l px y :=
+  match y with
+  | Zero => Pos px
+  | Pos py => Pos (px + py)
+  | Neg py =>
+      match GQcompare px py with
+      | Eq => Zero
+      | Lt => Neg (py - px)
+      | Gt => Pos (px - py)
+      end
+  end.
+
+Definition NQadd_neg_l px y :=
+  match y with
+  | Zero => Neg px
+  | Pos py =>
+      match GQcompare px py with
+      | Eq => Zero
+      | Lt => Pos (py - px)
+      | Gt => Neg (px - py)
+      end
+  | Neg py => Neg (px + py)
+  end.
+
+Definition add x y :=
+  match x with
+  | Zero => y
+  | Pos px => NQadd_pos_l px y
+  | Neg px => NQadd_neg_l px y
+  end.
+
+Definition sub x y := add x (opp y).
+
+Definition NQmul_pos_l px y :=
+  match y with
+  | Zero => Zero
+  | Pos py => Pos (px * py)
+  | Neg py => Neg (px * py)
+  end.
+
+Definition NQmul_neg_l px y :=
+  match y with
+  | Zero => Zero
+  | Pos py => Neg (px * py)
+  | Neg py => Pos (px * py)
+  end.
+
+Definition mul x y :=
+  match x with
+  | Zero => Zero
+  | Pos px => NQmul_pos_l px y
+  | Neg px => NQmul_neg_l px y
+  end.
+
+Module Notations.
+
+Notation "a // b" := (of_pair a b) : Q_scope.
 Notation "0" := Zero : Q_scope.
 Notation "1" := (1 // 1)%Q : Q_scope.
 Notation "2" := (2 // 1)%Q : Q_scope.
 Notation "3" := (3 // 1)%Q : Q_scope.
+Notation "x < y" := (lt x y) : Q_scope.
+Notation "x ≤ y" := (le x y) : Q_scope.
+Notation "x > y" := (gt x y) : Q_scope.
+Notation "x ≥ y" := (ge x y) : Q_scope.
+Notation "x < y < z" := (lt x y ∧ lt y z) : Q_scope.
+Notation "x ≤ y < z" := (le x y ∧ lt y z) : Q_scope.
+Notation "x < y ≤ z" := (lt x y ∧ le y z) : Q_scope.
+Notation "x ≤ y ≤ z" := (le x y ∧ le y z) : Q_scope.
+Notation "- x" := (opp x) : Q_scope.
+Notation "x + y" := (add x y) : Q_scope.
+Notation "x - y" := (sub x y) : Q_scope.
+Notation "‖ x ‖" := (abs x) (at level 60) : Q_scope.
+Notation "x * y" := (mul x y) : Q_scope.
+Notation "x / y" := (mul x (inv y)) : Q_scope.
+Notation "/ x" := (inv x) : Q_scope.
+
+End Notations.
+
+Import Notations.
+
+Definition of_nat n :=
+  match n with
+  | 0 => Zero
+  | S _ => Pos (GQ_of_nat n)
+  end.
 
 Definition num x :=
   match x with
@@ -64,34 +177,6 @@ Definition compare x y :=
   | Pos px => match y with Pos py => GQcompare px py | _ => Gt end
   | Neg px => match y with Neg py => GQcompare py px | _ => Lt end
   end.
-
-Definition lt x y :=
-  match x with
-  | Zero => match y with Pos _ => True | _ => False end
-  | Pos px => match y with Pos py => GQlt px py | _ => False end
-  | Neg px => match y with Neg py => GQlt py px | _ => True end
-  end.
-Arguments lt x%Q y%Q.
-
-Definition le x y :=
-  match x with
-  | Zero => match y with Zero | Pos _ => True | _ => False end
-  | Pos px => match y with Pos py => GQle px py | _ => False end
-  | Neg px => match y with Neg py => GQle py px | _ => True end
-  end.
-Arguments le x%Q y%Q.
-
-Definition gt x y := lt y x.
-Definition ge x y := le y x.
-
-Notation "x < y" := (lt x y) : Q_scope.
-Notation "x ≤ y" := (le x y) : Q_scope.
-Notation "x > y" := (gt x y) : Q_scope.
-Notation "x ≥ y" := (ge x y) : Q_scope.
-Notation "x < y < z" := (lt x y ∧ lt y z) : Q_scope.
-Notation "x ≤ y < z" := (le x y ∧ lt y z) : Q_scope.
-Notation "x < y ≤ z" := (lt x y ∧ le y z) : Q_scope.
-Notation "x ≤ y ≤ z" := (le x y ∧ le y z) : Q_scope.
 
 Theorem eq_dec : ∀ x y : ty, {x = y} + {x ≠ y}.
 Proof.
@@ -144,89 +229,6 @@ destruct x as [| px| px], y as [| py| py]; try easy; simpl.
 -f_equal; now apply GQle_antisymm.
 -f_equal; now apply GQle_antisymm.
 Qed.
-
-Definition NQadd_pos_l px y :=
-  match y with
-  | Zero => Pos px
-  | Pos py => Pos (px + py)
-  | Neg py =>
-      match GQcompare px py with
-      | Eq => Zero
-      | Lt => Neg (py - px)
-      | Gt => Pos (px - py)
-      end
-  end.
-
-Definition NQadd_neg_l px y :=
-  match y with
-  | Zero => Neg px
-  | Pos py =>
-      match GQcompare px py with
-      | Eq => Zero
-      | Lt => Pos (py - px)
-      | Gt => Neg (px - py)
-      end
-  | Neg py => Neg (px + py)
-  end.
-
-Definition add x y :=
-  match x with
-  | Zero => y
-  | Pos px => NQadd_pos_l px y
-  | Neg px => NQadd_neg_l px y
-  end.
-
-Definition opp x :=
-  match x with
-  | Zero => Zero
-  | Pos px => Neg px
-  | Neg px => Pos px
-  end.
-
-Definition sub x y := add x (opp y).
-
-Definition abs x :=
-  match x with
-  | Neg px => Pos px
-  | _ => x
-  end.
-
-Notation "- x" := (opp x) : Q_scope.
-Notation "x + y" := (add x y) : Q_scope.
-Notation "x - y" := (sub x y) : Q_scope.
-Notation "‖ x ‖" := (abs x) (at level 60) : Q_scope.
-
-Definition NQmul_pos_l px y :=
-  match y with
-  | Zero => Zero
-  | Pos py => Pos (px * py)
-  | Neg py => Neg (px * py)
-  end.
-
-Definition NQmul_neg_l px y :=
-  match y with
-  | Zero => Zero
-  | Pos py => Neg (px * py)
-  | Neg py => Pos (px * py)
-  end.
-
-Definition mul x y :=
-  match x with
-  | Zero => Zero
-  | Pos px => NQmul_pos_l px y
-  | Neg px => NQmul_neg_l px y
-  end.
-
-Definition inv x :=
-  match x with
-  | Zero => Zero
-  | Pos px => Pos (/ px)
-  | Neg px => Neg (/ px)
-  end.
-
-Notation "x * y" := (mul x y) : Q_scope.
-Notation "x / y" := (mul x (inv y)) : Q_scope.
-Notation "/ x" := (inv x) : Q_scope.
 
 Theorem match_match_comp : ∀ A c p q (f0 : A) fp fn,
   match
@@ -2982,26 +2984,5 @@ now do 2 rewrite Nat.mul_1_l.
 Qed.
 
 End Q.
-
-Notation "a // b" := (Q.of_pair a b) : Q_scope.
-Notation "0" := Q.Zero : Q_scope.
-Notation "1" := (1 // 1)%Q : Q_scope.
-Notation "2" := (2 // 1)%Q : Q_scope.
-Notation "3" := (3 // 1)%Q : Q_scope.
-Notation "x < y" := (Q.lt x y) : Q_scope.
-Notation "x ≤ y" := (Q.le x y) : Q_scope.
-Notation "x > y" := (Q.gt x y) : Q_scope.
-Notation "x ≥ y" := (Q.ge x y) : Q_scope.
-Notation "x < y < z" := (Q.lt x y ∧ Q.lt y z) : Q_scope.
-Notation "x ≤ y < z" := (Q.le x y ∧ Q.lt y z) : Q_scope.
-Notation "x < y ≤ z" := (Q.lt x y ∧ Q.le y z) : Q_scope.
-Notation "x ≤ y ≤ z" := (Q.le x y ∧ Q.le y z) : Q_scope.
-Notation "- x" := (Q.opp x) : Q_scope.
-Notation "x + y" := (Q.add x y) : Q_scope.
-Notation "x - y" := (Q.sub x y) : Q_scope.
-Notation "‖ x ‖" := (Q.abs x) (at level 60) : Q_scope.
-Notation "x * y" := (Q.mul x y) : Q_scope.
-Notation "x / y" := (Q.mul x (Q.inv y)) : Q_scope.
-Notation "/ x" := (Q.inv x) : Q_scope.
 
 Canonical Structure Q.ord_ring_def.

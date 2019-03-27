@@ -1,6 +1,7 @@
 (* diff between two nats *)
 
 Require Import Utf8 Arith.
+
 Set Nested Proofs Allowed.
 
 Fixpoint diff a b :=

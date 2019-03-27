@@ -2,10 +2,12 @@
    Implemented as function of type nat → nat.
    Operations + and * implemented using LPO. *)
 
-Set Nested Proofs Allowed.
 Require Import Utf8 Arith Psatz NPeano.
 Require Import Misc Summation NQ.
 Import Init.Nat PeanoNat.
+Import Q.Notations.
+
+Set Nested Proofs Allowed.
 
 (* "fast" lia, to improve compilation speed *)
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.

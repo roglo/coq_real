@@ -1,8 +1,9 @@
 (* gcd a b with computation of a/gcd a b and b/gcd a b on the fly *)
 
 Require Import Utf8 Arith Psatz.
-Set Nested Proofs Allowed.
 Require Import Misc.
+
+Set Nested Proofs Allowed.
 
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 
