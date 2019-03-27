@@ -147,24 +147,29 @@ Notation "x * y" := (mul x y) : Q_scope.
 Notation "x / y" := (mul x (inv y)) : Q_scope.
 Notation "/ x" := (inv x) : Q_scope.
 
+End Notations.
+
+End Q.
+
+Import Q.Notations.
 Import Decimal.
 
-Definition of_decimal_uint (n : Decimal.uint) : ty :=
+Definition of_decimal_uint (n : Decimal.uint) : Q.ty :=
   match n with
-  | Nil => Zero
-  | D0 d => Zero
-  | D1 d => Zero
-  | D2 d => Zero
-  | D3 d => Zero
-  | D4 d => Zero
+  | Nil => Q.Zero
+  | D0 d => Q.Zero
+  | D1 d => Q.Zero
+  | D2 d => Q.Zero
+  | D3 d => Q.Zero
+  | D4 d => Q.Zero
   | D5 d => (5 // 1)%Q
-  | D6 d => Zero
-  | D7 d => Zero
-  | D8 d => Zero
-  | D9 d => Zero
+  | D6 d => Q.Zero
+  | D7 d => Q.Zero
+  | D8 d => Q.Zero
+  | D9 d => Q.Zero
   end.
 
-Definition of_decimal_int (n : Decimal.int) : ty :=
+Definition of_decimal_int (n : Decimal.int) : Q.ty :=
   match n with
   | Pos ui => of_decimal_uint ui
   | Neg ui => of_decimal_uint ui
@@ -174,7 +179,7 @@ Definition to_decimal_uint (gq : GQ) : Decimal.uint :=
   let (num, den) := PQ_of_GQ gq in
   Nat.to_uint (num + 1).
 
-Definition to_decimal_int (q : ty) : option Decimal.int :=
+Definition to_decimal_int (q : Q.ty) : option Decimal.int :=
   match q with
   | Q.Zero => Some (Pos Nil)
   | Q.Pos gq => Some (Pos (to_decimal_uint gq))
@@ -190,12 +195,26 @@ Definition to_decimal_int (q : ty) : Decimal.int :=
   end.
 *)
 
-Numeral Notation Q.ty of_decimal_int to_decimal_int : Q_scope.
+Numeral Notation Q.ty of_decimal_int to_decimal_int : Q_scope
+  (abstract after 5000).
+
+Print Decimal.uint.
+
+Definition GQ_of_decimal_int (d : Decimal.int) : GQ :=
+  match d with
+  | Pos ui => of_decimal_uint ui
+  | Neg ui => of_decimal_uint ui
+  end.
+
+Definition GQ_to_decimal_int (gq : GQ) : Decimal.int :=
+  Pos (to_decimal_uint gq).
+
+Numeral Notation GQ GQ_of_decimal_int GQ_to_decimal_int : GQ_scope
+  (abstract after 5000).
 
 Check 5%Q.
 Compute (to_decimal_int 5%Q).
 Compute (Nat.to_int 5).
-
 Compute (Nat.to_uint 5).
 Print Nat.to_uint.
 Print Nat.to_little_uint.
