@@ -2028,6 +2028,8 @@ destruct (zerop j) as [Hj| Hj]. {
     replace (S (i + 2)) with (i + 3) by easy.
     unfold "⊕" at 1.
     rewrite Hu3, Nat.add_0_l.
+    replace (P v (i + 3)) with 0. 2: {
+      symmetry.
 ...
 }
 set (u' := λ k, if le_dec k (i + j) then u k else u (k + 1)).
