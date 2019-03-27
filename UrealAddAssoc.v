@@ -2015,10 +2015,26 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
     replace (S (i + j)) with (i + j + 1) in H2 by flia.
     remember (A (i + j + 1) (min_n i p) (u ⊕ v)) as a2 eqn:Ha2.
     move a2 before a1.
-    replace (A (i + j) (min_n i p) (u' ⊕ v')) with a2. 2: {
+    rewrite A_split_last; [ | flia Hip ].
+    replace (A (i + j) (min_n i p - 1) (u' ⊕ v')) with a2. 2: {
       rewrite Ha2; unfold A.
+      destruct (lt_dec (i + j + 2) (min_n i p)) as [Hip1| Hip1]. {
+        rewrite summation_shift; [ symmetry | flia Hip1 ].
+        rewrite summation_shift; [ symmetry | flia Hip1 ].
+        remember (min_n i p) as c.
+        replace (c - 1 - (i + j + 1 + 1)) with (c - i - j - 3) by flia Hip.
+        replace (c - 1 - 1 - (i + j + 1)) with (c - i - j - 3) by flia Hip.
+        apply summation_eq_compat.
+        intros q Hq.
+        f_equal; [ | f_equal; flia ].
+        unfold "⊕", u', v'.
+        destruct (le_dec (i + j + 1 + q) (i + j)) as [H| H]; [ flia H | ].
+        f_equal; f_equal; flia.
+      }
+      rewrite summation_empty; [ | flia Hip Hip1 ].
+      rewrite summation_empty; [ easy | flia Hip Hip1 ].
+    }
 ...
-
 }
 specialize (IHj H); clear H.
 assert (H : (u' ⊕ v') (i + 1) = 0). {
