@@ -1755,8 +1755,11 @@ destruct (zerop j) as [Hj| Hj]. {
   subst j.
   specialize (Huvbef 0 Nat.lt_0_1) as Huv2.
   rewrite Nat.add_0_r in H1, Huvj, Huv2.
-  rename Huvj into Huv3; clear Huvbef.
+  rename Huvj into Huv3.
   move Huv2 before Huv1; move Huv3 before Huv2.
+  specialize (H1 0) as H2; destruct H2 as (Huv4, _).
+  rewrite Nat.add_0_r in Huv4.
+clear - Huv3 Huv2 Huv1 Hr2 Hu Hv Huv4.
   unfold "⊕" in Huv1; apply Nat.eq_add_0 in Huv1.
   destruct Huv1 as (Hu1, Hv1).
   rewrite A_split_first; [ | min_n_ge ].
@@ -1783,13 +1786,13 @@ destruct (zerop j) as [Hj| Hj]. {
   unfold P, d2n, prop_carr, dig in Hp1.
   rewrite Hv1, Nat.add_0_l in Hp1.
   rewrite Nat.mod_small in Hp1. 2: {
-    specialize (carry_upper_bound_for_adds 2 v i) as H2.
+    specialize (carry_upper_bound_for_adds 2 v i) as H3.
     assert (H : 2 ≠ 0) by easy.
-    specialize (H2 H); clear H.
+    specialize (H3 H); clear H.
     assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
       intros; rewrite <- Nat.add_assoc, Hr2; apply Hv.
     }
-    specialize (H2 H); clear H.
+    specialize (H3 H); clear H.
     now rewrite Hr2.
   }
   rename Hp1 into Hc1.
@@ -1827,8 +1830,8 @@ destruct (zerop j) as [Hj| Hj]. {
       remember (P v (i + 2)) as p1 eqn:Hp1.
       destruct p1; [ rewrite Q.sub_0_r; apply Q.le_pair_mono_l; flia | ].
       destruct p1; [ apply Q.le_refl | ].
-      specialize (P_le v (i + 2)) as H2.
-      flia Hr2 Hp1 H2.
+      specialize (P_le v (i + 2)) as H3.
+      flia Hr2 Hp1 H3.
     }
     rewrite Hr2.
     apply Q.mul_lt_mono_pos_r; [ easy | ].
@@ -1837,16 +1840,14 @@ destruct (zerop j) as [Hj| Hj]. {
     unfold "⊕" at 1.
     rewrite Hu3, Nat.add_0_l.
     apply Q.lt_add_lt_sub_l.
-    specialize (H1 0) as H2; destruct H2 as (H2, H3).
-    rewrite Nat.add_0_r in H2, H3.
     replace (P v (i + 3)) with 0. 2: {
       symmetry; unfold P, d2n, prop_carr, dig.
       rewrite Hv3; unfold carry.
       rewrite A_split_first; [ | min_n_ge ].
       replace (S (i + 3)) with (i + 4) by easy.
       replace (v (i + 4)) with 2. 2: {
-        symmetry; unfold "⊕" in H2.
-        specialize (Hu 4); specialize (Hv 4); flia Hu Hv H2.
+        symmetry; unfold "⊕" in Huv4.
+        specialize (Hu 4); specialize (Hv 4); flia Hu Hv Huv4.
       }
       rewrite Hr2, Q.pair_diag; [ | easy ].
       rewrite Q.intg_add_nat_l; [ | now apply Q.le_0_mul_r ].
@@ -1896,14 +1897,12 @@ destruct (zerop j) as [Hj| Hj]. {
       rewrite Hv3, Hr2.
       rewrite A_split_first; [ | min_n_ge ].
       replace (S (i + 3)) with (i + 4) by easy.
-      specialize (H1 0) as H2; destruct H2 as (H2, H3).
-      rewrite Nat.add_0_r in H2, H3.
-      unfold "⊕" in H2.
+      unfold "⊕" in Huv4.
       assert (H : u (i + 4) = 1 ∧ v (i + 4) = 2). {
-        specialize (Hu 4); specialize (Hv 4); flia Hu Hv H2.
+        specialize (Hu 4); specialize (Hv 4); flia Hu Hv Huv4.
       }
       destruct H as (Hu4, Hv4).
-      clear H2; move Hu4 before Hv3; move Hv4 before Hu4.
+      move Hu4 before Hv3; move Hv4 before Hu4.
       rewrite Hv4, Hr2, Q.pair_diag; [ | easy ].
       rewrite Q.mul_add_distr_r, Q.mul_1_l, Q.add_assoc.
       rewrite Q.add_pair; [ | easy | easy ].
@@ -1941,14 +1940,12 @@ destruct (zerop j) as [Hj| Hj]. {
       remember (carry_cases v (i + 3)) as c eqn:Hc.
       rewrite A_split_first; [ | min_n_ge ].
       replace (S (i + 3)) with (i + 4) by easy.
-      specialize (H1 0) as H2; destruct H2 as (H2, H3).
-      rewrite Nat.add_0_r in H2, H3.
-      unfold "⊕" in H2.
+      unfold "⊕" in Huv4.
       assert (H : u (i + 4) = 1 ∧ v (i + 4) = 2). {
-        specialize (Hu 4); specialize (Hv 4); flia Hu Hv H2.
+        specialize (Hu 4); specialize (Hv 4); flia Hu Hv Huv4.
       }
       destruct H as (Hu4, Hv4).
-      clear H2; move Hu4 before Hv3; move Hv4 before Hu4.
+      move Hu4 before Hv3; move Hv4 before Hu4.
       rewrite Hv4, Hr2, Q.pair_diag; [ | easy ].
       rewrite Q.intg_add_nat_l; [ | now apply Q.le_0_mul_r ].
       replace 1 with (1 + 0) at 6 by easy; f_equal.
@@ -1966,6 +1963,7 @@ destruct (zerop j) as [Hj| Hj]. {
   }
   specialize (Hu 2); flia Hu Hu2.
 }
+...
 set (u' := λ k, if le_dec k (i + j) then u k else u (k + 1)).
 set (v' := λ k, if le_dec k (i + j) then v k else v (k + 1)).
 specialize (IHj u' v').
