@@ -2021,6 +2021,13 @@ destruct (zerop j) as [Hj| Hj]. {
       apply Q.le_pair_mono_r; pauto.
     }
     rewrite Nat.add_0_r.
+    apply Q.lt_add_lt_sub_l; rewrite Hr2.
+    replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
+    rewrite A_split_first; [ | unfold min_n; rewrite Hr2; flia ].
+    replace (S (i + 2)) with (i + 3) by easy.
+    unfold "⊕" at 1.
+    rewrite Hu3, Nat.add_0_l.
 ...
 }
 set (u' := λ k, if le_dec k (i + j) then u k else u (k + 1)).
