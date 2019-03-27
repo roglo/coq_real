@@ -125,10 +125,12 @@ Definition mul x y :=
 Module Notations.
 
 Notation "a // b" := (of_pair a b) : Q_scope.
+(*
 Notation "0" := Zero : Q_scope.
 Notation "1" := (1 // 1)%Q : Q_scope.
 Notation "2" := (2 // 1)%Q : Q_scope.
 Notation "3" := (3 // 1)%Q : Q_scope.
+*)
 Notation "x < y" := (lt x y) : Q_scope.
 Notation "x ≤ y" := (le x y) : Q_scope.
 Notation "x > y" := (gt x y) : Q_scope.
@@ -145,9 +147,50 @@ Notation "x * y" := (mul x y) : Q_scope.
 Notation "x / y" := (mul x (inv y)) : Q_scope.
 Notation "/ x" := (inv x) : Q_scope.
 
+Import Decimal.
+
+Definition of_decimal_uint (n : Decimal.uint) : ty :=
+  match n with
+  | Nil => Zero
+  | D0 d => Zero
+  | D1 d => Zero
+  | D2 d => Zero
+  | D3 d => Zero
+  | D4 d => Zero
+  | D5 d => (5 // 1)%Q
+  | D6 d => Zero
+  | D7 d => Zero
+  | D8 d => Zero
+  | D9 d => Zero
+  end.
+
+Definition of_decimal_int (n : Decimal.int) : ty :=
+  match n with
+  | Pos ui => of_decimal_uint ui
+  | Neg ui => of_decimal_uint ui
+  end.
+
+Definition to_decimal_uint (gq : GQ) : Decimal.uint :=
+  let (num, den) := PQ_of_GQ gq in
+  D5 Nil.
+
+Definition to_decimal_int (q : ty) : Decimal.int :=
+  match q with
+  | Q.Zero => Pos Nil
+  | Q.Pos n => Pos (to_decimal_uint n)
+  | Q.Neg n => Neg (to_decimal_uint n)
+  end.
+
+Numeral Notation ty of_decimal_int to_decimal_int : Q_scope.
+
 End Notations.
 
 Import Notations.
+
+Check 5%Q.
+Check 6%Q.
+
+...
 
 Definition of_nat n :=
   match n with
