@@ -2034,6 +2034,11 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
       rewrite summation_empty; [ | flia Hip Hip1 ].
       rewrite summation_empty; [ easy | flia Hip Hip1 ].
     }
+    replace ((u' ⊕ v') (min_n i p - 1)) with ((u ⊕ v) (min_n i p)). 2: {
+      unfold "⊕", u', v'.
+      destruct (le_dec (min_n i p - 1) (i + j)) as [H| H]; [ flia H Hip | ].
+      now rewrite Nat.sub_add; flia Hip.
+    }
 ...
 }
 specialize (IHj H); clear H.
