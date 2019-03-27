@@ -172,16 +172,27 @@ Definition of_decimal_int (n : Decimal.int) : ty :=
 
 Definition to_decimal_uint (gq : GQ) : Decimal.uint :=
   let (num, den) := PQ_of_GQ gq in
-  D5 Nil.
+  Nat.to_uint num.
 
 Definition to_decimal_int (q : ty) : Decimal.int :=
   match q with
   | Q.Zero => Pos Nil
-  | Q.Pos n => Pos (to_decimal_uint n)
-  | Q.Neg n => Neg (to_decimal_uint n)
+  | Q.Pos gq => Pos (to_decimal_uint gq)
+  | Q.Neg gq => Neg (to_decimal_uint gq)
   end.
 
 Numeral Notation ty of_decimal_int to_decimal_int : Q_scope.
+
+Check 5%Q.
+Check 6%Q.
+
+Compute (Nat.to_uint 5).
+
+Print Decimal.uint.
+
+Print Nat.to_uint.
+
+...
 
 End Notations.
 
