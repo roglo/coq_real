@@ -6,7 +6,6 @@ Require Import Misc PQ Nat_ggcd.
 
 Set Nested Proofs Allowed.
 
-Declare Scope GQ_scope.
 Delimit Scope GQ_scope with GQ.
 
 Record GQ :=
