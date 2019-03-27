@@ -14,12 +14,19 @@ Tactic Notation "pauto" := progress auto.
 
 Delimit Scope Q_scope with Q.
 
+Inductive Q :=
+  | Zero : Q
+  | Pos : GQ → Q
+  | Neg : GQ → Q.
+
 Module Q.
 
+(*
 Inductive ty :=
   | Zero : ty
   | Pos : GQ → ty
   | Neg : GQ → ty.
+*)
 Arguments Pos p%GQ.
 Arguments Neg p%GQ.
 
@@ -125,12 +132,12 @@ Definition mul x y :=
 Module Notations.
 
 Notation "a // b" := (of_pair a b) : Q_scope.
-(*
+(**)
 Notation "0" := Zero : Q_scope.
 Notation "1" := (1 // 1)%Q : Q_scope.
 Notation "2" := (2 // 1)%Q : Q_scope.
 Notation "3" := (3 // 1)%Q : Q_scope.
-*)
+(**)
 Notation "x < y" := (lt x y) : Q_scope.
 Notation "x ≤ y" := (le x y) : Q_scope.
 Notation "x > y" := (gt x y) : Q_scope.
@@ -149,8 +156,9 @@ Notation "/ x" := (inv x) : Q_scope.
 
 End Notations.
 
-End Q.
+(*
 
+End Q.
 Import Q.Notations.
 Import Decimal.
 
@@ -198,21 +206,47 @@ Definition to_decimal_int (q : ty) : Decimal.int :=
 Numeral Notation Q.ty of_decimal_int to_decimal_int : Q_scope
   (abstract after 5000).
 
-Print Decimal.uint.
-
 Definition GQ_of_decimal_int (d : Decimal.int) : GQ :=
   match d with
-  | Pos ui => of_decimal_uint ui
-  | Neg ui => of_decimal_uint ui
+  | Pos ui | Neg ui =>
+      match (of_decimal_uint ui) with
+      | Q.Zero => 1%GQ
+      | Q.Pos gq => gq
+      | Q.Neg gq => gq
+      end
   end.
 
 Definition GQ_to_decimal_int (gq : GQ) : Decimal.int :=
   Pos (to_decimal_uint gq).
 
-Numeral Notation GQ GQ_of_decimal_int GQ_to_decimal_int : GQ_scope
+Numeral Notation GQ GQ_of_decimal_int GQ_to_decimal_int : GQ_scope.
+
+Require Import PQ.
+
+Definition PQ_of_decimal_int (d : Decimal.int) : PQ :=
+  match d with
+  | Pos ui | Neg ui =>
+      match (of_decimal_uint ui) with
+      | Q.Zero => 1%PQ
+      | Q.Pos gq => PQ_of_GQ gq
+      | Q.Neg gq => PQ_of_GQ gq
+      end
+  end.
+
+Definition PQ_to_decimal_int (pq : PQ) : Decimal.int :=
+  Pos (to_decimal_uint (GQ_of_PQ pq)).
+
+Check 5%Q.
+Check 5%GQ.
+
+Numeral Notation PQ PQ_of_decimal_int PQ_to_decimal_int : PQ_scope
   (abstract after 5000).
 
 Check 5%Q.
+Check 5%GQ.
+
+Check 5%PQ.
+Check 6%PQ.
 Compute (to_decimal_int 5%Q).
 Compute (Nat.to_int 5).
 Compute (Nat.to_uint 5).
@@ -228,13 +262,12 @@ Print Nat.to_uint.
 ...
 
 End Notations.
+*)
 
 Import Notations.
 
 Check 5%Q.
 Check 6%Q.
-
-...
 
 Definition of_nat n :=
   match n with
@@ -264,7 +297,7 @@ Definition compare x y :=
   | Neg px => match y with Neg py => GQcompare py px | _ => Lt end
   end.
 
-Theorem eq_dec : ∀ x y : ty, {x = y} + {x ≠ y}.
+Theorem eq_dec : ∀ x y : Q, {x = y} + {x ≠ y}.
 Proof.
 intros.
 destruct x as [| px| px], y as [| py| py]; try now right.
@@ -278,7 +311,7 @@ destruct x as [| px| px], y as [| py| py]; try now right.
 Qed.
 Arguments eq_dec x%Q y%Q.
 
-Theorem lt_le_dec : ∀ x y : ty, {(x < y)%Q} + {(y ≤ x)%Q}.
+Theorem lt_le_dec : ∀ x y : Q, {(x < y)%Q} + {(y ≤ x)%Q}.
 Proof.
 intros.
 destruct x as [| px| px].
@@ -290,7 +323,7 @@ destruct x as [| px| px].
 Qed.
 Arguments lt_le_dec x%Q y%Q.
 
-Theorem le_lt_dec : ∀ x y : ty, {(x ≤ y)%Q} + {(y < x)%Q}.
+Theorem le_lt_dec : ∀ x y : Q, {(x ≤ y)%Q} + {(y < x)%Q}.
 Proof.
 destruct x as [| px| px].
 -destruct y as [| py| py]; [ now left | now left | now right ].
@@ -2891,7 +2924,7 @@ now apply mul_pos_cancel_l.
 Qed.
 
 Definition ord_ring_def :=
-  {| rng_t := ty;
+  {| rng_t := Q;
      rng_zero := 0%Q;
      rng_add := add;
      rng_sub := sub;

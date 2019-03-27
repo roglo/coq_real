@@ -354,9 +354,9 @@ Definition ureal_mul_series {r : radix} a b i :=
 
 (**)
 Definition A {r : radix} (rg := Q.ord_ring) i n u :=
-  (Σ (j = i + 1, n - 1), (u j // rad ^ (j - i))%Q : Q.ty).
+  (Σ (j = i + 1, n - 1), (u j // rad ^ (j - i))%Q : Q).
 Definition B {r : radix} (rg := Q.ord_ring) i n u l :=
-  (Σ (j = n, n + l - 1), (u j // rad ^ (j - i))%Q : Q.ty).
+  (Σ (j = n, n + l - 1), (u j // rad ^ (j - i))%Q : Q).
 
 Definition NA {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), (u j * rad ^ (n - 1 - j)).
