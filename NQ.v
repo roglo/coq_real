@@ -19,16 +19,10 @@ Inductive Q :=
   | Pos : GQ → Q
   | Neg : GQ → Q.
 
-Module Q.
-
-(*
-Inductive ty :=
-  | Zero : ty
-  | Pos : GQ → ty
-  | Neg : GQ → ty.
-*)
 Arguments Pos p%GQ.
 Arguments Neg p%GQ.
+
+Module Q.
 
 Definition of_pair n d :=
   match n with
