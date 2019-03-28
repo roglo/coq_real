@@ -39,6 +39,18 @@ Arguments GQ_of_PQ x%PQ.
 Definition GQ_of_nat n := GQmake (PQ_of_nat n) (Nat.gcd_1_r (n - 1 + 1)).
 Definition GQ_of_pair n d := GQ_of_PQ (PQ_of_pair n d).
 
+Check (Nat.gcd_1_r 3).
+Check (eq_refl 1).
+
+...
+
+Compute (GQprop (GQ_of_nat 3)).
+...
+     = Nat.gcd_1_r 3
+     : Nat.gcd (PQnum1 (PQ_of_GQ (GQ_of_nat 3)) + 1) (PQden1 (PQ_of_GQ (GQ_of_nat 3)) + 1) = 1
+     = eq_refl
+     : Nat.gcd (PQnum1 (PQ_of_GQ (GQ_of_nat 3)) + 1) (PQden1 (PQ_of_GQ (GQ_of_nat 3)) + 1) = 1
+
 Definition GQadd x y := GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
 Definition GQsub x y := GQ_of_PQ (PQ_of_GQ x - PQ_of_GQ y).
 Definition GQmul x y := GQ_of_PQ (PQ_of_GQ x * PQ_of_GQ y).
