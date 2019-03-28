@@ -126,12 +126,12 @@ Definition mul x y :=
 Module Notations.
 
 Notation "a // b" := (of_pair a b) : Q_scope.
-(**)
+(*
 Notation "0" := Zero : Q_scope.
 Notation "1" := (1 // 1)%Q : Q_scope.
 Notation "2" := (2 // 1)%Q : Q_scope.
 Notation "3" := (3 // 1)%Q : Q_scope.
-(**)
+*)
 Notation "x < y" := (lt x y) : Q_scope.
 Notation "x ≤ y" := (le x y) : Q_scope.
 Notation "x > y" := (gt x y) : Q_scope.
@@ -154,7 +154,7 @@ Definition of_decimal_uint (n : Decimal.uint) : Q := (Nat.of_uint n // 1)%Q.
 Definition of_decimal_int (n : Decimal.int) : Q :=
   match n with
   | Decimal.Pos ui => of_decimal_uint ui
-  | Decimal.Neg ui => of_decimal_uint ui
+  | Decimal.Neg ui => (- of_decimal_uint ui)%Q
   end.
 
 Definition to_decimal_uint (gq : GQ) : option Decimal.uint :=
@@ -166,13 +166,15 @@ Definition to_decimal_uint (gq : GQ) : option Decimal.uint :=
 
 Definition to_decimal_int (q : Q) : option Decimal.int :=
   match q with
-  | Zero => Some (Decimal.Pos Decimal.Nil)
+  | Zero => Some (Nat.to_int 0)
   | Pos gq => option_map Decimal.Pos (to_decimal_uint gq)
   | Neg gq => option_map Decimal.Neg (to_decimal_uint gq)
   end.
 
-Numeral Notation Q of_decimal_int to_decimal_int : Q_scope.
+Numeral Notation Q of_decimal_int to_decimal_int : Q_scope
+  (abstract after 5001).
 
+(*
 Check 5%Q.
 Check 6%Q.
 Check (5 // 1)%Q.
@@ -180,13 +182,23 @@ Check (5 // 2)%Q.
 Check (53 // 1)%Q.
 Check 53%Q.
 Check 35%Q.
+Check (-28)%Q.
+Compute (-28)%Q.
+Check (-28 // 1)%Q.
+Compute (-28 // 1)%Q.
 Compute (5 // 1)%Q.
 Compute (53 // 1)%Q.
 Compute (63 // 1)%Q.
 Compute 63%Q.
 Compute (5 // 2)%Q.
-...
-(**)
+Check (0 // 1)%Q.
+Check 0%Q.
+Set Printing All.
+Check (0 // 1)%Q.
+Check 0%Q.
+Check (3 // 1)%Q.
+Check 3%Q.
+*)
 
 End Notations.
 
@@ -1681,7 +1693,7 @@ Proof.
 intros.
 unfold "//"%Q.
 destruct a; [ easy | ].
-rewrite GQpair_diag; [ now rewrite GQpair_diag | easy ].
+now rewrite GQpair_diag.
 Qed.
 
 Theorem mul_inv_pair : ∀ a b, a ≠ 0 → b ≠ 0 → (a // b * b // a = 1)%Q.
@@ -1749,7 +1761,6 @@ Theorem mul_1_l : ∀ a, (1 * a)%Q = a.
 Proof.
 intros.
 unfold "*"%Q; simpl.
-rewrite GQpair_diag; [ | easy ].
 unfold NQmul_pos_l.
 destruct a; [ easy | | ]; now rewrite GQmul_1_l.
 Qed.
@@ -2147,6 +2158,8 @@ intros * Hx.
 destruct x as [| px| px]; [ easy | | easy ].
 cbn in Hx; destruct Hx as (_, Hx).
 rewrite (GQnum_den px) in Hx.
+Check GQpair_lt_nat_r.
+....
 apply GQpair_lt_nat_r in Hx; [ | easy | easy | easy ].
 rewrite Nat.mul_1_r in Hx.
 unfold frac; cbn.

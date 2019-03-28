@@ -28,7 +28,7 @@ Definition transparentify_nat_eq {n m : nat} (H : n = m) : n = m
      | right npf => match npf H with end (* False-elimination *)
      end.
 
-Definition GQmake x p := GQmake0 x (Nat.eq_sym (transparentify_nat_eq p)).
+Definition GQmake x p := GQmake0 x (transparentify_nat_eq (Nat.eq_sym p)).
 Arguments GQmake x%PQ.
 
 Definition GQ_of_PQ x := GQmake (PQred x) (PQred_gcd x).
