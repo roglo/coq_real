@@ -10,17 +10,15 @@ Set Nested Proofs Allowed.
 Delimit Scope GQ_scope with GQ.
 
 Record GQ :=
-  GQmake0
+  GQmake
     { PQ_of_GQ : PQ;
       GQprop : Nat.gcd (PQnum1 PQ_of_GQ + 1) (PQden1 PQ_of_GQ + 1) = 1 }.
-Arguments GQmake0 PQ_of_GQ%PQ.
+Arguments GQmake PQ_of_GQ%PQ.
+Arguments PQ_of_GQ x%GQ : rename.
 
-(* the use of transparent_nat_eq below is to allow Numeral Notation of
+(* the use of transparentify below is to allow Numeral Notation of
    values of type Q (file NQ.v) work; trick given to me by Jason Gross;
    don't know why, but since it works... *)
-
-(**)
-Check Nat.eq_dec.
 
 Definition transparentify {A} (D : {A} + {¬A}) (H : A) : A :=
   match D with
@@ -28,37 +26,25 @@ Definition transparentify {A} (D : {A} + {¬A}) (H : A) : A :=
   | right npf => match npf H with end
   end.
 
-(**)
-Definition transparentify_nat_eq n m := transparentify (Nat.eq_dec n m).
 (*
-Definition transparentify_nat_eq {n m : nat} (H : n = m) : n = m :=
-  match Nat.eq_dec n m with
-  | left pf => pf
-  | right npf => match npf H with end
-  end.
+Definition GQmake x p := GQmake0 x (transparentify (Nat.eq_dec _ _) p).
+Arguments GQmake x%PQ.
 *)
 
-...
-
-Definition GQmake x p := GQmake0 x (transparentify_nat_eq p).
-
-Arguments GQmake x%PQ.
-(**)
-
 Definition GQ_of_PQ x := GQmake (PQred x) (PQred_gcd x).
-
-Arguments PQ_of_GQ x%GQ : rename.
 Arguments GQ_of_PQ x%PQ.
 
 Definition GQ_of_nat n := GQmake (PQ_of_nat n) (Nat.gcd_1_r (n - 1 + 1)).
 Definition GQ_of_pair n d := GQ_of_PQ (PQ_of_pair n d).
 
+(*
 Compute (GQprop (GQ_of_nat 3)).
 ...
      = Nat.gcd_1_r 3
      : Nat.gcd (PQnum1 (PQ_of_GQ (GQ_of_nat 3)) + 1) (PQden1 (PQ_of_GQ (GQ_of_nat 3)) + 1) = 1
      = eq_refl
      : Nat.gcd (PQnum1 (PQ_of_GQ (GQ_of_nat 3)) + 1) (PQden1 (PQ_of_GQ (GQ_of_nat 3)) + 1) = 1
+*)
 
 Definition GQadd x y := GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
 Definition GQsub x y := GQ_of_PQ (PQ_of_GQ x - PQ_of_GQ y).
