@@ -126,12 +126,12 @@ Definition mul x y :=
 Module Notations.
 
 Notation "a // b" := (of_pair a b) : Q_scope.
-(*
+(**)
 Notation "0" := Zero : Q_scope.
 Notation "1" := (1 // 1)%Q : Q_scope.
 Notation "2" := (2 // 1)%Q : Q_scope.
 Notation "3" := (3 // 1)%Q : Q_scope.
-*)
+(**)
 Notation "x < y" := (lt x y) : Q_scope.
 Notation "x ≤ y" := (le x y) : Q_scope.
 Notation "x > y" := (gt x y) : Q_scope.
@@ -148,7 +148,7 @@ Notation "x * y" := (mul x y) : Q_scope.
 Notation "x / y" := (mul x (inv y)) : Q_scope.
 Notation "/ x" := (inv x) : Q_scope.
 
-(**)
+(*
 Definition of_decimal_uint (n : Decimal.uint) : Q := (Nat.of_uint n // 1)%Q.
 
 Definition of_decimal_int (n : Decimal.int) : Q :=
@@ -174,7 +174,6 @@ Definition to_decimal_int (q : Q) : option Decimal.int :=
 Numeral Notation Q of_decimal_int to_decimal_int : Q_scope
   (abstract after 5001).
 
-(*
 Check 5%Q.
 Check 6%Q.
 Check (5 // 1)%Q.
@@ -1693,6 +1692,7 @@ Proof.
 intros.
 unfold "//"%Q.
 destruct a; [ easy | ].
+rewrite GQpair_diag; [ | easy ].
 now rewrite GQpair_diag.
 Qed.
 
@@ -1762,6 +1762,7 @@ Proof.
 intros.
 unfold "*"%Q; simpl.
 unfold NQmul_pos_l.
+rewrite GQpair_diag; [ | easy ].
 destruct a; [ easy | | ]; now rewrite GQmul_1_l.
 Qed.
 
@@ -2158,8 +2159,6 @@ intros * Hx.
 destruct x as [| px| px]; [ easy | | easy ].
 cbn in Hx; destruct Hx as (_, Hx).
 rewrite (GQnum_den px) in Hx.
-Check GQpair_lt_nat_r.
-....
 apply GQpair_lt_nat_r in Hx; [ | easy | easy | easy ].
 rewrite Nat.mul_1_r in Hx.
 unfold frac; cbn.
