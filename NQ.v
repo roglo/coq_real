@@ -148,21 +148,8 @@ Notation "x * y" := (mul x y) : Q_scope.
 Notation "x / y" := (mul x (inv y)) : Q_scope.
 Notation "/ x" := (inv x) : Q_scope.
 
-(*
-Definition of_decimal_uint (n : Decimal.uint) : Q :=
-  match n with
-  | Decimal.Nil => Zero
-  | Decimal.D0 d => Zero
-  | Decimal.D1 d => Zero
-  | Decimal.D2 d => Zero
-  | Decimal.D3 d => Zero
-  | Decimal.D4 d => Zero
-  | Decimal.D5 d => (5 // 1)%Q
-  | Decimal.D6 d => Zero
-  | Decimal.D7 d => Zero
-  | Decimal.D8 d => Zero
-  | Decimal.D9 d => Zero
-  end.
+(**)
+Definition of_decimal_uint (n : Decimal.uint) : Q := (Nat.of_uint n // 1)%Q.
 
 Definition of_decimal_int (n : Decimal.int) : Q :=
   match n with
@@ -170,22 +157,36 @@ Definition of_decimal_int (n : Decimal.int) : Q :=
   | Decimal.Neg ui => of_decimal_uint ui
   end.
 
-Definition to_decimal_uint (gq : GQ) : Decimal.uint :=
+Definition to_decimal_uint (gq : GQ) : option Decimal.uint :=
   let (num, den) := PQ_of_GQ gq in
-  Nat.to_uint (num + 1).
+  match den with
+  | 0 => Some (Nat.to_uint (num + 1))
+  | _ => None
+  end.
 
-Definition to_decimal_int (q : Q) : Decimal.int :=
+Definition to_decimal_int (q : Q) : option Decimal.int :=
   match q with
-  | Zero => Decimal.Pos Decimal.Nil
-  | Pos gq => Decimal.Pos (to_decimal_uint gq)
-  | Neg gq => Decimal.Neg (to_decimal_uint gq)
+  | Zero => Some (Decimal.Pos Decimal.Nil)
+  | Pos gq => option_map Decimal.Pos (to_decimal_uint gq)
+  | Neg gq => option_map Decimal.Neg (to_decimal_uint gq)
   end.
 
 Numeral Notation Q of_decimal_int to_decimal_int : Q_scope.
 
 Check 5%Q.
 Check 6%Q.
-*)
+Check (5 // 1)%Q.
+Check (5 // 2)%Q.
+Check (53 // 1)%Q.
+Check 53%Q.
+Check 35%Q.
+Compute (5 // 1)%Q.
+Compute (53 // 1)%Q.
+Compute (63 // 1)%Q.
+Compute 63%Q.
+Compute (5 // 2)%Q.
+...
+(**)
 
 End Notations.
 

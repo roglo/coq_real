@@ -9,10 +9,27 @@ Set Nested Proofs Allowed.
 Delimit Scope GQ_scope with GQ.
 
 Record GQ :=
-  GQmake
+  GQmake0
     { PQ_of_GQ : PQ;
-      GQprop : Nat.gcd (PQnum1 PQ_of_GQ + 1) (PQden1 PQ_of_GQ + 1) = 1 }.
-Arguments GQmake PQ_of_GQ%PQ.
+      GQprop : 1 = Nat.gcd (PQnum1 PQ_of_GQ + 1) (PQden1 PQ_of_GQ + 1) }.
+Arguments GQmake0 PQ_of_GQ%PQ.
+
+(* the definition above 1=gcd.. instead of gcd..=1 and the use of
+   transparent_nat_eq_dec below is to allow Numeral Notation of
+   values of type Q (file NQ.v) work; trick given to me by Jason
+   Gross; don't know why, but since it works... *)
+
+Definition transparent_nat_eq_dec (n m : nat) : {n = m} + {n <> m}.
+Proof. decide equality. Defined.
+
+Definition transparentify_nat_eq {n m : nat} (H : n = m) : n = m
+  := match transparent_nat_eq_dec n m with
+     | left pf => pf
+     | right npf => match npf H with end (* False-elimination *)
+     end.
+
+Definition GQmake x p := GQmake0 x (Nat.eq_sym (transparentify_nat_eq p)).
+Arguments GQmake x%PQ.
 
 Definition GQ_of_PQ x := GQmake (PQred x) (PQred_gcd x).
 
@@ -119,6 +136,7 @@ simpl in Hxp, Hyp, Hxy.
 apply GQeq_eq; simpl.
 clear Hyx.
 assert (H : yd + 1 ≠ 0) by flia.
+symmetry in Hxp, Hyp.
 apply (proj2 (Nat.mul_cancel_r _ _ _ H)) in Hxp.
 rewrite <- Nat.gcd_mul_mono_r, <- Hxy, Nat.mul_comm, Nat.mul_1_l in Hxp.
 rewrite Nat.gcd_mul_mono_l, Hyp, Nat.mul_1_r in Hxp.
@@ -140,7 +158,6 @@ Theorem PQred_of_GQ : ∀ x, PQred (PQ_of_GQ x) = PQ_of_GQ x.
 Proof.
 intros (xp, Hxp); simpl.
 unfold PQred.
-symmetry in Hxp.
 apply ggcd_split in Hxp.
 rewrite Hxp.
 do 2 rewrite Nat.div_1_r.
@@ -683,6 +700,7 @@ apply (Nat.mul_cancel_r _ _ (yd + 1)) in Hx; [ | flia ].
 rewrite Nat.mul_1_l in Hx.
 rewrite <- Nat.gcd_mul_mono_r in Hx.
 rewrite H, Nat.mul_comm in Hx.
+symmetry in Hx, Hy.
 rewrite Nat.gcd_mul_mono_l, Hy, Nat.mul_1_r in Hx.
 rewrite Hx in H.
 apply Nat.mul_cancel_r in H; [ | flia ].
