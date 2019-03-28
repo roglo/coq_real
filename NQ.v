@@ -2164,10 +2164,13 @@ Proof.
 intros * Hx.
 destruct x as [| px| px]; [ easy | | easy ].
 cbn in Hx; destruct Hx as (_, Hx).
-(* add a numeral notation for the type GQ!
-   to make Hx displayed as (px < 1)%GQ *)
-...
 rewrite (GQnum_den px) in Hx.
+Check GQpair_lt_nat_r.
+specialize (GQpair_lt_nat_r (GQnum px) (GQden px) 1) as H.
+Set Printing All.
+Check 1%GQ.
+Check (1 // 1)%GQ.
+apply GQpair_lt_nat_r in Hx; [ | easy | easy | easy ].
 ...
 apply GQpair_lt_nat_r in Hx; [ | easy | easy | easy ].
 rewrite Nat.mul_1_r in Hx.

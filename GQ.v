@@ -50,8 +50,10 @@ Definition GQle x y := PQle (PQ_of_GQ x) (PQ_of_GQ y).
 Definition GQgt x y := GQlt y x.
 Definition GQge x y := GQle y x.
 
+(*
 Notation "1" := (GQmake 1 (Nat.gcd_1_r (0 + 1))) : GQ_scope.
 Notation "2" := (GQ_of_pair 2 1) : GQ_scope.
+*)
 Notation "a // b" := (GQ_of_pair a b) : GQ_scope.
 Notation "x + y" := (GQadd x y) : GQ_scope.
 Notation "x - y" := (GQsub x y) : GQ_scope.
@@ -64,6 +66,45 @@ Notation "x > y" := (GQgt x y) : GQ_scope.
 Notation "x ≥ y" := (GQge x y) : GQ_scope.
 Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%GQ (at level 70, y at next level) :
   GQ_scope.
+
+Definition GQ_of_decimal_uint (n : Decimal.uint) : option GQ :=
+  match Nat.of_uint n with
+  | 0 => None
+  | a => Some (a // 1)%GQ
+  end.
+
+Definition GQ_of_decimal_int (n : Decimal.int) : option GQ :=
+  match n with
+  | Decimal.Pos ui => GQ_of_decimal_uint ui
+  | Decimal.Neg ui => None
+  end.
+
+Definition GQ_to_decimal_uint (gq : GQ) : option Decimal.uint :=
+  let (num, den) := PQ_of_GQ gq in
+  match den with
+  | 0 => Some (Nat.to_uint (num + 1))
+  | _ => None
+  end.
+
+Definition GQ_to_decimal_int (gq : GQ) : option Decimal.int :=
+  option_map Decimal.Pos (GQ_to_decimal_uint gq).
+
+Numeral Notation GQ GQ_of_decimal_int GQ_to_decimal_int : GQ_scope
+  (abstract after 5001).
+
+(*
+Check 0%GQ.
+Check (-4)%GQ.
+*)
+(*
+Check 1%GQ.
+Check 2%GQ.
+Check 3%GQ.
+Check 4%GQ.
+Check 5%GQ.
+Check 6%GQ.
+Check (22 // 7)%GQ.
+*)
 
 Theorem GQeq_eq : ∀ x y, x = y ↔ (PQ_of_GQ x = PQ_of_GQ y)%PQ.
 Proof.
