@@ -20,11 +20,25 @@ Arguments GQmake0 PQ_of_GQ%PQ.
    don't know why, but since it works... *)
 
 (**)
+Check Nat.eq_dec.
+
+Definition transparentify {A} (D : {A} + {¬A}) (H : A) : A :=
+  match D with
+  | left pf => pf
+  | right npf => match npf H with end
+  end.
+
+(**)
+Definition transparentify_nat_eq n m := transparentify (Nat.eq_dec n m).
+(*
 Definition transparentify_nat_eq {n m : nat} (H : n = m) : n = m :=
   match Nat.eq_dec n m with
   | left pf => pf
   | right npf => match npf H with end
   end.
+*)
+
+...
 
 Definition GQmake x p := GQmake0 x (transparentify_nat_eq p).
 
