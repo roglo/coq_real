@@ -197,6 +197,9 @@ Check (0 // 1)%Q.
 Check 0%Q.
 Check (3 // 1)%Q.
 Check 3%Q.
+Check GQprop.
+Unset Printing Notations.
+Compute (22 // 7)%Q.
 *)
 
 End Notations.

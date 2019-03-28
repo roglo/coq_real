@@ -17,22 +17,71 @@ Arguments PQmake _%nat _%nat.
 Arguments PQnum1 x%PQ : rename.
 Arguments PQden1 x%PQ : rename.
 
-Notation "1" := (PQmake 0 0) : PQ_scope.
-Notation "2" := (PQmake 1 0) : PQ_scope.
-
-Definition nd x y := (PQnum1 x + 1) * (PQden1 y + 1).
-Definition PQone x := PQmake (PQden1 x) (PQden1 x).
-Definition PQ_of_nat n := PQmake (n - 1) 0.
 Definition PQ_of_pair n d := PQmake (n - 1) (d - 1).
-
-Notation "a // b" := (PQ_of_pair a b) : PQ_scope.
-
-(* equality *)
-
+Definition nd x y := (PQnum1 x + 1) * (PQden1 y + 1).
 Definition PQeq x y := nd x y = nd y x.
 
+Theorem PQeq_dec : ∀ x y : PQ, {PQeq x y} + {¬ PQeq x y}.
+Proof. intros; apply Nat.eq_dec. Qed.
+Arguments PQeq_dec x%PQ y%PQ.
+
+Definition if_PQeq {A} (P Q : A) x y := if PQeq_dec x y then P else Q.
+Arguments if_PQeq _ _ _ x%PQ y%PQ.
+
+Definition PQlt x y := nd x y < nd y x.
+Definition PQle x y := nd x y ≤ nd y x.
+Definition PQgt x y := PQlt y x.
+Definition PQge x y := PQle y x.
+
+(* addition, subtraction *)
+
+Definition PQadd_num1 x y := nd x y + nd y x - 1.
+Definition PQsub_num1 x y := nd x y - nd y x - 1.
+Definition PQadd_den1 x y := (PQden1 x + 1) * (PQden1 y + 1) - 1.
+
+Definition PQadd x y := PQmake (PQadd_num1 x y) (PQadd_den1 x y).
+Definition PQsub x y := PQmake (PQsub_num1 x y) (PQadd_den1 x y).
+Arguments PQadd x%PQ y%PQ.
+Arguments PQsub x%PQ y%PQ.
+
+(* multiplication, inversion, division *)
+
+Definition PQmul_num1 x y := (PQnum1 x + 1) * (PQnum1 y + 1) - 1.
+Definition PQmul_den1 x y := (PQden1 x + 1) * (PQden1 y + 1) - 1.
+
+Definition PQmul x y := PQmake (PQmul_num1 x y) (PQmul_den1 x y).
+Arguments PQmul x%PQ y%PQ.
+
+Definition PQinv x := PQmake (PQden1 x) (PQnum1 x).
+
+Module PQ_Notations.
+
+Notation "1" := (PQmake 0 0) : PQ_scope.
+Notation "2" := (PQmake 1 0) : PQ_scope.
+Notation "a // b" := (PQ_of_pair a b) : PQ_scope.
 Notation "x == y" := (PQeq x y) (at level 70) : PQ_scope.
 Notation "x ≠≠ y" := (¬ PQeq x y) (at level 70) : PQ_scope.
+Notation "'if_PQeq_dec' x y 'then' P 'else' Q" :=
+  (if_PQeq P Q x y) (at level 200, x at level 9, y at level 9).
+Notation "x < y" := (PQlt x y) : PQ_scope.
+Notation "x ≤ y" := (PQle x y) : PQ_scope.
+Notation "x > y" := (PQgt x y) : PQ_scope.
+Notation "x ≥ y" := (PQge x y) : PQ_scope.
+Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%PQ (at level 70, y at next level) :
+  PQ_scope.
+Notation "x + y" := (PQadd x y) : PQ_scope.
+Notation "x - y" := (PQsub x y) : PQ_scope.
+Notation "x * y" := (PQmul x y) : PQ_scope.
+Notation "/ x" := (PQinv x) : PQ_scope.
+
+End PQ_Notations.
+
+Import PQ_Notations.
+
+Definition PQone x := PQmake (PQden1 x) (PQden1 x).
+Definition PQ_of_nat n := PQmake (n - 1) 0.
+
+(* equality *)
 
 Theorem PQeq_refl : ∀ x : PQ, (x == x)%PQ.
 Proof. easy. Qed.
@@ -57,16 +106,6 @@ Add Parametric Relation : _ PQeq
  symmetry proved by PQeq_symm
  transitivity proved by PQeq_trans
  as PQeq_equiv_rel.
-
-Theorem PQeq_dec : ∀ x y : PQ, {(x == y)%PQ} + {(x ≠≠ y)%PQ}.
-Proof. intros; apply Nat.eq_dec. Qed.
-Arguments PQeq_dec x%PQ y%PQ.
-
-Definition if_PQeq {A} (P Q : A) x y := if PQeq_dec x y then P else Q.
-Arguments if_PQeq _ _ _ x%PQ y%PQ.
-
-Notation "'if_PQeq_dec' x y 'then' P 'else' Q" :=
-  (if_PQeq P Q x y) (at level 200, x at level 9, y at level 9).
 
 Theorem PQeq_if : ∀ A {P Q : A} x y,
   (if PQeq_dec x y then P else Q) = if_PQeq P Q x y.
@@ -95,18 +134,6 @@ Qed.
 
 Definition PQcompare x y := Nat.compare (nd x y) (nd y x).
 Arguments PQcompare x%PQ y%PQ.
-
-Definition PQlt x y := nd x y < nd y x.
-Definition PQle x y := nd x y ≤ nd y x.
-Definition PQgt x y := PQlt y x.
-Definition PQge x y := PQle y x.
-
-Notation "x < y" := (PQlt x y) : PQ_scope.
-Notation "x ≤ y" := (PQle x y) : PQ_scope.
-Notation "x > y" := (PQgt x y) : PQ_scope.
-Notation "x ≥ y" := (PQge x y) : PQ_scope.
-Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%PQ (at level 70, y at next level) :
-  PQ_scope.
 
 Theorem PQcompare_eq_iff : ∀ x y, PQcompare x y = Eq ↔ (x == y)%PQ.
 Proof. intros; apply Nat.compare_eq_iff. Qed.
@@ -248,33 +275,6 @@ Proof.
 intros x1 x2 Hx y1 y2 Hy.
 now apply PQle_morph.
 Qed.
-
-(* addition, subtraction *)
-
-Definition PQadd_num1 x y := nd x y + nd y x - 1.
-Definition PQsub_num1 x y := nd x y - nd y x - 1.
-Definition PQadd_den1 x y := (PQden1 x + 1) * (PQden1 y + 1) - 1.
-
-Definition PQadd x y := PQmake (PQadd_num1 x y) (PQadd_den1 x y).
-Definition PQsub x y := PQmake (PQsub_num1 x y) (PQadd_den1 x y).
-Arguments PQadd x%PQ y%PQ.
-Arguments PQsub x%PQ y%PQ.
-
-Notation "x + y" := (PQadd x y) : PQ_scope.
-Notation "x - y" := (PQsub x y) : PQ_scope.
-
-(* multiplication, inversion, division *)
-
-Definition PQmul_num1 x y := (PQnum1 x + 1) * (PQnum1 y + 1) - 1.
-Definition PQmul_den1 x y := (PQden1 x + 1) * (PQden1 y + 1) - 1.
-
-Definition PQmul x y := PQmake (PQmul_num1 x y) (PQmul_den1 x y).
-Arguments PQmul x%PQ y%PQ.
-
-Definition PQinv x := PQmake (PQden1 x) (PQnum1 x).
-
-Notation "x * y" := (PQmul x y) : PQ_scope.
-Notation "/ x" := (PQinv x) : PQ_scope.
 
 (* allows to use rewrite inside an addition
    e.g.
