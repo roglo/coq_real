@@ -20,14 +20,11 @@ Arguments GQmake0 PQ_of_GQ%PQ.
    don't know why, but since it works... *)
 
 (**)
-Definition transparent_nat_eq_dec (n m : nat) : {n = m} + {n <> m}.
-Proof. decide equality. Defined.
-
-Definition transparentify_nat_eq {n m : nat} (H : n = m) : n = m
-  := match transparent_nat_eq_dec n m with
-     | left pf => pf
-     | right npf => match npf H with end
-     end.
+Definition transparentify_nat_eq {n m : nat} (H : n = m) : n = m :=
+  match Nat.eq_dec n m with
+  | left pf => pf
+  | right npf => match npf H with end
+  end.
 
 Definition GQmake x p := GQmake0 x (transparentify_nat_eq p).
 
