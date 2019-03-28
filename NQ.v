@@ -189,9 +189,12 @@ Compute (5 // 1)%Q.
 Compute (53 // 1)%Q.
 Compute (63 // 1)%Q.
 Compute 63%Q.
+Check (5 // 2)%Q.
 Compute (5 // 2)%Q.
 Check (0 // 1)%Q.
 Check 0%Q.
+Check (22 // 7)%Q.
+Compute (22 // 7)%Q.
 Set Printing All.
 Check (0 // 1)%Q.
 Check 0%Q.
@@ -200,6 +203,7 @@ Check 3%Q.
 Check GQprop.
 Unset Printing Notations.
 Compute (22 // 7)%Q.
+...
 *)
 
 End Notations.

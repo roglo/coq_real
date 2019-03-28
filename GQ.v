@@ -15,7 +15,7 @@ Record GQ :=
       GQprop : Nat.gcd (PQnum1 PQ_of_GQ + 1) (PQden1 PQ_of_GQ + 1) = 1 }.
 Arguments GQmake0 PQ_of_GQ%PQ.
 
-(* the use of transparent_nat_eq_dec below is to allow Numeral Notation of
+(* the use of transparent_nat_eq below is to allow Numeral Notation of
    values of type Q (file NQ.v) work; trick given to me by Jason Gross;
    don't know why, but since it works... *)
 
