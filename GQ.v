@@ -1244,11 +1244,7 @@ unfold GQden.
 now rewrite Nat.add_1_r.
 Qed.
 
-Print HintDB.
-
-...
-
-Hint Resolve GQnum_neq_0 GQden_neq_0 : toto.
+Hint Resolve GQnum_neq_0 GQden_neq_0 : core.
 
 Theorem GQnum_den : ∀ x, x = (GQnum x // GQden x)%GQ.
 Proof.

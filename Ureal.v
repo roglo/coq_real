@@ -14,7 +14,7 @@ Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 (* "pauto" = "auto" failing if not working *)
 Tactic Notation "pauto" := progress auto.
 
-Hint Resolve Nat.pow_nonzero.
+Hint Resolve Nat.pow_nonzero : core.
 
 (* Limited Principle of Omniscience *)
 Axiom LPO : ∀ (u : nat → nat), (∀ i, u i = O) + { i : nat | u i ≠ O }.
@@ -95,7 +95,7 @@ Proof.
 destruct r as (rad, radi); cbn; flia radi.
 Qed.
 
-Hint Resolve radix_gt_0 radix_ge_1 radix_ne_0 radix_ge_2.
+Hint Resolve radix_gt_0 radix_ge_1 radix_ne_0 radix_ge_2 : core.
 
 (* Digit *)
 
@@ -125,13 +125,14 @@ Qed.
 
 Definition d2n {r : radix} u (i : nat) := dig (u i).
 
-Hint Resolve digit_lt_radix digit_le_pred_radix.
+Hint Resolve digit_lt_radix digit_le_pred_radix : core.
 
 Theorem fold_d2n {r : radix} : ∀ u i, dig (u i) = d2n u i.
 Proof. easy. Qed.
 
 (* Frac Real *)
 
+Declare Scope ureal_scope.
 Delimit Scope ureal_scope with F.
 
 Record Ureal {r : radix} := { ureal : nat → digit }.
@@ -520,7 +521,7 @@ replace 0%Q with (Σ (j = n, n + l - 1), 0)%Q.
 -now apply all_0_summation_0.
 Qed.
 
-Hint Resolve A_ge_0 B_ge_0.
+Hint Resolve A_ge_0 B_ge_0 : core.
 
 Theorem B_lt_1 {r : radix} : ∀ i n u,
   (∀ k, u (i + k) ≤ 3 * (rad - 1))

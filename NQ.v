@@ -2056,7 +2056,7 @@ destruct x; [ easy | | ].
  now rewrite Nat.add_1_r.
 Qed.
 
-Hint Resolve den_neq_0.
+Hint Resolve den_neq_0 : core.
 
 Theorem num_pair_1_r : ∀ a, num (a // 1) = a.
 Proof.
@@ -2273,7 +2273,7 @@ apply le_pair; [ easy | easy | ].
 rewrite Nat.mul_1_l; cbn; flia.
 Qed.
 
-Hint Resolve frac_ge_0.
+Hint Resolve frac_ge_0 : core.
 
 Theorem frac_lt_1 : ∀ x, (frac x < 1)%Q.
 Proof.
