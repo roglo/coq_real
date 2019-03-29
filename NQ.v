@@ -126,12 +126,12 @@ Definition mul x y :=
 Module Notations.
 
 Notation "a // b" := (of_pair a b) : Q_scope.
-(*
+(**)
 Notation "0" := Zero : Q_scope.
 Notation "1" := (1 // 1)%Q : Q_scope.
 Notation "2" := (2 // 1)%Q : Q_scope.
 Notation "3" := (3 // 1)%Q : Q_scope.
-*)
+(**)
 Notation "x < y" := (lt x y) : Q_scope.
 Notation "x ≤ y" := (le x y) : Q_scope.
 Notation "x > y" := (gt x y) : Q_scope.
@@ -148,7 +148,7 @@ Notation "x * y" := (mul x y) : Q_scope.
 Notation "x / y" := (mul x (inv y)) : Q_scope.
 Notation "/ x" := (inv x) : Q_scope.
 
-(**)
+(*
 Definition of_decimal_uint (n : Decimal.uint) : Q := (Nat.of_uint n // 1)%Q.
 
 Definition of_decimal_int (n : Decimal.int) : Q :=
@@ -173,6 +173,7 @@ Definition to_decimal_int (q : Q) : option Decimal.int :=
 
 Numeral Notation Q of_decimal_int to_decimal_int : Q_scope
   (abstract after 5001).
+*)
 
 (*
 Check 5%Q.
@@ -214,7 +215,7 @@ Import Notations.
 Definition of_nat n :=
   match n with
   | 0 => Zero
-  | S _ => Pos (GQ_of_nat n)
+  | S _ => Pos (GQ_of_pair n 1)
   end.
 
 Definition num x :=
@@ -1700,6 +1701,7 @@ Proof.
 intros.
 unfold "//"%Q.
 destruct a; [ easy | ].
+rewrite GQpair_diag; [ | easy ].
 now rewrite GQpair_diag.
 Qed.
 
@@ -1769,6 +1771,7 @@ Proof.
 intros.
 unfold "*"%Q; simpl.
 unfold NQmul_pos_l.
+rewrite GQpair_diag; [ | easy ].
 destruct a; [ easy | | ]; now rewrite GQmul_1_l.
 Qed.
 
@@ -2165,10 +2168,6 @@ intros * Hx.
 destruct x as [| px| px]; [ easy | | easy ].
 cbn in Hx; destruct Hx as (_, Hx).
 rewrite (GQnum_den px) in Hx.
-(*
-replace 1%GQ with (1 // 1)%GQ in Hx by easy.
-*)
-Check GQpair_lt_nat_r.
 apply GQpair_lt_nat_r in Hx; [ | easy | easy | easy ].
 rewrite Nat.mul_1_r in Hx.
 unfold frac; cbn.
@@ -2197,7 +2196,6 @@ destruct x as [| px| px].
 -cbn in Hx; destruct Hx as (H1, H2).
  destruct n; [ now apply frac_small | ].
  rewrite (GQnum_den px) in H1, H2; cbn in H1, H2.
- replace 1%GQ with (1 // 1)%GQ in H2 by easy.
  apply GQpair_le_nat_l in H1; [ | easy | easy | easy ].
  rewrite <- GQpair_add_l in H2; [ | easy | easy | easy ].
  apply GQpair_lt_nat_r in H2; [ | easy | easy | easy ].
@@ -2332,7 +2330,6 @@ intros * Hx1 Hx2.
 destruct x as [| x| x]; [ easy | | easy ].
 unfold intg in Hx2; cbn in Hx2; cbn.
 rewrite (GQnum_den x).
-replace 1%GQ with (1 // 1)%GQ by easy.
 apply GQlt_pair; [ easy | easy | easy | easy | ].
 do 2 rewrite Nat.mul_1_r.
 now apply Nat_div_small_iff.
@@ -2509,7 +2506,6 @@ destruct (lt_le_dec (frac x + frac y) 1) as [H1| H1].
  destruct z as [| zp| zp]; [ cbn; pauto | | ].
  +cbn in H1; cbn.
   replace zp with (GQnum zp // GQden zp)%GQ in H1 by now rewrite GQnum_den.
-  replace 1%GQ with (1 // 1)%GQ in H1 by easy.
   apply GQpair_lt_nat_r in H1; [ | | | easy ]; cycle 1. {
     apply GQnum_neq_0.
   } {
@@ -2528,7 +2524,6 @@ destruct (lt_le_dec (frac x + frac y) 1) as [H1| H1].
  symmetry in Hz.
  destruct z as [| zp| zp]; [ easy | | easy ].
  replace zp with (GQnum zp // GQden zp)%GQ in H1 by now rewrite GQnum_den.
- replace 1%GQ with (1 // 1)%GQ in H1 by easy.
  apply GQpair_le_nat_l in H1; [ | easy | | ]; cycle 1. {
    apply GQnum_neq_0.
  } {
@@ -2544,10 +2539,6 @@ destruct (lt_le_dec (frac x + frac y) 1) as [H1| H1].
  cbn in H.
  remember mult as f; cbn; subst f.
  replace zp with (GQnum zp // GQden zp)%GQ in H by now rewrite GQnum_den.
-clear - H.
-Set Printing All.
- replace 2%GQ with (2 // 1)%GQ in H by easy.
-...
  apply GQpair_lt_nat_r in H; [ | | | easy ]; cycle 1. {
    apply GQnum_neq_0.
  } {

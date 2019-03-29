@@ -10,16 +10,16 @@ Set Nested Proofs Allowed.
 Delimit Scope GQ_scope with GQ.
 
 Record GQ :=
-  GQmake0
+  GQmake
     { PQ_of_GQ : PQ;
       GQprop : Nat.gcd (PQnum1 PQ_of_GQ + 1) (PQden1 PQ_of_GQ + 1) = 1 }.
-Arguments GQmake0 PQ_of_GQ%PQ.
+Arguments GQmake PQ_of_GQ%PQ.
 Arguments PQ_of_GQ x%GQ : rename.
 
 (* the use of transparentify below is to allow Numeral Notation of
    values of type Q (file NQ.v) work by always giving eq_refl as
    proof of gcd n d = 1; thanks to Theo Zimmermann, Hugo Herbelin
-   and Jason Gross *)
+   and Jason Gross
 
 Definition transparentify {A} (D : {A} + {¬A}) (H : A) : A :=
   match D with
@@ -29,11 +29,14 @@ Definition transparentify {A} (D : {A} + {¬A}) (H : A) : A :=
 
 Definition GQmake x p := GQmake0 x (transparentify (Nat.eq_dec _ _) p).
 Arguments GQmake x%PQ.
+*)
 
 Definition GQ_of_PQ x := GQmake (PQred x) (PQred_gcd x).
 Arguments GQ_of_PQ x%PQ.
 
+(*
 Definition GQ_of_nat n := GQmake (PQ_of_nat n) (Nat.gcd_1_r (n - 1 + 1)).
+*)
 Definition GQ_of_pair n d := GQ_of_PQ (PQ_of_pair n d).
 
 Definition GQadd x y := GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
@@ -52,6 +55,9 @@ Definition GQge x y := GQle y x.
 
 (**)
 Notation "1" := (GQmake 1 (Nat.gcd_1_r (0 + 1))) : GQ_scope.
+(*
+Notation "1" := (GQ_of_pair 1 1) : GQ_scope.
+*)
 Notation "2" := (GQ_of_pair 2 1) : GQ_scope.
 (**)
 Notation "a // b" := (GQ_of_pair a b) : GQ_scope.
@@ -98,11 +104,13 @@ Check (2 // 1)%GQ.
 Compute 2%GQ.
 Compute (2 // 1)%GQ.
 ...
+*)
 (*
 Check 0%GQ.
 Check (-4)%GQ.
 *)
 (*
+Compute 1%GQ.
 Check 1%GQ.
 Check 2%GQ.
 Check 3%GQ.
@@ -110,7 +118,7 @@ Check 4%GQ.
 Check 5%GQ.
 Check 6%GQ.
 Check (22 // 7)%GQ.
-*)
+Compute (22 // 7)%GQ.
 *)
 
 Theorem GQeq_eq : ∀ x y, x = y ↔ (PQ_of_GQ x = PQ_of_GQ y)%PQ.
