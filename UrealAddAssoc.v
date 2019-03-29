@@ -2001,6 +2001,7 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
   apply A_ge_1_true_iff in H2.
   rewrite Q.frac_small in H2. 2: {
     split; [ easy | ].
+clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
     rewrite A_split_first; [ | min_n_ge ].
     replace (S i) with (i + 1) by flia.
     rewrite Huv1, Q.add_0_l.
@@ -2017,9 +2018,13 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
     rewrite <- Q.mul_assoc.
     rewrite Q.mul_pair_den_num; [ | easy ].
     rewrite Q.mul_1_r, Q.mul_1_l.
+clear Huv1.
+    induction j. 2: {
+(* ouais, mais ça va pas, ça *)
+...
     rewrite A_split_first; [ | min_n_ge ].
     replace (S (i + 2)) with (i + 3) by easy.
-    destruct j; [ easy | ].
+...
     assert (H : 1 < S (S j)) by flia.
     specialize (Huvbef _ H) as H3; clear H.
     replace (i + 1 + 2) with (i + 3) in H3 by flia.
