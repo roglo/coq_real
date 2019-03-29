@@ -7,6 +7,7 @@ Import PQ_Notations.
 
 Set Nested Proofs Allowed.
 
+Declare Scope GQ_scope.
 Delimit Scope GQ_scope with GQ.
 
 Record GQ :=
@@ -1243,7 +1244,11 @@ unfold GQden.
 now rewrite Nat.add_1_r.
 Qed.
 
-Hint Resolve GQnum_neq_0 GQden_neq_0.
+Print HintDB.
+
+...
+
+Hint Resolve GQnum_neq_0 GQden_neq_0 : toto.
 
 Theorem GQnum_den : ∀ x, x = (GQnum x // GQden x)%GQ.
 Proof.

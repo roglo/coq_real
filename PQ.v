@@ -8,6 +8,7 @@ Set Nested Proofs Allowed.
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 Reserved Notation "a // b" (at level 32).
 
+Declare Scope PQ_scope.
 Delimit Scope PQ_scope with PQ.
 
 (* A PQ number {PQnum1:=a; PQden1:=b} represents the rational (a+1)/(b+1) *)
