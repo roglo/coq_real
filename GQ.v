@@ -34,9 +34,6 @@ Arguments GQmake x%PQ.
 Definition GQ_of_PQ x := GQmake (PQred x) (PQred_gcd x).
 Arguments GQ_of_PQ x%PQ.
 
-(*
-Definition GQ_of_nat n := GQmake (PQ_of_nat n) (Nat.gcd_1_r (n - 1 + 1)).
-*)
 Definition GQ_of_pair n d := GQ_of_PQ (PQ_of_pair n d).
 
 Definition GQadd x y := GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
@@ -53,13 +50,8 @@ Definition GQle x y := PQle (PQ_of_GQ x) (PQ_of_GQ y).
 Definition GQgt x y := GQlt y x.
 Definition GQge x y := GQle y x.
 
-(**)
 Notation "1" := (GQmake 1 (Nat.gcd_1_r (0 + 1))) : GQ_scope.
-(*
-Notation "1" := (GQ_of_pair 1 1) : GQ_scope.
-*)
 Notation "2" := (GQ_of_pair 2 1) : GQ_scope.
-(**)
 Notation "a // b" := (GQ_of_pair a b) : GQ_scope.
 Notation "x + y" := (GQadd x y) : GQ_scope.
 Notation "x - y" := (GQsub x y) : GQ_scope.
