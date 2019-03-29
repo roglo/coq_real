@@ -2165,13 +2165,10 @@ intros * Hx.
 destruct x as [| px| px]; [ easy | | easy ].
 cbn in Hx; destruct Hx as (_, Hx).
 rewrite (GQnum_den px) in Hx.
+(*
+replace 1%GQ with (1 // 1)%GQ in Hx by easy.
+*)
 Check GQpair_lt_nat_r.
-specialize (GQpair_lt_nat_r (GQnum px) (GQden px) 1) as H.
-Set Printing All.
-Check 1%GQ.
-Check (1 // 1)%GQ.
-apply GQpair_lt_nat_r in Hx; [ | easy | easy | easy ].
-...
 apply GQpair_lt_nat_r in Hx; [ | easy | easy | easy ].
 rewrite Nat.mul_1_r in Hx.
 unfold frac; cbn.
@@ -2200,6 +2197,7 @@ destruct x as [| px| px].
 -cbn in Hx; destruct Hx as (H1, H2).
  destruct n; [ now apply frac_small | ].
  rewrite (GQnum_den px) in H1, H2; cbn in H1, H2.
+ replace 1%GQ with (1 // 1)%GQ in H2 by easy.
  apply GQpair_le_nat_l in H1; [ | easy | easy | easy ].
  rewrite <- GQpair_add_l in H2; [ | easy | easy | easy ].
  apply GQpair_lt_nat_r in H2; [ | easy | easy | easy ].
@@ -2285,6 +2283,7 @@ Theorem frac_lt_1 : ∀ x, (frac x < 1)%Q.
 Proof.
 intros.
 unfold frac.
+replace 1%Q with (1 // 1)%Q by easy.
 apply lt_pair; [ easy | easy | ].
 do 2 rewrite Nat.mul_1_r.
 now apply Nat.mod_upper_bound.
@@ -2333,6 +2332,7 @@ intros * Hx1 Hx2.
 destruct x as [| x| x]; [ easy | | easy ].
 unfold intg in Hx2; cbn in Hx2; cbn.
 rewrite (GQnum_den x).
+replace 1%GQ with (1 // 1)%GQ by easy.
 apply GQlt_pair; [ easy | easy | easy | easy | ].
 do 2 rewrite Nat.mul_1_r.
 now apply Nat_div_small_iff.
@@ -2471,6 +2471,7 @@ split; intros Hx.
  replace x with (num x // den x)%Q in Hx; cycle 1. {
    now symmetry; apply num_den.
  }
+ replace 1%Q with (1 // 1)%Q in Hx by easy.
  rewrite add_pair in Hx; [ | easy | easy ].
  do 2 rewrite Nat.mul_1_r in Hx.
  destruct Hx as (Hnx, Hxn).
@@ -2508,6 +2509,7 @@ destruct (lt_le_dec (frac x + frac y) 1) as [H1| H1].
  destruct z as [| zp| zp]; [ cbn; pauto | | ].
  +cbn in H1; cbn.
   replace zp with (GQnum zp // GQden zp)%GQ in H1 by now rewrite GQnum_den.
+  replace 1%GQ with (1 // 1)%GQ in H1 by easy.
   apply GQpair_lt_nat_r in H1; [ | | | easy ]; cycle 1. {
     apply GQnum_neq_0.
   } {
@@ -2526,6 +2528,7 @@ destruct (lt_le_dec (frac x + frac y) 1) as [H1| H1].
  symmetry in Hz.
  destruct z as [| zp| zp]; [ easy | | easy ].
  replace zp with (GQnum zp // GQden zp)%GQ in H1 by now rewrite GQnum_den.
+ replace 1%GQ with (1 // 1)%GQ in H1 by easy.
  apply GQpair_le_nat_l in H1; [ | easy | | ]; cycle 1. {
    apply GQnum_neq_0.
  } {
@@ -2541,6 +2544,10 @@ destruct (lt_le_dec (frac x + frac y) 1) as [H1| H1].
  cbn in H.
  remember mult as f; cbn; subst f.
  replace zp with (GQnum zp // GQden zp)%GQ in H by now rewrite GQnum_den.
+clear - H.
+Set Printing All.
+ replace 2%GQ with (2 // 1)%GQ in H by easy.
+...
  apply GQpair_lt_nat_r in H; [ | | | easy ]; cycle 1. {
    apply GQnum_neq_0.
  } {
