@@ -2002,6 +2002,9 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
   rewrite Q.frac_small in H2. 2: {
     split; [ easy | ].
 clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
+(* well, to prove a difficult thing (this theorem), I have to prove
+   a more difficult thing! no hope *)
+...
     rewrite A_split_first; [ | min_n_ge ].
     replace (S i) with (i + 1) by flia.
     rewrite Huv1, Q.add_0_l.
