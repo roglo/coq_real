@@ -4,7 +4,7 @@ Import Q.Notations.
 
 Set Nested Proofs Allowed.
 
-Hint Resolve Nat.neq_0_lt_0.
+Hint Resolve Nat.neq_0_lt_0 : core.
 
 Definition is_num_9_strict_after {r : radix} u i j :=
   if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false.
