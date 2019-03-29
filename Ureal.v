@@ -132,7 +132,9 @@ Proof. easy. Qed.
 
 (* Frac Real *)
 
+(*
 Declare Scope ureal_scope.
+*)
 Delimit Scope ureal_scope with F.
 
 Record Ureal {r : radix} := { ureal : nat → digit }.

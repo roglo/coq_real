@@ -11,7 +11,9 @@ Class ord_ring_def :=
      rng_mul : rng_t → rng_t → rng_t;
      rng_le : rng_t → rng_t → Prop }.
 
+(*
 Declare Scope rng_scope.
+*)
 Delimit Scope rng_scope with Rg.
 
 Notation "0" := (rng_zero) : rng_scope.

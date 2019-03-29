@@ -1996,6 +1996,20 @@ specialize (IHj H); clear H.
 assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
   intros p.
   apply A_ge_1_true_iff.
+(**)
+  specialize (Hauv (p + 1)) as H2.
+  apply A_ge_1_true_iff in H2.
+  rewrite Q.frac_small in H2. 2: {
+    split; [ easy | ].
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S i) with (i + 1) by flia.
+    rewrite Huv1, Q.add_0_l.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 1)) with (i + 2) by flia.
+    specialize (Huvbef _ (Nat.lt_0_succ j)) as H3.
+    rewrite Nat.add_0_r in H3; rewrite H3; clear H3.
+(* shit *)
+...
   specialize (Hauv p) as H2.
   apply A_ge_1_true_iff in H2.
   destruct (lt_dec (i + j + 1) (min_n i p)) as [Hip| Hip]. {
