@@ -50,7 +50,7 @@ Definition GQle x y := PQle (PQ_of_GQ x) (PQ_of_GQ y).
 Definition GQgt x y := GQlt y x.
 Definition GQge x y := GQle y x.
 
-Notation "1" := (GQmake 1 (Nat.gcd_1_r (0 + 1))) : GQ_scope.
+Notation "1" := (GQ_of_pair 1 1) : GQ_scope.
 Notation "2" := (GQ_of_pair 2 1) : GQ_scope.
 Notation "a // b" := (GQ_of_pair a b) : GQ_scope.
 Notation "x + y" := (GQadd x y) : GQ_scope.

@@ -1701,7 +1701,6 @@ Proof.
 intros.
 unfold "//"%Q.
 destruct a; [ easy | ].
-rewrite GQpair_diag; [ | easy ].
 now rewrite GQpair_diag.
 Qed.
 
@@ -1771,7 +1770,6 @@ Proof.
 intros.
 unfold "*"%Q; simpl.
 unfold NQmul_pos_l.
-rewrite GQpair_diag; [ | easy ].
 destruct a; [ easy | | ]; now rewrite GQmul_1_l.
 Qed.
 
