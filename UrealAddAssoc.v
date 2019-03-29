@@ -2008,7 +2008,30 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
     replace (S (i + 1)) with (i + 2) by flia.
     specialize (Huvbef _ (Nat.lt_0_succ j)) as H3.
     rewrite Nat.add_0_r in H3; rewrite H3; clear H3.
-(* shit *)
+    rewrite Hr2, (Q.pair_diag 2); [ | easy ].
+    rewrite Q.mul_add_distr_r, Q.mul_1_l.
+    apply Q.lt_add_lt_sub_l.
+    replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
+    apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
+    rewrite <- Q.mul_assoc.
+    rewrite Q.mul_pair_den_num; [ | easy ].
+    rewrite Q.mul_1_r, Q.mul_1_l.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 2)) with (i + 3) by easy.
+    destruct j; [ easy | ].
+    assert (H : 1 < S (S j)) by flia.
+    specialize (Huvbef _ H) as H3; clear H.
+    replace (i + 1 + 2) with (i + 3) in H3 by flia.
+    rewrite H3; clear H3.
+    rewrite Hr2, (Q.pair_diag 2); [ | easy ].
+    apply Q.lt_add_lt_sub_l.
+    replace (2 - 1)%Q with 1%Q by easy.
+    apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
+    rewrite <- Q.mul_assoc.
+    rewrite Q.mul_pair_den_num; [ | easy ].
+    rewrite Q.mul_1_r, Q.mul_1_l.
+    (* récurrence *)
 ...
   specialize (Hauv p) as H2.
   apply A_ge_1_true_iff in H2.
