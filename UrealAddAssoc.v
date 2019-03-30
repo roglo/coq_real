@@ -2006,6 +2006,7 @@ clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
     replace (S i) with (i + 1) by flia.
     rewrite Huv1, Q.add_0_l.
     rewrite A_split_first; [ | min_n_ge ].
+(*1*)
     replace (S (i + 1)) with (i + 2) by flia.
     specialize (Huvbef _ (Nat.lt_0_succ j)) as H3.
     rewrite Nat.add_0_r in H3; rewrite H3; clear H3.
@@ -2041,7 +2042,8 @@ clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
     specialize (Huv3 (proj1 (Nat.succ_lt_mono 0 (S j)) (Nat.lt_0_succ j))).
     replace (i + 1 + 2) with (i + 3) in Huv3 by flia.
     rewrite A_split_first; [ | min_n_ge ].
-    replace (S (i + 2)) with (i + 3) by easy.
+(*2*)
+    replace (S (i + 2)) with (i + 3) by flia.
     rewrite Huv3, Hr2, Q.pair_diag; [ clear Huv3 | easy ].
     apply Q.lt_add_lt_sub_l.
     replace (2 - 1)%Q with 1%Q by easy.
@@ -2060,7 +2062,7 @@ clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
       apply Q.mul_lt_mono_pos_r; [ easy | ].
       eapply Q.le_lt_trans. {
         apply (A_upper_bound_for_adds 3).
-        intros k; cbn; rewrite Hr2.
+        intros j; cbn; rewrite Hr2.
         do 2 rewrite <- Nat.add_assoc.
         now apply Nat.add_le_mono.
       }
@@ -2076,6 +2078,7 @@ clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
       unfold min_n; rewrite Hr2.
       rewrite Nat.mul_add_distr_l; flia.
     }
+(*3*)
     replace (S (i + 3)) with (i + 4) by easy.
     rewrite Huv4, Hr2, Q.pair_diag; [ clear Huv4 | easy ].
     apply Q.lt_add_lt_sub_l.
