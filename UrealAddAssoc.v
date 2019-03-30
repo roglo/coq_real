@@ -1934,6 +1934,39 @@ Theorem glop {r : radix} : ∀ u v i j n p,
   → (A (i + n + 1) p (u ⊕ v) < 2)%Q.
 Proof.
 intros * Hr2 Hu Hv H1 Huvbef Huvj Hp.
+revert j p Huvbef Huvj Hp.
+induction n; intros. {
+  rewrite Nat.add_0_r in Huvbef, Huvj, Hp |-*.
+  destruct j. {
+    rewrite Nat.add_0_r in Huvj.
+    rewrite A_split_first; [ | flia Hp ].
+    replace (S (i + 1)) with (i + 2) by easy.
+    rewrite Huvj, Hr2.
+    apply Q.lt_add_lt_sub_l.
+    replace (2 - 1 // 2)%Q with (3 * 1 // 2)%Q by easy.
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
+    eapply Q.le_lt_trans. {
+      apply (A_upper_bound_for_adds 3).
+      intros j; cbn; rewrite Hr2.
+      do 2 rewrite <- Nat.add_assoc.
+      now apply Nat.add_le_mono.
+    }
+    rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+    now apply Q.sub_lt.
+  }
+  replace (i + S j + 2) with (i + j + 3) in Huvj by flia.
+  specialize (Huvbef 0) as Huv4.
+  rewrite Nat.add_0_r in Huv4.
+  assert (H : 0 < S j) by flia.
+  specialize (Huv4 H); clear H.
+  rewrite A_split_first; [ | flia Hp ].
+  replace (S (i + 1)) with (i + 2) by easy.
+  rewrite Huv4, Hr2, Q.pair_diag; [ clear Huv4 | easy ].
+  apply Q.lt_add_lt_sub_l.
+  replace (2 - 1)%Q with 1%Q by easy.
+  rewrite <- (Q.mul_inv_pair 2 1); [ | easy | easy ].
+  apply Q.mul_lt_mono_pos_r; [ easy | ].
+...
 destruct j. {
   rewrite Nat.add_0_r in Huvj.
   rewrite A_split_first; [ | flia Hp ].
