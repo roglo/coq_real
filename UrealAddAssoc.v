@@ -1923,6 +1923,7 @@ destruct u2. {
 specialize (Hu 2); flia Hu Hu2.
 Qed.
 
+(*
 Theorem glop {r : radix} : ∀ u v i j n p,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -1970,6 +1971,7 @@ replace (2 - 1)%Q with 1%Q by easy.
 rewrite <- (Q.mul_inv_pair 2 1); [ | easy | easy ].
 apply Q.mul_lt_mono_pos_r; [ easy | ].
 ...
+*)
 
 Theorem rad_2_sum_3_all_9_0_2_1_A_lt_1 {r : radix} : ∀ u v i j,
   rad = 2
@@ -2097,14 +2099,6 @@ clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
     rewrite <- (Q.mul_inv_pair 2 1); [ | easy | easy ].
     apply Q.mul_lt_mono_pos_r; [ easy | ].
 (*2*)
-...
-replace (i + 3) with (i + 2 + 1) by flia.
-replace (S (S j)) with (j + 2) in Huvbef by flia.
-replace (i + j + 4) with (i + j + 2 + 2) in Huvj by flia.
-apply (glop _ _ _ j); try easy.
-}
-...
-
     destruct j. {
       rewrite Nat.add_0_r in Huvj.
       rewrite A_split_first. 2: {
