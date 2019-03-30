@@ -1923,18 +1923,17 @@ destruct u2. {
 specialize (Hu 2); flia Hu Hu2.
 Qed.
 
-(*
-Theorem glop {r : radix} : ∀ u v i j n p,
+Theorem rad_2_sum_3_22_1_lt_2 {r : radix} : ∀ u v i j n p,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
   → (∀ k, v (i + k) ≤ 2)
-  → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
   → (∀ k, k < j + n → (u ⊕ v) (i + k + 2) = 2)
   → (u ⊕ v) (i + j + n + 2) = 1
   → (A (i + n + 1) p (u ⊕ v) < 2)%Q.
 Proof.
-intros * Hr2 Hu Hv H1 Huvbef Huvj.
-destruct j. {
+intros * Hr2 Hu Hv Huvbef Huvj.
+revert n Huvbef Huvj.
+induction j; intros. {
   rewrite Nat.add_0_r in Huvj.
   destruct (lt_dec (p - 1) (i + n + 2)) as [H2| H2]. {
     unfold A; rewrite summation_empty; [ easy | flia H2 ].
@@ -1955,23 +1954,25 @@ destruct j. {
   rewrite Q.mul_sub_distr_l, Q.mul_1_r.
   now apply Q.sub_lt.
 }
-replace (i + S j + n + 2) with (i + j + n + 3) in Huvj by flia.
-specialize (Huvbef n) as Huv4.
-assert (H : n < S j + n) by flia.
-specialize (Huv4 H); clear H.
-destruct (lt_dec (p - 1) (i + n + 2)) as [H2| H2]. {
-  unfold A; rewrite summation_empty; [ easy | flia H2 ].
+replace (S j + n) with (j + S n) in Huvbef by flia.
+replace (i + S j + n) with (i + j + S n) in Huvj by flia.
+specialize (IHj (S n) Huvbef Huvj) as H2.
+destruct (lt_dec (p - 1) (i + n + 2)) as [H3| H3]. {
+  unfold A; rewrite summation_empty; [ easy | flia H3 ].
 }
-apply Nat.nlt_ge in H2.
-rewrite A_split_first; [ | flia H2 ].
-replace (S (i + n + 1)) with (i + n + 2) by easy.
-rewrite Huv4, Hr2, Q.pair_diag; [ clear Huv4 | easy ].
+apply Nat.nlt_ge in H3.
+rewrite A_split_first; [ | flia H3 ].
+replace (i + S n + 1) with (i + n + 2) in H2 by flia.
+replace (S (i + n + 1)) with (i + n + 2) by flia.
+specialize (Huvbef n) as H4.
+assert (H : n < j + S n) by flia.
+specialize (H4 H); clear H.
+rewrite H4, Hr2, Q.pair_diag; [ | easy ].
 apply Q.lt_add_lt_sub_l.
 replace (2 - 1)%Q with 1%Q by easy.
 rewrite <- (Q.mul_inv_pair 2 1); [ | easy | easy ].
-apply Q.mul_lt_mono_pos_r; [ easy | ].
-...
-*)
+now apply Q.mul_lt_mono_pos_r.
+Qed.
 
 Theorem rad_2_sum_3_all_9_0_2_1_A_lt_1 {r : radix} : ∀ u v i j,
   rad = 2
@@ -2046,12 +2047,11 @@ specialize (IHj H); clear H.
 assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
   intros p.
   apply A_ge_1_true_iff.
-(**)
   specialize (Hauv (p + 1)) as H2.
   apply A_ge_1_true_iff in H2.
   rewrite Q.frac_small in H2. 2: {
     split; [ easy | ].
-clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
+    clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
     rewrite A_split_first; [ | min_n_ge ].
     replace (S i) with (i + 1) by flia.
     rewrite Huv1, Q.add_0_l.
@@ -2068,94 +2068,13 @@ clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
     rewrite <- Q.mul_assoc.
     rewrite Q.mul_pair_den_num; [ | easy ].
     rewrite Q.mul_1_r, Q.mul_1_l.
-    clear Huv1.
-(*1*)
-    destruct j. {
-      rewrite Nat.add_0_r in Huvj.
-      rewrite A_split_first; [ | min_n_ge ].
-      replace (S (i + 2)) with (i + 3) by easy.
-      rewrite Huvj, Hr2.
-      apply Q.lt_add_lt_sub_l.
-      replace (2 - 1 // 2)%Q with (3 * 1 // 2)%Q by easy.
-      apply Q.mul_lt_mono_pos_r; [ easy | ].
-      eapply Q.le_lt_trans. {
-        apply (A_upper_bound_for_adds 3).
-        intros k; cbn; rewrite Hr2.
-        do 2 rewrite <- Nat.add_assoc.
-        now apply Nat.add_le_mono.
-      }
-      rewrite Q.mul_sub_distr_l, Q.mul_1_r.
-      now apply Q.sub_lt.
-    }
-    replace (i + S j + 3) with (i + j + 4) in Huvj by flia.
-    specialize (Huvbef 1) as Huv3.
-    specialize (Huv3 (proj1 (Nat.succ_lt_mono 0 (S j)) (Nat.lt_0_succ j))).
-    replace (i + 1 + 2) with (i + 3) in Huv3 by flia.
-    rewrite A_split_first; [ | min_n_ge ].
-    replace (S (i + 2)) with (i + 3) by flia.
-    rewrite Huv3, Hr2, Q.pair_diag; [ clear Huv3 | easy ].
-    apply Q.lt_add_lt_sub_l.
-    replace (2 - 1)%Q with 1%Q by easy.
-    rewrite <- (Q.mul_inv_pair 2 1); [ | easy | easy ].
-    apply Q.mul_lt_mono_pos_r; [ easy | ].
-(*2*)
-    destruct j. {
-      rewrite Nat.add_0_r in Huvj.
-      rewrite A_split_first. 2: {
-        unfold min_n; rewrite Hr2.
-        rewrite Nat.mul_add_distr_l; flia.
-      }
-      replace (S (i + 3)) with (i + 4) by easy.
-      rewrite Huvj, Hr2.
-      apply Q.lt_add_lt_sub_l.
-      replace (2 - 1 // 2)%Q with (3 * 1 // 2)%Q by easy.
-      apply Q.mul_lt_mono_pos_r; [ easy | ].
-      eapply Q.le_lt_trans. {
-        apply (A_upper_bound_for_adds 3).
-        intros j; cbn; rewrite Hr2.
-        do 2 rewrite <- Nat.add_assoc.
-        now apply Nat.add_le_mono.
-      }
-      rewrite Q.mul_sub_distr_l, Q.mul_1_r.
-      now apply Q.sub_lt.
-    }
-    replace (i + S j + 4) with (i + j + 5) in Huvj by flia.
-    specialize (Huvbef 2) as Huv4.
-    assert (H : 2 < S (S (S j))) by flia.
-    specialize (Huv4 H); clear H.
-    replace (i + 2 + 2) with (i + 4) in Huv4 by flia.
-    rewrite A_split_first. 2: {
-      unfold min_n; rewrite Hr2.
-      rewrite Nat.mul_add_distr_l; flia.
-    }
-    replace (S (i + 3)) with (i + 4) by easy.
-    rewrite Huv4, Hr2, Q.pair_diag; [ clear Huv4 | easy ].
-    apply Q.lt_add_lt_sub_l.
-    replace (2 - 1)%Q with 1%Q by easy.
-    rewrite <- (Q.mul_inv_pair 2 1); [ | easy | easy ].
-    apply Q.mul_lt_mono_pos_r; [ easy | ].
-(*3*)
-    destruct j. {
-      rewrite Nat.add_0_r in Huvj.
-      rewrite A_split_first. 2: {
-        unfold min_n; rewrite Hr2.
-        rewrite Nat.mul_add_distr_l; flia.
-      }
-      replace (S (i + 4)) with (i + 5) by easy.
-      rewrite Huvj, Hr2.
-      apply Q.lt_add_lt_sub_l.
-      replace (2 - 1 // 2)%Q with (3 * 1 // 2)%Q by easy.
-      apply Q.mul_lt_mono_pos_r; [ easy | ].
-      eapply Q.le_lt_trans. {
-        apply (A_upper_bound_for_adds 3).
-        intros k; cbn; rewrite Hr2.
-        do 2 rewrite <- Nat.add_assoc.
-        now apply Nat.add_le_mono.
-      }
-      rewrite Q.mul_sub_distr_l, Q.mul_1_r.
-      now apply Q.sub_lt.
-    }
-(* etc. induction *)
+    replace (i + 2) with (i + 1 + 1) by flia.
+    replace (S j) with (j + 1) in Huvbef by flia.
+    replace (i + j + 3) with (i + j + 1 + 2) in Huvj by flia.
+    now apply (rad_2_sum_3_22_1_lt_2 _ _ _ j).
+  }
+  rewrite Q.frac_small. 2: {
+    idtac.
 ...
   specialize (Hauv p) as H2.
   apply A_ge_1_true_iff in H2.
