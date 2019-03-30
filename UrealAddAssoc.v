@@ -2020,22 +2020,89 @@ clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
     rewrite Q.mul_1_r, Q.mul_1_l.
     clear Huv1.
     destruct j. {
-...
+      rewrite Nat.add_0_r in Huvj.
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S (i + 2)) with (i + 3) by easy.
+      rewrite Huvj, Hr2.
+      apply Q.lt_add_lt_sub_l.
+      replace (2 - 1 // 2)%Q with (3 * 1 // 2)%Q by easy.
+      apply Q.mul_lt_mono_pos_r; [ easy | ].
+      eapply Q.le_lt_trans. {
+        apply (A_upper_bound_for_adds 3).
+        intros k; cbn; rewrite Hr2.
+        do 2 rewrite <- Nat.add_assoc.
+        now apply Nat.add_le_mono.
+      }
+      rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+      now apply Q.sub_lt.
+    }
+    replace (i + S j + 3) with (i + j + 4) in Huvj by flia.
+    specialize (Huvbef 1) as Huv3.
+    specialize (Huv3 (proj1 (Nat.succ_lt_mono 0 (S j)) (Nat.lt_0_succ j))).
+    replace (i + 1 + 2) with (i + 3) in Huv3 by flia.
     rewrite A_split_first; [ | min_n_ge ].
     replace (S (i + 2)) with (i + 3) by easy.
-...
-    assert (H : 1 < S (S j)) by flia.
-    specialize (Huvbef _ H) as H3; clear H.
-    replace (i + 1 + 2) with (i + 3) in H3 by flia.
-    rewrite H3; clear H3.
-    rewrite Hr2, (Q.pair_diag 2); [ | easy ].
+    rewrite Huv3, Hr2, Q.pair_diag; [ clear Huv3 | easy ].
     apply Q.lt_add_lt_sub_l.
     replace (2 - 1)%Q with 1%Q by easy.
-    apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
-    rewrite <- Q.mul_assoc.
-    rewrite Q.mul_pair_den_num; [ | easy ].
-    rewrite Q.mul_1_r, Q.mul_1_l.
-    (* récurrence *)
+    rewrite <- (Q.mul_inv_pair 2 1); [ | easy | easy ].
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
+    destruct j. {
+      rewrite Nat.add_0_r in Huvj.
+      rewrite A_split_first. 2: {
+        unfold min_n; rewrite Hr2.
+        rewrite Nat.mul_add_distr_l; flia.
+      }
+      replace (S (i + 3)) with (i + 4) by easy.
+      rewrite Huvj, Hr2.
+      apply Q.lt_add_lt_sub_l.
+      replace (2 - 1 // 2)%Q with (3 * 1 // 2)%Q by easy.
+      apply Q.mul_lt_mono_pos_r; [ easy | ].
+      eapply Q.le_lt_trans. {
+        apply (A_upper_bound_for_adds 3).
+        intros k; cbn; rewrite Hr2.
+        do 2 rewrite <- Nat.add_assoc.
+        now apply Nat.add_le_mono.
+      }
+      rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+      now apply Q.sub_lt.
+    }
+    replace (i + S j + 4) with (i + j + 5) in Huvj by flia.
+    specialize (Huvbef 2) as Huv4.
+    assert (H : 2 < S (S (S j))) by flia.
+    specialize (Huv4 H); clear H.
+    replace (i + 2 + 2) with (i + 4) in Huv4 by flia.
+    rewrite A_split_first. 2: {
+      unfold min_n; rewrite Hr2.
+      rewrite Nat.mul_add_distr_l; flia.
+    }
+    replace (S (i + 3)) with (i + 4) by easy.
+    rewrite Huv4, Hr2, Q.pair_diag; [ clear Huv4 | easy ].
+    apply Q.lt_add_lt_sub_l.
+    replace (2 - 1)%Q with 1%Q by easy.
+    rewrite <- (Q.mul_inv_pair 2 1); [ | easy | easy ].
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
+    destruct j. {
+      rewrite Nat.add_0_r in Huvj.
+      rewrite A_split_first. 2: {
+        unfold min_n; rewrite Hr2.
+        rewrite Nat.mul_add_distr_l; flia.
+      }
+      replace (S (i + 4)) with (i + 5) by easy.
+      rewrite Huvj, Hr2.
+      apply Q.lt_add_lt_sub_l.
+      replace (2 - 1 // 2)%Q with (3 * 1 // 2)%Q by easy.
+      apply Q.mul_lt_mono_pos_r; [ easy | ].
+      eapply Q.le_lt_trans. {
+        apply (A_upper_bound_for_adds 3).
+        intros k; cbn; rewrite Hr2.
+        do 2 rewrite <- Nat.add_assoc.
+        now apply Nat.add_le_mono.
+      }
+      rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+      now apply Q.sub_lt.
+    }
+(* etc. induction *)
 ...
   specialize (Hauv p) as H2.
   apply A_ge_1_true_iff in H2.

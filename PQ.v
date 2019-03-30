@@ -59,8 +59,10 @@ Definition PQinv x := PQmake (PQden1 x) (PQnum1 x).
 
 Module PQ_Notations.
 
+(*
 Notation "1" := (PQmake 0 0) : PQ_scope.
 Notation "2" := (PQmake 1 0) : PQ_scope.
+*)
 Notation "a // b" := (PQ_of_pair a b) : PQ_scope.
 Notation "x == y" := (PQeq x y) (at level 70) : PQ_scope.
 Notation "x ≠≠ y" := (¬ PQeq x y) (at level 70) : PQ_scope.
@@ -76,6 +78,36 @@ Notation "x + y" := (PQadd x y) : PQ_scope.
 Notation "x - y" := (PQsub x y) : PQ_scope.
 Notation "x * y" := (PQmul x y) : PQ_scope.
 Notation "/ x" := (PQinv x) : PQ_scope.
+
+Definition PQ_of_decimal_uint (n : Decimal.uint) : option PQ :=
+  let a := Nat.of_uint n in
+  if Nat.eq_dec a 0 then None
+  else Some (PQ_of_pair a 1).
+
+Definition PQ_of_decimal_int (n : Decimal.int) : option PQ :=
+  match n with
+  | Decimal.Pos ui => PQ_of_decimal_uint ui
+  | Decimal.Neg ui => None
+  end.
+
+Definition PQ_to_decimal_uint (pq : PQ) : option Decimal.uint :=
+  match PQden1 pq with
+  | 0 => Some (Nat.to_uint (PQnum1 pq + 1))
+  | _ => None
+  end.
+
+Definition PQ_to_decimal_int (pq : PQ) : option Decimal.int :=
+  option_map Decimal.Pos (PQ_to_decimal_uint pq).
+
+Numeral Notation PQ PQ_of_decimal_int PQ_to_decimal_int : PQ_scope.
+
+(*
+Check 25%PQ.
+Check (22 // 7)%PQ.
+*)
+(*
+Check 0%PQ.
+*)
 
 End PQ_Notations.
 
