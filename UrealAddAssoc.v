@@ -1923,6 +1923,47 @@ destruct u2. {
 specialize (Hu 2); flia Hu Hu2.
 Qed.
 
+Theorem glop {r : radix} : ∀ u v i j n p,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 1)
+  → (∀ k, v (i + k) ≤ 2)
+  → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
+  → (∀ k, k < j + n → (u ⊕ v) (i + k + 2) = 2)
+  → (u ⊕ v) (i + j + n + 2) = 1
+  → i + n + 3 ≤ p
+  → (A (i + n + 1) p (u ⊕ v) < 2)%Q.
+Proof.
+intros * Hr2 Hu Hv H1 Huvbef Huvj Hp.
+destruct j. {
+  rewrite Nat.add_0_r in Huvj.
+  rewrite A_split_first; [ | flia Hp ].
+  replace (S (i + n + 1)) with (i + n + 2) by easy.
+  rewrite Huvj, Hr2.
+  apply Q.lt_add_lt_sub_l.
+  replace (2 - 1 // 2)%Q with (3 * 1 // 2)%Q by easy.
+  apply Q.mul_lt_mono_pos_r; [ easy | ].
+  eapply Q.le_lt_trans. {
+    apply (A_upper_bound_for_adds 3).
+    intros j; cbn; rewrite Hr2.
+    do 3 rewrite <- Nat.add_assoc.
+    now apply Nat.add_le_mono.
+  }
+  rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+  now apply Q.sub_lt.
+}
+replace (i + S j + n + 2) with (i + j + n + 3) in Huvj by flia.
+specialize (Huvbef n) as Huv4.
+assert (H : n < S j + n) by flia.
+specialize (Huv4 H); clear H.
+rewrite A_split_first; [ | flia Hp ].
+replace (S (i + n + 1)) with (i + n + 2) by easy.
+rewrite Huv4, Hr2, Q.pair_diag; [ clear Huv4 | easy ].
+apply Q.lt_add_lt_sub_l.
+replace (2 - 1)%Q with 1%Q by easy.
+rewrite <- (Q.mul_inv_pair 2 1); [ | easy | easy ].
+apply Q.mul_lt_mono_pos_r; [ easy | ].
+...
+
 Theorem rad_2_sum_3_all_9_0_2_1_A_lt_1 {r : radix} : ∀ u v i j,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -2049,6 +2090,14 @@ clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
     rewrite <- (Q.mul_inv_pair 2 1); [ | easy | easy ].
     apply Q.mul_lt_mono_pos_r; [ easy | ].
 (*2*)
+...
+replace (i + 3) with (i + 2 + 1) by flia.
+replace (S (S j)) with (j + 2) in Huvbef by flia.
+replace (i + j + 4) with (i + j + 2 + 2) in Huvj by flia.
+apply (glop _ _ _ j); try easy.
+}
+...
+
     destruct j. {
       rewrite Nat.add_0_r in Huvj.
       rewrite A_split_first. 2: {
