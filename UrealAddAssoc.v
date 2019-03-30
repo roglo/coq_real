@@ -1930,46 +1930,16 @@ Theorem glop {r : radix} : ∀ u v i j n p,
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
   → (∀ k, k < j + n → (u ⊕ v) (i + k + 2) = 2)
   → (u ⊕ v) (i + j + n + 2) = 1
-  → i + n + 3 ≤ p
   → (A (i + n + 1) p (u ⊕ v) < 2)%Q.
 Proof.
-intros * Hr2 Hu Hv H1 Huvbef Huvj Hp.
-revert j p Huvbef Huvj Hp.
-induction n; intros. {
-  rewrite Nat.add_0_r in Huvbef, Huvj, Hp |-*.
-  destruct j. {
-    rewrite Nat.add_0_r in Huvj.
-    rewrite A_split_first; [ | flia Hp ].
-    replace (S (i + 1)) with (i + 2) by easy.
-    rewrite Huvj, Hr2.
-    apply Q.lt_add_lt_sub_l.
-    replace (2 - 1 // 2)%Q with (3 * 1 // 2)%Q by easy.
-    apply Q.mul_lt_mono_pos_r; [ easy | ].
-    eapply Q.le_lt_trans. {
-      apply (A_upper_bound_for_adds 3).
-      intros j; cbn; rewrite Hr2.
-      do 2 rewrite <- Nat.add_assoc.
-      now apply Nat.add_le_mono.
-    }
-    rewrite Q.mul_sub_distr_l, Q.mul_1_r.
-    now apply Q.sub_lt.
-  }
-  replace (i + S j + 2) with (i + j + 3) in Huvj by flia.
-  specialize (Huvbef 0) as Huv4.
-  rewrite Nat.add_0_r in Huv4.
-  assert (H : 0 < S j) by flia.
-  specialize (Huv4 H); clear H.
-  rewrite A_split_first; [ | flia Hp ].
-  replace (S (i + 1)) with (i + 2) by easy.
-  rewrite Huv4, Hr2, Q.pair_diag; [ clear Huv4 | easy ].
-  apply Q.lt_add_lt_sub_l.
-  replace (2 - 1)%Q with 1%Q by easy.
-  rewrite <- (Q.mul_inv_pair 2 1); [ | easy | easy ].
-  apply Q.mul_lt_mono_pos_r; [ easy | ].
-...
+intros * Hr2 Hu Hv H1 Huvbef Huvj.
 destruct j. {
   rewrite Nat.add_0_r in Huvj.
-  rewrite A_split_first; [ | flia Hp ].
+  destruct (lt_dec (p - 1) (i + n + 2)) as [H2| H2]. {
+    unfold A; rewrite summation_empty; [ easy | flia H2 ].
+  }
+  apply Nat.nlt_ge in H2.
+  rewrite A_split_first; [ | flia H2 ].
   replace (S (i + n + 1)) with (i + n + 2) by easy.
   rewrite Huvj, Hr2.
   apply Q.lt_add_lt_sub_l.
@@ -1988,7 +1958,11 @@ replace (i + S j + n + 2) with (i + j + n + 3) in Huvj by flia.
 specialize (Huvbef n) as Huv4.
 assert (H : n < S j + n) by flia.
 specialize (Huv4 H); clear H.
-rewrite A_split_first; [ | flia Hp ].
+destruct (lt_dec (p - 1) (i + n + 2)) as [H2| H2]. {
+  unfold A; rewrite summation_empty; [ easy | flia H2 ].
+}
+apply Nat.nlt_ge in H2.
+rewrite A_split_first; [ | flia H2 ].
 replace (S (i + n + 1)) with (i + n + 2) by easy.
 rewrite Huv4, Hr2, Q.pair_diag; [ clear Huv4 | easy ].
 apply Q.lt_add_lt_sub_l.
