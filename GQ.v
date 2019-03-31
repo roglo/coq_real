@@ -1110,7 +1110,7 @@ destruct g2; [ easy | ].
 simpl; flia.
 Qed.
 
-Theorem GQpair_diag : ∀ a, a ≠ 0 → GQ_of_pair a a = 1%GQ.
+Theorem GQpair_diag : ∀ a, a ≠ 0 → (a // a = 1)%GQ.
 Proof.
 intros * Ha.
 apply GQeq_eq; simpl.
@@ -1124,7 +1124,7 @@ Theorem GQmul_pair : ∀ x y z t,
   → ((x // y) * (z // t) = (x * z) // (y * t))%GQ.
 Proof.
 intros * Hx Hy Hz Ht; simpl.
-unfold "*"%GQ, "//"%GQ; simpl.
+unfold "*"%GQ; cbn.
 apply GQeq_eq; simpl.
 rewrite <- PQred_mul.
 unfold PQ_of_pair.
@@ -1260,9 +1260,7 @@ Proof.
 intros x.
 apply GQeq_eq.
 unfold GQnum, GQden.
-unfold "//"%GQ, "//"%PQ.
 unfold GQ_of_PQ; cbn.
-do 2 rewrite Nat.add_sub.
 remember (PQ_of_GQ x) as px eqn:Hpx; symmetry in Hpx.
 unfold PQred.
 destruct px as (nx, dx).
@@ -1280,6 +1278,8 @@ rewrite <- ggcd_gcd in H.
 rewrite Hg in H; cbn in H; subst g.
 rewrite Nat.mul_1_l in Hdx, Hnx.
 subst aa bb.
+do 2 rewrite Nat.add_sub.
+rewrite Hg.
 now do 2 rewrite Nat.add_sub.
 Qed.
 
@@ -1288,7 +1288,6 @@ Theorem GQnum_mult_GQden : ∀ a b n,
   → a mod b = 0.
 Proof.
 intros * Hnd.
-unfold "//"%GQ in Hnd.
 unfold GQnum, GQden in Hnd.
 unfold GQ_of_PQ in Hnd; cbn in Hnd.
 unfold PQred in Hnd.
@@ -1361,7 +1360,7 @@ Theorem GQnum_pair : ∀ a b,
     if zerop a then 1 else if zerop b then a else a / Nat.gcd a b.
 Proof.
 intros.
-unfold GQnum, "//"%GQ; cbn.
+unfold GQnum; cbn.
 unfold PQred.
 remember ggcd as f; cbn; subst f.
 destruct a.
@@ -1389,7 +1388,7 @@ Theorem GQden_pair : ∀ a b,
   GQden (a // b) = if zerop a ∨∨ zerop b then Nat.max 1 b else b / Nat.gcd a b.
 Proof.
 intros.
-unfold GQden, "//"%GQ; cbn.
+unfold GQden; cbn.
 unfold PQred.
 remember ggcd as f; cbn; subst f.
 destruct a.
@@ -1521,7 +1520,9 @@ Theorem glop : ∀ a b, a ≠ 0 → b ≠ 0 →
   (a // b < 1)%GQ → a < b.
 Proof.
 intros * Ha Hb Hab.
+...
 replace 1%GQ with (1 // 1)%GQ in Hab by easy.
+Check GQpair_lt_nat_r.
 apply GQpair_lt_nat_r in Hab.
 ...
 *)
