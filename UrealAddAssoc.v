@@ -2074,7 +2074,83 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
     now apply (rad_2_sum_3_22_1_lt_2 _ _ _ j).
   }
   rewrite Q.frac_small. 2: {
-    idtac.
+    split; [ easy | ].
+(*
+    clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
+*)
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S i) with (i + 1) by flia.
+    unfold u' at 1, v' at 1, "⊕" at 1.
+    destruct (le_dec (i + 1) (i + j)) as [H3| H3]; [ clear H3 | flia Hj H3 ].
+    unfold "⊕" in Huv1; rewrite Huv1, Q.add_0_l.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 1)) with (i + 2) by flia.
+    unfold u' at 1, v' at 1, "⊕" at 1.
+    destruct (le_dec (i + 2) (i + j)) as [H4| H4]. {
+      specialize (Huvbef _ (Nat.lt_0_succ j)) as H3.
+      rewrite Nat.add_0_r in H3; unfold "⊕" in H3.
+      rewrite H3; clear H3.
+      rewrite Hr2, (Q.pair_diag 2); [ | easy ].
+      rewrite Q.mul_add_distr_r, Q.mul_1_l.
+      apply Q.lt_add_lt_sub_l.
+      replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+      apply Q.mul_lt_mono_pos_r; [ easy | ].
+      apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
+      rewrite <- Q.mul_assoc.
+      rewrite Q.mul_pair_den_num; [ | easy ].
+      rewrite Q.mul_1_r, Q.mul_1_l.
+      replace (i + 2) with (i + 1 + 1) by flia.
+      replace (S j) with (j + 1) in Huvbef by flia.
+      replace (i + j + 3) with (i + j + 1 + 2) in Huvj by flia.
+      destruct j; [ flia Hj | clear Hj ].
+      apply (rad_2_sum_3_22_1_lt_2 _ _ _ j); [ easy | | | | ]. {
+        intros q; unfold u'.
+        destruct (le_dec (i + q) (i + S j)) as [H5| H5]; [ easy | ].
+        now rewrite <- Nat.add_assoc.
+      } {
+        intros q; unfold v'.
+        destruct (le_dec (i + q) (i + S j)) as [H5| H5]; [ easy | ].
+        now rewrite <- Nat.add_assoc.
+      } {
+        intros q Hq; unfold u', v', "⊕".
+        destruct (le_dec (i + q + 2) (i + S j)) as [H5| H5]. {
+          apply Huvbef; flia H5.
+        }
+        apply Nat.nle_gt in H5.
+        replace (i + q + 2 + 1) with (i + (q + 1) + 2) by flia.
+        apply Huvbef; flia Hq.
+      } {
+        unfold u', v', "⊕".
+        replace (i + j + 1 + 2) with (i + j + 3) by flia.
+        replace (i + S j) with (i + j + 1) by flia.
+        replace (i + j + 3 + 1) with (i + j + 4) by flia.
+        destruct (le_dec (i + j + 3) (i + j + 1)) as [H5| H5]; [ flia H5 | ].
+        clear H5.
+        now replace (i + S j + 1 + 2) with (i + j + 4) in Huvj by flia.
+      }
+    }
+    apply Nat.nle_gt in H4.
+    replace j with 1 in * by flia Hj H4.
+    clear Hj H4.
+    rewrite Nat.add_shuffle0; unfold "⊕" in Huvbef.
+    rewrite Huvbef; [ | pauto ].
+    rewrite Hr2, Q.pair_diag; [ | easy ].
+    rewrite Q.mul_add_distr_r, Q.mul_1_l.
+    apply Q.lt_add_lt_sub_l.
+    replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
+    apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
+    rewrite <- Q.mul_assoc.
+    rewrite Q.mul_pair_den_num; [ | easy ].
+    rewrite Q.mul_1_r, Q.mul_1_l.
+    replace (i + 2) with (i + 1 + 1) by flia.
+    replace (S j) with (j + 1) in Huvbef by flia.
+    replace (i + j + 3) with (i + j + 1 + 2) in Huvj by flia.
+...
+    destruct j; [ flia Hj | clear Hj ].
+      apply (rad_2_sum_3_22_1_lt_2 _ _ _ j); [ easy | | | | ]. {
+        intros q; unfold u'.
+  }
 ...
   specialize (Hauv p) as H2.
   apply A_ge_1_true_iff in H2.
