@@ -13,16 +13,16 @@ Declare Scope GQ_scope.
 Delimit Scope GQ_scope with GQ.
 
 Record GQ :=
-  GQmake
+  GQmake0
     { PQ_of_GQ : PQ;
       GQprop : Nat.gcd (PQnum1 PQ_of_GQ + 1) (PQden1 PQ_of_GQ + 1) = 1 }.
-Arguments GQmake PQ_of_GQ%PQ.
+Arguments GQmake0 PQ_of_GQ%PQ.
 Arguments PQ_of_GQ x%GQ : rename.
 
 (* the use of transparentify below is to allow Numeral Notation of
    values of type Q (file NQ.v) work by always giving eq_refl as
    proof of gcd n d = 1; thanks to Theo Zimmermann, Hugo Herbelin
-   and Jason Gross
+   and Jason Gross *)
 
 Definition transparentify {A} (D : {A} + {¬A}) (H : A) : A :=
   match D with
@@ -32,7 +32,6 @@ Definition transparentify {A} (D : {A} + {¬A}) (H : A) : A :=
 
 Definition GQmake x p := GQmake0 x (transparentify (Nat.eq_dec _ _) p).
 Arguments GQmake x%PQ.
-*)
 
 Definition GQ_of_PQ x := GQmake (PQred x) (PQred_gcd x).
 Arguments GQ_of_PQ x%PQ.
@@ -53,8 +52,10 @@ Definition GQle x y := PQle (PQ_of_GQ x) (PQ_of_GQ y).
 Definition GQgt x y := GQlt y x.
 Definition GQge x y := GQle y x.
 
+(*
 Notation "1" := (GQ_of_pair 1 1) : GQ_scope.
 Notation "2" := (GQ_of_pair 2 1) : GQ_scope.
+*)
 Notation "a // b" := (GQ_of_pair a b) : GQ_scope.
 Notation "x + y" := (GQadd x y) : GQ_scope.
 Notation "x - y" := (GQsub x y) : GQ_scope.
@@ -69,7 +70,7 @@ Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%GQ (at level 70, y at next lev
   GQ_scope.
 
 (* Bon, ça déconne. Ça crée une différence entre 2%GQ et (2//1)%GQ
-   qu'on est tout le temps en train de convertir l'un vers l'autre
+   qu'on est tout le temps en train de convertir l'un vers l'autre *)
 
 Definition GQ_of_decimal_uint (n : Decimal.uint) : option GQ :=
   let a := Nat.of_uint n in
@@ -94,11 +95,17 @@ Definition GQ_to_decimal_int (gq : GQ) : option Decimal.int :=
 
 Numeral Notation GQ GQ_of_decimal_int GQ_to_decimal_int : GQ_scope.
 
-Check 2%GQ.
-Check (2 // 1)%GQ.
-Compute 2%GQ.
-Compute (2 // 1)%GQ.
-...
+(* Set Printing All. *)
+(* Check 1%GQ. *)
+(* GQmake0 (PQmake O O) (@eq_refl nat (S O)) *)
+(* Check (1 // 1)%GQ. *)
+(* GQ_of_pair (S O) (S O) *)
+
+(*
+Check 3%GQ.
+Check (3 // 1)%GQ.
+Compute 3%GQ.
+Compute (3 // 1)%GQ.
 *)
 (*
 Check 0%GQ.
@@ -1508,6 +1515,16 @@ destruct c; [ easy | ].
 do 3 rewrite Nat.sub_succ, Nat.sub_0_r in Habc.
 now do 3 rewrite Nat.add_1_r in Habc.
 Qed.
+
+(*
+Theorem glop : ∀ a b, a ≠ 0 → b ≠ 0 →
+  (a // b < 1)%GQ → a < b.
+Proof.
+intros * Ha Hb Hab.
+replace 1%GQ with (1 // 1)%GQ in Hab by easy.
+apply GQpair_lt_nat_r in Hab.
+...
+*)
 
 Theorem GQpair_le_nat_l : ∀ a b c, a ≠ 0 → b ≠ 0 → c ≠ 0 →
   (a // 1 ≤ b // c)%GQ → a * c ≤ b.

@@ -541,6 +541,7 @@ rewrite Nat.pow_1_r.
 rewrite Q.mul_pair; [ | pauto | pauto ].
 rewrite Nat.mul_1_r, <- Nat.pow_succ_r'.
 replace (S (n - i - 1)) with (n - i) by flia Hin.
+replace 1%Q with (1 // 1)%Q by easy.
 apply Q.lt_pair; [ pauto | easy | ].
 do 2 rewrite Nat.mul_1_r.
 replace n with (i + (n - i)) at 1 by flia Hin.
@@ -895,6 +896,7 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
     symmetry in Hs.
     now apply Nat.pow_nonzero in Hs.
   }
+  replace 1%Q with (1 // 1)%Q by easy.
   apply Q.le_pair_mono_l; split; [ pauto | flia ].
 -apply Nat.nlt_ge in Hin.
  remember (n - i - 1) as s eqn:Hs.
@@ -912,6 +914,7 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
   rewrite Nat.mul_comm, Nat.add_shuffle0.
   apply Nat.mul_le_mono_l, Hur.
  +rewrite Q.mul_assoc.
+  replace 1%Q with (1 // 1)%Q by easy.
   rewrite Q.sub_pair_pos; [ | easy | easy | now apply Nat.mul_le_mono_l].
   do 2 rewrite Nat.mul_1_l.
   rewrite Q.mul_pair; [ | easy | easy ].
@@ -1374,7 +1377,8 @@ assert (HB : ∀ l, (0 ≤ B i n u l < 1)%Q). {
     destruct rad as [| rr]; [ easy | ].
     destruct rr; [ flia Hr | cbn; flia ].
    +intros j Hj; replace j with (i + (j - i)) by flia Hj; apply Hur.
-  -apply Q.le_pair; [ pauto | easy | ].
+  -replace 1%Q with (1 // 1)%Q by easy.
+   apply Q.le_pair; [ pauto | easy | ].
    do 2 rewrite Nat.mul_1_r.
    now apply Nat_pow_ge_1.
 }
@@ -1426,6 +1430,7 @@ destruct (Q.lt_le_dec (Q.frac (A i n u) + B i n u l) 1) as [H4| H4].
     eapply Q.lt_le_trans; [ apply H8 | ].
     replace 2%Q with (1 + 1)%Q by easy.
     apply Q.add_le_mono_l.
+    replace 1%Q with (1 // 1)%Q by easy.
     apply Q.le_pair; [ pauto | easy | ].
     do 2 rewrite Nat.mul_1_r.
     now apply Nat_pow_ge_1.
@@ -1441,6 +1446,7 @@ destruct (Q.lt_le_dec (Q.frac (A i n u) + B i n u l) 1) as [H4| H4].
   replace (rad ^ S k) with (rad ^ S k * 1) by flia.
   rewrite Nat.pow_add_r, Nat.pow_1_r.
   rewrite <- Nat.mul_add_distr_l.
+  replace 1%Q with (1 // 1)%Q by easy.
   apply Q.le_pair; [ pauto | easy | ].
   do 2 rewrite Nat.mul_1_r.
   rewrite <- Nat.add_assoc.
@@ -1546,6 +1552,7 @@ specialize (fApB_lower_bound u i k l Hfa) as H1.
 rewrite <- Hn in H1.
 apply (Q.add_le_mono_l _ _ (Q.intg (A i n u) // 1)) in H1.
 rewrite Q.add_sub_assoc in H1.
+replace 1%Q with (1 // 1)%Q in H1 by easy.
 rewrite Q.add_pair in H1; [ | easy | easy ].
 do 2 rewrite Nat.mul_1_r in H1.
 rewrite Q.add_assoc in H1.
@@ -1568,6 +1575,7 @@ rewrite <- Hn in H1.
 apply (Q.add_lt_mono_l (Q.intg (A i n u) // 1)) in H1.
 do 2 rewrite Q.add_assoc in H1.
 rewrite <- Q.intg_frac in H1; [ | apply A_ge_0 ].
+replace 1%Q with (1 // 1)%Q in H1 by easy.
 rewrite Q.add_pair in H1; [ | easy | easy ].
 do 2 rewrite Nat.mul_1_r in H1.
 replace (Q.intg (A i n u) + 1) with (Q.intg (A i n u + 1)%Q) in H1.
@@ -1814,6 +1822,7 @@ apply (Q.le_trans _ (A i n (λ i, rad - 1))).
  }
  rewrite Q.pair_diag; [ rewrite Q.mul_1_r | flia Hr ].
  rewrite <- Nat.pow_succ_r'.
+ replace 1%Q with (1 // 1)%Q by easy.
  rewrite Q.sub_pair_pos; [ | easy | pauto | ]; cycle 1. {
    apply Nat.mul_le_mono_l, Nat.neq_0_lt_0; pauto.
  }
@@ -1852,6 +1861,7 @@ rewrite Q.power_summation; [ | flia Hr ].
 replace (n - 1 - (i + 1)) with (n - i - 1 - 1) by flia Hin.
 remember (n - i - 1) as s eqn:Hs.
 replace (S (s - 1)) with s by flia Hs Hin.
+replace 1%Q with (1 // 1)%Q by easy.
 rewrite Q.sub_pair_pos; [ | easy | pauto | ]; cycle 1. {
   apply Nat.mul_le_mono_l.
   now apply Nat_pow_ge_1.
@@ -1897,15 +1907,19 @@ rewrite summation_eq_compat with
   rewrite <- Nat.pow_add_r.
   replace (i + j + 1 - i) with (j + 1) by flia; f_equal.
   rewrite Hj.
+  replace 2%Q with (2 // 1)%Q by easy.
   rewrite Q.mul_pair; [ | easy | pauto ].
   now rewrite Nat.mul_1_l.
 }
 rewrite <- summation_mul_distr_l.
+(*
 remember Q.of_pair as f; simpl; subst f.
+*)
 rewrite Q.power_summation; [ | flia Hr ].
 replace (n - 1 - (i + 1)) with (n - i - 1 - 1) by flia Hin.
 remember (n - i - 1) as s eqn:Hs.
 replace (S (s - 1)) with s by flia Hs Hin.
+replace 2%Q with (2 // 1)%Q by easy.
 rewrite Q.sub_pair_pos; [ | easy | pauto | ]; cycle 1. {
   rewrite Nat.mul_comm.
   apply Nat.mul_le_mono_l.
@@ -1971,6 +1985,7 @@ replace (i + j + 2 - i - 1) with (j + 1) by flia.
 rewrite Q.mul_pair; [ | easy | pauto ].
 rewrite Nat.mul_1_r.
 rewrite Q.mul_sub_distr_r.
+replace 2%Q with (2 // 1)%Q by easy.
 rewrite Q.mul_pair; [ | easy | pauto ].
 rewrite Nat.mul_1_r, Nat.mul_1_l.
 rewrite <- Nat.pow_succ_r', Nat.add_1_r.
@@ -2273,6 +2288,7 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
    symmetry in Hs.
    now apply Nat.pow_nonzero in Hs.
  }
+ replace 1%Q with (1 // 1)%Q by easy.
  apply Q.le_pair; [ easy | easy | ].
  apply Nat.mul_le_mono_nonneg_r; [ apply Nat.le_0_1 | flia ].
 -apply Nat.nlt_ge in Hin.
@@ -2291,8 +2307,10 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
   rewrite Nat.mul_comm, Nat.add_shuffle0.
   apply Nat.mul_le_mono_l, Hur.
  +rewrite Q.mul_assoc.
+  replace 1%Q with (1 // 1)%Q by easy.
   rewrite Q.sub_pair_pos; [ | easy | easy | now apply Nat.mul_le_mono_l].
   do 2 rewrite Nat.mul_1_l.
+  replace 2%Q with (2 // 1)%Q by easy.
   rewrite Q.mul_pair; [ | easy | easy ].
   rewrite Nat.mul_1_l.
   rewrite Q.mul_pair; [ | easy | pauto ].
@@ -2317,6 +2335,7 @@ apply (Q.le_lt_trans _ ((rad - 3) // rad + 2 // rad * (1 - 1 // rad ^ s))%Q).
   apply Nat.mul_le_mono_pos_l; [ easy | flia H1 ].
  +destruct s; [ flia Hs His | ].
   rewrite Q.power_summation_inv; [ | flia Hr ].
+  replace 1%Q with (1 // 1)%Q by easy.
   rewrite Q.sub_pair_pos; [ | easy | easy | now apply Nat.mul_le_mono_l ].
   do 2 rewrite Nat.mul_1_l.
   rewrite Q.mul_assoc, summation_mul_distr_l.
@@ -2341,6 +2360,7 @@ apply (Q.le_lt_trans _ ((rad - 3) // rad + 2 // rad * (1 - 1 // rad ^ s))%Q).
 -rewrite Q.mul_sub_distr_l, Q.mul_1_r.
  rewrite Q.add_sub_assoc, <- Q.pair_add_l.
  replace (rad - 3 + 2) with (rad - 1) by flia H1.
+ replace 1%Q with (1 // 1)%Q by easy.
  rewrite Q.sub_pair_pos; [ | easy | easy | now apply Nat.mul_le_mono_l ].
  do 2 rewrite Nat.mul_1_l.
  rewrite Q.mul_pair; [ | easy | pauto ].
@@ -2365,6 +2385,7 @@ rewrite A_split with (e := i + j + 2); [ | flia Hin ].
 replace (i + j + 2 - i - 1) with (j + 1) by flia.
 remember (i + j + 2) as k eqn:Hk.
 move k before j.
+replace 1%Q with (1 // 1)%Q by easy.
 rewrite Q.sub_pair_pos; [ | easy | pauto | ]; cycle 1. {
   apply Nat.mul_le_mono_l, Nat.neq_0_lt_0; pauto.
 }
@@ -2458,6 +2479,7 @@ apply Q.add_le_lt_mono.
   rewrite Q.pair_diag, Q.mul_1_r; [ | easy ].
   rewrite Q.sub_pair_pos; [ | easy | easy | flia Hr ].
   do 2 rewrite Nat.mul_1_l.
+  replace 2%Q with (2 // 1)%Q by easy.
   apply Q.lt_pair; [ easy | easy | ].
   rewrite Nat.mul_1_l; flia Hr.
 Qed.
@@ -2497,6 +2519,7 @@ replace (1 - 1 // rad ^ (k + 2))%Q with
     replace 2 with (2 * 1) by easy.
     apply Nat.mul_le_mono; [ easy | apply Nat.neq_0_lt_0; pauto ].
   }
+  replace 1%Q with (1 // 1)%Q by easy.
   rewrite Q.sub_pair_pos; [ | easy | pauto | ]; cycle 1. {
     apply Nat.mul_le_mono_pos_l; [ flia | apply Nat.neq_0_lt_0; pauto ].
   }
@@ -2553,6 +2576,7 @@ apply Q.add_le_lt_mono.
   replace (2 - 2 // rad ^ k)%Q with (2 * (1 - 1 // rad ^ k))%Q; cycle 1. {
     rewrite Q.mul_sub_distr_l, Q.mul_1_r.
     f_equal; f_equal.
+    replace 2%Q with (2 // 1)%Q by easy.
     rewrite Q.mul_pair; [ | easy | pauto ].
     now rewrite Nat.mul_1_l.
   }
@@ -2591,6 +2615,7 @@ apply Q.add_le_lt_mono.
     apply Hur.
   --rewrite Q.mul_sub_distr_l, Q.mul_1_r.
     apply Q.sub_lt.
+    replace 2%Q with (2 // 1)%Q by easy.
     rewrite Q.mul_pair; [ | easy | pauto ].
     rewrite Nat.mul_1_r, Nat.mul_1_l.
     replace 0%Q with (0 // 1)%Q by easy.
@@ -3050,14 +3075,17 @@ rewrite (Nat_mod_less_small 1); cycle 1. {
   rewrite Nat.mul_1_l.
   split.
   -rewrite Q.num_den in H7; [ | apply A_ge_0 ].
+   replace 1%Q with (1 // 1)%Q in H7 by easy.
    apply Q.le_pair in H7; [ | easy | pauto ].
    now do 2 rewrite Nat.mul_1_l in H7.
   -remember (A i n u) as x in H8.
    rewrite Q.num_den in Heqx; [ subst x | apply A_ge_0 ].
+   replace 1%Q with (1 // 1)%Q in H8 by easy.
    rewrite Q.sub_pair_pos in H8; [ | easy | pauto | ]; cycle 1. {
     apply Nat.mul_le_mono_l, Nat.neq_0_lt_0; pauto.
    }
    do 2 rewrite Nat.mul_1_l in H8.
+   replace 2%Q with (2 // 1)%Q in H8 by easy.
    rewrite Q.mul_pair in H8; [ | easy | pauto ].
    rewrite Nat.mul_1_l in H8.
    apply Q.le_pair in H8; [ | pauto | pauto ].
@@ -3074,6 +3102,7 @@ rewrite (Nat_mod_less_small 1); cycle 1. {
 }
 rewrite Q.pair_sub_l; cycle 1. {
   rewrite Q.num_den in H7; [ | apply A_ge_0 ].
+  replace 1%Q with (1 // 1)%Q in H7 by easy.
   apply Q.le_pair in H7; [ | easy | pauto ].
   rewrite Nat.mul_1_l.
   now do 2 rewrite Nat.mul_1_l in H7.
@@ -3117,6 +3146,7 @@ apply Q.le_lt_trans with
   rewrite Nat.mul_1_l, <- Nat.pow_add_r.
   rewrite Nat.sub_add; [ | flia Hs H6 Ht ].
   rewrite Q.mul_sub_distr_l.
+  replace 2%Q with (2 // 1)%Q by easy.
   rewrite Q.mul_pair; [ rewrite Nat.mul_1_l, Nat.mul_1_r | easy | pauto ].
   rewrite Q.mul_pair; [ rewrite Nat.mul_1_l, Nat.mul_1_r | easy | pauto ].
   rewrite Q.pair_sub_l; [ | easy ].
@@ -3128,10 +3158,11 @@ apply Q.le_lt_trans with
    apply Q.lt_pair; [ easy | pauto | cbn; flia ].
   *apply (Q.add_le_mono_r _ _ (1 // rad ^ S k)%Q).
    rewrite Q.sub_add.
-   replace 2%Q with (1 + 1)%Q by easy.
+   replace (2 // 1)%Q with (1 + 1)%Q by easy.
    rewrite <- Q.add_assoc.
    apply Q.add_le_mono_l.
    rewrite <- Q.pair_add_l.
+   replace 1%Q with (1 // 1)%Q by easy.
    apply Q.le_pair; [ pauto | easy | ].
    do 2 rewrite Nat.mul_1_r.
    rewrite Nat.add_1_r.
@@ -3223,6 +3254,7 @@ destruct (Q.eq_dec (A (i + j) n u) 0) as [HAz| HAz].
  unfold Q.sub.
  rewrite HAz, Q.add_0_l, Q.mul_opp_l, Q.mul_1_l.
  rewrite Q.add_opp_r.
+ replace 1%Q with (1 // 1)%Q by easy.
  rewrite Q.sub_pair_pos; [ | easy | pauto | ]; cycle 1. {
    now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
  }
@@ -3275,7 +3307,8 @@ destruct (Q.eq_dec (A (i + j) n u) 0) as [HAz| HAz].
      rewrite Q.mul_sub_distr_r, Q.mul_1_l.
      replace 1%Q with (1 - 0)%Q by easy.
      apply Q.sub_le_mono.
-     +apply Q.le_pair; [ pauto | easy | ].
+     +replace 1%Q with (1 // 1)%Q by easy.
+      apply Q.le_pair; [ pauto | easy | ].
       now apply Nat.mul_le_mono_r, Nat_pow_ge_1.
      +rewrite <- (Q.mul_0_l (1 // rad ^ j)%Q).
       apply Q.mul_le_mono_pos_r; [ | apply A_ge_0 ].
@@ -3329,6 +3362,7 @@ destruct (Q.eq_dec (A (i + j) n u) 0) as [HAz| HAz].
    rewrite Q.pair_sub_l; [ | easy ].
    rewrite Q.sub_add.
    apply Q.sub_lt.
+   replace 2%Q with (2 // 1)%Q by easy.
    rewrite Q.mul_pair_den_num; [ | easy ].
    replace 0%Q with (0 // 1)%Q by easy.
    apply Q.lt_pair; [ easy | pauto | cbn; flia ].
@@ -3445,6 +3479,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
    rewrite H; clear H.
    replace (2 * (rad - 1)) with (rad + (rad - 2)) by flia Hr.
    rewrite Q.pair_add_l, Q.pair_diag; [ | easy ].
+   replace 1%Q with (1 // 1)%Q by easy.
    rewrite <- Q.add_assoc, Q.frac_add_nat_l; [ apply Q.le_refl | ].
    eapply Q.le_trans; [ | apply Q.le_add_r ].
    -replace 0%Q with (0 // 1)%Q by easy.
@@ -3480,6 +3515,7 @@ apply Q.nlt_ge in H1; apply H1; clear H1.
 replace (S (S x)) with (2 + x) by easy.
 rewrite Q.pair_add_l.
 rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+replace 2%Q with (2 // 1)%Q by easy.
 rewrite Q.mul_pair; [ | easy | pauto ].
 rewrite Nat.mul_1_r, Nat.mul_1_l.
 unfold Q.sub.
@@ -3568,6 +3604,7 @@ assert (H1 : NA (i + j) n u mod rad ^ s = NA i n u mod rad ^ s). {
 }
 rewrite H1 in Hu.
 replace (n - i - 1) with (s + j) by flia Hs Hijn.
+replace 1%Q with (1 // 1)%Q by easy.
 rewrite Q.sub_pair_pos; [ | easy | pauto | ]. 2: {
   apply Nat.mul_le_mono_l.
   now apply Nat_pow_ge_1.
@@ -3581,6 +3618,7 @@ do 3 rewrite Nat.pow_add_r.
 do 2 rewrite <-  Nat.mul_assoc.
 apply Nat.mul_lt_mono_pos_l; [ apply Nat.neq_0_lt_0; pauto | ].
 rewrite Nat.mul_comm.
+replace 1%Q with (1 // 1)%Q in Hu by easy.
 rewrite Q.sub_pair_pos in Hu; [ | easy | pauto | ]. 2: {
   apply Nat.mul_le_mono_l.
   now apply Nat_pow_ge_1.
@@ -3713,13 +3751,16 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur.
+(*
 remember S as f; simpl; subst f.
+*)
 set (n1 := rad * (i + j + 3)).
 set (s1 := n1 - i - 1).
 assert (Hin1 : i + j + 2 ≤ n1 - 1). {
   subst n1.
   destruct rad; [ easy | simpl; flia ].
 }
+unfold n1.
 rewrite A_split with (e := i + j + 2); [ | flia Hin1 ].
 eapply Q.le_trans; cycle 1. {
   apply Q.le_add_r.
@@ -3741,6 +3782,7 @@ replace (i + j + 2 - 1 - (i + 1)) with j by flia Hin1.
 apply summation_le_compat.
 intros k Hk.
 replace (i + 1 + k - i) with (S k) by flia.
+replace 1%Q with (1 // 1)%Q by easy.
 rewrite Q.sub_pair_pos; [ | easy | easy | flia Hr ].
 do 2 rewrite Nat.mul_1_l.
 rewrite Q.mul_pair; [ | easy | pauto ].
