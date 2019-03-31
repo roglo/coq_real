@@ -2031,6 +2031,7 @@ destruct (zerop j) as [Hj| Hj]. {
 }
 remember (λ k, if le_dec k (i + j) then u k else u (k + 1)) as u' eqn:Hu'.
 remember (λ k, if le_dec k (i + j) then v k else v (k + 1)) as v' eqn:Hv'.
+move v' before u'.
 specialize (IHj u' v').
 assert (H : ∀ k, u' (i + k) ≤ 1). {
   intros p; rewrite Hu'.
