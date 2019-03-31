@@ -123,6 +123,7 @@ Proof.
 intros * Hs12.
 unfold Q.intg.
 apply Nat_div_less_small.
+replace 2%Q with (2 // 1)%Q by easy.
 rewrite Q.sub_pair_pos; [ | easy | pauto | ]; cycle 1. {
   rewrite Nat.mul_comm; apply Nat.mul_le_mono_l.
   now apply Nat_pow_ge_1.
