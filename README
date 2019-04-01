@@ -1,3 +1,2 @@
 Started on Coq version 8.6.1.
-Now using Coq version 8.9.
-Don't know if it still works in 8.6.1 and intermediate versions.
+Now using Coq version 8.10 (master version).

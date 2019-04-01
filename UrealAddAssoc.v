@@ -940,6 +940,18 @@ destruct
       move Hx1 at top; subst x.
       rewrite Q.intg_small in HA. 2: {
         split; [ easy | ].
+Check Q.lt_pair_mono_l.
+Check 1%Q.
+Check (1//1)%Q.
+(*
+Pos (GQ.GQmake0 (PQ.PQmake O O) (@eq_refl nat (S O)))
+replace 1%Q with (1 // 1)%Q by easy.
+Set Printing All.
+*)
+Check Q.lt_pair_mono_l.
+apply (Q.lt_pair_mono_l 1); pauto.
+...
+refine (Q.lt_pair_mono_l 1 _ _ _ _).
         apply Q.lt_pair_mono_l; pauto.
       }
       rewrite Nat.add_0_l in HA.
