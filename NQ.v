@@ -123,6 +123,8 @@ Definition mul x y :=
   | Neg px => NQmul_neg_l px y
   end.
 
+Inductive qand (A B : Prop) := qconj : A → B → qand A B.
+
 Module Notations.
 
 Notation "a // b" := (of_pair a b) : Q_scope.
@@ -137,7 +139,7 @@ Notation "x ≤ y" := (le x y) : Q_scope.
 Notation "x > y" := (gt x y) : Q_scope.
 Notation "x ≥ y" := (ge x y) : Q_scope.
 Notation "x < y < z" := (lt x y ∧ lt y z) : Q_type_scope.
-Notation "x ≤ y < z" := (le x y ∧ lt y z) : Q_scope.
+Notation "x ≤ y < z" := (qand (le x y) (lt y z)) : Q_scope.
 Notation "x < y ≤ z" := (lt x y ∧ le y z) : Q_scope.
 Notation "x ≤ y ≤ z" := (le x y ∧ le y z) : Q_scope.
 Notation "- x" := (opp x) : Q_scope.
@@ -2162,9 +2164,8 @@ Qed.
 
 Theorem frac_small : ∀ x, (0 ≤ x < 1)%Q → frac x = x.
 Proof.
-intros * Hx.
+intros * (Hx0, Hx).
 destruct x as [| px| px]; [ easy | | easy ].
-cbn in Hx; destruct Hx as (_, Hx).
 rewrite (GQnum_den px) in Hx.
 apply (GQpair_lt_nat_r _ _ 1) in Hx; [ | easy | easy | easy ].
 rewrite Nat.mul_1_r in Hx.
@@ -2239,7 +2240,8 @@ destruct x as [| px| px].
   ++now rewrite Nat.mul_1_l in Hc.
   ++now intros H; rewrite H, Nat.mul_comm in H2.
   ++now intros H; rewrite H in Hx.
--now destruct n.
+-destruct Hx as (Hx1, Hx2).
+ now destruct n.
 Qed.
 
 Theorem intg_0 : intg 0 = 0.
@@ -2677,6 +2679,7 @@ rewrite Nat.mul_comm.
 apply lt_pair; [ easy | easy | ].
 eapply le_lt_trans; [ apply H1 | ].
 eapply le_lt_trans; [ apply Hxy | ].
+destruct H2 as (H21, H22).
 now rewrite pair_add_l.
 Qed.
 
