@@ -594,7 +594,7 @@ apply (Q.lt_le_trans _ ((rad - 2) // rad + 2 // rad)%Q). {
   apply Q.add_lt_mono_l.
   apply (Q.mul_lt_mono_pos_r (rad // 1)%Q); [ now apply Q.lt_0_pair | ].
   rewrite <- Q.mul_assoc, Q.mul_pair_den_num; [ | easy ].
-  now rewrite Q.mul_1_r, Q.mul_pair_den_num.
+  rewrite Q.mul_1_r, Q.mul_pair_den_num; [ now destruct Hci2 | easy ].
 }
 rewrite <- Q.pair_add_l.
 rewrite Nat.sub_add; [ | easy ].
@@ -872,9 +872,11 @@ destruct
   apply Q.intg_interv in Hcw; [ | now apply Q.le_0_mul_r ].
   assert (HA : Q.intg (A (i + p + 1) nr u) = 2). {
     apply Q.intg_interv; [ easy | ].
-    split; [ now apply (Q.mul_le_mono_pos_r (1 // 2)%Q) | ].
-    replace 1%Q with (1 // 1)%Q by easy.
-    rewrite <- Q.pair_add_l.
+    split. {
+      apply (Q.mul_le_mono_pos_r (1 // 2)%Q); [ easy | ].
+      now destruct Hcw.
+    }
+    rewrite <- (Q.pair_add_l _ 1).
     replace (2 + 1) with 3 by easy.
     eapply Q.le_lt_trans. {
       apply (A_upper_bound_for_adds 3).
@@ -1082,8 +1084,7 @@ destruct
     rewrite Q.sub_pair_pos; [ | easy | easy | flia ].
     do 2 rewrite Nat.mul_1_l.
     replace (2 * 2 - 1) with 3 by easy.
-...
-    rewrite Q.mul_pair_den_num; [ | easy ].
+    rewrite (Q.mul_pair_den_num _ 2 1); [ | easy ].
     apply Q.le_refl.
   }
   destruct (Nat.eq_dec x 2) as [Hx2| Hx2]. {
@@ -1144,7 +1145,7 @@ destruct
     rewrite Huv42 in H7.
     rewrite Hr2 in H7 at 1.
     rewrite Q.pair_diag in H7; [ | easy ].
-    rewrite Q.intg_add_nat_l in H7; [ | now apply Q.le_0_mul_r ].
+    rewrite (Q.intg_add_nat_l 1) in H7; [ | now apply Q.le_0_mul_r ].
     replace 2 with (1 + 1) in H7 at 3 by easy.
     apply Nat.add_cancel_l in H7.
     remember (A (i + p + 2) (min_n (i + p + 1) 0 + rad) u) as x eqn:Hx.
@@ -1155,10 +1156,10 @@ destruct
     destruct H8 as (_, H8).
     apply (Q.mul_le_mono_pos_r 2%Q) in H7; [ | easy ].
     rewrite <- Q.mul_assoc in H7.
-    rewrite Q.mul_pair in H7; [ | easy | easy ].
+    rewrite (Q.mul_pair _ _ 2 1) in H7; [ | easy | easy ].
     do 2 rewrite Nat.mul_1_l in H7.
     replace (1 + 1)%Q with 2%Q in H8 by easy.
-    rewrite Q.mul_pair_den_num in H7; [ | easy ].
+    rewrite (Q.mul_pair_den_num _ 2 1) in H7; [ | easy ].
     rewrite Q.mul_1_r in H7.
     now apply Q.nlt_ge in H7.
   }
@@ -1171,10 +1172,11 @@ replace 1 with (0 + 1) in Hcw at 5 by easy.
 apply Nat.add_cancel_r in Hcw.
 apply Q.eq_intg_0 in Hcw; [ | now apply Q.le_0_mul_r ].
 apply (Q.mul_lt_mono_pos_r 2%Q) in Hcw; [ | easy ].
-rewrite <- Q.mul_assoc, Q.mul_pair_den_num in Hcw; [ | easy ].
+rewrite <- Q.mul_assoc in Hcw.
+rewrite (Q.mul_pair_den_num _ 2 1) in Hcw; [ | easy ].
 rewrite Q.mul_1_r, Q.mul_1_l in Hcw.
 apply Q.le_sub_le_add_l in H1.
-rewrite Q.sub_pair_pos in H1; [ | easy | easy | cbn; pauto ].
+rewrite (Q.sub_pair_pos 1 1) in H1; [ | easy | easy | cbn; pauto ].
 do 2 rewrite Nat.mul_1_l in H1.
 replace (2 - 1) with 1 in H1 by easy.
 assert (Hcuv3x : carry u (i + p + 1) < 2). {
@@ -1189,7 +1191,7 @@ assert (Hcuv3x : carry u (i + p + 1) < 2). {
   apply Nat.lt_succ_r.
   rewrite (Q.intg_frac (A _ _ _)) in Hcw; [ | easy ].
   eapply Q.le_lt_trans in Hcw; [ | now apply Q.le_add_r ].
-  apply Q.lt_pair in Hcw; [ flia Hcw | easy | easy ].
+  apply (Q.lt_pair _ _ 2 1) in Hcw; [ flia Hcw | easy | easy ].
 }
 remember (carry u (i + p + 1)) as ci eqn:Hcuv3.
 symmetry in Hcuv3; move Hcuv3 before Hcuv2.

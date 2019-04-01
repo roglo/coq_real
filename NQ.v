@@ -123,6 +123,9 @@ Definition mul x y :=
   | Neg px => NQmul_neg_l px y
   end.
 
+(* in 8.10, coq obstinately refuses to print "a < b < c": he prints
+   "a < b ∧ b < c"; I found a solution: redefining my own and constructor
+   and then, it works *)
 Inductive qand (A B : Prop) := qconj : A → B → qand A B.
 
 Module Notations.
@@ -138,10 +141,10 @@ Notation "x < y" := (lt x y) : Q_scope.
 Notation "x ≤ y" := (le x y) : Q_scope.
 Notation "x > y" := (gt x y) : Q_scope.
 Notation "x ≥ y" := (ge x y) : Q_scope.
-Notation "x < y < z" := (lt x y ∧ lt y z) : Q_type_scope.
+Notation "x < y < z" := (qand (lt x y) (lt y z)) : Q_scope.
 Notation "x ≤ y < z" := (qand (le x y) (lt y z)) : Q_scope.
-Notation "x < y ≤ z" := (lt x y ∧ le y z) : Q_scope.
-Notation "x ≤ y ≤ z" := (le x y ∧ le y z) : Q_scope.
+Notation "x < y ≤ z" := (qand (lt x y) (le y z)) : Q_scope.
+Notation "x ≤ y ≤ z" := (qand (le x y) (le y z)) : Q_scope.
 Notation "- x" := (opp x) : Q_scope.
 Notation "x + y" := (add x y) : Q_scope.
 Notation "x - y" := (sub x y) : Q_scope.
