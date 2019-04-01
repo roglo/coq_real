@@ -1528,6 +1528,7 @@ destruct Hvr as [Hvr| [Hvr| Hvr]].
  rewrite <- Q.add_assoc.
  apply Q.add_le_mono_l.
  eapply Q.le_trans; [ | now apply Q.le_add_r ].
+ replace 1%Q with (1 // 1)%Q by easy.
  apply Q.le_pair; [ pauto | pauto | ].
  apply Nat.mul_le_mono_pos_r; [ pauto | ].
  rewrite Hnik; apply rad_pow_min_n.
@@ -1591,6 +1592,7 @@ remember (nij - i - 1) as s eqn:Hs.
 rewrite Q.frac_add_cond in H4; [ | easy | ]. 2: {
   apply Q.le_add_le_sub_r.
   rewrite Q.add_0_r.
+  replace 1%Q with (1 // 1)%Q by easy.
   apply Q.le_pair; [ pauto | easy | ].
   now apply Nat.mul_le_mono_r, Nat_pow_ge_1.
 }
@@ -1603,6 +1605,7 @@ rewrite Q.frac_small in H4. 2: {
   split.
   -apply Q.le_add_le_sub_r.
    rewrite Q.add_0_r.
+   replace 1%Q with (1 // 1)%Q by easy.
    apply Q.le_pair; [ pauto | easy | ].
    now apply Nat.mul_le_mono_r, Nat_pow_ge_1.
   -now apply Q.sub_lt.
@@ -1641,6 +1644,7 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ s)%Q 1) as [Har| Har].
   apply Q.le_add_le_sub_r.
   rewrite Q.add_pair; [ | pauto | easy ].
   rewrite Nat.mul_1_l, Nat.mul_1_r.
+  replace 1%Q with (1 // 1)%Q by easy.
   apply Q.le_pair; [ apply Nat.neq_mul_0; pauto | easy | ].
   apply Nat.mul_le_mono_r.
   replace rad with (1 + (rad - 1)) at 4 by flia Hr.
@@ -1743,7 +1747,7 @@ destruct (le_dec j k) as [Hljk| Hljk].
      now apply Q.sub_lt.
  }
  rewrite Q.add_sub_assoc in Hj.
- destruct (Q.lt_le_dec (A i nij u + A i nij v - 1)%Q 1) as [Hjuv| Hjuv].
+ destruct (Q.lt_le_dec (A i nij u + A i nij v - 1 // 1)%Q 1) as [Hjuv| Hjuv].
  +rewrite Q.sub_0_r in Hj; clear Hjuv.
   apply (Q.lt_sub_lt_add_l (A i nij u + A i nij v)%Q) in Hj.
   rewrite Q.add_sub_assoc in Hj.
@@ -1808,6 +1812,7 @@ rewrite (A_all_9 (P _)) in H1; [ | easy ].
 remember (ni - i - 1) as s eqn:Hs.
 assert (H11 : (0 ≤ 1 - 1 // rad ^ s)%Q). {
   apply Q.le_add_le_sub_r; rewrite Q.add_0_r.
+  replace 1%Q with (1 // 1)%Q by easy.
   apply Q.le_pair; [ pauto | easy | ].
   apply Nat.mul_le_mono_r.
   now apply Nat_pow_ge_1.
@@ -1849,6 +1854,7 @@ destruct (Q.lt_le_dec (A i ni u + (1 - 1 // rad ^ s))%Q 1) as [H2| H2].
   apply Q.add_le_mono_l, Q.le_add_le_sub_r.
   rewrite Q.add_pair; [ | easy | pauto ].
   rewrite Nat.mul_1_l, Nat.mul_1_r.
+  replace 1%Q with (1 // 1)%Q by easy.
   apply Q.le_pair; [ apply Nat.neq_mul_0; pauto | easy | ].
   apply Nat.mul_le_mono_r.
   rewrite Hni in Hs; unfold min_n in Hs.
@@ -1864,6 +1870,7 @@ destruct (Q.lt_le_dec (A i ni u + (1 - 1 // rad ^ s))%Q 1) as [H2| H2].
   rewrite <- Hs, Q.intg_small in Ha1; [ easy | ].
   split.
  --apply Q.le_add_le_sub_l; rewrite Q.add_0_l.
+   replace 1%Q with (1 // 1)%Q by easy.
    apply Q.le_pair; [ pauto | easy | ].
    apply Nat.mul_le_mono_r.
    destruct (le_dec (i + j + 1) (ni - 1)) as [H3| H3].
@@ -1916,6 +1923,7 @@ assert (H1s : ∀ s n, (0 ≤ n // 1 - n // rad ^ s)%Q). {
   rewrite Nat.mul_comm.
   now apply Nat.mul_le_mono_r, Nat_pow_ge_1.
 }
+replace 1%Q with (1 // 1)%Q in Hpi by easy.
 rewrite Q.frac_add_cond in Hpi; [ | easy | easy ].
 rewrite Q.frac_small in Hpi. 2: {
   split; [ easy | ].
@@ -1941,10 +1949,12 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%Q 1) as [Hau1| Hau1].
  *exfalso.
   rewrite A_all_9 in Ha1; [ | easy ].
   rewrite Q.intg_small in Ha1; [ easy | ].
+  replace 1%Q with (1 // 1)%Q by easy.
   split; [ easy | now apply Q.sub_lt ].
  *specialize (Hauv j) as H1.
   rewrite <- Hnij, A_additive in H1.
   rewrite (A_all_18 v), <- Hsij in H1; [ | easy ].
+  replace 2%Q with (2 // 1)%Q in H1 by easy.
   rewrite Q.frac_add_cond in H1; [ | easy | easy ].
   rewrite Q.frac_small in H1. 2: {
     split; [ easy | ].
@@ -1955,6 +1965,7 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%Q 1) as [Hau1| Hau1].
     intros n Hn.
     destruct n; [ easy | ].
     apply Q.le_add_le_sub_r; rewrite Q.add_0_r.
+    replace 1%Q with (1 // 1)%Q by easy.
     apply Q.le_pair; [ pauto | easy | ].
     apply Nat.mul_le_mono_r.
     replace 2 with (2 ^ 1) by easy.
@@ -1963,7 +1974,7 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%Q 1) as [Hau1| Hau1].
   rewrite (Q.frac_less_small 1) in H1. 2: {
     split; [ | now apply Q.sub_lt ].
     apply Q.le_add_le_sub_l.
-    replace 2%Q with (1 + 1)%Q by easy.
+    replace (2 // 1)%Q with (1 // 1 + 1 // 1)%Q by easy.
     apply Q.add_le_mono_l.
     apply Q.le_pair; [ pauto | easy | ].
     apply Nat.mul_le_mono_r.
