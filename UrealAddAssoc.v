@@ -1893,10 +1893,12 @@ destruct u2. {
     split; [ easy | ].
     apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
     rewrite <- Q.mul_assoc.
-    rewrite Q.mul_pair; [ | easy | easy ].
+    rewrite (Q.mul_pair_den_num _ 2 1); [ | easy ].
     rewrite Q.pair_diag; [ | easy ].
     rewrite Q.mul_1_r, Q.mul_1_l.
-    apply (Q.lt_le_trans _ 1); [ | apply Q.le_pair_mono_r; pauto ].
+    apply (Q.lt_le_trans _ 1). 2: {
+      apply (Q.le_pair_mono_r 1 2 1); pauto.
+    }
     apply rad_2_sum_2_half_A_lt_1; [ easy | ].
     now intros; rewrite <- Nat.add_assoc.
   }
@@ -1923,7 +1925,7 @@ destruct u2. {
     destruct H as (Hu4, Hv4).
     move Hu4 before Hv3; move Hv4 before Hu4.
     rewrite Hv4, Hr2, Q.pair_diag; [ | easy ].
-    rewrite Q.intg_add_nat_l; [ | now apply Q.le_0_mul_r ].
+    rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
     replace 1 with (1 + 0) at 6 by easy; f_equal.
     apply Q.intg_small.
     split; [ now apply Q.le_0_mul_r | ].
@@ -2083,7 +2085,7 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
     apply Q.mul_lt_mono_pos_r; [ easy | ].
     apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
     rewrite <- Q.mul_assoc.
-    rewrite Q.mul_pair_den_num; [ | easy ].
+    rewrite (Q.mul_pair_den_num _ 2 1); [ | easy ].
     rewrite Q.mul_1_r, Q.mul_1_l.
     replace (i + 2) with (i + 1 + 1) by flia.
     replace (S j) with (j + 1) in Huvbef by flia.
@@ -2111,7 +2113,7 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
       apply Q.mul_lt_mono_pos_r; [ easy | ].
       apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
       rewrite <- Q.mul_assoc.
-      rewrite Q.mul_pair_den_num; [ | easy ].
+      rewrite (Q.mul_pair_den_num _ 2 1); [ | easy ].
       rewrite Q.mul_1_r, Q.mul_1_l.
       replace (i + 2) with (i + 1 + 1) by flia.
       replace (S j) with (j + 1) in Huvbef by flia.
@@ -2155,7 +2157,7 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
     apply Q.mul_lt_mono_pos_r; [ easy | ].
     apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
     rewrite <- Q.mul_assoc.
-    rewrite Q.mul_pair_den_num; [ | easy ].
+    rewrite (Q.mul_pair_den_num _ 2 1); [ | easy ].
     rewrite Q.mul_1_r, Q.mul_1_l.
     replace (i + 2) with (i + 1 + 1) by flia.
     apply (rad_2_sum_3_22_1_lt_2 _ _ _ 0); [ easy | | | | ]. {
