@@ -1520,11 +1520,7 @@ Theorem glop : ∀ a b, a ≠ 0 → b ≠ 0 →
   (a // b < 1)%GQ → a < b.
 Proof.
 intros * Ha Hb Hab.
-...
-replace 1%GQ with (1 // 1)%GQ in Hab by easy.
-Check GQpair_lt_nat_r.
-apply GQpair_lt_nat_r in Hab.
-...
+apply (GQpair_lt_nat_r _ _ 1) in Hab.
 *)
 
 Theorem GQpair_le_nat_l : ∀ a b c, a ≠ 0 → b ≠ 0 → c ≠ 0 →

@@ -2166,8 +2166,7 @@ intros * Hx.
 destruct x as [| px| px]; [ easy | | easy ].
 cbn in Hx; destruct Hx as (_, Hx).
 rewrite (GQnum_den px) in Hx.
-replace 1%GQ with (1 // 1)%GQ in Hx by easy.
-apply GQpair_lt_nat_r in Hx; [ | easy | easy | easy ].
+apply (GQpair_lt_nat_r _ _ 1) in Hx; [ | easy | easy | easy ].
 rewrite Nat.mul_1_r in Hx.
 unfold frac; cbn.
 rewrite Nat.mod_small; [ | easy ].
@@ -2187,8 +2186,7 @@ Proof.
 intros * Hx.
 destruct x as [| px| px].
 -destruct Hx as (H, _).
- replace 0%Q with (0 // 1)%Q in H by easy.
- apply le_pair in H; [ | easy | easy ].
+ apply (le_pair _ _ 0 1) in H; [ | easy | easy ].
  rewrite Nat.mul_comm in H.
  apply Nat.mul_le_mono_pos_l in H; [ | pauto ].
  now apply Nat.le_0_r in H; subst n.
@@ -2196,8 +2194,7 @@ destruct x as [| px| px].
  destruct n; [ now apply frac_small | ].
  rewrite (GQnum_den px) in H1, H2; cbn in H1, H2.
  apply GQpair_le_nat_l in H1; [ | easy | easy | easy ].
- replace 1%GQ with (1 // 1)%GQ in H2 by easy.
- rewrite <- GQpair_add_l in H2; [ | easy | easy | easy ].
+ rewrite <- (GQpair_add_l _ 1) in H2; [ | easy | easy | easy ].
  apply GQpair_lt_nat_r in H2; [ | easy | easy | easy ].
  rewrite Nat.mul_comm in H2.
  unfold frac; cbn.
@@ -2270,8 +2267,7 @@ Theorem frac_ge_0 : ∀ x, (0 ≤ frac x)%Q.
 Proof.
 intros.
 unfold frac.
-replace 0%Q with (0 // 1)%Q by easy.
-apply le_pair; [ easy | easy | ].
+apply (le_pair 0 1); [ easy | easy | ].
 rewrite Nat.mul_1_l; cbn; flia.
 Qed.
 
@@ -2281,8 +2277,7 @@ Theorem frac_lt_1 : ∀ x, (frac x < 1)%Q.
 Proof.
 intros.
 unfold frac.
-replace 1%Q with (1 // 1)%Q by easy.
-apply lt_pair; [ easy | easy | ].
+apply (lt_pair _ _ 1 1); [ easy | easy | ].
 do 2 rewrite Nat.mul_1_r.
 now apply Nat.mod_upper_bound.
 Qed.
@@ -2320,8 +2315,7 @@ rewrite intg_to_frac.
 -rewrite (frac_less_small n); [ | easy ].
  now rewrite sub_sub_distr, sub_diag.
 -eapply le_trans; [ | apply Hx ].
- replace 0%Q with (0 // 1)%Q by easy.
- apply le_pair_mono_r, Nat.le_0_l.
+ apply (le_pair_mono_r 0), Nat.le_0_l.
 Qed.
 
 Theorem eq_intg_0 : ∀ x, (0 ≤ x)%Q → intg x = 0 → (x < 1)%Q.
@@ -2330,8 +2324,7 @@ intros * Hx1 Hx2.
 destruct x as [| x| x]; [ easy | | easy ].
 unfold intg in Hx2; cbn in Hx2; cbn.
 rewrite (GQnum_den x).
-replace 1%GQ with (1 // 1)%GQ by easy.
-apply GQlt_pair; [ easy | easy | easy | easy | ].
+apply (GQlt_pair _ _ 1 1); [ easy | easy | easy | easy | ].
 do 2 rewrite Nat.mul_1_r.
 now apply Nat_div_small_iff.
 Qed.
@@ -2469,8 +2462,7 @@ split; intros Hx.
  replace x with (num x // den x)%Q in Hx; cycle 1. {
    now symmetry; apply num_den.
  }
- replace 1%Q with (1 // 1)%Q in Hx by easy.
- rewrite add_pair in Hx; [ | easy | easy ].
+ rewrite (add_pair _ _ 1 1) in Hx; [ | easy | easy ].
  do 2 rewrite Nat.mul_1_r in Hx.
  destruct Hx as (Hnx, Hxn).
  apply le_pair in Hnx; [ | easy | easy ].
@@ -2526,8 +2518,7 @@ destruct (lt_le_dec (frac x + frac y) 1) as [H1| H1].
  symmetry in Hz.
  destruct z as [| zp| zp]; [ easy | | easy ].
  replace zp with (GQnum zp // GQden zp)%GQ in H1 by now rewrite GQnum_den.
- replace 1%GQ with (1 // 1)%GQ in H1 by easy.
- apply GQpair_le_nat_l in H1; [ | easy | | ]; cycle 1. {
+ apply (GQpair_le_nat_l 1) in H1; [ | easy | | ]; cycle 1. {
    apply GQnum_neq_0.
  } {
    apply GQden_neq_0.
@@ -2542,8 +2533,7 @@ destruct (lt_le_dec (frac x + frac y) 1) as [H1| H1].
  cbn in H.
  remember mult as f; cbn; subst f.
  replace zp with (GQnum zp // GQden zp)%GQ in H by now rewrite GQnum_den.
- replace 2%GQ with (2 // 1)%GQ in H by easy.
- apply GQpair_lt_nat_r in H; [ | | | easy ]; cycle 1. {
+ apply (GQpair_lt_nat_r _ _ 2) in H; [ | | | easy ]; cycle 1. {
    apply GQnum_neq_0.
  } {
    apply GQden_neq_0.
@@ -2695,8 +2685,7 @@ Theorem intg_add_nat_l : ∀ a x, (0 ≤ x)%Q →
 Proof.
 intros * Hx.
 rewrite intg_add; [ | | easy ]. 2: {
-  replace 0%Q with (0 // 1)%Q by easy.
-  apply le_pair; [ easy | easy | cbn; flia ].
+  apply (le_pair 0 1); [ easy | easy | cbn; flia ].
 }
 rewrite Nat.add_shuffle0; f_equal.
 rewrite intg_pair; [ | easy ].
@@ -2811,12 +2800,11 @@ Qed.
 Theorem le_0_pair : ∀ a b, (0 ≤ a // b)%Q.
 Proof.
 intros.
-replace 0%Q with (0 // 1)%Q by easy.
 destruct b. {
   rewrite den_0.
-  apply le_pair; [ easy | easy | apply Nat.le_0_l ].
+  apply (le_pair 0 1); [ easy | easy | apply Nat.le_0_l ].
 }
-apply le_pair; [ easy | easy | apply Nat.le_0_l ].
+apply (le_pair 0 1); [ easy | easy | apply Nat.le_0_l ].
 Qed.
 
 Theorem lt_0_pair : ∀ a b, (0 < a // b)%Q ↔ 0 < a.
@@ -2825,13 +2813,12 @@ intros.
 split; intros Ha.
 -apply Nat.nle_gt; intros H.
  now apply Nat.le_0_r in H; rewrite H in Ha.
--replace 0%Q with (0 // 1)%Q by easy.
- destruct b. {
+-destruct b. {
    rewrite den_0.
-   apply lt_pair; [ easy | easy | ].
+   apply (lt_pair 0 1); [ easy | easy | ].
    now rewrite Nat.mul_1_l.
  }
- apply lt_pair; [ easy | easy | ].
+ apply (lt_pair 0 1); [ easy | easy | ].
  now rewrite Nat.mul_1_l.
 Qed.
 
@@ -3026,8 +3013,7 @@ destruct (eq_nat_dec a 1) as [Ha1| Ha1]. {
 assert (Haa : a ≠ 0 ∧ a ≠ 1) by flia Ha Ha1; clear Ha Ha1.
 rewrite power_summation; [ | flia Haa ].
 symmetry.
-replace 1%Q with (1 // 1)%Q by easy.
-rewrite sub_pair_pos; [ | easy | flia Haa | flia Haa ].
+rewrite (sub_pair_pos 1 1); [ | easy | flia Haa | flia Haa ].
 do 2 rewrite Nat.mul_1_l.
 rewrite mul_pair; [ | flia Haa | ]; cycle 1. {
   intros H; apply Nat.eq_mul_0 in H.
@@ -3043,7 +3029,7 @@ rewrite <- mul_pair; [ | | flia Haa ]; cycle 1. {
 rewrite pair_diag; [ | flia Haa ].
 rewrite mul_1_r, <- Nat.pow_succ_r'.
 destruct Haa as (Ha, Ha1).
-rewrite sub_pair_pos; [ | flia | now apply Nat.pow_nonzero | ]; cycle 1. {
+rewrite (sub_pair_pos 1 1); [ | flia | now apply Nat.pow_nonzero | ]; cycle 1. {
   apply Nat.mul_le_mono_l.
   apply (Nat.lt_le_trans _ 2); [ flia | cbn ].
   replace 2 with (2 * 1) by flia.
