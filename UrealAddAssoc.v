@@ -940,19 +940,7 @@ destruct
       move Hx1 at top; subst x.
       rewrite Q.intg_small in HA. 2: {
         split; [ easy | ].
-Check Q.lt_pair_mono_l.
-Check 1%Q.
-Check (1//1)%Q.
-(*
-Pos (GQ.GQmake0 (PQ.PQmake O O) (@eq_refl nat (S O)))
-replace 1%Q with (1 // 1)%Q by easy.
-Set Printing All.
-*)
-Check Q.lt_pair_mono_l.
-apply (Q.lt_pair_mono_l 1); pauto.
-...
-refine (Q.lt_pair_mono_l 1 _ _ _ _).
-        apply Q.lt_pair_mono_l; pauto.
+        apply (Q.lt_pair_mono_l 1); pauto.
       }
       rewrite Nat.add_0_l in HA.
       apply Q.intg_interv in HA; [ | now apply Q.le_0_mul_r ].
@@ -960,7 +948,7 @@ refine (Q.lt_pair_mono_l 1 _ _ _ _).
       apply Q.nlt_ge in H; apply H; clear H.
       apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
       rewrite <- Q.mul_assoc.
-      rewrite Q.mul_pair; [ | easy | easy ].
+      rewrite (Q.mul_pair _ _ 2 1); [ | easy | easy ].
       rewrite Q.pair_diag; [ | easy ].
       rewrite Q.mul_1_r.
       eapply Q.le_lt_trans. {
@@ -969,7 +957,7 @@ refine (Q.lt_pair_mono_l 1 _ _ _ _).
       }
       rewrite Q.mul_sub_distr_l, Q.mul_1_r.
       eapply Q.lt_trans; [ now apply Q.sub_lt | ].
-      rewrite <- Q.pair_mul_r.
+      rewrite <- (Q.pair_mul_r _ 2 1).
       apply Q.lt_pair_mono_r; pauto.
     }
     destruct (Nat.eq_dec x 2) as [Hx2| Hx2]. {
@@ -1029,7 +1017,7 @@ refine (Q.lt_pair_mono_l 1 _ _ _ _).
       rewrite Huv42 in H7.
       rewrite Hr2 in H7 at 1.
       rewrite Q.pair_diag in H7; [ | easy ].
-      rewrite Q.intg_add_nat_l in H7; [ | now apply Q.le_0_mul_r ].
+      rewrite (Q.intg_add_nat_l 1) in H7; [ | now apply Q.le_0_mul_r ].
       replace 2 with (1 + 1) in H7 at 3 by easy.
       apply Nat.add_cancel_l in H7.
       remember (A (i + p + 2) (min_n (i + p + 2) 0 + rad) u) as x eqn:Hx.
@@ -1039,11 +1027,11 @@ refine (Q.lt_pair_mono_l 1 _ _ _ _).
       destruct H8 as (_, H8).
       apply (Q.mul_le_mono_pos_r 2%Q) in H7; [ | easy ].
       rewrite <- Q.mul_assoc in H7.
-      rewrite Q.mul_pair in H7; [ | easy | easy ].
+      rewrite (Q.mul_pair _ _ 2 1) in H7; [ | easy | easy ].
       do 2 rewrite Nat.mul_1_l in H7.
       replace (1 + 1)%Q with 2%Q in H8 by easy.
       rewrite Hr2 in H7, H8.
-      rewrite Q.mul_pair_den_num in H7; [ | easy ].
+      rewrite (Q.mul_pair_den_num _ 2 1) in H7; [ | easy ].
       rewrite Q.mul_1_r in H7.
       now apply Q.nlt_ge in H7.
     }
@@ -1058,7 +1046,7 @@ refine (Q.lt_pair_mono_l 1 _ _ _ _).
     rename Hx into Huv41; move Huv41 before Huv33.
     rewrite Q.intg_small in HA. 2: {
       split; [ easy | ].
-      apply Q.lt_pair_mono_l; pauto.
+      apply (Q.lt_pair_mono_l 1); pauto.
     }
     rewrite Nat.add_0_l in HA.
     replace 2 with (1 + 1) in HA at 3 by easy.
