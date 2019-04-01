@@ -2004,6 +2004,8 @@ Theorem rad_2_sum_3_all_9_0_2_1_A_lt_1 {r : radix} : ∀ u v i j,
   → ∀ k, (A i (min_n i k) (u ⊕ P v) < 1)%Q.
 Proof.
 intros * Hr2 Hu Hv Hauv Huv1 Huvbef Huvj *.
+...
+intros * Hr2 Hu Hv Hauv Huv1 Huvbef Huvj *.
 revert u v Hu Hv Hauv Huv1 Huvbef Huvj.
 induction j; intros. {
   rewrite Nat.add_0_r in Huvj.
