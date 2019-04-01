@@ -1315,7 +1315,7 @@ destruct j. {
     rewrite Huj, Hr2 in Hpu2.
     destruct Hpu2 as (Hpu2, _).
     apply Q.le_sub_le_add_l in Hpu2.
-    replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q in Hpu2 by easy.
+    replace (1 // 1 - 1 // 2)%Q with (1 * 1 // 2)%Q in Hpu2 by easy.
     apply Q.mul_le_mono_pos_r in Hpu2; [ | easy ].
     now apply Q.nle_gt in Hc3.
   }
@@ -1420,11 +1420,11 @@ assert (H : u (i + 3) ≠ 0). {
     destruct H1 as (H1, _).
     apply (Q.mul_le_mono_pos_r 2%Q) in H1; [ | easy ].
     rewrite <- Q.mul_assoc in H1.
-    rewrite Q.mul_pair_den_num in H1; [ | easy ].
+    rewrite (Q.mul_pair_den_num _ 2 1) in H1; [ | easy ].
     rewrite Q.mul_1_l, Q.mul_1_r in H1.
     eapply Q.le_trans; [ | apply H1 ].
-    rewrite <- Q.pair_add_l.
-    apply Q.le_pair; [ easy | easy | flia Hc2 ].
+    rewrite <- (Q.pair_add_l _ 1 1).
+    apply (Q.le_pair _ _ 2 1); [ easy | easy | flia Hc2 ].
   }
   apply Nat.nlt_ge in Hc2.
   destruct (Nat.eq_dec c 2) as [H| H]. 2: {
@@ -1708,7 +1708,7 @@ destruct pv. {
       flia H6 H7 H8.
     }
     rewrite Hr2, Q.pair_diag in Hx; [ | easy ].
-    rewrite Q.intg_add_nat_l in Hx; [ | now apply Q.le_0_mul_r ].
+    rewrite (Q.intg_add_nat_l 1) in Hx; [ | now apply Q.le_0_mul_r ].
     rewrite Nat.add_assoc in Hx.
     rewrite Nat_mod_add_same_l in Hx; [ | easy ].
     rewrite Q.intg_small in Hx; [ easy | ].
@@ -1804,7 +1804,7 @@ destruct u2. {
   apply (Q.lt_le_trans _ (1 * 1 // 2)%Q). 2: {
     rewrite Q.mul_1_l, Hr2.
     remember (P v (i + 2)) as p1 eqn:Hp1.
-    destruct p1; [ rewrite Q.sub_0_r; apply Q.le_pair_mono_l; flia | ].
+    destruct p1; [ rewrite Q.sub_0_r; apply (Q.le_pair_mono_l 1); flia | ].
     destruct p1; [ apply Q.le_refl | ].
     specialize (P_le v (i + 2)) as H3.
     flia Hr2 Hp1 H3.
