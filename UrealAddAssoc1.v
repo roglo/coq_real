@@ -2458,6 +2458,7 @@ move Hj at bottom; clear Haj0.
 assert (Havi : (1 ≤ A i nk v < 2)%Q). {
   split.
   -specialize (Q.intg_to_frac (A i nk v) (A_ge_0 _ _ _)) as H.
+   replace 1%Q with (1 // 1)%Q by easy.
    rewrite Hak1 in H; rewrite H.
    now apply Q.le_sub_l.
   -eapply Q.le_lt_trans; [ apply A_upper_bound_for_add | ].
@@ -2553,6 +2554,7 @@ destruct (Q.lt_le_dec (A i nj u + A i nj v)%Q 1) as [Hajv| Hajv].
    apply Q.le_add_le_sub_r.
    rewrite A_num_den in Hj; unfold den_A in Hj; rewrite <- Hsj in Hj.
    rewrite A_num_den; unfold den_A; rewrite <- Hsj.
+   replace 1%Q with (1 // 1)%Q by easy.
    rewrite Q.sub_pair_pos; [ | easy | pauto | ]. 2: {
      now apply Nat.mul_le_mono_l, Nat_pow_ge_1.
    }
