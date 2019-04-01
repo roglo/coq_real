@@ -29,6 +29,7 @@ rewrite Q.frac_small. 2: {
   split.
   -apply Q.le_add_le_sub_l.
    rewrite Q.add_0_l.
+   replace 1%Q with (1 // 1)%Q by easy.
    apply Q.le_pair_mono_l; split; [ pauto | now apply Nat_pow_ge_1 ].
   -apply Q.sub_lt, Q.lt_0_pair; pauto.
 }
