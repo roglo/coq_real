@@ -72,6 +72,7 @@ intros * Hn H1 H3.
 specialize radix_ge_2 as Hr.
 specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
 assert (H4 : (0 ≤ 1 - 2 // rad ^ (n - i - 1))%Q). {
+  replace 1%Q with (1 // 1)%Q by easy.
   rewrite Q.sub_pair_pos; [ | easy | pauto | ]. 2: {
     do 2 rewrite Nat.mul_1_l.
     rewrite Hn; apply rad_pow_min_n.
@@ -85,6 +86,7 @@ destruct (Q.lt_le_dec x (1 // rad ^ s)%Q) as [H5| H5].
 -rewrite Q.intg_small. 2: {
    split.
    -apply Q.le_0_add; [ now subst x | apply Q.le_0_sub ].
+    replace 1%Q with (1 // 1)%Q by easy.
     apply Q.le_pair_mono_l; split; [ pauto | ].
     now apply Nat_pow_ge_1.
    -rewrite Q.add_comm, <- Q.sub_sub_distr.
@@ -107,6 +109,7 @@ destruct (Q.lt_le_dec x (1 // rad ^ s)%Q) as [H5| H5].
  +do 2 rewrite Q.add_sub_assoc.
   rewrite Q.add_comm.
   do 2 rewrite <- Q.add_sub_assoc.
+  replace 1%Q with (1 // 1)%Q by easy.
   rewrite Q.intg_add_nat_l; [ | now apply Q.le_add_le_sub_l ].
   rewrite Q.intg_add_nat_l; [ | now apply Q.le_add_le_sub_l ].
   rewrite Q.intg_small. 2: {
@@ -150,6 +153,7 @@ destruct (Q.lt_le_dec x (1 // rad ^ s)%Q) as [H5| H5].
   apply Q.nlt_ge in AA1; apply AA1.
   apply Q.lt_add_lt_sub_r.
   rewrite Q.add_0_l.
+  replace 1%Q with (1 // 1)%Q by easy.
   apply Q.lt_pair; [ easy | pauto | flia Hr ].
 Qed.
 
@@ -169,26 +173,22 @@ rewrite <- Q.add_sub_assoc.
 assert (H3 : (0 ≤ 1 - 2 * 1 // rad ^ (n - i - 1))%Q). {
   apply Q.le_add_le_sub_l.
   rewrite Q.add_0_l.
+  replace 2%Q with (2 // 1)%Q by easy.
   rewrite Q.mul_pair; [ | easy | pauto ].
   rewrite Nat.mul_1_r, Nat.mul_1_l.
+  replace 1%Q with (1 // 1)%Q by easy.
   apply Q.le_pair; [ pauto | easy | ].
   do 2 rewrite Nat.mul_1_r.
   rewrite Hn; apply rad_pow_min_n.
 }
+replace 1%Q with (1 // 1)%Q by easy.
 rewrite Q.intg_add_nat_l; [ | easy ].
 rewrite Q.intg_small; [ easy | ].
 split; [ easy | ].
 apply Q.lt_sub_lt_add_r.
-replace 1%Q with (1 + 0)%Q at 1 by easy.
+replace (1 // 1)%Q with (1 + 0)%Q by easy.
 apply Q.add_le_lt_mono; [ apply Q.le_refl | ].
-remember (1 // rad ^ (n - i - 1))%Q as x eqn:Hx.
-apply (Q.lt_le_trans _ x).
-+subst x; apply Q.lt_0_pair; pauto.
-+replace x with (1 * x)%Q at 1 by apply Q.mul_1_l.
- subst x.
- apply Q.mul_le_mono_pos_r.
- *apply Q.lt_0_pair; pauto.
- *apply Q.le_pair; flia.
+now apply Q.mul_pos_cancel_r.
 Qed.
 
 Theorem carry_upper_bound_for_add {r : radix} : ∀ u i,
@@ -451,6 +451,7 @@ Proof.
 intros * Hr2 Hu.
 apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
 rewrite <- Q.mul_assoc.
+replace 2%Q with (2 // 1)%Q by easy.
 rewrite Q.mul_pair; [ | easy | easy ].
 rewrite Q.pair_diag; [ | easy ].
 rewrite Q.mul_1_r, Q.mul_1_l.
@@ -550,10 +551,12 @@ rewrite Q.intg_add_cond in Hci1; [ | apply Q.le_0_pair | ]. 2: {
 }
 rewrite Q.intg_small in Hci1. 2: {
   split; [ apply Q.le_0_pair | ].
+  replace 1%Q with (1 // 1)%Q by easy.
   apply Q.lt_pair; [ easy | easy | flia Hr ].
 }
 rewrite Q.frac_small in Hci1. 2: {
   split; [ apply Q.le_0_pair | ].
+  replace 1%Q with (1 // 1)%Q by easy.
   apply Q.lt_pair; [ easy | easy | flia Hr ].
 }
 rewrite Nat.add_0_l in Hci1.
@@ -564,6 +567,7 @@ rewrite Q.frac_small in Hci1. 2: {
   rewrite <- Q.mul_assoc, Q.mul_pair_den_num; [ | easy ].
   rewrite Q.mul_1_r, Q.mul_1_l.
   eapply Q.lt_le_trans; [ apply Hci2 | ].
+  replace 1%Q with (1 // 1)%Q by easy.
   rewrite <- Q.pair_add_l.
   apply Q.le_pair; [ easy | easy | flia Hr ].
 }
@@ -580,6 +584,7 @@ destruct (Q.lt_le_dec (((rad - 2) // rad)%Q + (a * 1 // rad)%Q) 1)
   rewrite <- Q.mul_assoc, Q.mul_pair_den_num; [ | easy ].
   rewrite Q.mul_1_r, Q.mul_1_l.
   eapply Q.lt_le_trans; [ apply Hci2 | ].
+  replace 1%Q with (1 // 1)%Q by easy.
   rewrite <- Q.pair_add_l.
   apply Q.le_pair; [ easy | easy | flia Hr ].
 }
@@ -668,9 +673,11 @@ destruct (Nat.eq_dec c2 0) as [Hc20| Hc20]. {
   }
   rewrite Q.intg_small in H1. 2: {
     split; [ easy | ].
+    replace 1%Q with (1 // 1)%Q by easy.
     apply Q.lt_pair_mono_l; [ flia Hr2 | pauto ].
   }
   rewrite (Q.frac_small (_ // _)%Q) in H1. 2: {
+    replace 1%Q with (1 // 1)%Q by easy.
     split; [ easy | apply Q.lt_pair_mono_l; flia Hr2 ].
   }
   rewrite Nat.add_0_l in H1.
@@ -683,6 +690,7 @@ destruct (Nat.eq_dec c2 0) as [Hc20| Hc20]. {
     rewrite <- Q.mul_assoc, Q.mul_pair_den_num; [ | easy ].
     rewrite Q.mul_1_r, Q.mul_1_l.
     eapply Q.lt_trans; [ apply Q.frac_lt_1 | ].
+    replace 1%Q with (1 // 1)%Q by easy.
     apply Q.lt_pair_mono_r; flia Hr2.
   }
   rewrite Q.intg_small in H1; [ | easy ].
@@ -695,11 +703,13 @@ destruct (Nat.eq_dec c2 0) as [Hc20| Hc20]. {
         1 // rad)%Q 1) as [H6| H6]; [ easy | clear H1 ].
   apply Q.nlt_ge in H6; apply H6; clear H6.
   apply Q.lt_add_lt_sub_l.
+  replace 1%Q with (1 // 1)%Q by easy.
   rewrite Q.sub_pair_pos; [ | easy | easy | flia Hr2 ].
   do 2 rewrite Nat.mul_1_l.
   rewrite <- (Q.mul_pair_den_num (rad - 1) 1); [ | easy ].
   apply Q.mul_lt_mono_pos_r; [ easy | ].
   eapply Q.lt_le_trans; [ apply Q.frac_lt_1 | ].
+  replace 1%Q with (1 // 1)%Q by easy.
   apply Q.le_pair_mono_r; flia Hr2.
 }
 destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
@@ -790,12 +800,13 @@ destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
     apply Q.intg_interv in Hpu3; [ | easy ].
     rewrite Hr2, Q.pair_diag in H6; [ | easy ].
     destruct H6 as (H6, _).
-    replace 2%Q with (1 + 1)%Q in H6 by easy.
+    replace (2 // 1)%Q with (1 + 1)%Q in H6 by easy.
     apply Q.add_le_mono_l in H6.
     destruct Hpu3 as (_, H).
     apply Q.nle_gt in H; apply H; clear H.
     apply (Q.mul_le_mono_pos_r 2%Q) in H6; [ | easy ].
-    rewrite <-  Q.mul_assoc in H6.
+    replace 2%Q with (2 // 1)%Q in H6 by easy.
+    rewrite <- Q.mul_assoc in H6.
     rewrite Q.mul_pair_den_num in H6; [ | easy ].
     rewrite Q.mul_1_l, Q.mul_1_r in H6.
     now rewrite Hr2.
@@ -862,6 +873,7 @@ destruct
   assert (HA : Q.intg (A (i + p + 1) nr u) = 2). {
     apply Q.intg_interv; [ easy | ].
     split; [ now apply (Q.mul_le_mono_pos_r (1 // 2)%Q) | ].
+    replace 1%Q with (1 // 1)%Q by easy.
     rewrite <- Q.pair_add_l.
     replace (2 + 1) with 3 by easy.
     eapply Q.le_lt_trans. {
