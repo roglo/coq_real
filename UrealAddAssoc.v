@@ -1070,7 +1070,8 @@ destruct
     apply Q.nlt_ge in H; apply H; clear H.
     apply Q.lt_add_lt_sub_l; rewrite Hr2.
     apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
-    rewrite <- Q.mul_assoc, Q.mul_pair_den_num; [ | easy ].
+    rewrite <- Q.mul_assoc.
+    rewrite (Q.mul_pair_den_num _ 2 1); [ | easy ].
     rewrite Q.mul_1_r.
     eapply Q.le_lt_trans. {
       apply (A_upper_bound_for_adds 3).
@@ -1081,6 +1082,7 @@ destruct
     rewrite Q.sub_pair_pos; [ | easy | easy | flia ].
     do 2 rewrite Nat.mul_1_l.
     replace (2 * 2 - 1) with 3 by easy.
+...
     rewrite Q.mul_pair_den_num; [ | easy ].
     apply Q.le_refl.
   }
