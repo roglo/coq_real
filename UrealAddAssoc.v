@@ -1826,7 +1826,7 @@ destruct u2. {
       specialize (Hu 4); specialize (Hv 4); flia Hu Hv Huv4.
     }
     rewrite Hr2, Q.pair_diag; [ | easy ].
-    rewrite Q.intg_add_nat_l; [ | now apply Q.le_0_mul_r ].
+    rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
     rewrite Nat.add_assoc, Nat_mod_add_same_l; [ | easy ].
     rewrite Q.intg_small; [ easy | ].
     split; [ now apply Q.le_0_mul_r | ].
@@ -1854,7 +1854,7 @@ destruct u2. {
     replace (S (i + 1)) with (i + 2) by easy.
     replace (v (i + 2)) with 1 by flia Huv2.
     apply Q.lt_add_lt_sub_l; rewrite Hr2.
-    replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+    replace (1 // 1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
     apply Q.mul_lt_mono_pos_r; [ easy | ].
     rewrite A_split_first; [ | min_n_ge ].
     replace (S (i + 2)) with (i + 3) by easy.
@@ -1887,7 +1887,7 @@ destruct u2. {
       apply Q.le_0_mul_r; [ easy | ].
       now apply Q.le_0_mul_r.
     }
-    rewrite Q.intg_add_nat_l; [ | easy ].
+    rewrite (Q.intg_add_nat_l 1); [ | easy ].
     replace 1 with (1 + 0) at 8 by easy; f_equal.
     apply Q.intg_small.
     split; [ easy | ].
