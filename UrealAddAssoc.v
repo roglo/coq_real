@@ -2066,6 +2066,9 @@ assert (H : ∀ k, v' (i + k) ≤ 2). {
 specialize (IHj H); clear H.
 assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
   intros p.
+(*
+clear - Hauv Hu' Hv' Hr2 Hu Hv Huv1 Huvbef Huvj Hj.
+*)
   apply A_ge_1_true_iff.
   remember (min_n i p) as n eqn:Hn.
   destruct (le_dec (n - 1) (i + j + 1)) as [Hpij| Hpij]. {
@@ -2081,31 +2084,6 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
     flia Hpij Hq Hqij.
   }
   apply Nat.nle_gt in Hpij; subst n.
-  specialize (Hauv (p + 1)) as H2.
-  apply A_ge_1_true_iff in H2.
-  assert (Huv : (A i (min_n i (p + 1)) (u ⊕ v) < 1)%Q). {
-    clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
-    rewrite A_split_first; [ | min_n_ge ].
-    replace (S i) with (i + 1) by flia.
-    rewrite Huv1, Q.add_0_l.
-    rewrite A_split_first; [ | min_n_ge ].
-    replace (S (i + 1)) with (i + 2) by flia.
-    specialize (Huvbef _ (Nat.lt_0_succ j)) as H3.
-    rewrite Nat.add_0_r in H3; rewrite H3; clear H3.
-    rewrite Hr2, (Q.pair_diag 2); [ | easy ].
-    rewrite Q.mul_add_distr_r, Q.mul_1_l.
-    apply Q.lt_add_lt_sub_l.
-    replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
-    apply Q.mul_lt_mono_pos_r; [ easy | ].
-    apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
-    rewrite <- Q.mul_assoc.
-    rewrite (Q.mul_pair_den_num _ 2 1); [ | easy ].
-    rewrite Q.mul_1_r, Q.mul_1_l.
-    replace (i + 2) with (i + 1 + 1) by flia.
-    replace (S j) with (j + 1) in Huvbef by flia.
-    replace (i + j + 3) with (i + j + 1 + 2) in Huvj by flia.
-    now apply (rad_2_sum_3_22_1_lt_2 _ _ _ j).
-  }
   assert (Huv' : (A i (min_n i p) (u' ⊕ v') < 1)%Q). {
     rewrite A_split_first; [ | min_n_ge ].
     replace (S i) with (i + 1) by flia.
@@ -2199,9 +2177,42 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
       now replace (i + 1 + 3) with (i + 4) in Huvj by flia.
     }
   }
+  rewrite Q.frac_small; [ | easy ].
+...
+rewrite A_split_first; [ | min_n_ge ].
+rewrite <- Nat.add_1_r.
+rewrite Hu', Hv' at 1; unfold "⊕" at 1.
+destruct (le_dec (i + 1) (i + j + 1)) as [Hij| Hij]; [ | flia Hij].
+clear Hij.
+unfold "⊕" in Huv1; rewrite Huv1, Q.add_0_l.
+... suite possible mais j'espère ne pas en avoir besoin
+  specialize (Hauv (p + 1)) as H2.
+  apply A_ge_1_true_iff in H2.
+  assert (Huv : (A i (min_n i (p + 1)) (u ⊕ v) < 1)%Q). {
+    clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S i) with (i + 1) by flia.
+    rewrite Huv1, Q.add_0_l.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 1)) with (i + 2) by flia.
+    specialize (Huvbef _ (Nat.lt_0_succ j)) as H3.
+    rewrite Nat.add_0_r in H3; rewrite H3; clear H3.
+    rewrite Hr2, (Q.pair_diag 2); [ | easy ].
+    rewrite Q.mul_add_distr_r, Q.mul_1_l.
+    apply Q.lt_add_lt_sub_l.
+    replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
+    apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
+    rewrite <- Q.mul_assoc.
+    rewrite (Q.mul_pair_den_num _ 2 1); [ | easy ].
+    rewrite Q.mul_1_r, Q.mul_1_l.
+    replace (i + 2) with (i + 1 + 1) by flia.
+    replace (S j) with (j + 1) in Huvbef by flia.
+    replace (i + j + 3) with (i + j + 1 + 2) in Huvj by flia.
+    now apply (rad_2_sum_3_22_1_lt_2 _ _ _ j).
+  }
   move H2 at bottom.
   rewrite Q.frac_small in H2; [ | easy ].
-  rewrite Q.frac_small; [ | easy ].
 ...
 }
 specialize (IHj H); clear H.
