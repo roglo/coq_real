@@ -2067,6 +2067,20 @@ specialize (IHj H); clear H.
 assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
   intros p.
   apply A_ge_1_true_iff.
+  remember (min_n i p) as n eqn:Hn.
+  destruct (le_dec (n - 1) (i + j + 1)) as [Hpij| Hpij]. {
+    specialize (Hauv p) as H2.
+    apply A_ge_1_true_iff in H2.
+    rewrite <- Hn in H2.
+    replace (A i n (u' ⊕ v')) with (A i n (u ⊕ v)); [ easy | ].
+    unfold A.
+    apply summation_eq_compat.
+    intros q Hq; f_equal.
+    unfold "⊕"; rewrite Hu', Hv'.
+    destruct (le_dec q (i + j + 1)) as [Hqij| Hqij]; [ easy | ].
+    flia Hpij Hq Hqij.
+  }
+  apply Nat.nle_gt in Hpij; subst n.
   specialize (Hauv (p + 1)) as H2.
   apply A_ge_1_true_iff in H2.
   assert (Huv : (A i (min_n i (p + 1)) (u ⊕ v) < 1)%Q). {
