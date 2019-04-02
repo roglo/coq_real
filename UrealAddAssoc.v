@@ -2004,8 +2004,6 @@ Theorem rad_2_sum_3_all_9_0_2_1_A_lt_1 {r : radix} : ∀ u v i j,
   → ∀ k, (A i (min_n i k) (u ⊕ P v) < 1)%Q.
 Proof.
 intros * Hr2 Hu Hv Hauv Huv1 Huvbef Huvj *.
-...
-intros * Hr2 Hu Hv Hauv Huv1 Huvbef Huvj *.
 revert u v Hu Hv Hauv Huv1 Huvbef Huvj.
 induction j; intros. {
   rewrite Nat.add_0_r in Huvj.
@@ -2050,19 +2048,19 @@ destruct (zerop j) as [Hj| Hj]. {
   rewrite Nat.add_0_r in Huv4.
   now apply rad_2_sum_3_0213_A_lt_1.
 }
-remember (λ k, if le_dec k (i + j) then u k else u (k + 1)) as u' eqn:Hu'.
-remember (λ k, if le_dec k (i + j) then v k else v (k + 1)) as v' eqn:Hv'.
+remember (λ k, if le_dec k (i + j + 1) then u k else u (k + 1)) as u' eqn:Hu'.
+remember (λ k, if le_dec k (i + j + 1) then v k else v (k + 1)) as v' eqn:Hv'.
 move v' before u'.
 specialize (IHj u' v').
 assert (H : ∀ k, u' (i + k) ≤ 1). {
   intros p; rewrite Hu'.
-  destruct (le_dec (i + p) (i + j)); [ apply Hu | ].
+  destruct (le_dec (i + p) (i + j + 1)); [ apply Hu | ].
   now rewrite <- Nat.add_assoc.
 }
 specialize (IHj H); clear H.
 assert (H : ∀ k, v' (i + k) ≤ 2). {
   intros p; rewrite Hv'.
-  destruct (le_dec (i + p) (i + j)); [ apply Hv | ].
+  destruct (le_dec (i + p) (i + j + 1)); [ apply Hv | ].
   now rewrite <- Nat.add_assoc.
 }
 specialize (IHj H); clear H.
@@ -2099,12 +2097,13 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
     replace (S i) with (i + 1) by flia.
     rewrite Hu', Hv' at 1.
     unfold "⊕" at 1.
-    destruct (le_dec (i + 1) (i + j)) as [H3| H3]; [ clear H3 | flia Hj H3 ].
+    destruct (le_dec (i + 1) (i + j + 1)) as [H3| H3]; [ | flia Hj H3 ].
+    clear H3.
     unfold "⊕" in Huv1; rewrite Huv1, Q.add_0_l.
     rewrite A_split_first; [ | min_n_ge ].
     replace (S (i + 1)) with (i + 2) by flia.
     rewrite Hu', Hv' at 1; unfold "⊕" at 1.
-    destruct (le_dec (i + 2) (i + j)) as [H4| H4]. {
+    destruct (le_dec (i + 2) (i + j + 1)) as [H4| H4]. {
       specialize (Huvbef _ (Nat.lt_0_succ j)) as H3.
       rewrite Nat.add_0_r in H3; unfold "⊕" in H3.
       rewrite H3; clear H3.
@@ -2123,15 +2122,15 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
       destruct j; [ flia Hj | clear Hj ].
       apply (rad_2_sum_3_22_1_lt_2 _ _ _ j); [ easy | | | | ]. {
         intros q; rewrite Hu'.
-        destruct (le_dec (i + q) (i + S j)) as [H5| H5]; [ easy | ].
+        destruct (le_dec (i + q) (i + S j + 1)) as [H5| H5]; [ easy | ].
         now rewrite <- Nat.add_assoc.
       } {
         intros q; rewrite Hv'.
-        destruct (le_dec (i + q) (i + S j)) as [H5| H5]; [ easy | ].
+        destruct (le_dec (i + q) (i + S j + 1)) as [H5| H5]; [ easy | ].
         now rewrite <- Nat.add_assoc.
       } {
         intros q Hq; rewrite Hu', Hv'; unfold "⊕".
-        destruct (le_dec (i + q + 2) (i + S j)) as [H5| H5]. {
+        destruct (le_dec (i + q + 2) (i + S j + 1)) as [H5| H5]. {
           apply Huvbef; flia H5.
         }
         apply Nat.nle_gt in H5.
@@ -2140,9 +2139,9 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
       } {
         rewrite Hu', Hv'; unfold "⊕".
         replace (i + j + 1 + 2) with (i + j + 3) by flia.
-        replace (i + S j) with (i + j + 1) by flia.
+        replace (i + S j + 1) with (i + j + 2) by flia.
         replace (i + j + 3 + 1) with (i + j + 4) by flia.
-        destruct (le_dec (i + j + 3) (i + j + 1)) as [H5| H5]; [ flia H5 | ].
+        destruct (le_dec (i + j + 3) (i + j + 2)) as [H5| H5]; [ flia H5 | ].
         clear H5.
         now replace (i + S j + 1 + 2) with (i + j + 4) in Huvj by flia.
       }
@@ -2164,15 +2163,15 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
     replace (i + 2) with (i + 1 + 1) by flia.
     apply (rad_2_sum_3_22_1_lt_2 _ _ _ 0); [ easy | | | | ]. {
       intros q; rewrite Hu'.
-      destruct (le_dec (i + q) (i + 1)) as [H5| H5]; [ easy | ].
+      destruct (le_dec (i + q) (i + 1 + 1)) as [H5| H5]; [ easy | ].
       now rewrite <- Nat.add_assoc.
     } {
       intros q; rewrite Hv'.
-      destruct (le_dec (i + q) (i + 1)) as [H5| H5]; [ easy | ].
+      destruct (le_dec (i + q) (i + 1 + 1)) as [H5| H5]; [ easy | ].
       now rewrite <- Nat.add_assoc.
     } {
       intros q Hq; rewrite Hu', Hv'; unfold "⊕".
-      destruct (le_dec (i + q + 2) (i + 1)) as [H5| H5]. {
+      destruct (le_dec (i + q + 2) (i + 1 + 1)) as [H5| H5]. {
         apply Huvbef; flia H5.
       }
       apply Nat.nle_gt in H5.
@@ -2182,7 +2181,7 @@ assert (H : ∀ k, fA_ge_1_ε (u' ⊕ v') i k = true). {
       rewrite Nat.add_0_r, Hu', Hv'; unfold "⊕".
       replace (i + 1 + 2) with (i + 3) by flia.
       replace (i + 3 + 1) with (i + 4) by flia.
-      destruct (le_dec (i + 3) (i + 1)) as [H5| H5]; [ flia H5 | ].
+      destruct (le_dec (i + 3) (i + 1 + 1)) as [H5| H5]; [ flia H5 | ].
       now replace (i + 1 + 3) with (i + 4) in Huvj by flia.
     }
   }
