@@ -2218,7 +2218,7 @@ unfold "⊕" in Huv1; rewrite Huv1, Q.add_0_l.
 specialize (IHj H); clear H.
 assert (H : (u' ⊕ v') (i + 1) = 0). {
   rewrite Hu', Hv'; cbn.
-  destruct (le_dec (i + 1) (i + j)) as [H2| H2]; [ apply Huv1 | ].
+  destruct (le_dec (i + 1) (i + j + 1)) as [H2| H2]; [ apply Huv1 | ].
   apply Nat.nle_gt in H2.
   destruct j; [ flia Hj | flia H2 ].
 }
@@ -2226,7 +2226,7 @@ specialize (IHj H); clear H.
 assert (H : ∀ k : nat, k < j → (u' ⊕ v') (i + k + 2) = 2). {
   intros p Hp.
   rewrite Hu', Hv'; cbn.
-  destruct (le_dec (i + p + 2) (i + j)) as [Hpj| Hpj]. {
+  destruct (le_dec (i + p + 2) (i + j + 1)) as [Hpj| Hpj]. {
     apply Huvbef; flia Hp.
   }
   apply Nat.nle_gt in Hpj.
@@ -2236,7 +2236,7 @@ assert (H : ∀ k : nat, k < j → (u' ⊕ v') (i + k + 2) = 2). {
 specialize (IHj H); clear H.
 assert (H : (u' ⊕ v') (i + j + 2) = 1). {
   rewrite Hu', Hv'; cbn.
-  destruct (le_dec (i + j + 2) (i + j)) as [Hpj| Hpj]; [ flia Hpj | ].
+  destruct (le_dec (i + j + 2) (i + j + 1)) as [Hpj| Hpj]; [ flia Hpj | ].
   now replace (i + j + 2 + 1) with (i + j + 3) by flia.
 }
 specialize (IHj H); clear H.
