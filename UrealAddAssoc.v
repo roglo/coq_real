@@ -1762,9 +1762,8 @@ rewrite A_additive.
 rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
 rewrite <- Nat.add_1_r.
 replace (u (i + 1)) with 0. 2: {
-...
-  rewrite Hw in Huv10.
-  now apply Nat.eq_add_0 in Huv10.
+  rewrite Hw in Huv1.
+  now apply Nat.eq_add_0 in Huv1.
 }
 rewrite Q.add_0_l.
 rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
@@ -1781,16 +1780,23 @@ destruct pv. {
   replace 1 with (rad - 1) by flia Hr2.
   apply P_le.
 }
+Search (A _ _ _ < 1)%Q.
+Abort. (*
+...
 destruct pv. {
   apply Q.lt_add_lt_sub_r.
   rewrite Hr2.
   replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
   apply Q.mul_lt_mono_pos_r; [ easy | ].
+Inspect 1.
+...
+
   rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
   replace (S (i + 1)) with (i + 2) by flia.
-  generalize Huv21; intros H1.
+  generalize Huv2; intros H1.
   rewrite Hw in H1; unfold "⊕" in H1.
-  apply Nat.eq_add_1 in H1.
+...
+  apply Nat.eq_add_2 in H1.
   destruct H1 as [H1| H1]. {
     unfold "⊕" at 1; rewrite (proj1 H1).
     remember (P v (i + 2)) as x eqn:Hx.
@@ -1944,6 +1950,7 @@ flia H.
 Qed.
 
 ...
+*)
 
 Theorem rad_2_sum_3_0213_A_lt_1 {r : radix} : ∀ u v i k,
   rad = 2
