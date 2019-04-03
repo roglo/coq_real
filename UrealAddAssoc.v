@@ -2186,9 +2186,9 @@ destruct (le_dec (i + 1) (i + j + 1)) as [Hij| Hij]; [ | flia Hij].
 clear Hij.
 unfold "⊕" in Huv1; rewrite Huv1, Q.add_0_l.
 ... suite possible mais j'espère ne pas en avoir besoin
-  specialize (Hauv (p + 1)) as H2.
+  specialize (Hauv p) as H2.
   apply A_ge_1_true_iff in H2.
-  assert (Huv : (A i (min_n i (p + 1)) (u ⊕ v) < 1)%Q). {
+  assert (Huv : (A i (min_n i p) (u ⊕ v) < 1)%Q). {
     clear - Hr2 Hu Hv Hauv Huv1 Huvbef Huvj.
     rewrite A_split_first; [ | min_n_ge ].
     replace (S i) with (i + 1) by flia.
