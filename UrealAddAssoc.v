@@ -2014,6 +2014,12 @@ destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
     rewrite A_split_first; [ | min_n_ge ].
     replace (S (i + 2)) with (i + 3) by easy.
     rewrite Hv3, Hr2.
+    apply Q.lt_add_lt_sub_l.
+    replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
+    rewrite A_split_first; [ | unfold min_n; rewrite Hr2; flia ].
+    replace (S (i + 3)) with (i + 4) by easy.
+Check rad_2_sum_2_half_A_lt_1.
 ...
     apply rad_2_sum_2_half_A_lt_1; [ easy | ].
     now intros; rewrite <- Nat.add_assoc.
