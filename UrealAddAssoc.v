@@ -1732,10 +1732,36 @@ Theorem rad_2_sum_3_213c1_A_lt_1 {r : radix} : ∀ u v i k,
   → (u ⊕ v) (i + 2) = 2
   → (u ⊕ v) (i + 3) = 1
   → (u ⊕ v) (i + 4) = 3
-  → carry v (i + 1) = 1
+  → carry v (i + 1) ≠ 0
   → (A (i + 1) (min_n i k) (u ⊕ P v) < 1)%Q.
 Proof.
-intros * Hr2 Hu Hv Huv2 Huv3 Huv4 Hc1.
+intros * Hr2 Hu Hv Huv2 Huv3 Huv4 Hc1z.
+remember (carry v (i + 1)) as c1 eqn:Hc1.
+symmetry in Hc1.
+destruct c1; [ easy | clear Hc1z ].
+destruct c1. 2: {
+  destruct c1. 2: {
+    specialize (carry_upper_bound_for_adds 2 v i) as H1.
+    assert (H : 2 ≠ 0) by easy.
+    specialize (H1 H); clear H.
+    assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+      now intros; rewrite <- Nat.add_assoc, Hr2.
+    }
+    specialize (H1 H 1); clear H.
+    rewrite Hc1 in H1; flia H1.
+  }
+  unfold carry in Hc1.
+  apply Q.intg_interv in Hc1; [ | easy ].
+  destruct Hc1 as (Hc1, _).
+  apply Q.nlt_ge in Hc1.
+  exfalso; apply Hc1; clear Hc1.
+  eapply Q.le_lt_trans. {
+    apply (A_upper_bound_for_adds 2).
+    now intros; do 2 rewrite <- Nat.add_assoc; rewrite Hr2.
+  }
+  rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+  now apply Q.sub_lt.
+}
 apply Nat_eq_add_2 in Huv2.
 destruct Huv2 as [Huv2| Huv2]; [ specialize (Hu 2); flia Hu Huv2 | ].
 destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
@@ -1952,7 +1978,8 @@ rewrite Nat.mod_small in Hc1. 2: {
   specialize (H3 H); clear H.
   now rewrite Hr2.
 }
-now apply rad_2_sum_3_213c1_A_lt_1.
+apply rad_2_sum_3_213c1_A_lt_1; try easy.
+now intros H; rewrite H in Hc1.
 Qed.
 
 Theorem rad_2_sum_3_02213_A_lt_1 {r : radix} : ∀ u v i k,
