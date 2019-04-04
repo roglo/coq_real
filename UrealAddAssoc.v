@@ -2018,33 +2018,52 @@ clear Hzp1.
 rewrite Hp1.
 replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
 apply Q.mul_lt_mono_pos_r; [ easy | ].
+(*
+specialize (rad_2_sum_3_213c1_A_lt_1 u v (i + 1) k Hr2) as H1.
+replace (i + 1 + 1) with (i + 2) in H1 by flia.
+replace (i + 1 + 2) with (i + 3) in H1 by flia.
+replace (i + 1 + 3) with (i + 4) in H1 by flia.
+replace (i + 1 + 4) with (i + 5) in H1 by flia.
+assert (H : ∀ k, u (i + 1 + k) ≤ 1). {
+  now intros; rewrite <- Nat.add_assoc.
+}
+specialize (H1 H); clear H.
+assert (H : ∀ k, v (i + 1 + k) ≤ 2). {
+  now intros; rewrite <- Nat.add_assoc.
+}
+specialize (H1 H Huv3 Huv4 Huv5); clear H.
+assert (H : carry v (i + 2) ≠ 0). {
+  intros H2.
+  unfold carry in H2.
+  apply Q.eq_intg_0 in H2; [ | easy ].
+...
+*)
 rewrite A_split_first; [ | min_n_ge ].
 replace (S (i + 1)) with (i + 2) by easy.
 apply Nat_eq_add_2 in Huv2.
-destruct Huv2 as [(Hu2, Hv2)| Huv2]. {
-  exfalso.
-  unfold P, d2n, prop_carr, dig in Hp1.
-  rewrite Hv1, Nat.add_0_l in Hp1.
-  rewrite Nat.mod_small in Hp1. 2: {
-    rewrite Hr2 in Hp1 |-*.
-    remember (carry v (i + 1)) as c1 eqn:Hc1.
-    symmetry in Hc1.
-    destruct c1; [ easy | ].
-    destruct c1; [ pauto | exfalso ].
-    destruct c1; [ easy | ].
-    specialize (carry_upper_bound_for_adds 2 v i) as H1.
-    assert (H : 2 ≠ 0) by easy.
-    specialize (H1 H); clear H.
-    assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
-      intros; rewrite <- Nat.add_assoc, Hr2; apply Hv.
-    }
-    specialize (H1 H 1); clear H.
-    rewrite Hc1 in H1; flia H1.
+unfold P, d2n, prop_carr, dig in Hp1.
+rewrite Hv1, Nat.add_0_l in Hp1.
+rewrite Nat.mod_small in Hp1. 2: {
+  rewrite Hr2 in Hp1 |-*.
+  remember (carry v (i + 1)) as c1 eqn:Hc1.
+  symmetry in Hc1.
+  destruct c1; [ easy | ].
+  destruct c1; [ pauto | exfalso ].
+  destruct c1; [ easy | ].
+  specialize (carry_upper_bound_for_adds 2 v i) as H1.
+  assert (H : 2 ≠ 0) by easy.
+  specialize (H1 H); clear H.
+  assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+    intros; rewrite <- Nat.add_assoc, Hr2; apply Hv.
   }
-  rename Hp1 into Hc1.
-  unfold carry in Hc1.
-  rewrite A_split_first in Hc1; [ | min_n_ge ].
-  replace (S (i + 1)) with (i + 2) in Hc1 by flia.
+  specialize (H1 H 1); clear H.
+  rewrite Hc1 in H1; flia H1.
+}
+rename Hp1 into Hc1.
+unfold carry in Hc1.
+rewrite A_split_first in Hc1; [ | min_n_ge ].
+replace (S (i + 1)) with (i + 2) in Hc1 by flia.
+destruct Huv2 as [(Hu2, Hv2)| Huv2]. {
   rewrite Hv2, Q.add_0_l in Hc1.
   apply Q.intg_interv in Hc1; [ | now apply Q.le_0_mul_r ].
   destruct Hc1 as (Hc1, _).
@@ -2062,8 +2081,9 @@ destruct Huv2 as [(Hu2, Hv2)| Huv2]. {
   rewrite Q.mul_sub_distr_l, Q.mul_1_r.
   now apply Q.sub_lt.
 }
+destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
+  unfold "⊕" at 1; rewrite Hv2, Hr2 in Hc1; rewrite Hu2, Hr2.
 ...
-
 Check rad_2_sum_3_213c1_A_lt_1.
 ...
 
