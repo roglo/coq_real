@@ -2037,6 +2037,24 @@ destruct j. {
   now specialize (H1 (or_intror Huv2) Huvj).
 }
 destruct j. {
+  specialize (Huvbef 1 Nat.lt_1_2) as Huv3.
+  replace (i + 1 + 2) with (i + 3) in Huv3 by flia.
+  replace (i + 2 + 2) with (i + 4) in Huvj by flia.
+  specialize (rad_2_sum_3_all_9_02_1_3 (u ⊕ v) (i + 2) Hr2) as H1.
+  replace (i + 2 + 1) with (i + 3) in H1 by flia.
+  replace (i + 2 + 2) with (i + 4) in H1 by flia.
+  replace (i + 2 + 3) with (i + 5) in H1 by flia.
+  assert (H : ∀ k, (u ⊕ v) (i + 2 + k) ≤ 3 * (rad - 1)). {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  specialize (H1 H); clear H.
+  assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 2) k = true). {
+    now intros; apply A_ge_1_add_r_true_if.
+  }
+  specialize (H1 H); clear H.
+  specialize (H1 (or_intror Huv3) Huvj).
+Check rad_2_sum_3_0213_A_lt_1.
+Check rad_2_sum_3_all_9_0_1_A_lt_1.
 ...
 intros * Hr2 Hu Hv Hauv Huv1 Huvbef Huvj *.
 revert u v Hu Hv Hauv Huv1 Huvbef Huvj.
