@@ -2019,10 +2019,18 @@ destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
     apply Q.mul_lt_mono_pos_r; [ easy | ].
     rewrite A_split_first; [ | unfold min_n; rewrite Hr2; flia ].
     replace (S (i + 3)) with (i + 4) by easy.
-Check rad_2_sum_2_half_A_lt_1.
+    apply Nat.eq_add_1 in Huv4.
+    destruct Huv4 as [(Hu4, Hv4)| (Hu4, Hv4)]. {
+      rewrite Hv4, Q.add_0_l, Hr2.
+      apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+      now intros; rewrite <- Nat.add_assoc.
+    }
+    rewrite Hv4, Hr2.
+    apply Q.lt_add_lt_sub_l.
+    replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
+    rewrite A_split_first; [ | unfold min_n; rewrite Hr2; flia ].
 ...
-    apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-    now intros; rewrite <- Nat.add_assoc.
   }
   rewrite A_split_first; [ | min_n_ge ].
   replace (S (i + 1)) with (i + 2) by flia.
