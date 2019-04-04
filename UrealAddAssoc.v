@@ -2030,6 +2030,14 @@ destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
     replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
     apply Q.mul_lt_mono_pos_r; [ easy | ].
     rewrite A_split_first; [ | unfold min_n; rewrite Hr2; flia ].
+    replace (S (i + 4)) with (i + 5) by flia.
+    apply Q.lt_add_lt_sub_l.
+    change 1%Q with (1 // 1)%Q.
+    rewrite Hr2.
+    rewrite Q.sub_pair_pos; [ | easy | easy | ]. 2: {
+      now apply Nat.mul_le_mono_l.
+    }
+    do 2 rewrite Nat.mul_1_l.
 ...
   }
   rewrite A_split_first; [ | min_n_ge ].
