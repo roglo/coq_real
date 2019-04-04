@@ -1725,55 +1725,17 @@ rewrite <- Hpv, Hr2 in H.
 flia H.
 Qed.
 
-Theorem rad_2_sum_3_0213_A_lt_1 {r : radix} : ∀ u v i k,
+Theorem rad_2_sum_3_213c1_A_lt_1 {r : radix} : ∀ u v i k,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
   → (∀ k, v (i + k) ≤ 2)
-  → (u ⊕ v) (i + 1) = 0
   → (u ⊕ v) (i + 2) = 2
   → (u ⊕ v) (i + 3) = 1
   → (u ⊕ v) (i + 4) = 3
-  → (A i (min_n i k) (u ⊕ P v) < 1)%Q.
+  → carry v (i + 1) = 1
+  → (A (i + 1) (min_n i k) (u ⊕ P v) < 1)%Q.
 Proof.
-intros * Hr2 Hu Hv Huv1 Huv2 Huv3 Huv4.
-unfold "⊕" in Huv1; apply Nat.eq_add_0 in Huv1.
-destruct Huv1 as (Hu1, Hv1).
-rewrite A_split_first; [ | min_n_ge ].
-replace (S i) with (i + 1) by flia.
-unfold "⊕" at 1; rewrite Hu1, Nat.add_0_l, Hr2.
-clear Hu1.
-apply Q.lt_add_lt_sub_l.
-destruct (zerop (P v (i + 1))) as [Hp1| Hzp1]. {
-  rewrite Hp1, Q.sub_0_r.
-  apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-  intros p; rewrite <- Nat.add_assoc; unfold "⊕".
-  replace 2 with (1 + 1) by easy.
-  apply Nat.add_le_mono; [ easy | ].
-  replace 1 with (rad - 1) by flia Hr2.
-  apply P_le.
-}
-assert (Hp1 : P v (i + 1) = 1). {
-  specialize (P_le v (i + 1)) as H.
-  rewrite Hr2 in H; flia Hzp1 H.
-}
-clear Hzp1.
-rename Hp1 into Hc1.
-rewrite Hc1.
-replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
-apply Q.mul_lt_mono_pos_r; [ easy | ].
-unfold P, d2n, prop_carr, dig in Hc1.
-rewrite Hv1, Nat.add_0_l in Hc1.
-clear Hv1.
-rewrite Nat.mod_small in Hc1. 2: {
-  specialize (carry_upper_bound_for_adds 2 v i) as H3.
-  assert (H : 2 ≠ 0) by easy.
-  specialize (H3 H); clear H.
-  assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
-    intros; rewrite <- Nat.add_assoc, Hr2; apply Hv.
-  }
-  specialize (H3 H); clear H.
-  now rewrite Hr2.
-}
+intros * Hr2 Hu Hv Huv2 Huv3 Huv4 Hc1.
 apply Nat_eq_add_2 in Huv2.
 destruct Huv2 as [Huv2| Huv2]; [ specialize (Hu 2); flia Hu Huv2 | ].
 destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
@@ -1942,6 +1904,58 @@ replace 1 with (rad - 1) by flia Hr2; apply P_le.
 Qed.
 
 ...
+
+Theorem rad_2_sum_3_0213_A_lt_1 {r : radix} : ∀ u v i k,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 1)
+  → (∀ k, v (i + k) ≤ 2)
+  → (u ⊕ v) (i + 1) = 0
+  → (u ⊕ v) (i + 2) = 2
+  → (u ⊕ v) (i + 3) = 1
+  → (u ⊕ v) (i + 4) = 3
+  → (A i (min_n i k) (u ⊕ P v) < 1)%Q.
+Proof.
+intros * Hr2 Hu Hv Huv1 Huv2 Huv3 Huv4.
+unfold "⊕" in Huv1; apply Nat.eq_add_0 in Huv1.
+destruct Huv1 as (Hu1, Hv1).
+rewrite A_split_first; [ | min_n_ge ].
+replace (S i) with (i + 1) by flia.
+unfold "⊕" at 1; rewrite Hu1, Nat.add_0_l, Hr2.
+clear Hu1.
+apply Q.lt_add_lt_sub_l.
+destruct (zerop (P v (i + 1))) as [Hp1| Hzp1]. {
+  rewrite Hp1, Q.sub_0_r.
+  apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+  intros p; rewrite <- Nat.add_assoc; unfold "⊕".
+  replace 2 with (1 + 1) by easy.
+  apply Nat.add_le_mono; [ easy | ].
+  replace 1 with (rad - 1) by flia Hr2.
+  apply P_le.
+}
+assert (Hp1 : P v (i + 1) = 1). {
+  specialize (P_le v (i + 1)) as H.
+  rewrite Hr2 in H; flia Hzp1 H.
+}
+clear Hzp1.
+rename Hp1 into Hc1.
+rewrite Hc1.
+replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+apply Q.mul_lt_mono_pos_r; [ easy | ].
+unfold P, d2n, prop_carr, dig in Hc1.
+rewrite Hv1, Nat.add_0_l in Hc1.
+clear Hv1.
+rewrite Nat.mod_small in Hc1. 2: {
+  specialize (carry_upper_bound_for_adds 2 v i) as H3.
+  assert (H : 2 ≠ 0) by easy.
+  specialize (H3 H); clear H.
+  assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+    intros; rewrite <- Nat.add_assoc, Hr2; apply Hv.
+  }
+  specialize (H3 H); clear H.
+  now rewrite Hr2.
+}
+now apply rad_2_sum_3_213c1_A_lt_1.
+Qed.
 
 Theorem rad_2_sum_3_02213_A_lt_1 {r : radix} : ∀ u v i k,
   rad = 2
