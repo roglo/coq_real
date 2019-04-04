@@ -16,6 +16,24 @@ apply le_lt_eq_dec in Hab.
 now destruct Hab.
 Qed.
 
+Theorem Nat_eq_add_2 : ∀ a b, a + b = 2
+  → a = 2 ∧ b = 0 ∨ a = 1 ∧ b = 1 ∨ a = 0 ∧ b = 2.
+Proof.
+intros * Hab.
+destruct a; [ now right; right | ].
+destruct a. {
+  right; left.
+  split; [ easy | ].
+  change 2 with (1 + 1) in Hab.
+  now apply Nat.add_cancel_l in Hab.
+}
+destruct a; [ | easy ].
+left.
+split; [ easy | ].
+change 2 with (2 + 0) in Hab at 2.
+now apply Nat.add_cancel_l in Hab.
+Qed.
+
 (*
 Definition Nat_le_neq_lt₁ : ∀ a b, a ≤ b → a ≠ b → a < b :=
   λ (a b : nat) (Hab : a ≤ b) (Hnab : a ≠ b),
