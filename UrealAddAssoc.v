@@ -1903,8 +1903,6 @@ apply Nat.add_le_mono; [ easy | ].
 replace 1 with (rad - 1) by flia Hr2; apply P_le.
 Qed.
 
-...
-
 Theorem rad_2_sum_3_0213_A_lt_1 {r : radix} : ∀ u v i k,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -1993,6 +1991,9 @@ clear Hzp1.
 rewrite Hp1.
 replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
 apply Q.mul_lt_mono_pos_r; [ easy | ].
+Check rad_2_sum_3_213c1_A_lt_1.
+...
+
 apply Nat_eq_add_2 in Huv2.
 destruct Huv2 as [Huv2| Huv2]; [ specialize (Hu 2); flia Hu Huv2 | ].
 destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
