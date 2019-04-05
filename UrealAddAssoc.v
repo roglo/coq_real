@@ -3427,29 +3427,20 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
          specialize (rad_2_sum_3_all_9_0_123 w i Hr2 Huv3 Hauv) as H.
          specialize (H Huv0 Huv22).
          destruct H as [Huv31| [Huv32| Huv33]].
-         -idtac.
-Check rad_2_sum_3_all_9_0_1_A_lt_1.
-(* 0 2 1, c'est pareil que 0 1 : à démontrer *)
-         apply Q.nlt_ge in Hup; apply Hup; clear Hup.
-         rewrite <- A_additive; subst nk.
-...
-Check rad_2_sum_3_all_9_0_222_1_A_lt_1.
-...
-          specialize (rad_2_sum_3_all_9_02_1_3 w (i + 1) Hr2) as H1.
+         -apply Q.nlt_ge in Hup; apply Hup; clear Hup.
+          rewrite <- A_additive; subst nk.
+          rewrite Hw in Huv0, Huv22, Huv31.
+          apply rad_2_sum_3_0213_A_lt_1; try easy.
+          specialize (rad_2_sum_3_all_9_02_1_3 (u ⊕ v) (i + 1) Hr2) as H1.
           replace (i + 1 + 1) with (i + 2) in H1 by flia.
           replace (i + 1 + 2) with (i + 3) in H1 by flia.
           replace (i + 1 + 3) with (i + 4) in H1 by flia.
-          assert (H : ∀ k, w (i + 1 + k) ≤ 3 * (rad - 1)). {
-            now intros; rewrite <- Nat.add_assoc.
+          apply H1; [ | | now right | easy ]. {
+            now intros; rewrite <- Nat.add_assoc, <- Hw.
           }
-          specialize (H1 H); clear H.
-          assert (H : ∀ k, fA_ge_1_ε w (i + 1) k = true). {
-            now intros; apply A_ge_1_add_r_true_if.
-          }
-          specialize (H1 H (or_intror Huv22) Huv31); clear H.
-          destruct H1 as (Huv43, Hc32).
-          exfalso; apply Q.nlt_ge in Hup; apply Hup; clear Hup.
-          rewrite <- A_additive.
+          intros p; rewrite <- Hw.
+          now apply A_ge_1_add_r_true_if.
+         -idtac.
 ...
 induction p. {
   rewrite Nat.add_0_r.
