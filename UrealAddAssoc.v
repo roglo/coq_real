@@ -2132,14 +2132,18 @@ destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
         destruct (LPO_fst (fA_ge_1_ε v (i + 1))) as [H1| H1]; [ flia | ].
         destruct H1 as (j & Hjj & Hj).
         destruct j; [ flia | ].
-...
         destruct (LPO_fst (fA_ge_1_ε v (i + 2))) as [H2| H2]. {
-          destruct j; [ flia | ].
-          destruct j; [ easy | exfalso ].
-apply A_ge_1_false_iff in Hj.
-specialize (H2 j).
-apply A_ge_1_true_iff in H2.
-
+          destruct j; [ flia | exfalso ].
+          replace (S (S j)) with (j + 2) in Hj by flia.
+          apply A_ge_1_false_iff in Hj.
+          replace (S (j + 2)) with (j + 3) in Hj by easy.
+          rewrite A_split_first in Hj; [ | min_n_ge ].
+          replace (S (i + 1)) with (i + 2) in Hj by easy.
+          rewrite Hv2, Hr2 in Hj.
+          specialize (H2 j) as H3.
+          apply A_ge_1_true_iff in H3.
+          move Hj before H3.
+...
 specialize (Hjj (1 + 0)).
 assert (H : 1 + 0 < S (S j)) by flia.
 specialize (Hjj H); clear H.
