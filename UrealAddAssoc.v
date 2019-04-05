@@ -1339,7 +1339,7 @@ Abort. (*
 ...
 *)
 
-Theorem rad_2_sum_3_all_9_0_123 {r : radix} : ∀ u i,
+Theorem rad_2_sum_3_all_9_0_2_123 {r : radix} : ∀ u i,
   rad = 2
   → (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
@@ -3424,7 +3424,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 2) as [Huv22| Huv22]. {
          clear Huv20 Huv21.
          remember (u ⊕ v) as w eqn:Hw.
-         specialize (rad_2_sum_3_all_9_0_123 w i Hr2 Huv3 Hauv) as H.
+         specialize (rad_2_sum_3_all_9_0_2_123 w i Hr2 Huv3 Hauv) as H.
          specialize (H Huv0 Huv22).
          destruct H as [Huv31| [Huv32| Huv33]].
          -apply Q.nlt_ge in Hup; apply Hup; clear Hup.
@@ -3441,6 +3441,11 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
           intros p; rewrite <- Hw.
           now apply A_ge_1_add_r_true_if.
          -idtac.
+(* faudrait faire un rad_2_sum_3_all_9_0_2_2_123 *)
+Check rad_2_sum_3_all_9_0_2_123.
+...
+Check rad_2_sum_3_0213_A_lt_1.
+Check rad_2_sum_3_all_9_02_1_3.
 ...
 induction p. {
   rewrite Nat.add_0_r.
