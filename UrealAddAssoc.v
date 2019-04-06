@@ -3443,6 +3443,31 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
             now intros; apply A_ge_1_add_r_true_if.
           }
           specialize (H1 H Huv32); clear H.
+          destruct H1 as [Huv4| Huv4]. {
+            apply Q.nlt_ge in Hup; apply Hup; clear Hup.
+            rewrite <- A_additive; subst nk.
+            rewrite Hw in Huv0, Huv22, Huv32, Huv4.
+            rewrite A_split_first; [ | min_n_ge ].
+            replace (S i) with (i + 1) by flia.
+            apply Nat.eq_add_0 in Huv0.
+            unfold "⊕" at 1; rewrite (proj1 Huv0), Nat.add_0_l.
+            apply Q.lt_add_lt_sub_l.
+            remember (P v (i + 1)) as p1 eqn:Hp1; symmetry in Hp1.
+            destruct p1. {
+              rewrite Q.sub_0_r, Hr2.
+              apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+              intros p; rewrite <- Nat.add_assoc; unfold "⊕".
+              replace 2 with (1 + 1) by easy.
+              apply Nat.add_le_mono; [ apply Hu | ].
+              replace 1 with (rad - 1) by flia Hr2.
+              apply P_le.
+            }
+            destruct p1. {
+              rewrite Hr2.
+              replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+              apply Q.mul_lt_mono_pos_r; [ easy | ].
+              unfold P, d2n, prop_carr, dig in Hp1.
+              rewrite (proj2 Huv0), Nat.add_0_l in Hp1.
 ...
 induction p. {
   rewrite Nat.add_0_r.
