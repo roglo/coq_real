@@ -3468,6 +3468,16 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
               apply Q.mul_lt_mono_pos_r; [ easy | ].
               unfold P, d2n, prop_carr, dig in Hp1.
               rewrite (proj2 Huv0), Nat.add_0_l in Hp1.
+              rewrite Nat.mod_small in Hp1. 2: {
+                specialize (carry_upper_bound_for_add v (i + 1)) as H1.
+                assert (H : ∀ k, v (i + 1 + k + 1) ≤ 2 * (rad - 1)). {
+                  now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+                }
+                specialize (H1 H); clear H.
+                flia H1 Hr2.
+              }
+              unfold carry in Hp1.
+              apply Q.intg_interv in Hp1.
 ...
 induction p. {
   rewrite Nat.add_0_r.
