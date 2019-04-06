@@ -1339,37 +1339,19 @@ Abort. (*
 ...
 *)
 
-Theorem rad_2_sum_3_all_9_0_2_123 {r : radix} : ∀ u i,
+Theorem rad_2_sum_3_all_9_2_123 {r : radix} : ∀ u i,
   rad = 2
-  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
+  → (∀ k, u (i + k + 1) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
-  → u (i + 1) = 0
   → u (i + 2) = 2
   → u (i + 3) = 1 ∨ u (i + 3) = 2 ∨ u (i + 3) = 3.
 Proof.
-intros * Hr2 Hu3r Hau Hu10 Hu21.
+intros * Hr2 Hu3r Hau Hu21.
 assert (Hcu : ∀ k, carry u (i + k) < 3). {
-  intros p.
-  apply carry_upper_bound_for_adds; [ easy | ].
-  intros q; rewrite <- Nat.add_assoc; apply Hu3r.
-}
-assert (Hcu1 : carry u (i + 1) = 1). {
-  specialize (all_fA_ge_1_ε_P_999 _ _ Hau 0) as Hpu1.
-  rewrite Nat.add_0_r in Hpu1.
-  unfold P, d2n, prop_carr, dig in Hpu1.
-  rewrite Hu10, Nat.add_0_l, Hr2 in Hpu1.
-  replace (2 - 1) with 1 in Hpu1 by easy.
-  specialize (Nat.div_mod (carry u (i + 1)) 2) as H1.
-  assert (H : 2 ≠ 0) by easy.
-  specialize (H1 H); clear H; rewrite Hpu1 in H1.
-  rewrite H1, <- Nat.add_0_l; f_equal.
-  specialize (Hcu 1).
-  remember (carry u (i + 1)) as c eqn:Hc.
-  destruct c; [ easy | ].
-  destruct c; [ easy | exfalso ].
-  destruct c; [ flia H1 | flia Hcu ].
+  now apply carry_upper_bound_for_adds.
 }
 assert (Hcu2 : carry u (i + 2) = 1). {
+  clear - Hau Hu21 Hr2 Hcu.
   specialize (all_fA_ge_1_ε_P_999 _ _ Hau 1) as Hpu2.
   replace (i + 1 + 1) with (i + 2) in Hpu2 by flia.
   unfold P, d2n, prop_carr, dig in Hpu2.
@@ -1386,10 +1368,10 @@ assert (H : u (i + 3) ≠ 0). {
   remember (carry u (i + 3)) as c eqn:Hc.
   symmetry in Hc.
   destruct (lt_dec c 2) as [Hc2| Hc2]. {
-    generalize Hc; intros Hcu3; move Hcu3 before Hcu2.
+    generalize Hc; intros Hcu3.
     unfold carry in Hc.
     rewrite all_fA_ge_1_ε_NQintg_A' in Hc; cycle 1. {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+      now intros p; replace (i + 3 + p) with (i + (p + 2) + 1) by flia.
     } {
       intros p.
       apply A_ge_1_add_r_true_if, Hau.
@@ -1397,13 +1379,13 @@ assert (H : u (i + 3) ≠ 0). {
     generalize Hcu2; intros H1.
     unfold carry in H1.
     rewrite all_fA_ge_1_ε_NQintg_A' in H1; cycle 1. {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+      now intros p; replace (i + 2 + p) with (i + (p + 1) + 1) by flia.
     } {
       intros p.
       apply A_ge_1_add_r_true_if, Hau.
     }
     rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in H1; cycle 1. {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+      now intros p; replace (i + 2 + p) with (i + (p + 1) + 1) by flia.
     } {
       intros p.
       apply A_ge_1_add_r_true_if, Hau.
@@ -1440,23 +1422,11 @@ assert (H : u (i + 3) ≠ 0). {
   rewrite Hu30, Hr2, Nat.add_0_l in Hpu3.
   now rewrite Hcu3 in Hpu3.
 }
-specialize (Hu3r 3) as H1.
+specialize (Hu3r 2) as H1.
 rewrite Hr2 in H1.
+replace (i + 2 + 1) with (i + 3) in H1 by flia.
 flia H H1.
 Qed.
-
-Theorem rad_2_sum_3_all_9_0_2_2_123 {r : radix} : ∀ u i,
-  rad = 2
-  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
-  → (∀ k, fA_ge_1_ε u i k = true)
-  → u (i + 1) = 0
-  → u (i + 2) = 2
-  → u (i + 3) = 2
-  → u (i + 4) = 1 ∨ u (i + 4) = 2 ∨ u (i + 4) = 3.
-Proof.
-intros * Hr2 Hu3r Hau Hu10 Hu21 Hu32.
-(* s'inspirer du précédent *)
-...
 
 Theorem rad_2_sum_3_all_9_0_22_1_333 {r : radix} : ∀ u i j,
   rad = 2
@@ -3437,8 +3407,11 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
        destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 2) as [Huv22| Huv22]. {
          clear Huv20 Huv21.
          remember (u ⊕ v) as w eqn:Hw.
-         specialize (rad_2_sum_3_all_9_0_2_123 w i Hr2 Huv3 Hauv) as H.
-         specialize (H Huv0 Huv22).
+         specialize (rad_2_sum_3_all_9_2_123 w i Hr2) as H.
+         assert (H' : ∀ k, w (i + k + 1) ≤ 3 * (rad - 1)). {
+           now intros; rewrite <- Nat.add_assoc.
+         }
+         specialize (H H' Hauv (*Huv0*) Huv22); clear H'.
          destruct H as [Huv31| [Huv32| Huv33]].
          -apply Q.nlt_ge in Hup; apply Hup; clear Hup.
           rewrite <- A_additive; subst nk.
@@ -3454,8 +3427,9 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
           intros p; rewrite <- Hw.
           now apply A_ge_1_add_r_true_if.
          -idtac.
+          specialize (rad_2_sum_3_all_9_2_123 w (i + 1) Hr2) as H.
 ...
-          specialize (rad_2_sum_3_all_9_0_2_2_123 w i Hr2 Huv3 Hauv) as H.
+          specialize (rad_2_sum_3_all_9_2_123 w i Hr2 Huv3 Hauv) as H.
           specialize (H Huv0 Huv22 Huv32).
 Check rad_2_sum_3_all_9_0_2_2_123.
 Check rad_2_sum_3_all_9_0_2_123.
