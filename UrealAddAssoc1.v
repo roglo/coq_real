@@ -1,5 +1,5 @@
 Require Import Utf8 Arith PeanoNat.
-Require Import Misc Summation NQ Ureal.
+Require Import Misc Summation Rational Ureal.
 Import Q.Notations.
 
 Set Nested Proofs Allowed.

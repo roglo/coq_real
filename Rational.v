@@ -1,4 +1,4 @@
-(* Positive rationals where num and den are always common primes *)
+(* Rationals where num and den are always common primes *)
 (* allowing us to use Leibnitz' equality. *)
 
 Require Import Utf8 Arith Psatz Init.Nat.

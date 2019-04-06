@@ -3,7 +3,7 @@
    Operations + and * implemented using LPO. *)
 
 Require Import Utf8 Arith Psatz NPeano.
-Require Import Misc Summation NQ.
+Require Import Misc Summation Rational.
 Import Init.Nat PeanoNat.
 Import Q.Notations.
 

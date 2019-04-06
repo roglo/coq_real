@@ -1,7 +1,7 @@
 (* Reals between 0 and 1; associativity of addition *)
 
 Require Import Utf8 Arith NPeano Psatz PeanoNat.
-Require Import Misc Summation Ureal UrealNorm NQ UrealAddAssoc1.
+Require Import Misc Summation Rational Ureal UrealNorm UrealAddAssoc1.
 Import Q.Notations.
 
 Set Nested Proofs Allowed.
