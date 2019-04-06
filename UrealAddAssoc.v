@@ -1445,7 +1445,20 @@ rewrite Hr2 in H1.
 flia H H1.
 Qed.
 
-Theorem rad_2_sum_3_all_9_0_1_22_333 {r : radix} : ∀ u i j,
+Theorem rad_2_sum_3_all_9_0_2_2_123 {r : radix} : ∀ u i,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → u (i + 1) = 0
+  → u (i + 2) = 2
+  → u (i + 3) = 2
+  → u (i + 4) = 1 ∨ u (i + 4) = 2 ∨ u (i + 4) = 3.
+Proof.
+intros * Hr2 Hu3r Hau Hu10 Hu21 Hu32.
+(* s'inspirer du précédent *)
+...
+
+Theorem rad_2_sum_3_all_9_0_22_1_333 {r : radix} : ∀ u i j,
   rad = 2
   → (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
@@ -3441,7 +3454,10 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
           intros p; rewrite <- Hw.
           now apply A_ge_1_add_r_true_if.
          -idtac.
-(* faudrait faire un rad_2_sum_3_all_9_0_2_2_123 *)
+...
+          specialize (rad_2_sum_3_all_9_0_2_2_123 w i Hr2 Huv3 Hauv) as H.
+          specialize (H Huv0 Huv22 Huv32).
+Check rad_2_sum_3_all_9_0_2_2_123.
 Check rad_2_sum_3_all_9_0_2_123.
 ...
 Check rad_2_sum_3_0213_A_lt_1.
