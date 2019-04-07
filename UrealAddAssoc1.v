@@ -344,16 +344,14 @@ destruct H5 as [H5| [H5| H5]].
  rewrite A3 in H5; flia H5 Hr.
 Qed.
 
-Theorem NQintg_A_slow_incr {r : radix} : ∀ u i,
-  (∀ k, u (i + k) ≤ 3 * (rad - 1))
-  → ∀ k n, min_n i k ≤ n
+Theorem NQintg_A_slow_incr {r : radix} : ∀ u i n,
+  u n < rad ^ (n - i)
+  → i + 1 < n - 1
   → Q.intg (A i n u) < Q.intg (A i (n + 1) u)
   → Q.intg (A i (n + 1) u) = Q.intg (A i n u) + 1.
 Proof.
 intros *.
-specialize radix_ge_2 as Hr.
-intros Hur k n Hn Hlt.
-assert (Hin : i + 1 < n - 1) by min_n_ge_in Hn.
+intros Hun Hin Hlt.
 rewrite <- ApB_A in Hlt; [ | flia Hin ].
 rewrite <- ApB_A; [ | flia Hin ].
 rewrite Q.intg_add in Hlt; [ | easy | easy ].
@@ -363,13 +361,6 @@ replace x with (x + 0) in Hlt at 1 by easy; subst x.
 rewrite <- Nat.add_assoc in Hlt.
 apply Nat.add_lt_mono_l in Hlt.
 rewrite <- Nat.add_assoc; f_equal.
-assert (Hun : u n < rad ^ (n - i)). {
-  replace n with (i + (n - i)) at 1 by flia Hin.
-  eapply Nat.le_lt_trans; [ apply Hur | ].
-  assert (Hm2 : 3 ≤ n - i) by flia Hin.
-  eapply le_lt_trans; [ | now apply Nat_mul_lt_pow ].
-  rewrite Nat.mul_comm; apply Nat.mul_le_mono; [ flia Hr | easy ].
-}
 destruct (zerop (Q.intg (Q.frac (A i n u) + Q.frac (B i n u 1)))) as [H1| H1].
 -rewrite H1, Nat.add_0_r in Hlt.
  rewrite Q.intg_small in Hlt; [ easy | ].
