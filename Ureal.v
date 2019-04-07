@@ -526,37 +526,16 @@ Qed.
 Hint Resolve A_ge_0 B_ge_0 : core.
 
 Theorem B_lt_1 {r : radix} : ∀ i n u,
-  (∀ k, u (i + k) ≤ 3 * (rad - 1))
-  → i + 1 < n - 1
+  u n < rad ^ (n - i)
   → (B i n u 1 < 1)%Q.
 Proof.
-intros * Hur Hin.
+intros * Hun.
 specialize radix_ge_2 as Hr.
-rewrite B_of_A; [ | flia Hin ].
-unfold A.
-rewrite Nat.add_sub, Nat.sub_add; [ | flia Hin ].
+unfold B.
+rewrite Nat.add_sub.
 rewrite summation_only_one.
-replace (n - (n - 1)) with 1 by flia Hin.
-rewrite Nat.pow_1_r.
-rewrite Q.mul_pair; [ | pauto | pauto ].
-rewrite Nat.mul_1_r, <- Nat.pow_succ_r'.
-replace (S (n - i - 1)) with (n - i) by flia Hin.
-replace 1%Q with (1 // 1)%Q by easy.
-apply Q.lt_pair; [ pauto | easy | ].
-do 2 rewrite Nat.mul_1_r.
-replace n with (i + (n - i)) at 1 by flia Hin.
-eapply le_lt_trans; [ apply Hur | ].
-remember (n - i) as m eqn:Hm.
-destruct m; [ flia Hin Hm | ].
-destruct m; [ flia Hin Hm | ].
-destruct m; [ flia Hin Hm | ].
-rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-apply (lt_le_trans _ (3 * rad)).
--apply Nat.sub_lt; [ flia Hr | pauto ].
--apply (le_trans _ (rad * S (S (S m)))).
- +rewrite Nat.mul_comm.
-  apply Nat.mul_le_mono_l; flia.
- +apply Nat.lt_le_incl, Nat_mul_lt_pow; [ easy | flia ].
+apply (Q.lt_pair _ _ 1 1); [ pauto | easy | ].
+apply Nat.mul_lt_mono_pos_r; [ pauto | easy ].
 Qed.
 
 (*

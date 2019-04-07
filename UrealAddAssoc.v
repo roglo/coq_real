@@ -3270,10 +3270,36 @@ Theorem glop {r : radix} : ∀ u i,
   end.
 Proof.
 intros.
+specialize radix_ge_2 as Hr.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   now apply all_fA_ge_1_ε_P_999.
 }
 destruct H1 as (k & Hjk & Hk).
+About all_fA_ge_1_ε_NQintg_A.
+Search (Q.intg _ = Q.intg _).
+...
+all_fA_ge_1_ε_NQintg_A:
+  ∀ (r : radix) (i : nat) (u : nat → nat),
+    (∀ k : nat, u (i + k) ≤ 3 * (rad - 1))
+    → (∀ k : nat, fA_ge_1_ε u i k = true)
+      → ∀ k l : nat,
+          Q.intg (A i (min_n i k + l) u) = Q.intg (A i (min_n i k) u)
+fA_lt_1_ε_NQintg_A:
+  ∀ (r : radix) (i : nat) (u : nat → nat) (j : nat),
+    (∀ k : nat, u (i + k) ≤ 3 * (rad - 1))
+    → (∀ k : nat, k < j → fA_ge_1_ε u i k = true)
+      → fA_ge_1_ε u i j = false
+        → ∀ k : nat,
+            j ≤ k → Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i j) u)
+induction k. {
+  split; [ now intros | ].
+  rewrite Nat.add_0_r.
+  apply A_ge_1_false_iff in Hk.
+  rewrite Nat.pow_1_r in Hk.
+  unfold P, d2n, prop_carr, dig.
+  unfold carry.
+  rewrite A_split_first in Hk; [ | min_n_ge ].
+  replace (S i) with (i + 1) in Hk by flia.
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
