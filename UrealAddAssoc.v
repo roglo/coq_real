@@ -3259,6 +3259,23 @@ Theorem fold_carry {r : radix} : ∀ u i,
   Q.intg (A i (min_n i (carry_cases u i)) u) = carry u i.
 Proof. easy. Qed.
 
+Check LPO_fst.
+
+Theorem glop {r : radix} : ∀ u i,
+  match LPO_fst (fA_ge_1_ε u i) with
+  | inl _ => ∀ k, P u (i + k + 1) = rad - 1
+  | inr (exist _ k _) =>
+      (∀ j, j < k → P u (i + j + 1) = rad - 1) ∧
+      P u (i + k + 1) ≠ rad - 1
+  end.
+Proof.
+intros.
+destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
+  now apply all_fA_ge_1_ε_P_999.
+}
+destruct H1 as (k & Hjk & Hk).
+...
+
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -3477,7 +3494,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
                 flia H1 Hr2.
               }
               unfold carry in Hp1.
-              apply Q.intg_interv in Hp1.
+              apply Q.intg_interv in Hp1; [ | easy ].
 ...
 induction p. {
   rewrite Nat.add_0_r.
