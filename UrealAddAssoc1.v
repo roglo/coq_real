@@ -390,8 +390,6 @@ destruct (zerop (Q.intg (Q.frac (A i n u) + Q.frac (B i n u 1)))) as [H1| H1].
  now destruct (Q.lt_le_dec (Q.frac (A i n u) + B i n u 1) 1).
 Qed.
 
-...
-
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
   (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
@@ -418,6 +416,7 @@ assert (Hur2 : ∀ k, u (i + k) ≤ 3 * (rad - 1)). {
   intros; eapply le_trans; [ apply Hur | ].
   apply Nat.mul_le_mono_r; pauto.
 }
+...
 specialize (NQintg_A_slow_incr u i Hur2 k (n + l)) as H3.
 assert (H : min_n i k ≤ n + l) by (rewrite Hn; flia).
 specialize (H3 H H2); clear H H1 H2 IHl.
