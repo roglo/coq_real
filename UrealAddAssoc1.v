@@ -363,11 +363,17 @@ replace x with (x + 0) in Hlt at 1 by easy; subst x.
 rewrite <- Nat.add_assoc in Hlt.
 apply Nat.add_lt_mono_l in Hlt.
 rewrite <- Nat.add_assoc; f_equal.
+assert (Hun : u n < rad ^ (n - i)). {
+  replace n with (i + (n - i)) at 1 by flia Hin.
+  eapply Nat.le_lt_trans; [ apply Hur | ].
+  assert (Hm2 : 3 ≤ n - i) by flia Hin.
+  eapply le_lt_trans; [ | now apply Nat_mul_lt_pow ].
+  rewrite Nat.mul_comm; apply Nat.mul_le_mono; [ flia Hr | easy ].
+}
 destruct (zerop (Q.intg (Q.frac (A i n u) + Q.frac (B i n u 1)))) as [H1| H1].
 -rewrite H1, Nat.add_0_r in Hlt.
  rewrite Q.intg_small in Hlt; [ easy | ].
- split; [ easy | ].
- now apply B_lt_1.
+ split; [ easy | now apply B_lt_1 ].
 -rewrite Q.intg_add_frac in H1.
  destruct (Q.lt_le_dec (Q.frac (A i n u) + Q.frac (B i n u 1)) 1)
    as [| H2]; [ easy | clear H1 ].
@@ -392,6 +398,8 @@ destruct (zerop (Q.intg (Q.frac (A i n u) + Q.frac (B i n u 1)))) as [H1| H1].
  }
  now destruct (Q.lt_le_dec (Q.frac (A i n u) + B i n u 1) 1).
 Qed.
+
+...
 
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
   (∀ k, u (i + k) ≤ 3 * (rad - 1))
