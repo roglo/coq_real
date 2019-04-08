@@ -258,6 +258,19 @@ Theorem fA_ge_1_ε_lt_999 {r : radix} : ∀ u i j,
 Proof.
 intros * Hkj Hj * Hlkj.
 specialize radix_ge_2 as Hr.
+destruct j; [ easy | ].
+destruct j. {
+  replace k with 0 in * by flia Hlkj; clear Hlkj.
+  rewrite Nat.add_0_r.
+  specialize (Hkj _ Nat.lt_0_1).
+  unfold P, d2n, prop_carr, dig.
+  unfold carry, carry_cases.
+  apply A_ge_1_true_iff in Hkj.
+  apply A_ge_1_false_iff in Hj.
+...
+
+intros * Hkj Hj * Hlkj.
+specialize radix_ge_2 as Hr.
 specialize (Hkj _ Hlkj) as H1.
 unfold P, d2n, prop_carr, dig.
 unfold carry, carry_cases.
