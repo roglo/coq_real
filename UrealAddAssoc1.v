@@ -493,8 +493,6 @@ apply (Q.lt_le_trans _ (1 + u (n + l)%nat // rad ^ m)%Q).
    now apply Nat_pow_ge_1.
 Qed.
 
-...
-
 Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ i u,
   (∀ k, u (i + k) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
