@@ -412,13 +412,20 @@ remember (min_n i k) as n eqn:Hn.
 replace (n + S l) with (n + l + 1) by flia.
 apply Nat.nlt_ge.
 intros H2.
-assert (Hur2 : ∀ k, u (i + k) ≤ 3 * (rad - 1)). {
-  intros; eapply le_trans; [ apply Hur | ].
-  apply Nat.mul_le_mono_r; pauto.
+specialize (NQintg_A_slow_incr u i (n + l)) as H3.
+assert (Hun : u (n + l) < rad ^ (n + l - i)). {
+  replace (n + l) with (i + (n + l - i)) at 1 by flia Hin.
+  eapply le_lt_trans; [ apply Hur | ].
+  eapply le_lt_trans. 2: {
+    apply Nat_mul_lt_pow; [ easy | ].
+    rewrite Hn; min_n_ge.
+  }
+  rewrite Nat.mul_comm.
+  apply Nat.mul_le_mono; [ flia | ].
+  rewrite Hn; min_n_ge.
 }
-...
-specialize (NQintg_A_slow_incr u i Hur2 k (n + l)) as H3.
-assert (H : min_n i k ≤ n + l) by (rewrite Hn; flia).
+specialize (H3 Hun).
+assert (H : i + 1 < n + l - 1) by (rewrite Hn; min_n_ge).
 specialize (H3 H H2); clear H H1 H2 IHl.
 symmetry in H3.
 rewrite Nat.add_comm in H3.
@@ -485,6 +492,8 @@ apply (Q.lt_le_trans _ (1 + u (n + l)%nat // rad ^ m)%Q).
    apply Nat.mul_le_mono_l.
    now apply Nat_pow_ge_1.
 Qed.
+
+...
 
 Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ i u,
   (∀ k, u (i + k) ≤ 3 * (rad - 1))
