@@ -268,6 +268,9 @@ destruct (lt_dec (k + p) j) as [Hkpj| Hkpj]. {
   now rewrite Hp in H2.
 }
 apply Nat.nlt_ge in Hkpj.
+assert (H2 : j - k - 1 < p) by flia Hkpj Hkj.
+apply Hjp in H2.
+unfold P, d2n, prop_carr, dig.
 ...
 
 Theorem all_fA_ge_1_ε_P_999 {r : radix} : ∀ u i,
