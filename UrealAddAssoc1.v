@@ -253,8 +253,25 @@ Qed.
 
 Theorem fA_ge_1_ε_lt_999 {r : radix} : ∀ u i j,
   (∀ k, k < j → fA_ge_1_ε u i k = true)
+  → fA_ge_1_ε u i j = false
   → ∀ k, k < j → P u (i + k + 1) = rad - 1.
 Proof.
+intros * Hkj Hj * Hlkj.
+specialize radix_ge_2 as Hr.
+specialize (Hkj _ Hlkj) as H1.
+unfold P, d2n, prop_carr, dig.
+unfold carry, carry_cases.
+destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H2| H2]. {
+  specialize (H2 0) as H3.
+...
+Search (fA_ge_1_ε _ (_ + _)).
+...
+  apply A_ge_1_add_r_true_if in H2.
+...
+  specialize (fA_ge_1_ε_999 u) as H2.
+  now apply fA_ge_1_ε_999.
+}
+...
 intros * Hu * Hkj.
 specialize radix_ge_2 as Hr.
 destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]. {
@@ -270,7 +287,9 @@ destruct (lt_dec (k + p) j) as [Hkpj| Hkpj]. {
 apply Nat.nlt_ge in Hkpj.
 assert (H2 : j - k - 1 < p) by flia Hkpj Hkj.
 apply Hjp in H2.
-unfold P, d2n, prop_carr, dig.
+apply A_ge_1_true_iff in H2.
+apply A_ge_1_false_iff in Hp.
+move Hp at bottom.
 ...
 
 Theorem all_fA_ge_1_ε_P_999 {r : radix} : ∀ u i,
