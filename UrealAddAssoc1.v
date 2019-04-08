@@ -398,23 +398,10 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hut k l.
-assert (Hin : i + 1 ≤ min_n i k) by min_n_ge.
-symmetry; apply Nat.le_antisymm. {
-  apply Q.intg_le_mono; [ easy | ].
-  rewrite <- ApB_A; [ | easy ].
-  apply Q.le_add_r, B_ge_0.
-}
-apply Nat.nlt_ge; intros H1.
-induction l; [ rewrite Nat.add_0_r in H1; flia H1 | ].
-apply IHl.
-eapply Nat.lt_le_trans; [ apply H1 | ].
 remember (min_n i k) as n eqn:Hn.
-replace (n + S l) with (n + l + 1) by flia.
-apply Nat.nlt_ge.
-intros H2.
-specialize (NQintg_A_slow_incr u i (n + l)) as H3.
-assert (Hun : u (n + l) < rad ^ (n + l - i)). {
-  replace (n + l) with (i + (n + l - i)) at 1 by flia Hin.
+assert (Hun : ∀ l, u (n + l) < rad ^ (n + l - i)). {
+  rename l into l'; intros.
+  replace (n + l) with (i + (n + l - i)) at 1 by (rewrite Hn; min_n_ge).
   eapply le_lt_trans; [ apply Hur | ].
   eapply le_lt_trans. 2: {
     apply Nat_mul_lt_pow; [ easy | ].
@@ -424,7 +411,20 @@ assert (Hun : u (n + l) < rad ^ (n + l - i)). {
   apply Nat.mul_le_mono; [ flia | ].
   rewrite Hn; min_n_ge.
 }
-specialize (H3 Hun).
+assert (Hin : i + 1 ≤ n) by (rewrite Hn; min_n_ge).
+symmetry; apply Nat.le_antisymm. {
+  apply Q.intg_le_mono; [ easy | ].
+  rewrite <- ApB_A; [ | easy ].
+  apply Q.le_add_r, B_ge_0.
+}
+apply Nat.nlt_ge; intros H1.
+induction l; [ rewrite Nat.add_0_r in H1; flia H1 | ].
+apply IHl.
+eapply Nat.lt_le_trans; [ apply H1 | ].
+replace (n + S l) with (n + l + 1) by flia.
+apply Nat.nlt_ge.
+intros H2.
+specialize (NQintg_A_slow_incr u i (n + l) (Hun l)) as H3.
 assert (H : i + 1 < n + l - 1) by (rewrite Hn; min_n_ge).
 specialize (H3 H H2); clear H H1 H2 IHl.
 symmetry in H3.
