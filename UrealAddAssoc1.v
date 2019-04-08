@@ -262,25 +262,12 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]. {
 }
 destruct H1 as (p & Hjp & Hp).
 specialize (Hu _ Hkj) as H1.
-...
-destruct (lt_dec k p) as [Hpk| Hpk]. {
-  specialize (Hjp _ Hpk) as H2.
-  replace p with (k + (p - k)) in H1 by flia Hpk.
-  assert (H : p < j) by flia Hkj Hpk.
-  specialize (Hu _ H) as H2; clear H.
-  apply A_ge_1_add_r_true_if in H1.
-...
-replace j with (k + (j - k)) in H1 by flia Hkj.
-...
-destruct (lt_dec k p) as [Hpk| Hpk]. {
-  specialize (Hjp _ Hpk) as H1.
-...
-unfold P, prop_carr; cbn.
-unfold carry, carry_cases.
-  destruct j; [ easy | ].
-  specialize (Hu j (Nat.lt_succ_diag_r j)) as H2.
-  replace j with (k + (j - k)) in H2 by flia Hkj.
+destruct (lt_dec (k + p) j) as [Hkpj| Hkpj]. {
+  specialize (Hu _ Hkpj) as H2.
   apply A_ge_1_add_r_true_if in H2.
+  now rewrite Hp in H2.
+}
+apply Nat.nlt_ge in Hkpj.
 ...
 
 Theorem all_fA_ge_1_ε_P_999 {r : radix} : ∀ u i,
