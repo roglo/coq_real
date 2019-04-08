@@ -251,6 +251,28 @@ apply (lt_le_trans _ ((xd + xd * (rad - 2)) * rad)).
  now apply Nat.sub_le_mono_l.
 Qed.
 
+Theorem fA_ge_1_ε_lt_999 {r : radix} : ∀ u i j,
+  (∀ k, k < j → fA_ge_1_ε u i k = true)
+  → ∀ k, k < j → P u (i + k + 1) = rad - 1.
+Proof.
+intros * Hu * Hkj.
+specialize radix_ge_2 as Hr.
+destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]. {
+  now apply fA_ge_1_ε_999.
+}
+destruct H1 as (p & Hjp & Hp).
+destruct (lt_dec p k) as [Hpk| Hpk]. {
+  specialize (Hu _ Hpj) as H1.
+
+...
+unfold P, prop_carr; cbn.
+unfold carry, carry_cases.
+  destruct j; [ easy | ].
+  specialize (Hu j (Nat.lt_succ_diag_r j)) as H2.
+  replace j with (k + (j - k)) in H2 by flia Hkj.
+  apply A_ge_1_add_r_true_if in H2.
+...
+
 Theorem all_fA_ge_1_ε_P_999 {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, P u (i + k + 1) = rad - 1.
@@ -260,6 +282,16 @@ apply fA_ge_1_ε_999.
 intros l.
 apply A_ge_1_add_r_true_if, Hu.
 Qed.
+
+Theorem fA_lt_1_ε_P_999_n9 {r : radix} : ∀ u i j,
+  (∀ k, k < j → fA_ge_1_ε u i k = true)
+  → fA_ge_1_ε u i j = false
+  → (∀ k, k < j → P u (i + k + 1) = rad - 1) ∧ P u (i + j + 1) ≠ rad - 1.
+Proof.
+intros * Hij Hj.
+split. {
+  intros k Hk.
+...
 
 Theorem A_additive {r : radix} : ∀ i n u v,
   A i n (u ⊕ v) = (A i n u + A i n v)%Q.

@@ -3275,7 +3275,8 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   now apply all_fA_ge_1_ε_P_999.
 }
 destruct H1 as (k & Hjk & Hk).
-Check all_fA_ge_1_ε_NQintg_A.
+About all_fA_ge_1_ε_P_999.
+About all_fA_ge_1_ε_NQintg_A.
 ...
 Search (Q.intg _ = Q.intg _).
 ...
