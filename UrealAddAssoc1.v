@@ -264,11 +264,18 @@ destruct j. {
   rewrite Nat.add_0_r.
   specialize (Hkj _ Nat.lt_0_1).
   unfold P, d2n, prop_carr, dig.
-  unfold carry, carry_cases.
   apply A_ge_1_true_iff in Hkj.
   apply A_ge_1_false_iff in Hj.
+  rewrite A_split_first in Hkj; [ | min_n_ge ].
+  rewrite A_split_first in Hj; [ | min_n_ge ].
+  replace (S i) with (i + 1) in Hkj, Hj by flia.
+  remember (u (i + 1)) as ui eqn:Hui; symmetry in Hui.
+  destruct ui. {
+    rewrite Q.add_0_l in Hkj, Hj.
+    rewrite Nat.add_0_l.
+    unfold carry, carry_cases.
+    destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H1| H1]. {
 ...
-
 intros * Hkj Hj * Hlkj.
 specialize radix_ge_2 as Hr.
 specialize (Hkj _ Hlkj) as H1.
