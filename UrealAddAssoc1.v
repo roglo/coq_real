@@ -261,9 +261,19 @@ destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]. {
   now apply fA_ge_1_ε_999.
 }
 destruct H1 as (p & Hjp & Hp).
-destruct (lt_dec p k) as [Hpk| Hpk]. {
-  specialize (Hu _ Hpj) as H1.
-
+specialize (Hu _ Hkj) as H1.
+...
+destruct (lt_dec k p) as [Hpk| Hpk]. {
+  specialize (Hjp _ Hpk) as H2.
+  replace p with (k + (p - k)) in H1 by flia Hpk.
+  assert (H : p < j) by flia Hkj Hpk.
+  specialize (Hu _ H) as H2; clear H.
+  apply A_ge_1_add_r_true_if in H1.
+...
+replace j with (k + (j - k)) in H1 by flia Hkj.
+...
+destruct (lt_dec k p) as [Hpk| Hpk]. {
+  specialize (Hjp _ Hpk) as H1.
 ...
 unfold P, prop_carr; cbn.
 unfold carry, carry_cases.
