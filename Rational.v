@@ -127,12 +127,12 @@ Definition mul x y :=
   | Neg px => Qlem1.NQmul_neg_l px y
   end.
 
+Module Notations.
+
 (* in 8.10, coq obstinately refuses to print "a < b < c": he prints
    "a < b ∧ b < c"; I found a solution: redefining my own and constructor
    and then, it works *)
 Inductive qand (A B : Prop) := qconj : A → B → qand A B.
-
-Module Notations.
 
 Notation "a // b" := (of_pair a b) : Q_scope.
 Notation "0" := Zero : Q_scope.
@@ -193,6 +193,8 @@ destruct x as [| px| px], y as [| py| py]; try easy; simpl.
 -now rewrite GQcompare_swap; destruct (GQcompare py px).
 -f_equal; apply GQadd_comm.
 Qed.
+
+Module Qlem2.
 
 Theorem match_match_comp : ∀ A c p q (f0 : A) fp fn,
   match
@@ -405,18 +407,20 @@ destruct c1, c2; repeat GQcompare_iff.
   now rewrite GQsub_add in Hc4.
 Qed.
 
-Theorem opp_involutive : ∀ x, (- - x)%Q = x.
-Proof. intros; now destruct x. Qed.
-
-Theorem match_opp_comp : ∀ c eq lt gt,
-  (match c with Eq => eq | Lt => lt | Gt => gt end =
-   - match c with Eq => - eq | Lt => - lt | Gt => - gt end)%Q.
-Proof. now intros; destruct c; rewrite opp_involutive. Qed.
+Theorem match_opp_comp : ∀ c x y z,
+  (match c with Eq => x | Lt => y | Gt => z end =
+   - match c with Eq => - x | Lt => - y | Gt => - z end)%Q.
+Proof. now intros; destruct c; [ destruct x | destruct y | destruct z ]. Qed.
 
 Theorem opp_match_comp : ∀ c eq lt gt,
   (- match c with Eq => eq | Lt => lt | Gt => gt end =
    match c with Eq => - eq | Lt => - lt | Gt => - gt end)%Q.
 Proof. intros; now destruct c. Qed.
+
+End Qlem2.
+
+Theorem opp_involutive : ∀ x, (- - x)%Q = x.
+Proof. intros; now destruct x. Qed.
 
 Theorem add_add_swap : ∀ x y z, (x + y + z = x + z + y)%Q.
 Proof.
@@ -429,30 +433,30 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -now rewrite GQadd_comm.
 -now destruct (GQcompare px pz).
 -now rewrite GQadd_add_swap.
--rewrite match_match_comp.
- apply add_swap_lemma1.
+-rewrite Qlem2.match_match_comp.
+ apply Qlem2.add_swap_lemma1.
 -now destruct (GQcompare px py).
--rewrite match_match_comp.
- symmetry; apply add_swap_lemma1.
--do 2 (rewrite match_match_comp; symmetry).
- apply add_swap_lemma2.
+-rewrite Qlem2.match_match_comp.
+ symmetry; apply Qlem2.add_swap_lemma1.
+-do 2 (rewrite Qlem2.match_match_comp; symmetry).
+ apply Qlem2.add_swap_lemma2.
 -now destruct (GQcompare px pz).
 -now destruct (GQcompare px py).
--rewrite GQcompare_swap, match_match_comp; symmetry.
- rewrite GQcompare_swap, match_match_comp; symmetry.
- do 2 rewrite <- add_swap_lemma1.
+-rewrite GQcompare_swap, Qlem2.match_match_comp; symmetry.
+ rewrite GQcompare_swap, Qlem2.match_match_comp; symmetry.
+ do 2 rewrite <- Qlem2.add_swap_lemma1.
  now replace (pz + py)%GQ with (py + pz)%GQ by apply GQadd_comm.
--rewrite GQcompare_swap, match_match_comp; symmetry.
- rewrite match_opp_comp; simpl.
- rewrite add_swap_lemma1.
+-rewrite GQcompare_swap, Qlem2.match_match_comp; symmetry.
+ rewrite Qlem2.match_opp_comp; simpl.
+ rewrite Qlem2.add_swap_lemma1.
  rewrite GQcompare_swap.
- rewrite match_opp_comp; simpl.
+ rewrite Qlem2.match_opp_comp; simpl.
  rewrite opp_involutive.
- now rewrite opp_match_comp.
--rewrite match_opp_comp; simpl.
- rewrite add_swap_lemma1; symmetry.
- rewrite GQcompare_swap, match_match_comp, GQcompare_swap.
- now do 2 rewrite opp_match_comp.
+ now rewrite Qlem2.opp_match_comp.
+-rewrite Qlem2.match_opp_comp; simpl.
+ rewrite Qlem2.add_swap_lemma1; symmetry.
+ rewrite GQcompare_swap, Qlem2.match_match_comp, GQcompare_swap.
+ now do 2 rewrite Qlem2.opp_match_comp.
 -now rewrite GQadd_add_swap.
 Qed.
 
