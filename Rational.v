@@ -69,6 +69,8 @@ Arguments le x%Q y%Q.
 Definition gt x y := lt y x.
 Definition ge x y := le y x.
 
+Module Qlem1.
+
 Definition NQadd_pos_l px y :=
   match y with
   | Zero => Pos px
@@ -93,15 +95,6 @@ Definition NQadd_neg_l px y :=
   | Neg py => Neg (px + py)
   end.
 
-Definition add x y :=
-  match x with
-  | Zero => y
-  | Pos px => NQadd_pos_l px y
-  | Neg px => NQadd_neg_l px y
-  end.
-
-Definition sub x y := add x (opp y).
-
 Definition NQmul_pos_l px y :=
   match y with
   | Zero => Zero
@@ -116,11 +109,22 @@ Definition NQmul_neg_l px y :=
   | Neg py => Pos (px * py)
   end.
 
+End Qlem1.
+
+Definition add x y :=
+  match x with
+  | Zero => y
+  | Pos px => Qlem1.NQadd_pos_l px y
+  | Neg px => Qlem1.NQadd_neg_l px y
+  end.
+
+Definition sub x y := add x (opp y).
+
 Definition mul x y :=
   match x with
   | Zero => Zero
-  | Pos px => NQmul_pos_l px y
-  | Neg px => NQmul_neg_l px y
+  | Pos px => Qlem1.NQmul_pos_l px y
+  | Neg px => Qlem1.NQmul_neg_l px y
   end.
 
 (* in 8.10, coq obstinately refuses to print "a < b < c": he prints
@@ -506,7 +510,7 @@ Theorem mul_1_l : ∀ a, (1 * a)%Q = a.
 Proof.
 intros.
 unfold "*"%Q; simpl.
-unfold NQmul_pos_l.
+unfold Qlem1.NQmul_pos_l.
 destruct a; [ easy | | ]; now rewrite GQmul_1_l.
 Qed.
 
@@ -523,13 +527,13 @@ intros.
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -f_equal; apply GQmul_add_distr_l.
 -rewrite GQcompare_mul_cancel_l.
- unfold NQmul_pos_l.
+ unfold Qlem1.NQmul_pos_l.
  remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
  destruct b; GQcompare_iff; [ easy | | ].
  +now f_equal; apply GQmul_sub_distr_l.
  +now f_equal; apply GQmul_sub_distr_l.
 -rewrite GQcompare_mul_cancel_l.
- unfold NQmul_pos_l.
+ unfold Qlem1.NQmul_pos_l.
  remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
  destruct b; GQcompare_iff; [ easy | | ].
  +now f_equal; apply GQmul_sub_distr_l.
@@ -537,13 +541,13 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -f_equal; apply GQmul_add_distr_l.
 -f_equal; apply GQmul_add_distr_l.
 -rewrite GQcompare_mul_cancel_l.
- unfold NQmul_neg_l.
+ unfold Qlem1.NQmul_neg_l.
  remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
  destruct b; GQcompare_iff; [ easy | | ].
  +now f_equal; apply GQmul_sub_distr_l.
  +now f_equal; apply GQmul_sub_distr_l.
 -rewrite GQcompare_mul_cancel_l.
- unfold NQmul_neg_l.
+ unfold Qlem1.NQmul_neg_l.
  remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
  destruct b; GQcompare_iff; [ easy | | ].
  +now f_equal; apply GQmul_sub_distr_l.
@@ -771,7 +775,7 @@ Theorem le_add_l : ∀ x y, (0 ≤ y)%Q → (x ≤ y + x)%Q.
 Proof.
 intros * Hy.
 destruct y as [| py| py]; [ apply le_refl | | easy ].
-simpl; unfold NQadd_pos_l.
+simpl; unfold Qlem1.NQadd_pos_l.
 destruct x as [| px| px]; [ easy | apply GQle_add_l | simpl ].
 remember (GQcompare py px) as b eqn:Hb; symmetry in Hb.
 destruct b; GQcompare_iff; [ easy | | easy ].
@@ -1465,7 +1469,7 @@ Proof.
 intros.
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -rewrite GQcompare_mul_cancel_l.
- unfold NQmul_pos_l.
+ unfold Qlem1.NQmul_pos_l.
  remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
  destruct b; GQcompare_iff; [ easy | | ].
  +now f_equal; apply GQmul_sub_distr_l.
@@ -1473,13 +1477,13 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -f_equal; apply GQmul_add_distr_l.
 -f_equal; apply GQmul_add_distr_l.
 -rewrite GQcompare_mul_cancel_l.
- unfold NQmul_pos_l.
+ unfold Qlem1.NQmul_pos_l.
  remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
  destruct b; GQcompare_iff; [ easy | | ].
  +now f_equal; apply GQmul_sub_distr_l.
  +now f_equal; apply GQmul_sub_distr_l.
 -rewrite GQcompare_mul_cancel_l.
- unfold NQmul_neg_l.
+ unfold Qlem1.NQmul_neg_l.
  remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
  destruct b; GQcompare_iff; [ easy | | ].
  +now f_equal; apply GQmul_sub_distr_l.
@@ -1487,7 +1491,7 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -f_equal; apply GQmul_add_distr_l.
 -f_equal; apply GQmul_add_distr_l.
 -rewrite GQcompare_mul_cancel_l.
- unfold NQmul_neg_l.
+ unfold Qlem1.NQmul_neg_l.
  remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
  destruct b; GQcompare_iff; [ easy | | ].
  +now f_equal; apply GQmul_sub_distr_l.
@@ -1821,7 +1825,7 @@ destruct ab as [| pab| pab]; [ | | now destruct a ].
   rewrite <- mul_pair; [ | easy | easy ].
   rewrite pair_diag; [ | easy ].
   now rewrite mul_1_r.
- +unfold NQadd_pos_l.
+ +unfold Qlem1.NQadd_pos_l.
   unfold "//"%Q.
   remember (a * d + b * c) as e eqn:He; symmetry in He.
   destruct e.
