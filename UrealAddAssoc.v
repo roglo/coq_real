@@ -3478,6 +3478,23 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
               }
               unfold carry in Hp1.
               apply Q.intg_interv in Hp1; [ | easy ].
+              apply Nat_eq_add_2 in Huv22.
+              destruct Huv22 as [Huv22| Huv22]. {
+                rewrite A_split_first in Hp1; [ | min_n_ge ].
+                replace (S (i + 1)) with (i + 2) in Hp1 by flia.
+                rewrite (proj2 Huv22), Q.add_0_l in Hp1.
+                destruct Hp1 as (Hp1, _).
+                apply Q.nlt_ge in Hp1.
+                exfalso; apply Hp1; clear Hp1.
+                rewrite Hr2.
+                apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+                now intros; rewrite <- Nat.add_assoc.
+              }
+              destruct Huv22 as [Huv22| Huv22]. {
+                rewrite A_split_first; [ | min_n_ge ].
+                replace (S (i + 1)) with (i + 2) by flia.
+                unfold "⊕" at 1.
+                rewrite (proj1 Huv22).
 ...
 induction p. {
   rewrite Nat.add_0_r.
