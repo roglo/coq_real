@@ -109,6 +109,8 @@ Definition NQmul_neg_l px y :=
   | Neg py => Pos (px * py)
   end.
 
+Opaque NQadd_pos_l NQadd_neg_l.
+
 End Qlem1.
 
 Definition add x y :=
