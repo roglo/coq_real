@@ -132,11 +132,6 @@ Module Notations.
 
 Notation "a // b" := (of_pair a b) : Q_scope.
 Notation "0" := Zero : Q_scope.
-(*
-Notation "1" := (1 // 1)%Q : Q_scope.
-Notation "2" := (2 // 1)%Q : Q_scope.
-Notation "3" := (3 // 1)%Q : Q_scope.
-*)
 Notation "x < y" := (lt x y) : Q_scope.
 Notation "x ≤ y" := (le x y) : Q_scope.
 Notation "x > y" := (gt x y) : Q_scope.
@@ -153,7 +148,6 @@ Notation "x * y" := (mul x y) : Q_scope.
 Notation "x / y" := (mul x (inv y)) : Q_scope.
 Notation "/ x" := (inv x) : Q_scope.
 
-(**)
 Definition of_decimal_uint (n : Decimal.uint) : Q := (Nat.of_uint n // 1)%Q.
 
 Definition of_decimal_int (n : Decimal.int) : Q :=
@@ -178,123 +172,22 @@ Definition to_decimal_int (q : Q) : option Decimal.int :=
 
 Numeral Notation Q of_decimal_int to_decimal_int : Q_scope
   (abstract after 5001).
-(**)
-
-(*
-Check 5%Q.
-Check 6%Q.
-Check (5 // 1)%Q.
-Check (5 // 2)%Q.
-Check (53 // 1)%Q.
-Check 53%Q.
-Check 35%Q.
-Check (-28)%Q.
-Compute (-28)%Q.
-Check (-28 // 1)%Q.
-Compute (-28 // 1)%Q.
-Compute (5 // 1)%Q.
-Compute (53 // 1)%Q.
-Compute (63 // 1)%Q.
-Compute 63%Q.
-Check (5 // 2)%Q.
-Compute (5 // 2)%Q.
-Check (0 // 1)%Q.
-Check 0%Q.
-Check (22 // 7)%Q.
-Compute (22 // 7)%Q.
-Set Printing All.
-Check (0 // 1)%Q.
-Check 0%Q.
-Check (3 // 1)%Q.
-Check 3%Q.
-Check GQprop.
-Unset Printing Notations.
-Compute (22 // 7)%Q.
-...
-*)
 
 End Notations.
 
 Import Notations.
 
-Definition of_nat n :=
-  match n with
-  | 0 => Zero
-  | S _ => Pos (GQ_of_pair n 1)
-  end.
+(* Q is a field *)
 
-Definition num x :=
-  match x with
-  | Zero => 0
-  | Pos a => GQnum a
-  | Neg a => GQnum a
-  end.
-Definition den x :=
-  match x with
-  | Zero => 1
-  | Pos a => GQden a
-  | Neg a => GQden a
-  end.
-Arguments num x%Q.
-Arguments den x%Q.
-
-Definition compare x y :=
-  match x with
-  | Zero => match y with Zero => Eq | Pos _ => Lt | Neg _ => Gt end
-  | Pos px => match y with Pos py => GQcompare px py | _ => Gt end
-  | Neg px => match y with Neg py => GQcompare py px | _ => Lt end
-  end.
-
-Theorem eq_dec : ∀ x y : Q, {x = y} + {x ≠ y}.
+Theorem add_comm : ∀ x y, (x + y = y + x)%Q.
 Proof.
 intros.
-destruct x as [| px| px], y as [| py| py]; try now right.
--now left.
--destruct (GQeq_dec px py) as [H1| H1]; [ left | right ].
- +now f_equal.
- +now intros H; apply H1; injection H; intros.
--destruct (GQeq_dec px py) as [H1| H1]; [ left | right ].
- +now f_equal.
- +now intros H; apply H1; injection H; intros.
-Qed.
-Arguments eq_dec x%Q y%Q.
-
-Theorem lt_le_dec : ∀ x y : Q, {(x < y)%Q} + {(y ≤ x)%Q}.
-Proof.
-intros.
-destruct x as [| px| px].
--destruct y as [| py| py]; [ now right | now left | now right ].
--destruct y as [| py| py]; [ now right | simpl | now right ].
- apply GQlt_le_dec.
--destruct y as [| py| py]; [ now left | now left | ].
- apply GQlt_le_dec.
-Qed.
-Arguments lt_le_dec x%Q y%Q.
-
-Theorem le_lt_dec : ∀ x y : Q, {(x ≤ y)%Q} + {(y < x)%Q}.
-Proof.
-destruct x as [| px| px].
--destruct y as [| py| py]; [ now left | now left | now right ].
--destruct y as [| py| py]; [ now right | simpl | now right ].
- apply GQle_lt_dec.
--destruct y as [| py| py]; [ now left | now left | ].
- apply GQle_lt_dec.
-Qed.
-Arguments le_lt_dec x%Q y%Q.
-
-Theorem le_refl : ∀ x, (x ≤ x)%Q.
-Proof.
-intros.
-destruct x as [| px| px]; [ easy | apply GQle_refl | apply GQle_refl ].
-Qed.
-
-Theorem le_antisymm : ∀ x y, (x ≤ y)%Q → (y ≤ x)%Q → x = y.
-Proof.
-intros * Hxy Hyx.
-unfold "≤"%Q in Hxy, Hyx.
+unfold "+".
 destruct x as [| px| px], y as [| py| py]; try easy; simpl.
--f_equal; now apply GQle_antisymm.
--f_equal; now apply GQle_antisymm.
+-f_equal; apply GQadd_comm.
+-now rewrite GQcompare_swap; destruct (GQcompare py px).
+-now rewrite GQcompare_swap; destruct (GQcompare py px).
+-f_equal; apply GQadd_comm.
 Qed.
 
 Theorem match_match_comp : ∀ A c p q (f0 : A) fp fn,
@@ -315,66 +208,6 @@ Theorem match_match_comp : ∀ A c p q (f0 : A) fp fn,
   | Gt => fp q
   end.
 Proof. intros; now destruct c. Qed.
-
-Theorem opp_involutive : ∀ x, (- - x)%Q = x.
-Proof. intros; now destruct x. Qed.
-
-Theorem opp_match_comp : ∀ c eq lt gt,
-  (- match c with Eq => eq | Lt => lt | Gt => gt end =
-   match c with Eq => - eq | Lt => - lt | Gt => - gt end)%Q.
-Proof. intros; now destruct c. Qed.
-
-Theorem match_opp_comp : ∀ c eq lt gt,
-  (match c with Eq => eq | Lt => lt | Gt => gt end =
-   - match c with Eq => - eq | Lt => - lt | Gt => - gt end)%Q.
-Proof. now intros; destruct c; rewrite opp_involutive. Qed.
-
-Theorem add_comm : ∀ x y, (x + y = y + x)%Q.
-Proof.
-intros.
-unfold "+".
-destruct x as [| px| px], y as [| py| py]; try easy; simpl.
--f_equal; apply GQadd_comm.
--now rewrite GQcompare_swap; destruct (GQcompare py px).
--now rewrite GQcompare_swap; destruct (GQcompare py px).
--f_equal; apply GQadd_comm.
-Qed.
-
-Theorem add_0_l : ∀ x, (0 + x = x)%Q.
-Proof. easy. Qed.
-
-Theorem add_0_r : ∀ x, (x + 0 = x)%Q.
-Proof. intros; now rewrite add_comm. Qed.
-
-Theorem sub_0_l : ∀ x, (0 - x = - x)%Q.
-Proof. easy. Qed.
-
-Theorem sub_0_r : ∀ x, (x - 0 = x)%Q.
-Proof. intros; now destruct x. Qed.
-
-Theorem nle_gt : ∀ x y, ¬ (x ≤ y)%Q ↔ (y < x)%Q.
-Proof.
-intros.
-destruct x as [| xp| xp], y as [| yp| yp]; try now simpl.
--apply GQnle_gt.
--apply GQnle_gt.
-Qed.
-
-Theorem nlt_ge : ∀ x y, ¬ (x < y)%Q ↔ (y ≤ x)%Q.
-Proof.
-intros.
-destruct x as [| xp| xp], y as [| yp| yp]; try now simpl.
--apply GQnlt_ge.
--apply GQnlt_ge.
-Qed.
-
-Theorem lt_irrefl : ∀ x, ¬ (x < x)%Q.
-Proof.
-intros * Hx.
-destruct x as [| xp| xp]; [ easy | | ].
--now apply GQlt_irrefl in Hx.
--now apply GQlt_irrefl in Hx.
-Qed.
 
 Theorem add_swap_lemma1 : ∀ px py pz,
   match GQcompare (px + py) pz with
@@ -568,6 +401,19 @@ destruct c1, c2; repeat GQcompare_iff.
   now rewrite GQsub_add in Hc4.
 Qed.
 
+Theorem opp_involutive : ∀ x, (- - x)%Q = x.
+Proof. intros; now destruct x. Qed.
+
+Theorem match_opp_comp : ∀ c eq lt gt,
+  (match c with Eq => eq | Lt => lt | Gt => gt end =
+   - match c with Eq => - eq | Lt => - lt | Gt => - gt end)%Q.
+Proof. now intros; destruct c; rewrite opp_involutive. Qed.
+
+Theorem opp_match_comp : ∀ c eq lt gt,
+  (- match c with Eq => eq | Lt => lt | Gt => gt end =
+   match c with Eq => - eq | Lt => - lt | Gt => - gt end)%Q.
+Proof. intros; now destruct c. Qed.
+
 Theorem add_add_swap : ∀ x y z, (x + y + z = x + z + y)%Q.
 Proof.
 intros.
@@ -617,6 +463,213 @@ setoid_rewrite add_comm.
 apply add_add_swap.
 Qed.
 
+Theorem add_0_l : ∀ x, (0 + x = x)%Q.
+Proof. easy. Qed.
+
+Theorem add_0_r : ∀ x, (x + 0 = x)%Q.
+Proof. intros; now rewrite add_comm. Qed.
+
+Theorem add_opp_l : ∀ x y, (- x + y)%Q = (y - x)%Q.
+Proof. intros; apply add_comm. Qed.
+
+Theorem add_opp_r : ∀ x y, (x + - y)%Q = (x - y)%Q.
+Proof. easy. Qed.
+
+Theorem mul_comm : ∀ x y, (x * y = y * x)%Q.
+Proof.
+intros.
+unfold "*".
+destruct x as [| px| px], y as [| py| py]; try easy; simpl;
+f_equal; apply GQmul_comm.
+Qed.
+
+Theorem mul_mul_swap : ∀ x y z, (x * y * z = x * z * y)%Q.
+Proof.
+intros.
+unfold "*"%Q.
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl;
+f_equal; apply GQmul_mul_swap.
+Qed.
+
+Theorem mul_assoc : ∀ x y z, (x * (y * z) = (x * y) * z)%Q.
+Proof.
+intros.
+symmetry.
+rewrite mul_comm.
+remember (x * y)%Q as t eqn:Ht.
+rewrite mul_comm in Ht; rewrite Ht.
+setoid_rewrite mul_comm.
+apply mul_mul_swap.
+Qed.
+
+Theorem mul_1_l : ∀ a, (1 * a)%Q = a.
+Proof.
+intros.
+unfold "*"%Q; simpl.
+unfold NQmul_pos_l.
+destruct a; [ easy | | ]; now rewrite GQmul_1_l.
+Qed.
+
+Theorem mul_1_r : ∀ a, (a * 1)%Q = a.
+Proof.
+intros.
+rewrite mul_comm.
+apply mul_1_l.
+Qed.
+
+Theorem mul_add_distr_l : ∀ x y z, (x * (y + z) = x * y + x * z)%Q.
+Proof.
+intros.
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
+-f_equal; apply GQmul_add_distr_l.
+-rewrite GQcompare_mul_cancel_l.
+ unfold NQmul_pos_l.
+ remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ easy | | ].
+ +now f_equal; apply GQmul_sub_distr_l.
+ +now f_equal; apply GQmul_sub_distr_l.
+-rewrite GQcompare_mul_cancel_l.
+ unfold NQmul_pos_l.
+ remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ easy | | ].
+ +now f_equal; apply GQmul_sub_distr_l.
+ +now f_equal; apply GQmul_sub_distr_l.
+-f_equal; apply GQmul_add_distr_l.
+-f_equal; apply GQmul_add_distr_l.
+-rewrite GQcompare_mul_cancel_l.
+ unfold NQmul_neg_l.
+ remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ easy | | ].
+ +now f_equal; apply GQmul_sub_distr_l.
+ +now f_equal; apply GQmul_sub_distr_l.
+-rewrite GQcompare_mul_cancel_l.
+ unfold NQmul_neg_l.
+ remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
+ destruct b; GQcompare_iff; [ easy | | ].
+ +now f_equal; apply GQmul_sub_distr_l.
+ +now f_equal; apply GQmul_sub_distr_l.
+-f_equal; apply GQmul_add_distr_l.
+Qed.
+
+Theorem mul_add_distr_r : ∀ x y z, ((x + y) * z = x * z + y * z)%Q.
+Proof.
+intros.
+setoid_rewrite mul_comm.
+apply mul_add_distr_l.
+Qed.
+
+(* end Q field *)
+
+Definition of_nat n :=
+  match n with
+  | 0 => Zero
+  | S _ => Pos (GQ_of_pair n 1)
+  end.
+
+Definition num x :=
+  match x with
+  | Zero => 0
+  | Pos a => GQnum a
+  | Neg a => GQnum a
+  end.
+Definition den x :=
+  match x with
+  | Zero => 1
+  | Pos a => GQden a
+  | Neg a => GQden a
+  end.
+Arguments num x%Q.
+Arguments den x%Q.
+
+Definition compare x y :=
+  match x with
+  | Zero => match y with Zero => Eq | Pos _ => Lt | Neg _ => Gt end
+  | Pos px => match y with Pos py => GQcompare px py | _ => Gt end
+  | Neg px => match y with Neg py => GQcompare py px | _ => Lt end
+  end.
+
+Theorem eq_dec : ∀ x y : Q, {x = y} + {x ≠ y}.
+Proof.
+intros.
+destruct x as [| px| px], y as [| py| py]; try now right.
+-now left.
+-destruct (GQeq_dec px py) as [H1| H1]; [ left | right ].
+ +now f_equal.
+ +now intros H; apply H1; injection H; intros.
+-destruct (GQeq_dec px py) as [H1| H1]; [ left | right ].
+ +now f_equal.
+ +now intros H; apply H1; injection H; intros.
+Qed.
+Arguments eq_dec x%Q y%Q.
+
+Theorem lt_le_dec : ∀ x y : Q, {(x < y)%Q} + {(y ≤ x)%Q}.
+Proof.
+intros.
+destruct x as [| px| px].
+-destruct y as [| py| py]; [ now right | now left | now right ].
+-destruct y as [| py| py]; [ now right | simpl | now right ].
+ apply GQlt_le_dec.
+-destruct y as [| py| py]; [ now left | now left | ].
+ apply GQlt_le_dec.
+Qed.
+Arguments lt_le_dec x%Q y%Q.
+
+Theorem le_lt_dec : ∀ x y : Q, {(x ≤ y)%Q} + {(y < x)%Q}.
+Proof.
+destruct x as [| px| px].
+-destruct y as [| py| py]; [ now left | now left | now right ].
+-destruct y as [| py| py]; [ now right | simpl | now right ].
+ apply GQle_lt_dec.
+-destruct y as [| py| py]; [ now left | now left | ].
+ apply GQle_lt_dec.
+Qed.
+Arguments le_lt_dec x%Q y%Q.
+
+Theorem le_refl : ∀ x, (x ≤ x)%Q.
+Proof.
+intros.
+destruct x as [| px| px]; [ easy | apply GQle_refl | apply GQle_refl ].
+Qed.
+
+Theorem le_antisymm : ∀ x y, (x ≤ y)%Q → (y ≤ x)%Q → x = y.
+Proof.
+intros * Hxy Hyx.
+unfold "≤"%Q in Hxy, Hyx.
+destruct x as [| px| px], y as [| py| py]; try easy; simpl.
+-f_equal; now apply GQle_antisymm.
+-f_equal; now apply GQle_antisymm.
+Qed.
+
+Theorem sub_0_l : ∀ x, (0 - x = - x)%Q.
+Proof. easy. Qed.
+
+Theorem sub_0_r : ∀ x, (x - 0 = x)%Q.
+Proof. intros; now destruct x. Qed.
+
+Theorem nle_gt : ∀ x y, ¬ (x ≤ y)%Q ↔ (y < x)%Q.
+Proof.
+intros.
+destruct x as [| xp| xp], y as [| yp| yp]; try now simpl.
+-apply GQnle_gt.
+-apply GQnle_gt.
+Qed.
+
+Theorem nlt_ge : ∀ x y, ¬ (x < y)%Q ↔ (y ≤ x)%Q.
+Proof.
+intros.
+destruct x as [| xp| xp], y as [| yp| yp]; try now simpl.
+-apply GQnlt_ge.
+-apply GQnlt_ge.
+Qed.
+
+Theorem lt_irrefl : ∀ x, ¬ (x < x)%Q.
+Proof.
+intros * Hx.
+destruct x as [| xp| xp]; [ easy | | ].
+-now apply GQlt_irrefl in Hx.
+-now apply GQlt_irrefl in Hx.
+Qed.
+
 Theorem add_sub_assoc : ∀ x y z, (x + (y - z) = (x + y) - z)%Q.
 Proof. intros; apply add_assoc. Qed.
 
@@ -641,12 +694,6 @@ destruct x as [| px| px]; [ easy | | ]; simpl.
 -now rewrite GQcompare_diag.
 -now rewrite GQcompare_diag.
 Qed.
-
-Theorem add_opp_l : ∀ x y, (- x + y)%Q = (y - x)%Q.
-Proof. intros; apply add_comm. Qed.
-
-Theorem add_opp_r : ∀ x y, (x + - y)%Q = (x - y)%Q.
-Proof. easy. Qed.
 
 Theorem sub_add : ∀ a b, (a - b + b)%Q = a.
 Proof.
@@ -1397,74 +1444,6 @@ f_equal.
 now apply GQmul_pair.
 Qed.
 
-Theorem mul_comm : ∀ x y, (x * y = y * x)%Q.
-Proof.
-intros.
-unfold "*".
-destruct x as [| px| px], y as [| py| py]; try easy; simpl;
-f_equal; apply GQmul_comm.
-Qed.
-
-Theorem mul_mul_swap : ∀ x y z, (x * y * z = x * z * y)%Q.
-Proof.
-intros.
-unfold "*"%Q.
-destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl;
-f_equal; apply GQmul_mul_swap.
-Qed.
-
-Theorem mul_assoc : ∀ x y z, (x * (y * z) = (x * y) * z)%Q.
-Proof.
-intros.
-symmetry.
-rewrite mul_comm.
-remember (x * y)%Q as t eqn:Ht.
-rewrite mul_comm in Ht; rewrite Ht.
-setoid_rewrite mul_comm.
-apply mul_mul_swap.
-Qed.
-
-Theorem mul_add_distr_l : ∀ x y z, (x * (y + z) = x * y + x * z)%Q.
-Proof.
-intros.
-destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
--f_equal; apply GQmul_add_distr_l.
--rewrite GQcompare_mul_cancel_l.
- unfold NQmul_pos_l.
- remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
- destruct b; GQcompare_iff; [ easy | | ].
- +now f_equal; apply GQmul_sub_distr_l.
- +now f_equal; apply GQmul_sub_distr_l.
--rewrite GQcompare_mul_cancel_l.
- unfold NQmul_pos_l.
- remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
- destruct b; GQcompare_iff; [ easy | | ].
- +now f_equal; apply GQmul_sub_distr_l.
- +now f_equal; apply GQmul_sub_distr_l.
--f_equal; apply GQmul_add_distr_l.
--f_equal; apply GQmul_add_distr_l.
--rewrite GQcompare_mul_cancel_l.
- unfold NQmul_neg_l.
- remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
- destruct b; GQcompare_iff; [ easy | | ].
- +now f_equal; apply GQmul_sub_distr_l.
- +now f_equal; apply GQmul_sub_distr_l.
--rewrite GQcompare_mul_cancel_l.
- unfold NQmul_neg_l.
- remember (GQcompare py pz) as b eqn:Hb; symmetry in Hb.
- destruct b; GQcompare_iff; [ easy | | ].
- +now f_equal; apply GQmul_sub_distr_l.
- +now f_equal; apply GQmul_sub_distr_l.
--f_equal; apply GQmul_add_distr_l.
-Qed.
-
-Theorem mul_add_distr_r : ∀ x y z, ((x + y) * z = x * z + y * z)%Q.
-Proof.
-intros.
-setoid_rewrite mul_comm.
-apply mul_add_distr_l.
-Qed.
-
 Theorem mul_sub_distr_l : ∀ x y z, (x * (y - z) = x * y - x * z)%Q.
 Proof.
 intros.
@@ -1768,21 +1747,6 @@ Proof.
 intros * Hb Hc.
 rewrite mul_pair; [ | easy | easy ].
 now rewrite Nat.mul_1_r.
-Qed.
-
-Theorem mul_1_l : ∀ a, (1 * a)%Q = a.
-Proof.
-intros.
-unfold "*"%Q; simpl.
-unfold NQmul_pos_l.
-destruct a; [ easy | | ]; now rewrite GQmul_1_l.
-Qed.
-
-Theorem mul_1_r : ∀ a, (a * 1)%Q = a.
-Proof.
-intros.
-rewrite mul_comm.
-apply mul_1_l.
 Qed.
 
 Theorem mul_pair_mono_l : ∀ a b c,
