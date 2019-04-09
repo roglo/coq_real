@@ -8,9 +8,7 @@ Set Nested Proofs Allowed.
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 Reserved Notation "a // b" (at level 32).
 
-(*
 Declare Scope PQ_scope.
-*)
 Delimit Scope PQ_scope with PQ.
 
 (* A PQ number {PQnum1:=a; PQden1:=b} represents the rational (a+1)/(b+1) *)
@@ -1639,12 +1637,17 @@ destruct a.
   --rewrite Ha; apply Nat.gcd_divide_r.
 Qed.
 
+Theorem PQred_mul_r : ∀ x y, PQred (x * y) = PQred (x * PQred y).
+Proof.
+intros.
+setoid_rewrite PQmul_comm.
+apply PQred_mul_l.
+Qed.
+
 Theorem PQred_mul : ∀ x y, PQred (x * y) = PQred (PQred x * PQred y).
 Proof.
 intros.
-rewrite PQred_mul_l, PQmul_comm.
-rewrite PQred_mul_l, PQmul_comm.
-easy.
+now rewrite PQred_mul_l, PQred_mul_r.
 Qed.
 
 Theorem PQred_gcd : ∀ x,
@@ -1754,6 +1757,15 @@ destruct d.
   subst c d.
   rewrite Nat.mul_0_l, Nat.add_0_r in H1, H2.
   now subst yn yd.
+Qed.
+
+Theorem PQred_diag : ∀ x, x ≠ 0 → PQred (x // x) = 1%PQ.
+Proof.
+intros * Hx.
+unfold PQred.
+remember ggcd as f; cbn; subst f.
+rewrite Nat.sub_add; [ | flia Hx ].
+now rewrite ggcd_diag.
 Qed.
 
 Theorem PQle_decidable : ∀ x y, Decidable.decidable (x ≤ y)%PQ.

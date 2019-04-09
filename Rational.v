@@ -558,6 +558,22 @@ setoid_rewrite mul_comm.
 apply mul_add_distr_l.
 Qed.
 
+Theorem mul_inv_l : ∀ x, x ≠ 0%Q → (x / x = 1)%Q.
+Proof.
+intros * Hx.
+unfold "/"%Q.
+destruct x as [| gx| gx]; [ easy | | ].
+-cbn; f_equal; apply GQmul_inv_r.
+-cbn; f_equal; apply GQmul_inv_r.
+Qed.
+
+Theorem mul_inv_r : ∀ x, x ≠ 0%Q → (/ x * x = 1)%Q.
+Proof.
+intros * Hx.
+rewrite mul_comm.
+now apply mul_inv_l.
+Qed.
+
 (* end Q field *)
 
 Definition of_nat n :=

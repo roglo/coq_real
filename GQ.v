@@ -7,9 +7,7 @@ Import PQ_Notations.
 
 Set Nested Proofs Allowed.
 
-(*
 Declare Scope GQ_scope.
-*)
 Delimit Scope GQ_scope with GQ.
 
 Record GQ :=
@@ -68,9 +66,6 @@ Notation "x > y" := (GQgt x y) : GQ_scope.
 Notation "x ≥ y" := (GQge x y) : GQ_scope.
 Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%GQ (at level 70, y at next level) :
   GQ_scope.
-
-(* Bon, ça déconne. Ça crée une différence entre 2%GQ et (2//1)%GQ
-   qu'on est tout le temps en train de convertir l'un vers l'autre *)
 
 Definition GQ_of_decimal_uint (n : Decimal.uint) : option GQ :=
   let a := Nat.of_uint n in
@@ -1483,6 +1478,25 @@ Proof.
 intros.
 setoid_rewrite GQmul_comm.
 apply GQmul_cancel_l.
+Qed.
+
+Theorem GQmul_inv_r : ∀ x, (x * / x = 1)%GQ.
+Proof.
+intros.
+apply GQeq_eq; cbn.
+destruct x as (px, Hpx); cbn.
+rewrite <- PQred_mul_r.
+unfold "*"%PQ, "/"%PQ.
+unfold PQmul_num1, PQmul_den1; cbn.
+rewrite Nat.mul_comm.
+apply PQred_diag.
+now do 2 rewrite Nat.add_1_r.
+Qed.
+
+Theorem GQmul_inv_l : ∀ x, (/ x * x = 1)%GQ.
+Proof.
+intros; rewrite GQmul_comm.
+apply GQmul_inv_r.
 Qed.
 
 Theorem GQpair_lt_nat_l : ∀ a b c, a ≠ 0 → b ≠ 0 → c ≠ 0 →
