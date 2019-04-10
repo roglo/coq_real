@@ -3381,6 +3381,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
      apply Nat.add_le_mono; [ apply Hu | apply Hv ].
    }
+...
    specialize (P_999_start (u ⊕ v) (i + 1) 3) as H1.
    assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
      intros; rewrite <- Nat.add_assoc; apply Huv3.
@@ -3391,6 +3392,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      intros; rewrite Nat.add_shuffle0; apply H.
    }
    specialize (H1 H); clear H.
+...
    destruct (lt_dec rad 3) as [H| Hr3]. {
      assert (Hr2 : rad = 2) by flia H Hr; clear H H1.
      rewrite Hr2 in Hu, Hv, Hk; cbn in Hu, Hv.
@@ -3495,7 +3497,6 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
                 replace (S (i + 1)) with (i + 2) by flia.
                 unfold "⊕" at 1.
                 rewrite (proj1 Huv22).
-Abort. (* bon, faut que je voye...
 ...
 induction p. {
   rewrite Nat.add_0_r.
@@ -3611,7 +3612,6 @@ assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
 }
 specialize (H1 H); clear H.
 ...
-*)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
