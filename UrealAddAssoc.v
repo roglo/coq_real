@@ -3495,6 +3495,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
                 replace (S (i + 1)) with (i + 2) by flia.
                 unfold "⊕" at 1.
                 rewrite (proj1 Huv22).
+Abort. (* bon, faut que je voye...
 ...
 induction p. {
   rewrite Nat.add_0_r.
@@ -3610,6 +3611,7 @@ assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
 }
 specialize (H1 H); clear H.
 ...
+*)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
@@ -3619,7 +3621,7 @@ Proof.
 intros * Hu Hv.
 specialize radix_ge_2 as Hr.
 symmetry; rewrite Nat.add_comm; symmetry.
-unfold carry.
+unfold carry, carry_cases.
 remember
   (match LPO_fst (fA_ge_1_ε v i) with
    | inl _ => 0
@@ -3826,7 +3828,7 @@ rewrite NQintg_P_M, Nat.add_0_r.
 rewrite (NQintg_A_for_dig _ _ u), Nat.add_0_l. 2: {
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
 }
-rewrite (NQintg_A_for_dig _ _ u), Nat.add_0_r. 2: {
+rewrite (NQintg_A_for_dig _ _ u), Nat.add_0_l. 2: {
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
 }
 specialize (NQintg_A_le_1_for_add v i kv) as H1.
@@ -3848,7 +3850,7 @@ rewrite (Q.frac_small (A i nuv u)). 2: {
   apply A_upper_bound_for_dig.
   intros k Hk; replace k with (i + (k - i)) by flia Hk; apply Hu.
 }
-rewrite Q.frac_P_M.
+rewrite NQfrac_P_M.
 assert (Hv3 : ∀ k, v (i + k) ≤ 3 * (rad - 1)). {
   intros.
   intros; eapply le_trans; [ apply Hv | ].
@@ -3908,7 +3910,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
  +destruct m; [ clear H2 | flia H2 ].
   rewrite (Q.frac_less_small 1). 2: {
     split.
-    -specialize (Q.intg_of_frac (A i nuv v) (A_ge_0 _ _ _)) as H2.
+    -specialize (Q.intg_to_frac (A i nuv v) (A_ge_0 _ _ _)) as H2.
      rewrite Hm in H2; rewrite H2.
      now apply Q.le_sub_l.
     -eapply Q.le_lt_trans; [ apply A_upper_bound_for_add | ].
@@ -3916,6 +3918,7 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
      rewrite Q.mul_sub_distr_l, Q.mul_1_r.
      now apply Q.sub_lt.
   }
+  replace (1 // 1)%Q with 1%Q by easy.
   rewrite Q.add_sub_assoc.
   destruct (Q.lt_le_dec (A i nup u + A i nup (P v))%Q 1) as [H4| H4].
   *destruct (Q.lt_le_dec (A i nuv u + A i nuv v - 1)%Q 1)
