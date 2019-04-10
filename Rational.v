@@ -183,19 +183,6 @@ End Notations.
 
 Import Notations.
 
-(* Q is a field *)
-
-Theorem add_comm : ∀ x y, (x + y = y + x)%Q.
-Proof.
-intros.
-unfold "+".
-destruct x as [| px| px], y as [| py| py]; try easy; simpl.
--f_equal; apply GQadd_comm.
--now rewrite GQcompare_swap; destruct (GQcompare py px).
--now rewrite GQcompare_swap; destruct (GQcompare py px).
--f_equal; apply GQadd_comm.
-Qed.
-
 Module Qlem2.
 
 Theorem match_match_comp : ∀ A c p q (f0 : A) fp fn,
@@ -420,6 +407,19 @@ Theorem opp_match_comp : ∀ c eq lt gt,
 Proof. intros; now destruct c. Qed.
 
 End Qlem2.
+
+(* Q is a field *)
+
+Theorem add_comm : ∀ x y, (x + y = y + x)%Q.
+Proof.
+intros.
+unfold "+".
+destruct x as [| px| px], y as [| py| py]; try easy; simpl.
+-f_equal; apply GQadd_comm.
+-now rewrite GQcompare_swap; destruct (GQcompare py px).
+-now rewrite GQcompare_swap; destruct (GQcompare py px).
+-f_equal; apply GQadd_comm.
+Qed.
 
 Theorem opp_involutive : ∀ x, (- - x)%Q = x.
 Proof. intros; now destruct x. Qed.
