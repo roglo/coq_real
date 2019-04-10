@@ -3381,6 +3381,32 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
      apply Nat.add_le_mono; [ apply Hu | apply Hv ].
    }
+assert (Q.intg (A i n (u ⊕ v)) = 0). {
+apply Q.intg_small.
+split; [ easy | ].
+now rewrite A_additive.
+}
+assert (∀ p, Q.intg (A i (min_n i p) (u ⊕ v)) = 0). {
+  now intros; rewrite Hiuv.
+}
+clear Hiuv.
+assert (∀ p, Q.intg (A i (min_n i p) u) = 0). {
+  intros.
+  specialize (H0 p); rewrite A_additive in H0.
+  rewrite Q.intg_add in H0; [ | easy | easy ].
+  apply Nat.eq_add_0 in H0.
+  destruct H0 as (H0, _).
+  now apply Nat.eq_add_0 in H0.
+}
+assert (∀ p, Q.intg (A i (min_n i p) v) = 0). {
+  intros.
+  specialize (H0 p); rewrite A_additive in H0.
+  rewrite Q.intg_add in H0; [ | easy | easy ].
+  apply Nat.eq_add_0 in H0.
+  destruct H0 as (H0, _).
+  now apply Nat.eq_add_0 in H0.
+}
+clear H2 H3 Hzn H H4 H5 Huv Hiv.
 ...
    specialize (P_999_start (u ⊕ v) (i + 1) 3) as H1.
    assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
