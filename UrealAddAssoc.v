@@ -234,6 +234,63 @@ unfold is_num_9.
 now destruct (Nat.eq_dec (u (i + j)) (rad - 1)).
 Qed.
 
+Theorem all_fA_ge_1_ε_carry {r : radix} : ∀ u i,
+  (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k, carry u (i + k) = Q.intg (A (i + k) (min_n (i + k) 0) u).
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Haut *.
+clear - Haut.
+unfold carry, carry_cases.
+destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]; [ easy | ].
+destruct H1 as (j & Hjj & Hj).
+specialize (Haut (k + j)) as H1.
+apply A_ge_1_add_r_true_if in H1.
+now rewrite Hj in H1.
+Qed.
+
+Theorem all_fA_ge_1_ε_carry_carry {r : radix} : ∀ u i,
+  (∀ k, u (i + k) ≤ 3 * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ k,
+    carry u (i + k) =
+    Q.intg
+      ((u (i + k + 1) + carry u (i + k + 1))%nat // rad +
+       Q.frac (A (i + k + 1) (min_n (i + k) 1) u) * 1 // rad)%Q.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hmr Haut *.
+rewrite all_fA_ge_1_ε_carry; [ | easy ].
+assert (Hmr' : ∀ l, u (i + k + l) ≤ 3 * (rad - 1)). {
+  intros; rewrite <- Nat.add_assoc; apply Hmr.
+}
+assert (Haut' : ∀ l, fA_ge_1_ε u (i + k) l = true). {
+  intros l; apply A_ge_1_add_r_true_if, Haut.
+}
+rewrite <- (all_fA_ge_1_ε_NQintg_A (i + k) u Hmr' Haut' 0 rad).
+unfold carry, carry_cases.
+destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1]. 2: {
+  destruct H1 as (j & Hjj & Hj).
+  specialize (Haut (k + 1 + j)) as H1.
+  apply A_ge_1_add_r_true_if in H1.
+  now rewrite Nat.add_assoc, Hj in H1.
+}
+clear H1.
+rewrite A_split_first; [ | min_n_ge ].
+replace (S (i + k)) with (i + k + 1) by flia.
+rewrite Q.pair_add_l, <- Q.add_assoc.
+rewrite <- (Q.mul_pair_den_num (Q.intg _) 1); [ | easy ].
+rewrite <- Q.mul_add_distr_r.
+rewrite (min_n_add_l (i + k)), Nat.mul_1_r.
+f_equal; f_equal; f_equal.
+rewrite Q.intg_frac at 1; [ | easy ].
+f_equal; symmetry.
+replace 1 with (0 + 1) by easy.
+now rewrite min_n_add, Nat.mul_1_r.
+Qed.
+
 (* Says that if P(u) ends with an infinity of 9s, and u is
    - limited by 18, then u_i is 8, 9 or 18,
    - limited by 27, then u is 7, 8, 9, 17, 18, 19 or 27,
@@ -389,13 +446,13 @@ Qed.
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
   m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
-  → (∀ k, P u (i + k + 1) = rad - 1)
+  → (∀ k, fA_ge_1_ε u i k = true)
   → u (i + 1) = rad - m
   → ∀ k, u (i + k + 2) = m * (rad - 1).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hmr Hur Hpu Hu1 *.
+intros Hmr Hur Hau Hu1 *.
 destruct (zerop m) as [Hmz| Hmz]. {
   rewrite Hmz in Hur |-*.
   specialize (Hur (k + 2)) as H1.
@@ -405,6 +462,8 @@ destruct (zerop m) as [Hmz| Hmz]. {
 apply Nat.neq_0_lt_0 in Hmz.
 induction k. {
   rewrite Nat.add_0_r.
+Search (∀ _, fA_ge_1_ε _ _ _ = true).
+...
   specialize (Hpu 0) as H1.
   rewrite Nat.add_0_r in H1.
   unfold P, d2n, prop_carr, dig in H1.
@@ -422,65 +481,13 @@ induction k. {
     split; [ | easy ].
     apply Nat.lt_le_incl, Hcm.
   }
-Search (_ - _ = _ - _).
+  assert (H2 : carry u (i + 1) = m - 1) by flia H1 Hmz Hmr.
 ...
-
-Theorem all_fA_ge_1_ε_carry {r : radix} : ∀ u i,
-  (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k, carry u (i + k) = Q.intg (A (i + k) (min_n (i + k) 0) u).
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros Haut *.
-clear - Haut.
-unfold carry, carry_cases.
-destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H1| H1]; [ easy | ].
-destruct H1 as (j & Hjj & Hj).
-specialize (Haut (k + j)) as H1.
-apply A_ge_1_add_r_true_if in H1.
-now rewrite Hj in H1.
-Qed.
-
-Theorem all_fA_ge_1_ε_carry_carry {r : radix} : ∀ u i,
-  (∀ k, u (i + k) ≤ 3 * (rad - 1))
-  → (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k,
-    carry u (i + k) =
-    Q.intg
-      ((u (i + k + 1) + carry u (i + k + 1))%nat // rad +
-       Q.frac (A (i + k + 1) (min_n (i + k) 1) u) * 1 // rad)%Q.
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hmr Haut *.
-rewrite all_fA_ge_1_ε_carry; [ | easy ].
-assert (Hmr' : ∀ l, u (i + k + l) ≤ 3 * (rad - 1)). {
-  intros; rewrite <- Nat.add_assoc; apply Hmr.
-}
-assert (Haut' : ∀ l, fA_ge_1_ε u (i + k) l = true). {
-  intros l; apply A_ge_1_add_r_true_if, Haut.
-}
-rewrite <- (all_fA_ge_1_ε_NQintg_A (i + k) u Hmr' Haut' 0 rad).
-unfold carry, carry_cases.
-destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1]. 2: {
-  destruct H1 as (j & Hjj & Hj).
-  specialize (Haut (k + 1 + j)) as H1.
-  apply A_ge_1_add_r_true_if in H1.
-  now rewrite Nat.add_assoc, Hj in H1.
-}
-clear H1.
-rewrite A_split_first; [ | min_n_ge ].
-replace (S (i + k)) with (i + k + 1) by flia.
-rewrite Q.pair_add_l, <- Q.add_assoc.
-rewrite <- (Q.mul_pair_den_num (Q.intg _) 1); [ | easy ].
-rewrite <- Q.mul_add_distr_r.
-rewrite (min_n_add_l (i + k)), Nat.mul_1_r.
-f_equal; f_equal; f_equal.
-rewrite Q.intg_frac at 1; [ | easy ].
-f_equal; symmetry.
-replace 1 with (0 + 1) by easy.
-now rewrite min_n_add, Nat.mul_1_r.
-Qed.
+  unfold carry in H2.
+  rewrite A_split_first in H2; [ | min_n_ge ].
+  replace (S (i + 1)) with (i + 2) in H2 by easy.
+  apply Q.intg_interv in H2; [ | easy ].
+...
 
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
   rad = 2

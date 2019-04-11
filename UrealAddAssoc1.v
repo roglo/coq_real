@@ -510,15 +510,16 @@ replace (min_n i k) with (min_n i 0 + rad * k). 2: {
 now apply all_fA_ge_1_ε_NQintg_A.
 Qed.
 
-Theorem fA_lt_1_ε_NQintg_A {r : radix} : ∀ i u j,
-  (∀ k, u (i + k) ≤ 3 * (rad - 1))
+Theorem fA_lt_1_ε_NQintg_A {r : radix} : ∀ m i u j,
+  0 < m ≤ rad ^ 2
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, k < j → fA_ge_1_ε u i k = true)
   → fA_ge_1_ε u i j = false
   → ∀ k, j ≤ k → Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i j) u).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur Hjj Huf * Hjk.
+intros Hmr Hur Hjj Huf * Hjk.
 replace k with (j + (k - j)) by flia Hjk.
 rewrite min_n_add.
 rewrite <- ApB_A by min_n_ge.
@@ -526,15 +527,9 @@ rewrite Q.intg_add; [ | easy | easy ].
 rewrite <- Nat.add_assoc, <- Nat.add_0_r.
 f_equal.
 assert (HB : (B i (min_n i j) u (rad * (k - j)) < 1 // rad ^ S j)%Q). {
-  specialize (B_upper_bound_for_adds 3 u i j) as HB.
-  specialize (HB (rad * (k - j))).
-  assert (H : 0 < 3 ≤ rad ^ 2). {
-    split; [ pauto | ].
-    destruct rad as [| rr]; [ easy | ].
-    destruct rr; [ flia Hr | cbn; flia ].
-  }
-  specialize (HB H); clear H.
-  assert (H : ∀ j, j ≥ i → u j ≤ 3 * (rad - 1)). {
+  specialize (B_upper_bound_for_adds m u i j) as HB.
+  specialize (HB (rad * (k - j)) Hmr).
+  assert (H : ∀ j, j ≥ i → u j ≤ m * (rad - 1)). {
     intros p Hp; replace p with (i + (p - i)) by flia Hp.
     apply Hur.
   }
