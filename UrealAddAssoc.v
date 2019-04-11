@@ -462,9 +462,7 @@ destruct (zerop m) as [Hmz| Hmz]. {
 apply Nat.neq_0_lt_0 in Hmz.
 induction k. {
   rewrite Nat.add_0_r.
-Search (∀ _, fA_ge_1_ε _ _ _ = true).
-...
-  specialize (Hpu 0) as H1.
+  specialize (all_fA_ge_1_ε_P_999 u i Hau 0) as H1.
   rewrite Nat.add_0_r in H1.
   unfold P, d2n, prop_carr, dig in H1.
   rewrite Hu1 in H1.
@@ -482,11 +480,10 @@ Search (∀ _, fA_ge_1_ε _ _ _ = true).
     apply Nat.lt_le_incl, Hcm.
   }
   assert (H2 : carry u (i + 1) = m - 1) by flia H1 Hmz Hmr.
-...
   unfold carry in H2.
+  apply Q.intg_interv in H2; [ | easy ].
   rewrite A_split_first in H2; [ | min_n_ge ].
   replace (S (i + 1)) with (i + 2) in H2 by easy.
-  apply Q.intg_interv in H2; [ | easy ].
 ...
 
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
