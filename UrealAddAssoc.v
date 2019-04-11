@@ -484,6 +484,12 @@ induction k. {
   apply Q.intg_interv in H2; [ | easy ].
   rewrite A_split_first in H2; [ | min_n_ge ].
   replace (S (i + 1)) with (i + 2) in H2 by easy.
+  destruct H2 as (H2, H3).
+  apply Nat.le_antisymm; [ apply Hur | ].
+  apply Nat.nlt_ge; intros H4.
+  apply Q.nlt_ge in H2; apply H2; clear H2.
+  remember (min_n (i + 1) (carry_cases u (i + 1))) as n eqn:Hn.
+Check A_upper_bound_for_adds.
 ...
 
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
