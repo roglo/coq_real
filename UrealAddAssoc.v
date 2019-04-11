@@ -386,6 +386,36 @@ apply (lt_le_trans _ (rad * (m - 1) + carry u i + 1)).
  *destruct m; [ easy | cbn; flia ].
 Qed.
 
+Theorem P_999_after_7 {r : radix} : ∀ m u i,
+  (∀ k, u (i + k) ≤ m * (rad - 1))
+  → (∀ k, P u (i + k + 1) = rad - 1)
+  → u (i + 1) = rad - m
+  → ∀ k, u (i + k + 2) = m * (rad - 1).
+Proof.
+intros * Hur Hpu Hu1 *.
+destruct (zerop m) as [Hmz| Hmz]. {
+  rewrite Hmz in Hur |-*.
+  specialize (Hur (k + 2)) as H1.
+  rewrite Nat.add_assoc, Nat.mul_0_l in H1.
+  now apply Nat.le_0_r in H1.
+}
+apply Nat.neq_0_lt_0 in Hmz.
+induction k. {
+  rewrite Nat.add_0_r.
+  specialize (Hpu 0) as H1.
+  rewrite Nat.add_0_r in H1.
+  unfold P, d2n, prop_carr, dig in H1.
+  rewrite Hu1 in H1.
+  destruct (lt_dec rad m) as [Hrm| Hrm]. {
+    replace (rad - m) with 0 in H1 by flia Hrm.
+    rewrite Nat.add_0_l in H1.
+    specialize (carry_upper_bound_for_adds m u i Hmz) as Hcm.
+    assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+      now intros; rewrite <- Nat.add_assoc.
+    }
+    specialize (Hcm H); clear H.
+...
+
 Theorem all_fA_ge_1_ε_carry {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, carry u (i + k) = Q.intg (A (i + k) (min_n (i + k) 0) u).
@@ -3460,6 +3490,11 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      }
      flia H3 H7 H8.
    }
+   destruct Huv789 as [Huv7| Huv89]. {
+     assert (Huv2 : ∀ p, (u ⊕ v) (i + p + 2) = 3 * (rad - 1)). {
+       intros p.
+...
+specialize (P_999_after_7 3 (u ⊕ v) i) as H1.
 ...
    specialize (P_999_start (u ⊕ v) (i + 1) 3) as H1.
    assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
