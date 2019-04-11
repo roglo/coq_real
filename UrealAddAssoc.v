@@ -443,6 +443,38 @@ apply (lt_le_trans _ (rad * (m - 1) + carry u i + 1)).
  *destruct m; [ easy | cbn; flia ].
 Qed.
 
+Theorem glop {r : radix} : ∀ m u i,
+  m ≤ rad
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → u (i + 1) = rad - m
+  → u (i + 2) ≥ (m - 1) * rad - m.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hmr Hur Hau Hu1 *.
+destruct (zerop m) as [Hmz| Hmz]; [ rewrite Hmz; cbn; flia | ].
+apply Nat.neq_0_lt_0 in Hmz.
+specialize (all_fA_ge_1_ε_P_999 u i Hau 0) as H1.
+rewrite Nat.add_0_r in H1.
+unfold P, d2n, prop_carr, dig in H1.
+rewrite Hu1 in H1.
+specialize (carry_upper_bound_for_adds m u i Hmz) as Hcm.
+assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+  now intros; rewrite <- Nat.add_assoc.
+}
+specialize (Hcm H); clear H.
+rewrite Nat.mod_small in H1. 2: {
+  specialize (Hcm 1) as H2.
+  flia Hmr H2.
+}
+rewrite <- Nat_sub_sub_distr in H1. 2: {
+  split; [ | easy ].
+  apply Nat.lt_le_incl, Hcm.
+}
+assert (H2 : carry u (i + 1) = m - 1) by flia H1 Hmz Hmr.
+...
+
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
   m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
