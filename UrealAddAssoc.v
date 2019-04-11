@@ -393,6 +393,7 @@ Theorem P_999_after_7 {r : radix} : ∀ m u i,
   → ∀ k, u (i + k + 2) = m * (rad - 1).
 Proof.
 intros * Hur Hpu Hu1 *.
+specialize radix_ge_2 as Hr.
 destruct (zerop m) as [Hmz| Hmz]. {
   rewrite Hmz in Hur |-*.
   specialize (Hur (k + 2)) as H1.
@@ -414,6 +415,10 @@ induction k. {
       now intros; rewrite <- Nat.add_assoc.
     }
     specialize (Hcm H); clear H.
+    unfold carry in H1.
+    rewrite A_split_first in H1; [ | min_n_ge ].
+    replace (S (i + 1)) with (i + 2) in H1 by easy.
+    remember (u (i + 2)) as u2 eqn:Hu2; symmetry in Hu2.
 ...
 
 Theorem all_fA_ge_1_ε_carry {r : radix} : ∀ u i,
