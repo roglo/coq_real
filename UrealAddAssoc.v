@@ -3407,6 +3407,59 @@ assert (∀ p, Q.intg (A i (min_n i p) v) = 0). {
   now apply Nat.eq_add_0 in H0.
 }
 clear H2 H3 Hzn H H4 H5 Huv Hiv.
+assert (H7 :
+   (u ⊕ v) (i + 1) = rad - 3 ∨ (u ⊕ v) (i + 1) = rad - 2 ∨
+   (u ⊕ v) (i + 1) = rad - 1). {
+  specialize (H0 0) as H7.
+  apply Q.eq_intg_0 in H7; [ | easy ].
+  rewrite A_split_first in H7; [ | min_n_ge ].
+  replace (S i) with (i + 1) in H7 by flia.
+  remember ((u ⊕ v) (i + 1)) as uvi1 eqn:Huvi1.
+  symmetry in Huvi1.
+  assert (H8 : uvi1 < rad). {
+    apply Nat.nle_gt; intros H.
+    apply Q.nle_gt in H7; apply H7; clear H7.
+    eapply Q.le_trans; [ | now apply Q.le_add_r, Q.le_0_mul_r ].
+    apply (Q.le_pair 1 1); [ easy | pauto | flia H ].
+  }
+  specialize (P_999_start (u ⊕ v) (i + 1) 3) as H9.
+  assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
+    intros; rewrite <- Nat.add_assoc; apply Huv3.
+  }
+  specialize (H9 H); clear H.
+  assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
+    specialize (all_fA_ge_1_ε_P_999 _ _ Hauv) as H.
+    intros; rewrite Nat.add_shuffle0; apply H.
+  }
+  specialize (H9 H); clear H.
+  rewrite Huvi1 in H9.
+  destruct (lt_dec rad 3) as [H| Hr3]; [ flia H8 H | ].
+  apply Nat.nlt_ge in Hr3.
+  destruct (Nat.eq_dec uvi1 (3 * (rad - 1))) as [H10| H10]; [ flia H8 H10 | ].
+  remember (uvi1 / rad + 1) as j1 eqn:Hj1.
+  remember (carry (u ⊕ v) (i + 1) + 1) as c1 eqn:Hc1.
+  cbn in H9.
+  destruct H9 as (H9 & H11 & H12).
+  destruct (Nat.eq_dec j1 1) as [H13| H13]. {
+    move H13 at top; subst j1; clear H9.
+    rewrite Nat.mul_1_l in H12.
+    destruct (Nat.eq_dec c1 1) as [H9| H9]. {
+      now move H9 at top; subst c1; clear H11; right; right.
+    }
+    destruct (Nat.eq_dec c1 2) as [H14| H14]. {
+      now move H14 at top; subst c1; clear H11; right; left.
+    }
+    destruct (Nat.eq_dec c1 3) as [H15| H15]. {
+      now move H15 at top; subst c1; clear H11; left.
+    }
+    flia H11 H9 H14 H15.
+  }
+  destruct (Nat.eq_dec j1 2) as [H14| H14]. {
+    move H14 at top; subst j1; clear H9 H13.
+    now rewrite Nat.div_small in Hj1.
+  }
+  flia H9 H13 H14.
+}
 ...
    specialize (P_999_start (u ⊕ v) (i + 1) 3) as H1.
    assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
