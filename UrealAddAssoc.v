@@ -473,6 +473,34 @@ rewrite <- Nat_sub_sub_distr in H1. 2: {
   apply Nat.lt_le_incl, Hcm.
 }
 assert (H2 : carry u (i + 1) = m - 1) by flia H1 Hmz Hmr.
+unfold carry in H2.
+apply Q.intg_interv in H2; [ | easy ].
+rewrite A_split_first in H2; [ | min_n_ge ].
+replace (S (i + 1)) with (i + 2) in H2 by easy.
+destruct H2 as (H2, H3).
+apply Nat.nlt_ge; intros H4.
+apply Q.nlt_ge in H2; apply H2; clear H2.
+remember (min_n (i + 1) (carry_cases u (i + 1))) as n eqn:Hn.
+(**)
+eapply Q.lt_le_trans. {
+  apply (Q.lt_pair_mono_r _ _ rad) in H4.
+  apply Q.add_lt_le_mono; [ apply H4 | ].
+  apply Q.mul_le_mono_pos_r; [ apply Q.lt_0_pair; pauto | ].
+  apply (A_upper_bound_for_adds m).
+  now intros; do 2 rewrite <- Nat.add_assoc.
+}
+...
+(**)
+rewrite <- (Q.mul_pair_den_num _ 1); [ | easy ].
+rewrite <- Q.mul_add_distr_r.
+apply (Q.mul_lt_mono_pos_r (rad // 1)%Q); [ now apply Q.lt_0_pair | ].
+rewrite <- Q.mul_assoc.
+rewrite Q.mul_inv_pair; [ | easy | easy ].
+rewrite Q.mul_1_r.
+rewrite <- Q.pair_mul_r.
+eapply Q.lt_le_trans. {
+  apply Q.add_lt_mono.
+  apply (Q.lt_pair_mono_r _ _ 1) in H4.
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
