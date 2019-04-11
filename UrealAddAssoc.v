@@ -496,6 +496,7 @@ induction k. {
   rewrite Q.mul_inv_pair; [ | easy | easy ].
   rewrite Q.mul_1_r.
   rewrite <- Q.pair_mul_r.
+Check A_upper_bound_for_adds.
 ...
 
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
