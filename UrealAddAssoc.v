@@ -387,13 +387,15 @@ apply (lt_le_trans _ (rad * (m - 1) + carry u i + 1)).
 Qed.
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
-  (∀ k, u (i + k) ≤ m * (rad - 1))
+  m ≤ rad
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, P u (i + k + 1) = rad - 1)
   → u (i + 1) = rad - m
   → ∀ k, u (i + k + 2) = m * (rad - 1).
 Proof.
-intros * Hur Hpu Hu1 *.
+intros *.
 specialize radix_ge_2 as Hr.
+intros Hmr Hur Hpu Hu1 *.
 destruct (zerop m) as [Hmz| Hmz]. {
   rewrite Hmz in Hur |-*.
   specialize (Hur (k + 2)) as H1.
@@ -407,18 +409,20 @@ induction k. {
   rewrite Nat.add_0_r in H1.
   unfold P, d2n, prop_carr, dig in H1.
   rewrite Hu1 in H1.
-  destruct (lt_dec rad m) as [Hrm| Hrm]. {
-    replace (rad - m) with 0 in H1 by flia Hrm.
-    rewrite Nat.add_0_l in H1.
-    specialize (carry_upper_bound_for_adds m u i Hmz) as Hcm.
-    assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
-      now intros; rewrite <- Nat.add_assoc.
-    }
-    specialize (Hcm H); clear H.
-    unfold carry in H1.
-    rewrite A_split_first in H1; [ | min_n_ge ].
-    replace (S (i + 1)) with (i + 2) in H1 by easy.
-    remember (u (i + 2)) as u2 eqn:Hu2; symmetry in Hu2.
+  specialize (carry_upper_bound_for_adds m u i Hmz) as Hcm.
+  assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  specialize (Hcm H); clear H.
+  rewrite Nat.mod_small in H1. 2: {
+    specialize (Hcm 1) as H2.
+    flia Hmr H2.
+  }
+  rewrite <- Nat_sub_sub_distr in H1. 2: {
+    split; [ | easy ].
+    apply Nat.lt_le_incl, Hcm.
+  }
+Search (_ - _ = _ - _).
 ...
 
 Theorem all_fA_ge_1_ε_carry {r : radix} : ∀ u i,
@@ -3496,6 +3500,9 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      flia H3 H7 H8.
    }
    destruct Huv789 as [Huv7| Huv89]. {
+     destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
+       (* à voir *) admit.
+     }
      assert (Huv2 : ∀ p, (u ⊕ v) (i + p + 2) = 3 * (rad - 1)). {
        intros p.
 ...
