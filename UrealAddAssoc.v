@@ -489,7 +489,13 @@ induction k. {
   apply Nat.nlt_ge; intros H4.
   apply Q.nlt_ge in H2; apply H2; clear H2.
   remember (min_n (i + 1) (carry_cases u (i + 1))) as n eqn:Hn.
-Check A_upper_bound_for_adds.
+  rewrite <- (Q.mul_pair_den_num _ 1); [ | easy ].
+  rewrite <- Q.mul_add_distr_r.
+  apply (Q.mul_lt_mono_pos_r (rad // 1)%Q); [ now apply Q.lt_0_pair | ].
+  rewrite <- Q.mul_assoc.
+  rewrite Q.mul_inv_pair; [ | easy | easy ].
+  rewrite Q.mul_1_r.
+  rewrite <- Q.pair_mul_r.
 ...
 
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
