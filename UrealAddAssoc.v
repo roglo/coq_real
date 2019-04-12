@@ -559,6 +559,7 @@ induction k. {
   move Hm1 before Hmz.
   destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m)) as [H1| H1]. {
     exfalso.
+    unfold carry in Hc2.
 ...
 
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
