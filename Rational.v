@@ -652,6 +652,8 @@ intros.
 destruct x as [| px| px]; [ easy | apply GQle_refl | apply GQle_refl ].
 Qed.
 
+Hint Resolve le_refl : core.
+
 Theorem le_antisymm : ∀ x y, (x ≤ y)%Q → (y ≤ x)%Q → x = y.
 Proof.
 intros * Hxy Hyx.

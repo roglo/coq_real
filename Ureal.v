@@ -897,8 +897,7 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
   rewrite Q.mul_pair; [ | easy | easy ].
   rewrite Nat.mul_1_l.
   rewrite Q.mul_pair; [ | easy | pauto ].
-  rewrite Nat.mul_1_r.
-  apply Q.le_refl.
+  now rewrite Nat.mul_1_r.
 Qed.
 
 Theorem B_gen_upper_bound_for_mul {r : radix} : ∀ u i n l,
@@ -1462,7 +1461,7 @@ split.
   specialize (H4 H); clear H.
   rewrite min_n_add, <- Nat.add_assoc, <- H3 in H4.
   eapply Q.le_trans; [ | apply H4 ].
-  apply Q.sub_le_mono; [ apply Q.le_refl | ].
+  apply Q.sub_le_mono; [ easy | ].
   apply Q.le_pair; [ pauto | pauto | ].
   rewrite Nat.mul_1_l, Nat.mul_1_r.
   apply Nat.pow_le_mono_r; [ easy | flia ].
@@ -2291,8 +2290,7 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
   rewrite Q.mul_pair; [ | easy | easy ].
   rewrite Nat.mul_1_l.
   rewrite Q.mul_pair; [ | easy | pauto ].
-  rewrite Nat.mul_1_r.
-  apply Q.le_refl.
+  now rewrite Nat.mul_1_r.
 Qed.
 
 Theorem A_upper_bound_for_add_3 {r : radix} : ∀ u i n,
@@ -2941,8 +2939,7 @@ assert (HA : (A i (i + k + 1) u ≥ 1 - 1 // rad ^ k)%Q). {
   -apply Q.le_pair; [ pauto | pauto | ].
    rewrite Nat.mul_1_l, Nat.add_1_r; cbn.
    now rewrite Nat.mul_comm.
-  -rewrite Nat.pow_add_r, Nat.pow_1_r, Nat.mul_comm.
-   apply Q.le_refl.
+  -now rewrite Nat.pow_add_r, Nat.pow_1_r, Nat.mul_comm.
 }
 replace (i + k + 2 - i - 1) with (k + 1) by flia.
 apply Q.le_trans with
@@ -2951,7 +2948,7 @@ apply Q.le_trans with
  replace rad with (rad * 1) at 2 by flia.
  rewrite <- Q.mul_pair; [ | easy | pauto ].
  remember 1%Q as x; rewrite Q.pair_diag; subst x; [ | easy ].
- rewrite Q.mul_1_l, Q.sub_add; apply Q.le_refl.
+ now rewrite Q.mul_1_l, Q.sub_add.
 -apply Q.add_le_mono; [ easy | ].
  apply Q.le_pair; [ pauto | pauto | ].
  rewrite Nat.mul_comm.
@@ -3457,7 +3454,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
    replace (2 * (rad - 1)) with (rad + (rad - 2)) by flia Hr.
    rewrite Q.pair_add_l, Q.pair_diag; [ | easy ].
    replace 1%Q with (1 // 1)%Q by easy.
-   rewrite <- Q.add_assoc, Q.frac_add_nat_l; [ apply Q.le_refl | ].
+   rewrite <- Q.add_assoc, Q.frac_add_nat_l; [ easy | ].
    eapply Q.le_trans; [ | apply Q.le_add_r ].
    -replace 0%Q with (0 // 1)%Q by easy.
     apply Q.le_pair; [ easy | pauto | flia Hr ].

@@ -33,7 +33,7 @@ rewrite Q.frac_small. 2: {
    apply Q.le_pair_mono_l; split; [ pauto | now apply Nat_pow_ge_1 ].
   -apply Q.sub_lt, Q.lt_0_pair; pauto.
 }
-apply Q.sub_le_mono; [ apply Q.le_refl | ].
+apply Q.sub_le_mono; [ easy | ].
 apply Q.le_pair_mono_l; split; [ apply Nat.neq_0_lt_0; pauto | ].
 apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
 Qed.
@@ -145,7 +145,7 @@ destruct (Q.lt_le_dec x (1 // rad ^ s)%Q) as [H5| H5].
   rewrite (Q.frac_small (1 - 1 // rad ^ s)%Q) in AA1. 2: {
     split.
     -eapply Q.le_trans; [ apply H4 | ].
-     apply Q.sub_le_mono; [ apply Q.le_refl | ].
+     apply Q.sub_le_mono; [ easy | ].
      apply Q.le_pair; [ pauto | pauto | flia ].
     -apply Q.sub_lt, Q.lt_0_pair; pauto.
   }
@@ -187,7 +187,7 @@ rewrite Q.intg_small; [ easy | ].
 split; [ easy | ].
 apply Q.lt_sub_lt_add_r.
 replace (1 // 1)%Q with (1 + 0)%Q by easy.
-apply Q.add_le_lt_mono; [ apply Q.le_refl | ].
+apply Q.add_le_lt_mono; [ easy | ].
 now apply Q.mul_pos_cancel_r.
 Qed.
 
@@ -509,8 +509,7 @@ eapply Q.le_trans. {
   apply Q.le_0_pair.
 }
 rewrite Q.pair_sub_l; [ | flia H4 ].
-rewrite Q.sub_add.
-apply Q.le_refl.
+now rewrite Q.sub_add.
 Qed.
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
@@ -690,7 +689,7 @@ apply (Q.lt_le_trans _ ((rad - 2) // rad + 2 // rad)%Q). {
 }
 rewrite <- Q.pair_add_l.
 rewrite Nat.sub_add; [ | easy ].
-rewrite Q.pair_diag; [ apply Q.le_refl | easy ].
+now rewrite Q.pair_diag.
 Qed.
 
 (* special case of sum_3_all_fA_true_8_not_8 *)
@@ -858,8 +857,7 @@ destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
     }
     rewrite Q.mul_sub_distr_l, Q.mul_1_r.
     eapply Q.lt_le_trans; [ now apply Q.sub_lt | ].
-    rewrite <- Q.pair_mul_l, Hr2.
-    apply Q.le_refl.
+    now rewrite <- Q.pair_mul_l, Hr2.
   }
   destruct (Nat.eq_dec u3 2) as [Hu32| Hu32]. {
     exfalso; move Hu32 at top; subst u3.
@@ -1176,8 +1174,7 @@ destruct
     rewrite Q.sub_pair_pos; [ | easy | easy | flia ].
     do 2 rewrite Nat.mul_1_l.
     replace (2 * 2 - 1) with 3 by easy.
-    rewrite (Q.mul_pair_den_num _ 2 1); [ | easy ].
-    apply Q.le_refl.
+    now rewrite (Q.mul_pair_den_num _ 2 1).
   }
   destruct (Nat.eq_dec x 2) as [Hx2| Hx2]. {
     exfalso; clear Hx0 Hx1.
@@ -1969,7 +1966,7 @@ apply (Q.lt_le_trans _ (1 * 1 // 2)%Q). 2: {
   rewrite Q.mul_1_l, Hr2.
   remember (P v (i + 2)) as p2 eqn:Hp2.
   destruct p2; [ rewrite Q.sub_0_r; apply (Q.le_pair_mono_l 1); flia | ].
-  destruct p2; [ apply Q.le_refl | ].
+  destruct p2; [ easy | ].
   specialize (P_le v (i + 2)) as H3.
   flia Hr2 Hp2 H3.
 }
@@ -2972,7 +2969,7 @@ destruct H1 as [H1| [H1| H1]].
     now apply Nat.mul_le_mono_r, Nat_pow_ge_1.
    -apply Q.sub_lt, Q.lt_0_pair; pauto.
  }
- apply Q.sub_le_mono; [ apply Q.le_refl | ].
+ apply Q.sub_le_mono; [ easy | ].
  apply Q.le_pair; [ pauto | pauto | ].
  rewrite Nat.mul_1_l, Nat.mul_1_r.
  apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
@@ -2987,7 +2984,7 @@ destruct H1 as [H1| [H1| H1]].
      apply Nat.mul_le_mono_r, rad_pow_min_n.
     -apply Q.sub_lt, Q.lt_0_pair; pauto.
   }
-  apply Q.sub_le_mono; [ apply Q.le_refl | ].
+  apply Q.sub_le_mono; [ easy | ].
   apply Q.le_pair; [ pauto | pauto | ].
   rewrite Nat.mul_1_r.
   apply (le_trans _ (rad ^ S (S k))).
@@ -3010,7 +3007,7 @@ destruct H1 as [H1| [H1| H1]].
     -apply Q.sub_lt, Q.lt_0_pair.
      destruct (le_dec (i + j + 1) (min_n i k - 1)); pauto.
   }
-  apply Q.sub_le_mono; [ apply Q.le_refl | ].
+  apply Q.sub_le_mono; [ easy | ].
   apply Q.le_pair; [ pauto | pauto | ].
   rewrite Nat.mul_1_r.
   destruct (le_dec (i + j + 1) (min_n i k - 1)) as [H1| H1].
