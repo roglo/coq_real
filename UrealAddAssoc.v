@@ -559,6 +559,11 @@ induction k. {
   move Hm1 before Hmz.
   specialize (all_fA_ge_1_ε_carry u i Hau 1) as H2.
 ...
+Check A_upper_bound_for_adds.
+rewrite H2 in Hc2.
+rewrite A_split_first in Hc2; [ | min_n_ge ].
+replace (S (i + 1)) with (i + 2) in Hc2 by easy.
+...
   destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m)) as [H1| H1]. {
     exfalso.
 ...
