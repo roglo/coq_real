@@ -391,7 +391,7 @@ destruct (zerop (Q.intg (Q.frac (A i n u) + Q.frac (B i n u 1)))) as [H1| H1].
 Qed.
 
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ m i u,
-  0 < m ≤ rad ^ 2
+  0 < m ≤ rad * 3
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, Q.intg (A i (min_n i k + l) u) = Q.intg (A i (min_n i k) u).
@@ -410,13 +410,9 @@ assert (Hun : ∀ l, u (n + l) < rad ^ (n + l - i)). {
   }
   rewrite Nat.mul_comm.
   apply Nat.mul_le_mono; [ flia | ].
-(**)
   rewrite Hn; unfold min_n.
-...
   eapply le_trans; [ apply Hmr | ].
-  rewrite Hn; unfold min_n.
   do 2 rewrite Nat.mul_add_distr_l.
-  replace (rad * 3) with (rad + rad + rad) by flia.
   destruct rad; [ easy | cbn; flia ].
 }
 assert (Hin : i + 1 ≤ n) by (rewrite Hn; min_n_ge).
@@ -462,6 +458,7 @@ specialize (frac_ge_if_all_fA_ge_1_ε_for_add m u i) as H1.
 assert (H : 0 < m ≤ rad ^ 2). {
   split; [ easy | ].
   eapply le_trans; [ apply Hmr | ].
+...
   destruct rad; [ easy | cbn; flia ].
 }
 specialize (proj1 (H1 H Hur) Hut k) as H2; clear H1 H; rename H2 into H1.
@@ -505,6 +502,8 @@ apply (Q.lt_le_trans _ (1 + u (n + l)%nat // rad ^ p)%Q).
    apply Nat.mul_le_mono_l.
    now apply Nat_pow_ge_1.
 Qed.
+
+...
 
 Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ m i u,
   (∀ k, u (i + k) ≤ m * (rad - 1))
