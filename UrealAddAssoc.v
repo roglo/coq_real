@@ -539,6 +539,26 @@ apply Nat.neq_0_lt_0 in Hmz.
 induction k. {
   rewrite Nat.add_0_r.
   specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2, Hc2).
+  destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
+    move Hm1 at top; subst m; clear Hmz Hu2.
+    replace j with 1 in Hu1 by flia Hj; clear j Hj.
+    rewrite Nat.mul_1_l in Hur, Hu1 |-*.
+    specialize (all_fA_ge_1_ε_P_999 u i Hau 1) as H1.
+    replace (i + 1 + 1) with (i + 2) in H1 by flia.
+    unfold P, d2n, prop_carr, dig in H1.
+    specialize (carry_upper_bound_for_adds 1 u i (Nat.neq_succ_0 _)) as H2.
+    assert (H : ∀ k, u (i + k + 1) ≤ 1 * (rad - 1)). {
+      now intros; rewrite <- Nat.add_assoc, Nat.mul_1_l.
+    }
+    specialize (H2 H 2); clear H.
+    apply Nat.lt_1_r in H2; rewrite H2, Nat.add_0_r in H1.
+    rewrite Nat.mod_small in H1; [ easy | ].
+    specialize (Hur 2) as H3.
+    flia Hr H3.
+  }
+  move Hm1 before Hmz.
+  destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m)) as [H1| H1]. {
+    exfalso.
 ...
 
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
