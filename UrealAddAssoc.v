@@ -529,9 +529,6 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hau * Hj Hu1 *.
-(* faux : si m=1, alors j=1 mais après un 9, je peux avoir des 9, un 8 et
-   une infinité de 18 et non pas seulement une infinité de 9 *)
-...
 destruct (zerop m) as [Hmz| Hmz]. {
   rewrite Hmz in Hur |-*.
   specialize (Hur (k + 2)) as H1.
