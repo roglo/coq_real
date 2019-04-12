@@ -538,7 +538,7 @@ destruct (zerop m) as [Hmz| Hmz]. {
 apply Nat.neq_0_lt_0 in Hmz.
 induction k. {
   rewrite Nat.add_0_r.
-  specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2, Hc2).
+  specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2, Hc1).
   destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
     move Hm1 at top; subst m; clear Hmz Hu2.
     replace j with 1 in Hu1 by flia Hj; clear j Hj.
@@ -557,10 +557,27 @@ induction k. {
     flia Hr H3.
   }
   move Hm1 before Hmz.
+  destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m)) as [H1| H1]. {
+    exfalso; clear Hu2; rename H1 into Hu2.
+    specialize (P_999_after_7_ge_17 m u (i + 1) Hmr) as H2.
+    replace (i + 1 + 1) with (i + 2) in H2 by flia.
+    replace (i + 1 + 2) with (i + 3) in H2 by flia.
+    assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
+      now intros; rewrite <- Nat.add_assoc.
+    }
+    specialize (H2 H); clear H.
+    assert (H : ∀ k, fA_ge_1_ε u (i + 1) k = true). {
+      now intros; apply A_ge_1_add_r_true_if.
+    }
+    specialize (H2 H (m - 1)); clear H.
+    assert (H : 1 ≤ m - 1 ≤ m) by flia Hmz Hm1.
+    specialize (H2 H Hu2); clear H.
+    destruct H2 as (Hu3, Hc2).
+    move Hc2 before Hc1.
+...
   specialize (all_fA_ge_1_ε_carry u i Hau 1) as H2.
   apply Nat.le_antisymm; [ apply Hur | ].
 ...
-  destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m)) as [H1| H1]. {
     exfalso.
     rewrite H2 in Hc2.
     rewrite A_split_first in Hc2; [ | min_n_ge ].
