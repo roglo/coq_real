@@ -443,7 +443,7 @@ apply (lt_le_trans _ (rad * (m - 1) + carry u i + 1)).
  *destruct m; [ easy | cbn; flia ].
 Qed.
 
-Theorem P_999_after_7_ge {r : radix} : ∀ m u i,
+Theorem P_999_after_7_ge_17 {r : radix} : ∀ m u i,
   m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
@@ -507,8 +507,6 @@ rewrite Q.sub_add.
 apply Q.le_refl.
 Qed.
 
-...
-
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
   m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
@@ -528,41 +526,7 @@ destruct (zerop m) as [Hmz| Hmz]. {
 apply Nat.neq_0_lt_0 in Hmz.
 induction k. {
   rewrite Nat.add_0_r.
-  specialize (all_fA_ge_1_ε_P_999 u i Hau 0) as H1.
-  rewrite Nat.add_0_r in H1.
-  unfold P, d2n, prop_carr, dig in H1.
-  rewrite Hu1 in H1.
-  specialize (carry_upper_bound_for_adds m u i Hmz) as Hcm.
-  assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
-    now intros; rewrite <- Nat.add_assoc.
-  }
-  specialize (Hcm H); clear H.
-  rewrite Nat.mod_small in H1. 2: {
-    specialize (Hcm 1) as H2.
-    flia Hmr H2.
-  }
-  rewrite <- Nat_sub_sub_distr in H1. 2: {
-    split; [ | easy ].
-    apply Nat.lt_le_incl, Hcm.
-  }
-  assert (H2 : carry u (i + 1) = m - 1) by flia H1 Hmz Hmr.
-  unfold carry in H2.
-  apply Q.intg_interv in H2; [ | easy ].
-  rewrite A_split_first in H2; [ | min_n_ge ].
-  replace (S (i + 1)) with (i + 2) in H2 by easy.
-  destruct H2 as (H2, H3).
-  apply Nat.le_antisymm; [ apply Hur | ].
-  apply Nat.nlt_ge; intros H4.
-  apply Q.nlt_ge in H2; apply H2; clear H2.
-  remember (min_n (i + 1) (carry_cases u (i + 1))) as n eqn:Hn.
-  rewrite <- (Q.mul_pair_den_num _ 1); [ | easy ].
-  rewrite <- Q.mul_add_distr_r.
-  apply (Q.mul_lt_mono_pos_r (rad // 1)%Q); [ now apply Q.lt_0_pair | ].
-  rewrite <- Q.mul_assoc.
-  rewrite Q.mul_inv_pair; [ | easy | easy ].
-  rewrite Q.mul_1_r.
-  rewrite <- Q.pair_mul_r.
-Check A_upper_bound_for_adds.
+  specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau Hu1) as H42.
 ...
 
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
