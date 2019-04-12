@@ -526,7 +526,33 @@ destruct (zerop m) as [Hmz| Hmz]. {
 apply Nat.neq_0_lt_0 in Hmz.
 induction k. {
   rewrite Nat.add_0_r.
-  specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau Hu1) as H42.
+  specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau Hu1) as Hu2.
+  specialize (all_fA_ge_1_ε_P_999 u i Hau 1) as H1.
+  replace (i + 1 + 1) with (i + 2) in H1 by flia.
+  unfold P, d2n, prop_carr, dig in H1.
+  destruct (ge_dec m 2) as [Hm2| Hm2]. {
+    rewrite (Nat_mod_less_small (m - 2)) in H1. 2: {
+      split. {
+        apply Nat.le_sub_le_add_r in Hu2.
+        apply (Nat.add_le_mono_r _ _ rad).
+        replace ((m - 2) * rad + rad) with ((m - 1) * rad). 2: {
+          rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+          rewrite Nat.mul_sub_distr_r.
+          replace (2 * rad) with (rad + rad) by flia.
+          rewrite Nat.sub_add_distr.
+          rewrite Nat.sub_add; [ easy | ].
+          replace (m * rad - rad) with ((m - 1) * rad). 2: {
+            now rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+          }
+          replace rad with (1 * rad) at 1 by flia.
+          apply Nat.mul_le_mono_r; flia Hm2.
+        }
+        eapply le_trans; [ apply Hu2 | ].
+        rewrite <- Nat.add_assoc.
+        apply Nat.add_le_mono_l.
+        flia Hmr.
+      }
+      replace (m - 2 + 1) with (m - 1) by flia Hm2.
 ...
 
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
