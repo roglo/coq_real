@@ -448,12 +448,17 @@ Theorem P_999_after_7_ge_17 {r : radix} : ∀ m u i,
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → u (i + 1) = rad - m
-  → u (i + 2) ≥ (m - 1) * rad - m.
+  → u (i + 2) ≥ (m - 1) * rad - m ∧ carry u (i + 1) = m - 1.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hau Hu1 *.
-destruct (zerop m) as [Hmz| Hmz]; [ rewrite Hmz; cbn; flia | ].
+destruct (zerop m) as [Hmz| Hmz]. {
+  rewrite Hmz, Nat.sub_0_r in Hu1.
+  specialize (Hur 1) as H1.
+  rewrite Hmz, Nat.mul_0_l, Hu1 in H1.
+  flia Hr H1.
+}
 apply Nat.neq_0_lt_0 in Hmz.
 specialize (all_fA_ge_1_ε_P_999 u i Hau 0) as H1.
 rewrite Nat.add_0_r in H1.
@@ -473,6 +478,7 @@ rewrite <- Nat_sub_sub_distr in H1. 2: {
   apply Nat.lt_le_incl, Hcm.
 }
 assert (H2 : carry u (i + 1) = m - 1) by flia H1 Hmz Hmr.
+split; [ | easy ].
 unfold carry in H2.
 apply Q.intg_interv in H2; [ | easy ].
 rewrite A_split_first in H2; [ | min_n_ge ].
@@ -526,7 +532,7 @@ destruct (zerop m) as [Hmz| Hmz]. {
 apply Nat.neq_0_lt_0 in Hmz.
 induction k. {
   rewrite Nat.add_0_r.
-  specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau Hu1) as Hu2.
+  specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau Hu1) as (Hu2, Hc2).
 ...
 
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
