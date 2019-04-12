@@ -391,7 +391,7 @@ destruct (zerop (Q.intg (Q.frac (A i n u) + Q.frac (B i n u 1)))) as [H1| H1].
 Qed.
 
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ m i u,
-  0 < m ≤ rad
+  0 < m ≤ rad ^ 2
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, Q.intg (A i (min_n i k + l) u) = Q.intg (A i (min_n i k) u).
@@ -410,6 +410,9 @@ assert (Hun : ∀ l, u (n + l) < rad ^ (n + l - i)). {
   }
   rewrite Nat.mul_comm.
   apply Nat.mul_le_mono; [ flia | ].
+(**)
+  rewrite Hn; unfold min_n.
+...
   eapply le_trans; [ apply Hmr | ].
   rewrite Hn; unfold min_n.
   do 2 rewrite Nat.mul_add_distr_l.
@@ -503,8 +506,8 @@ apply (Q.lt_le_trans _ (1 + u (n + l)%nat // rad ^ p)%Q).
    now apply Nat_pow_ge_1.
 Qed.
 
-Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ i u,
-  (∀ k, u (i + k) ≤ 3 * (rad - 1))
+Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ m i u,
+  (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i 0) u).
 Proof.
@@ -517,6 +520,9 @@ replace (min_n i k) with (min_n i 0 + rad * k). 2: {
   do 3 rewrite Nat.mul_add_distr_l.
   apply Nat.add_shuffle0.
 }
+apply (all_fA_ge_1_ε_NQintg_A m).
+...
+Check all_fA_ge_1_ε_NQintg_A.
 ...
 now apply all_fA_ge_1_ε_NQintg_A.
 Qed.
