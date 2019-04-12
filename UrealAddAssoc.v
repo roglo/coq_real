@@ -447,23 +447,33 @@ Theorem P_999_after_7_ge_17 {r : radix} : ∀ m u i,
   m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
-  → u (i + 1) = rad - m
+  → ∀ j, 1 ≤ j ≤ m
+  → u (i + 1) = j * rad - m
   → u (i + 2) ≥ (m - 1) * rad - m ∧ carry u (i + 1) = m - 1.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hmr Hur Hau Hu1 *.
+intros Hmr Hur Hau * Hj Hu1 *.
 destruct (zerop m) as [Hmz| Hmz]. {
   rewrite Hmz, Nat.sub_0_r in Hu1.
   specialize (Hur 1) as H1.
   rewrite Hmz, Nat.mul_0_l, Hu1 in H1.
-  flia Hr H1.
+  apply Nat.le_0_r in H1.
+  apply Nat.eq_mul_0 in H1.
+  destruct H1 as [H1| H1]; [ flia Hj H1 | flia Hr H1  ].
 }
 apply Nat.neq_0_lt_0 in Hmz.
 specialize (all_fA_ge_1_ε_P_999 u i Hau 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold P, d2n, prop_carr, dig in H1.
 rewrite Hu1 in H1.
+replace j with (j - 1 + 1) in H1 by flia Hj.
+rewrite Nat.mul_add_distr_r, Nat.mul_1_l in H1.
+rewrite <- Nat.add_sub_assoc in H1; [ | easy ].
+rewrite <- Nat.add_assoc in H1.
+rewrite Nat.add_comm in H1.
+rewrite Nat.mod_add in H1; [ | easy ].
+rewrite Nat.add_comm in H1.
 specialize (carry_upper_bound_for_adds m u i Hmz) as Hcm.
 assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
   now intros; rewrite <- Nat.add_assoc.
@@ -472,10 +482,6 @@ specialize (Hcm H); clear H.
 rewrite Nat.mod_small in H1. 2: {
   specialize (Hcm 1) as H2.
   flia Hmr H2.
-}
-rewrite <- Nat_sub_sub_distr in H1. 2: {
-  split; [ | easy ].
-  apply Nat.lt_le_incl, Hcm.
 }
 assert (H2 : carry u (i + 1) = m - 1) by flia H1 Hmz Hmr.
 split; [ | easy ].
@@ -516,12 +522,16 @@ Theorem P_999_after_7 {r : radix} : ∀ m u i,
   m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
-  → u (i + 1) = rad - m
+  → ∀ j, 1 ≤ j ≤ m
+  → u (i + 1) = j * rad - m
   → ∀ k, u (i + k + 2) = m * (rad - 1).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hmr Hur Hau Hu1 *.
+intros Hmr Hur Hau * Hj Hu1 *.
+(* faux : si m=1, alors j=1 mais après un 9, je peux avoir des 9, un 8 et
+   une infinité de 18 et non pas seulement une infinité de 9 *)
+...
 destruct (zerop m) as [Hmz| Hmz]. {
   rewrite Hmz in Hur |-*.
   specialize (Hur (k + 2)) as H1.
@@ -531,7 +541,7 @@ destruct (zerop m) as [Hmz| Hmz]. {
 apply Nat.neq_0_lt_0 in Hmz.
 induction k. {
   rewrite Nat.add_0_r.
-  specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau Hu1) as (Hu2, Hc2).
+  specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2, Hc2).
 ...
 
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
