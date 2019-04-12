@@ -390,14 +390,15 @@ destruct (zerop (Q.intg (Q.frac (A i n u) + Q.frac (B i n u 1)))) as [H1| H1].
  now destruct (Q.lt_le_dec (Q.frac (A i n u) + B i n u 1) 1).
 Qed.
 
-Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ i u,
-  (∀ k, u (i + k) ≤ 3 * (rad - 1))
+Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ m i u,
+  m ≤ rad
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, Q.intg (A i (min_n i k + l) u) = Q.intg (A i (min_n i k) u).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur Hut k l.
+intros Hmr Hur Hut k l.
 remember (min_n i k) as n eqn:Hn.
 assert (Hun : ∀ l, u (n + l) < rad ^ (n + l - i)). {
   rename l into l'; intros.
@@ -409,7 +410,11 @@ assert (Hun : ∀ l, u (n + l) < rad ^ (n + l - i)). {
   }
   rewrite Nat.mul_comm.
   apply Nat.mul_le_mono; [ flia | ].
-  rewrite Hn; min_n_ge.
+  eapply le_trans; [ apply Hmr | ].
+  rewrite Hn; unfold min_n.
+  do 2 rewrite Nat.mul_add_distr_l.
+  replace (rad * 3) with (rad + rad + rad) by flia.
+  destruct rad; [ easy | cbn; flia ].
 }
 assert (Hin : i + 1 ≤ n) by (rewrite Hn; min_n_ge).
 symmetry; apply Nat.le_antisymm. {
@@ -450,6 +455,10 @@ apply Q.add_cancel_r in H3.
 unfold B in H3.
 rewrite Nat.add_sub in H3.
 rewrite summation_only_one in H3.
+About frac_ge_if_all_fA_ge_1_ε_for_add.
+...
+specialize (frac_ge_if_all_fA_ge_1_ε_for_add u i) as H1.
+...
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε_for_add u i Hur) Hut k) as H1.
 rewrite <- Hn in H1.
 specialize (H1 (l + 1)) as H2.

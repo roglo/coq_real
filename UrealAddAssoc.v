@@ -574,8 +574,17 @@ induction k. {
     specialize (H2 H Hu2); clear H.
     destruct H2 as (Hu3, Hc2).
     move Hc2 before Hc1.
-...
   specialize (all_fA_ge_1_ε_carry u i Hau 1) as H2.
+  specialize (all_fA_ge_1_ε_carry u i Hau 2) as H3.
+...
+Search (Q.intg _ = Q.intg _).
+all_fA_ge_1_ε_NQintg_A:
+  ∀ (r : radix) (i : nat) (u : nat → nat),
+    (∀ k : nat, u (i + k) ≤ 3 * (rad - 1))
+    → (∀ k : nat, fA_ge_1_ε u i k = true)
+      → ∀ k l : nat,
+          Q.intg (A i (min_n i k + l) u) = Q.intg (A i (min_n i k) u)
+...
   apply Nat.le_antisymm; [ apply Hur | ].
 ...
     exfalso.
