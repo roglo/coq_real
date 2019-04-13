@@ -391,7 +391,7 @@ destruct (zerop (Q.intg (Q.frac (A i n u) + Q.frac (B i n u 1)))) as [H1| H1].
 Qed.
 
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ m i u,
-  0 < m ≤ rad * 3
+  0 < m ≤ min (rad ^ 2) (3 * rad)
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, Q.intg (A i (min_n i k + l) u) = Q.intg (A i (min_n i k) u).
@@ -458,7 +458,6 @@ specialize (frac_ge_if_all_fA_ge_1_ε_for_add m u i) as H1.
 assert (H : 0 < m ≤ rad ^ 2). {
   split; [ easy | ].
   eapply le_trans; [ apply Hmr | ].
-...
   destruct rad; [ easy | cbn; flia ].
 }
 specialize (proj1 (H1 H Hur) Hut k) as H2; clear H1 H; rename H2 into H1.
@@ -496,6 +495,7 @@ apply (Q.lt_le_trans _ (1 + u (n + l)%nat // rad ^ p)%Q).
    ++cbn; rewrite Nat.mul_assoc.
      replace m with (m * 1) by flia.
      apply Nat.mul_le_mono; [ | now apply Nat_pow_ge_1 ].
+...
      destruct rad; [ easy | cbn; flia Hmr ].
   *apply Nat.sub_le_mono_r; cbn.
    replace rad with (rad * 1) at 1 by flia.
