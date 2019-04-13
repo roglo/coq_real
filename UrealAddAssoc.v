@@ -576,26 +576,41 @@ induction k. {
     specialize (H2 H Hu2); clear H.
     destruct H2 as (Hu3, Hc2).
     move Hc2 before Hc1.
-  specialize (all_fA_ge_1_ε_carry u i Hau 1) as H2.
+    specialize (all_fA_ge_1_ε_carry u i Hau 1) as H2.
+    rewrite A_split_first in H2; [ | min_n_ge ].
+    replace (S (i + 1)) with (i + 2) in H2 by flia.
+    rewrite Hc1, Hu2 in H2.
+    rewrite Q.intg_add_cond in H2; [ | apply Q.le_0_pair | ]. 2: {
+      now apply Q.le_0_mul_r.
+    }
+...
+    rewrite Q.pair_sub_l in H2. 2: {
+      apply (le_trans _ (1 * rad)); [ now rewrite Nat.mul_1_l | ].
+      apply Nat.mul_le_mono_r; flia Hmz Hm1.
+    }
+    rewrite Q.pair_mul_r in H2.
+    rewrite Q.pair_diag in H2; [ | easy ].
+    rewrite Q.mul_1_r in H2.
+    rewrite Q.intg_add_cond in H2; cycle 1. {
+      apply Q.le_0_sub.
+      apply Q.le_pair; [ easy | easy | ].
+      apply Nat.mul_le_mono; [ easy | flia Hmz Hm1 ].
+    } {
+      now apply Q.le_0_mul_r.
+    }
+Search (Q.intg (_ - _)%Q).
+...
 (*
   specialize (all_fA_ge_1_ε_carry u i Hau 2) as H3.
 rewrite <- (all_fA_ge_1_ε_NQintg_A 3) with (l := rad) in H2.
 *)
-rewrite A_split_first in H2; [ | min_n_ge ].
-replace (S (i + 1)) with (i + 2) in H2 by flia.
 (*
 replace (i + 2) with (i + 1 + 1) in H3 at 3 by flia.
 rewrite min_n_add_l, Nat.mul_1_r in H3.
 *)
-rewrite Hc1, Hu2 in H2.
 (*
 rewrite Hc2 in H3.
 *)
-rewrite Q.pair_sub_l in H2.
-rewrite Q.pair_mul_r in H2.
-rewrite Q.pair_diag in H2; [ | easy ].
-rewrite Q.mul_1_r in H2.
-rewrite Q.intg_add_cond in H2.
 ...
 rewrite <- Q.add_sub_swap in H2.
 rewrite <- Q.add_sub_assoc in H2.
