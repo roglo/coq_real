@@ -391,7 +391,7 @@ destruct (zerop (Q.intg (Q.frac (A i n u) + Q.frac (B i n u 1)))) as [H1| H1].
 Qed.
 
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ m i u,
-  0 < m ≤ min (rad ^ 2) (3 * rad)
+  0 < m ≤ rad ^ 3
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, Q.intg (A i (min_n i k + l) u) = Q.intg (A i (min_n i k) u).
@@ -400,6 +400,7 @@ intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hut k l.
 remember (min_n i k) as n eqn:Hn.
+...
 assert (Hun : ∀ l, u (n + l) < rad ^ (n + l - i)). {
   rename l into l'; intros.
   replace (n + l) with (i + (n + l - i)) at 1 by (rewrite Hn; min_n_ge).
