@@ -604,8 +604,7 @@ induction k. {
     rewrite (Q.intg_small (_ * _)%Q) in H2; [ | easy ].
     rewrite (Q.frac_small (_ * _)%Q) in H2; [ | easy ].
     clear H.
-...
-        apply Q.lt_0_mul.
+    rewrite Nat.add_0_r in H2.
 `...
     rewrite Q.pair_sub_l in H2. 2: {
       apply (le_trans _ (1 * rad)); [ now rewrite Nat.mul_1_l | ].
