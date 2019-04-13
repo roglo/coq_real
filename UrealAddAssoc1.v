@@ -2531,8 +2531,8 @@ destruct (Q.lt_le_dec (A i nj u + A i nj v)%Q 1) as [Hajv| Hajv].
    eapply Q.le_trans.
    -apply (B_upper_bound_for_adds' 2).
     +split; [ pauto | cbn; rewrite Nat.mul_1_r ].
-...
-     replace 2 with (2 * 1) by easy.
+     replace 2 with (2 * (1 * 1)) by easy.
+     apply Nat.mul_le_mono; [ easy | ].
      now apply Nat.mul_le_mono.
     +flia Hinij.
     +intros p Hp; replace p with (i + (p - i)) by flia Hp.
@@ -2609,9 +2609,10 @@ destruct (Q.lt_le_dec (A i nj u + A i nj v)%Q 1) as [Hajv| Hajv].
  apply Q.lt_sub_lt_add_r, Q.add_lt_mono_l.
  specialize (B_upper_bound_for_adds' 2 v i nj (rad * (k - j))) as H1.
  rewrite <- Hsj in H1.
- assert (H : 0 < 2 ≤ rad ^ 2). {
+ assert (H : 0 < 2 ≤ rad ^ 3). {
    split; [ pauto | cbn; rewrite Nat.mul_1_r ].
-   replace 2 with (2 * 1) by easy.
+   replace 2 with (2 * (1 * 1)) by easy.
+   apply Nat.mul_le_mono; [ easy | ].
    now apply Nat.mul_le_mono.
  }
  specialize (H1 H); clear H.

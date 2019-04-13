@@ -269,7 +269,9 @@ assert (Hmr' : ∀ l, u (i + k + l) ≤ 3 * (rad - 1)). {
 assert (Haut' : ∀ l, fA_ge_1_ε u (i + k) l = true). {
   intros l; apply A_ge_1_add_r_true_if, Haut.
 }
-rewrite <- (all_fA_ge_1_ε_NQintg_A (i + k) u Hmr' Haut' 0 rad).
+assert (H : 0 < 3 ≤ 4) by flia.
+rewrite <- (all_fA_ge_1_ε_NQintg_A 3 (i + k) u H Hmr' Haut' 0 rad).
+clear H.
 unfold carry, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u (i + k + 1))) as [H1| H1]. 2: {
   destruct H1 as (j & Hjj & Hj).
@@ -576,6 +578,7 @@ induction k. {
     move Hc2 before Hc1.
   specialize (all_fA_ge_1_ε_carry u i Hau 1) as H2.
   specialize (all_fA_ge_1_ε_carry u i Hau 2) as H3.
+About all_fA_ge_1_ε_NQintg_A.
 ...
 Search (Q.intg _ = Q.intg _).
 all_fA_ge_1_ε_NQintg_A:
