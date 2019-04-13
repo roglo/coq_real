@@ -595,9 +595,15 @@ rewrite Q.pair_sub_l in H2.
 rewrite Q.pair_mul_r in H2.
 rewrite Q.pair_diag in H2; [ | easy ].
 rewrite Q.mul_1_r in H2.
+rewrite Q.intg_add_cond in H2.
+...
+rewrite <- Q.add_sub_swap in H2.
+rewrite <- Q.add_sub_assoc in H2.
 rewrite <- Q.sub_sub_distr in H2.
-Search (Q.intg (_ - _)).
 remember (A (i + 2) (min_n (i + 1) 0) u) as a eqn:Ha.
+Search (Q.intg (_ - _))%Q.
+rewrite Q.intg_sub in H2.
+...
 specialize (Q.intg_sub_nat_l_lt (m - 1)) as H3.
 specialize (H3 (m // rad - a * 1 // rad)%Q).
 rewrite <- H2 in H3.
