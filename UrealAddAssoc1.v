@@ -391,7 +391,7 @@ destruct (zerop (Q.intg (Q.frac (A i n u) + Q.frac (B i n u 1)))) as [H1| H1].
 Qed.
 
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ m i u,
-  0 < m ≤ 3 * rad
+  0 < m ≤ 4
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, Q.intg (A i (min_n i k + l) u) = Q.intg (A i (min_n i k) u).
@@ -413,7 +413,8 @@ assert (Hun : ∀ l, u (n + l) < rad ^ (n + l - i)). {
   rewrite Hn; unfold min_n.
   eapply le_trans; [ apply Hmr | ].
   do 2 rewrite Nat.mul_add_distr_l.
-  destruct rad; [ easy | cbn; flia ].
+  destruct rad as [| rr]; [ easy | cbn ].
+  destruct rr; [ flia Hr | cbn; flia ].
 }
 assert (Hin : i + 1 ≤ n) by (rewrite Hn; min_n_ge).
 symmetry; apply Nat.le_antisymm. {
@@ -458,7 +459,7 @@ specialize (frac_ge_if_all_fA_ge_1_ε_for_add m u i) as H1.
 assert (H : 0 < m ≤ rad ^ 3). {
   split; [ easy | ].
   eapply le_trans; [ apply Hmr | ].
-  rewrite Nat.mul_comm.
+  apply (le_trans _ (rad * 3)); [ flia Hr | ].
   apply Nat.lt_le_incl, Nat_mul_lt_pow; [ easy | pauto ].
 }
 specialize (proj1 (H1 H Hur) Hut k) as H2; clear H1 H; rename H2 into H1.
@@ -496,41 +497,35 @@ apply (Q.lt_le_trans _ (1 + u (n + l)%nat // rad ^ p)%Q).
    ++cbn; rewrite Nat.mul_assoc.
      replace m with (m * 1) by flia.
      apply Nat.mul_le_mono; [ | now apply Nat_pow_ge_1 ].
-...
      eapply le_trans; [ apply Hmr | ].
-...
-     destruct rad; [ easy | cbn; flia Hmr ].
+     destruct rad as [| rr]; [ easy | ].
+     destruct rr; [ flia Hr | cbn; flia ].
   *apply Nat.sub_le_mono_r; cbn.
    replace rad with (rad * 1) at 1 by flia.
    apply Nat.mul_le_mono_l.
    now apply Nat_pow_ge_1.
 Qed.
 
-...
-
 Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ m i u,
-  (∀ k, u (i + k) ≤ m * (rad - 1))
+  0 < m ≤ 4
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i 0) u).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur Hut k.
+intros Hm Hur Hut k.
 replace (min_n i k) with (min_n i 0 + rad * k). 2: {
   unfold min_n.
   rewrite Nat.add_0_r.
   do 3 rewrite Nat.mul_add_distr_l.
   apply Nat.add_shuffle0.
 }
-apply (all_fA_ge_1_ε_NQintg_A m).
-...
-Check all_fA_ge_1_ε_NQintg_A.
-...
-now apply all_fA_ge_1_ε_NQintg_A.
+now apply (all_fA_ge_1_ε_NQintg_A m).
 Qed.
 
 Theorem fA_lt_1_ε_NQintg_A {r : radix} : ∀ m i u j,
-  0 < m ≤ rad ^ 2
+  0 < m ≤ rad ^ 3
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, k < j → fA_ge_1_ε u i k = true)
   → fA_ge_1_ε u i j = false
@@ -1375,7 +1370,7 @@ destruct H4 as [H4| [H4| H4]].
    apply Q.le_antisymm in H5; [ | easy ].
    rewrite <- H5, Q.add_0_l.
    specialize (B_upper_bound_for_adds 1 u i 0 (rad * j)) as H1.
-   assert (H : 0 < 1 ≤ rad ^ 2). {
+   assert (H : 0 < 1 ≤ rad ^ 3). {
      split; [ pauto | now apply Nat_pow_ge_1 ].
    }
    specialize (H1 H); clear H.
@@ -1653,9 +1648,7 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ s)%Q 1) as [Har| Har].
  +rewrite Hni.
   apply (B_upper_bound_for_adds 1).
   *split; [ pauto | ].
-   rewrite Nat.pow_2_r.
-   replace 1 with (1 * 1) by easy.
-   now apply Nat.mul_le_mono.
+   destruct rad; [ easy | cbn; flia ].
   *intros p Hp; rewrite Nat.mul_1_l.
    replace p with (i + (p - i)) by flia Hp; apply Hu.
  +rewrite Nat.pow_1_r.
@@ -2040,7 +2033,7 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%Q 1) as [Hau1| Hau1].
    }
    specialize (B_upper_bound_for_adds 1 u i j rad) as H1.
    rewrite Nat.mul_1_l, <- Hnij in H1.
-   assert (H : 0 < 1 ≤ rad ^ 2). {
+   assert (H : 0 < 1 ≤ rad ^ 3). {
      split; [ pauto | now apply Nat_pow_ge_1 ].
    }
    specialize (H1 H); clear H.
@@ -2405,7 +2398,9 @@ remember (min_n i 0) as n eqn:Hn.
 remember (min_n i j) as nj eqn:Hnj.
 move nj before n; move Hnj before Hn.
 assert (Hii : Q.intg (A i nj (u ⊕ v)) = Q.intg (A i n (u ⊕ v))). {
-  specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as Hii.
+  specialize (all_fA_ge_1_ε_NQintg_A' 3 i (u ⊕ v)) as Hii.
+  assert (H : 0 < 3 ≤ 4) by flia.
+  specialize (Hii H); clear H.
   assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
     intros p.
     unfold "⊕"; replace 3 with (1 + 2) by easy.
@@ -2536,6 +2531,7 @@ destruct (Q.lt_le_dec (A i nj u + A i nj v)%Q 1) as [Hajv| Hajv].
    eapply Q.le_trans.
    -apply (B_upper_bound_for_adds' 2).
     +split; [ pauto | cbn; rewrite Nat.mul_1_r ].
+...
      replace 2 with (2 * 1) by easy.
      now apply Nat.mul_le_mono.
     +flia Hinij.
