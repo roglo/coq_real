@@ -583,7 +583,30 @@ induction k. {
     rewrite Q.intg_add_cond in H2; [ | apply Q.le_0_pair | ]. 2: {
       now apply Q.le_0_mul_r.
     }
+    assert (H : (0 ≤ A (i + 2) (min_n (i + 1) 0) u * 1 // rad < 1)%Q). {
+      split; [ now apply Q.le_0_mul_r | ].
+      apply (Q.mul_lt_mono_pos_r (rad // 1)%Q); [ now apply Q.lt_0_pair | ].
+      rewrite <- Q.mul_assoc, Q.mul_pair_den_num; [ | easy ].
+      rewrite Q.mul_1_r, Q.mul_1_l.
+      eapply Q.le_lt_trans. {
+        apply (A_upper_bound_for_adds m).
+        now intros; do 2 rewrite <- Nat.add_assoc.
+      }
+      apply (Q.lt_le_trans _ (m // 1)%Q). {
+        rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+        apply Q.sub_lt.
+        apply Q.mul_pos_cancel_l; [ | easy ].
+        apply Q.lt_0_pair; flia Hmz.
+      }
+      apply Q.le_pair; [ easy | easy | ].
+      now rewrite Nat.mul_1_r, Nat.mul_1_l.
+    }
+    rewrite (Q.intg_small (_ * _)%Q) in H2; [ | easy ].
+    rewrite (Q.frac_small (_ * _)%Q) in H2; [ | easy ].
+    clear H.
 ...
+        apply Q.lt_0_mul.
+`...
     rewrite Q.pair_sub_l in H2. 2: {
       apply (le_trans _ (1 * rad)); [ now rewrite Nat.mul_1_l | ].
       apply Nat.mul_le_mono_r; flia Hmz Hm1.
