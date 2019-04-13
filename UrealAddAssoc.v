@@ -577,15 +577,49 @@ induction k. {
     destruct H2 as (Hu3, Hc2).
     move Hc2 before Hc1.
   specialize (all_fA_ge_1_ε_carry u i Hau 1) as H2.
+(*
   specialize (all_fA_ge_1_ε_carry u i Hau 2) as H3.
 rewrite <- (all_fA_ge_1_ε_NQintg_A 3) with (l := rad) in H2.
+*)
 rewrite A_split_first in H2; [ | min_n_ge ].
 replace (S (i + 1)) with (i + 2) in H2 by flia.
+(*
 replace (i + 2) with (i + 1 + 1) in H3 at 3 by flia.
 rewrite min_n_add_l, Nat.mul_1_r in H3.
-remember (A (i + 2) (min_n (i + 1) 0 + rad) u) as a eqn:Ha.
+*)
 rewrite Hc1, Hu2 in H2.
+(*
 rewrite Hc2 in H3.
+*)
+rewrite Q.pair_sub_l in H2.
+rewrite Q.pair_mul_r in H2.
+rewrite Q.pair_diag in H2; [ | easy ].
+rewrite Q.mul_1_r in H2.
+rewrite <- Q.sub_sub_distr in H2.
+Search (Q.intg (_ - _)).
+remember (A (i + 2) (min_n (i + 1) 0) u) as a eqn:Ha.
+specialize (Q.intg_sub_nat_l_lt (m - 1)) as H3.
+specialize (H3 (m // rad - a * 1 // rad)%Q).
+rewrite <- H2 in H3.
+assert (H : (0 < m // rad - a * 1 // rad ≤ (m - 1) // 1)%Q). {
+split. {
+  apply Q.lt_0_sub.
+  replace (m // rad)%Q with (m // 1 * 1 // rad)%Q. 2: {
+    now apply Q.mul_pair_den_num.
+  }
+  apply Q.mul_lt_mono_pos_r; [ easy | ].
+  rewrite Ha.
+  eapply Q.le_lt_trans.
+  apply (A_upper_bound_for_adds m).
+  now intros; do 2 rewrite <- Nat.add_assoc.
+  rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+  apply Q.sub_lt.
+apply Q.mul_pos_cancel_r; [ easy | ].
+apply Q.lt_0_pair; flia Hmz.
+}
+(* chiasse de pute *)
+...
+specialize (H3 H).
 ...
 Search (Q.intg _ = Q.intg _).
 all_fA_ge_1_ε_NQintg_A:
