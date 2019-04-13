@@ -605,7 +605,12 @@ induction k. {
     rewrite (Q.frac_small (_ * _)%Q) in H2; [ | easy ].
     clear H.
     rewrite Nat.add_0_r in H2.
-`...
+    assert (H : Q.intg (((m - 1) * rad - m) // rad) = m - 2). {
+      apply Q.intg_interv; [ apply Q.le_0_pair | ].
+      split. {
+        apply Q.le_pair; [ easy | easy | ].
+        rewrite Nat.mul_1_l.
+...
     rewrite Q.pair_sub_l in H2. 2: {
       apply (le_trans _ (1 * rad)); [ now rewrite Nat.mul_1_l | ].
       apply Nat.mul_le_mono_r; flia Hmz Hm1.
