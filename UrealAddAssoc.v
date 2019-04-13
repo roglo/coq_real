@@ -578,7 +578,14 @@ induction k. {
     move Hc2 before Hc1.
   specialize (all_fA_ge_1_ε_carry u i Hau 1) as H2.
   specialize (all_fA_ge_1_ε_carry u i Hau 2) as H3.
-About all_fA_ge_1_ε_NQintg_A.
+rewrite <- (all_fA_ge_1_ε_NQintg_A 3) with (l := rad) in H2.
+rewrite A_split_first in H2; [ | min_n_ge ].
+replace (S (i + 1)) with (i + 2) in H2 by flia.
+replace (i + 2) with (i + 1 + 1) in H3 at 3 by flia.
+rewrite min_n_add_l, Nat.mul_1_r in H3.
+remember (A (i + 2) (min_n (i + 1) 0 + rad) u) as a eqn:Ha.
+rewrite Hc1, Hu2 in H2.
+rewrite Hc2 in H3.
 ...
 Search (Q.intg _ = Q.intg _).
 all_fA_ge_1_ε_NQintg_A:
