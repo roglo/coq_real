@@ -619,22 +619,36 @@ induction k. {
         }
         flia Hmr Hr.
       }
-...
-    rewrite Q.pair_sub_l in H2. 2: {
-      apply (le_trans _ (1 * rad)); [ now rewrite Nat.mul_1_l | ].
-      apply Nat.mul_le_mono_r; flia Hmz Hm1.
-    }
-    rewrite Q.pair_mul_r in H2.
-    rewrite Q.pair_diag in H2; [ | easy ].
-    rewrite Q.mul_1_r in H2.
-    rewrite Q.intg_add_cond in H2; cycle 1. {
-      apply Q.le_0_sub.
-      apply Q.le_pair; [ easy | easy | ].
+      rewrite <- (Q.pair_add_l _ 1).
+      apply Q.lt_pair; [ easy | easy | ].
+      rewrite Nat.mul_1_r, Nat.mul_comm.
+      replace (m - 2 + 1) with (m - 1) by flia Hmz Hm1.
+      apply Nat.sub_lt; [ | flia Hmz ].
+      replace m with (m * 1) at 1 by flia.
       apply Nat.mul_le_mono; [ easy | flia Hmz Hm1 ].
-    } {
-      now apply Q.le_0_mul_r.
     }
-Search (Q.intg (_ - _)%Q).
+    rewrite H in H2.
+    rewrite Q.frac_of_intg in H2; [ | apply Q.le_0_pair ].
+    rewrite H in H2; clear H.
+    rewrite Q.sub_pair_pos in H2; [ | easy | easy | ]. 2: {
+      rewrite Nat.mul_1_r, Nat.mul_sub_distr_l.
+      rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+      do 2 apply Nat.le_add_le_sub_r.
+      rewrite <- Nat.add_assoc.
+      rewrite <- Nat.add_sub_swap. 2: {
+        apply Nat.mul_le_mono_l; flia Hmz Hm1.
+      }
+      flia Hmr.
+    }
+    do 2 rewrite Nat.mul_1_r in H2.
+    rewrite Nat_sub_sub_swap, Nat.mul_comm in H2.
+    rewrite <- Nat.mul_sub_distr_l in H2.
+    replace (m - 1 - (m - 2)) with 1 in H2 by flia Hmz Hm1.
+    rewrite Nat.mul_1_r in H2.
+    destruct
+      (Q.lt_le_dec
+         (((rad - m) // rad)%Q + (A (i + 2) (min_n (i + 1) 0) u * 1 // rad)%Q)
+         1) as [H1| H1]; [ flia Hmz Hm1 H2 | clear H2 ].
 ...
 (*
   specialize (all_fA_ge_1_ε_carry u i Hau 2) as H3.
