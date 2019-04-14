@@ -610,6 +610,15 @@ induction k. {
       split. {
         apply Q.le_pair; [ easy | easy | ].
         rewrite Nat.mul_1_l.
+        do 2 rewrite Nat.mul_sub_distr_r.
+        rewrite Nat.mul_1_l.
+        do 2 apply Nat.le_add_le_sub_r.
+        rewrite <- Nat.add_assoc.
+        rewrite <- Nat.add_sub_swap. 2: {
+          apply Nat.mul_le_mono_r; flia Hmz Hm1.
+        }
+        flia Hmr Hr.
+      }
 ...
     rewrite Q.pair_sub_l in H2. 2: {
       apply (le_trans _ (1 * rad)); [ now rewrite Nat.mul_1_l | ].
