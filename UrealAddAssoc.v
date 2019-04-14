@@ -649,15 +649,10 @@ induction k. {
       (Q.lt_le_dec
          (((rad - m) // rad)%Q + (A (i + 2) (min_n (i + 1) 0) u * 1 // rad)%Q)
          1) as [H1| H1]; [ flia Hmz Hm1 H2 | clear H2 ].
-...
-(*
   specialize (all_fA_ge_1_ε_carry u i Hau 2) as H3.
-rewrite <- (all_fA_ge_1_ε_NQintg_A 3) with (l := rad) in H2.
-*)
-(*
+...
 replace (i + 2) with (i + 1 + 1) in H3 at 3 by flia.
 rewrite min_n_add_l, Nat.mul_1_r in H3.
-*)
 (*
 rewrite Hc2 in H3.
 *)
