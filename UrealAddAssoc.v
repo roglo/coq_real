@@ -576,9 +576,8 @@ induction k. {
     specialize (H2 H Hu2); clear H.
     destruct H2 as (Hu3, Hc2).
     move Hc2 before Hc1.
-    (* u 7(←2)17(←2)
+    (* u 7(←2)17(←2) (si m=3 et r=10)
        mais, du coup, la 1ère retenue ne peut pas être 2, en fait *)
-...
     specialize (all_fA_ge_1_ε_carry u i Hau 1) as H2.
 (**)
     rewrite A_split_first in H2; [ | min_n_ge ].
@@ -663,8 +662,7 @@ induction k. {
 *)
     rewrite <- ApB_A in H3; [ | min_n_ge ].
     remember (A (i + 2) (min_n (i + 1) 0) u) as a eqn:Ha.
-    (* u 7(←2)17(←2)
-       mais, du coup, la 1ère retenue ne peut pas être 2, en fait *)
+    rewrite Hc2 in H3; symmetry in H3.
 (*
 rewrite Hc2 in H3.
 *)
