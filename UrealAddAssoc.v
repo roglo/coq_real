@@ -576,7 +576,11 @@ induction k. {
     specialize (H2 H Hu2); clear H.
     destruct H2 as (Hu3, Hc2).
     move Hc2 before Hc1.
+    (* u 7(←2)17(←2)
+       mais, du coup, la 1ère retenue ne peut pas être 2, en fait *)
+...
     specialize (all_fA_ge_1_ε_carry u i Hau 1) as H2.
+(**)
     rewrite A_split_first in H2; [ | min_n_ge ].
     replace (S (i + 1)) with (i + 2) in H2 by flia.
     rewrite Hc1, Hu2 in H2.
@@ -649,10 +653,18 @@ induction k. {
       (Q.lt_le_dec
          (((rad - m) // rad)%Q + (A (i + 2) (min_n (i + 1) 0) u * 1 // rad)%Q)
          1) as [H1| H1]; [ flia Hmz Hm1 H2 | clear H2 ].
-  specialize (all_fA_ge_1_ε_carry u i Hau 2) as H3.
-...
-replace (i + 2) with (i + 1 + 1) in H3 at 3 by flia.
-rewrite min_n_add_l, Nat.mul_1_r in H3.
+(**)
+    specialize (all_fA_ge_1_ε_carry u i Hau 2) as H3.
+    replace (i + 2) with (i + 1 + 1) in H3 at 3 by flia.
+    rewrite min_n_add_l, Nat.mul_1_r in H3.
+(*
+    rewrite A_split_first in H2; [ | min_n_ge ].
+    replace (S (i + 1)) with (i + 2) in H2 by flia.
+*)
+    rewrite <- ApB_A in H3; [ | min_n_ge ].
+    remember (A (i + 2) (min_n (i + 1) 0) u) as a eqn:Ha.
+    (* u 7(←2)17(←2)
+       mais, du coup, la 1ère retenue ne peut pas être 2, en fait *)
 (*
 rewrite Hc2 in H3.
 *)
