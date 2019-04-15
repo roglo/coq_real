@@ -579,6 +579,10 @@ induction k. {
     (* u 7(←2)17(←2) (si m=3 et r=10)
        mais, du coup, la 1ère retenue ne peut pas être 2, en fait *)
     specialize (all_fA_ge_1_ε_carry u i Hau 1) as H2.
+Theorem glop {r : radix} : ∀ u i,
+  carry u i = (u (i + 1) + carry u (i + 1)) / rad.
+Proof.
+intros.
 ...
 (**)
     rewrite A_split_first in H2; [ | min_n_ge ].
