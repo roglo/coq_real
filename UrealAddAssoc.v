@@ -567,6 +567,19 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
       rewrite Nat.div_add; [ | easy ].
       rewrite Nat.add_comm; f_equal.
 ...
+      rewrite (Q.intg_small (_ * _)%Q). 2: {
+        rewrite Ha.
+        split; [ now apply Q.le_0_mul_r | ].
+        apply (Q.mul_lt_mono_pos_r (rad // 1)%Q); [ now apply Q.lt_0_pair | ].
+        rewrite <- Q.mul_assoc.
+        rewrite Q.mul_pair_den_num; [ | easy ].
+        rewrite Q.mul_1_r, Q.mul_1_l.
+        eapply Q.le_lt_trans. {
+          apply A_upper_bound_for_adds.
+          now intros; do 2 rewrite <- Nat.add_assoc.
+        }
+        rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+...
 (*
 ...
       destruct
