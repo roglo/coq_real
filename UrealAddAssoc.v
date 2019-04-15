@@ -3736,19 +3736,20 @@ assert
   }
   specialize (H1 H); clear H.
   assert (H : ∀ k, (u ⊕ P v) (i + k) ≤ 2 * (rad - 1)). {
-    intros p.
-...
-    unfold "⊕"; replace 3 with (1 + 2) by easy.
+    intros p; unfold "⊕".
+    replace 2 with (1 + 1) by easy.
     rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-    apply Nat.add_le_mono; [ apply Hu | ].
-    eapply Nat.le_trans; [ apply P_le | flia Hr ].
+    apply Nat.add_le_mono; [ easy | ].
+    apply P_le.
   }
   specialize (H1 H Hjk Hk); clear H.
   now rewrite Hnk.
 }
 assert
   (Hiuv : ∀ p, Q.intg (A i (min_n i p) (u ⊕ v)) = Q.intg (A i n (u ⊕ v))). {
-  specialize (all_fA_ge_1_ε_NQintg_A' i (u ⊕ v)) as Hiuv.
+  specialize (all_fA_ge_1_ε_NQintg_A' 3 i (u ⊕ v)) as Hiuv.
+  assert (H : 0 < 3 ≤ 4) by pauto.
+  specialize (Hiuv H); clear H.
   assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
     intros p.
     unfold "⊕"; replace 3 with (1 + 2) by easy.
