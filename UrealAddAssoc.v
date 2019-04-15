@@ -610,11 +610,14 @@ rewrite H2 in Hj.
         replace 1 with (0 + 1) by easy.
         now rewrite min_n_add, Nat.mul_1_r.
       }
-      rewrite <- Nat.add_mod_idemp_l in H6; [ | easy ].
 ...
+      rewrite <- Nat.add_mod_idemp_l in H6; [ | easy ].
       specialize (Nat.div_mod (u (i + 1) mod rad + Q.intg a) rad) as H7.
       specialize (H7 radix_ne_0).
       rewrite H6 in H7.
+      remember ((u (i + 1) mod rad + Q.intg a) / rad) as b eqn:Hb.
+      symmetry in Hb.
+      destruct b; [ easy | exfalso ].
 ...
 Search (∀ _, fA_ge_1_ε _ _ _ = true).
 all_fA_ge_1_ε_P_999:
