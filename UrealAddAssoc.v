@@ -520,15 +520,20 @@ rewrite Q.pair_sub_l; [ | flia H4 ].
 now rewrite Q.sub_add.
 Qed.
 
+(*
 Theorem B_lt_mono_mid {r : radix} : ∀ i n1 n2 u l,
-  n1 ≤ n2 → (B i n1 u l ≤ B i n2 u l)%Q.
+  l ≠ 0 → n1 ≤ n2 → (B i n1 u l ≤ B i n2 u l)%Q.
 Proof.
-intros * Hnn.
+intros * Hl Hnn.
 unfold B.
+rewrite summation_shift; [ | flia Hl ].
+rewrite (summation_shift n2); [ | flia Hl ].
+replace (n1 + l - 1 - n1) with (l - 1) by flia.
+replace (n2 + l - 1 - n2) with (l - 1) by flia.
+apply summation_le_compat.
+intros j Hj.
 ...
-rewrite summation_shift.
-rewrite (summation_split _ _ 42 (n2 + l - 1)).
-...
+*)
 
 Theorem carry_succ {r : radix} : ∀ m u i,
   0 < m ≤ rad ^ 3
