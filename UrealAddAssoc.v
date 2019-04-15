@@ -572,7 +572,13 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
         rewrite Nat.add_comm; f_equal.
         rewrite (Q.intg_small (B _ _ _ _)). 2: {
           split; [ easy | ].
-About B_upper_bound_for_adds.
+          specialize (B_upper_bound_for_adds m u (i + 1) 0 (min_n i 0)) as H6.
+          specialize (H6 rad Hm).
+          assert (H : i + 1 + 0 + 5 < min_n i 0). {
+            unfold min_n.
+            destruct rad as [| rr]; [ easy | ].
+            destruct rr; [ flia Hr | ].
+cbn.
 ...
           apply (Q.le_lt_trans _ (B (i + 1) (min_n (i + 1) 0) u rad)). {
 ...
