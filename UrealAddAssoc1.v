@@ -541,8 +541,14 @@ rewrite Q.intg_add; [ | easy | easy ].
 rewrite <- Nat.add_assoc, <- Nat.add_0_r.
 f_equal.
 assert (HB : (B i (min_n i j) u (rad * (k - j)) < 1 // rad ^ S j)%Q). {
-  specialize (B_upper_bound_for_adds m u i j) as HB.
+  specialize (B_upper_bound_for_adds m u i j (min_n i j)) as HB.
   specialize (HB (rad * (k - j)) Hmr).
+  assert (H : i + j + 5 < min_n i j). {
+    unfold min_n.
+    destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | cbn; flia ].
+  }
+  specialize (HB H); clear H.
   assert (H : ∀ j, j ≥ i → u j ≤ m * (rad - 1)). {
     intros p Hp; replace p with (i + (p - i)) by flia Hp.
     apply Hur.
@@ -1087,7 +1093,11 @@ destruct H4 as [H4| [H4| H4]].
   rewrite H5, Q.add_0_l.
   eapply Q.lt_le_trans.
   rewrite Hnv.
-  apply B_upper_bound_for_add. {
+  apply (B_upper_bound_for_add _ _ 0). {
+    unfold min_n.
+    destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | cbn; flia ].
+  } {
     intros p Hp.
     replace p with (i + (p - i)) by flia Hp.
     eapply le_trans; [ apply Hu | ].
@@ -1194,8 +1204,11 @@ destruct H4 as [H4| [H4| H4]].
      split; [ easy | ].
      rewrite Hnup.
      eapply Q.lt_trans.
-     -apply (B_upper_bound_for_adds 3).
+     -apply (B_upper_bound_for_adds 3 _ _ 0).
       +split; [ pauto | ].
+       destruct rad as [| rr]; [ easy | ].
+       destruct rr; [ flia Hr | cbn; flia ].
+      +unfold min_n.
        destruct rad as [| rr]; [ easy | ].
        destruct rr; [ flia Hr | cbn; flia ].
       +intros p Hp; replace p with (i + (p - i)) by flia Hp.
@@ -1207,8 +1220,7 @@ destruct H4 as [H4| [H4| H4]].
       apply Nat.mul_lt_mono_pos_r; [ pauto | ].
       cbn; apply (lt_le_trans _ 2); [ pauto | ].
       replace 2 with (2 * 1) by easy.
-      apply Nat.mul_le_mono; [ easy | ].
-      now apply Nat_pow_ge_1.
+      now apply Nat.mul_le_mono.
    }
    rewrite (A_9_8_all_18 k v) in H7; [ | easy | easy | easy ].
    destruct (le_dec (i + k + 1) (nup - 1)) as [H| H]; [ | flia Hnk H ].
@@ -1260,8 +1272,11 @@ destruct H4 as [H4| [H4| H4]].
      apply Q.lt_sub_lt_add_r.
      eapply Q.lt_le_trans.
     **rewrite Hnup.
-      apply (B_upper_bound_for_adds 3).
+      apply (B_upper_bound_for_adds 3 _ _ j).
     ---split; [ pauto | ].
+       destruct rad as [| rr]; [ easy | ].
+       destruct rr; [ flia Hr | cbn; flia ].
+    ---unfold min_n.
        destruct rad as [| rr]; [ easy | ].
        destruct rr; [ flia Hr | cbn; flia ].
     ---intros p Hp; replace p with (i + (p - i)) by flia Hp.
@@ -1272,8 +1287,7 @@ destruct H4 as [H4| [H4| H4]].
       apply Q.le_add_le_sub_r.
       rewrite Q.add_pair; [ | pauto | pauto ].
       rewrite Nat.mul_1_l, Nat.mul_1_r, <- Nat.pow_add_r.
-      replace 1%Q with (1 // 1)%Q by easy.
-      rewrite Q.add_pair; [ | pauto | pauto ].
+      rewrite (Q.add_pair 1 1); [ | pauto | pauto ].
       rewrite Nat.mul_1_l, Nat.mul_1_r.
       apply Q.le_pair; [ pauto | pauto | ].
       rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
@@ -1369,9 +1383,16 @@ destruct H4 as [H4| [H4| H4]].
    rewrite Nat.sub_diag in H5.
    apply Q.le_antisymm in H5; [ | easy ].
    rewrite <- H5, Q.add_0_l.
-   specialize (B_upper_bound_for_adds 1 u i 0 (rad * j)) as H1.
+   specialize (B_upper_bound_for_adds 1 u i 0 nv (rad * j)) as H1.
    assert (H : 0 < 1 ≤ rad ^ 3). {
      split; [ pauto | now apply Nat_pow_ge_1 ].
+   }
+   specialize (H1 H); clear H.
+   assert (H : i + 0 + 5 < nv). {
+     rewrite Hnv.
+     unfold min_n.
+     destruct rad as [| rr]; [ easy | ].
+     destruct rr; [ flia Hr | cbn; flia ].
    }
    specialize (H1 H); clear H.
    assert (H : ∀ j, j ≥ i → u j ≤ 1 * (rad - 1)). {
@@ -1379,7 +1400,7 @@ destruct H4 as [H4| [H4| H4]].
      replace p with (i + (p - i)) by flia Hp; apply Hu.
    }
    specialize (H1 H); clear H.
-   rewrite <- Hnv, Nat.pow_1_r in H1.
+   rewrite Nat.pow_1_r in H1.
    eapply Q.lt_le_trans; [ apply H1 | ].
    rewrite <- Q.add_sub_swap.
    apply Q.le_add_le_sub_r.
@@ -1646,9 +1667,12 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ s)%Q 1) as [Har| Har].
  apply Q.lt_sub_lt_add_r.
  eapply Q.lt_le_trans.
  +rewrite Hni.
-  apply (B_upper_bound_for_adds 1).
+  apply (B_upper_bound_for_adds 1 _ _ 0).
   *split; [ pauto | ].
    destruct rad; [ easy | cbn; flia ].
+  *unfold min_n.
+   destruct rad as [| rr]; [ easy | ].
+   destruct rr; [ flia Hr | cbn; flia ].
   *intros p Hp; rewrite Nat.mul_1_l.
    replace p with (i + (p - i)) by flia Hp; apply Hu.
  +rewrite Nat.pow_1_r.
@@ -2031,6 +2055,7 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%Q 1) as [Hau1| Hau1].
      apply Q.le_0_add; [ | easy ].
      apply Q.le_0_mul_l; [ easy | now apply H012r ].
    }
+...
    specialize (B_upper_bound_for_adds 1 u i j rad) as H1.
    rewrite Nat.mul_1_l, <- Hnij in H1.
    assert (H : 0 < 1 ≤ rad ^ 3). {
