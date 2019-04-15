@@ -520,6 +520,40 @@ rewrite Q.pair_sub_l; [ | flia H4 ].
 now rewrite Q.sub_add.
 Qed.
 
+Theorem carry_succ {r : radix} : ∀ u i,
+  carry u i = (u (i + 1) + carry u (i + 1)) / rad.
+Proof.
+intros.
+specialize radix_ge_2 as Hr.
+unfold carry, carry_cases.
+destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
+  destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S i) with (i + 1) by flia.
+    rewrite min_n_add_l, Nat.mul_1_r.
+    rewrite <- ApB_A; [ | min_n_ge ].
+    rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
+      now apply Q.le_0_mul_r.
+    }
+    rewrite Q.intg_pair; [ | easy ].
+    rewrite Q.intg_add_cond; [ | easy | easy ].
+    remember (A (i + 1) (min_n i 0) u) as a eqn:Ha.
+    destruct
+      (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
+      as [H3| H3]. {
+      rewrite Nat.add_0_r.
+      destruct
+        (Q.lt_le_dec (Q.frac a + Q.frac (B (i + 1) (min_n i 0) u rad)) 1)
+        as [H4| H4]. {
+        rewrite Nat.add_0_r.
+        rewrite Q.frac_pair in H3.
+        specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
+        symmetry; rewrite H5 at 1.
+        rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
+        rewrite Nat.div_add; [ | easy ].
+        rewrite Nat.add_comm; f_equal.
+...
+
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
   m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
@@ -579,10 +613,8 @@ induction k. {
     (* u 7(←2)17(←2) (si m=3 et r=10)
        mais, du coup, la 1ère retenue ne peut pas être 2, en fait *)
     specialize (all_fA_ge_1_ε_carry u i Hau 1) as H2.
-Theorem glop {r : radix} : ∀ u i,
-  carry u i = (u (i + 1) + carry u (i + 1)) / rad.
-Proof.
-intros.
+(* voir si je suis arrivé à prouver que
+  carry u i = (u (i + 1) + carry u (i + 1)) / rad *)
 ...
 (**)
     rewrite A_split_first in H2; [ | min_n_ge ].
