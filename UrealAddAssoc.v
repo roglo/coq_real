@@ -520,11 +520,24 @@ rewrite Q.pair_sub_l; [ | flia H4 ].
 now rewrite Q.sub_add.
 Qed.
 
-Theorem carry_succ {r : radix} : ∀ u i,
-  carry u i = (u (i + 1) + carry u (i + 1)) / rad.
+Theorem B_lt_mono_mid {r : radix} : ∀ i n1 n2 u l,
+  n1 ≤ n2 → (B i n1 u l ≤ B i n2 u l)%Q.
 Proof.
-intros.
+intros * Hnn.
+unfold B.
+...
+rewrite summation_shift.
+rewrite (summation_split _ _ 42 (n2 + l - 1)).
+...
+
+Theorem carry_succ {r : radix} : ∀ m u i,
+  0 < m ≤ rad ^ 3
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
+  → carry u i = (u (i + 1) + carry u (i + 1)) / rad.
+Proof.
+intros *.
 specialize radix_ge_2 as Hr.
+intros Hm Hur.
 unfold carry, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
@@ -552,6 +565,34 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
         rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
         rewrite Nat.div_add; [ | easy ].
         rewrite Nat.add_comm; f_equal.
+        rewrite (Q.intg_small (B _ _ _ _)). 2: {
+          split; [ easy | ].
+          apply (Q.le_lt_trans _ (B (i + 1) (min_n (i + 1) 0) u rad)). {
+...
+apply B_lt_mono_mid.
+unfold min_n; flia.
+          }
+          eapply Q.lt_le_trans. {
+            apply (B_upper_bound_for_adds m); [ easy | ].
+            intros k Hk.
+            now replace k with (i + (k - i)) by flia Hk.
+          }
+          rewrite Nat.pow_1_r.
+          apply (Q.le_pair _ _ 1 1); [ easy | easy | ].
+          now apply Nat.mul_le_mono_r.
+...
+Search (Q.intg (A _ _ _)).
+    rewrite (all_fA_ge_1_ε_NQintg_A' m).
+all_fA_ge_1_ε_NQintg_A':
+  ∀ (r : radix) (m i : nat) (u : nat → nat),
+    0 < m ≤ 4
+    → (∀ k : nat, u (i + k) ≤ m * (rad - 1))
+      → (∀ k : nat, fA_ge_1_ε u i k = true)
+        → ∀ k : nat, Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i 0) u)
+          eapply Q.lt_le_trans. {
+Check B_upper_bound_for_adds.
+Search (B _ _ _ _ < _)%Q.
+            apply (B_upper_bound_for_adds m).
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
