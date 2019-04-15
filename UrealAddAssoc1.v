@@ -2055,11 +2055,17 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%Q 1) as [Hau1| Hau1].
      apply Q.le_0_add; [ | easy ].
      apply Q.le_0_mul_l; [ easy | now apply H012r ].
    }
-...
-   specialize (B_upper_bound_for_adds 1 u i j rad) as H1.
-   rewrite Nat.mul_1_l, <- Hnij in H1.
+   specialize (B_upper_bound_for_adds 1 u i j nij rad) as H1.
+   rewrite Nat.mul_1_l in H1.
    assert (H : 0 < 1 ≤ rad ^ 3). {
      split; [ pauto | now apply Nat_pow_ge_1 ].
+   }
+   specialize (H1 H); clear H.
+   assert (H : i + j + 5 < nij). {
+     rewrite Hnij.
+     unfold min_n.
+     destruct rad as [| rr]; [ easy | ].
+     destruct rr; [ flia Hr | cbn; flia ].
    }
    specialize (H1 H); clear H.
    assert (H : ∀ j : nat, j ≥ i → u j ≤ rad - 1). {
