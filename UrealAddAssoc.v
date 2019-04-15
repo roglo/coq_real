@@ -572,6 +572,8 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
         rewrite Nat.add_comm; f_equal.
         rewrite (Q.intg_small (B _ _ _ _)). 2: {
           split; [ easy | ].
+About B_upper_bound_for_adds.
+...
           apply (Q.le_lt_trans _ (B (i + 1) (min_n (i + 1) 0) u rad)). {
 ...
 apply B_lt_mono_mid.
