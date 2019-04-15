@@ -537,12 +537,13 @@ intros j Hj.
 
 Theorem carry_succ {r : radix} : ∀ m u i,
   0 < m ≤ 4
+  → m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → carry u i = (u (i + 1) + carry u (i + 1)) / rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hm Hur.
+intros Hm Hmr Hur.
 unfold carry, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
@@ -566,7 +567,6 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
       rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
       rewrite Nat.div_add; [ | easy ].
       rewrite Nat.add_comm; f_equal.
-...
       rewrite (Q.intg_small (_ * _)%Q). 2: {
         rewrite Ha.
         split; [ now apply Q.le_0_mul_r | ].
@@ -579,6 +579,22 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
           now intros; do 2 rewrite <- Nat.add_assoc.
         }
         rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+        eapply Q.lt_le_trans. {
+          apply Q.sub_lt.
+          apply Q.mul_pos_cancel_l; [ | easy ].
+          now apply Q.lt_0_pair.
+        }
+        apply Q.le_pair; [ easy | easy | ].
+        now rewrite Nat.mul_1_r, Nat.mul_1_l.
+      }
+      replace (min_n i 0 + rad) with (min_n i 1) in Ha. 2: {
+        replace 1 with (0 + 1) by easy.
+        now rewrite min_n_add, Nat.mul_1_r.
+      }
+...
+      rewrite A_num_den in Ha.
+      rewrite Ha.
+      rewrite Q.intg_pair; [ | unfold den_A; pauto ].
 ...
 (*
 ...
