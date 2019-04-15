@@ -546,6 +546,24 @@ specialize radix_ge_2 as Hr.
 intros Hm Hmr Hur.
 unfold carry, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
+(*
+  assert (H2 : ∀ k, fA_ge_1_ε u (i + 1) k = true). {
+Search (∀ _, fA_ge_1_ε _ _ _ = true).
+intros k.
+    apply A_ge_1_add_r_true_if.
+apply H1.
+}
+  destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H3| H3]. 2: {
+destruct H3 as (j & Hjj & Hj).
+congruence.
+...
+rewrite H2 in Hj.
+...
+*)
+  specialize (all_fA_ge_1_ε_P_999 u i H1 0) as H6.
+  rewrite Nat.add_0_r in H6.
+  unfold P, d2n, prop_carr, dig in H6.
+  unfold carry, carry_cases in H6.
   destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     rewrite <- (all_fA_ge_1_ε_NQintg_A' m i) with (k := 1); try easy.
     rewrite A_split_first; [ | min_n_ge ].
@@ -591,6 +609,18 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
         replace 1 with (0 + 1) by easy.
         now rewrite min_n_add, Nat.mul_1_r.
       }
+...
+Search (∀ _, fA_ge_1_ε _ _ _ = true).
+all_fA_ge_1_ε_P_999:
+  ∀ (r : radix) (u : nat → nat) (i : nat),
+    (∀ k : nat, fA_ge_1_ε u i k = true) → ∀ k : nat, P u (i + k + 1) = rad - 1
+...
+Search (∀ _, fA_ge_1_ε _ _ _ = true).
+Print A.
+...
+Search (Q.frac _ + Q.frac _)%Q.
+Print carry.
+Print carry_cases.
 ...
       rewrite A_num_den in Ha.
       rewrite Ha.
