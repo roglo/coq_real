@@ -536,7 +536,7 @@ intros j Hj.
 *)
 
 Theorem carry_succ {r : radix} : ∀ m u i,
-  0 < m ≤ rad ^ 3
+  0 < m ≤ 4
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → carry u i = (u (i + 1) + carry u (i + 1)) / rad.
 Proof.
@@ -546,20 +546,22 @@ intros Hm Hur.
 unfold carry, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
+    rewrite <- (all_fA_ge_1_ε_NQintg_A' m i) with (k := 1); try easy.
     rewrite A_split_first; [ | min_n_ge ].
+    replace 1 with (0 + 1) at 1 by easy.
     replace (S i) with (i + 1) by flia.
+    rewrite min_n_add, Nat.mul_1_r.
     rewrite min_n_add_l, Nat.mul_1_r.
-    rewrite <- ApB_A; [ | min_n_ge ].
+    remember (A (i + 1) (min_n i 0 + rad) u) as a eqn:Ha.
     rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
-      now apply Q.le_0_mul_r.
+      apply Q.le_0_mul_r; [ easy | now rewrite Ha ].
     }
     rewrite Q.intg_pair; [ | easy ].
-    rewrite Q.intg_add_cond; [ | easy | easy ].
-    remember (A (i + 1) (min_n i 0) u) as a eqn:Ha.
     destruct
       (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
       as [H3| H3]. {
       rewrite Nat.add_0_r.
+...
       destruct
         (Q.lt_le_dec (Q.frac a + Q.frac (B (i + 1) (min_n i 0) u rad)) 1)
         as [H4| H4]. {
