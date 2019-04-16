@@ -689,6 +689,7 @@ rewrite H2 in Hj.
     rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
     rewrite Q.mul_pair_den_num in H3; [ | easy ].
     rewrite Q.mul_1_r in H3.
+...
     specialize (Q.intg_interv rad ((u (i + 1)%nat mod rad) // 1 + a)%Q) as H4.
     assert (H : (0 ≤ (u (i + 1)%nat mod rad) // 1 + a)%Q). {
       apply Q.le_0_add; [ | now rewrite Ha ].
