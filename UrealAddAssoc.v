@@ -623,103 +623,24 @@ rewrite H2 in Hj.
       rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
       rewrite Q.mul_pair_den_num in H3; [ | easy ].
       rewrite Q.mul_1_r in H3.
-      destruct (lt_dec (u (i + 1)) rad) as [H7| H7]. {
-        rewrite Nat.mod_small in H3; [ | easy ].
-        rewrite Nat.mod_small; [ | easy ].
-        clear H5.
-        destruct (lt_dec (u (i + 1) + Q.intg a) rad) as [H8| H8]. {
-          now apply Nat.div_small.
-        }
-        apply Nat.nlt_ge in H8; exfalso.
-        specialize (Q.intg_interv (Q.intg a) a) as H9.
-        assert (H : (0 ≤ a)%Q) by now rewrite Ha.
-        specialize (proj2 (H9 H) eq_refl) as H10; clear H.
-        clear H9.
+      destruct (lt_dec (u (i + 1) mod rad + Q.intg a) rad) as [H8| H8]. {
+        now apply Nat.div_small.
+      }
+      exfalso; apply H8; clear H8.
+      specialize (Q.intg_interv (Q.intg a) a) as H9.
+      assert (H : (0 ≤ a)%Q) by now rewrite Ha.
+      specialize (proj2 (H9 H) eq_refl) as H10; clear H.
+      clear H9.
+      enough (H : ((u (i + 1)%nat mod rad + Q.intg a) // 1 < rad // 1)%Q). {
+        apply Q.lt_pair in H; [ | easy | easy ].
+        now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
+      }
+      apply (Q.le_lt_trans _ ((u (i + 1)%nat mod rad) // 1 + a)%Q); [ | easy ].
+      rewrite Q.pair_add_l.
+      apply Q.add_le_mono_l.
+      now destruct H10.
+    }
 ...
-        specialize (Nat.div_mod (u (i + 1) + Q.intg a) rad) as H9.
-        specialize (H9 radix_ne_0).
-        rewrite H6 in H9.
-...
-rewrite Q.frac_pair in H3.
-      rewrite <- Nat.add_mod_idemp_l in H6; [ | easy ].
-remember (u (i + 1) mod rad) as b eqn:Hb.
-rewrite Q.frac_small in H3.
-replace (b // rad)%Q with (b // 1 * 1 // rad)%Q in H3.
-rewrite <- Q.mul_add_distr_r in H3.
-...
-      specialize (Nat.div_mod (u (i + 1) mod rad + Q.intg a) rad) as H7.
-      specialize (H7 radix_ne_0).
-      rewrite H6 in H7.
-      remember ((u (i + 1) mod rad + Q.intg a) / rad) as b eqn:Hb.
-      symmetry in Hb.
-      destruct b; [ easy | exfalso ].
-...
-Search (∀ _, fA_ge_1_ε _ _ _ = true).
-all_fA_ge_1_ε_P_999:
-  ∀ (r : radix) (u : nat → nat) (i : nat),
-    (∀ k : nat, fA_ge_1_ε u i k = true) → ∀ k : nat, P u (i + k + 1) = rad - 1
-...
-Search (∀ _, fA_ge_1_ε _ _ _ = true).
-Print A.
-...
-Search (Q.frac _ + Q.frac _)%Q.
-Print carry.
-Print carry_cases.
-...
-      rewrite A_num_den in Ha.
-      rewrite Ha.
-      rewrite Q.intg_pair; [ | unfold den_A; pauto ].
-...
-(*
-...
-      destruct
-        (Q.lt_le_dec (Q.frac a + Q.frac (B (i + 1) (min_n i 0) u rad)) 1)
-        as [H4| H4]. {
-        rewrite Nat.add_0_r.
-        rewrite Q.frac_pair in H3.
-        specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
-        symmetry; rewrite H5 at 1.
-        rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
-        rewrite Nat.div_add; [ | easy ].
-        rewrite Nat.add_comm; f_equal.
-        rewrite (Q.intg_small (B _ _ _ _)). 2: {
-          split; [ easy | ].
-          specialize (B_upper_bound_for_adds m u (i + 1) 0 (min_n i 0)) as H6.
-          specialize (H6 rad Hm).
-          assert (H : i + 1 + 0 + 5 < min_n i 0). {
-            unfold min_n.
-            destruct rad as [| rr]; [ easy | ].
-            destruct rr; [ flia Hr | ].
-cbn.
-...
-          apply (Q.le_lt_trans _ (B (i + 1) (min_n (i + 1) 0) u rad)). {
-...
-apply B_lt_mono_mid.
-unfold min_n; flia.
-          }
-          eapply Q.lt_le_trans. {
-            apply (B_upper_bound_for_adds m); [ easy | ].
-            intros k Hk.
-            now replace k with (i + (k - i)) by flia Hk.
-          }
-          rewrite Nat.pow_1_r.
-          apply (Q.le_pair _ _ 1 1); [ easy | easy | ].
-          now apply Nat.mul_le_mono_r.
-...
-Search (Q.intg (A _ _ _)).
-    rewrite (all_fA_ge_1_ε_NQintg_A' m).
-all_fA_ge_1_ε_NQintg_A':
-  ∀ (r : radix) (m i : nat) (u : nat → nat),
-    0 < m ≤ 4
-    → (∀ k : nat, u (i + k) ≤ m * (rad - 1))
-      → (∀ k : nat, fA_ge_1_ε u i k = true)
-        → ∀ k : nat, Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i 0) u)
-          eapply Q.lt_le_trans. {
-Check B_upper_bound_for_adds.
-Search (B _ _ _ _ < _)%Q.
-            apply (B_upper_bound_for_adds m).
-...
-*)
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
   m ≤ rad
