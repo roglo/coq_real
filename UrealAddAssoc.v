@@ -627,10 +627,18 @@ rewrite H2 in Hj.
         rewrite Nat.mod_small in H3; [ | easy ].
         rewrite Nat.mod_small; [ | easy ].
         clear H5.
+        destruct (lt_dec (u (i + 1) + Q.intg a) rad) as [H8| H8]. {
+          now apply Nat.div_small.
+        }
+        apply Nat.nlt_ge in H8; exfalso.
+        specialize (Q.intg_interv (Q.intg a) a) as H9.
+        assert (H : (0 ≤ a)%Q) by now rewrite Ha.
+        specialize (proj2 (H9 H) eq_refl) as H10; clear H.
+        clear H9.
 ...
-        specialize (Nat.div_mod (u (i + 1) + Q.intg a) rad) as H8.
-        specialize (H8 radix_ne_0).
-        rewrite H6 in H8.
+        specialize (Nat.div_mod (u (i + 1) + Q.intg a) rad) as H9.
+        specialize (H9 radix_ne_0).
+        rewrite H6 in H9.
 ...
 rewrite Q.frac_pair in H3.
       rewrite <- Nat.add_mod_idemp_l in H6; [ | easy ].
