@@ -612,6 +612,10 @@ rewrite H2 in Hj.
     rewrite min_n_add_l, Nat.mul_1_r.
     rewrite min_n_add_l, Nat.mul_1_r in H6.
     remember (A (i + 1) (min_n i 0 + rad) u) as a eqn:Ha.
+    replace (min_n i 0 + rad) with (min_n i 1) in Ha. 2: {
+      replace 1 with (0 + 1) by easy.
+      now rewrite min_n_add, Nat.mul_1_r.
+    }
     rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
       apply Q.le_0_mul_r; [ easy | now rewrite Ha ].
     }
@@ -643,10 +647,6 @@ rewrite H2 in Hj.
         rewrite Ha.
         apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
       }
-      replace (min_n i 0 + rad) with (min_n i 1) in Ha. 2: {
-        replace 1 with (0 + 1) by easy.
-        now rewrite min_n_add, Nat.mul_1_r.
-      }
       destruct (lt_dec (u (i + 1) mod rad + Q.intg a) rad) as [H8| H8]. {
         now apply Nat.div_small.
       }
@@ -670,15 +670,12 @@ rewrite H2 in Hj.
     symmetry; rewrite H5 at 1.
     rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
     rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.add_comm, <- Nat.add_assoc; f_equal.
     rewrite (Q.intg_small (_ * _)%Q). 2: {
       rewrite Ha.
       apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
     }
-    rewrite Nat.add_0_r.
-    replace (min_n i 0 + rad) with (min_n i 1) in Ha. 2: {
-      replace 1 with (0 + 1) by easy.
-      now rewrite min_n_add, Nat.mul_1_r.
-    }
+    rewrite Nat.add_0_l.
     rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
       rewrite Ha.
       apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
@@ -686,10 +683,17 @@ rewrite H2 in Hj.
     rewrite Q.frac_pair in H3.
     rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
     rewrite <- Q.mul_add_distr_r in H3.
+    apply (Q.mul_le_mono_pos_r (rad // 1)%Q) in H3. 2: {
+      now apply Q.lt_0_pair.
+    }
+    rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
+    rewrite Q.mul_pair_den_num in H3; [ | easy ].
+    rewrite Q.mul_1_r in H3.
+...
     destruct (lt_dec (u (i + 1) mod rad + Q.intg a) rad) as [H8| H8]. {
       exfalso.
-      apply Q.nlt_ge in H3; apply H3; clear H3.
 ...
+      apply Q.nlt_ge in H3; apply H3; clear H3.
       exfalso; apply H8; clear H8.
       specialize (Q.intg_interv (Q.intg a) a) as H9.
       assert (H : (0 ≤ a)%Q) by now rewrite Ha.
