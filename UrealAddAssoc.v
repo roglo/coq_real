@@ -597,6 +597,7 @@ rewrite H2 in Hj.
       (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
       as [H3| H3]. {
       rewrite Nat.add_0_r.
+clear - Ha Hm Hmr Hur H3.
       specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
       symmetry; rewrite H5 at 1.
       rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
@@ -610,19 +611,6 @@ rewrite H2 in Hj.
         replace 1 with (0 + 1) by easy.
         now rewrite min_n_add, Nat.mul_1_r.
       }
-      rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
-        rewrite Ha.
-        apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
-      }
-      rewrite Q.frac_pair in H3.
-      rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
-      rewrite <- Q.mul_add_distr_r in H3.
-      apply (Q.mul_lt_mono_pos_r (rad // 1)%Q) in H3. 2: {
-        now apply Q.lt_0_pair.
-      }
-      rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
-      rewrite Q.mul_pair_den_num in H3; [ | easy ].
-      rewrite Q.mul_1_r in H3.
       destruct (lt_dec (u (i + 1) mod rad + Q.intg a) rad) as [H8| H8]. {
         now apply Nat.div_small.
       }
@@ -635,10 +623,24 @@ rewrite H2 in Hj.
         apply Q.lt_pair in H; [ | easy | easy ].
         now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
       }
-      apply (Q.le_lt_trans _ ((u (i + 1)%nat mod rad) // 1 + a)%Q); [ | easy ].
-      rewrite Q.pair_add_l.
-      apply Q.add_le_mono_l.
-      now destruct H10.
+      apply (Q.le_lt_trans _ ((u (i + 1)%nat mod rad) // 1 + a)%Q). {
+        rewrite Q.pair_add_l.
+        apply Q.add_le_mono_l.
+        now destruct H10.
+      }
+      rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
+        rewrite Ha.
+        apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
+      }
+      rewrite Q.frac_pair in H3.
+      rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
+      rewrite <- Q.mul_add_distr_r in H3.
+      apply (Q.mul_lt_mono_pos_r (rad // 1)%Q) in H3. 2: {
+        now apply Q.lt_0_pair.
+      }
+      rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
+      rewrite Q.mul_pair_den_num in H3; [ | easy ].
+      now rewrite Q.mul_1_r in H3.
     }
 ...
 
