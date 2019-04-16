@@ -691,6 +691,17 @@ rewrite H2 in Hj.
     rewrite Q.mul_1_r in H3.
     apply Nat_div_less_small.
     split. {
+      apply Nat.lt_succ_r.
+      rewrite <- Nat.add_1_r.
+      apply (Nat.mul_lt_mono_pos_l 1); [ pauto | ].
+      rewrite Nat.mul_comm.
+      apply Q.lt_pair; [ easy | easy | ].
+      rewrite Q.pair_add_l.
+      specialize (Q.intg_interv (u (i + 1) mod rad + Q.intg a)) as H4.
+      specialize (H4 (rad // 1)%Q).
+      assert (H : (0 ≤ rad // 1)%Q) by apply Q.le_0_pair.
+      specialize (H4 H); clear H.
+      apply H4.
 ...
     assert (H4 : Q.intg ((u (i + 1)%nat mod rad) // 1 + a)%Q = rad). {
       apply Q.intg_interv. {
