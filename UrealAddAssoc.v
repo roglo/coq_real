@@ -628,6 +628,10 @@ rewrite H2 in Hj.
         rewrite Nat.mod_small; [ | easy ].
         clear H5.
 ...
+        specialize (Nat.div_mod (u (i + 1) + Q.intg a) rad) as H8.
+        specialize (H8 radix_ne_0).
+        rewrite H6 in H8.
+...
 rewrite Q.frac_pair in H3.
       rewrite <- Nat.add_mod_idemp_l in H6; [ | easy ].
 remember (u (i + 1) mod rad) as b eqn:Hb.
