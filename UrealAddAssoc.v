@@ -689,6 +689,17 @@ rewrite H2 in Hj.
     rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
     rewrite Q.mul_pair_den_num in H3; [ | easy ].
     rewrite Q.mul_1_r in H3.
+    specialize (Q.intg_interv rad ((u (i + 1)%nat mod rad) // 1 + a)%Q) as H4.
+    assert (H : (0 ≤ (u (i + 1)%nat mod rad) // 1 + a)%Q). {
+      apply Q.le_0_add; [ | now rewrite Ha ].
+      apply Q.le_0_pair.
+    }
+    specialize (H4 H); clear H.
+    assert (H : ((u (i + 1)%nat mod rad) // 1 + a < rad // 1 + 1)%Q). {
+(* ah oui mais non *)
+...
+    }
+    specialize (proj1 H4 (qconj _ _ H3 H)) as H7; clear H4 H.
 ...
     destruct (lt_dec (u (i + 1) mod rad + Q.intg a) rad) as [H8| H8]. {
       exfalso.
