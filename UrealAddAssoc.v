@@ -520,20 +520,36 @@ rewrite Q.pair_sub_l; [ | flia H4 ].
 now rewrite Q.sub_add.
 Qed.
 
-(*
-Theorem B_lt_mono_mid {r : radix} : ∀ i n1 n2 u l,
-  l ≠ 0 → n1 ≤ n2 → (B i n1 u l ≤ B i n2 u l)%Q.
+Theorem A_mul_inv_rad_interv {r : radix} : ∀ m u i j n,
+  0 < m ≤ rad
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
+  → i ≤ j + 1
+  → (0 ≤ A j n u * 1 // rad < 1)%Q.
 Proof.
-intros * Hl Hnn.
-unfold B.
-rewrite summation_shift; [ | flia Hl ].
-rewrite (summation_shift n2); [ | flia Hl ].
-replace (n1 + l - 1 - n1) with (l - 1) by flia.
-replace (n2 + l - 1 - n2) with (l - 1) by flia.
-apply summation_le_compat.
-intros j Hj.
-...
-*)
+intros * Hm Hur Hj.
+split; [ now apply Q.le_0_mul_r | ].
+apply (Q.mul_lt_mono_pos_r (rad // 1)%Q). {
+  now apply Q.lt_0_pair.
+}
+rewrite <- Q.mul_assoc.
+rewrite Q.mul_pair_den_num; [ | easy ].
+rewrite Q.mul_1_r, Q.mul_1_l.
+eapply Q.le_lt_trans. {
+  apply A_upper_bound_for_adds.
+  intros p.
+  replace (j + p + 1) with (i + (j + p + 1 - i)).
+  apply Hur.
+  intros; rewrite <- Nat.add_assoc; flia Hj.
+}
+rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+eapply Q.lt_le_trans. {
+  apply Q.sub_lt.
+  apply Q.mul_pos_cancel_l; [ | easy ].
+  now apply Q.lt_0_pair.
+}
+apply Q.le_pair; [ easy | easy | ].
+now rewrite Nat.mul_1_r, Nat.mul_1_l.
+Qed.
 
 Theorem carry_succ {r : radix} : ∀ m u i,
   0 < m ≤ 4
@@ -588,28 +604,30 @@ rewrite H2 in Hj.
       rewrite Nat.add_comm; f_equal.
       rewrite (Q.intg_small (_ * _)%Q). 2: {
         rewrite Ha.
-        split; [ now apply Q.le_0_mul_r | ].
-        apply (Q.mul_lt_mono_pos_r (rad // 1)%Q); [ now apply Q.lt_0_pair | ].
-        rewrite <- Q.mul_assoc.
-        rewrite Q.mul_pair_den_num; [ | easy ].
-        rewrite Q.mul_1_r, Q.mul_1_l.
-        eapply Q.le_lt_trans. {
-          apply A_upper_bound_for_adds.
-          now intros; do 2 rewrite <- Nat.add_assoc.
-        }
-        rewrite Q.mul_sub_distr_l, Q.mul_1_r.
-        eapply Q.lt_le_trans. {
-          apply Q.sub_lt.
-          apply Q.mul_pos_cancel_l; [ | easy ].
-          now apply Q.lt_0_pair.
-        }
-        apply Q.le_pair; [ easy | easy | ].
-        now rewrite Nat.mul_1_r, Nat.mul_1_l.
+        apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
       }
       replace (min_n i 0 + rad) with (min_n i 1) in Ha. 2: {
         replace 1 with (0 + 1) by easy.
         now rewrite min_n_add, Nat.mul_1_r.
       }
+      rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
+        rewrite Ha.
+        apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
+      }
+      rewrite Q.frac_pair in H3.
+      rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
+      rewrite <- Q.mul_add_distr_r in H3.
+      apply (Q.mul_lt_mono_pos_r (rad // 1)%Q) in H3. 2: {
+        now apply Q.lt_0_pair.
+      }
+      rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
+      rewrite Q.mul_pair_den_num in H3; [ | easy ].
+      rewrite Q.mul_1_r in H3.
+      destruct (lt_dec (u (i + 1)) rad) as [H7| H7]. {
+        rewrite Nat.mod_small in H3; [ | easy ].
+        rewrite Nat.mod_small; [ | easy ].
+        clear H5.
+...
 rewrite Q.frac_pair in H3.
       rewrite <- Nat.add_mod_idemp_l in H6; [ | easy ].
 remember (u (i + 1) mod rad) as b eqn:Hb.
@@ -898,6 +916,7 @@ Check A_upper_bound_for_adds.
 ...
 *)
 
+(* cf A_mul_inv_rad_interv
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
   rad = 2
   → (∀ k, u (i + k) ≤ 2)
@@ -917,6 +936,7 @@ eapply Q.le_lt_trans. {
 rewrite Q.mul_sub_distr_l, Q.mul_1_r.
 now apply Q.sub_lt.
 Qed.
+*)
 
 (* ça serait achement plus cool si au lieu de l'hypothèse
    (∀ k, fA_ge_1_ε u i k = true), j'avais
