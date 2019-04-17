@@ -730,18 +730,10 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     rewrite <- (all_fA_ge_1_ε_NQintg_A' m i) with (k := 1); try easy.
     rewrite A_split_first; [ | min_n_ge ].
-    replace 1 with (0 + 1) at 1 by easy.
     replace (S i) with (i + 1) by flia.
-    rewrite min_n_add, Nat.mul_1_r.
-    rewrite min_n_add_l, Nat.mul_1_r.
-    rewrite min_n_add_l, Nat.mul_1_r in H6.
-    remember (A (i + 1) (min_n i 0 + rad) u) as a eqn:Ha.
-    replace (min_n i 0 + rad) with (min_n i 1) in Ha. 2: {
-      replace 1 with (0 + 1) by easy.
-      now rewrite min_n_add, Nat.mul_1_r.
-    }
-    replace 1 with (0 + 1) in Ha at 2 by easy.
-    rewrite min_n_add, <- min_n_add_l in Ha.
+    replace 1 with (0 + 1) at 3 by easy.
+    rewrite min_n_add, <- min_n_add_l.
+    remember (A (i + 1) (min_n (i + 1) 0) u) as a eqn:Ha.
     now apply (carry_succ_lemma3 m _ _ 0).
   }
   destruct H2 as (j & Hjj & Hj).
