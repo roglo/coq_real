@@ -707,6 +707,23 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
 }
 destruct H1 as (j & Hjj & Hj).
 destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
+  destruct j. 2: {
+    apply A_ge_1_false_iff in Hj.
+    specialize (H2 (j + 1)) as H3.
+    apply A_ge_1_true_iff in H3.
+    replace (S (j + 1)) with (S (S j)) in H3 by flia.
+    apply Q.nlt_ge in H3.
+    exfalso; apply H3; clear H3.
+    eapply Q.lt_trans; [ | apply Hj ].
+...
+    rewrite <- (all_fA_ge_1_ε_NQintg_A' m) with (k := j); try easy. 2: {
+      now intros; rewrite <- Nat.add_assoc.
+    }
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S i) with (i + 1) by flia.
+    replace (S j) with (j + 1) by flia.
+    rewrite min_n_add, <- min_n_add_l.
+    remember (A (i + 1) (min_n (i + 1) j) u) as a eqn:Ha.
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
