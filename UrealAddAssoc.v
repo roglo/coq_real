@@ -749,17 +749,51 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     destruct H1 as (k & Hjk & Hk).
     now rewrite A_ge_1_add_r_true_if in Hk.
   }
-  destruct j. 2: {
-    rewrite <- (all_fA_ge_1_ε_NQintg_A' m) with (k := j); try easy. 2: {
-      now intros; rewrite <- Nat.add_assoc.
-    }
-    rewrite A_split_first; [ | min_n_ge ].
-    replace (S i) with (i + 1) by flia.
-    replace (S j) with (j + 1) by flia.
-    rewrite min_n_add, <- min_n_add_l.
-    remember (A (i + 1) (min_n (i + 1) j) u) as a eqn:Ha.
-    now apply (carry_succ_lemma3 m _ _ j).
+  assert
+    (H3 :
+     ∀ k, j ≤ k → Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i j) u)). {
+    intros k Hk.
+    apply (fA_lt_1_ε_NQintg_A m); try easy.
+    split; [ easy | ].
+    apply (le_trans _ rad); [ easy | ].
+    replace rad with (rad ^ 1) at 1 by (cbn; flia).
+    apply Nat.pow_le_mono_r; [ easy | pauto ].
   }
+  rewrite <- (H3 (j + 1)); [ | flia ].
+  symmetry.
+  rewrite <- (all_fA_ge_1_ε_NQintg_A' m) with (k := j); try easy. 2: {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  symmetry.
+  rewrite min_n_add, <- min_n_add_l.
+  rewrite A_split_first; [ | min_n_ge ].
+  replace (S i) with (i + 1) by flia.
+  remember (A (i + 1) (min_n (i + 1) j) u) as a eqn:Ha.
+  apply (carry_succ_lemma3 m _ _ j); try easy.
+}
+destruct H2 as (k & Hjk & Hk); move k before j.
+specialize (fA_lt_1_ε_NQintg_A m i u j) as H1.
+specialize (fA_lt_1_ε_NQintg_A m (i + 1) u k) as H2.
+assert (H : 0 < m ≤ rad ^ 3). {
+  split; [ easy | ].
+  apply (le_trans _ rad); [ easy | ].
+  replace rad with (rad ^ 1) at 1 by (cbn; flia).
+  apply Nat.pow_le_mono_r; [ easy | pauto ].
+}
+specialize (H1 H); specialize (H2 H); clear H.
+specialize (H1 Hur Hjj Hj).
+assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
+  now intros; rewrite <- Nat.add_assoc.
+}
+specialize (H2 H Hjk Hk); clear H.
+...
+Search (∀ _, _ < _ → fA_ge_1_ε _ _ _ = true).
+fA_lt_1_ε_NQintg_A:
+  ∀ (r : radix) (m i : nat) (u : nat → nat) (j : nat),
+    0 < m ≤ rad ^ 3
+    → (∀ k : nat, u (i + k) ≤ m * (rad - 1))
+      → (∀ k : nat, k < j → fA_ge_1_ε u i k = true)
+        → fA_ge_1_ε u i j = false → ∀ k : nat, j ≤ k → Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i j) u)
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
