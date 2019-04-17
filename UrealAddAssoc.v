@@ -749,7 +749,6 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     destruct H1 as (k & Hjk & Hk).
     now rewrite A_ge_1_add_r_true_if in Hk.
   }
-  replace (i + 1 + 1) with (i + 2) in H1, H6 by flia.
   destruct j. 2: {
     rewrite <- (all_fA_ge_1_ε_NQintg_A' m) with (k := j); try easy. 2: {
       now intros; rewrite <- Nat.add_assoc.
