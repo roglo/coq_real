@@ -705,6 +705,8 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   destruct H2 as (j & Hjj & Hj).
   now rewrite A_ge_1_add_r_true_if in Hj.
 }
+destruct H1 as (j & Hjj & Hj).
+destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
