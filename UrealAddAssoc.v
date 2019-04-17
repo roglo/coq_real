@@ -585,20 +585,6 @@ destruct (zerop m) as [Hmz| Hmz]. {
 }
 unfold carry, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
-(*
-  assert (H2 : ∀ k, fA_ge_1_ε u (i + 1) k = true). {
-Search (∀ _, fA_ge_1_ε _ _ _ = true).
-intros k.
-    apply A_ge_1_add_r_true_if.
-apply H1.
-}
-  destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H3| H3]. 2: {
-destruct H3 as (j & Hjj & Hj).
-congruence.
-...
-rewrite H2 in Hj.
-...
-*)
   specialize (all_fA_ge_1_ε_P_999 u i H1 0) as H6.
   rewrite Nat.add_0_r in H6.
   unfold P, d2n, prop_carr, dig in H6.
@@ -716,6 +702,9 @@ rewrite H2 in Hj.
     rewrite min_n_add, Nat.mul_1_r.
     eapply Nat.le_lt_trans; [ apply H4 | flia Hmz Hmr ].
   }
+  destruct H2 as (j & Hjj & Hj).
+  now rewrite A_ge_1_add_r_true_if in Hj.
+}
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
