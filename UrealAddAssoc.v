@@ -665,6 +665,30 @@ rewrite min_n_add_l, Nat.mul_1_r.
 eapply Nat.le_lt_trans; [ apply H4 | flia Hmz Hmr ].
 Qed.
 
+Theorem carry_succ_lemma3 {r : radix} : ∀ m u i j a,
+  0 < m ≤ rad
+  → m ≤ 4
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
+  → (∀ k : nat, fA_ge_1_ε u (i + 1) k = true)
+  → a = A (i + 1) (min_n (i + 1) j) u
+  → Q.intg ((u (i + 1)%nat // rad)%Q + (a * 1 // rad)%Q) =
+    (u (i + 1) + Q.intg a) / rad.
+Proof.
+intros * Hmr Hm4 Hur H2 Ha.
+rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
+  apply Q.le_0_mul_r; [ easy | now rewrite Ha ].
+}
+rewrite Q.intg_pair; [ | easy ].
+destruct
+  (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
+  as [H3| H3]. {
+  rewrite Nat.add_0_r.
+  apply (carry_succ_lemma1 m _ _ (i + 1) _ (min_n (i + 1) j)); try easy; flia.
+}
+now apply (carry_succ_lemma2 m _ _ j).
+Qed.
+
+
 Theorem carry_succ {r : radix} : ∀ m u i,
   m ≤ 4
   → m ≤ rad
@@ -716,19 +740,9 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
       replace 1 with (0 + 1) by easy.
       now rewrite min_n_add, Nat.mul_1_r.
     }
-    rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
-      apply Q.le_0_mul_r; [ easy | now rewrite Ha ].
-    }
-    rewrite Q.intg_pair; [ | easy ].
-    replace 1 with (0 + 1) in Ha by easy.
+    replace 1 with (0 + 1) in Ha at 2 by easy.
     rewrite min_n_add, <- min_n_add_l in Ha.
-    destruct
-      (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
-      as [H3| H3]. {
-      rewrite Nat.add_0_r.
-      apply (carry_succ_lemma1 m _ _ (i + 1) _ (min_n (i + 1) 0)); try easy; flia.
-    }
-    now apply (carry_succ_lemma2 m _ _ 0).
+    now apply (carry_succ_lemma3 m _ _ 0).
   }
   destruct H2 as (j & Hjj & Hj).
   now rewrite A_ge_1_add_r_true_if in Hj.
@@ -753,17 +767,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     replace (S j) with (j + 1) by flia.
     rewrite min_n_add, <- min_n_add_l.
     remember (A (i + 1) (min_n (i + 1) j) u) as a eqn:Ha.
-    rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
-      apply Q.le_0_mul_r; [ easy | now rewrite Ha ].
-    }
-    rewrite Q.intg_pair; [ | easy ].
-    destruct
-      (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
-      as [H3| H3]. {
-      rewrite Nat.add_0_r.
-      apply (carry_succ_lemma1 m _ _ (i + 1) _ (min_n (i + 1) j)); try easy; flia.
-    }
-    now apply (carry_succ_lemma2 m _ _ j).
+    now apply (carry_succ_lemma3 m _ _ j).
   }
 ...
 
