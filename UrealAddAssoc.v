@@ -701,6 +701,7 @@ rewrite H2 in Hj.
       specialize (H4 (rad // 1)%Q).
       assert (H : (0 ≤ rad // 1)%Q) by apply Q.le_0_pair.
       specialize (H4 H); clear H.
+...
       apply H4.
 ...
     assert (H4 : Q.intg ((u (i + 1)%nat mod rad) // 1 + a)%Q = rad). {
