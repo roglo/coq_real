@@ -683,14 +683,16 @@ now apply (carry_succ_lemma2 m _ _ j).
 Qed.
 
 Theorem carry_succ {r : radix} : ∀ m u i,
-  m ≤ 4
-  → m ≤ rad
+  m ≤ min rad 4
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → carry u i = (u (i + 1) + carry u (i + 1)) / rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hm4 Hmr Hur.
+intros H Hur.
+assert (Hmr : m ≤ rad) by now apply Nat.min_glb_l in H.
+assert (Hm4 : m ≤ 4) by now apply Nat.min_glb_r in H.
+clear H.
 destruct (zerop m) as [Hmz| Hmz]. {
   subst m.
   replace (u (i + 1)) with 0. 2: {
@@ -877,40 +879,30 @@ rewrite (Nat_mod_less_small 1). 2: {
   split; [ easy | ].
   rewrite Hx, Nat.mul_add_distr_r, Nat.mul_1_l.
   apply Nat.add_lt_mono; [ now apply Nat.mod_upper_bound | ].
-...
-(* mouais : c'est pas paskeu (u+a≥r) que (u+I(a)≥r) ; donc faut voir... *)
-replace (x mod rad) with (x - rad) in H2. 2: {
-  rewrite (Nat_mod_less_small 1); [ flia | ].
-  rewrite Nat.mul_1_l; replace (1 + 1) with 2 by easy.
-  split. {
-    rewrite Hx.
-    apply (Nat.mul_le_mono_pos_l _ _ 1); [ pauto | ].
-    rewrite Nat.mul_comm.
-    apply Q.le_pair; [ easy | easy | ].
-    eapply Q.le_trans; [ apply H1 | ].
-Search (_ < 2 * _).
-...
-rewrite H3 at 2.
-rewrite <- Nat.add_assoc, <- Hx.
-...
-Check Nat_mod_less_small.
-...
-rewrite (Nat_mod_less_small 1 (_ + _)) in H2. 2: {
-  split. {
-    rewrite Nat.mul_1_l.
-    apply (Nat.mul_le_mono_pos_l _ _ 1); [ pauto | ].
-    rewrite Nat.mul_comm.
-    apply Q.le_pair; [ easy | easy | ].
-    eapply Q.le_trans; [ apply H1 | ].
-    rewrite Q.pair_add_l.
-    apply Q.add_le_mono_l.
-...
-  specialize (Q.intg_interv (Q.intg a) a) as H9.
-  assert (H : (0 ≤ a)%Q) by now rewrite Ha.
-  specialize (proj2 (H9 H) eq_refl) as H10; clear H.
-  now destruct H10.
+  apply (Nat.mul_lt_mono_pos_l 1); [ pauto | ].
+  rewrite Nat.mul_comm.
+  apply Q.lt_pair; [ easy | easy | ].
+  eapply Q.le_lt_trans. {
+    apply Q.intg_interv; [ | easy ].
+    now rewrite Ha.
   }
-...
+  rewrite Ha.
+  eapply Q.le_lt_trans. {
+    apply (A_upper_bound_for_adds m).
+    now intros; do 2 rewrite <- Nat.add_assoc.
+  }
+  apply (Q.lt_le_trans _ (m // 1)). {
+    rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+    apply Q.sub_lt.
+    apply Q.mul_pos_cancel_r; [ easy | ].
+    now apply Q.lt_0_pair.
+  }
+  apply Q.le_pair; [ easy | easy | ].
+  now rewrite Nat.mul_1_r, Nat.mul_1_l.
+}
+rewrite Nat.mul_1_l.
+now symmetry; apply Nat.sub_add.
+Qed.
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
   m ≤ rad
@@ -1119,27 +1111,20 @@ Check A_upper_bound_for_adds.
 ...
 *)
 
-(* cf A_mul_inv_rad_interv
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
   rad = 2
   → (∀ k, u (i + k) ≤ 2)
   → (A i n u * 1 // 2 < 1)%Q.
 Proof.
 intros * Hr2 Hu.
-apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
-rewrite <- Q.mul_assoc.
-replace 2%Q with (2 // 1)%Q by easy.
-rewrite Q.mul_pair; [ | easy | easy ].
-rewrite Q.pair_diag; [ | easy ].
-rewrite Q.mul_1_r, Q.mul_1_l.
-eapply Q.le_lt_trans. {
-  apply (A_upper_bound_for_adds 2); rewrite Hr2.
-  intros; rewrite <- Nat.add_assoc; apply Hu.
-}
-rewrite Q.mul_sub_distr_l, Q.mul_1_r.
-now apply Q.sub_lt.
+specialize (A_mul_inv_rad_interv 2 u i i n) as H1.
+rewrite Hr2 in H1.
+assert (H : 0 < 2 ≤ 2) by flia.
+specialize (H1 H Hu); clear H.
+assert (H : i ≤ i + 1) by flia.
+specialize (H1 H); clear H.
+now destruct H1.
 Qed.
-*)
 
 (* ça serait achement plus cool si au lieu de l'hypothèse
    (∀ k, fA_ge_1_ε u i k = true), j'avais
@@ -3833,7 +3818,7 @@ move n after nj; move Hn after Hnj.
 assert (Hiup : ∀ p,
   Q.intg (A i (min_n i p) (u ⊕ P v)) = Q.intg (A i n (u ⊕ P v))). {
   specialize (all_fA_ge_1_ε_NQintg_A' 2 i (u ⊕ P v)) as Hiup.
-  assert (H : 0 < 2 ≤ 4) by flia.
+  assert (H : 2 ≤ 4) by flia.
   specialize (Hiup H); clear H.
   assert (H : ∀ k, (u ⊕ P v) (i + k) ≤ 2 * (rad - 1)). {
     intros p; unfold "⊕".
@@ -4009,8 +3994,7 @@ move n before k; move nj before n; move nk before nj.
 move nk before nj; move Hnk before Hnj; move Hn after Hnj.
 assert (Hiv : ∀ p, j ≤ p → Q.intg (A i (min_n i p) v) = Q.intg (A i nj v)). {
   specialize (fA_lt_1_ε_NQintg_A 2 i v j) as H1.
-  assert (H : 0 < 2 ≤ rad ^ 3). {
-    split; [ pauto | ].
+  assert (H : 2 ≤ rad ^ 3). {
     cbn; rewrite Nat.mul_1_r.
     replace 2 with (2 * (1 * 1)) by easy.
     apply Nat.mul_le_mono; [ easy | ].
@@ -4023,8 +4007,7 @@ assert
   (Hiup : ∀ p, k ≤ p
    → Q.intg (A i (min_n i p) (u ⊕ P v)) = Q.intg (A i nk (u ⊕ P v))). {
   specialize (fA_lt_1_ε_NQintg_A 2 i (u ⊕ P v) k) as H1.
-  assert (H : 0 < 2 ≤ rad ^ 3). {
-    split; [ pauto | ].
+  assert (H : 2 ≤ rad ^ 3). {
     cbn; rewrite Nat.mul_1_r.
     replace 2 with (2 * (1 * 1)) by easy.
     apply Nat.mul_le_mono; [ easy | ].
@@ -4044,7 +4027,7 @@ assert
 assert
   (Hiuv : ∀ p, Q.intg (A i (min_n i p) (u ⊕ v)) = Q.intg (A i n (u ⊕ v))). {
   specialize (all_fA_ge_1_ε_NQintg_A' 3 i (u ⊕ v)) as Hiuv.
-  assert (H : 0 < 3 ≤ 4) by pauto.
+  assert (H : 3 ≤ 4) by pauto.
   specialize (Hiuv H); clear H.
   assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
     intros p.
@@ -4204,6 +4187,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      }
      assert (Huv2 : ∀ p, (u ⊕ v) (i + p + 2) = 3 * (rad - 1)). {
        intros p.
+Check carry_succ.
 ...
 specialize (P_999_after_7 3 (u ⊕ v) i) as H1.
 ...
@@ -4437,6 +4421,7 @@ assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
 }
 specialize (H1 H); clear H.
 ...
+*)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
