@@ -780,6 +780,17 @@ rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
 }
 rewrite Q.intg_pair; [ | easy ].
 do 2 rewrite <- Nat.add_assoc; f_equal.
+Search (Q.intg (_ * _)).
+...
+destruct j. 2: {
+  replace (S j) with (j + 1) by flia.
+  rewrite min_n_add, <- min_n_add_l.
+  destruct (lt_dec j k) as [Hljk| Hgjk]. {
+    replace k with (j + (k - j)) at 1 by flia Hljk.
+Search (min_n).
+Check fA_lt_1_ε_NQintg_A.
+rewrite (fA_lt_1_ε_NQintg_A m (i + 1)).
+...
 rewrite <- Ha.
 remember (A (i + 1) (min_n i j) u) as b eqn:Hb.
 move b before a.
