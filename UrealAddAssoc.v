@@ -770,88 +770,38 @@ rewrite A_split_first; [ | min_n_ge ].
 replace (S i) with (i + 1) by flia.
 remember (A (i + 1) (min_n (i + 1) k) u) as a eqn:Ha.
 rewrite <- (carry_succ_lemma3 m _ _ k); try easy.
-f_equal; f_equal; f_equal.
 rewrite Ha.
-specialize (fA_lt_1_ε_NQintg_A m i u j) as H1.
-specialize (fA_lt_1_ε_NQintg_A m (i + 1) u k) as H2.
-assert (H : m ≤ rad ^ 3). {
-  apply (le_trans _ rad); [ easy | ].
-  replace rad with (rad ^ 1) at 1 by (cbn; flia).
-  apply Nat.pow_le_mono_r; [ easy | pauto ].
+rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
+  now apply Q.le_0_mul_r.
 }
-specialize (H1 H); specialize (H2 H); clear H.
-specialize (H1 Hur Hjj Hj).
-assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
-  now intros; rewrite <- Nat.add_assoc.
+rewrite Q.intg_pair; [ | easy ].
+rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
+  now apply Q.le_0_mul_r.
 }
-specialize (H2 H Hjk Hk); clear H.
-destruct (le_dec j (k + 1)) as [Hjk1| Hjk1]. {
-...
-  rewrite <- (H1 _ Hjk1).
-  rewrite min_n_add, <- min_n_add_l.
-  rewrite A_split_first; [ | min_n_ge ].
-  replace (S i) with (i + 1) by flia.
-  remember (A (i + 1) (min_n (i + 1) k) u) as a eqn:Ha.
-  move a before k; move Ha before a.
-  rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
-    apply Q.le_0_mul_r; [ easy | now rewrite Ha ].
-  }
-  rewrite Q.intg_pair; [ | easy ].
-  destruct
-    (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
-    as [H3| H3]. {
-    rewrite Nat.add_0_r.
-    apply (carry_succ_lemma1 m _ _ (i + 1) _ (min_n (i + 1) k)); try easy.
-    flia.
-  }
-  specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
-  symmetry; rewrite H5 at 1.
-  rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
-  rewrite Nat.div_add; [ | easy ].
-  rewrite Nat.add_comm, <- Nat.add_assoc; f_equal.
-  rewrite (Q.intg_small (_ * _)%Q). 2: {
-    rewrite Ha.
-    apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
-  }
-  rewrite Nat.add_0_l.
-  rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
-    rewrite Ha.
-    apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
-  }
-  rewrite Q.frac_pair in H3.
-  rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
-  rewrite <- Q.mul_add_distr_r in H3.
-  apply (Q.mul_le_mono_pos_r (rad // 1)%Q) in H3. 2: {
-    now apply Q.lt_0_pair.
-  }
-  rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
-  rewrite Q.mul_pair_den_num in H3; [ | easy ].
-  rewrite Q.mul_1_r in H3.
-  apply Nat_div_less_small.
-  split. {
-    apply Nat.lt_succ_r.
-    rewrite <- Nat.add_1_r.
-    apply (Nat.mul_lt_mono_pos_l 1); [ pauto | ].
-    rewrite Nat.mul_comm.
-    apply Q.lt_pair; [ easy | easy | ].
-    eapply Q.le_lt_trans; [ apply H3 | ].
-    do 2 rewrite Q.pair_add_l.
-    rewrite <- Q.add_assoc.
-    apply Q.add_lt_mono_l.
-    now rewrite Ha; apply Q.intg_interv.
-  }
-  replace 2 with (1 + 1) by easy.
-  rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-  apply Nat.add_lt_mono; [ now apply Nat.mod_upper_bound | ].
-...
-  specialize (NQintg_A_le_for_adds m u (i + 1) k) as H4.
-  assert (H : ∀ k, u (i + 1 + k + 1) ≤ m * (rad - 1)). {
-    now intros; do 2 rewrite <- Nat.add_assoc.
-  }
-  specialize (H4 H); clear H.
-  rewrite <- Ha in H4.
-  eapply Nat.le_lt_trans; [ apply H4 | flia Hmz Hmr ].
+rewrite Q.intg_pair; [ | easy ].
+do 2 rewrite <- Nat.add_assoc; f_equal.
+rewrite <- Ha.
+remember (A (i + 1) (min_n i j) u) as b eqn:Hb.
+move b before a.
+rewrite Q.intg_small. 2: {
+  rewrite Hb.
+  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
 }
+rewrite Q.intg_small. 2: {
+  rewrite Ha.
+  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
+}
+f_equal.
+rewrite (Q.frac_small (_ * _)%Q). 2: {
+  rewrite Hb.
+  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
+}
+rewrite (Q.frac_small (_ * _)%Q). 2: {
+  rewrite Ha.
+  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
+}
+destruct (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + (b * 1 // rad)%Q) 1) as [H1| H1]. {
+  destruct (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + (a * 1 // rad)%Q) 1) as [H2| H2]; [ easy | exfalso ].
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
