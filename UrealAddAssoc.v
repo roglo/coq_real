@@ -802,6 +802,7 @@ rewrite (Q.frac_small (_ * _)%Q). 2: {
 }
 destruct (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + (b * 1 // rad)%Q) 1) as [H1| H1]. {
   destruct (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + (a * 1 // rad)%Q) 1) as [H2| H2]; [ easy | exfalso ].
+  apply Q.nlt_ge in H2; apply H2; clear H2.
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
