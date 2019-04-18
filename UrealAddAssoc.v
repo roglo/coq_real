@@ -780,6 +780,29 @@ rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
 }
 rewrite Q.intg_pair; [ | easy ].
 do 2 rewrite <- Nat.add_assoc; f_equal.
+rewrite Q.intg_small. 2: {
+  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
+}
+rewrite Q.intg_small. 2: {
+  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
+}
+f_equal.
+rewrite (Q.frac_small (_ * _)%Q). 2: {
+  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
+}
+rewrite (Q.frac_small (_ * _)%Q). 2: {
+  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
+}
+rewrite <- Ha.
+remember (A (i + 1) (min_n i j) u) as b eqn:Hb.
+move b before a.
+destruct (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + (b * 1 // rad)%Q) 1)
+  as [H1| H1]. {
+  destruct (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + (a * 1 // rad)%Q) 1)
+    as [H2| H2]; [ easy | exfalso ].
+  apply Q.nlt_ge in H2; apply H2; clear H2.
+...
+(*
 Search (Q.intg (_ * _)).
 ...
 destruct j. 2: {
@@ -791,30 +814,7 @@ Search (min_n).
 Check fA_lt_1_ε_NQintg_A.
 rewrite (fA_lt_1_ε_NQintg_A m (i + 1)).
 ...
-rewrite <- Ha.
-remember (A (i + 1) (min_n i j) u) as b eqn:Hb.
-move b before a.
-rewrite Q.intg_small. 2: {
-  rewrite Hb.
-  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
-}
-rewrite Q.intg_small. 2: {
-  rewrite Ha.
-  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
-}
-f_equal.
-rewrite (Q.frac_small (_ * _)%Q). 2: {
-  rewrite Hb.
-  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
-}
-rewrite (Q.frac_small (_ * _)%Q). 2: {
-  rewrite Ha.
-  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
-}
-destruct (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + (b * 1 // rad)%Q) 1) as [H1| H1]. {
-  destruct (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + (a * 1 // rad)%Q) 1) as [H2| H2]; [ easy | exfalso ].
-  apply Q.nlt_ge in H2; apply H2; clear H2.
-...
+*)
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
   m ≤ rad
