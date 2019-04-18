@@ -791,8 +791,6 @@ rewrite <- (Hkqq (j + k)); [ | flia ].
 rewrite min_n_add_l, <- min_n_add.
 rewrite A_split_first; [ | min_n_ge ].
 replace (S i) with (i + 1) by flia.
-remember (A (i + 1) (min_n i (j + k + 1)) u) as a eqn:Ha.
-...
 rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
   now apply Q.le_0_mul_r.
 }
@@ -804,13 +802,13 @@ rewrite Nat.add_0_r.
 rewrite (Q.frac_small (_ * _)%Q). 2: {
   apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
 }
+remember (A (i + 1) (min_n i (j + k + 1)) u) as a eqn:Ha.
+destruct (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + (a * 1 // rad)%Q) 1)
+  as [H1| H1]. {
+  rewrite Nat.add_0_r.
 ...
-remember (A (i + 1) (min_n (i + 1) k) u) as a eqn:Ha.
-...
-(* mmm... j'ai peur que l'appel de carry_succ_lemma3 empêche de conclure
+(* mmm... j'ai peur que l'appel de carry_succ_lemma3 empêche de conclure *)
 rewrite <- (carry_succ_lemma3 m _ _ k); try easy.
-*)
-...
 rewrite Ha.
 rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
   now apply Q.le_0_mul_r.
