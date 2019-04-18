@@ -845,6 +845,21 @@ rewrite <- Nat.add_assoc in H2.
 rewrite <- Nat.add_mod_idemp_l in H2; [ | easy ].
 remember (u (i + 1) mod rad + Q.intg a) as x eqn:Hx.
 ...
+(* mouais : c'est pas paskeu (u+a≥r) que (u+I(a)≥r) ; donc faut voir... *)
+replace (x mod rad) with (x - rad) in H2. 2: {
+  rewrite (Nat_mod_less_small 1); [ flia | ].
+  rewrite Nat.mul_1_l; replace (1 + 1) with 2 by easy.
+  split. {
+    rewrite Hx.
+    apply (Nat.mul_le_mono_pos_l _ _ 1); [ pauto | ].
+    rewrite Nat.mul_comm.
+    apply Q.le_pair; [ easy | easy | ].
+    eapply Q.le_trans; [ apply H1 | ].
+Search (_ < 2 * _).
+...
+rewrite H3 at 2.
+rewrite <- Nat.add_assoc, <- Hx.
+...
 Check Nat_mod_less_small.
 ...
 rewrite (Nat_mod_less_small 1 (_ + _)) in H2. 2: {
