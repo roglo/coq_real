@@ -652,7 +652,6 @@ replace 2 with (1 + 1) by easy.
 rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
 apply Nat.add_lt_mono; [ now apply Nat.mod_upper_bound | ].
 rewrite Ha.
-(**)
 specialize (NQintg_A_le_for_adds m u (i + 1) j) as H4.
 assert (H : ∀ k, u (i + 1 + k + 1) ≤ m * (rad - 1)). {
   now intros; do 2 rewrite <- Nat.add_assoc.
@@ -801,20 +800,32 @@ destruct (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + (b * 1 // rad)%Q) 1)
   destruct (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + (a * 1 // rad)%Q) 1)
     as [H2| H2]; [ easy | exfalso ].
   apply Q.nlt_ge in H2; apply H2; clear H2.
+  eapply Q.le_lt_trans; [ | apply H1 ].
+  apply Q.add_le_mono_l.
+  apply Q.mul_le_mono_pos_r; [ easy | ].
+  rewrite Ha, Hb.
+  assert
+    (Hjqq :
+     ∀ p, j ≤ p → Q.intg (A i (min_n i p) u) = Q.intg (A i (min_n i j) u)). {
+    intros p Hp.
+    apply (fA_lt_1_ε_NQintg_A m); try easy.
+    apply (le_trans _ rad); [ easy | ].
+    replace rad with (rad ^ 1) at 1 by (cbn; flia).
+    apply Nat.pow_le_mono_r; [ easy | pauto ].
+  }
+  assert
+    (Hkqq : ∀ p, k ≤ p →
+     Q.intg (A (i + 1) (min_n (i + 1) p) u) =
+     Q.intg (A (i + 1) (min_n (i + 1) k) u)). {
+    intros p Hp.
+    apply (fA_lt_1_ε_NQintg_A m); try easy. 2: {
+      now intros; rewrite <- Nat.add_assoc.
+    }
+    apply (le_trans _ rad); [ easy | ].
+    replace rad with (rad ^ 1) at 1 by (cbn; flia).
+    apply Nat.pow_le_mono_r; [ easy | pauto ].
+  }
 ...
-(*
-Search (Q.intg (_ * _)).
-...
-destruct j. 2: {
-  replace (S j) with (j + 1) by flia.
-  rewrite min_n_add, <- min_n_add_l.
-  destruct (lt_dec j k) as [Hljk| Hgjk]. {
-    replace k with (j + (k - j)) at 1 by flia Hljk.
-Search (min_n).
-Check fA_lt_1_ε_NQintg_A.
-rewrite (fA_lt_1_ε_NQintg_A m (i + 1)).
-...
-*)
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
   m ≤ rad
