@@ -666,6 +666,30 @@ rewrite min_n_add_l, Nat.mul_1_r.
 eapply Nat.le_lt_trans; [ apply H4 | flia Hmz Hmr ].
 Qed.
 
+Check all_fA_ge_1_ε_NQintg_A.
+Check fA_lt_1_ε_NQintg_A.
+...
+all_fA_ge_1_ε_NQintg_A
+     : ∀ (m i : nat) (u : nat → nat),
+         0 < m ≤ 4
+         → (∀ k : nat, u (i + k) ≤ m * (rad - 1))
+           → (∀ k : nat, fA_ge_1_ε u i k = true)
+             → ∀ k l : nat,
+                 Q.intg (A i (min_n i k + l) u) = Q.intg (A i (min_n i k) u)
+where
+?r : [ |- radix]
+fA_lt_1_ε_NQintg_A
+     : ∀ (m i : nat) (u : nat → nat) (j : nat),
+         0 < m ≤ rad ^ 3
+         → (∀ k : nat, u (i + k) ≤ m * (rad - 1))
+           → (∀ k : nat, k < j → fA_ge_1_ε u i k = true)
+             → fA_ge_1_ε u i j = false
+               → ∀ k : nat,
+                   j ≤ k
+                   → Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i j) u)
+where
+?r : [ |- radix]
+
 ...
 
 Theorem carry_succ_lemma3 {r : radix} : ∀ m u i j a,
