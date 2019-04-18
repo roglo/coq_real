@@ -765,13 +765,52 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
 }
 destruct H2 as (k & Hjk & Hk); move k before j.
 move Hjk before Hjj.
+assert
+  (Hjqq :
+     ∀ p, j ≤ p → Q.intg (A i (min_n i p) u) = Q.intg (A i (min_n i j) u)). {
+  intros p Hp.
+  apply (fA_lt_1_ε_NQintg_A m); try easy.
+  apply (le_trans _ rad); [ easy | ].
+  replace rad with (rad ^ 1) at 1 by (cbn; flia).
+  apply Nat.pow_le_mono_r; [ easy | pauto ].
+}
+assert
+(Hkqq : ∀ p, k ≤ p →
+             Q.intg (A (i + 1) (min_n (i + 1) p) u) =
+             Q.intg (A (i + 1) (min_n (i + 1) k) u)). {
+  intros p Hp.
+  apply (fA_lt_1_ε_NQintg_A m); try easy. 2: {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  apply (le_trans _ rad); [ easy | ].
+  replace rad with (rad ^ 1) at 1 by (cbn; flia).
+  apply Nat.pow_le_mono_r; [ easy | pauto ].
+}
+rewrite <- (Hjqq (j + k + 1)); [ | flia ].
+rewrite <- (Hkqq (j + k)); [ | flia ].
+rewrite min_n_add_l, <- min_n_add.
 rewrite A_split_first; [ | min_n_ge ].
 replace (S i) with (i + 1) by flia.
-remember (A (i + 1) (min_n (i + 1) k) u) as a eqn:Ha.
-(**)
+remember (A (i + 1) (min_n i (j + k + 1)) u) as a eqn:Ha.
 ...
-(* mmm... j'ai peur que l'appel de carry_succ_lemma3 empêche de conclure *)
+rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
+  now apply Q.le_0_mul_r.
+}
+rewrite Q.intg_pair; [ | easy ].
+rewrite Q.intg_small. 2: {
+  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
+}
+rewrite Nat.add_0_r.
+rewrite (Q.frac_small (_ * _)%Q). 2: {
+  apply (A_mul_inv_rad_interv m _ i); [ easy | easy | flia ].
+}
+...
+remember (A (i + 1) (min_n (i + 1) k) u) as a eqn:Ha.
+...
+(* mmm... j'ai peur que l'appel de carry_succ_lemma3 empêche de conclure
 rewrite <- (carry_succ_lemma3 m _ _ k); try easy.
+*)
+...
 rewrite Ha.
 rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
   now apply Q.le_0_mul_r.
