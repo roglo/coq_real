@@ -609,10 +609,10 @@ Theorem carry_succ_lemma2 {r : radix} : ∀ m u i j a,
   → (∀ k : nat, fA_ge_1_ε u (i + 1) k = true)
   → a = A (i + 1) (min_n (i + 1) j) u
   → (1 ≤ Q.frac (u (i + 1)%nat // rad) + Q.frac (a * 1 // rad))%Q
-  → u (i + 1) / rad + Q.intg (a * (1 // rad)%Q) + 1 = (u (i + 1) + Q.intg a) / rad.
+  → u (i + 1) / rad + Q.intg (a * (1 // rad)%Q) + 1 =
+    (u (i + 1) + Q.intg a) / rad.
 Proof.
 intros * (Hmz, Hmr) Hm4 Hur H2 Ha H3.
-clear H2.
 specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
 symmetry; rewrite H5 at 1.
 rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
@@ -659,11 +659,10 @@ assert (H : ∀ k, u (i + 1 + k + 1) ≤ m * (rad - 1)). {
 }
 specialize (H4 H); clear H.
 rewrite min_n_add_l, Nat.mul_1_r in H4.
-rewrite min_n_add_l, Nat.mul_1_r.
-...
 rewrite (all_fA_ge_1_ε_NQintg_A' m (i + 1)) with (k := j); try easy. 2: {
   now intros; rewrite <- Nat.add_assoc.
 }
+rewrite min_n_add_l, Nat.mul_1_r.
 eapply Nat.le_lt_trans; [ apply H4 | flia Hmz Hmr ].
 Qed.
 
