@@ -1588,6 +1588,7 @@ destruct y as [| yp| yp]; [ now destruct z | | ].
 -destruct z as [| zp| zp]; [ easy | easy | cbn ].
  apply GQmul_lt_mono_l.
 Qed.
+Arguments mul_lt_mono_pos_l x%Q y%Q z%Q.
 
 Theorem mul_lt_mono_pos_r : ∀ x y z,
   (0 < x)%Q → (y < z)%Q ↔ (y * x < z * x)%Q.
@@ -1595,6 +1596,7 @@ Proof.
 setoid_rewrite mul_comm.
 apply mul_lt_mono_pos_l.
 Qed.
+Arguments mul_lt_mono_pos_r x%Q y%Q z%Q.
 
 Theorem mul_le_mono_pos_l : ∀ x y z,
   (0 < x)%Q → (y ≤ z)%Q ↔ (x * y ≤ x * z)%Q.
@@ -1607,6 +1609,7 @@ destruct y as [| yp| yp]; [ now destruct z | | ].
 -destruct z as [| zp| zp]; [ easy | easy | cbn ].
  apply GQmul_le_mono_l.
 Qed.
+Arguments mul_le_mono_pos_l x%Q y%Q z%Q.
 
 Theorem mul_le_mono_pos_r : ∀ x y z,
   (0 < x)%Q → (y ≤ z)%Q ↔ (y * x ≤ z * x)%Q.
@@ -1614,6 +1617,7 @@ Proof.
 setoid_rewrite mul_comm.
 apply mul_le_mono_pos_l.
 Qed.
+Arguments mul_le_mono_pos_r x%Q y%Q z%Q.
 
 Theorem mul_cancel_l : ∀ x y z, x ≠ 0%Q → (x * y)%Q = (x * z)%Q ↔ y = z.
 Proof.

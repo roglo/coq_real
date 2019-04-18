@@ -806,6 +806,9 @@ remember (A (i + 1) (min_n i (j + k + 1)) u) as a eqn:Ha.
 destruct (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + (a * 1 // rad)%Q) 1)
   as [H1| H1]. {
   rewrite Nat.add_0_r.
+  rewrite Q.frac_pair in H1.
+  rewrite <- (Q.mul_pair_den_num _ 1) in H1; [ | easy ].
+  rewrite <- Q.mul_add_distr_r in H1.
 ...
 (* mmm... j'ai peur que l'appel de carry_succ_lemma3 empêche de conclure *)
 rewrite <- (carry_succ_lemma3 m _ _ k); try easy.
