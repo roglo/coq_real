@@ -606,13 +606,12 @@ Theorem carry_succ_lemma2 {r : radix} : ∀ m u i j a,
   0 < m ≤ rad
   → m ≤ 4
   → (∀ k, u (i + k) ≤ m * (rad - 1))
-  → (∀ k : nat, fA_ge_1_ε u (i + 1) k = true)
   → a = A (i + 1) (min_n (i + 1) j) u
   → (1 ≤ Q.frac (u (i + 1)%nat // rad) + Q.frac (a * 1 // rad))%Q
   → u (i + 1) / rad + Q.intg (a * (1 // rad)%Q) + 1 =
     (u (i + 1) + Q.intg a) / rad.
 Proof.
-intros * (Hmz, Hmr) Hm4 Hur H2 Ha H3.
+intros * (Hmz, Hmr) Hm4 Hur Ha H3.
 specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
 symmetry; rewrite H5 at 1.
 rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
@@ -653,16 +652,12 @@ replace 2 with (1 + 1) by easy.
 rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
 apply Nat.add_lt_mono; [ now apply Nat.mod_upper_bound | ].
 rewrite Ha.
-specialize (NQintg_A_le_for_adds m u (i + 1) 0) as H4.
+(**)
+specialize (NQintg_A_le_for_adds m u (i + 1) j) as H4.
 assert (H : ∀ k, u (i + 1 + k + 1) ≤ m * (rad - 1)). {
   now intros; do 2 rewrite <- Nat.add_assoc.
 }
 specialize (H4 H); clear H.
-rewrite min_n_add_l, Nat.mul_1_r in H4.
-rewrite (all_fA_ge_1_ε_NQintg_A' m (i + 1)) with (k := j); try easy. 2: {
-  now intros; rewrite <- Nat.add_assoc.
-}
-rewrite min_n_add_l, Nat.mul_1_r.
 eapply Nat.le_lt_trans; [ apply H4 | flia Hmz Hmr ].
 Qed.
 
@@ -670,12 +665,11 @@ Theorem carry_succ_lemma3 {r : radix} : ∀ m u i j a,
   0 < m ≤ rad
   → m ≤ 4
   → (∀ k, u (i + k) ≤ m * (rad - 1))
-  → (∀ k : nat, fA_ge_1_ε u (i + 1) k = true)
   → a = A (i + 1) (min_n (i + 1) j) u
   → Q.intg ((u (i + 1)%nat // rad)%Q + (a * 1 // rad)%Q) =
     (u (i + 1) + Q.intg a) / rad.
 Proof.
-intros * Hmr Hm4 Hur H2 Ha.
+intros * Hmr Hm4 Hur Ha.
 rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
   apply Q.le_0_mul_r; [ easy | now rewrite Ha ].
 }
@@ -688,7 +682,6 @@ destruct
 }
 now apply (carry_succ_lemma2 m _ _ j).
 Qed.
-
 
 Theorem carry_succ {r : radix} : ∀ m u i,
   m ≤ 4
@@ -772,6 +765,13 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
   apply (carry_succ_lemma3 m _ _ j); try easy.
 }
 destruct H2 as (k & Hjk & Hk); move k before j.
+move Hjk before Hjj.
+rewrite A_split_first; [ | min_n_ge ].
+replace (S i) with (i + 1) by flia.
+remember (A (i + 1) (min_n (i + 1) k) u) as a eqn:Ha.
+rewrite <- (carry_succ_lemma3 m _ _ k); try easy.
+f_equal; f_equal; f_equal.
+rewrite Ha.
 specialize (fA_lt_1_ε_NQintg_A m i u j) as H1.
 specialize (fA_lt_1_ε_NQintg_A m (i + 1) u k) as H2.
 assert (H : m ≤ rad ^ 3). {
@@ -786,12 +786,13 @@ assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
 }
 specialize (H2 H Hjk Hk); clear H.
 destruct (le_dec j (k + 1)) as [Hjk1| Hjk1]. {
+...
   rewrite <- (H1 _ Hjk1).
   rewrite min_n_add, <- min_n_add_l.
   rewrite A_split_first; [ | min_n_ge ].
   replace (S i) with (i + 1) by flia.
   remember (A (i + 1) (min_n (i + 1) k) u) as a eqn:Ha.
-...
+  move a before k; move Ha before a.
   rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
     apply Q.le_0_mul_r; [ easy | now rewrite Ha ].
   }
@@ -803,7 +804,6 @@ destruct (le_dec j (k + 1)) as [Hjk1| Hjk1]. {
     apply (carry_succ_lemma1 m _ _ (i + 1) _ (min_n (i + 1) k)); try easy.
     flia.
   }
-  Check carry_cases_NQintg_A.
   specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
   symmetry; rewrite H5 at 1.
   rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
@@ -843,35 +843,15 @@ destruct (le_dec j (k + 1)) as [Hjk1| Hjk1]. {
   replace 2 with (1 + 1) by easy.
   rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
   apply Nat.add_lt_mono; [ now apply Nat.mod_upper_bound | ].
-  rewrite Ha.
-  specialize (NQintg_A_le_for_adds m u (i + 1) 0) as H4.
+...
+  specialize (NQintg_A_le_for_adds m u (i + 1) k) as H4.
   assert (H : ∀ k, u (i + 1 + k + 1) ≤ m * (rad - 1)). {
     now intros; do 2 rewrite <- Nat.add_assoc.
   }
   specialize (H4 H); clear H.
-  rewrite min_n_add_l, Nat.mul_1_r in H4.
-...
-  rewrite <- (fA_lt_1_ε_NQintg_A m) with (k0 := 0).
-  rewrite (all_fA_ge_1_ε_NQintg_A' m (i + 1)) with (k := j); try easy. 2: {
-    now intros; rewrite <- Nat.add_assoc.
-  }
-  rewrite min_n_add_l, Nat.mul_1_r.
+  rewrite <- Ha in H4.
   eapply Nat.le_lt_trans; [ apply H4 | flia Hmz Hmr ].
-...
-  rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
-  apply Q.le_0_mul_r; [ easy | now rewrite Ha ].
 }
-rewrite Q.intg_pair; [ | easy ].
-destruct
-  (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
-  as [H3| H3]. {
-  rewrite Nat.add_0_r.
-  apply (carry_succ_lemma1 m _ _ (i + 1) _ (min_n (i + 1) j)); try easy; flia.
-}
-now apply (carry_succ_lemma2 m _ _ j).
-...
-  apply (carry_succ_lemma2 m _ _ k); try easy.
-(* ah oui mais non *)
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
