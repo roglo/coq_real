@@ -768,6 +768,9 @@ move Hjk before Hjj.
 rewrite A_split_first; [ | min_n_ge ].
 replace (S i) with (i + 1) by flia.
 remember (A (i + 1) (min_n (i + 1) k) u) as a eqn:Ha.
+(**)
+...
+(* mmm... j'ai peur que l'appel de carry_succ_lemma3 empêche de conclure *)
 rewrite <- (carry_succ_lemma3 m _ _ k); try easy.
 rewrite Ha.
 rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
