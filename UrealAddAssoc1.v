@@ -391,7 +391,7 @@ destruct (zerop (Q.intg (Q.frac (A i n u) + Q.frac (B i n u 1)))) as [H1| H1].
 Qed.
 
 Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ m i u,
-  0 < m ≤ 4
+  m ≤ 4
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, Q.intg (A i (min_n i k + l) u) = Q.intg (A i (min_n i k) u).
@@ -399,6 +399,20 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hut k l.
+destruct (zerop m) as [Hmz| Hmz]. {
+  subst m; f_equal; unfold A.
+  rewrite all_0_summation_0. 2: {
+    intros j Hj.
+    replace (u j) with 0; [ easy | ].
+    replace j with (i + (j - i)) by flia Hj.
+    now symmetry; apply Nat.le_0_r.
+  }
+  rewrite all_0_summation_0; [ easy | ].
+  intros j Hj.
+  replace (u j) with 0; [ easy | ].
+  replace j with (i + (j - i)) by flia Hj.
+  now symmetry; apply Nat.le_0_r.
+}
 remember (min_n i k) as n eqn:Hn.
 assert (Hun : ∀ l, u (n + l) < rad ^ (n + l - i)). {
   rename l into l'; intros.
@@ -507,7 +521,7 @@ apply (Q.lt_le_trans _ (1 + u (n + l)%nat // rad ^ p)%Q).
 Qed.
 
 Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ m i u,
-  0 < m ≤ 4
+  m ≤ 4
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i 0) u).
@@ -515,6 +529,20 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hm Hur Hut k.
+destruct (zerop m) as [Hmz| Hmz]. {
+  subst m; f_equal; unfold A.
+  rewrite all_0_summation_0. 2: {
+    intros j Hj.
+    replace (u j) with 0; [ easy | ].
+    replace j with (i + (j - i)) by flia Hj.
+    now symmetry; apply Nat.le_0_r.
+  }
+  rewrite all_0_summation_0; [ easy | ].
+  intros j Hj.
+  replace (u j) with 0; [ easy | ].
+  replace j with (i + (j - i)) by flia Hj.
+  now symmetry; apply Nat.le_0_r.
+}
 replace (min_n i k) with (min_n i 0 + rad * k). 2: {
   unfold min_n.
   rewrite Nat.add_0_r.
@@ -525,7 +553,7 @@ now apply (all_fA_ge_1_ε_NQintg_A m).
 Qed.
 
 Theorem fA_lt_1_ε_NQintg_A {r : radix} : ∀ m i u j,
-  0 < m ≤ rad ^ 3
+  m ≤ rad ^ 3
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, k < j → fA_ge_1_ε u i k = true)
   → fA_ge_1_ε u i j = false
@@ -534,6 +562,20 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hjj Huf * Hjk.
+destruct (zerop m) as [Hmz| Hmz]. {
+  subst m; f_equal; unfold A.
+  rewrite all_0_summation_0. 2: {
+    clear j Hjj Huf Hjk; intros j Hj.
+    replace (u j) with 0; [ easy | ].
+    replace j with (i + (j - i)) by flia Hj.
+    now symmetry; apply Nat.le_0_r.
+  }
+  rewrite all_0_summation_0; [ easy | ].
+  intros p Hp.
+  replace (u p) with 0; [ easy | ].
+  replace p with (i + (p - i)) by flia Hp.
+  now symmetry; apply Nat.le_0_r.
+}
 replace k with (j + (k - j)) by flia Hjk.
 rewrite min_n_add.
 rewrite <- ApB_A by min_n_ge.
@@ -542,7 +584,7 @@ rewrite <- Nat.add_assoc, <- Nat.add_0_r.
 f_equal.
 assert (HB : (B i (min_n i j) u (rad * (k - j)) < 1 // rad ^ S j)%Q). {
   specialize (B_upper_bound_for_adds m u i j (min_n i j)) as HB.
-  specialize (HB (rad * (k - j)) Hmr).
+  specialize (HB (rad * (k - j)) (conj Hmz Hmr)).
   assert (H : i + j + 5 < min_n i j). {
     unfold min_n.
     destruct rad as [| rr]; [ easy | ].
@@ -574,6 +616,24 @@ split; [ now apply Q.le_0_add | ].
 eapply Q.lt_le_trans; [ apply Q.add_lt_mono_l, HB | ].
 apply Q.le_add_le_sub_l.
 now apply Q.lt_le_incl.
+Qed.
+
+Theorem carry_cases_NQintg_A {r : radix} : ∀ m u i j,
+  m ≤ min 4 (rad ^ 3)
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
+  → j = carry_cases u i
+  → ∀ k, j ≤ k →
+    Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i j) u).
+Proof.
+intros * Hmr Hur Hj k Hjk.
+unfold carry_cases in Hj; subst j.
+destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
+  apply Nat.min_glb_l in Hmr.
+  now apply (all_fA_ge_1_ε_NQintg_A' m).
+}
+destruct H1 as (j & Hjj & Hj).
+apply Nat.min_glb_r in Hmr.
+now apply (fA_lt_1_ε_NQintg_A m).
 Qed.
 
 Theorem pre_Hugo_Herbelin_1 {r : radix} : ∀ u v i kup kuv,
@@ -2430,7 +2490,7 @@ remember (min_n i j) as nj eqn:Hnj.
 move nj before n; move Hnj before Hn.
 assert (Hii : Q.intg (A i nj (u ⊕ v)) = Q.intg (A i n (u ⊕ v))). {
   specialize (all_fA_ge_1_ε_NQintg_A' 3 i (u ⊕ v)) as Hii.
-  assert (H : 0 < 3 ≤ 4) by flia.
+  assert (H : 3 ≤ 4) by flia.
   specialize (Hii H); clear H.
   assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
     intros p.
