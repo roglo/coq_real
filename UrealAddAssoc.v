@@ -844,6 +844,39 @@ rewrite H3 in H2 at 1.
 rewrite <- Nat.add_assoc in H2.
 rewrite <- Nat.add_mod_idemp_l in H2; [ | easy ].
 remember (u (i + 1) mod rad + Q.intg a) as x eqn:Hx.
+enough (H : x = x mod rad + rad). {
+  rewrite H in H2 at 1.
+  rewrite Nat.add_assoc, Nat.add_shuffle0 in H2.
+  apply Nat.add_cancel_r in H2.
+  rewrite Hx in H.
+  rewrite Nat.add_mod_idemp_l in H; [ | easy ].
+  replace rad with (rad * 1) in H2 at 3 by flia.
+  rewrite <- Nat.mul_add_distr_l in H2.
+  now apply Nat.mul_cancel_l in H2.
+}
+destruct (lt_dec x rad) as [H4| H4]. {
+  exfalso.
+  apply Nat.lt_le_pred in H4.
+  apply Nat.succ_le_mono in H4.
+  rewrite Nat.succ_pred_pos in H4; [ | easy ].
+  rewrite <- Nat.add_1_r in H4.
+  rewrite Hx in H4.
+  apply Nat.nlt_ge in H4; apply H4; clear H4.
+  apply (Nat.mul_lt_mono_pos_l 1); [ pauto | ].
+  rewrite Nat.mul_comm.
+  apply Q.lt_pair; [ easy | easy | ].
+  eapply Q.le_lt_trans; [ apply H1 | ].
+  rewrite <- Nat.add_assoc.
+  do 2 rewrite Q.pair_add_l.
+  apply Q.add_lt_mono_l.
+  apply Q.intg_interv; [ now rewrite Ha | easy ].
+}
+apply Nat.nlt_ge in H4.
+rewrite (Nat_mod_less_small 1). 2: {
+  rewrite Nat.mul_1_l.
+  split; [ easy | ].
+  rewrite Hx, Nat.mul_add_distr_r, Nat.mul_1_l.
+  apply Nat.add_lt_mono; [ now apply Nat.mod_upper_bound | ].
 ...
 (* mouais : c'est pas paskeu (u+a≥r) que (u+I(a)≥r) ; donc faut voir... *)
 replace (x mod rad) with (x - rad) in H2. 2: {
