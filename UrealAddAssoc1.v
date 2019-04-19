@@ -474,8 +474,7 @@ unfold B in H3.
 rewrite Nat.add_sub in H3.
 rewrite summation_only_one in H3.
 specialize (frac_ge_if_all_fA_ge_1_ε_for_add m u i) as H1.
-assert (H : 0 < m ≤ rad ^ 3). {
-  split; [ easy | ].
+assert (H : m ≤ rad ^ 3). {
   eapply le_trans; [ apply Hmr | ].
   apply (le_trans _ (rad * 3)); [ flia Hr | ].
   apply Nat.lt_le_incl, Nat_mul_lt_pow; [ easy | pauto ].
@@ -532,21 +531,7 @@ Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ m i u,
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hm Hur Hut k.
-destruct (zerop m) as [Hmz| Hmz]. {
-  subst m; f_equal; unfold A.
-  rewrite all_0_summation_0. 2: {
-    intros j Hj.
-    replace (u j) with 0; [ easy | ].
-    replace j with (i + (j - i)) by flia Hj.
-    now symmetry; apply Nat.le_0_r.
-  }
-  rewrite all_0_summation_0; [ easy | ].
-  intros j Hj.
-  replace (u j) with 0; [ easy | ].
-  replace j with (i + (j - i)) by flia Hj.
-  now symmetry; apply Nat.le_0_r.
-}
+intros Hm4 Hur Hut k.
 replace (min_n i k) with (min_n i 0 + rad * k). 2: {
   unfold min_n.
   rewrite Nat.add_0_r.
@@ -566,20 +551,6 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hjj Huf * Hjk.
-destruct (zerop m) as [Hmz| Hmz]. {
-  subst m; f_equal; unfold A.
-  rewrite all_0_summation_0. 2: {
-    clear j Hjj Huf Hjk; intros j Hj.
-    replace (u j) with 0; [ easy | ].
-    replace j with (i + (j - i)) by flia Hj.
-    now symmetry; apply Nat.le_0_r.
-  }
-  rewrite all_0_summation_0; [ easy | ].
-  intros p Hp.
-  replace (u p) with 0; [ easy | ].
-  replace p with (i + (p - i)) by flia Hp.
-  now symmetry; apply Nat.le_0_r.
-}
 replace k with (j + (k - j)) by flia Hjk.
 rewrite min_n_add.
 rewrite <- ApB_A by min_n_ge.
@@ -588,7 +559,7 @@ rewrite <- Nat.add_assoc, <- Nat.add_0_r.
 f_equal.
 assert (HB : (B i (min_n i j) u (rad * (k - j)) < 1 // rad ^ S j)%Q). {
   specialize (B_upper_bound_for_adds m u i j (min_n i j)) as HB.
-  specialize (HB (rad * (k - j)) (conj Hmz Hmr)).
+  specialize (HB (rad * (k - j)) Hmr).
   assert (H : i + j + 5 < min_n i j). {
     unfold min_n.
     destruct rad as [| rr]; [ easy | ].
@@ -1269,8 +1240,7 @@ destruct H4 as [H4| [H4| H4]].
      rewrite Hnup.
      eapply Q.lt_trans.
      -apply (B_upper_bound_for_adds 3 _ _ 0).
-      +split; [ pauto | ].
-       destruct rad as [| rr]; [ easy | ].
+      +destruct rad as [| rr]; [ easy | ].
        destruct rr; [ flia Hr | cbn; flia ].
       +unfold min_n.
        destruct rad as [| rr]; [ easy | ].
@@ -1337,8 +1307,7 @@ destruct H4 as [H4| [H4| H4]].
      eapply Q.lt_le_trans.
     **rewrite Hnup.
       apply (B_upper_bound_for_adds 3 _ _ j).
-    ---split; [ pauto | ].
-       destruct rad as [| rr]; [ easy | ].
+    ---destruct rad as [| rr]; [ easy | ].
        destruct rr; [ flia Hr | cbn; flia ].
     ---unfold min_n.
        destruct rad as [| rr]; [ easy | ].
@@ -1448,9 +1417,7 @@ destruct H4 as [H4| [H4| H4]].
    apply Q.le_antisymm in H5; [ | easy ].
    rewrite <- H5, Q.add_0_l.
    specialize (B_upper_bound_for_adds 1 u i 0 nv (rad * j)) as H1.
-   assert (H : 0 < 1 ≤ rad ^ 3). {
-     split; [ pauto | now apply Nat_pow_ge_1 ].
-   }
+   assert (H : 1 ≤ rad ^ 3) by now apply Nat_pow_ge_1.
    specialize (H1 H); clear H.
    assert (H : i + 0 + 5 < nv). {
      rewrite Hnv.
@@ -1732,8 +1699,7 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ s)%Q 1) as [Har| Har].
  eapply Q.lt_le_trans.
  +rewrite Hni.
   apply (B_upper_bound_for_adds 1 _ _ 0).
-  *split; [ pauto | ].
-   destruct rad; [ easy | cbn; flia ].
+  *destruct rad; [ easy | cbn; flia ].
   *unfold min_n.
    destruct rad as [| rr]; [ easy | ].
    destruct rr; [ flia Hr | cbn; flia ].
@@ -2121,9 +2087,7 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%Q 1) as [Hau1| Hau1].
    }
    specialize (B_upper_bound_for_adds 1 u i j nij rad) as H1.
    rewrite Nat.mul_1_l in H1.
-   assert (H : 0 < 1 ≤ rad ^ 3). {
-     split; [ pauto | now apply Nat_pow_ge_1 ].
-   }
+   assert (H : 1 ≤ rad ^ 3) by now apply Nat_pow_ge_1.
    specialize (H1 H); clear H.
    assert (H : i + j + 5 < nij). {
      rewrite Hnij.
@@ -2625,7 +2589,7 @@ destruct (Q.lt_le_dec (A i nj u + A i nj v)%Q 1) as [Hajv| Hajv].
    apply Q.add_le_mono_l.
    eapply Q.le_trans.
    -apply (B_upper_bound_for_adds' 2).
-    +split; [ pauto | cbn; rewrite Nat.mul_1_r ].
+    +cbn; rewrite Nat.mul_1_r.
      replace 2 with (2 * (1 * 1)) by easy.
      apply Nat.mul_le_mono; [ easy | ].
      now apply Nat.mul_le_mono.
@@ -2704,8 +2668,8 @@ destruct (Q.lt_le_dec (A i nj u + A i nj v)%Q 1) as [Hajv| Hajv].
  apply Q.lt_sub_lt_add_r, Q.add_lt_mono_l.
  specialize (B_upper_bound_for_adds' 2 v i nj (rad * (k - j))) as H1.
  rewrite <- Hsj in H1.
- assert (H : 0 < 2 ≤ rad ^ 3). {
-   split; [ pauto | cbn; rewrite Nat.mul_1_r ].
+ assert (H : 2 ≤ rad ^ 3). {
+   cbn; rewrite Nat.mul_1_r.
    replace 2 with (2 * (1 * 1)) by easy.
    apply Nat.mul_le_mono; [ easy | ].
    now apply Nat.mul_le_mono.

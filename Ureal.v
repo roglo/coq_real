@@ -1047,14 +1047,14 @@ eapply Q.le_lt_trans.
 Qed.
 
 Theorem B_upper_bound_for_adds_at_0 {r : radix} : ∀ m u k n l,
-  0 < m ≤ rad ^ 3
+  m ≤ rad ^ 3
   → k + 5 < n
   → (∀ j, u j ≤ m * (rad - 1))
   → (B 0 n u l < 1 // rad ^ S k)%Q.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hm Hk5n Hur.
+intros Hmr3 Hk5n Hur.
 unfold B.
 destruct l.
 -rewrite summation_empty; [ easy | ].
@@ -1094,6 +1094,7 @@ destruct l.
   }
   rewrite Q.pair_diag; [ | flia Hr ].
   rewrite Q.mul_1_r.
+  destruct (zerop m) as [Hmz| Hmz]; [ now rewrite Hmz | ].
   apply (Q.lt_trans _ (m // rad ^ (n - 1))).
   *apply Q.lt_pair; [ | pauto | ]. {
      apply Nat.neq_mul_0; pauto.
@@ -1118,7 +1119,7 @@ destruct l.
 Qed.
 
 Theorem B_upper_bound_for_adds {r : radix} : ∀ m u i k n l,
-  0 < m ≤ rad ^ 3
+  m ≤ rad ^ 3
   → i + k + 5 < n
   → (∀ j, j ≥ i → u j ≤ m * (rad - 1))
   → (B i n u l < 1 // rad ^ S k)%Q.
@@ -1172,6 +1173,10 @@ destruct i.
     rewrite Nat.mul_1_r, <- Nat.pow_add_r.
     apply Q.lt_pair; [ pauto | pauto | ].
     rewrite Nat.mul_1_r, Nat.pow_add_r.
+    destruct (zerop m) as [Hmz| Hmz]. {
+      rewrite Hmz, Nat.mul_0_r, Nat.mul_0_l.
+      apply Nat.neq_0_lt_0, Nat.neq_mul_0; pauto.
+    }
     apply (lt_le_trans _ (rad ^ S l * m * rad ^ S k)).
    ++apply Nat.mul_lt_mono_pos_r; [ apply Nat.neq_0_lt_0; pauto | ].
      apply Nat.mul_lt_mono_pos_r; [ easy | ].
@@ -1197,14 +1202,14 @@ Proof.
 intros * Hikn Hur.
 specialize radix_ge_2 as Hr.
 apply (B_upper_bound_for_adds 2); [ | easy | easy ].
-split; [ pauto | cbn; rewrite Nat.mul_1_r ].
+cbn; rewrite Nat.mul_1_r.
 replace 2 with (2 * 1) by easy.
 apply Nat.mul_le_mono; [ easy | ].
 destruct rad; [ easy | cbn; flia ].
 Qed.
 
 Theorem B_upper_bound_for_adds' {r : radix} : ∀ m u i n l,
-  0 < m ≤ rad ^ 3
+  m ≤ rad ^ 3
   → i + 1 ≤ n
   → (∀ j : nat, j ≥ i → u j ≤ m * (rad - 1))
   → (B i n u l ≤ m // rad ^ (n - i - 1) * (1 - 1 // rad ^ l))%Q.
@@ -1322,7 +1327,7 @@ erewrite <- (all_0_summation_0 (λ _, 0%Rg)).
 Qed.
 
 Theorem frac_ge_if_all_fA_ge_1_ε_le_rad_for_add {r : radix} : ∀ m u i,
-  0 < m ≤ rad ^ 3
+  m ≤ rad ^ 3
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, l ≤ rad
@@ -1434,7 +1439,7 @@ destruct (Q.lt_le_dec (Q.frac (A i n u) + B i n u l) 1) as [H4| H4].
 Qed.
 
 Theorem frac_ge_if_all_fA_ge_1_ε_for_add {r : radix} : ∀ m u i,
-  0 < m ≤ rad ^ 3
+  m ≤ rad ^ 3
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   ↔ (∀ k l, (Q.frac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%Q).
