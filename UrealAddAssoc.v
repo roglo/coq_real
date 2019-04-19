@@ -570,6 +570,7 @@ rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
 apply (Q.mul_lt_mono_pos_r (rad // 1)%Q) in H3. 2: {
   now apply Q.lt_0_pair.
 }
+...
 rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
   rewrite Ha.
   now apply (A_mul_inv_rad_interv m _ i).
