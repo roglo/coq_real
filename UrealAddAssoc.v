@@ -574,23 +574,6 @@ rewrite Q.mul_add_distr_r in H3.
 rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
 rewrite Q.mul_pair_den_num in H3; [ | easy ].
 rewrite Q.mul_1_r in H3.
-(**)
-rewrite Q.frac_of_intg in H3.
-rewrite Q.mul_sub_distr_r in H3.
-rewrite <- Q.mul_assoc in H3.
-rewrite Q.mul_pair_den_num in H3; [ | easy ].
-rewrite Q.mul_1_r in H3.
-rewrite Q.add_sub_assoc in H3.
-apply Q.lt_sub_lt_add_r in H3.
-replace (rad // 1)%Q with (1 * rad // 1)%Q in H3 at 1 by apply Q.mul_1_l.
-rewrite <- Q.mul_add_distr_r in H3.
-rewrite (Q.add_pair 1 1) in H3; [ | easy | easy ].
-do 2 rewrite Nat.mul_1_l in H3.
-rewrite <- Q.intg_add_nat_l in H3.
-replace (1 // 1)%Q with 1%Q in H3 by easy.
-rewrite Q.mul_pair in H3; [ | easy | easy ].
-rewrite Nat.mul_1_l in H3.
-...
 rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
   rewrite Ha.
   now apply (A_mul_inv_rad_interv m _ i).
@@ -626,8 +609,6 @@ apply (Q.le_lt_trans _ ((u (i + 1)%nat mod rad) // 1 + a)%Q). {
 }
 easy.
 Qed.
-
-...
 
 Theorem carry_succ_lemma2 {r : radix} : ∀ m u i j a,
   m ≤ rad
