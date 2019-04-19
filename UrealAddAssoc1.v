@@ -399,20 +399,6 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hut k l.
-destruct (zerop m) as [Hmz| Hmz]. {
-  subst m; f_equal; unfold A.
-  rewrite all_0_summation_0. 2: {
-    intros j Hj.
-    replace (u j) with 0; [ easy | ].
-    replace j with (i + (j - i)) by flia Hj.
-    now symmetry; apply Nat.le_0_r.
-  }
-  rewrite all_0_summation_0; [ easy | ].
-  intros j Hj.
-  replace (u j) with 0; [ easy | ].
-  replace j with (i + (j - i)) by flia Hj.
-  now symmetry; apply Nat.le_0_r.
-}
 remember (min_n i k) as n eqn:Hn.
 assert (Hun : ∀ l, u (n + l) < rad ^ (n + l - i)). {
   rename l into l'; intros.
