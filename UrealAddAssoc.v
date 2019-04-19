@@ -962,99 +962,41 @@ induction k. {
     move Hc2 before Hc1.
     (* u 7(←2)17(←2) (si m=3 et r=10)
        mais, du coup, la 1ère retenue ne peut pas être 2, en fait *)
-    specialize (all_fA_ge_1_ε_carry u i Hau 1) as H2.
-Check carry_succ.
-...
-(* voir si je suis arrivé à prouver que
-  carry u i = (u (i + 1) + carry u (i + 1)) / rad *)
-...
-(**)
-    rewrite A_split_first in H2; [ | min_n_ge ].
-    replace (S (i + 1)) with (i + 2) in H2 by flia.
-    rewrite Hc1, Hu2 in H2.
-    rewrite Q.intg_add_cond in H2; [ | apply Q.le_0_pair | ]. 2: {
-      now apply Q.le_0_mul_r.
+    specialize (carry_succ m u (i + 1)) as H2.
+    assert (H : m ≤ min rad 4). {
+      apply Nat.min_glb; [ easy | ].
+      admit.
     }
-    assert (H : (0 ≤ A (i + 2) (min_n (i + 1) 0) u * 1 // rad < 1)%Q). {
-      split; [ now apply Q.le_0_mul_r | ].
-      apply (Q.mul_lt_mono_pos_r (rad // 1)%Q); [ now apply Q.lt_0_pair | ].
-      rewrite <- Q.mul_assoc, Q.mul_pair_den_num; [ | easy ].
-      rewrite Q.mul_1_r, Q.mul_1_l.
-      eapply Q.le_lt_trans. {
-        apply (A_upper_bound_for_adds m).
-        now intros; do 2 rewrite <- Nat.add_assoc.
-      }
-      apply (Q.lt_le_trans _ (m // 1)%Q). {
-        rewrite Q.mul_sub_distr_l, Q.mul_1_r.
-        apply Q.sub_lt.
-        apply Q.mul_pos_cancel_l; [ | easy ].
-        apply Q.lt_0_pair; flia Hmz.
-      }
-      apply Q.le_pair; [ easy | easy | ].
-      now rewrite Nat.mul_1_r, Nat.mul_1_l.
+    specialize (H2 H); clear H.
+    assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
+      now intros; rewrite <- Nat.add_assoc.
     }
-    rewrite (Q.intg_small (_ * _)%Q) in H2; [ | easy ].
-    rewrite (Q.frac_small (_ * _)%Q) in H2; [ | easy ].
-    clear H.
-    rewrite Nat.add_0_r in H2.
-    assert (H : Q.intg (((m - 1) * rad - m) // rad) = m - 2). {
-      apply Q.intg_interv; [ apply Q.le_0_pair | ].
-      split. {
-        apply Q.le_pair; [ easy | easy | ].
-        rewrite Nat.mul_1_l.
-        do 2 rewrite Nat.mul_sub_distr_r.
-        rewrite Nat.mul_1_l.
-        do 2 apply Nat.le_add_le_sub_r.
-        rewrite <- Nat.add_assoc.
-        rewrite <- Nat.add_sub_swap. 2: {
-          apply Nat.mul_le_mono_r; flia Hmz Hm1.
-        }
-        flia Hmr Hr.
-      }
-      rewrite <- (Q.pair_add_l _ 1).
-      apply Q.lt_pair; [ easy | easy | ].
-      rewrite Nat.mul_1_r, Nat.mul_comm.
-      replace (m - 2 + 1) with (m - 1) by flia Hmz Hm1.
-      apply Nat.sub_lt; [ | flia Hmz ].
-      replace m with (m * 1) at 1 by flia.
-      apply Nat.mul_le_mono; [ easy | flia Hmz Hm1 ].
+    specialize (H2 H); clear H.
+    replace (i + 1 + 1) with (i + 2) in H2 by flia.
+    rewrite Hc1, Hc2, Hu2 in H2.
+    rewrite Nat.add_sub_assoc in H2; [ | flia Hmz Hm1 ].
+    rewrite Nat.sub_add in H2. 2: {
+      apply Nat.lt_pred_le.
+      rewrite <- Nat.sub_1_r.
+      rewrite Nat.mul_comm.
+      destruct rad as [ | rr]; [ easy | cbn ].
+      destruct rr; [ flia Hr | cbn; flia Hmz Hm1 ].
     }
-    rewrite H in H2.
-    rewrite Q.frac_of_intg in H2; [ | apply Q.le_0_pair ].
-    rewrite H in H2; clear H.
-    rewrite Q.sub_pair_pos in H2; [ | easy | easy | ]. 2: {
-      rewrite Nat.mul_1_r, Nat.mul_sub_distr_l.
-      rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-      do 2 apply Nat.le_add_le_sub_r.
-      rewrite <- Nat.add_assoc.
-      rewrite <- Nat.add_sub_swap. 2: {
-        apply Nat.mul_le_mono_l; flia Hmz Hm1.
-      }
-      flia Hmr.
+    destruct m; [ flia Hmz | ].
+    cbn in H2; rewrite Nat.sub_0_r in H2.
+    apply (Nat.add_cancel_r _ _ 1) in H2.
+    rewrite <- Nat.div_add in H2; [ | easy ].
+    rewrite Nat.mul_1_l in H2.
+    rewrite <- Nat.add_sub_swap in H2. 2: {
+      replace 1 with (1 * 1) at 1 by easy.
+      apply Nat.mul_le_mono; [ flia Hmz Hm1 | easy ].
     }
-    do 2 rewrite Nat.mul_1_r in H2.
-    rewrite Nat_sub_sub_swap, Nat.mul_comm in H2.
-    rewrite <- Nat.mul_sub_distr_l in H2.
-    replace (m - 1 - (m - 2)) with 1 in H2 by flia Hmz Hm1.
-    rewrite Nat.mul_1_r in H2.
-    destruct
-      (Q.lt_le_dec
-         (((rad - m) // rad)%Q + (A (i + 2) (min_n (i + 1) 0) u * 1 // rad)%Q)
-         1) as [H1| H1]; [ flia Hmz Hm1 H2 | clear H2 ].
-(**)
-    specialize (all_fA_ge_1_ε_carry u i Hau 2) as H3.
-    replace (i + 2) with (i + 1 + 1) in H3 at 3 by flia.
-    rewrite min_n_add_l, Nat.mul_1_r in H3.
-(*
-    rewrite A_split_first in H2; [ | min_n_ge ].
-    replace (S (i + 1)) with (i + 2) in H2 by flia.
-*)
-    rewrite <- ApB_A in H3; [ | min_n_ge ].
-    remember (A (i + 2) (min_n (i + 1) 0) u) as a eqn:Ha.
-    rewrite Hc2 in H3; symmetry in H3.
-(*
-rewrite Hc2 in H3.
-*)
+    rewrite <- Nat.add_sub_assoc in H2; [ | easy ].
+    rewrite (Nat.add_comm (m * rad)) in H2.
+    rewrite Nat.div_add in H2; [ | easy ].
+    rewrite Nat.div_small in H2; [ | flia Hr ].
+    flia H2.
+  }
 ...
 rewrite <- Q.add_sub_swap in H2.
 rewrite <- Q.add_sub_assoc in H2.
