@@ -609,14 +609,13 @@ Qed.
 
 Theorem carry_succ_lemma2 {r : radix} : ∀ m u i j a,
   m ≤ rad
-  → m ≤ 4
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → a = A (i + 1) (min_n (i + 1) j) u
   → (1 ≤ Q.frac (u (i + 1)%nat // rad) + Q.frac (a * 1 // rad))%Q
   → u (i + 1) / rad + Q.intg (a * (1 // rad)%Q) + 1 =
     (u (i + 1) + Q.intg a) / rad.
 Proof.
-intros * Hmr Hm4 Hur Ha H3.
+intros * Hmr Hur Ha H3.
 specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
 symmetry; rewrite H5 at 1.
 rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
@@ -669,13 +668,12 @@ Qed.
 
 Theorem carry_succ_lemma3 {r : radix} : ∀ m u i j a,
   m ≤ rad
-  → m ≤ 4
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → a = A (i + 1) (min_n (i + 1) j) u
   → Q.intg ((u (i + 1)%nat // rad)%Q + (a * 1 // rad)%Q) =
     (u (i + 1) + Q.intg a) / rad.
 Proof.
-intros * Hmr Hm4 Hur Ha.
+intros * Hmr Hur Ha.
 rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
   apply Q.le_0_mul_r; [ easy | now rewrite Ha ].
 }
