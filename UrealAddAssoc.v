@@ -565,16 +565,16 @@ Theorem carry_succ_lemma1 {r : radix} : ∀ m u i j a n,
   → u (i + 1) / rad + Q.intg (a * (1 // rad)%Q) = (u (i + 1) + Q.intg a) / rad.
 Proof.
 intros * Hmr Hij Hur Ha H3.
+rewrite Q.frac_pair in H3.
+rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
+apply (Q.mul_lt_mono_pos_r (rad // 1)%Q) in H3. 2: {
+  now apply Q.lt_0_pair.
+}
 rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
   rewrite Ha.
   now apply (A_mul_inv_rad_interv m _ i).
 }
-rewrite Q.frac_pair in H3.
-rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
 rewrite <- Q.mul_add_distr_r in H3.
-apply (Q.mul_lt_mono_pos_r (rad // 1)%Q) in H3. 2: {
-  now apply Q.lt_0_pair.
-}
 rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
 rewrite Q.mul_pair_den_num in H3; [ | easy ].
 rewrite Q.mul_1_r in H3.
