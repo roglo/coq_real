@@ -698,7 +698,6 @@ intros H Hur.
 assert (Hmr : m ≤ rad) by now apply Nat.min_glb_l in H.
 assert (Hm4 : m ≤ 4) by now apply Nat.min_glb_r in H.
 clear H.
-clear Hm4.
 unfold carry, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   specialize (all_fA_ge_1_ε_P_999 u i H1 0) as H6.
@@ -706,7 +705,6 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   unfold P, d2n, prop_carr, dig in H6.
   unfold carry, carry_cases in H6.
   destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
-...
     rewrite <- (all_fA_ge_1_ε_NQintg_A' m i) with (k := 1); try easy.
     rewrite A_split_first; [ | min_n_ge ].
     replace (S i) with (i + 1) by flia.
@@ -893,7 +891,7 @@ now symmetry; apply Nat.sub_add.
 Qed.
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
-  m ≤ rad
+  m ≤ min rad 4
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ j, 1 ≤ j ≤ m
@@ -902,7 +900,9 @@ Theorem P_999_after_7 {r : radix} : ∀ m u i,
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hmr Hur Hau * Hj Hu1 *.
+intros Hmr4 Hur Hau * Hj Hu1 *.
+assert (Hmr : m ≤ rad) by now apply Nat.min_glb_l in Hmr4.
+assert (Hm4 : m ≤ 4) by now apply Nat.min_glb_r in Hmr4.
 destruct (zerop m) as [Hmz| Hmz]. {
   rewrite Hmz in Hur |-*.
   specialize (Hur (k + 2)) as H1.
@@ -913,6 +913,14 @@ apply Nat.neq_0_lt_0 in Hmz.
 induction k. {
   rewrite Nat.add_0_r.
   specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2, Hc1).
+(**)
+specialize (carry_succ m u (i + 1) Hmr4) as H1.
+assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
+  now intros; rewrite <- Nat.add_assoc.
+}
+specialize (H1 H); clear H.
+replace (i + 1 + 1) with (i + 2) in H1 by flia.
+...
   destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
     move Hm1 at top; subst m; clear Hmz Hu2.
     replace j with 1 in Hu1 by flia Hj; clear j Hj.
@@ -950,12 +958,7 @@ induction k. {
     move Hc2 before Hc1.
     (* u 7(←2)17(←2) (si m=3 et r=10)
        mais, du coup, la 1ère retenue ne peut pas être 2, en fait *)
-    specialize (carry_succ m u (i + 1)) as H2.
-    assert (H : m ≤ min rad 4). {
-      apply Nat.min_glb; [ easy | ].
-...
-    }
-    specialize (H2 H); clear H.
+    specialize (carry_succ m u (i + 1) Hmr4) as H2.
     assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
       now intros; rewrite <- Nat.add_assoc.
     }
@@ -4114,6 +4117,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
    }
    destruct Huv789 as [Huv7| Huv89]. {
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
+...
        (* à voir *) admit.
      }
      assert (Huv2 : ∀ p, (u ⊕ v) (i + p + 2) = 3 * (rad - 1)). {
