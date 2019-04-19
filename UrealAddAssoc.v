@@ -698,6 +698,7 @@ intros H Hur.
 assert (Hmr : m ≤ rad) by now apply Nat.min_glb_l in H.
 assert (Hm4 : m ≤ 4) by now apply Nat.min_glb_r in H.
 clear H.
+clear Hm4.
 unfold carry, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   specialize (all_fA_ge_1_ε_P_999 u i H1 0) as H6.
@@ -705,6 +706,7 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   unfold P, d2n, prop_carr, dig in H6.
   unfold carry, carry_cases in H6.
   destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
+...
     rewrite <- (all_fA_ge_1_ε_NQintg_A' m i) with (k := 1); try easy.
     rewrite A_split_first; [ | min_n_ge ].
     replace (S i) with (i + 1) by flia.
@@ -951,7 +953,7 @@ induction k. {
     specialize (carry_succ m u (i + 1)) as H2.
     assert (H : m ≤ min rad 4). {
       apply Nat.min_glb; [ easy | ].
-      admit.
+...
     }
     specialize (H2 H); clear H.
     assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {

@@ -413,12 +413,12 @@ assert (Hun : ∀ l, u (n + l) < rad ^ (n + l - i)). {
   rewrite Hn; unfold min_n.
   rewrite <- Nat.add_assoc, Nat.mul_add_distr_l.
   rewrite <-  Nat.add_assoc, Nat.add_comm.
-  eapply le_trans; [ apply Hmr | ].
-  rewrite <- Nat.add_sub_assoc. {
-    destruct rad as [| rr]; [ easy | cbn ].
-    destruct rr; [ flia Hr | cbn; flia ].
+  rewrite <- Nat.add_sub_assoc. 2: {
+    destruct rad; [ easy | cbn; flia ].
   }
-  destruct rad; [ easy | cbn; flia ].
+  eapply le_trans; [ apply Hmr | ].
+  destruct rad as [| rr]; [ easy | ].
+  destruct rr; [ flia Hr | cbn; flia ].
 }
 assert (Hin : i + 1 ≤ n) by (rewrite Hn; min_n_ge).
 symmetry; apply Nat.le_antisymm. {
