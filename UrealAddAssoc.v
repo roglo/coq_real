@@ -570,13 +570,15 @@ rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
 apply (Q.mul_lt_mono_pos_r (rad // 1)%Q) in H3. 2: {
   now apply Q.lt_0_pair.
 }
-...
+rewrite Q.mul_add_distr_r in H3.
+rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
+rewrite Q.mul_pair_den_num in H3; [ | easy ].
+rewrite Q.mul_1_r in H3.
 rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
   rewrite Ha.
   now apply (A_mul_inv_rad_interv m _ i).
 }
-rewrite <- Q.mul_add_distr_r in H3.
-rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
+rewrite <- Q.mul_assoc in H3.
 rewrite Q.mul_pair_den_num in H3; [ | easy ].
 rewrite Q.mul_1_r in H3.
 specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
