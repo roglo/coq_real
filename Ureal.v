@@ -1047,14 +1047,14 @@ eapply Q.le_lt_trans.
 Qed.
 
 Theorem B_upper_bound_for_adds_at_0 {r : radix} : ∀ m u k n l,
-  m ≤ rad ^ 3
-  → k + 5 < n
+  k + 5 < n
+  → m < rad ^ (n - k - 2)
   → (∀ j, u j ≤ m * (rad - 1))
   → (B 0 n u l < 1 // rad ^ S k)%Q.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hmr3 Hk5n Hur.
+intros Hk5n Hmr Hur.
 unfold B.
 destruct l.
 -rewrite summation_empty; [ easy | ].
@@ -1112,22 +1112,23 @@ destruct l.
    now apply Nat_pow_ge_1.
   *apply Q.lt_pair; [ pauto | pauto | ].
    rewrite Nat.mul_1_r.
-   apply (le_lt_trans _ (rad ^ 3 * rad ^ S k)).
-  --now apply Nat.mul_le_mono_r.
-  --rewrite <- Nat.pow_add_r.
-    apply Nat.pow_lt_mono_r; [ easy | flia Hk5n ].
+   replace (n - 1) with (n - k - 2 + S k) by flia Hk5n.
+   rewrite Nat.pow_add_r.
+   apply Nat.mul_lt_mono_pos_r; [ apply Nat.neq_0_lt_0; pauto | easy ].
 Qed.
 
 Theorem B_upper_bound_for_adds {r : radix} : ∀ m u i k n l,
-  m ≤ rad ^ 3
-  → i + k + 5 < n
+  i + k + 5 < n
+  → m < rad ^ (n - i - k - 2)
   → (∀ j, j ≥ i → u j ≤ m * (rad - 1))
   → (B i n u l < 1 // rad ^ S k)%Q.
 Proof.
-intros * Hm Hikn Hur.
+intros * Hikn Hm Hur.
 specialize radix_ge_2 as Hr.
 destruct i.
--apply (B_upper_bound_for_adds_at_0 m); [ easy | flia Hikn | ].
+-apply (B_upper_bound_for_adds_at_0 m); [ easy | | ]. {
+   now rewrite Nat.sub_0_r in Hm.
+ }
  intros j; apply Hur; flia.
 -unfold B.
  destruct l.
@@ -1185,13 +1186,13 @@ destruct i.
    ++rewrite <- Nat.add_1_r, Nat.pow_add_r, Nat.pow_1_r.
      do 2 rewrite <- Nat.mul_assoc.
      apply Nat.mul_le_mono_l.
-     apply (le_trans _ (rad * (rad ^ 3 * rad ^ S k))).
-    **apply Nat.mul_le_mono_l.
-      now apply Nat.mul_le_mono_r.
-    **rewrite <- Nat.pow_add_r.
-      rewrite <- Nat.pow_succ_r; [ | flia ].
-      apply Nat.pow_le_mono_r; [ easy | ].
-      flia Hikn.
+     rewrite Nat.mul_comm, <- Nat.mul_assoc.
+     replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+     rewrite <- Nat.pow_add_r.
+     replace (S k + 1) with (S (S k)) by flia.
+     replace (n - S i) with (n - S i - k - 2 + (S (S k))) by flia Hikn.
+     rewrite Nat.pow_add_r.
+     now apply Nat.mul_le_mono_r, Nat.lt_le_incl.
 Qed.
 
 Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l n,
@@ -1201,11 +1202,15 @@ Theorem B_upper_bound_for_add {r : radix} : ∀ u i k l n,
 Proof.
 intros * Hikn Hur.
 specialize radix_ge_2 as Hr.
-apply (B_upper_bound_for_adds 2); [ | easy | easy ].
-cbn; rewrite Nat.mul_1_r.
-replace 2 with (2 * 1) by easy.
-apply Nat.mul_le_mono; [ easy | ].
-destruct rad; [ easy | cbn; flia ].
+apply (B_upper_bound_for_adds 2); [ easy | | easy ].
+replace (n - i - k - 2) with (3 + (n - i - k - 5)) by flia Hikn.
+rewrite Nat.pow_add_r.
+apply (lt_le_trans _ (rad ^ 3 * 1)). {
+  destruct rad as [| rr]; [ easy | ].
+  destruct rr; [ flia Hr | cbn; flia ].
+}
+apply Nat.mul_le_mono_l.
+apply Nat.neq_0_lt_0; pauto.
 Qed.
 
 Theorem B_upper_bound_for_adds' {r : radix} : ∀ m u i n l,
@@ -1327,13 +1332,13 @@ erewrite <- (all_0_summation_0 (λ _, 0%Rg)).
 Qed.
 
 Theorem frac_ge_if_all_fA_ge_1_ε_le_rad_for_add {r : radix} : ∀ m u i,
-  m ≤ rad ^ 3
+  m < rad ^ (rad * (i + 3) - (i + 2))
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, l ≤ rad
   → (Q.frac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%Q.
 Proof.
-intros * Hm Hur.
+intros * Hmr Hur.
 specialize radix_ge_2 as Hr.
 intros H1 * Hlr.
 remember (min_n i k) as n eqn:Hn.
@@ -1344,12 +1349,24 @@ rewrite <- Hn in H3.
 apply Q.nlt_ge; intros H2.
 rewrite <- ApB_A in H2; [ | easy ].
 rewrite Q.frac_add in H2; [ | easy | easy ].
+assert (Hmrk : m < rad ^ (n - i - k - 2)). {
+  eapply lt_le_trans; [ apply Hmr | ].
+  apply Nat.pow_le_mono_r; [ easy | ].
+  rewrite (Nat_sub_sub_swap _ i).
+  rewrite <- Nat.sub_add_distr.
+  apply Nat.sub_le_mono_r.
+  rewrite Hn; unfold min_n.
+  rewrite Nat.add_shuffle0.
+  rewrite (Nat.mul_add_distr_l _ (i + 3)).
+  rewrite <- Nat.add_sub_assoc; [ flia | ].
+  destruct rad; [ easy | cbn; flia ].
+}
 assert (HB : ∀ l, (0 ≤ B i n u l < 1)%Q). {
   clear l H2 Hlr; intros l.
   rewrite Hn.
   split; [ easy | ].
   eapply Q.lt_le_trans.
-  -apply (B_upper_bound_for_adds m _ _ 0); [ easy | | ]. {
+  -apply (B_upper_bound_for_adds m _ _ k); [ | now rewrite <- Hn | ]. {
      unfold min_n.
      destruct rad as [| rr]; [ easy | ].
      destruct rr; [ flia Hr | cbn; flia ].
@@ -1385,13 +1402,13 @@ destruct (Q.lt_le_dec (Q.frac (A i n u) + B i n u l) 1) as [H4| H4].
   eapply Q.le_lt_trans; [ | apply H6 ].
   apply Q.add_le_mono_l.
   now apply B_le_mono_r.
- +specialize (B_upper_bound_for_adds m u i k n rad Hm) as H7.
+ +specialize (B_upper_bound_for_adds m u i k n rad) as H7.
   assert (H : i + k + 5 < n). {
     rewrite Hn; unfold min_n.
     destruct rad as [| rr]; [ easy | ].
     destruct rr; [ flia Hr | cbn; flia ].
   }
-  specialize (H7 H); clear H.
+  specialize (H7 H Hmrk); clear H.
   assert (H : ∀ j, j ≥ i → u j ≤ m * (rad - 1)). {
     intros j Hj; replace j with (i + (j - i)) by flia Hj; apply Hur.
   }
@@ -1439,7 +1456,7 @@ destruct (Q.lt_le_dec (Q.frac (A i n u) + B i n u l) 1) as [H4| H4].
 Qed.
 
 Theorem frac_ge_if_all_fA_ge_1_ε_for_add {r : radix} : ∀ m u i,
-  m ≤ rad ^ 3
+  m < rad ^ (rad * (i + 3) - (i + 2))
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   ↔ (∀ k l, (Q.frac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%Q).

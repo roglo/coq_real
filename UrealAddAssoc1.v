@@ -399,11 +399,13 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hut k l.
+clear Hmr.
 remember (min_n i k) as n eqn:Hn.
 assert (Hun : ∀ l, u (n + l) < rad ^ (n + l - i)). {
   rename l into l'; intros.
   replace (n + l) with (i + (n + l - i)) at 1 by (rewrite Hn; min_n_ge).
   eapply le_lt_trans; [ apply Hur | ].
+...
   eapply le_lt_trans. 2: {
     apply Nat_mul_lt_pow; [ easy | ].
     rewrite Hn; min_n_ge.
@@ -417,9 +419,14 @@ assert (Hun : ∀ l, u (n + l) < rad ^ (n + l - i)). {
     destruct rad; [ easy | cbn; flia ].
   }
   eapply le_trans; [ apply Hmr | ].
+unfold min_n.
+rewrite Nat.add_0_r; flia.
+(*
   destruct rad as [| rr]; [ easy | ].
   destruct rr; [ flia Hr | cbn; flia ].
+*)
 }
+...
 assert (Hin : i + 1 ≤ n) by (rewrite Hn; min_n_ge).
 symmetry; apply Nat.le_antisymm. {
   apply Q.intg_le_mono; [ easy | ].
@@ -433,6 +440,8 @@ eapply Nat.lt_le_trans; [ apply H1 | ].
 replace (n + S l) with (n + l + 1) by flia.
 apply Nat.nlt_ge.
 intros H2.
+specialize (NQintg_A_slow_incr u i (n + l)) as H3.
+...
 specialize (NQintg_A_slow_incr u i (n + l) (Hun l)) as H3.
 assert (H : i + 1 < n + l - 1) by (rewrite Hn; min_n_ge).
 specialize (H3 H H2); clear H H1 H2 IHl.
@@ -460,6 +469,7 @@ unfold B in H3.
 rewrite Nat.add_sub in H3.
 rewrite summation_only_one in H3.
 specialize (frac_ge_if_all_fA_ge_1_ε_for_add m u i) as H1.
+...
 assert (H : m ≤ rad ^ 3). {
   eapply le_trans; [ apply Hmr | ].
   apply (le_trans _ (rad * 3)); [ flia Hr | ].
@@ -518,12 +528,15 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hm4 Hur Hut k.
+clear Hm4.
 replace (min_n i k) with (min_n i 0 + rad * k). 2: {
   unfold min_n.
   rewrite Nat.add_0_r.
   do 3 rewrite Nat.mul_add_distr_l.
   apply Nat.add_shuffle0.
 }
+apply (all_fA_ge_1_ε_NQintg_A m); try easy.
+...
 now apply (all_fA_ge_1_ε_NQintg_A m).
 Qed.
 
