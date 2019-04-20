@@ -502,50 +502,36 @@ apply Nat.mul_le_mono. 2: {
 rewrite Hp, Hn; unfold min_n.
 eapply le_trans; [ apply Nat.lt_le_incl, Hmr | ].
 apply Nat.pow_le_mono_r; [ easy | ].
-...
-  apply Nat.mul_le_mono.
-  *remember (p - S k) as q eqn:Hq.
-   destruct q.
-  --rewrite Hp, Hn in Hq; min_n_ge_in Hq.
-  --cbn.
-    destruct q.
-   ++rewrite Hp, Hn in Hq; min_n_ge_in Hq.
-   ++cbn; rewrite Nat.mul_assoc.
-     replace m with (m * 1) by flia.
-     apply Nat.mul_le_mono; [ | now apply Nat_pow_ge_1 ].
-...
-     eapply le_trans; [ apply Hmr | ].
-     destruct rad as [| rr]; [ easy | ].
-     destruct rr; [ flia Hr | cbn; flia ].
-  *apply Nat.sub_le_mono_r; cbn.
-   replace rad with (rad * 1) at 1 by flia.
-   apply Nat.mul_le_mono_l.
-   now apply Nat_pow_ge_1.
+do 2 apply Nat.le_add_le_sub_r.
+rewrite <- Nat.add_sub_swap; [ | min_n_ge ].
+rewrite Nat.sub_add_distr, Nat_sub_sub_swap.
+rewrite Nat.sub_add; [ | min_n_ge ].
+rewrite Nat.add_shuffle0.
+apply Nat.le_sub_le_add_r.
+rewrite (Nat.mul_add_distr_l _ (i + 3)).
+min_n_ge.
 Qed.
 
 Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ m i u,
-  m ≤ 4
+  m < rad ^ (rad * (i + 3) - (i + 2))
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i 0) u).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hm4 Hur Hut k.
-clear Hm4.
+intros Hmr Hur Hut k.
 replace (min_n i k) with (min_n i 0 + rad * k). 2: {
   unfold min_n.
   rewrite Nat.add_0_r.
   do 3 rewrite Nat.mul_add_distr_l.
   apply Nat.add_shuffle0.
 }
-apply (all_fA_ge_1_ε_NQintg_A m); try easy.
-...
 now apply (all_fA_ge_1_ε_NQintg_A m).
 Qed.
 
 Theorem fA_lt_1_ε_NQintg_A {r : radix} : ∀ m i u j,
-  m ≤ rad ^ 3
+  m < rad ^ (min_n i j - i - j - 2)
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, k < j → fA_ge_1_ε u i k = true)
   → fA_ge_1_ε u i j = false
@@ -562,18 +548,18 @@ rewrite <- Nat.add_assoc, <- Nat.add_0_r.
 f_equal.
 assert (HB : (B i (min_n i j) u (rad * (k - j)) < 1 // rad ^ S j)%Q). {
   specialize (B_upper_bound_for_adds m u i j (min_n i j)) as HB.
-  specialize (HB (rad * (k - j)) Hmr).
+  specialize (HB (rad * (k - j))).
   assert (H : i + j + 5 < min_n i j). {
     unfold min_n.
     destruct rad as [| rr]; [ easy | ].
     destruct rr; [ flia Hr | cbn; flia ].
   }
-  specialize (HB H); clear H.
+  specialize (HB H Hmr); clear H.
   assert (H : ∀ j, j ≥ i → u j ≤ m * (rad - 1)). {
     intros p Hp; replace p with (i + (p - i)) by flia Hp.
     apply Hur.
   }
-  now specialize (HB H); clear H.
+  now specialize (HB H).
 }
 rewrite Q.intg_small; [ | split ]; [ | easy | ]. 2: {
   eapply Q.lt_le_trans; [ apply HB | ].
@@ -597,7 +583,7 @@ now apply Q.lt_le_incl.
 Qed.
 
 Theorem carry_cases_NQintg_A {r : radix} : ∀ m u i j,
-  m ≤ min 4 (rad ^ 3)
+  m < rad ^ (rad * (i + 3) - (i + 2))
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → j = carry_cases u i
   → ∀ k, j ≤ k →
@@ -606,12 +592,13 @@ Proof.
 intros * Hmr Hur Hj k Hjk.
 unfold carry_cases in Hj; subst j.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
-  apply Nat.min_glb_l in Hmr.
   now apply (all_fA_ge_1_ε_NQintg_A' m).
 }
 destruct H1 as (j & Hjj & Hj).
-apply Nat.min_glb_r in Hmr.
-now apply (fA_lt_1_ε_NQintg_A m).
+apply (fA_lt_1_ε_NQintg_A m); try easy.
+eapply lt_le_trans; [ apply Hmr | ].
+unfold min_n.
+...
 Qed.
 
 Theorem pre_Hugo_Herbelin_1 {r : radix} : ∀ u v i kup kuv,
