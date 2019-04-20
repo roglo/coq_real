@@ -598,7 +598,15 @@ destruct H1 as (j & Hjj & Hj).
 apply (fA_lt_1_ε_NQintg_A m); try easy.
 eapply lt_le_trans; [ apply Hmr | ].
 unfold min_n.
-...
+apply Nat.pow_le_mono_r; [ easy | ].
+rewrite (Nat_sub_sub_swap _ i).
+rewrite <- Nat.sub_add_distr.
+apply Nat.sub_le_mono_r.
+rewrite Nat.add_shuffle0.
+rewrite (Nat.mul_add_distr_l _ (i + 3)).
+rewrite <- Nat.add_sub_assoc; [ flia | ].
+specialize radix_ge_2 as Hr.
+destruct rad; [ easy | cbn; flia ].
 Qed.
 
 Theorem pre_Hugo_Herbelin_1 {r : radix} : ∀ u v i kup kuv,
@@ -1230,9 +1238,13 @@ destruct H4 as [H4| [H4| H4]].
      rewrite Hnup.
      eapply Q.lt_trans.
      -apply (B_upper_bound_for_adds 3 _ _ 0).
-      +destruct rad as [| rr]; [ easy | ].
-       destruct rr; [ flia Hr | cbn; flia ].
       +unfold min_n.
+       destruct rad as [| rr]; [ easy | ].
+       destruct rr; [ flia Hr | cbn; flia ].
+      +apply (lt_le_trans _ 4); [ pauto | ].
+       replace 4 with (2 ^ 2) by easy.
+       apply Nat.pow_le_mono; [ easy | easy | ].
+       unfold min_n.
        destruct rad as [| rr]; [ easy | ].
        destruct rr; [ flia Hr | cbn; flia ].
       +intros p Hp; replace p with (i + (p - i)) by flia Hp.
@@ -1297,9 +1309,13 @@ destruct H4 as [H4| [H4| H4]].
      eapply Q.lt_le_trans.
     **rewrite Hnup.
       apply (B_upper_bound_for_adds 3 _ _ j).
-    ---destruct rad as [| rr]; [ easy | ].
-       destruct rr; [ flia Hr | cbn; flia ].
     ---unfold min_n.
+       destruct rad as [| rr]; [ easy | ].
+       destruct rr; [ flia Hr | cbn; flia ].
+    ---apply (lt_le_trans _ 4); [ pauto | ].
+       replace 4 with (2 ^ 2) by easy.
+       apply Nat.pow_le_mono; [ easy | easy | ].
+       unfold min_n.
        destruct rad as [| rr]; [ easy | ].
        destruct rr; [ flia Hr | cbn; flia ].
     ---intros p Hp; replace p with (i + (p - i)) by flia Hp.
@@ -1407,8 +1423,6 @@ destruct H4 as [H4| [H4| H4]].
    apply Q.le_antisymm in H5; [ | easy ].
    rewrite <- H5, Q.add_0_l.
    specialize (B_upper_bound_for_adds 1 u i 0 nv (rad * j)) as H1.
-   assert (H : 1 ≤ rad ^ 3) by now apply Nat_pow_ge_1.
-   specialize (H1 H); clear H.
    assert (H : i + 0 + 5 < nv). {
      rewrite Hnv.
      unfold min_n.
@@ -1416,6 +1430,10 @@ destruct H4 as [H4| [H4| H4]].
      destruct rr; [ flia Hr | cbn; flia ].
    }
    specialize (H1 H); clear H.
+...
+   assert (H : 1 ≤ rad ^ 3) by now apply Nat_pow_ge_1.
+   specialize (H1 H); clear H.
+...
    assert (H : ∀ j, j ≥ i → u j ≤ 1 * (rad - 1)). {
      intros p Hp; rewrite Nat.mul_1_l.
      replace p with (i + (p - i)) by flia Hp; apply Hu.
