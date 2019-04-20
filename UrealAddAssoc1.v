@@ -1430,10 +1430,17 @@ destruct H4 as [H4| [H4| H4]].
      destruct rr; [ flia Hr | cbn; flia ].
    }
    specialize (H1 H); clear H.
-...
-   assert (H : 1 ≤ rad ^ 3) by now apply Nat_pow_ge_1.
+   assert (H : 1 < rad ^ (nv - i - 0 - 2)). {
+     rewrite Hnv; unfold min_n.
+     rewrite Nat.add_0_r, Nat.sub_0_r.
+     remember (rad * (i + 3) - i - 2) as q eqn:Hq.
+     destruct q. {
+       destruct rad; [ easy | cbn in Hq; flia Hq ].
+     }
+     replace 1 with (1 ^ S q) by now rewrite Nat.pow_1_l.
+     now apply Nat.pow_lt_mono_l.
+   }
    specialize (H1 H); clear H.
-...
    assert (H : ∀ j, j ≥ i → u j ≤ 1 * (rad - 1)). {
      intros p Hp; rewrite Nat.mul_1_l.
      replace p with (i + (p - i)) by flia Hp; apply Hu.
@@ -1707,10 +1714,11 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ s)%Q 1) as [Har| Har].
  eapply Q.lt_le_trans.
  +rewrite Hni.
   apply (B_upper_bound_for_adds 1 _ _ 0).
-  *destruct rad; [ easy | cbn; flia ].
   *unfold min_n.
    destruct rad as [| rr]; [ easy | ].
    destruct rr; [ flia Hr | cbn; flia ].
+...
+  *destruct rad; [ easy | cbn; flia ].
   *intros p Hp; rewrite Nat.mul_1_l.
    replace p with (i + (p - i)) by flia Hp; apply Hu.
  +rewrite Nat.pow_1_r.
