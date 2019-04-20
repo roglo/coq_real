@@ -480,7 +480,6 @@ apply (Q.lt_le_trans _ (1 + u (n + l)%nat // rad ^ p)%Q).
 -apply Q.add_lt_mono_r, Q.frac_lt_1.
 -rewrite Q.add_comm.
  apply Q.add_le_mono_r.
-...
  apply (Q.le_trans _ ((m * (rad - 1)) // rad ^ p)).
  +apply Q.le_pair; [ pauto | pauto | ].
   rewrite Nat.mul_comm.
@@ -494,6 +493,16 @@ apply (Q.lt_le_trans _ (1 + u (n + l)%nat // rad ^ p)%Q).
   replace p with (S k + (p - S k)) by (rewrite Hp, Hn; min_n_ge).
   rewrite Nat.pow_add_r, Nat.mul_comm, <- Nat.mul_assoc.
   apply Nat.mul_le_mono_l.
+apply Nat.mul_le_mono. 2: {
+  apply Nat.sub_le_mono_r; cbn.
+  replace rad with (rad * 1) at 1 by flia.
+  apply Nat.mul_le_mono_l.
+  now apply Nat_pow_ge_1.
+}
+rewrite Hp, Hn; unfold min_n.
+eapply le_trans; [ apply Nat.lt_le_incl, Hmr | ].
+apply Nat.pow_le_mono_r; [ easy | ].
+...
   apply Nat.mul_le_mono.
   *remember (p - S k) as q eqn:Hq.
    destruct q.
