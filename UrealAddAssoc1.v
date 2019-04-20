@@ -476,11 +476,11 @@ apply (Q.add_lt_mono_r _ _ 1).
 replace 1%Q with (1 // 1)%Q by easy.
 rewrite Nat.add_assoc, H3.
 remember (n + l - i) as p eqn:Hp.
-...
 apply (Q.lt_le_trans _ (1 + u (n + l)%nat // rad ^ p)%Q).
 -apply Q.add_lt_mono_r, Q.frac_lt_1.
 -rewrite Q.add_comm.
  apply Q.add_le_mono_r.
+...
  apply (Q.le_trans _ ((m * (rad - 1)) // rad ^ p)).
  +apply Q.le_pair; [ pauto | pauto | ].
   rewrite Nat.mul_comm.
