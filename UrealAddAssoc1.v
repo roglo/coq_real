@@ -1717,8 +1717,14 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ s)%Q 1) as [Har| Har].
   *unfold min_n.
    destruct rad as [| rr]; [ easy | ].
    destruct rr; [ flia Hr | cbn; flia ].
-...
-  *destruct rad; [ easy | cbn; flia ].
+  *unfold min_n.
+   rewrite Nat.add_0_r, Nat.sub_0_r.
+   remember (rad * (i + 3) - i - 2) as q eqn:Hq.
+   destruct q. {
+     destruct rad; [ easy | cbn in Hq; flia Hq ].
+   }
+   replace 1 with (1 ^ S q) by now rewrite Nat.pow_1_l.
+   now apply Nat.pow_lt_mono_l.
   *intros p Hp; rewrite Nat.mul_1_l.
    replace p with (i + (p - i)) by flia Hp; apply Hu.
  +rewrite Nat.pow_1_r.
@@ -2103,13 +2109,21 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%Q 1) as [Hau1| Hau1].
    }
    specialize (B_upper_bound_for_adds 1 u i j nij rad) as H1.
    rewrite Nat.mul_1_l in H1.
-   assert (H : 1 ≤ rad ^ 3) by now apply Nat_pow_ge_1.
-   specialize (H1 H); clear H.
    assert (H : i + j + 5 < nij). {
      rewrite Hnij.
      unfold min_n.
      destruct rad as [| rr]; [ easy | ].
      destruct rr; [ flia Hr | cbn; flia ].
+   }
+   specialize (H1 H); clear H.
+   assert (H : 1 < rad ^ (nij - i - j - 2)). {
+     rewrite Hnij; unfold min_n.
+     remember (rad * (i + j + 3) - i - j - 2) as q eqn:Hq.
+     destruct q. {
+       destruct rad; [ easy | cbn in Hq; flia Hq ].
+     }
+     replace 1 with (1 ^ S q) by now rewrite Nat.pow_1_l.
+     now apply Nat.pow_lt_mono_l.
    }
    specialize (H1 H); clear H.
    assert (H : ∀ j : nat, j ≥ i → u j ≤ rad - 1). {
@@ -2474,7 +2488,21 @@ remember (min_n i j) as nj eqn:Hnj.
 move nj before n; move Hnj before Hn.
 assert (Hii : Q.intg (A i nj (u ⊕ v)) = Q.intg (A i n (u ⊕ v))). {
   specialize (all_fA_ge_1_ε_NQintg_A' 3 i (u ⊕ v)) as Hii.
-  assert (H : 3 ≤ 4) by flia.
+  assert (H : 3 < rad ^ (rad * (i + 3) - (i + 2))). {
+   remember (rad * (i + 3) - (i + 2)) as q eqn:Hq.
+   destruct q. {
+     destruct rad; [ easy | cbn in Hq; flia Hq ].
+   }
+   destruct q. {
+     destruct rad as [| rr]; [ easy | ].
+     destruct rr; [ flia Hr | cbn in Hq; flia Hq ].
+   }
+   apply (lt_le_trans _ 4); [ pauto | ].
+   cbn; replace 4 with (2 * (2 * 1)) by easy.
+   apply Nat.mul_le_mono; [ easy | ].
+   apply Nat.mul_le_mono; [ easy | ].
+   apply Nat.neq_0_lt_0; pauto.
+  }
   specialize (Hii H); clear H.
   assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
     intros p.
