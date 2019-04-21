@@ -705,19 +705,15 @@ now apply (carry_succ_lemma2 m _ _ j).
 Qed.
 
 Theorem carry_succ {r : radix} : ∀ m u i,
-  m ≤ min rad 4
+  m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → carry u i = (u (i + 1) + carry u (i + 1)) / rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros H Hur.
-assert (Hmr : m ≤ rad) by now apply Nat.min_glb_l in H.
-assert (Hm4 : m ≤ 4) by now apply Nat.min_glb_r in H.
-clear H.
-clear Hm4.
-assert (Hmrj : ∀ j, m < rad ^ (rad * (i + j + 3) - i - j - 2)). {
-  intros j.
+intros Hmr Hur.
+assert (Hmrj : ∀ i j, m < rad ^ (rad * (i + j + 3) - i - j - 2)). {
+  intros p j.
   eapply le_lt_trans; [ apply Hmr | ].
   replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
   apply Nat.pow_lt_mono_r; [ easy | ].
@@ -732,7 +728,7 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   unfold carry, carry_cases in H6.
   destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     rewrite <- (all_fA_ge_1_ε_NQintg_A' m i) with (k := 1); try easy. 2: {
-      specialize (Hmrj 0) as H3.
+      specialize (Hmrj i 0) as H3.
       rewrite Nat.add_0_r, Nat.sub_0_r in H3.
       now rewrite <- Nat.sub_add_distr in H3.
     }
@@ -784,10 +780,7 @@ assert
      ∀ p, j ≤ p → Q.intg (A i (min_n i p) u) = Q.intg (A i (min_n i j) u)). {
   intros p Hp.
   apply (fA_lt_1_ε_NQintg_A m); try easy.
-...
-  apply (le_trans _ rad); [ easy | ].
-  replace rad with (rad ^ 1) at 1 by (cbn; flia).
-  apply Nat.pow_le_mono_r; [ easy | pauto ].
+  apply Hmrj.
 }
 assert
 (Hkqq : ∀ p, k ≤ p →
@@ -797,9 +790,7 @@ assert
   apply (fA_lt_1_ε_NQintg_A m); try easy. 2: {
     now intros; rewrite <- Nat.add_assoc.
   }
-  apply (le_trans _ rad); [ easy | ].
-  replace rad with (rad ^ 1) at 1 by (cbn; flia).
-  apply Nat.pow_le_mono_r; [ easy | pauto ].
+  apply Hmrj.
 }
 rewrite <- (Hjqq (j + k + 1)); [ | flia ].
 rewrite <- (Hkqq (j + k)); [ | flia ].
@@ -921,8 +912,6 @@ rewrite Nat.mul_1_l.
 now symmetry; apply Nat.sub_add.
 Qed.
 
-...
-
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
   m ≤ min rad 4
   → (∀ k, u (i + k) ≤ m * (rad - 1))
@@ -946,7 +935,7 @@ apply Nat.neq_0_lt_0 in Hmz.
 induction k. {
   rewrite Nat.add_0_r.
   specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2, Hc1).
-(**)
+...
 specialize (carry_succ m u (i + 1) Hmr4) as H1.
 assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
   now intros; rewrite <- Nat.add_assoc.
