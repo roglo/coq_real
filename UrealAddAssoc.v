@@ -269,7 +269,21 @@ assert (Hmr' : ∀ l, u (i + k + l) ≤ 3 * (rad - 1)). {
 assert (Haut' : ∀ l, fA_ge_1_ε u (i + k) l = true). {
   intros l; apply A_ge_1_add_r_true_if, Haut.
 }
-assert (H : 3 ≤ 4) by flia.
+assert (H : 3 < rad ^ (rad * (i + k + 3) - (i + k + 2))). {
+  remember (rad * (i + k + 3) - (i + k + 2)) as q eqn:Hq.
+  destruct q. {
+    destruct rad; [ easy | cbn in Hq; flia Hq ].
+  }
+  destruct q. {
+    destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | cbn in Hq; flia Hq ].
+  }
+  apply (lt_le_trans _ 4); [ pauto | ].
+  cbn; replace 4 with (2 * (2 * 1)) by easy.
+  apply Nat.mul_le_mono; [ easy | ].
+  apply Nat.mul_le_mono; [ easy | ].
+  apply Nat.neq_0_lt_0; pauto.
+}
 rewrite <- (all_fA_ge_1_ε_NQintg_A 3 (i + k) u H Hmr' Haut' 0 rad).
 clear H.
 unfold carry, carry_cases.
@@ -702,6 +716,14 @@ assert (Hmr : m ≤ rad) by now apply Nat.min_glb_l in H.
 assert (Hm4 : m ≤ 4) by now apply Nat.min_glb_r in H.
 clear H.
 clear Hm4.
+assert (Hmrj : ∀ j, m < rad ^ (rad * (i + j + 3) - i - j - 2)). {
+  intros j.
+  eapply le_lt_trans; [ apply Hmr | ].
+  replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+  apply Nat.pow_lt_mono_r; [ easy | ].
+  destruct rad as [| rr]; [ easy | ].
+  destruct rr; [ flia Hr | cbn; flia ].
+}
 unfold carry, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   specialize (all_fA_ge_1_ε_P_999 u i H1 0) as H6.
@@ -709,8 +731,11 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   unfold P, d2n, prop_carr, dig in H6.
   unfold carry, carry_cases in H6.
   destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
-    rewrite <- (all_fA_ge_1_ε_NQintg_A' m i) with (k := 1); try easy.
-...
+    rewrite <- (all_fA_ge_1_ε_NQintg_A' m i) with (k := 1); try easy. 2: {
+      specialize (Hmrj 0) as H3.
+      rewrite Nat.add_0_r, Nat.sub_0_r in H3.
+      now rewrite <- Nat.sub_add_distr in H3.
+    }
     rewrite A_split_first; [ | min_n_ge ].
     replace (S i) with (i + 1) by flia.
     replace 1 with (0 + 1) at 3 by easy.
@@ -736,13 +761,13 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
      ∀ k, j ≤ k → Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i j) u)). {
     intros k Hk.
     apply (fA_lt_1_ε_NQintg_A m); try easy.
-    apply (le_trans _ rad); [ easy | ].
-    replace rad with (rad ^ 1) at 1 by (cbn; flia).
-    apply Nat.pow_le_mono_r; [ easy | pauto ].
+    now unfold min_n.
   }
   rewrite <- (H3 (j + 1)); [ | flia ].
   symmetry.
-  rewrite <- (all_fA_ge_1_ε_NQintg_A' m) with (k := j); try easy. 2: {
+  rewrite <- (all_fA_ge_1_ε_NQintg_A' m) with (k := j); try easy; cycle 1. {
+    do 2 rewrite Nat.sub_add_distr; apply Hmrj.
+  } {
     now intros; rewrite <- Nat.add_assoc.
   }
   symmetry.
@@ -759,6 +784,7 @@ assert
      ∀ p, j ≤ p → Q.intg (A i (min_n i p) u) = Q.intg (A i (min_n i j) u)). {
   intros p Hp.
   apply (fA_lt_1_ε_NQintg_A m); try easy.
+...
   apply (le_trans _ rad); [ easy | ].
   replace rad with (rad ^ 1) at 1 by (cbn; flia).
   apply Nat.pow_le_mono_r; [ easy | pauto ].
@@ -894,6 +920,8 @@ rewrite (Nat_mod_less_small 1). 2: {
 rewrite Nat.mul_1_l.
 now symmetry; apply Nat.sub_add.
 Qed.
+
+...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
   m ≤ min rad 4
