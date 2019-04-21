@@ -1,0 +1,67 @@
+\documentclass{article}
+\usepackage{cases}
+\usepackage[utf8]{inputenc}
+
+\newtheorem{axiome}{axiome}
+
+\title{Co-Nombres réels\\
+{\small (commençant par une rime féminine)}}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-15mm}
+
+\begin{verse}
+D'habitude un réel émerge d'une suite\\
+Qualifiée de Cauchy, dont on prend la limite.\\
+Chez Richard Dedekind, un autre procédé\\
+S'appelle une coupure, et l'avait précédé.\\
+Pour un endofoncteur, coalgèbre finale\\
+Dans les catégories, une autre idée géniale.\\
+Selon Alfred Tarski, l'axiomatisation\\
+Est encore une approche, une définition.\\
+\vspace{5mm}
+On peut les regarder formés de décimales.\\
+Ces façons de les voir ne sont pas anormales.\\
+Des retenues naissent dans les opérations\\
+Venant de l'infini, elles sont des questions\\
+Pour nous aider alors, un axiome magique,\\
+Le seul qu'on admettra dans ce monde logique,\\
+LPO en anglais, version du tiers exclu\\
+En plus faible pourtant, est remède absolu.\\
+\vspace{5mm}
+Le seul inconvénient de cette autre formule\\
+Est qu'une infinité de 9 disparaît et s'annule\\
+Pour tout nombre réel se terminant ainsi,\\
+On a deux notations, ça nous fait du souci.\\
+Trente-six et des 9 qui suivent la virgule\\
+Équivaut trente-sept, chaque chiffre bascule.\\
+On doit donc définir la bonne égalité\\
+Si on veut supprimer toute l'ambiguïté.\\
+\vspace{5mm}
+On compte en base dix, comme à notre habitude\\
+Mais pour ce choix, on a toute une latitude.\\
+Deux, dix-huit ou vingt-cinq, pour l'utilisateur,\\
+Dans les preuves, la base est juste une grandeur.\\
+Un chiffre après un autre, on forme chaque suite,\\
+L'intervalle unité est pleinement construite.\\
+Et on peut définir nos deux opérations\\
+Par l'oracle LPO pris comme une fonction.\\
+\vspace{5mm}
+\pagebreak
+La suite signifie la série repensée\\
+Où x est remplacé par la base inversée.\\
+La somme ou le produit dans cet étrange objet\\
+Se calcule en deux temps, et non pas d'un seul jet.\\
+...\\
+Ce sont sur les séries que notre opération\\
+S'applique au premier temps de cette itération\\
+La retenue du nombre ensuite se propage\\
+Grâce à notre LPO, par un simple codage.\\
+\vspace{5mm}
+\end{verse}
+\vspace{10mm}
+
+\end{document}

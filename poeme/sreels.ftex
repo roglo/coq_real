@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage{cases}
+\usepackage[utf8]{inputenc}
+
+\newtheorem{axiome}{axiome}
+
+\title{Nombres réels supplique}
+\date{}
+\author{}
+
+\begin{document}
+\maketitle
+\vspace{-15mm}
+\begin{verse}
+Depuis Charles Méray, tous les nombres réels\\
+Sont suites de Cauchy à nombres rationnels.\\
+Dedekind parle de coupures\\
+Coalgèbre finale en un endofoncteur,\\
+Dans les catégories, déclare un amateur.\\
+Chacun y va de ses structures.\\
+\vspace{5mm}
+Mais regardons plutôt leur aspect décimal\\
+Qu'on considère moins, mais pourtant pas si mal,\\
+Bien qu'il y ait des retenues\\
+L'axiome LPO, admis pour nous aider,\\
+Unique postulat qu'on va se concéder,\\
+Va résoudre ces inconnues\\
+\vspace{10mm}
+\end{verse}
+
+\end{document}

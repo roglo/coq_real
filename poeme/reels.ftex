@@ -1,0 +1,128 @@
+\documentclass{article}
+\usepackage{cases}
+\usepackage[utf8]{inputenc}
+
+\newtheorem{axiome}{axiome}
+
+\title{Nombres réels}
+\date{}
+\author{}
+
+\begin{document}
+\maketitle
+\vspace{-15mm}
+\begin{verse}
+Depuis Charles Méray, tous les nombres réels\\
+Sont suites de Cauchy à nombres rationnels.\\
+Chez Richard Dedekind, on parle de coupure.\\
+On peut aller plus loin en termes de structure :\\
+Coalgèbre finale en un endofoncteur,\\
+Dans les catégories, déclare un amateur.\\
+D'après Alfred Tarski, avec ses huit axiomes,\\
+Ce seraient des réels les plus petits atomes.\\
+\vspace{5mm}
+Mais regardons plutôt leur aspect décimal\\
+Qu'on considère moins, mais pourtant pas si mal.\\
+Dans les opérations, surgit la retenue,\\
+Venant de l'infini, elle est une inconnue.\\
+Un axiome magique, admis pour nous aider,\\
+Unique postulat qu'on va se concéder,\\
+Principe limité, muni de l'omniscience,\\
+LPO en anglais, fournit cette voyance\footnote{
+Axiome LPO :
+$\forall u\quad (\forall\ i\ u_i = 0) \ \vee\ (\exists\ i\ u_i \neq 0)$}.\\
+\vspace{5mm}
+Mais une telle vue nous fait son numéro :\\
+L'infinité de 9 retombe sur zéro.\\
+Quand un nombre réel se finit de la sorte,\\
+Il a deux notations et cela nous importe.\\
+Le nombre trente-six, virgule, que des 9,\\
+Équivaut trente-sept, le sujet n'est pas neuf\footnote{
+Théorème 0,999...=1. Nombreuses preuves, dont : (1)
+0,999...=3$\times$0,333...=3$\times$1/3=1, (2) \mbox{1-0,999...=0},
+(3) 0,999...=$\Sigma_{i=1}^\infty{9/10^i}$=1, etc.}.\\
+On devra définir l'égalité correcte,\\
+C'est quelquefois gênant, mais il faut qu'on l'accepte.\\
+\vspace{5mm}
+Nous avons jusqu'ici compté en décimal,\\
+Mais prendre une autre base est aussi optimal.\\
+Elle vaut au moins deux - pour le cas du binaire -\\
+Nous la paramétrons dans la preuve ordinaire.\\
+Une suite où le chiffre est ainsi limité\\
+Permet de recouvrir l'intervalle unité.\\
+Les deux opérations s'énoncent sans obstacle\\
+Avec un LPO défini comme oracle.\\
+\vspace{5mm}
+\pagebreak
+La somme ou le produit dans cet étrange objet\\
+Se calcule en deux temps, et non pas d'un seul jet.\\
+Car la suite s'incarne en série repensée\\
+Où x est remplacé par la base inversée\footnote{
+Exemple : $0,345=3x+4x^2+5x^3$ avec $x=10^{-1}$.}.\\
+Ce sont sur les séries que notre opération\\
+S'applique au premier temps de cette itération\\
+La retenue du nombre ensuite se propage\\
+Grâce à notre LPO, par un simple codage.\\
+\vspace{5mm}
+Mathématiquement, la retenue en i\\
+S'effectue par le biais d'un calcul infini\\
+Et notre résultat est sa partie entière.\\
+Il faut se limiter, donner une frontière\\
+Car on ne peut prouver sur un terme sans fin.\\
+On fait alors agir notre axiome devin\\
+Qui nous dit : ``là c'est bon, le reste est négligeable''\\
+Et le calcul total est donc envisageable.\\
+\vspace{5mm}
+Entrons dans les détails : dans notre logiciel,\\
+La suite, après le i, se voit comme un réel.\\
+Rappelons qu'il n'est pas dans sa forme normale\\
+Car issu du calcul de l'étape initiale.\\
+C'est sa partie entière, ici, notre objectif :\\
+Ce qu'il vaut strictement n'est pas très instructif.\\
+On peut se contenter d'une somme partielle\\
+Si la partie restante est très peu substantielle.\\
+\vspace{5mm}
+Il nous faut démontrer que cela forme un corps,\\
+Mais ce n'est pas gagné, je le dis sans remords.\\
+Commutativité : tout coule sans problème ;\\
+Associer en revanche, il n'en va pas de même.\\
+Déjà notre addition plonge dans l'infernal,\\
+C'est dû au 9-9-9 qui se combine mal.\\
+Les preuves de produit, celles de complétude\\
+Et de l'archimédien sont encore à l'étude.\\
+\end{verse}
+\vspace{10mm}
+
+\pagebreak
+
+\begin{axiome}[LPO]
+$\forall u\quad (\forall\ i\ u_i = 0) \ \vee\ (\exists\ i\ u_i \neq 0)$
+\end{axiome}
+
+Pour un nombre réel donné représenté par une suite $(u_i)$ de chiffres
+et un $i$ donné, si on applique LPO à la suite suivante
+\begin{numcases}
+  {b_j =}
+  \nonumber \mbox{0} &
+  \mbox{si~~$u_{i+j+1} = 9$} \\
+  \nonumber \mbox{1} &
+  \mbox{sinon}
+\end{numcases}
+on va savoir si $u_i$ est suivi par une infinité de 9 ($b_j=0$ tout le
+temps) ou non. Cela nous permet de définir une autre suite $(c_i)$
+\begin{numcases}
+  {c_i =}
+  \nonumber \mbox{1} &
+  \mbox{si~~$u_i$ est suivi par une infinité de 9} \\
+  \nonumber \mbox{0} &
+  \mbox{sinon}
+\end{numcases}
+En réappliquant LPO sur $(c_i)$, on va donc savoir si la suite $(u_i)$
+se termine à un moment par une infinité de 9 et si oui, à partir de
+quel indice. On peut utiliser cette information pour normaliser $u$,
+c'est-à-dire construire une autre suite où l'infinité de 9 de $u$
+après un certain $u_i$ est remplacé par une infinité de 0 et en
+ajoutant 1 à $u_i$ lui-même.  Deux nombres sont égaux si leur suites
+correspondantes normalisées sont égales.
+
+\end{document}
