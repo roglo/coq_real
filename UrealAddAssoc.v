@@ -913,7 +913,7 @@ now symmetry; apply Nat.sub_add.
 Qed.
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
-  m ≤ min rad 4
+  m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ j, 1 ≤ j ≤ m
@@ -922,9 +922,7 @@ Theorem P_999_after_7 {r : radix} : ∀ m u i,
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hmr4 Hur Hau * Hj Hu1 *.
-assert (Hmr : m ≤ rad) by now apply Nat.min_glb_l in Hmr4.
-assert (Hm4 : m ≤ 4) by now apply Nat.min_glb_r in Hmr4.
+intros Hmr Hur Hau * Hj Hu1 *.
 destruct (zerop m) as [Hmz| Hmz]. {
   rewrite Hmz in Hur |-*.
   specialize (Hur (k + 2)) as H1.
@@ -935,13 +933,12 @@ apply Nat.neq_0_lt_0 in Hmz.
 induction k. {
   rewrite Nat.add_0_r.
   specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2, Hc1).
-...
-specialize (carry_succ m u (i + 1) Hmr4) as H1.
-assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
-  now intros; rewrite <- Nat.add_assoc.
-}
-specialize (H1 H); clear H.
-replace (i + 1 + 1) with (i + 2) in H1 by flia.
+  specialize (carry_succ m u (i + 1) Hmr) as H1.
+  assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  specialize (H1 H); clear H.
+  replace (i + 1 + 1) with (i + 2) in H1 by flia.
 ...
   destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
     move Hm1 at top; subst m; clear Hmz Hu2.
