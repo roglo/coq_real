@@ -925,6 +925,7 @@ induction k. {
   }
   specialize (H1 H); clear H.
   replace (i + 1 + 1) with (i + 2) in H1 by flia.
+Abort. (*
 ...
   destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
     move Hm1 at top; subst m; clear Hmz Hu2.
