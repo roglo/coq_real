@@ -925,7 +925,6 @@ induction k. {
   }
   specialize (H1 H); clear H.
   replace (i + 1 + 1) with (i + 2) in H1 by flia.
-Abort. (*
 ...
   destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
     move Hm1 at top; subst m; clear Hmz Hu2.
@@ -4125,11 +4124,11 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
    destruct Huv789 as [Huv7| Huv89]. {
 ...
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
-...
        (* à voir *) admit.
      }
      assert (Huv2 : ∀ p, (u ⊕ v) (i + p + 2) = 3 * (rad - 1)). {
        intros p.
+Check P_999_after_7.
 Check carry_succ.
 ...
 specialize (P_999_after_7 3 (u ⊕ v) i) as H1.
