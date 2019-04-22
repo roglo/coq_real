@@ -918,35 +918,33 @@ destruct (zerop m) as [Hmz| Hmz]. {
 apply Nat.neq_0_lt_0 in Hmz.
 induction k. {
   rewrite Nat.add_0_r.
-  specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2, Hc1).
+  specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2g, Hc1).
   specialize (carry_succ m u (i + 1) Hmr) as H1.
   assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
     now intros; rewrite <- Nat.add_assoc.
   }
   specialize (H1 H); clear H.
   replace (i + 1 + 1) with (i + 2) in H1 by flia.
-Abort. (*
-...
   destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
-    move Hm1 at top; subst m; clear Hmz Hu2.
+    move Hm1 at top; subst m; clear Hmz Hu2g.
     replace j with 1 in Hu1 by flia Hj; clear j Hj.
     rewrite Nat.mul_1_l in Hur, Hu1 |-*.
-    specialize (all_fA_ge_1_ε_P_999 u i Hau 1) as H1.
-    replace (i + 1 + 1) with (i + 2) in H1 by flia.
-    unfold P, d2n, prop_carr, dig in H1.
-    specialize (carry_upper_bound_for_adds 1 u i (Nat.neq_succ_0 _)) as H2.
+    specialize (all_fA_ge_1_ε_P_999 u i Hau 1) as H2.
+    replace (i + 1 + 1) with (i + 2) in H2 by flia.
+    unfold P, d2n, prop_carr, dig in H2.
+    specialize (carry_upper_bound_for_adds 1 u i (Nat.neq_succ_0 _)) as H3.
     assert (H : ∀ k, u (i + k + 1) ≤ 1 * (rad - 1)). {
       now intros; rewrite <- Nat.add_assoc, Nat.mul_1_l.
     }
-    specialize (H2 H 2); clear H.
-    apply Nat.lt_1_r in H2; rewrite H2, Nat.add_0_r in H1.
-    rewrite Nat.mod_small in H1; [ easy | ].
-    specialize (Hur 2) as H3.
-    flia Hr H3.
+    specialize (H3 H 2); clear H.
+    apply Nat.lt_1_r in H3; rewrite H3, Nat.add_0_r in H2.
+    rewrite Nat.mod_small in H2; [ easy | ].
+    specialize (Hur 2) as H4.
+    flia Hr H4.
   }
   move Hm1 before Hmz.
-  destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m)) as [H1| H1]. {
-    exfalso; clear Hu2; rename H1 into Hu2.
+  destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m)) as [Hu2| Hu2]. {
+    exfalso; clear Hu2g.
     specialize (P_999_after_7_ge_17 m u (i + 1) Hmr) as H2.
     replace (i + 1 + 1) with (i + 2) in H2 by flia.
     replace (i + 1 + 2) with (i + 3) in H2 by flia.
@@ -962,38 +960,24 @@ Abort. (*
     specialize (H2 H Hu2); clear H.
     destruct H2 as (Hu3, Hc2).
     move Hc2 before Hc1.
-    (* u 7(←2)17(←2) (si m=3 et r=10)
-       mais, du coup, la 1ère retenue ne peut pas être 2, en fait *)
-    specialize (carry_succ m u (i + 1) Hmr4) as H2.
-    assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
-      now intros; rewrite <- Nat.add_assoc.
-    }
-    specialize (H2 H); clear H.
-    replace (i + 1 + 1) with (i + 2) in H2 by flia.
-    rewrite Hc1, Hc2, Hu2 in H2.
-    rewrite Nat.add_sub_assoc in H2; [ | flia Hmz Hm1 ].
-    rewrite Nat.sub_add in H2. 2: {
-      apply Nat.lt_pred_le.
-      rewrite <- Nat.sub_1_r.
+    rewrite Hc1, Hc2, Hu2 in H1.
+    apply (Nat.add_cancel_r _ _ 1) in H1.
+    rewrite Nat.sub_add in H1; [ | flia Hmz Hm1 ].
+    rewrite <- Nat.div_add in H1; [ | easy ].
+    rewrite Nat.mul_1_l, <- Nat.add_assoc in H1.
+    rewrite <- Nat.add_sub_swap in H1. 2: {
       rewrite Nat.mul_comm.
-      destruct rad as [ | rr]; [ easy | cbn ].
-      destruct rr; [ flia Hr | cbn; flia Hmz Hm1 ].
+      destruct rad as [| rr]; [ easy | ].
+      destruct rr; [ flia Hr | cbn; flia Hmr Hmz Hm1 ].
     }
-    destruct m; [ flia Hmz | ].
-    cbn in H2; rewrite Nat.sub_0_r in H2.
-    apply (Nat.add_cancel_r _ _ 1) in H2.
-    rewrite <- Nat.div_add in H2; [ | easy ].
-    rewrite Nat.mul_1_l in H2.
-    rewrite <- Nat.add_sub_swap in H2. 2: {
-      replace 1 with (1 * 1) at 1 by easy.
-      apply Nat.mul_le_mono; [ flia Hmz Hm1 | easy ].
-    }
-    rewrite <- Nat.add_sub_assoc in H2; [ | easy ].
-    rewrite (Nat.add_comm (m * rad)) in H2.
-    rewrite Nat.div_add in H2; [ | easy ].
-    rewrite Nat.div_small in H2; [ | flia Hr ].
-    flia H2.
+    rewrite <- Nat.add_sub_assoc in H1; [ | flia Hmr ].
+    rewrite Nat.add_comm in H1.
+    rewrite Nat.div_add in H1; [ | easy ].
+    replace (m - 1 + rad - m) with (rad - 1) in H1 by flia Hmr Hmz Hm1.
+    rewrite Nat.div_small in H1; [ flia H1 Hmz Hm1 | flia Hr ].
   }
+  assert (H : u (i + 2) > (m - 1) * rad - m) by flia Hu2g Hu2.
+  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
 ...
 rewrite <- Q.add_sub_swap in H2.
 rewrite <- Q.add_sub_assoc in H2.
