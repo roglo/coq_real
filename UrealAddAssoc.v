@@ -1065,9 +1065,19 @@ induction k. {
       now intros; rewrite <- Nat.add_assoc.
     }
     specialize (H4 H 2); clear H.
-...
-    flia H3 H4 Hm1 Hmr.
-  }
+    apply Nat.add_sub_eq_nz in H3; [ | flia Hr ].
+    rewrite Nat.add_comm, <- Nat.add_assoc, Nat.add_comm in H3.
+    apply Nat.add_cancel_r in H3.
+    rewrite <- H3 in H4.
+    replace (rad - 1 + (m - 2)) with (m + rad - 3) in H4 by flia Hr Hmz Hm1.
+    apply Nat.lt_sub_lt_add_r in H4.
+    apply Nat.add_lt_mono_l in H4.
+    replace rad with 2 in * by flia Hr H4.
+    clear Hr H4.
+    replace m with 2 in * by flia Hmr Hmz Hm1.
+    clear Hmr Hmz Hm1 H1 H2.
+    cbn in H3, Hc1, Hu2.
+    move Hu2 before Hu1; rename H3 into Hc2; symmetry in Hc2.
 ...
 rewrite <- Q.add_sub_swap in H2.
 rewrite <- Q.add_sub_assoc in H2.
