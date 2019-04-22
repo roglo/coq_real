@@ -995,8 +995,37 @@ induction k. {
     rewrite Nat.div_add in H1; [ | easy ].
 (* H1 : 3 = (c2+8)/10+2 *)
 (* Hu2 : u2 = 18 *)
-...
-    rewrite Nat.div_small in H1; [ flia H1 Hmz Hm1 | ].
+    specialize (all_fA_ge_1_ε_P_999 u i Hau 1) as H2.
+    replace (i + 1 + 1) with (i + 2) in H2 by flia.
+    unfold P, d2n, prop_carr, dig in H2.
+    rewrite Hu2 in H2.
+    rewrite <- (Nat.mod_add _ 1) in H2; [ | easy ].
+    rewrite Nat.mul_1_l in H2.
+    rewrite <- Nat.add_assoc in H2.
+    rewrite <- Nat.add_sub_swap in H2. 2: {
+      rewrite Nat.mul_comm.
+      destruct rad as [| rr]; [ easy | ].
+      destruct rr; [ flia Hr | cbn; flia Hmr Hmz Hm1 ].
+    }
+    rewrite <- Nat.add_sub_assoc in H2; [ | flia Hmr ].
+    rewrite Nat.add_comm in H2.
+    rewrite Nat.mod_add in H2; [ | easy ].
+    assert (H : (carry u (i + 2) + rad - (m - 1)) / rad = 1). {
+      flia H1 Hmz Hm1.
+    }
+    clear H1; rename H into H1; move H1 after H2.
+    specialize (Nat.div_mod (carry u (i + 2) + rad - (m - 1)) rad) as H3.
+    specialize (H3 radix_ne_0).
+    rewrite H1, H2, Nat.mul_1_r in H3.
+    specialize (carry_upper_bound_for_adds m u i Hmz) as H4.
+    assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+      now intros; rewrite <- Nat.add_assoc.
+    }
+    specialize (H4 H 2); clear H.
+    flia H3 H4 Hm1 Hmr.
+  }
+  assert (H : u (i + 2) ≥ (m - 1) * rad - m) by flia Hu2g Hu2.
+  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
 ...
 rewrite <- Q.add_sub_swap in H2.
 rewrite <- Q.add_sub_assoc in H2.
