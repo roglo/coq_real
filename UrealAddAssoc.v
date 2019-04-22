@@ -1027,7 +1027,7 @@ induction k. {
   assert (H : u (i + 2) ≥ (m - 1) * rad - (m - 2)) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
   destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - (m - 2))) as [Hu2| Hu2]. {
-    exfalso; clear Hu2g.
+    clear Hu2g.
     rewrite Hu2 in H1.
     rewrite <- Nat.div_add in H1; [ | easy ].
     rewrite Nat.mul_1_l, <- Nat.add_assoc in H1.
@@ -1078,6 +1078,9 @@ induction k. {
     clear Hmr Hmz Hm1 H1 H2.
     cbn in H3, Hc1, Hu2.
     move Hu2 before Hu1; rename H3 into Hc2; symmetry in Hc2.
+easy.
+(* ^ to be simplified *)
+}
 ...
 rewrite <- Q.add_sub_swap in H2.
 rewrite <- Q.add_sub_assoc in H2.
