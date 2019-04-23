@@ -762,7 +762,28 @@ induction k. {
       destruct rad as [| rr]; [ easy | ].
       destruct rr; [ flia Hr | cbn; flia ].
     }
-Abort. (*
+    exfalso.
+Check carry_succ.
+...
+    eapply Nat.add_cancel_r in Hu2.
+    rewrite <- H3 in Hu2.
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hu2.
+    rewrite <- Nat.add_assoc in Hu2.
+    rewrite Nat.add_comm in Hu2.
+    rewrite <- Nat.sub_add_distr in Hu2.
+    rewrite Nat.add_sub_assoc in Hu2; [ | ].
+    rewrite Nat.add_comm in Hu2.
+    apply Nat.add_sub_eq_nz in Hu2; [ | ].
+    rewrite Nat.add_sub_assoc in Hu2; [ | ].
+    apply Nat.add_sub_eq_nz in Hu2; [ | ].
+    rewrite Nat.add_assoc in Hu2.
+    rewrite (Nat.add_shuffle0 1) in Hu2.
+    apply Nat.add_cancel_r in Hu2.
+
+    rewrite Nat.add_assoc, Nat.add_shuffle0 in Hu2.
+...
+    eapply Nat.add_lt_mono_r; rewrite <- H3.
+
 ...
     clear Hu2g.
     replace rad with 2 in Hu2 at 2. {
@@ -3199,7 +3220,6 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      flia H3 H7 H8.
    }
    destruct Huv789 as [Huv7| Huv89]. {
-Abort. (*
 ...
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
        (* à voir *) admit.
