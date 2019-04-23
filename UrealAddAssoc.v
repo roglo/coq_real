@@ -762,6 +762,7 @@ induction k. {
       destruct rad as [| rr]; [ easy | ].
       destruct rr; [ flia Hr | cbn; flia ].
     }
+Abort. (*
 ...
     clear Hu2g.
     replace rad with 2 in Hu2 at 2. {
@@ -3198,6 +3199,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      flia H3 H7 H8.
    }
    destruct Huv789 as [Huv7| Huv89]. {
+Abort. (*
 ...
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
        (* à voir *) admit.
@@ -3685,8 +3687,11 @@ assert (Hv3 : ∀ k, v (i + k) ≤ 3 * (rad - 1)). {
   apply Nat.mul_le_mono_r; pauto.
 }
 destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
+specialize (proj1 (frac_ge_if_all_fA_ge_1_ε v i) H3) as H.
 -rewrite Hnv, Hnuv at 1.
- rewrite all_fA_ge_1_ε_NQintg_A'; [ symmetry | easy | easy ].
+ rewrite (all_fA_ge_1_ε_NQintg_A' 3); [ symmetry | | easy | easy ].
+...
+ rewrite (all_fA_ge_1_ε_NQintg_A' 3); [ symmetry | easy | easy ].
  rewrite all_fA_ge_1_ε_NQintg_A'; [ symmetry | easy | easy ].
  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
