@@ -1046,33 +1046,88 @@ induction k. {
     destruct rr; [ flia Hr | cbn; flia ].
   }
   move Hrm before Hm2.
+  apply Nat.add_sub_eq_r in H1; symmetry in H1.
+  specialize (Nat.div_mod (u (i + 2) + carry u (i + 2)) rad) as H3.
+  specialize (H3 radix_ne_0).
+  rewrite H1, H2 in H3.
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H3.
+  rewrite Nat.add_sub_assoc in H3; [ | easy ].
+  rewrite Nat.sub_add in H3. 2: {
+    destruct m; [ flia Hm2 | ].
+    rewrite Nat.mul_comm; cbn; flia.
+  }
+  rewrite Nat.mul_comm in H3.
+  symmetry in H3.
+(*
+  apply Nat.add_sub_eq_nz in H3. 2: {
+    intros H.
+    apply Nat.eq_add_0 in H.
+    rewrite (proj1 H) in Hu2g.
+    apply Nat.nlt_ge in Hu2g; apply Hu2g.
+    destruct m; [ easy | ].
+    destruct m; [ flia Hm2 | ].
+    destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | cbn; flia ].
+  }
+  rewrite Nat.add_comm in H3.
+  rewrite <- H3; symmetry.
+  apply Nat.add_sub_eq_l.
+  rewrite Nat.add_comm, <- Nat.add_assoc; f_equal.
+*)
+  clear H1 H2.
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+  symmetry.
+  destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
+    admit.
+  }
+...
+(*
+  move Hc1 at bottom.
+  rewrite (carry_succ m) in Hc1; [ | easy | ]. 2: {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  replace (i + 1 + 1) with (i + 2) in Hc1 by flia.
+  rewrite <- H3 in Hc1.
+  apply (Nat.add_cancel_r _ _ 1) in Hc1.
+  rewrite Nat.sub_add in Hc1; [ | flia Hm2 ].
+  rewrite <- Nat.div_add in Hc1; [ | easy ].
+  rewrite Nat.mul_1_l in Hc1.
+  rewrite <- Nat.add_sub_swap in Hc1. 2: {
+    destruct m; [ easy | ].
+    destruct rad; [ easy | cbn; flia ].
+  }
+  rewrite <- Nat.add_sub_assoc in Hc1; [ | easy ].
+  rewrite Nat.add_comm, Nat.div_add in Hc1; [ | easy ].
+*)
+...
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 2) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 2)) as [Hu2| Hu2]. {
     clear Hu2g.
-    apply Nat.add_sub_eq_r in H1; symmetry in H1.
+    replace rad with 2 in Hu2 at 2. {
+      rewrite Nat.sub_add in Hu2; [ easy | ].
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | ].
+      destruct rad as [| rr]; [ easy | ].
+      destruct rr; [ flia Hr | cbn; flia ].
+    }
+    ...
     specialize (Nat.div_mod (u (i + 2) + carry u (i + 2)) rad) as H3.
     specialize (H3 radix_ne_0).
     rewrite H1, H2, Hu2 in H3.
-    rewrite (Nat.mul_sub_distr_l m), Nat.mul_1_r in H3.
-    rewrite Nat.add_sub_assoc in H3; [ | easy ].
-    rewrite Nat.sub_add in H3.
-...
     do 2 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H3.
-    rewrite Nat.mul_comm, Nat_sub_sub_swap in H3.
-    rewrite <- Nat.add_assoc in H3.
-lia.
-...
-    rewrite (Nat.add_comm (u (i + 2))) in H1, H2.
-    rewrite Hu2 in H1, H2.
-...
-    rewrite <- Nat.div_add in H1; [ | easy ].
-    rewrite <- (Nat.mod_add _ 1) in H2; [ | easy ].
-    rewrite Nat.mul_1_l in H1, H2.
-    do 2 rewrite <- Nat.add_assoc in H1, H2.
-    rewrite <- Nat.add_sub_swap in H1, H2; [ | easy | easy ].
-    rewrite <- Nat.add_sub_assoc in H1, H2; [ | flia Hm2 | flia Hm2 ].
-    rewrite Nat.add_sub in H1, H2.
+    rewrite Nat.add_sub_assoc in H3; [ | easy ].
+    rewrite Nat.sub_add, <- Nat.add_assoc in H3; [ | ].
+    rewrite <- Nat.sub_add_distr in H3.
+    rewrite <- Nat.add_sub_swap in H3; [ | ].
+    apply Nat.add_sub_eq_nz in H3; [ | ].
+    rewrite Nat.add_sub_assoc in H3.
+    apply Nat.add_sub_eq_nz in H3; [ | ].
+    setoid_rewrite Nat.add_comm in H3.
+    rewrite <- Nat.add_assoc, Nat.mul_comm in H3.
+    apply Nat.add_cancel_l in H3.
+    rewrite <- Nat.add_assoc, Nat.add_comm, <- Nat.add_assoc in H3.
+    cbn in H3.
 ...
 
     rewrite (Nat.add_comm (m * (rad - 1))) in H1, H2.
