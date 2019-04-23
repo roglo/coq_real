@@ -1116,6 +1116,44 @@ induction k. {
     specialize (Hur 2) as H5.
     flia Hu2 Hm2 H3 H4 H5.
   }
+  assert (H : u (i + 2) ≥ (m - 1) * rad - m + 4) by flia Hu2g Hu2.
+  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
+  destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + 4)) as [Hu2| Hu2]. {
+    clear Hu2g.
+    rewrite (Nat.add_comm (u (i + 2))) in H1, H2.
+    rewrite Hu2 in H1, H2.
+    rewrite <- Nat.div_add in H1; [ | easy ].
+    rewrite <- (Nat.mod_add _ 1) in H2; [ | easy ].
+    rewrite Nat.mul_1_l in H1, H2.
+    do 2 rewrite <- Nat.add_assoc in H1, H2.
+    assert (H : m ≤ (m - 1) * rad). {
+      rewrite Nat.mul_comm.
+      destruct rad as [| rr]; [ easy | ].
+      destruct rr; [ flia Hr | cbn; flia Hm2 ].
+    }
+    rewrite <- Nat.add_sub_swap in H1, H2; [ clear H | easy | easy ].
+    rewrite <- Nat.add_sub_assoc in H1, H2; [ | flia Hm2 | flia Hm2 ].
+    rewrite (Nat.add_comm _ rad) in H1, H2.
+    rewrite Nat.add_assoc, Nat.add_shuffle0 in H1, H2.
+    rewrite Nat.div_add in H1; [ | easy ].
+    rewrite Nat.mod_add in H2; [ | easy ].
+    assert (H : (carry u (i + 2) + (rad + 4 - m)) / rad = 1) by flia H1 Hm2.
+    clear H1; rename H into H1; move H1 after H2.
+    specialize (Nat.div_mod (carry u (i + 2) + (rad + 4 - m)) rad) as H3.
+    specialize (H3 radix_ne_0).
+    rewrite H1, H2, Nat.mul_1_r in H3.
+    specialize (carry_upper_bound_for_adds m u i) as H4.
+    assert (H : m ≠ 0) by flia Hm2.
+    specialize (H4 H); clear H.
+    assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+      now intros; rewrite <- Nat.add_assoc.
+    }
+    specialize (H4 H 2); clear H.
+    rewrite Nat.add_sub_assoc in H3; [ | flia Hm2 ].
+    apply Nat.add_sub_eq_nz in H3; [ | flia Hr ].
+    specialize (Hur 2) as H5.
+    flia Hu2 Hm2 H3 H4 H5.
+  }
 ...
 rewrite <- Q.add_sub_swap in H2.
 rewrite <- Q.add_sub_assoc in H2.
