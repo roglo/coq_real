@@ -1113,23 +1113,8 @@ induction k. {
     specialize (H4 H 2); clear H.
     rewrite Nat.add_sub_assoc in H3; [ | flia Hm2 ].
     apply Nat.add_sub_eq_nz in H3; [ | flia Hr ].
-    setoid_rewrite Nat.add_comm in H3.
-    do 2 rewrite <- Nat.add_assoc in H3.
-    apply Nat.add_cancel_l in H3.
-    rewrite <- Nat.add_sub_swap in H3; [ | easy ].
-    apply Nat.add_sub_eq_nz in H3; [ | flia Hr ].
-    rewrite Nat.add_assoc, Nat.add_comm in H3; cbn in H3.
-    apply (Nat.add_lt_mono_r _ _ 4) in H4.
-    rewrite H3, Nat.add_comm in H4.
-    apply Nat.add_lt_mono_l in H4.
-    destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
-      rewrite Hr2 in *.
-      replace m with 2 in * by flia Hm2.
-      assert (Hc2 : carry u (i + 2) = 0) by flia H3.
-      clear Hr Hm2 H1 H2 H3 H4.
-      cbn in Hc1, Hu2 |-*.
-      move Hu2 before Hu1; move Hc2 before Hc1.
-...
+    specialize (Hur 2) as H5.
+    flia Hu2 H3 H4 H5 Hm2.
   }
 ...
 rewrite <- Q.add_sub_swap in H2.
