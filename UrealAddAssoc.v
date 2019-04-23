@@ -751,6 +751,13 @@ induction k. {
   rewrite <- Nat.add_sub_assoc in Hc1; [ | easy ].
   rewrite Nat.add_comm, Nat.div_add in Hc1; [ | easy ].
 *)
+  assert (Hmr : m + rad ≤ m * rad). {
+    destruct m; [ easy | ].
+    destruct m; [ flia Hm2 | ].
+    destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | ].
+    cbn; rewrite Nat.mul_comm; cbn; flia.
+  }
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 2) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 2)) as [Hu2| Hu2]. {
@@ -769,13 +776,6 @@ induction k. {
     rewrite <- Nat.add_assoc in Hu2.
     rewrite Nat.add_comm in Hu2.
     rewrite <- Nat.sub_add_distr in Hu2.
-    assert (Hmr : m + rad ≤ m * rad). {
-      destruct m; [ easy | ].
-      destruct m; [ flia Hm2 | ].
-      destruct rad as [| rr]; [ easy | ].
-      destruct rr; [ flia Hr | ].
-      cbn; rewrite Nat.mul_comm; cbn; flia.
-    }
     rewrite Nat.add_sub_assoc in Hu2; [ | easy ].
     rewrite Nat.add_comm in Hu2.
     apply Nat.add_sub_eq_nz in Hu2; [ | flia Hmr ].
