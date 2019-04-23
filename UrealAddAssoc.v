@@ -1075,13 +1075,13 @@ induction k. {
   rewrite Nat.add_comm, <- Nat.add_assoc; f_equal.
 *)
   clear H1 H2.
+(*
   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
   symmetry.
-  destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
-    admit.
+...
+...
   }
 ...
-(*
   move Hc1 at bottom.
   rewrite (carry_succ m) in Hc1; [ | easy | ]. 2: {
     now intros; rewrite <- Nat.add_assoc.
@@ -1099,10 +1099,18 @@ induction k. {
   rewrite <- Nat.add_sub_assoc in Hc1; [ | easy ].
   rewrite Nat.add_comm, Nat.div_add in Hc1; [ | easy ].
 *)
-...
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 2) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 2)) as [Hu2| Hu2]. {
+    destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
+      rewrite Hr2 in Hu2 at 2.
+      rewrite Nat.sub_add in Hu2; [ easy | ].
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | ].
+      destruct rad as [| rr]; [ easy | ].
+      destruct rr; [ flia Hr | cbn; flia ].
+    }
+...
     clear Hu2g.
     replace rad with 2 in Hu2 at 2. {
       rewrite Nat.sub_add in Hu2; [ easy | ].
