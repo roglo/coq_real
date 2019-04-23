@@ -4663,7 +4663,7 @@ Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
 Proof.
 intros * Hu Hv.
 specialize radix_ge_2 as Hr.
-symmetry; rewrite Nat.add_comm; symmetry.
+rewrite Nat.add_comm.
 unfold carry, carry_cases.
 remember
   (match LPO_fst (fA_ge_1_ε v i) with
