@@ -1114,7 +1114,7 @@ induction k. {
     rewrite Nat.add_sub_assoc in H3; [ | flia Hm2 ].
     apply Nat.add_sub_eq_nz in H3; [ | flia Hr ].
     specialize (Hur 2) as H5.
-    flia Hu2 H3 H4 H5 Hm2.
+    flia Hu2 Hm2 H3 H4 H5.
   }
 ...
 rewrite <- Q.add_sub_swap in H2.
