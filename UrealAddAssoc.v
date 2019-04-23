@@ -769,11 +769,18 @@ induction k. {
     rewrite <- Nat.add_assoc in Hu2.
     rewrite Nat.add_comm in Hu2.
     rewrite <- Nat.sub_add_distr in Hu2.
-    rewrite Nat.add_sub_assoc in Hu2; [ | ].
+    assert (Hmr : m + rad ≤ m * rad). {
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | ].
+      destruct rad as [| rr]; [ easy | ].
+      destruct rr; [ flia Hr | ].
+      cbn; rewrite Nat.mul_comm; cbn; flia.
+    }
+    rewrite Nat.add_sub_assoc in Hu2; [ | easy ].
     rewrite Nat.add_comm in Hu2.
-    apply Nat.add_sub_eq_nz in Hu2; [ | ].
-    rewrite Nat.add_sub_assoc in Hu2; [ | ].
-    apply Nat.add_sub_eq_nz in Hu2; [ | ].
+    apply Nat.add_sub_eq_nz in Hu2; [ | flia Hmr ].
+    rewrite Nat.add_sub_assoc in Hu2; [ | flia Hmr ].
+    apply Nat.add_sub_eq_nz in Hu2; [ | flia Hr Hmr ].
     rewrite Nat.add_assoc in Hu2.
     rewrite (Nat.add_shuffle0 1) in Hu2.
     apply Nat.add_cancel_r in Hu2.
