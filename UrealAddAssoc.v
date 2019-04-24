@@ -720,17 +720,18 @@ induction k. {
     destruct rr; [ flia Hr | ].
     cbn; rewrite Nat.mul_comm; cbn; flia.
   }
+remember 1 as k eqn:Hk in r.
 (*1*)
-  destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 2)) as [Hu2| Hu2]. {
+  destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + (k + 1))) as [Hu2| Hu2]. {
     clear Hu2g.
-    destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
+    destruct (Nat.eq_dec rad (k + 1)) as [Hr2| Hr2]. {
       rewrite Hr2 in Hu2 |-*; cbn in Hu2 |-*.
       rewrite Nat.sub_add in Hu2; [ easy | ].
       destruct m; [ easy | ].
-      destruct m; [ flia Hm2 | cbn; flia ].
+      destruct m; [ flia Hm2 | cbn; flia Hk ].
     }
     exfalso.
-    destruct (le_dec rad 1) as [Hr1| Hr1]. {
+    destruct (le_dec rad k) as [Hr1| Hr1]. {
       specialize (Hur 2) as H1.
       rewrite Hu2 in H1.
       apply Nat.nlt_ge in H1.
@@ -741,19 +742,21 @@ induction k. {
     }
     flia Hm2 H3 Hmr Hu2 Hr1 Hr2 Hc2.
   }
+  subst k.
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 3) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
+  remember 2 as k eqn:Hk in r.
 (*2*)
-  destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 3)) as [Hu2| Hu2]. {
+  destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + (k + 1))) as [Hu2| Hu2]. {
     clear Hu2g.
-    destruct (Nat.eq_dec rad 3) as [Hr2| Hr2]. {
+    destruct (Nat.eq_dec rad (k + 1)) as [Hr2| Hr2]. {
       rewrite Hr2 in Hu2 |-*; cbn in Hu2 |-*.
       rewrite Nat.sub_add in Hu2; [ easy | ].
       destruct m; [ easy | ].
-      destruct m; [ flia Hm2 | cbn; flia ].
+      destruct m; [ flia Hm2 | cbn; flia Hk ].
     }
     exfalso.
-    destruct (le_dec rad 2) as [Hr1| Hr1]. {
+    destruct (le_dec rad k) as [Hr1| Hr1]. {
       specialize (Hur 2) as H1.
       rewrite Hu2 in H1.
       apply Nat.nlt_ge in H1.
@@ -764,6 +767,7 @@ induction k. {
     }
     flia Hm2 H3 Hmr Hu2 Hr1 Hr2 Hc2.
   }
+  subst k.
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 4) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
 (*3*)
