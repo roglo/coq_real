@@ -839,9 +839,8 @@ induction k. {
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 4)) as [Hu2| Hu2]. {
     clear Hu2g.
     destruct (Nat.eq_dec rad 3) as [Hr3| Hr3]. {
-      rewrite Hr3 in *; cbn in Hu2 |-*.
-      clear Hr Hrm Hr2 Hmr.
       exfalso.
+      rewrite Hr3 in *; cbn in Hu2.
       specialize (Hur 2) as H1.
       rewrite Hu2 in H1.
       apply Nat.nlt_ge in H1.
