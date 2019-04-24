@@ -811,6 +811,7 @@ induction k. {
       destruct m; [ easy | ].
       destruct m; [ flia Hm2 | cbn; flia ].
     }
+    exfalso.
     eapply Nat.add_cancel_r in Hu2.
     rewrite <- H3 in Hu2.
     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hu2.
@@ -838,8 +839,14 @@ induction k. {
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 4)) as [Hu2| Hu2]. {
     clear Hu2g.
+    destruct (Nat.eq_dec rad 4) as [Hr4| Hr4]. {
+      rewrite Hr4 in Hu2 |-*; cbn in Hu2 |-*.
+      rewrite Nat.sub_add in Hu2; [ easy | ].
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | cbn; flia ].
+    }
+    exfalso.
     destruct (Nat.eq_dec rad 3) as [Hr3| Hr3]. {
-      exfalso.
       rewrite Hr3 in *; cbn in Hu2.
       specialize (Hur 2) as H1.
       rewrite Hu2 in H1.
@@ -849,13 +856,6 @@ induction k. {
       destruct m; [ easy | ].
       destruct m; [ flia Hm2 | cbn; flia ].
     }
-    destruct (Nat.eq_dec rad 4) as [Hr4| Hr4]. {
-      rewrite Hr4 in Hu2 |-*; cbn in Hu2 |-*.
-      rewrite Nat.sub_add in Hu2; [ easy | ].
-      destruct m; [ easy | ].
-      destruct m; [ flia Hm2 | cbn; flia ].
-    }
-    exfalso.
     specialize (carry_upper_bound_for_adds m u i) as H1.
     assert (H : m ≠ 0) by flia Hm2.
     specialize (H1 H); clear H.
@@ -864,6 +864,46 @@ induction k. {
     }
     specialize (H1 H 2); clear H.
     flia Hm2 H3 Hmr Hu2 Hr3 Hr4 H1.
+  }
+  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 5) by flia Hu2g Hu2.
+  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
+  destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 5)) as [Hu2| Hu2]. {
+    clear Hu2g.
+    destruct (Nat.eq_dec rad 5) as [Hr5| Hr5]. {
+      rewrite Hr5 in Hu2 |-*; cbn in Hu2 |-*.
+      rewrite Nat.sub_add in Hu2; [ easy | ].
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | cbn; flia ].
+    }
+    exfalso.
+    destruct (Nat.eq_dec rad 4) as [Hr4| Hr4]. {
+      rewrite Hr4 in *; cbn in Hu2.
+      specialize (Hur 2) as H1.
+      rewrite Hu2 in H1.
+      apply Nat.nlt_ge in H1.
+      apply H1; clear H1; cbn.
+      rewrite <- Nat.add_sub_swap; [ flia | ].
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | cbn; flia ].
+    }
+    destruct (Nat.eq_dec rad 3) as [Hr3| Hr3]. {
+      rewrite Hr3 in *; cbn in Hu2.
+      specialize (Hur 2) as H1.
+      rewrite Hu2 in H1.
+      apply Nat.nlt_ge in H1.
+      apply H1; clear H1; cbn.
+      rewrite <- Nat.add_sub_swap; [ flia | ].
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | cbn; flia ].
+    }
+    specialize (carry_upper_bound_for_adds m u i) as H1.
+    assert (H : m ≠ 0) by flia Hm2.
+    specialize (H1 H); clear H.
+    assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+      now intros; rewrite <- Nat.add_assoc.
+    }
+    specialize (H1 H 2); clear H.
+    flia Hm2 H3 Hmr Hu2 Hr3 Hr4 Hr5 H1.
   }
 ...
   assert (H : u (i + 2) ≥ (m - 1) * rad - m + 4) by flia Hu2g Hu2.
