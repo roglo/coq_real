@@ -751,20 +751,17 @@ induction k. {
     specialize (H1 H 2); clear H.
     flia Hm2 Hr2 Hu2 H1.
   }
-  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 3) by flia Hu2g Hu2.
-  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
-  destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
-    exfalso.
-    specialize (Hur 2) as H1.
-    rewrite Hr2 in Hm2, H1.
-    replace m with 2 in H1 by flia Hm2.
-    cbn in H1.
-    apply Nat.nlt_ge in H1; apply H1; clear H1.
-    eapply lt_le_trans; [ | apply Hu2g ].
-    flia.
-  }
 (**)
+  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 2) by flia Hu2g Hu2.
+  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
   clear - Hu2g Hm2 Hur H3.
+  specialize (carry_upper_bound_for_adds m u i) as Hc2.
+  assert (H : m ≠ 0) by flia Hm2.
+  specialize (Hc2 H); clear H.
+  assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  specialize (Hc2 H 2); clear H.
   symmetry in H3.
   specialize radix_ge_2 as Hr.
   assert (Hmr : m + rad ≤ m * rad). {
@@ -774,14 +771,30 @@ induction k. {
     destruct rr; [ flia Hr | ].
     cbn; rewrite Nat.mul_comm; cbn; flia.
   }
-  specialize (carry_upper_bound_for_adds m u i) as Hc2.
-  assert (H : m ≠ 0) by flia Hm2.
-  specialize (Hc2 H); clear H.
-  assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
-    now intros; rewrite <- Nat.add_assoc.
+(*1*)
+  destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 2)) as [Hu2| Hu2]. {
+    clear Hu2g.
+    destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
+      rewrite Hr2 in Hu2 |-*; cbn in Hu2 |-*.
+      rewrite Nat.sub_add in Hu2; [ easy | ].
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | cbn; flia ].
+    }
+    exfalso.
+    destruct (le_dec rad 1) as [Hr1| Hr1]. {
+      specialize (Hur 2) as H1.
+      rewrite Hu2 in H1.
+      apply Nat.nlt_ge in H1.
+      apply H1; clear H1; cbn.
+      rewrite <- Nat.add_sub_swap; [ flia Hr1 | ].
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | cbn; flia Hr ].
+    }
+    flia Hm2 H3 Hmr Hu2 Hr1 Hr2 Hc2.
   }
-  specialize (Hc2 H 2); clear H.
-(*0*)
+  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 3) by flia Hu2g Hu2.
+  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
+(*2*)
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 3)) as [Hu2| Hu2]. {
     clear Hu2g.
     destruct (Nat.eq_dec rad 3) as [Hr3| Hr3]. {
@@ -804,7 +817,7 @@ induction k. {
   }
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 4) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
-(*1*)
+(*3*)
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 4)) as [Hu2| Hu2]. {
     clear Hu2g.
     destruct (Nat.eq_dec rad 4) as [Hr4| Hr4]. {
@@ -827,7 +840,7 @@ induction k. {
   }
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 5) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
-(*2*)
+(*4*)
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 5)) as [Hu2| Hu2]. {
     clear Hu2g.
     destruct (Nat.eq_dec rad 5) as [Hr5| Hr5]. {
@@ -850,7 +863,7 @@ induction k. {
   }
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 6) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
-(*3*)
+(*5*)
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 6)) as [Hu2| Hu2]. {
     clear Hu2g.
     destruct (Nat.eq_dec rad 6) as [Hr6| Hr6]. {
@@ -873,7 +886,7 @@ induction k. {
   }
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 7) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
-(*4*)
+(*6*)
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 7)) as [Hu2| Hu2]. {
     clear Hu2g.
     destruct (Nat.eq_dec rad 7) as [Hr7| Hr7]. {
