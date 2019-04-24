@@ -835,6 +835,7 @@ induction k. {
     specialize (H1 H 2); clear H.
     flia Hr2 Hr3 Hm2 Hu2 H1.
   }
+clear - Hu2g Hu2 Hm2 Hur H3 Hmr.
   specialize (carry_upper_bound_for_adds m u i) as Hc2.
   assert (H : m ≠ 0) by flia Hm2.
   specialize (Hc2 H); clear H.
@@ -842,6 +843,7 @@ induction k. {
     now intros; rewrite <- Nat.add_assoc.
   }
   specialize (Hc2 H 2); clear H.
+specialize radix_ge_2 as Hr.
 (*1*)
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 4) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
