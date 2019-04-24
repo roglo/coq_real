@@ -835,7 +835,19 @@ induction k. {
     specialize (H1 H 2); clear H.
     flia Hr2 Hr3 Hm2 Hu2 H1.
   }
-clear - Hu2g Hu2 Hm2 Hur H3 Hmr.
+  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 4) by flia Hu2g Hu2.
+  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
+(**)
+  clear - Hu2g Hm2 Hur H3.
+  symmetry in H3.
+  specialize radix_ge_2 as Hr.
+  assert (Hmr : m + rad ≤ m * rad). {
+    destruct m; [ easy | ].
+    destruct m; [ flia Hm2 | ].
+    destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | ].
+    cbn; rewrite Nat.mul_comm; cbn; flia.
+  }
   specialize (carry_upper_bound_for_adds m u i) as Hc2.
   assert (H : m ≠ 0) by flia Hm2.
   specialize (Hc2 H); clear H.
@@ -843,10 +855,7 @@ clear - Hu2g Hu2 Hm2 Hur H3 Hmr.
     now intros; rewrite <- Nat.add_assoc.
   }
   specialize (Hc2 H 2); clear H.
-specialize radix_ge_2 as Hr.
 (*1*)
-  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 4) by flia Hu2g Hu2.
-  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 4)) as [Hu2| Hu2]. {
     clear Hu2g.
     destruct (Nat.eq_dec rad 4) as [Hr4| Hr4]. {
@@ -867,9 +876,9 @@ specialize radix_ge_2 as Hr.
     }
     flia Hm2 H3 Hmr Hu2 Hr3 Hr4 Hc2.
   }
-(*2*)
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 5) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
+(*2*)
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 5)) as [Hu2| Hu2]. {
     clear Hu2g.
     destruct (Nat.eq_dec rad 5) as [Hr5| Hr5]. {
@@ -890,9 +899,9 @@ specialize radix_ge_2 as Hr.
     }
     flia Hm2 H3 Hmr Hu2 Hr4 Hr5 Hc2.
   }
-(*3*)
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 6) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
+(*3*)
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 6)) as [Hu2| Hu2]. {
     clear Hu2g.
     destruct (Nat.eq_dec rad 6) as [Hr6| Hr6]. {
@@ -913,9 +922,9 @@ specialize radix_ge_2 as Hr.
     }
     flia Hm2 H3 Hmr Hu2 Hr5 Hr6 Hc2.
   }
-(*4*)
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 7) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
+(*4*)
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 7)) as [Hu2| Hu2]. {
     clear Hu2g.
     destruct (Nat.eq_dec rad 7) as [Hr7| Hr7]. {
