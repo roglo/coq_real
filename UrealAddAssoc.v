@@ -720,7 +720,7 @@ induction k. {
     destruct rr; [ flia Hr | ].
     cbn; rewrite Nat.mul_comm; cbn; flia.
   }
-remember 1 as k eqn:Hk in r.
+  remember 1 as k eqn:Hk in r.
 (*1*)
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + (k + 1))) as [Hu2| Hu2]. {
     clear Hu2g.
@@ -742,9 +742,8 @@ remember 1 as k eqn:Hk in r.
     }
     flia Hm2 H3 Hmr Hu2 Hr1 Hr2 Hc2.
   }
-  subst k.
-  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 3) by flia Hu2g Hu2.
-  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
+  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + (k + 2)) by flia Hk Hu2g Hu2.
+  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g; subst k.
   remember 2 as k eqn:Hk in r.
 (*2*)
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + (k + 1))) as [Hu2| Hu2]. {
@@ -767,9 +766,10 @@ remember 1 as k eqn:Hk in r.
     }
     flia Hm2 H3 Hmr Hu2 Hr1 Hr2 Hc2.
   }
-  subst k.
-  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 4) by flia Hu2g Hu2.
-  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
+  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + (k + 2)) by flia Hk Hu2g Hu2.
+  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g; subst k.
+  remember 3 as k eqn:Hk in r.
+...
 (*3*)
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 4)) as [Hu2| Hu2]. {
     clear Hu2g.
