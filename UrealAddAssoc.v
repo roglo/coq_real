@@ -703,7 +703,8 @@ induction k. {
 (**)
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 2) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
-  clear - Hu2g Hm2 Hur H3.
+  symmetry in H3.
+(**)
   specialize (carry_upper_bound_for_adds m u i) as Hc2.
   assert (H : m ≠ 0) by flia Hm2.
   specialize (Hc2 H); clear H.
@@ -711,7 +712,9 @@ induction k. {
     now intros; rewrite <- Nat.add_assoc.
   }
   specialize (Hc2 H 2); clear H.
-  symmetry in H3.
+  specialize (Hur 2) as H1.
+  clear - Hu2g Hm2 H1 Hc2 H3.
+(**)
   specialize radix_ge_2 as Hr.
   assert (Hmr : m + rad ≤ m * rad). {
     destruct m; [ easy | ].
@@ -732,7 +735,6 @@ induction k. {
     }
     exfalso.
     destruct (le_dec rad k) as [Hr1| Hr1]. {
-      specialize (Hur 2) as H1.
       rewrite Hu2 in H1.
       apply Nat.nlt_ge in H1.
       apply H1; clear H1; cbn.
@@ -756,7 +758,6 @@ induction k. {
     }
     exfalso.
     destruct (le_dec rad k) as [Hr1| Hr1]. {
-      specialize (Hur 2) as H1.
       rewrite Hu2 in H1.
       apply Nat.nlt_ge in H1.
       apply H1; clear H1; cbn.
@@ -780,7 +781,6 @@ induction k. {
     }
     exfalso.
     destruct (le_dec rad k) as [Hr1| Hr1]. {
-      specialize (Hur 2) as H1.
       rewrite Hu2 in H1.
       apply Nat.nlt_ge in H1.
       apply H1; clear H1; cbn.
@@ -804,7 +804,6 @@ induction k. {
     }
     exfalso.
     destruct (le_dec rad k) as [Hr1| Hr1]. {
-      specialize (Hur 2) as H1.
       rewrite Hu2 in H1.
       apply Nat.nlt_ge in H1.
       apply H1; clear H1; cbn.
@@ -828,7 +827,6 @@ induction k. {
     }
     exfalso.
     destruct (le_dec rad k) as [Hr1| Hr1]. {
-      specialize (Hur 2) as H1.
       rewrite Hu2 in H1.
       apply Nat.nlt_ge in H1.
       apply H1; clear H1; cbn.
@@ -852,7 +850,6 @@ induction k. {
     }
     exfalso.
     destruct (le_dec rad k) as [Hr1| Hr1]. {
-      specialize (Hur 2) as H1.
       rewrite Hu2 in H1.
       apply Nat.nlt_ge in H1.
       apply H1; clear H1; cbn.
@@ -864,7 +861,6 @@ induction k. {
   }
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + (k + 2)) by flia Hk Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g; subst k.
-  remember 7 as k eqn:Hk in r.
 ...
 
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
