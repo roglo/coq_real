@@ -715,6 +715,7 @@ induction k. {
   specialize (Hur 2) as H1.
   remember (u (i + 2)) as ui eqn:Hui.
   remember (carry u (i + 2)) as c eqn:Hc.
+  move ui before m; move c before ui.
   clear - Hu2g Hm2 H1 Hc2 H3.
 (**)
   specialize radix_ge_2 as Hr.
