@@ -687,17 +687,6 @@ induction k. {
   replace m with (m * 1) in Hu2g at 2 by flia.
   replace m with (m * 1) in Hu2 at 2 by flia.
   rewrite <- Nat.mul_sub_distr_l in Hu2g, Hu2.
-  assert (Hrm : rad ≤ m * (rad - 1)). {
-    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-    apply Nat.le_add_le_sub_r.
-    destruct m; [ flia Hm2 | cbn ].
-    destruct m; [ flia Hm2 | cbn ].
-    apply Nat.add_le_mono_l.
-    rewrite Nat.mul_comm.
-    destruct rad as [| rr]; [ easy | ].
-    destruct rr; [ flia Hr | cbn; flia ].
-  }
-  move Hrm before Hm2.
   apply Nat.add_sub_eq_r in H1; symmetry in H1.
   specialize (Nat.div_mod (u (i + 2) + carry u (i + 2)) rad) as H3.
   specialize (H3 radix_ne_0).
@@ -711,46 +700,6 @@ induction k. {
   rewrite Nat.mul_comm in H3.
   symmetry in H3.
   clear H1 H2.
-  assert (Hmr : m + rad ≤ m * rad). {
-    destruct m; [ easy | ].
-    destruct m; [ flia Hm2 | ].
-    destruct rad as [| rr]; [ easy | ].
-    destruct rr; [ flia Hr | ].
-    cbn; rewrite Nat.mul_comm; cbn; flia.
-  }
-  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 2) by flia Hu2g Hu2.
-  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
-  destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 2)) as [Hu2| Hu2]. {
-    destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
-      rewrite Hr2 in Hu2 |-*; cbn in Hu2 |-*.
-      rewrite Nat.sub_add in Hu2; [ easy | ].
-      destruct m; [ easy | ].
-      destruct m; [ flia Hm2 | cbn; flia ].
-    }
-    exfalso.
-    eapply Nat.add_cancel_r in Hu2.
-    rewrite <- H3 in Hu2.
-    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hu2.
-    rewrite <- Nat.add_assoc in Hu2.
-    rewrite Nat.add_comm in Hu2.
-    rewrite <- Nat.sub_add_distr in Hu2.
-    rewrite Nat.add_sub_assoc in Hu2; [ | easy ].
-    rewrite Nat.add_comm in Hu2.
-    apply Nat.add_sub_eq_nz in Hu2; [ | flia Hmr ].
-    rewrite Nat.add_sub_assoc in Hu2; [ | flia Hmr ].
-    apply Nat.add_sub_eq_nz in Hu2; [ | flia Hr Hmr ].
-    rewrite Nat.add_assoc in Hu2.
-    rewrite (Nat.add_shuffle0 1) in Hu2.
-    apply Nat.add_cancel_r in Hu2.
-    specialize (carry_upper_bound_for_adds m u i) as H1.
-    assert (H : m ≠ 0) by flia Hm2.
-    specialize (H1 H); clear H.
-    assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
-      now intros; rewrite <- Nat.add_assoc.
-    }
-    specialize (H1 H 2); clear H.
-    flia Hm2 Hr2 Hu2 H1.
-  }
 (**)
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 2) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
