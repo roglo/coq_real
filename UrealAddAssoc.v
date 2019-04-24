@@ -763,40 +763,6 @@ induction k. {
     eapply lt_le_trans; [ | apply Hu2g ].
     flia.
   }
-  destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 3)) as [Hu2| Hu2]. {
-    clear Hu2g.
-    destruct (Nat.eq_dec rad 3) as [Hr3| Hr3]. {
-      rewrite Hr3 in Hu2 |-*; cbn in Hu2 |-*.
-      rewrite Nat.sub_add in Hu2; [ easy | ].
-      destruct m; [ easy | ].
-      destruct m; [ flia Hm2 | cbn; flia ].
-    }
-    exfalso.
-    eapply Nat.add_cancel_r in Hu2.
-    rewrite <- H3 in Hu2.
-    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hu2.
-    rewrite <- Nat.add_assoc in Hu2.
-    rewrite Nat.add_comm in Hu2.
-    rewrite <- Nat.sub_add_distr in Hu2.
-    rewrite Nat.add_sub_assoc in Hu2; [ | easy ].
-    rewrite Nat.add_comm in Hu2.
-    apply Nat.add_sub_eq_nz in Hu2; [ | flia Hmr ].
-    rewrite Nat.add_sub_assoc in Hu2; [ | flia Hmr ].
-    apply Nat.add_sub_eq_nz in Hu2; [ | flia Hr Hmr ].
-    rewrite Nat.add_assoc in Hu2.
-    rewrite (Nat.add_shuffle0 1) in Hu2.
-    apply Nat.add_cancel_r in Hu2.
-    specialize (carry_upper_bound_for_adds m u i) as H1.
-    assert (H : m ≠ 0) by flia Hm2.
-    specialize (H1 H); clear H.
-    assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
-      now intros; rewrite <- Nat.add_assoc.
-    }
-    specialize (H1 H 2); clear H.
-    flia Hr2 Hr3 Hm2 Hu2 H1.
-  }
-  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 4) by flia Hu2g Hu2.
-  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
 (**)
   clear - Hu2g Hm2 Hur H3.
   symmetry in H3.
@@ -815,6 +781,29 @@ induction k. {
     now intros; rewrite <- Nat.add_assoc.
   }
   specialize (Hc2 H 2); clear H.
+(*0*)
+  destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 3)) as [Hu2| Hu2]. {
+    clear Hu2g.
+    destruct (Nat.eq_dec rad 3) as [Hr3| Hr3]. {
+      rewrite Hr3 in Hu2 |-*; cbn in Hu2 |-*.
+      rewrite Nat.sub_add in Hu2; [ easy | ].
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | cbn; flia ].
+    }
+    exfalso.
+    destruct (le_dec rad 2) as [Hr2| Hr2]. {
+      specialize (Hur 2) as H1.
+      rewrite Hu2 in H1.
+      apply Nat.nlt_ge in H1.
+      apply H1; clear H1; cbn.
+      rewrite <- Nat.add_sub_swap; [ flia Hr2 | ].
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | cbn; flia Hr ].
+    }
+    flia Hm2 H3 Hmr Hu2 Hr2 Hr3 Hc2.
+  }
+  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 4) by flia Hu2g Hu2.
+  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
 (*1*)
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 4)) as [Hu2| Hu2]. {
     clear Hu2g.
