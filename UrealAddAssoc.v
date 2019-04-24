@@ -563,7 +563,6 @@ specialize radix_ge_2 as Hr.
 intros Hmr Hur Hau * Hj Hu1 *.
 destruct (zerop m) as [Hmz| Hmz]; [ flia Hmz Hj | ].
 apply Nat.neq_0_lt_0 in Hmz.
-specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2g, Hc1).
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
