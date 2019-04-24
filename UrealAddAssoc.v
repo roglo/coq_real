@@ -550,6 +550,22 @@ rewrite Nat.mul_1_l.
 now symmetry; apply Nat.sub_add.
 Qed.
 
+Theorem P_999_after_7_gt {r : radix} : ∀ m u i,
+  m ≤ rad
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ j, 1 ≤ j ≤ m
+  → u (i + 1) = j * rad - m
+  → u (i + 2) > (m - 1) * rad.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hmr Hur Hau * Hj Hu1 *.
+destruct (zerop m) as [Hmz| Hmz]; [ flia Hmz Hj | ].
+apply Nat.neq_0_lt_0 in Hmz.
+specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2g, Hc1).
+...
+
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
   m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
