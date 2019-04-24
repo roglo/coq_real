@@ -580,6 +580,7 @@ destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
   }
   specialize (H3 H 2); clear H.
   apply Nat.lt_1_r in H3; rewrite H3, Nat.add_0_r in H2.
+  cbn in Hu2ub.
   rewrite Nat.mod_small in H2; [ flia Hr Hu2ub H2 | ].
   specialize (Hur 2) as H4.
   flia Hr H4.
@@ -653,6 +654,8 @@ destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + 1)) as [Hu2| Hu2]. {
     destruct rr; [ flia Hr | ].
     cbn; rewrite Nat.mul_comm; cbn; flia.
   }
+  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H3.
+  rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in Hu2.
   flia Hm2 H3 Hmr Hu2 Hc2 Hmrl.
 }
 assert (H : u (i + 2) ≥ (m - 1) * rad - m + 2) by flia Hu2lb Hu2.
