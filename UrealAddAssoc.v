@@ -564,8 +564,42 @@ intros Hmr Hur Hau * Hj Hu1 *.
 destruct (zerop m) as [Hmz| Hmz]; [ flia Hmz Hj | ].
 apply Nat.neq_0_lt_0 in Hmz.
 move Hmz before Hmr.
-apply Nat.nle_gt; intros Hu2.
-specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2g, Hc1).
+apply Nat.nle_gt; intros Hu2ub.
+specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2lb, Hc1).
+move Hu2lb after Hu2ub.
+destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m)) as [Hu2| Hu2]. {
+  exfalso; clear Hu2lb Hu2ub.
+...
+  rewrite Hu2 in H1.
+  rewrite <- Nat.div_add in H1; [ | easy ].
+  rewrite Nat.mul_1_l, <- Nat.add_assoc in H1.
+  rewrite <- Nat.add_sub_swap in H1. 2: {
+    rewrite Nat.mul_comm.
+    destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | cbn; flia Hm2 ].
+  }
+  rewrite <- Nat.add_sub_assoc in H1; [ | flia Hm2 ].
+  rewrite Nat.add_comm in H1.
+  rewrite Nat.div_add in H1; [ | easy ].
+  specialize (P_999_after_7_ge_17 m u (i + 1) (proj2 Hm2)) as H2.
+  replace (i + 1 + 1) with (i + 2) in H2 by flia.
+  replace (i + 1 + 2) with (i + 3) in H2 by flia.
+  assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  specialize (H2 H); clear H.
+  assert (H : ∀ k, fA_ge_1_ε u (i + 1) k = true). {
+    now intros; apply A_ge_1_add_r_true_if.
+  }
+  specialize (H2 H (m - 1)); clear H.
+  assert (H : 1 ≤ m - 1 ≤ m) by flia Hm2.
+  specialize (H2 H Hu2); clear H.
+  destruct H2 as (Hu3, Hc2).
+  move Hc2 before Hc1.
+  rewrite Hc2 in H1.
+  replace (m - 1 + rad - m) with (rad - 1) in H1 by flia Hm2.
+  rewrite Nat.div_small in H1; [ flia H1 Hm2 | flia Hr ].
+}
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
