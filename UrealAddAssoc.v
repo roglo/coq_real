@@ -746,23 +746,23 @@ induction k. {
 (*2*)
   destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 3)) as [Hu2| Hu2]. {
     clear Hu2g.
-    destruct (Nat.eq_dec rad 3) as [Hr3| Hr3]. {
-      rewrite Hr3 in Hu2 |-*; cbn in Hu2 |-*.
+    destruct (Nat.eq_dec rad 3) as [Hr2| Hr2]. {
+      rewrite Hr2 in Hu2 |-*; cbn in Hu2 |-*.
       rewrite Nat.sub_add in Hu2; [ easy | ].
       destruct m; [ easy | ].
       destruct m; [ flia Hm2 | cbn; flia ].
     }
     exfalso.
-    destruct (le_dec rad 2) as [Hr2| Hr2]. {
+    destruct (le_dec rad 2) as [Hr1| Hr1]. {
       specialize (Hur 2) as H1.
       rewrite Hu2 in H1.
       apply Nat.nlt_ge in H1.
       apply H1; clear H1; cbn.
-      rewrite <- Nat.add_sub_swap; [ flia Hr2 | ].
+      rewrite <- Nat.add_sub_swap; [ flia Hr1 | ].
       destruct m; [ easy | ].
       destruct m; [ flia Hm2 | cbn; flia Hr ].
     }
-    flia Hm2 H3 Hmr Hu2 Hr2 Hr3 Hc2.
+    flia Hm2 H3 Hmr Hu2 Hr1 Hr2 Hc2.
   }
   assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 4) by flia Hu2g Hu2.
   move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
