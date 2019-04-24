@@ -624,6 +624,8 @@ destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m)) as [Hu2| Hu2]. {
   replace (m - 1 + rad - m) with (rad - 1) in H1 by flia Hm2.
   rewrite Nat.div_small in H1; [ flia H1 Hm2 | flia Hr ].
 }
+assert (H : u (i + 2) ≥ (m - 1) * rad - m + 1) by flia Hu2lb Hu2.
+move H before Hu2lb; clear Hu2lb Hu2; rename H into Hu2lb.
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
