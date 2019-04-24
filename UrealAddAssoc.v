@@ -846,15 +846,14 @@ induction k. {
       destruct m; [ flia Hm2 | cbn; flia ].
     }
     exfalso.
-    destruct (Nat.eq_dec rad 3) as [Hr3| Hr3]. {
-      rewrite Hr3 in *; cbn in Hu2.
+    destruct (le_dec rad 3) as [Hr3| Hr3]. {
       specialize (Hur 2) as H1.
       rewrite Hu2 in H1.
       apply Nat.nlt_ge in H1.
       apply H1; clear H1; cbn.
-      rewrite <- Nat.add_sub_swap; [ flia | ].
+      rewrite <- Nat.add_sub_swap; [ flia Hr3 | ].
       destruct m; [ easy | ].
-      destruct m; [ flia Hm2 | cbn; flia ].
+      destruct m; [ flia Hm2 | cbn; flia Hr ].
     }
     specialize (carry_upper_bound_for_adds m u i) as H1.
     assert (H : m ≠ 0) by flia Hm2.
@@ -876,25 +875,14 @@ induction k. {
       destruct m; [ flia Hm2 | cbn; flia ].
     }
     exfalso.
-    destruct (Nat.eq_dec rad 4) as [Hr4| Hr4]. {
-      rewrite Hr4 in *; cbn in Hu2.
+    destruct (le_dec rad 4) as [Hr4| Hr4]. {
       specialize (Hur 2) as H1.
       rewrite Hu2 in H1.
       apply Nat.nlt_ge in H1.
       apply H1; clear H1; cbn.
-      rewrite <- Nat.add_sub_swap; [ flia | ].
+      rewrite <- Nat.add_sub_swap; [ flia Hr4 | ].
       destruct m; [ easy | ].
-      destruct m; [ flia Hm2 | cbn; flia ].
-    }
-    destruct (Nat.eq_dec rad 3) as [Hr3| Hr3]. {
-      rewrite Hr3 in *; cbn in Hu2.
-      specialize (Hur 2) as H1.
-      rewrite Hu2 in H1.
-      apply Nat.nlt_ge in H1.
-      apply H1; clear H1; cbn.
-      rewrite <- Nat.add_sub_swap; [ flia | ].
-      destruct m; [ easy | ].
-      destruct m; [ flia Hm2 | cbn; flia ].
+      destruct m; [ flia Hm2 | cbn; flia Hr ].
     }
     specialize (carry_upper_bound_for_adds m u i) as H1.
     assert (H : m ≠ 0) by flia Hm2.
@@ -903,7 +891,7 @@ induction k. {
       now intros; rewrite <- Nat.add_assoc.
     }
     specialize (H1 H 2); clear H.
-    flia Hm2 H3 Hmr Hu2 Hr3 Hr4 Hr5 H1.
+    flia Hm2 H3 Hmr Hu2 Hr4 Hr5 H1.
   }
 ...
   assert (H : u (i + 2) ≥ (m - 1) * rad - m + 4) by flia Hu2g Hu2.
