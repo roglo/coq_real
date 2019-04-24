@@ -587,6 +587,13 @@ destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
 }
 assert (Hm2 : m ≥ 2) by flia Hmz Hm1.
 move Hm1 before Hmz; move Hm2 before Hm1.
+(*
+replace m with (m + 0) in Hu2lb at 2 by easy.
+remember 0 as k eqn:Hk in Hu2lb at 3.
+clear Hk.
+induction k.
+rewrite Nat.add_0_r in Hu2lb.
+*)
 destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m)) as [Hu2| Hu2]. {
   exfalso; clear Hu2lb Hu2ub.
   specialize (P_999_after_7_ge_17 m u (i + 1) Hmr) as H2.
