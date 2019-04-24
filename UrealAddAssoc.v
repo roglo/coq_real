@@ -922,6 +922,35 @@ induction k. {
     specialize (H1 H 2); clear H.
     flia Hm2 H3 Hmr Hu2 Hr5 Hr6 H1.
   }
+  assert (H : u (i + 2) ≥ m * (rad - 1) - rad + 7) by flia Hu2g Hu2.
+  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g.
+  destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1) - rad + 7)) as [Hu2| Hu2]. {
+    clear Hu2g.
+    destruct (Nat.eq_dec rad 7) as [Hr7| Hr7]. {
+      rewrite Hr7 in Hu2 |-*; cbn in Hu2 |-*.
+      rewrite Nat.sub_add in Hu2; [ easy | ].
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | cbn; flia ].
+    }
+    exfalso.
+    destruct (le_dec rad 6) as [Hr6| Hr6]. {
+      specialize (Hur 2) as H1.
+      rewrite Hu2 in H1.
+      apply Nat.nlt_ge in H1.
+      apply H1; clear H1; cbn.
+      rewrite <- Nat.add_sub_swap; [ flia Hr6 | ].
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | cbn; flia Hr ].
+    }
+    specialize (carry_upper_bound_for_adds m u i) as H1.
+    assert (H : m ≠ 0) by flia Hm2.
+    specialize (H1 H); clear H.
+    assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+      now intros; rewrite <- Nat.add_assoc.
+    }
+    specialize (H1 H 2); clear H.
+    flia Hm2 H3 Hmr Hu2 Hr6 Hr7 H1.
+  }
 ...
 
 Theorem rad_2_sum_2_half_A_lt_1 {r : radix} : ∀ i n u,
