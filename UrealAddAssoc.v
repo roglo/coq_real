@@ -710,47 +710,7 @@ induction k. {
   }
   rewrite Nat.mul_comm in H3.
   symmetry in H3.
-(*
-  apply Nat.add_sub_eq_nz in H3. 2: {
-    intros H.
-    apply Nat.eq_add_0 in H.
-    rewrite (proj1 H) in Hu2g.
-    apply Nat.nlt_ge in Hu2g; apply Hu2g.
-    destruct m; [ easy | ].
-    destruct m; [ flia Hm2 | ].
-    destruct rad as [| rr]; [ easy | ].
-    destruct rr; [ flia Hr | cbn; flia ].
-  }
-  rewrite Nat.add_comm in H3.
-  rewrite <- H3; symmetry.
-  apply Nat.add_sub_eq_l.
-  rewrite Nat.add_comm, <- Nat.add_assoc; f_equal.
-*)
   clear H1 H2.
-(*
-  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-  symmetry.
-...
-...
-  }
-...
-  move Hc1 at bottom.
-  rewrite (carry_succ m) in Hc1; [ | easy | ]. 2: {
-    now intros; rewrite <- Nat.add_assoc.
-  }
-  replace (i + 1 + 1) with (i + 2) in Hc1 by flia.
-  rewrite <- H3 in Hc1.
-  apply (Nat.add_cancel_r _ _ 1) in Hc1.
-  rewrite Nat.sub_add in Hc1; [ | flia Hm2 ].
-  rewrite <- Nat.div_add in Hc1; [ | easy ].
-  rewrite Nat.mul_1_l in Hc1.
-  rewrite <- Nat.add_sub_swap in Hc1. 2: {
-    destruct m; [ easy | ].
-    destruct rad; [ easy | cbn; flia ].
-  }
-  rewrite <- Nat.add_sub_assoc in Hc1; [ | easy ].
-  rewrite Nat.add_comm, Nat.div_add in Hc1; [ | easy ].
-*)
   assert (Hmr : m + rad ≤ m * rad). {
     destruct m; [ easy | ].
     destruct m; [ flia Hm2 | ].
