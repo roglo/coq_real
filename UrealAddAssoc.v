@@ -2900,27 +2900,15 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      flia H3 H7 H8.
    }
    destruct Huv789 as [Huv7| Huv89]. {
-...
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
        (* à voir *) admit.
      }
      assert (Huv2 : ∀ p, (u ⊕ v) (i + p + 2) = 3 * (rad - 1)). {
        intros p.
-Check P_999_after_7.
-Check carry_succ.
-...
-specialize (P_999_after_7 3 (u ⊕ v) i) as H1.
-...
-   specialize (P_999_start (u ⊕ v) (i + 1) 3) as H1.
-   assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
-     intros; rewrite <- Nat.add_assoc; apply Huv3.
-   }
-   specialize (H1 H); clear H.
-   assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
-     specialize (all_fA_ge_1_ε_P_999 _ _ Hauv) as H.
-     intros; rewrite Nat.add_shuffle0; apply H.
-   }
-   specialize (H1 H); clear H.
+       replace rad with (1 * rad) in Huv7 by flia.
+       apply P_999_after_7 with (j0 := 1); try easy; [ | pauto ].
+       flia Hr Hr2.
+     }
 ...
    destruct (lt_dec rad 3) as [H| Hr3]. {
      assert (Hr2 : rad = 2) by flia H Hr; clear H H1.
