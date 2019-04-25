@@ -626,62 +626,10 @@ assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
   now intros; rewrite <- Nat.add_assoc.
 }
 specialize (Hc2 H 2); clear H.
-assert (Hmrl : m + rad ≤ m * rad). {
-  destruct m; [ easy | ].
-  destruct m; [ flia Hmg | ].
-  destruct rad as [| rr]; [ easy | ].
-  destruct rr; [ flia Hr | ].
-  cbn; rewrite Nat.mul_comm; cbn; flia.
-}
-rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H3.
-rewrite Nat.add_sub_assoc in H3; [ | easy ].
-rewrite Nat.sub_add in H3; [ | flia Hmrl ].
-destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + 1)) as [Hu2| Hu2]. {
-  rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in Hu2.
-  flia Hmg H3 Hmr Hu2 Hc2 Hmrl.
-}
-assert (H : u (i + 2) ≥ (m - 1) * rad - m + 2) by flia Hu2lb Hu2.
-move H before Hu2lb; clear Hu2lb Hu2; rename H into Hu2lb.
-destruct (Nat.eq_dec m 2) as [Hm| Hm]; [ flia Hu2lb Hm | ].
-assert (H : m ≥ 3) by flia Hmg Hm.
-move H before Hmg; clear Hmg Hm; rename H into Hmg.
-replace 2 with (1 + 1) in Hu2lb at 2 by easy.
-replace 3 with (1 + 2) in Hmg by easy.
-remember 1 as k eqn:Hk in Hu2lb at 3, Hmg at 1.
-clear Hk.
-(*1*)
-destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + (k + 1)))
-  as [Hu2| Hu2]. {
-  flia Hmr H3 Hc2.
-}
-destruct (Nat.eq_dec m (k + 2)) as [Hm| Hm]; [ flia Hu2lb Hu2 Hm | ].
-assert (H : m ≥ k + 1 + 2) by flia Hmg Hm.
-move H before Hmg; clear Hmg Hm; rename H into Hmg.
-assert (H : u (i + 2) ≥ (m - 1) * rad - m + (k + 1 + 1)) by flia Hu2lb Hu2.
-move H before Hu2lb; clear Hu2lb Hu2; rename H into Hu2lb.
-remember (k + 1) as k'; clear k Heqk'; rename k' into k.
-(*2*)
-destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + (k + 1)))
-  as [Hu2| Hu2]. {
-  flia Hmr H3 Hc2.
-}
-destruct (Nat.eq_dec m (k + 2)) as [Hm| Hm]; [ flia Hu2lb Hu2 Hm | ].
-assert (H : m ≥ k + 1 + 2) by flia Hmg Hm.
-move H before Hmg; clear Hmg Hm; rename H into Hmg.
-assert (H : u (i + 2) ≥ (m - 1) * rad - m + (k + 1 + 1)) by flia Hu2lb Hu2.
-move H before Hu2lb; clear Hu2lb Hu2; rename H into Hu2lb.
-remember (k + 1) as k'; clear k Heqk'; rename k' into k.
-(*3*)
-destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + (k + 1)))
-  as [Hu2| Hu2]. {
-  flia Hmr H3 Hc2.
-}
-destruct (Nat.eq_dec m (k + 2)) as [Hm| Hm]; [ flia Hu2lb Hu2 Hm | ].
-assert (H : m ≥ k + 1 + 2) by flia Hmg Hm.
-move H before Hmg; clear Hmg Hm; rename H into Hmg.
-assert (H : u (i + 2) ≥ (m - 1) * rad - m + (k + 1 + 1)) by flia Hu2lb Hu2.
-move H before Hu2lb; clear Hu2lb Hu2; rename H into Hu2lb.
-remember (k + 1) as k'; clear k Heqk'; rename k' into k.
+clear - Hmr H3 Hc2 Hmg Hu2lb.
+flia Hmr H3 Hc2 Hmg Hu2lb.
+Qed.
+
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
