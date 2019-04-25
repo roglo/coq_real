@@ -558,6 +558,10 @@ Theorem P_999_after_7_gt {r : radix} : ∀ m u i,
   → u (i + 1) = j * rad - m
   → u (i + 2) > (m - 1) * rad.
 Proof.
+(* u(i+2)>20 to say u(i+2)=27
+   u(i+2)>(m-1)r to say u(i+2)=m(r-1)
+   does not work if m=r !!! *)
+...
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hau * Hj Hu1 *.
