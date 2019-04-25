@@ -648,6 +648,7 @@ move H before Hmg; clear Hmg Hm; rename H into Hmg.
 replace 2 with (1 + 1) in Hu2lb at 2 by easy.
 replace 3 with (1 + 2) in Hmg by easy.
 remember 1 as k eqn:Hk in Hu2lb at 3, Hmg at 1.
+clear Hk.
 (*1*)
 destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + (k + 1)))
   as [Hu2| Hu2]. {
@@ -658,8 +659,7 @@ assert (H : m ≥ k + 1 + 2) by flia Hmg Hm.
 move H before Hmg; clear Hmg Hm; rename H into Hmg.
 assert (H : u (i + 2) ≥ (m - 1) * rad - m + (k + 1 + 1)) by flia Hu2lb Hu2.
 move H before Hu2lb; clear Hu2lb Hu2; rename H into Hu2lb.
-remember (k + 1) as k'.
-subst k; rename k' into k.
+remember (k + 1) as k'; clear k Heqk'; rename k' into k.
 (*2*)
 destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + (k + 1)))
   as [Hu2| Hu2]. {
@@ -670,8 +670,7 @@ assert (H : m ≥ k + 1 + 2) by flia Hmg Hm.
 move H before Hmg; clear Hmg Hm; rename H into Hmg.
 assert (H : u (i + 2) ≥ (m - 1) * rad - m + (k + 1 + 1)) by flia Hu2lb Hu2.
 move H before Hu2lb; clear Hu2lb Hu2; rename H into Hu2lb.
-remember (k + 1) as k'.
-subst k; rename k' into k.
+remember (k + 1) as k'; clear k Heqk'; rename k' into k.
 (*3*)
 destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + (k + 1)))
   as [Hu2| Hu2]. {
@@ -682,8 +681,7 @@ assert (H : m ≥ k + 1 + 2) by flia Hmg Hm.
 move H before Hmg; clear Hmg Hm; rename H into Hmg.
 assert (H : u (i + 2) ≥ (m - 1) * rad - m + (k + 1 + 1)) by flia Hu2lb Hu2.
 move H before Hu2lb; clear Hu2lb Hu2; rename H into Hu2lb.
-remember (k + 1) as k'.
-subst k; rename k' into k.
+remember (k + 1) as k'; clear k Heqk'; rename k' into k.
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
