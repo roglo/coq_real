@@ -2904,7 +2904,6 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
        rewrite Hr2 in Huv7; cbn in Huv7.
        unfold "⊕" in Huv7.
        apply Nat.eq_add_0 in Huv7.
-...
        apply Q.nlt_ge in Hup; apply Hup; clear Hup.
        rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
        replace (S i) with (i + 1) by flia.
@@ -2913,7 +2912,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
        replace (S i) with (i + 1) by flia.
        unfold P at 1, d2n, prop_carr, dig.
        rewrite (proj2 Huv7), Nat.add_0_l.
-(* mouais... pas sûr... faut voir... *)
+(* je pense que P v doit être 10000... et donc le second A doit être nul *)
 ...
      }
      (* ce qui suit est correct, mais faut le finir *)
