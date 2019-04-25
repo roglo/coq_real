@@ -630,7 +630,46 @@ clear - Hmr H3 Hc2 Hmg Hu2lb.
 flia Hmr H3 Hc2 Hmg Hu2lb.
 Qed.
 
-...
+Theorem P_999_once_after_7 {r : radix} : ∀ m u i,
+  m ≤ rad
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → ∀ j, 1 ≤ j ≤ m
+  → u (i + 1) = j * rad - m
+  → u (i + 2) = m * (rad - 1).
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hmr Hur Hau * Hj Hu1 *.
+specialize (P_999_after_7_gt m u i Hmr Hur Hau j Hj Hu1) as H1.
+specialize (P_999_start u (i + 2) m) as H2.
+assert (H : ∀ k, u (i + 2 + k) ≤ m * (rad - 1)). {
+  now intros; rewrite <- Nat.add_assoc.
+}
+specialize (H2 H); clear H.
+assert (H : ∀ k, P u (i + 2 + k) = rad - 1). {
+  intros.
+  replace (i + 2 + k) with (i + (k + 1) + 1) by flia.
+  now apply all_fA_ge_1_ε_P_999.
+}
+specialize (H2 H); clear H.
+destruct (lt_dec rad m) as [H| H]; [ flia Hmr H | clear H ].
+destruct (Nat.eq_dec (u (i + 2)) (m * (rad - 1))) as [Hu| Hu]; [ easy | ].
+destruct H2 as (H2 & H3 & H4).
+remember (u (i + 2) / rad + 1) as j1 eqn:Hj1.
+remember (carry u (i + 2) + 1) as k1 eqn:Hk1.
+move k1 before j1; move Hk1 before Hj1.
+exfalso.
+apply Nat.nlt_ge in H1; apply H1; clear H1.
+rewrite H4.
+apply (lt_le_trans _ (j1 * rad)). {
+  apply Nat.sub_lt; [ | flia H3 ].
+  replace k1 with (1 * k1) by flia.
+  apply Nat.mul_le_mono; [ easy | flia H3 Hmr ].
+}
+apply Nat.mul_le_mono_r.
+flia H2.
+Qed.
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
   m ≤ rad
@@ -640,6 +679,11 @@ Theorem P_999_after_7 {r : radix} : ∀ m u i,
   → u (i + 1) = j * rad - m
   → ∀ k, u (i + k + 2) = m * (rad - 1).
 Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hmr Hur Hau * Hj Hu1 *.
+Check P_999_once_after_7.
+...
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hau * Hj Hu1 *.
