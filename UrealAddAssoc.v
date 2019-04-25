@@ -669,6 +669,11 @@ destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + (k + 1)))
 }
 assert (H : u (i + 2) ≥ (m - 1) * rad - m + (k + 2)) by flia Hk Hu2lb Hu2.
 move H before Hu2lb; clear Hu2lb Hu2; rename H into Hu2lb; subst k.
+remember 2 as k eqn:Hk in r.
+destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + (k + 1)))
+  as [Hu2| Hu2]. {
+  flia Hmr Hu2ub H3 Hc2.
+}
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
