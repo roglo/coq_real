@@ -556,19 +556,15 @@ Theorem P_999_after_7_gt {r : radix} : ∀ m u i,
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ j, 1 ≤ j ≤ m
   → u (i + 1) = j * rad - m
-  → u (i + 2) > (m - 1) * rad.
+  → u (i + 2) ≥ (m - 1) * rad.
 Proof.
-(* u(i+2)>20 to say u(i+2)=27
-   u(i+2)>(m-1)r to say u(i+2)=m(r-1)
-   does not work if m=r !!! *)
-...
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hau * Hj Hu1 *.
 destruct (zerop m) as [Hmz| Hmz]; [ flia Hmz Hj | ].
 apply Nat.neq_0_lt_0 in Hmz.
 move Hmz before Hmr.
-apply Nat.nle_gt; intros Hu2ub.
+apply Nat.nlt_ge; intros Hu2ub.
 specialize (P_999_after_7_ge_17 m u i Hmr Hur Hau _ Hj Hu1) as (Hu2lb, Hc1).
 move Hu2lb after Hu2ub.
 destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
@@ -591,13 +587,6 @@ destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
 }
 assert (Hm2 : m ≥ 2) by flia Hmz Hm1.
 move Hm1 before Hmz; move Hm2 before Hm1.
-(*
-replace m with (m + 0) in Hu2lb at 2 by easy.
-remember 0 as k eqn:Hk in Hu2lb at 3.
-clear Hk.
-induction k.
-rewrite Nat.add_0_r in Hu2lb.
-*)
 destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m)) as [Hu2| Hu2]. {
   exfalso; clear Hu2lb Hu2ub.
   specialize (P_999_after_7_ge_17 m u (i + 1) Hmr) as H2.
@@ -638,74 +627,48 @@ destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m)) as [Hu2| Hu2]. {
 }
 assert (H : u (i + 2) ≥ (m - 1) * rad - m + 1) by flia Hu2lb Hu2.
 move H before Hu2lb; clear Hu2lb Hu2; rename H into Hu2lb.
+specialize (carry_succ m u (i + 1) Hmr) as H1.
+assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
+  now intros; rewrite <- Nat.add_assoc.
+}
+specialize (H1 H); clear H.
+replace (i + 1 + 1) with (i + 2) in H1 by flia.
+specialize (all_fA_ge_1_ε_P_999 u i Hau 1) as H2.
+replace (i + 1 + 1) with (i + 2) in H2 by flia.
+unfold P, d2n, prop_carr, dig in H2.
+specialize (Nat.div_mod (u (i + 2) + carry u (i + 2)) rad) as H3.
+specialize (H3 radix_ne_0).
+rewrite <- H1, H2, Hc1 in H3; clear H1 H2.
+specialize (carry_upper_bound_for_adds m u i) as Hc2.
+assert (H : m ≠ 0) by flia Hm2.
+specialize (Hc2 H); clear H.
+assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
+  now intros; rewrite <- Nat.add_assoc.
+}
+specialize (Hc2 H 2); clear H.
+assert (Hmrl : m + rad ≤ m * rad). {
+  destruct m; [ easy | ].
+  destruct m; [ flia Hm2 | ].
+  destruct rad as [| rr]; [ easy | ].
+  destruct rr; [ flia Hr | ].
+  cbn; rewrite Nat.mul_comm; cbn; flia.
+}
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H3.
+rewrite Nat.add_sub_assoc in H3; [ | easy ].
+rewrite Nat.sub_add in H3; [ | flia Hmrl ].
 destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + 1)) as [Hu2| Hu2]. {
-  specialize (carry_succ m u (i + 1) Hmr) as H1.
-  assert (H : ∀ k, u (i + 1 + k) ≤ m * (rad - 1)). {
-    now intros; rewrite <- Nat.add_assoc.
-  }
-  specialize (H1 H); clear H.
-  replace (i + 1 + 1) with (i + 2) in H1 by flia.
-  specialize (all_fA_ge_1_ε_P_999 u i Hau 1) as H2.
-  replace (i + 1 + 1) with (i + 2) in H2 by flia.
-  unfold P, d2n, prop_carr, dig in H2.
-  specialize (Nat.div_mod (u (i + 2) + carry u (i + 2)) rad) as H3.
-  specialize (H3 radix_ne_0).
-  rewrite <- H1, H2, Hc1 in H3; clear H1 H2.
-  specialize (carry_upper_bound_for_adds m u i) as Hc2.
-  assert (H : m ≠ 0) by flia Hm2.
-  specialize (Hc2 H); clear H.
-  assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
-    now intros; rewrite <- Nat.add_assoc.
-  }
-  specialize (Hc2 H 2); clear H.
-  assert (Hmrl : m + rad ≤ m * rad). {
-    destruct m; [ easy | ].
-    destruct m; [ flia Hm2 | ].
-    destruct rad as [| rr]; [ easy | ].
-    destruct rr; [ flia Hr | ].
-    cbn; rewrite Nat.mul_comm; cbn; flia.
-  }
-  rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H3.
   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in Hu2.
   flia Hm2 H3 Hmr Hu2 Hc2 Hmrl.
 }
 assert (H : u (i + 2) ≥ (m - 1) * rad - m + 2) by flia Hu2lb Hu2.
 move H before Hu2lb; clear Hu2lb Hu2; rename H into Hu2lb.
 remember 1 as k eqn:Hk in r.
-destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + (k + 1))) as [Hu2| Hu2]. {
-  clear Hu2lb.
-  destruct (Nat.eq_dec rad (k + 1)) as [Hr2| Hr2]. {
-    rewrite Hr2 in Hu2, Hu2ub.
-    destruct m; [ easy | ].
-    destruct m; [ flia Hm2 | ].
-    rewrite Nat.sub_succ, Nat.sub_0_r in Hu2, Hu2ub, Hc1.
-rewrite Nat.mul_add_distr_l, Nat.mul_1_r in Hu2ub.
-rewrite Nat.mul_add_distr_l, Nat.mul_1_r in Hu2.
-cbn in Hu2ub, Hu2.
-clear Hmz Hm1 Hm2.
-subst k.
-replace m with 0 in * by flia Hmr Hr2.
-cbn in *.
-rewrite Hr2 in Hur; cbn in Hur.
-clear Hu2ub.
-(* seems not to work for rad=2 *)
-...
-    destruct m; [ flia Hm2 | cbn; flia Hk ].
-  }
-...
-    exfalso.
-    destruct (le_dec rad k) as [Hr1| Hr1]. {
-      rewrite Hu2 in H1.
-      apply Nat.nlt_ge in H1.
-      apply H1; clear H1; cbn.
-      rewrite <- Nat.add_sub_swap; [ flia Hr1 | ].
-      destruct m; [ easy | ].
-      destruct m; [ flia Hm2 | cbn; flia Hr ].
-    }
-    flia Hm2 H3 Hmr Hu2 Hr1 Hr2 Hc2.
-  }
-  assert (H : ui ≥ m * (rad - 1) - rad + (k + 2)) by flia Hk Hu2g Hu2.
-  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g; subst k.
+destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + (k + 1)))
+  as [Hu2| Hu2]. {
+  flia Hmr Hu2ub H3 Hc2.
+}
+assert (H : u (i + 2) ≥ (m - 1) * rad - m + (k + 2)) by flia Hk Hu2lb Hu2.
+move H before Hu2lb; clear Hu2lb Hu2; rename H into Hu2lb; subst k.
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
