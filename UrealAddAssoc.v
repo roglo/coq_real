@@ -2901,13 +2901,24 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
    }
    destruct Huv789 as [Huv7| Huv89]. {
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
-       (* à voir *) admit.
+       rewrite Hr2 in Huv7; cbn in Huv7.
+...
      }
+     (* ce qui suit est correct, mais faut le finir *)
      assert (Huv2 : ∀ p, (u ⊕ v) (i + p + 2) = 3 * (rad - 1)). {
        intros p.
        replace rad with (1 * rad) in Huv7 by flia.
        apply P_999_after_7 with (j0 := 1); try easy; [ | pauto ].
        flia Hr Hr2.
+     }
+     assert (Hv2 : ∀ p, v (i + p + 2) = 2 * (rad - 1)). {
+       intros p; specialize (Huv2 p) as H1.
+       unfold "⊕" in H1.
+       replace 3 with (1 + 2) in H1 by easy.
+       rewrite Nat.mul_add_distr_r, Nat.mul_1_l in H1.
+       specialize (Hu (p + 2)) as H2; rewrite Nat.add_assoc in H2.
+       specialize (Hv (p + 2)) as H3; rewrite Nat.add_assoc in H3.
+       flia H1 H2 H3.
      }
 ...
    destruct (lt_dec rad 3) as [H| Hr3]. {
