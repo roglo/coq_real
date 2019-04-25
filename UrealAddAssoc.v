@@ -667,6 +667,41 @@ destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + 1)) as [Hu2| Hu2]. {
 }
 assert (H : u (i + 2) ≥ (m - 1) * rad - m + 2) by flia Hu2lb Hu2.
 move H before Hu2lb; clear Hu2lb Hu2; rename H into Hu2lb.
+remember 1 as k eqn:Hk in r.
+destruct (Nat.eq_dec (u (i + 2)) ((m - 1) * rad - m + (k + 1))) as [Hu2| Hu2]. {
+  clear Hu2lb.
+  destruct (Nat.eq_dec rad (k + 1)) as [Hr2| Hr2]. {
+    rewrite Hr2 in Hu2, Hu2ub.
+    destruct m; [ easy | ].
+    destruct m; [ flia Hm2 | ].
+    rewrite Nat.sub_succ, Nat.sub_0_r in Hu2, Hu2ub, Hc1.
+rewrite Nat.mul_add_distr_l, Nat.mul_1_r in Hu2ub.
+rewrite Nat.mul_add_distr_l, Nat.mul_1_r in Hu2.
+cbn in Hu2ub, Hu2.
+clear Hmz Hm1 Hm2.
+subst k.
+replace m with 0 in * by flia Hmr Hr2.
+cbn in *.
+rewrite Hr2 in Hur; cbn in Hur.
+clear Hu2ub.
+(* seems not to work for rad=2 *)
+...
+    destruct m; [ flia Hm2 | cbn; flia Hk ].
+  }
+...
+    exfalso.
+    destruct (le_dec rad k) as [Hr1| Hr1]. {
+      rewrite Hu2 in H1.
+      apply Nat.nlt_ge in H1.
+      apply H1; clear H1; cbn.
+      rewrite <- Nat.add_sub_swap; [ flia Hr1 | ].
+      destruct m; [ easy | ].
+      destruct m; [ flia Hm2 | cbn; flia Hr ].
+    }
+    flia Hm2 H3 Hmr Hu2 Hr1 Hr2 Hc2.
+  }
+  assert (H : ui ≥ m * (rad - 1) - rad + (k + 2)) by flia Hk Hu2g Hu2.
+  move H before Hu2g; clear Hu2g Hu2; rename H into Hu2g; subst k.
 ...
 
 Theorem P_999_after_7 {r : radix} : ∀ m u i,
