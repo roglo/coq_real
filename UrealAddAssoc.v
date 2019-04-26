@@ -3012,6 +3012,33 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
          apply P_le.
        }
        destruct Huv2 as [Huv2| Huv2]. {
+         unfold "⊕" in Huv2.
+         apply Nat_eq_add_2 in Huv2.
+         destruct Huv2 as [Huv2| Huv2]. {
+           replace (carry v (i + 1)) with 0. 2: {
+             symmetry.
+             unfold carry.
+             rewrite A_split_first; [ | min_n_ge ].
+             replace (S (i + 1)) with (i + 2) by flia.
+             rewrite (proj2 Huv2), Q.add_0_l.
+             apply Q.intg_small.
+             split; [ now apply Q.le_0_mul_r | ].
+             rewrite Hr2 in Hv |-*.
+             apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+             now intros; rewrite <- Nat.add_assoc.
+           }
+           rewrite Nat.mod_0_l; [ | easy ].
+           rewrite Q.add_0_l.
+           rewrite <- Q.mul_add_distr_r, <- A_additive, Hr2.
+           apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+           intros p; unfold "⊕"; rewrite <- Nat.add_assoc.
+           rewrite Hr2 in Hu.
+           replace 2 with (1 + 1) by easy.
+           apply Nat.add_le_mono; [ apply Hu | ].
+           replace 1 with (rad - 1) by flia Hr2.
+           apply P_le.
+         }
+         destruct Huv2 as [Huv2| Huv2]. {
 ...
      }
      (* ce qui suit est correct, mais faut le finir *)
