@@ -2911,6 +2911,11 @@ destruct Huv2 as [Huv2| Huv2]. {
           apply rad_2_sum_2_half_A_lt_1; [ easy | ].
           now intros; rewrite <- Nat.add_assoc.
         }
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + 2)) with (i + 3) by flia.
+        rewrite (proj2 Huv3).
+remember (min_n (i + 1) (carry_cases v (i + 1))) as l eqn:Hl.
+(* seems not working... *)
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
