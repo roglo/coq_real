@@ -2906,6 +2906,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
    }
    destruct Huv789 as [Huv1| Huv1]. {
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
+       move Hr2 before Hr.
        rewrite Hr2 in Huv1; cbn in Huv1.
        unfold "⊕" in Huv1.
        apply Nat.eq_add_0 in Huv1.
@@ -2927,6 +2928,10 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
          left; unfold "⊕".
          now apply Nat.eq_add_0.
        }
+       destruct Huv2 as [Huv2| Huv2]. {
+         unfold "⊕" in Huv2.
+         apply Nat.eq_add_1 in Huv2.
+         destruct Huv2 as [Huv2| Huv2]. {
 ...
      }
      (* ce qui suit est correct, mais faut le finir *)
