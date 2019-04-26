@@ -2950,6 +2950,68 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
          destruct Huv2 as [Huv2| Huv2]. {
            replace (carry v (i + 1)) with 0. 2: {
              symmetry.
+             unfold carry.
+             rewrite A_split_first; [ | min_n_ge ].
+             replace (S (i + 1)) with (i + 2) by flia.
+             rewrite (proj2 Huv2), Q.add_0_l.
+             apply Q.intg_small.
+             split; [ now apply Q.le_0_mul_r | ].
+             rewrite Hr2 in Hv |-*.
+             apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+             now intros; rewrite <- Nat.add_assoc.
+           }
+           rewrite Nat.mod_0_l; [ | easy ].
+           rewrite Q.add_0_l.
+           rewrite <- Q.mul_add_distr_r, <- A_additive, Hr2.
+           apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+           intros p; unfold "⊕"; rewrite <- Nat.add_assoc.
+           rewrite Hr2 in Hu.
+           replace 2 with (1 + 1) by easy.
+           apply Nat.add_le_mono; [ apply Hu | ].
+           replace 1 with (rad - 1) by flia Hr2.
+           apply P_le.
+         }
+         rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
+         replace (S (i + 1)) with (i + 2) by easy.
+         rewrite (proj1 Huv2), Q.add_0_l.
+         rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
+         replace (S (i + 1)) with (i + 2) by easy.
+         replace (P v (i + 2)) with 0. 2: {
+           symmetry; unfold P, d2n, prop_carr, dig.
+           rewrite (proj2 Huv2).
+           replace (carry v (i + 2)) with 1; [ now rewrite Hr2 | ].
+           symmetry; unfold carry.
+           rewrite A_all_18. 2: {
+             intros p.
+             replace (i + 2 + p + 1) with (i + p + 3) by flia.
+             rewrite Hr2; apply Hvn.
+           }
+           apply NQintg_2_sub_2_ov_pow.
+           replace 2 with (2 ^ 1) at 1 by easy.
+           rewrite Hr2.
+           apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
+         }
+         rewrite Q.add_0_l.
+         replace 1%Q with (1 // 4 + (1 // 2 + 1 // 4))%Q by easy.
+         apply Q.add_lt_mono. {
+           rewrite Hr2, <- Q.mul_assoc.
+           replace (1 // 4)%Q with (1 * (1 // 4))%Q by easy.
+           apply Q.mul_lt_mono_pos_r; [ easy | ].
+           apply A_upper_bound_for_dig; intros p Hp.
+           now replace p with (i + (p - i)) by flia Hp.
+         }
+         apply Q.add_le_lt_mono. {
+           rewrite Hr2.
+           apply Q.le_pair_mono_r, Nat.lt_succ_r.
+           now apply Nat.mod_upper_bound.
+         }
+         rewrite Hr2, <- Q.mul_assoc.
+         replace (1 // 4)%Q with (1 * (1 // 4))%Q by easy.
+         apply Q.mul_lt_mono_pos_r; [ easy | ].
+         apply A_upper_bound_for_dig; intros p Hp.
+         apply P_le.
+       }
+       destruct Huv2 as [Huv2| Huv2]. {
 ...
      }
      (* ce qui suit est correct, mais faut le finir *)
