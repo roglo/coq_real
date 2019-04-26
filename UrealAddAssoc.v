@@ -1625,32 +1625,37 @@ Abort. (*
 ...
 *)
 
-Theorem rad_2_sum_3_all_9_2_123 {r : radix} : ∀ u i,
+Theorem rad_2_sum_3_all_9_02_123 {r : radix} : ∀ u i,
   rad = 2
   → (∀ k, u (i + k + 1) ≤ 3 * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
-  → u (i + 1) = 2
+  → u (i + 1) = 0 ∨ u (i + 1) = 2
   → u (i + 2) = 1 ∨ u (i + 2) = 2 ∨ u (i + 2) = 3.
 Proof.
-intros * Hr2 Hu3r Hau Hu21.
+intros * Hr2 Hu3r Hau Hu1.
 assert (Hcu : ∀ k, carry u (i + k) < 3). {
   now apply carry_upper_bound_for_adds.
 }
 assert (Hcu2 : carry u (i + 1) = 1). {
-  clear - Hau Hu21 Hr2 Hcu.
+  clear - Hau Hu1 Hr2 Hcu.
   specialize (all_fA_ge_1_ε_P_999 _ _ Hau 0) as Hpu2.
   rewrite Nat.add_0_r in Hpu2.
   unfold P, d2n, prop_carr, dig in Hpu2.
-  rewrite Hu21, Hr2 in Hpu2.
-  rewrite Nat_mod_add_same_l in Hpu2; [ | easy ].
-  rewrite Nat.mod_small in Hpu2; [ easy | ].
+  rewrite Hr2 in Hpu2.
   destruct (Nat.eq_dec (carry u (i + 1)) 2) as [Hc2| Hc2]. {
-    now rewrite Hc2 in Hpu2.
+    rewrite Hc2, Nat_mod_add_same_r in Hpu2; [ | easy ].
+    now destruct Hu1 as [H| H]; rewrite H in Hpu2.
   }
-  specialize (Hcu 1); flia Hcu Hc2.
+  specialize (Hcu 1) as H1.
+  destruct Hu1 as [Hu1| Hu1]. {
+    rewrite Hu1, Nat.add_0_l in Hpu2.
+    rewrite Nat.mod_small in Hpu2; [ easy | flia Hc2 H1 ].
+  }
+  rewrite Hu1, Nat_mod_add_same_l in Hpu2; [ | easy ].
+  rewrite Nat.mod_small in Hpu2; [ easy | flia Hc2 H1 ].
 }
 assert (H : u (i + 2) ≠ 0). {
-  intros Hu30; move Hu30 before Hu21.
+  intros Hu30; move Hu30 before Hu1.
   remember (carry u (i + 2)) as c eqn:Hc.
   symmetry in Hc.
   destruct (lt_dec c 2) as [Hc2| Hc2]. {
@@ -2899,20 +2904,29 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      }
      flia H3 H7 H8.
    }
-   destruct Huv789 as [Huv7| Huv89]. {
+   destruct Huv789 as [Huv1| Huv1]. {
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
-       rewrite Hr2 in Huv7; cbn in Huv7.
-       unfold "⊕" in Huv7.
-       apply Nat.eq_add_0 in Huv7.
+       rewrite Hr2 in Huv1; cbn in Huv1.
+       unfold "⊕" in Huv1.
+       apply Nat.eq_add_0 in Huv1.
        apply Q.nlt_ge in Hup; apply Hup; clear Hup.
        rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
        replace (S i) with (i + 1) by flia.
-       rewrite (proj1 Huv7), Q.add_0_l.
+       rewrite (proj1 Huv1), Q.add_0_l.
        rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
        replace (S i) with (i + 1) by flia.
        unfold P at 1, d2n, prop_carr, dig.
-       rewrite (proj2 Huv7), Nat.add_0_l.
-(* je pense que P v doit être 10000... et donc le second A doit être nul *)
+       rewrite (proj2 Huv1), Nat.add_0_l.
+       assert
+         (Huv2 :
+            (u ⊕ v) (i + 2) = 1 ∨ (u ⊕ v) (i + 2) = 2 ∨
+            (u ⊕ v) (i + 2) = 3). {
+         apply rad_2_sum_3_all_9_02_123; [ easy | | easy | ]. {
+           now intros; rewrite <- Nat.add_assoc.
+         }
+         left; unfold "⊕".
+         now apply Nat.eq_add_0.
+       }
 ...
      }
      (* ce qui suit est correct, mais faut le finir *)
