@@ -2819,7 +2819,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
    rewrite Q.frac_small in H4; [ | split; [ easy | now apply Q.eq_intg_0 ] ].
    rewrite Q.frac_small in H5; [ | split; [ easy | now apply Q.eq_intg_0 ] ].
    rewrite Q.frac_small in Huv; [ | split; [ easy | now apply Q.eq_intg_0 ] ].
-   assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+   assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
      intros p.
      unfold "⊕"; replace 3 with (1 + 2) by easy.
      rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
@@ -2869,7 +2869,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      }
      specialize (P_999_start (u ⊕ v) (i + 1) 3) as H3.
      assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
-       intros; rewrite <- Nat.add_assoc; apply Huv3.
+       intros; rewrite <- Nat.add_assoc; apply Huvl3.
      }
      specialize (H3 H); clear H.
      assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
@@ -3039,8 +3039,73 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
            apply P_le.
          }
          destruct Huv2 as [Huv2| Huv2]. {
-           (* uv(1)=0 uv(2)=2 and then uv(3)=1 or 2 or 3 *)
-           (* seems to multiply the complexity of the thing *)
+           rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
+           replace (S (i + 1)) with (i + 2) by easy.
+           rewrite (proj1 Huv2).
+           specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) (i + 1) Hr2) as Huv3.
+           replace (i + 1 + 1) with (i + 2) in Huv3 by flia.
+           replace (i + 1 + 2) with (i + 3) in Huv3 by flia.
+           assert (H : ∀ k, (u ⊕ v) (i + 1 + k + 1) ≤ 3 * (rad - 1)). {
+             now intros; do 2 rewrite <- Nat.add_assoc.
+           }
+           specialize (Huv3 H); clear H.
+           assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
+             now intros; apply A_ge_1_add_r_true_if.
+           }
+           specialize (Huv3 H); clear H.
+           assert (H : (u ⊕ v) (i + 2) = 0 ∨ (u ⊕ v) (i + 2) = 2). {
+             now right; unfold "⊕"; rewrite (proj1 Huv2), (proj2 Huv2).
+           }
+           specialize (Huv3 H); clear H.
+           destruct Huv3 as [Huv3| Huv3]. {
+             assert
+               (Huvn :
+                ∀ k,
+                (u ⊕ v) (i + k + 4) = 3 ∧ carry (u ⊕ v) (i + k + 3) = 2). {
+               intros p.
+               replace (i + p + 4) with (i + 1 + p + 3) by flia.
+               replace (i + p + 3) with (i + 1 + p + 2) by flia.
+               apply rad_2_sum_3_all_9_02_1_333; [ easy | | | | ]. {
+                 now intros; rewrite <- Nat.add_assoc.
+               } {
+                 now intros; apply A_ge_1_add_r_true_if.
+               } {
+                 right; rewrite <- Nat.add_assoc; unfold "⊕".
+                 replace (1 + 1) with 2 by easy.
+                 now rewrite (proj1 Huv2), (proj2 Huv2).
+               }
+               rewrite <- Nat.add_assoc.
+               now replace (1 + 2) with 3.
+             }
+             assert (Hvn : ∀ k, v (i + k + 4) = 2). {
+               intros p.
+               specialize (Huvn p) as (H1, _).
+               unfold "⊕" in H1.
+               specialize (Hu (p + 4)) as H2; rewrite Hr2, Nat.add_assoc in H2.
+               specialize (Hv (p + 4)) as H3; rewrite Hr2, Nat.add_assoc in H3.
+               flia H1 H2 H3.
+             }
+             replace (carry v (i + 1)) with 0. 2: {
+               symmetry.
+               unfold carry.
+               apply Q.intg_small.
+               split; [ easy | ].
+               rewrite A_split_first; [ | min_n_ge ].
+               replace (S (i + 1)) with (i + 2) by flia.
+               rewrite (proj2 Huv2).
+               unfold "⊕" in Huv3.
+               apply Nat.eq_add_1 in Huv3.
+               destruct Huv3 as [Huv3| Huv3]. {
+                 rewrite A_split_first; [ | min_n_ge ].
+                 replace (S (i + 2)) with (i + 3) by flia.
+                 rewrite (proj2 Huv3), Q.add_0_l, Hr2.
+                 replace 1%Q with (1 // 2 + 1 * 1 // 2)%Q by easy.
+                 apply Q.add_lt_mono_l.
+                 apply Q.mul_lt_mono_pos_r; [ easy | ].
+                 apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+                 rewrite Hr2 in Hv.
+                 now intros; rewrite <- Nat.add_assoc.
+               }
 ...
      }
      (* ce qui suit est correct, mais faut le finir *)
