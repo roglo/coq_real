@@ -2929,9 +2929,27 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
          now apply Nat.eq_add_0.
        }
        destruct Huv2 as [Huv2| Huv2]. {
+         assert
+           (Huvn :
+              ∀ k, (u ⊕ v) (i + k + 3) = 3 ∧ carry (u ⊕ v) (i + k + 2) = 2). {
+           intros p.
+           apply rad_2_sum_3_all_9_02_1_333; [ easy | easy | easy | | easy ].
+           left; unfold "⊕".
+           now apply Nat.eq_add_0.
+         }
+         assert (Hvn : ∀ k, v (i + k + 3) = 2). {
+           intros p.
+           specialize (Huvn p) as (H1, _).
+           unfold "⊕" in H1.
+           specialize (Hu (p + 3)) as H2; rewrite Hr2, Nat.add_assoc in H2.
+           specialize (Hv (p + 3)) as H3; rewrite Hr2, Nat.add_assoc in H3.
+           flia H1 H2 H3.
+         }
          unfold "⊕" in Huv2.
          apply Nat.eq_add_1 in Huv2.
          destruct Huv2 as [Huv2| Huv2]. {
+           replace (carry v (i + 1)) with 0. 2: {
+             symmetry.
 ...
      }
      (* ce qui suit est correct, mais faut le finir *)
