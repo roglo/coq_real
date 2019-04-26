@@ -3039,6 +3039,8 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
            apply P_le.
          }
          destruct Huv2 as [Huv2| Huv2]. {
+           (* uv(1)=0 uv(2)=2 and then uv(3)=1 or 2 or 3 *)
+           (* seems to multiply the complexity of the thing *)
 ...
      }
      (* ce qui suit est correct, mais faut le finir *)
