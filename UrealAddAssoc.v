@@ -2978,7 +2978,8 @@ destruct Huv2 as [Huv2| Huv2]. {
         rewrite A_split_first; [ | min_n_ge ].
         replace (S i) with (i + 1) by flia.
         rewrite (proj2 Huv1), Q.add_0_l, Hr2.
-        admit. (* ouais *)
+        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+        now intros; rewrite <- Nat.add_assoc.
       }
       rewrite A_split_first; [ | min_n_ge ].
       replace (S i) with (i + 1) by flia.
