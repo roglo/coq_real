@@ -2891,20 +2891,16 @@ destruct Huv2 as [Huv2| Huv2]. {
         specialize (Hv (p + 4)) as H3; rewrite Nat.add_assoc in H3.
         flia H1 H2 H3.
       }
-...
-(* ceci est faux :
-     v = 0112222... *)
-      replace (carry v (i + 1)) with 0. 2: {
-        symmetry.
-        unfold carry.
-        apply Q.intg_small.
-        split; [ easy | ].
-        rewrite A_split_first; [ | min_n_ge ].
-        replace (S (i + 1)) with (i + 2) by flia.
-        rewrite (proj2 Huv2).
-        unfold "⊕" in Huv3.
-        apply Nat.eq_add_1 in Huv3.
-        destruct Huv3 as [Huv3| Huv3]. {
+      unfold "⊕" in Huv3.
+      apply Nat.eq_add_1 in Huv3.
+      destruct Huv3 as [Huv3| Huv3]. {
+        replace (carry v (i + 1)) with 0. 2: {
+          symmetry; unfold carry.
+          apply Q.intg_small.
+          split; [ easy | ].
+          rewrite A_split_first; [ | min_n_ge ].
+          replace (S (i + 1)) with (i + 2) by flia.
+          rewrite (proj2 Huv2).
           rewrite A_split_first; [ | min_n_ge ].
           replace (S (i + 2)) with (i + 3) by flia.
           rewrite (proj2 Huv3), Q.add_0_l, Hr2.
@@ -2914,15 +2910,35 @@ destruct Huv2 as [Huv2| Huv2]. {
           apply rad_2_sum_2_half_A_lt_1; [ easy | ].
           now intros; rewrite <- Nat.add_assoc.
         }
+        rewrite Nat.mod_0_l; [ | easy ].
+        rewrite Q.add_0_l, Hr2.
+        replace 1%Q with (1 * 1 // 2 + 1 * 1 // 2)%Q by easy.
+        apply Q.add_lt_mono. {
+          apply Q.mul_lt_mono_pos_r; [ easy | ].
+          apply Q.lt_add_lt_sub_l.
+          replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+          apply Q.mul_lt_mono_pos_r; [ easy | ].
+          apply A_upper_bound_for_dig.
+          intros p Hp; replace p with (i + (p - i)) by flia Hp.
+          now rewrite Hr2.
+        }
+        apply Q.mul_lt_mono_pos_r; [ easy | ].
+        apply A_upper_bound_for_dig.
+        intros p Hp; replace p with (i + (p - i)) by flia Hp.
+        apply P_le.
+      }
+      exfalso.
+      apply A_ge_1_false_iff in Hj.
+      apply Q.nle_gt in Hj; apply Hj; clear Hj.
+      rewrite Q.frac_small. 2: {
+        split; [ easy | ].
         rewrite A_split_first; [ | min_n_ge ].
-        replace (S (i + 2)) with (i + 3) by flia.
-        rewrite (proj2 Huv3).
-        (**)
-        exfalso.
-        apply A_ge_1_false_iff in Hj.
-        apply Q.nle_gt in Hj; apply Hj; clear Hj.
-        rewrite Q.frac_small.
-        destruct j.
+        replace (S i) with (i + 1) by flia.
+        rewrite (proj2 Huv1), Q.add_0_l, Hr2.
+        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+        now intros; rewrite <- Nat.add_assoc.
+      }
+      destruct j. {
         rewrite Hr2, Nat.pow_1_r.
         (*    v = 0112222...
            P(v) = 1001111... *)
@@ -2952,6 +2968,7 @@ destruct Huv2 as [Huv2| Huv2]. {
         rewrite Hvn, Hr2, Q.pair_diag; [ | easy ].
         apply Q.le_add_r.
         now apply Q.le_0_mul_r.
+      }
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
