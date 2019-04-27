@@ -3003,11 +3003,26 @@ destruct Huv2 as [Huv2| Huv2]. {
       rewrite Q.mul_1_r, Q.mul_sub_distr_r.
       replace (2 // 1 * 2 // 1)%Q with 4%Q by easy.
       rewrite Q.mul_comm, Q.mul_pair_den_num; [ | easy ].
-      replace 2 with (2 ^ 1) at 3 by easy.
       apply Q.lt_add_lt_sub_l.
       rewrite Q.sub_sub_swap.
       replace (4 - 1)%Q with 3%Q by easy.
-      eapply (Q.lt_le_trans _ 2).
+      eapply (Q.lt_le_trans _ 2). {
+        eapply Q.le_lt_trans. {
+          apply (A_upper_bound_for_adds 2).
+          now rewrite Hr2; intros; do 2 rewrite <- Nat.add_assoc.
+        }
+        rewrite Q.mul_sub_distr_l, Q.mul_1_r.
+        now apply Q.sub_lt, Q.mul_pos_cancel_r.
+      }
+      apply Q.le_add_le_sub_r.
+      rewrite (Q.add_pair _ _ 2 1); [ | pauto | easy ].
+      rewrite Nat.add_comm, Nat.mul_comm.
+      rewrite <- Nat.mul_add_distr_l, Nat.mul_1_r.
+      apply (Q.le_pair _ _ 3 1); [ pauto | easy | ].
+      rewrite Nat.mul_1_r.
+destruct j.
+cbn.
+(* chiasse de pute *)
 ...
 rewrite (Q.frac_less_small 1). 2: {
   split. {
