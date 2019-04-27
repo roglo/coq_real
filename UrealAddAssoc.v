@@ -2969,25 +2969,44 @@ destruct Huv2 as [Huv2| Huv2]. {
         apply Q.le_add_r.
         now apply Q.le_0_mul_r.
       }
-exfalso.
-specialize (Hjj j (Nat.lt_succ_diag_r _)) as H1.
-apply A_ge_1_true_iff in H1.
-apply Q.nlt_ge in H1; apply H1; clear H1.
-rewrite Q.frac_small. 2: {
-  split; [ easy | ].
-  rewrite A_split_first; [ | min_n_ge ].
-  replace (S i) with (i + 1) by flia.
-  rewrite (proj2 Huv1), Q.add_0_l, Hr2.
-  admit. (* ouais *)
-}
-rewrite A_split_first; [ | min_n_ge ].
-replace (S i) with (i + 1) by flia.
-rewrite (proj2 Huv1), Q.add_0_l, Hr2.
-(* 11222222
-  100111111 *)
-rewrite A_split_first; [ | min_n_ge ].
-replace (S (i + 1)) with (i + 2) by flia.
-rewrite (proj2 Huv2), Hr2.
+      exfalso.
+      specialize (Hjj j (Nat.lt_succ_diag_r _)) as H1.
+      apply A_ge_1_true_iff in H1.
+      apply Q.nlt_ge in H1; apply H1; clear H1.
+      rewrite Q.frac_small. 2: {
+        split; [ easy | ].
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S i) with (i + 1) by flia.
+        rewrite (proj2 Huv1), Q.add_0_l, Hr2.
+        admit. (* ouais *)
+      }
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S i) with (i + 1) by flia.
+      rewrite (proj2 Huv1), Q.add_0_l, Hr2.
+      apply (Q.mul_lt_mono_pos_r (2 // 1)); [ easy | ].
+      rewrite <- Q.mul_assoc, Q.mul_pair_den_num; [ | easy ].
+      rewrite Q.mul_1_r, Q.mul_sub_distr_r, Q.mul_1_l.
+      rewrite Q.mul_comm, Q.mul_pair_den_num; [ | easy ].
+      replace 2 with (2 ^ 1) at 2 by easy.
+      rewrite Q.pow_pair_r; [ | easy | flia ].
+      rewrite Nat.sub_succ, Nat.sub_0_r.
+      (* 11222222
+        100111111 *)
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S (i + 1)) with (i + 2) by flia.
+      rewrite (proj2 Huv2), Hr2.
+      replace (1 // 2)%Q with (1 * 1 // 2)%Q at 1 by easy.
+      rewrite <- Q.mul_add_distr_r.
+      apply (Q.mul_lt_mono_pos_r (2 // 1)); [ easy | ].
+      rewrite <- Q.mul_assoc, Q.mul_pair_den_num; [ | easy ].
+      rewrite Q.mul_1_r, Q.mul_sub_distr_r.
+      replace (2 // 1 * 2 // 1)%Q with 4%Q by easy.
+      rewrite Q.mul_comm, Q.mul_pair_den_num; [ | easy ].
+      replace 2 with (2 ^ 1) at 3 by easy.
+      apply Q.lt_add_lt_sub_l.
+      rewrite Q.sub_sub_swap.
+      replace (4 - 1)%Q with 3%Q by easy.
+      eapply (Q.lt_le_trans _ 2).
 ...
 rewrite (Q.frac_less_small 1). 2: {
   split. {
