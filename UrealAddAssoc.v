@@ -2938,10 +2938,10 @@ destruct Huv2 as [Huv2| Huv2]. {
         apply rad_2_sum_2_half_A_lt_1; [ easy | ].
         now intros; rewrite <- Nat.add_assoc.
       }
+      (*    v = 0112222...
+          P(v) = 1001111... *)
       destruct j. {
         rewrite Hr2, Nat.pow_1_r.
-        (*    v = 0112222...
-           P(v) = 1001111... *)
         rewrite A_split_first; [ | min_n_ge ].
         replace (S i) with (i + 1) by flia.
         rewrite (proj2 Huv1), Q.add_0_l, Hr2.
@@ -2969,6 +2969,58 @@ destruct Huv2 as [Huv2| Huv2]. {
         apply Q.le_add_r.
         now apply Q.le_0_mul_r.
       }
+exfalso.
+specialize (Hjj j (Nat.lt_succ_diag_r _)) as H1.
+apply A_ge_1_true_iff in H1.
+apply Q.nlt_ge in H1; apply H1; clear H1.
+rewrite Q.frac_small. 2: {
+  split; [ easy | ].
+  rewrite A_split_first; [ | min_n_ge ].
+  replace (S i) with (i + 1) by flia.
+  rewrite (proj2 Huv1), Q.add_0_l, Hr2.
+  admit. (* ouais *)
+}
+rewrite A_split_first; [ | min_n_ge ].
+replace (S i) with (i + 1) by flia.
+rewrite (proj2 Huv1), Q.add_0_l, Hr2.
+(* 11222222
+  100111111 *)
+rewrite A_split_first; [ | min_n_ge ].
+replace (S (i + 1)) with (i + 2) by flia.
+rewrite (proj2 Huv2), Hr2.
+...
+rewrite (Q.frac_less_small 1). 2: {
+  split. {
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S i) with (i + 1) by flia.
+    rewrite (proj2 Huv1), Q.add_0_l, Hr2.
+...
+
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 1)) with (i + 2) by flia.
+    rewrite (proj2 Huv2), Hr2.
+    rewrite A_split_first; [ | unfold min_n; rewrite Hr2; flia ].
+    replace (S (i + 2)) with (i + 3) by flia.
+    rewrite (proj2 Huv3), Hr2.
+    replace (1 // 1)%Q with (1 // 2 + 1 // 2)%Q by easy.
+    apply Q.add_le_mono. {
+...
+}
+apply Q.lt_sub_lt_add_r.
+...
+*)
+rewrite Q.frac_small.
+...
+assert (H : (A (i + 1) (min_n i 0) v * 1 // 2 < 1 // 2)%Q). {
+  replace (1 // 2)%Q with (1 * 1 // 2)%Q at 2 by easy.
+  apply Q.mul_lt_mono_pos_r; [ easy | ].
+...
+}
+rewrite Q.frac_small; [ easy | ].
+split; [ now apply Q.le_0_mul_r | ].
+eapply Q.lt_trans; [ apply H | ].
+apply (Q.lt_pair_mono_l 1); pauto.
+}
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
