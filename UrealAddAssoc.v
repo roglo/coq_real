@@ -2891,6 +2891,9 @@ destruct Huv2 as [Huv2| Huv2]. {
         specialize (Hv (p + 4)) as H3; rewrite Nat.add_assoc in H3.
         flia H1 H2 H3.
       }
+...
+(* ceci est faux :
+     v = 0112222... *)
       replace (carry v (i + 1)) with 0. 2: {
         symmetry.
         unfold carry.
@@ -2914,13 +2917,41 @@ destruct Huv2 as [Huv2| Huv2]. {
         rewrite A_split_first; [ | min_n_ge ].
         replace (S (i + 2)) with (i + 3) by flia.
         rewrite (proj2 Huv3).
-remember (min_n (i + 1) (carry_cases v (i + 1))) as l eqn:Hl.
-(* seems not working... *)
-apply A_ge_1_false_iff in Hk.
-        rewrite A_split_first; [ | ].
+        (**)
+        exfalso.
+        apply A_ge_1_false_iff in Hj.
+        apply Q.nle_gt in Hj; apply Hj; clear Hj.
+        rewrite Q.frac_small.
+        destruct j.
+        rewrite Hr2, Nat.pow_1_r.
+        (*    v = 0112222...
+           P(v) = 1001111... *)
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S i) with (i + 1) by flia.
+        rewrite (proj2 Huv1), Q.add_0_l, Hr2.
+        replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+        apply Q.mul_le_mono_pos_r; [ easy | ].
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + 1)) with (i + 2) by flia.
+        rewrite (proj2 Huv2), Hr2.
+        apply Q.le_sub_le_add_l.
+        replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+        apply Q.mul_le_mono_pos_r; [ easy | ].
+        rewrite A_split_first. 2: {
+          unfold min_n; rewrite Hr2; flia.
+        }
+        replace (S (i + 2)) with (i + 3) by flia.
+        rewrite (proj2 Huv3), Hr2.
+        apply Q.le_sub_le_add_l.
+        replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+        apply Q.mul_le_mono_pos_r; [ easy | ].
+        rewrite A_split_first. 2: {
+          unfold min_n; rewrite Hr2; flia.
+        }
         replace (S (i + 3)) with (i + 0 + 4) by flia.
-        rewrite Hvn, Nat.add_0_r.
-        rewrite Hr2.
+        rewrite Hvn, Hr2, Q.pair_diag; [ | easy ].
+        apply Q.le_add_r.
+        now apply Q.le_0_mul_r.
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
