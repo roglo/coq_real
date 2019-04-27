@@ -2916,6 +2916,11 @@ destruct Huv2 as [Huv2| Huv2]. {
         rewrite (proj2 Huv3).
 remember (min_n (i + 1) (carry_cases v (i + 1))) as l eqn:Hl.
 (* seems not working... *)
+apply A_ge_1_false_iff in Hk.
+        rewrite A_split_first; [ | ].
+        replace (S (i + 3)) with (i + 0 + 4) by flia.
+        rewrite Hvn, Nat.add_0_r.
+        rewrite Hr2.
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
