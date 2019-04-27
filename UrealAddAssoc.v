@@ -2969,21 +2969,6 @@ destruct Huv2 as [Huv2| Huv2]. {
         apply Q.le_add_r.
         now apply Q.le_0_mul_r.
       }
-rewrite A_split_first; [ | min_n_ge ].
-replace (S i) with (i + 1) by flia.
-rewrite (proj2 Huv1), Q.add_0_l, Hr2.
-rewrite A_split_first; [ | min_n_ge ].
-replace (S (i + 1)) with (i + 2) by flia.
-rewrite (proj2 Huv2), Hr2.
-replace (1 // 2)%Q with (1 * 1 // 2)%Q at 1 by easy.
-rewrite <- Q.mul_add_distr_r, <- Q.mul_assoc.
-replace (1 // 2 * 1 // 2)%Q with (1 // 4)%Q by easy.
-...
-        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-        now intros; rewrite <- Nat.add_assoc.
-...
-destruct j. {
-rewrite Hr2.
 ...
       exfalso.
       specialize (Hjj j (Nat.lt_succ_diag_r _)) as H1.
