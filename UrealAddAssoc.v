@@ -3087,6 +3087,59 @@ destruct Huv2 as [Huv2| Huv2]. {
         rewrite Hnk; min_n_ge.
       }
       symmetry.
+      assert
+        (Hpv : P v (i + 1) = 1 ∧ P v (i + 2) = 0 ∧ P v (i + 3) = 0 ∧
+         ∀ k, P v (i + k + 4) = 1). {
+        split. {
+          unfold P, d2n, prop_carr, dig.
+          rewrite (proj2 Huv1).
+          replace (carry v (i + 1)) with 1; [ now rewrite Hr2 | ].
+          symmetry; unfold carry.
+          rewrite A_split_first; [ | min_n_ge ].
+          replace (S (i + 1)) with (i + 2) by flia.
+          rewrite (proj2 Huv2), Hr2.
+          rewrite A_split_first; [ | min_n_ge ].
+          replace (S (i + 2)) with (i + 3) by flia.
+          rewrite (proj2 Huv3), Hr2.
+          rewrite Q.mul_add_distr_r, Q.add_assoc.
+          rewrite A_split_first; [ | unfold min_n; rewrite Hr2; cbn; flia ].
+          replace (S (i + 3)) with (i + 0 + 4) by flia.
+          rewrite Hvn, Hr2, Q.pair_diag; [ | easy ].
+          rewrite Nat.add_0_r, Q.mul_add_distr_r, Q.mul_1_l.
+          rewrite Q.mul_add_distr_r, Q.add_assoc.
+          do 2 rewrite <- Q.mul_assoc.
+          rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+          symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry.
+          f_equal.
+          apply Q.intg_small.
+          split; [ now apply Q.le_0_mul_r | ].
+          eapply Q.le_lt_trans. 2: {
+            apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+            intros p; rewrite <- (Nat.add_assoc i 4 p); apply Hv.
+          }
+          apply Q.mul_le_mono_nonneg_l; [ easy | ].
+          rewrite Q.mul_pair; [ | easy | easy ].
+          rewrite Q.mul_pair; [ | easy | easy ].
+          apply Q.le_pair; [ easy | easy | cbn; flia ].
+        }
+        split. {
+          unfold P, d2n, prop_carr, dig.
+          rewrite (proj2 Huv2).
+          replace (carry v (i + 2)) with 1; [ now rewrite Hr2 | ].
+          symmetry; unfold carry.
+...
+          rewrite A_all_18. 2: {
+      intros p.
+      replace (i + 2 + p + 1) with (i + p + 3) by flia.
+      rewrite Hr2; apply Hvn.
+    }
+    apply NQintg_2_sub_2_ov_pow.
+    replace 2 with (2 ^ 1) at 1 by easy.
+    rewrite Hr2.
+    apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
+  }
+...
+Search (1 - 2 // _)%Q.
 ...
   eapply Q.le_lt_trans. {
     apply Q.add_le_mono_r.
