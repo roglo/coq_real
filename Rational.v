@@ -1471,6 +1471,27 @@ rewrite sub_add_distr.
 now rewrite sub_opp_r.
 Qed.
 
+Theorem sub_le_mono_l : ∀ x y z, (x ≤ y)%Q ↔ (z - y ≤ z - x)%Q.
+Proof.
+intros.
+split; intros Hxy.
+-apply add_le_mono; [ apply le_refl | now apply opp_le_mono in Hxy ].
+-apply (sub_le_mono z z) in Hxy; [ | apply le_refl ].
+ do 2 rewrite sub_sub_distr in Hxy.
+ now rewrite sub_diag in Hxy.
+Qed.
+Arguments sub_le_mono_l x%Q y%Q z%Q.
+
+Theorem sub_le_mono_r : ∀ x y z, (x ≤ y)%Q ↔ (x - z ≤ y - z)%Q.
+Proof.
+intros.
+split; intros Hxy.
+-apply add_le_mono; [ easy | apply le_refl ].
+-apply (add_le_mono_r _ _ z) in Hxy.
+ now do 2 rewrite sub_add in Hxy.
+Qed.
+Arguments sub_le_mono_r x%Q y%Q z%Q.
+
 Theorem sub_lt_mono_l : ∀ x y z, (x < y)%Q ↔ (z - y < z - x)%Q.
 Proof.
 intros.

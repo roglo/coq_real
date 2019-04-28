@@ -3075,6 +3075,18 @@ destruct Huv2 as [Huv2| Huv2]. {
         replace 1 with (rad - 1) at 2 by flia Hr2.
         apply P_le.
       }
+      (* u⊕Pv 1 1 0 2 2 2 2 ... *)
+      (*       1 1 1 1 1 1 0 = 1 - 2/r^(n-i-1) *)
+      rewrite <- Hnk.
+      replace (A i nk (u ⊕ P v)) with (1 - 2 // rad ^ (nk - i - 1))%Q. {
+        apply Q.sub_le_mono_l.
+        apply Q.le_pair; [ pauto | pauto | ].
+        replace 2 with (2 ^ 1) by easy.
+        rewrite Hr2, Nat.mul_1_r, <- Nat.pow_add_r.
+        apply Nat.pow_le_mono_r; [ easy | ].
+        rewrite Hnk; min_n_ge.
+      }
+      symmetry.
 ...
   eapply Q.le_lt_trans. {
     apply Q.add_le_mono_r.
