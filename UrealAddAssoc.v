@@ -3165,6 +3165,21 @@ destruct Huv2 as [Huv2| Huv2]. {
           now intros; rewrite <- Nat.add_assoc.
         }
         intros p.
+        unfold P, d2n, prop_carr, dig.
+        rewrite Hvn, Hr2, Nat_mod_add_same_l; [ | easy ].
+        replace (carry v (i + p + 4)) with 1; [ easy | ].
+        symmetry.
+        unfold carry.
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + p + 4)) with (i + S p + 4) by flia.
+        rewrite Hvn, Hr2, Q.pair_diag; [ | easy ].
+        rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+        symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
+        apply Q.intg_small.
+        split; [ now apply Q.le_0_mul_r | ].
+        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+        now intros; do 2 rewrite <- Nat.add_assoc.
+      }
 ...
 Search (1 - 2 // _)%Q.
 ...
