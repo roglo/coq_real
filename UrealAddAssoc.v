@@ -2969,8 +2969,10 @@ destruct Huv2 as [Huv2| Huv2]. {
         apply Q.le_add_r.
         now apply Q.le_0_mul_r.
       }
-...
+      (* seems that other values of j do not work *)
       exfalso.
+      (* perhaps contradictions could be found in Hjk or Hk *)
+...
       specialize (Hjj j (Nat.lt_succ_diag_r _)) as H1.
       apply A_ge_1_true_iff in H1.
       apply Q.nlt_ge in H1; apply H1; clear H1.
