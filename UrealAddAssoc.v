@@ -3127,6 +3127,46 @@ destruct Huv2 as [Huv2| Huv2]. {
       apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
     }
     destruct Huv3 as [Huv3| Huv3]. {
+      specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) (i + 2) Hr2) as Huv4.
+      replace (i + 2 + 1) with (i + 3) in Huv4 by flia.
+      replace (i + 2 + 2) with (i + 4) in Huv4 by flia.
+      assert (H : ∀ k, (u ⊕ v) (i + 2 + k + 1) ≤ 3 * (rad - 1)). {
+        now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+      }
+      specialize (Huv4 H); clear H.
+      assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 2) k = true). {
+        now intros; apply A_ge_1_add_r_true_if.
+      }
+      specialize (Huv4 H); clear H.
+      assert (H : (u ⊕ v) (i + 3) = 0 ∨ (u ⊕ v) (i + 3) = 2) by now right.
+      specialize (Huv4 H); clear H.
+      destruct Huv4 as [Huv4| Huv4]. {
+        assert
+          (Huvn :
+             ∀ k, (u ⊕ v) (i + k + 5) = 3 ∧ carry (u ⊕ v) (i + k + 4) = 2). {
+          intros p.
+          replace (i + p + 5) with (i + 2 + p + 3) by flia.
+          replace (i + p + 4) with (i + 2 + p + 2) by flia.
+          apply rad_2_sum_3_all_9_02_1_333; [ easy | | | | ]. {
+            now intros; rewrite Hr2; rewrite <- Nat.add_assoc.
+          } {
+            now intros; apply A_ge_1_add_r_true_if.
+          } {
+            right; rewrite <- Nat.add_assoc; unfold "⊕".
+            now replace (2 + 1) with 3.
+          }
+          now rewrite <- Nat.add_assoc.
+        }
+        assert (Hvn : ∀ k, v (i + k + 5) = 2). {
+          intros p.
+          specialize (Huvn p) as (H1, _).
+          unfold "⊕" in H1.
+          specialize (Hu (p + 5)) as H2; rewrite Nat.add_assoc in H2.
+          specialize (Hv (p + 5)) as H3; rewrite Nat.add_assoc in H3.
+          flia H1 H2 H3.
+        }
+...
+(*
       unfold "⊕" in Huv3.
       apply Nat_eq_add_2 in Huv3.
       destruct Huv3 as [Huv3| Huv3]. {
@@ -3136,7 +3176,45 @@ destruct Huv2 as [Huv2| Huv2]. {
         rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
         replace (S (i + 1)) with (i + 2) by flia.
         rewrite Hr2.
-(* u⊕v : 0 2 2 ça doit donc être suivi par 1, 2 ou 3 *)
+*)
+...
+          unfold "⊕" in Huv3.
+      apply Nat.eq_add_1 in Huv3.
+      destruct Huv3 as [Huv3| Huv3]. {
+        replace (carry v (i + 1)) with 0. 2: {
+          symmetry; unfold carry.
+          apply Q.intg_small.
+          split; [ easy | ].
+          rewrite A_split_first; [ | min_n_ge ].
+          replace (S (i + 1)) with (i + 2) by flia.
+          rewrite (proj2 Huv2).
+          rewrite A_split_first; [ | min_n_ge ].
+          replace (S (i + 2)) with (i + 3) by flia.
+          rewrite (proj2 Huv3), Q.add_0_l, Hr2.
+          replace 1%Q with (1 // 2 + 1 * 1 // 2)%Q by easy.
+          apply Q.add_lt_mono_l.
+          apply Q.mul_lt_mono_pos_r; [ easy | ].
+          apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+          now intros; rewrite <- Nat.add_assoc.
+        }
+        rewrite Nat.mod_0_l; [ | easy ].
+        rewrite Q.add_0_l, Hr2.
+        replace 1%Q with (1 * 1 // 2 + 1 * 1 // 2)%Q by easy.
+        apply Q.add_lt_mono. {
+          apply Q.mul_lt_mono_pos_r; [ easy | ].
+          apply Q.lt_add_lt_sub_l.
+          replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+          apply Q.mul_lt_mono_pos_r; [ easy | ].
+          apply A_upper_bound_for_dig.
+          intros p Hp; replace p with (i + (p - i)) by flia Hp.
+          now rewrite Hr2.
+        }
+        apply Q.mul_lt_mono_pos_r; [ easy | ].
+        apply A_upper_bound_for_dig.
+        intros p Hp; replace p with (i + (p - i)) by flia Hp.
+        apply P_le.
+      }
+      exfalso.
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
