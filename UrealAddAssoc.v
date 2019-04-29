@@ -2717,8 +2717,11 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   apply Nat.add_le_mono; [ apply Hu | apply Hv ].
 }
 unfold "⊕" in Huv1.
+(*
 rewrite A_additive.
+*)
 apply Nat.eq_add_0 in Huv1.
+(*
 rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
 replace (S i) with (i + 1) by flia.
 rewrite (proj1 Huv1), Q.add_0_l.
@@ -2726,6 +2729,7 @@ rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
 replace (S i) with (i + 1) by flia.
 unfold P at 1, d2n, prop_carr, dig.
 rewrite (proj2 Huv1), Nat.add_0_l.
+*)
 assert
   (Huv2 :
      (u ⊕ v) (i + 2) = 1 ∨ (u ⊕ v) (i + 2) = 2 ∨
@@ -2745,6 +2749,14 @@ destruct Huv2 as [Huv2| Huv2]. {
     left; unfold "⊕".
     now apply Nat.eq_add_0.
   }
+  assert (Hun : ∀ k, u (i + k + 3) = 1). {
+    intros p.
+    specialize (Huvn p) as (H1, _).
+    unfold "⊕" in H1.
+    specialize (Hu (p + 3)) as H2; rewrite Nat.add_assoc in H2.
+    specialize (Hv (p + 3)) as H3; rewrite Nat.add_assoc in H3.
+    flia H1 H2 H3.
+  }
   assert (Hvn : ∀ k, v (i + k + 3) = 2). {
     intros p.
     specialize (Huvn p) as (H1, _).
@@ -2756,6 +2768,38 @@ destruct Huv2 as [Huv2| Huv2]. {
   unfold "⊕" in Huv2.
   apply Nat.eq_add_1 in Huv2.
   destruct Huv2 as [Huv2| Huv2]. {
+    rewrite (A_9_8_all_18 0); [ | now intros | | ]; cycle 1. {
+      unfold "⊕"; rewrite Nat.add_0_r, Hr2, (proj1 Huv1), Nat.add_0_l.
+      unfold P, d2n, prop_carr, dig; rewrite (proj2 Huv1), Nat.add_0_l.
+      unfold carry.
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S (i + 1)) with (i + 2) by flia.
+      rewrite (proj2 Huv2), Q.add_0_l, Nat.sub_diag.
+      rewrite Q.intg_small; [ now apply Nat.mod_0_l | ].
+      split; [ now apply Q.le_0_mul_r | ].
+      rewrite Hr2.
+      apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+      now intros; rewrite <- Nat.add_assoc.
+    }
+    intros p; unfold "⊕".
+    replace 2 with (1 + 1) at 3 by easy.
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l; f_equal. {
+      rewrite Nat.add_0_r, Hr2.
+      destruct p; [ rewrite Nat.add_0_r; apply Huv2 | ].
+      now replace (i + S p + 2) with (i + p + 3) by flia.
+    } {
+      unfold P, d2n, prop_carr, dig; rewrite Nat.add_0_r.
+...
+      unfold carry.
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S (i + 1)) with (i + 2) by flia.
+      rewrite (proj2 Huv2), Q.add_0_l, Nat.sub_diag.
+      rewrite Q.intg_small; [ now apply Nat.mod_0_l | ].
+      split; [ now apply Q.le_0_mul_r | ].
+      rewrite Hr2.
+      apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+      now intros; rewrite <- Nat.add_assoc.
+...
     replace (carry v (i + 1)) with 0. 2: {
       symmetry.
       unfold carry.
@@ -3171,9 +3215,13 @@ destruct Huv2 as [Huv2| Huv2]. {
           specialize (Hu 3) as H1; flia Huv3 H1.
         }
         destruct Huv3 as [Huv3| Huv3]. {
+(*
           rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
           replace (S (i + 1)) with (i + 2) by flia.
           rewrite Hr2.
+*)
+          apply Nat.eq_add_1 in Huv4.
+          destruct Huv4 as [Huv4| Huv4]. {
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
