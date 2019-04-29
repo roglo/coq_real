@@ -2815,6 +2815,45 @@ destruct Huv2 as [Huv2| Huv2]. {
     apply Q.sub_lt.
     now destruct (le_dec (i + 1) (nk - 1)).
   }
+  rewrite (A_9_8_all_18 1); cycle 1. {
+    intros p Hp.
+    apply Nat.lt_1_r in Hp; rewrite Hp, Nat.add_0_r, Hr2; cbn.
+    unfold "⊕"; rewrite (proj1 Huv1), Nat.add_0_l.
+    unfold P, d2n, prop_carr, dig.
+    rewrite (proj2 Huv1), Nat.add_0_l, Hr2.
+    unfold carry.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 1)) with (i + 2) by easy.
+    rewrite (proj2 Huv2), Hr2.
+    rewrite A_all_18. 2: {
+      intros q.
+      replace (i + 2 + q + 1) with (i + q + 3) by flia.
+      now rewrite Hr2.
+    }
+    rewrite Hr2, Q.mul_sub_distr_r.
+    replace 2%Q with (2 // 1)%Q by easy.
+    rewrite Q.mul_pair_den_num; [ | easy ].
+    rewrite Q.pair_diag; [ | easy ].
+    rewrite Q.add_sub_assoc, Q.add_comm, <- Q.add_sub_assoc.
+    replace (1 // 2)%Q with (1 * 1 // 2)%Q at 1 by easy.
+    rewrite <- Q.mul_sub_distr_r.
+    rewrite (Q.intg_add_nat_l 1). 2: {
+      apply Q.le_0_mul_r; [ easy | ].
+      apply Q.le_0_sub.
+      apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
+      apply Nat.mul_le_mono_pos_r; [ pauto | ].
+      replace 2 with (2 ^ 1) at 1 by easy.
+      apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
+    }
+    rewrite Q.intg_small; [ easy | ].
+    split. {
+      apply Q.le_0_mul_r; [ easy | ].
+      apply Q.le_0_sub.
+      apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
+      apply Nat.mul_le_mono_pos_r; [ pauto | ].
+      replace 2 with (2 ^ 1) at 1 by easy.
+      apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
+    }
 ...
   rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
   replace (S (i + 1)) with (i + 2) by easy.
