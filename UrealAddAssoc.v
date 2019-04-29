@@ -3331,7 +3331,6 @@ rewrite (Q.frac_less_small 1). 2: {
 }
 apply Q.lt_sub_lt_add_r.
 ...
-*)
 rewrite Q.frac_small.
 ...
 assert (H : (A (i + 1) (min_n i 0) v * 1 // 2 < 1 // 2)%Q). {
@@ -3345,6 +3344,7 @@ eapply Q.lt_trans; [ apply H | ].
 apply (Q.lt_pair_mono_l 1); pauto.
 }
 ...
+*)
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
