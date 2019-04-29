@@ -3165,18 +3165,15 @@ destruct Huv2 as [Huv2| Huv2]. {
           specialize (Hv (p + 5)) as H3; rewrite Nat.add_assoc in H3.
           flia H1 H2 H3.
         }
-...
-(*
-      unfold "⊕" in Huv3.
-      apply Nat_eq_add_2 in Huv3.
-      destruct Huv3 as [Huv3| Huv3]. {
-        specialize (Hu 3) as H1; flia Huv3 H1.
-      }
-      destruct Huv3 as [Huv3| Huv3]. {
-        rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
-        replace (S (i + 1)) with (i + 2) by flia.
-        rewrite Hr2.
-*)
+        unfold "⊕" in Huv3.
+        apply Nat_eq_add_2 in Huv3.
+        destruct Huv3 as [Huv3| Huv3]. {
+          specialize (Hu 3) as H1; flia Huv3 H1.
+        }
+        destruct Huv3 as [Huv3| Huv3]. {
+          rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
+          replace (S (i + 1)) with (i + 2) by flia.
+          rewrite Hr2.
 ...
           unfold "⊕" in Huv3.
       apply Nat.eq_add_1 in Huv3.
