@@ -2790,10 +2790,36 @@ destruct Huv2 as [Huv2| Huv2]. {
     } {
       unfold P, d2n, prop_carr, dig; rewrite Nat.add_0_r.
       unfold carry.
+      rewrite A_all_18. 2: {
+        intros q.
+        replace (i + p + 2 + q + 1) with (i + (p + q) + 3) by flia.
+        now rewrite Hvn, Hr2.
+      }
+Check Nat.pow_1_l.
+      rewrite Hr2, Q.pow_1_l.
+...
       rewrite A_split_first; [ | min_n_ge ].
       replace (S (i + p + 2)) with (i + p + 3) by flia.
       rewrite Hvn, Hr2, Q.pair_diag; [ | easy ].
       rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+      rewrite A_all_18. 2: {
+        intros q.
+        replace (i + p + 3 + q + 1)
+      rewrite (Q.intg_less_small 1). 2: {
+        rewrite Q.pair_diag; [ | easy ].
+
+        split. {
+          apply (Q.mul_le_mono_pos_r 2); [ easy | ].
+          rewrite Q.mul_1_l, <- Q.mul_assoc.
+          rewrite (Q.mul_pair_den_num _ 2 1); [ | easy ].
+          rewrite Q.mul_1_r.
+          rewrite A_split_first; [ | min_n_ge ].
+          replace (S (i + p + 3)) with (i + S p + 3) by flia.
+          rewrite Hvn, Hr2, Q.pair_diag; [ | easy ].
+          apply Q.le_sub_le_add_l.
+...
+      destruct p. {
+        rewrite Nat.add_0_r, (proj2 Huv2), Nat.add_0_l.
 ...
       replace (S (i + 1)) with (i + 2) by flia.
       rewrite (proj2 Huv2), Q.add_0_l, Nat.sub_diag.
