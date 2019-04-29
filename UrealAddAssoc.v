@@ -2789,9 +2789,12 @@ destruct Huv2 as [Huv2| Huv2]. {
       now replace (i + S p + 2) with (i + p + 3) by flia.
     } {
       unfold P, d2n, prop_carr, dig; rewrite Nat.add_0_r.
-...
       unfold carry.
       rewrite A_split_first; [ | min_n_ge ].
+      replace (S (i + p + 2)) with (i + p + 3) by flia.
+      rewrite Hvn, Hr2, Q.pair_diag; [ | easy ].
+      rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+...
       replace (S (i + 1)) with (i + 2) by flia.
       rewrite (proj2 Huv2), Q.add_0_l, Nat.sub_diag.
       rewrite Q.intg_small; [ now apply Nat.mod_0_l | ].
