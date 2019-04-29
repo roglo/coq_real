@@ -3133,6 +3133,10 @@ destruct Huv2 as [Huv2| Huv2]. {
         specialize (Hu 3) as H1; flia Huv3 H1.
       }
       destruct Huv3 as [Huv3| Huv3]. {
+        rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
+        replace (S (i + 1)) with (i + 2) by flia.
+        rewrite Hr2.
+(* u⊕v : 0 2 2 ça doit donc être suivi par 1, 2 ou 3 *)
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
