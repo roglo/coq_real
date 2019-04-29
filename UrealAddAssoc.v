@@ -3119,6 +3119,20 @@ destruct Huv2 as [Huv2| Huv2]. {
       apply Q.sub_le_mono_l.
       apply Q.le_pair; [ pauto | pauto | ].
       rewrite Nat.mul_1_r.
+      destruct (le_dec (i + 2 + 1) (min_n i k - 1)) as [H1| H1]. {
+        replace 2 with (2 ^ 1) by easy; rewrite Hr2, <- Nat.pow_add_r.
+        apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
+      }
+      rewrite Nat.mul_1_l.
+      apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
+    }
+    destruct Huv3 as [Huv3| Huv3]. {
+      unfold "⊕" in Huv3.
+      apply Nat_eq_add_2 in Huv3.
+      destruct Huv3 as [Huv3| Huv3]. {
+        specialize (Hu 3) as H1; flia Huv3 H1.
+      }
+      destruct Huv3 as [Huv3| Huv3]. {
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
