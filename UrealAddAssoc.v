@@ -3078,6 +3078,10 @@ destruct Huv2 as [Huv2| Huv2]. {
       (* u⊕Pv 1 1 0 2 2 2 2 ... *)
       (*       1 1 1 1 1 1 0 = 1 - 2/r^(n-i-1) *)
       rewrite <- Hnk.
+      rewrite (A_9_8_all_18 2); cycle 1. {
+3: {
+rewrite Hr2; cbn.
+...
       replace (A i nk (u ⊕ P v)) with (1 - 2 // rad ^ (nk - i - 1))%Q. {
         apply Q.sub_le_mono_l.
         apply Q.le_pair; [ pauto | pauto | ].
