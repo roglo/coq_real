@@ -1725,6 +1725,17 @@ replace (i + 1 + 1) with (i + 2) in H1 by flia.
 flia H H1.
 Qed.
 
+Theorem rad_2_sum_3_all_9_02_222_123 {r : radix} : ∀ j u i,
+  rad = 2
+  → (∀ k, u (i + k + 1) ≤ 3 * (rad - 1))
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → u (i + 1) = 0 ∨ u (i + 1) = 2
+  → (∀ k, k < j → u (i + k + 2) = 2)
+  → u (i + j + 2) = 1 ∨ u (i + j + 2) = 2 ∨ u (i + j + 2) = 3.
+Proof.
+intros * Hr2 Hu3r Hau Hu1 Huk.
+...
+
 Theorem rad_2_sum_3_all_9_0_22_1_333 {r : radix} : ∀ u i j,
   rad = 2
   → (∀ k, u (i + k) ≤ 3 * (rad - 1))
@@ -2838,6 +2849,8 @@ destruct Huv2' as [Huv2'| Huv2']. {
   apply P_le.
 }
 destruct Huv2' as [Huv2'| Huv2']. {
+...
+specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) i Hr2) as H.
 ...
   apply Q.sub_lt, Q.lt_0_pair.
   destruct (le_dec (i + 1 + 1 + 1) (nk - 1)); pauto.
