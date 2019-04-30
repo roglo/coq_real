@@ -1637,7 +1637,7 @@ intros * Hr2 Hu3r Hau Hu1 Huk.
 assert (Hcu : ∀ k, carry u (i + k) < 3). {
   now apply carry_upper_bound_for_adds.
 }
-assert (Hcu2 :  ∀ k, k < j → carry u (i + k + 1) = 1). {
+assert (Hcu2 :  ∀ k, k ≤ j → carry u (i + k + 1) = 1). {
   intros k Hk.
   specialize (all_fA_ge_1_ε_P_999 _ _ Hau k) as Hpu2.
   unfold P, d2n, prop_carr, dig in Hpu2.
@@ -1672,7 +1672,7 @@ assert (Hcu2 :  ∀ k, k < j → carry u (i + k + 1) = 1). {
   rewrite Nat.mod_small in Hpu2; [ easy | flia Hc2 H1 ].
 }
 assert (H : u (i + j + 2) ≠ 0). {
-  intros Hu30; move Hu30 before Hu1.
+  intros Hu30; move Hu30 before Huk.
 ...
   induction j. {
     rewrite Nat.add_0_r in Hu30; clear Huk.
