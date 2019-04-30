@@ -1657,75 +1657,81 @@ assert (Hcu2 : carry u (i + 1) = 1). {
 }
 assert (H : u (i + j + 2) ≠ 0). {
   intros Hu30; move Hu30 before Hu1.
+(* faut faire peut-être plutôt, pour Hcu2 :
+      ∀ k, k < j → carry u (i + k + 1) = 1
+   un truc comme ça *)
 ...
-  remember (carry u (i + j + 2)) as c eqn:Hc.
-  symmetry in Hc.
-  destruct (lt_dec c 2) as [Hc2| Hc2]. {
-    generalize Hc; intros Hcu3.
-    unfold carry in Hc.
-    rewrite (all_fA_ge_1_ε_NQintg_A' 3) in Hc; cycle 1. {
-      apply three_lt_rad_pow.
-    } {
-      intros p.
-      now replace (i + j + 2 + p) with (i + (j + p + 1) + 1) by flia.
-    } {
-      intros p; rewrite <- Nat.add_assoc.
-      apply A_ge_1_add_r_true_if, Hau.
+  induction j. {
+    rewrite Nat.add_0_r in Hu30; clear Huk.
+    remember (carry u (i + 2)) as c eqn:Hc.
+    symmetry in Hc.
+    destruct (lt_dec c 2) as [Hc2| Hc2]. {
+      generalize Hc; intros Hcu3.
+      unfold carry in Hc.
+      rewrite (all_fA_ge_1_ε_NQintg_A' 3) in Hc; cycle 1. {
+        apply three_lt_rad_pow.
+      } {
+        intros p.
+        now replace (i + 2 + p) with (i + (p + 1) + 1) by flia.
+      } {
+        now intros p; apply A_ge_1_add_r_true_if, Hau.
+      }
+      generalize Hcu2; intros H1.
+      unfold carry in H1.
+      rewrite (all_fA_ge_1_ε_NQintg_A' 3) in H1; cycle 1. {
+        apply three_lt_rad_pow.
+      } {
+        now intros p; rewrite Nat.add_shuffle0.
+      } {
+        intros p.
+        apply A_ge_1_add_r_true_if, Hau.
+      }
+      rewrite <- (all_fA_ge_1_ε_NQintg_A 3) with (l := rad) in H1; cycle 1. {
+        apply three_lt_rad_pow.
+      } {
+        now intros p; rewrite Nat.add_shuffle0.
+      } {
+        intros p.
+        apply A_ge_1_add_r_true_if, Hau.
+      }
+      rewrite A_split_first in H1; [ | min_n_ge ].
+      replace (S (i + 1)) with (i + 2) in H1 by easy.
+      rewrite Hu30, Q.add_0_l, Hr2 in H1.
+      replace (i + 2) with (i + 1 + 1) in Hc at 2 by flia.
+      rewrite min_n_add_l, Nat.mul_1_r in Hc.
+      apply Q.intg_interv in H1; [ | now apply Q.le_0_mul_r ].
+      apply Q.intg_interv in Hc; [ | easy ].
+      destruct Hc as (_, Hc); rewrite Hr2 in Hc.
+      apply Q.nle_gt in Hc; apply Hc; clear Hc.
+      destruct H1 as (H1, _).
+      apply (Q.mul_le_mono_pos_r 2%Q) in H1; [ | easy ].
+      rewrite <- Q.mul_assoc in H1.
+      rewrite (Q.mul_pair_den_num _ 2 1) in H1; [ | easy ].
+      rewrite Q.mul_1_l, Q.mul_1_r in H1.
+      eapply Q.le_trans; [ | apply H1 ].
+      rewrite <- (Q.pair_add_l _ 1 1).
+      apply (Q.le_pair _ _ 2 1); [ easy | easy | flia Hc2 ].
     }
-    generalize Hcu2; intros H1.
-    unfold carry in H1.
-    rewrite (all_fA_ge_1_ε_NQintg_A' 3) in H1; cycle 1. {
-      apply three_lt_rad_pow.
-    } {
-      now intros p; rewrite Nat.add_shuffle0.
-    } {
-      intros p.
-      apply A_ge_1_add_r_true_if, Hau.
+    apply Nat.nlt_ge in Hc2.
+    destruct (Nat.eq_dec c 2) as [H| H]. 2: {
+      rewrite <- Hc in Hc2; apply H; clear H; rewrite <- Hc.
+      specialize (Hcu 2).
+      flia Hcu Hc2.
     }
-    rewrite <- (all_fA_ge_1_ε_NQintg_A 3) with (l := rad) in H1; cycle 1. {
-      apply three_lt_rad_pow.
-    } {
-      now intros p; rewrite Nat.add_shuffle0.
-    } {
-      intros p.
-      apply A_ge_1_add_r_true_if, Hau.
-    }
-    rewrite A_split_first in H1; [ | min_n_ge ].
-    replace (S (i + 1)) with (i + 2) in H1 by easy.
+    move H at top; subst c.
+    clear Hc2; rename Hc into Hcu3.
+    specialize (all_fA_ge_1_ε_P_999 _ _ Hau 1) as Hpu3.
+    replace (i + 1 + 1) with (i + 2) in Hpu3 by flia.
+    unfold P, d2n, prop_carr, dig in Hpu3.
+    rewrite Hu30, Hr2, Nat.add_0_l in Hpu3.
+    now rewrite Hcu3 in Hpu3.
+  }
+  specialize (Huk j (Nat.lt_succ_diag_r _)) as H1.
 ...
-    rewrite Hu30, Q.add_0_l, Hr2 in H1.
-    replace (i + 2) with (i + 1 + 1) in Hc at 2 by flia.
-    rewrite min_n_add_l, Nat.mul_1_r in Hc.
-    apply Q.intg_interv in H1; [ | now apply Q.le_0_mul_r ].
-    apply Q.intg_interv in Hc; [ | easy ].
-    destruct Hc as (_, Hc); rewrite Hr2 in Hc.
-    apply Q.nle_gt in Hc; apply Hc; clear Hc.
-    destruct H1 as (H1, _).
-    apply (Q.mul_le_mono_pos_r 2%Q) in H1; [ | easy ].
-    rewrite <- Q.mul_assoc in H1.
-    rewrite (Q.mul_pair_den_num _ 2 1) in H1; [ | easy ].
-    rewrite Q.mul_1_l, Q.mul_1_r in H1.
-    eapply Q.le_trans; [ | apply H1 ].
-    rewrite <- (Q.pair_add_l _ 1 1).
-    apply (Q.le_pair _ _ 2 1); [ easy | easy | flia Hc2 ].
-  }
-  apply Nat.nlt_ge in Hc2.
-  destruct (Nat.eq_dec c 2) as [H| H]. 2: {
-    rewrite <- Hc in Hc2; apply H; clear H; rewrite <- Hc.
-    specialize (Hcu 2).
-    flia Hcu Hc2.
-  }
-  move H at top; subst c.
-  clear Hc2; rename Hc into Hcu3.
-  specialize (all_fA_ge_1_ε_P_999 _ _ Hau 1) as Hpu3.
-  replace (i + 1 + 1) with (i + 2) in Hpu3 by flia.
-  unfold P, d2n, prop_carr, dig in Hpu3.
-  rewrite Hu30, Hr2, Nat.add_0_l in Hpu3.
-  now rewrite Hcu3 in Hpu3.
 }
-specialize (Hu3r 1) as H1.
+specialize (Hu3r (j + 1)) as H1.
 rewrite Hr2 in H1.
-replace (i + 1 + 1) with (i + 2) in H1 by flia.
+replace (i + (j + 1) + 1) with (i + j + 2) in H1 by flia.
 flia H H1.
 Qed.
 
