@@ -3125,6 +3125,13 @@ destruct Huv2 as [Huv2| Huv2]. {
       apply Q.sub_lt, Q.lt_0_pair.
       destruct (le_dec (i + 1 + 1 + 1) (nk - 1)); pauto.
     }
+    destruct Huv3 as [Huv3| Huv3]. {
+      (* après 0 2 2, y a forcément 1, 2 ou 3 *)
+...
+      apply Nat_eq_add_2 in Huv3.
+      destruct Huv3 as [Huv3| Huv3]. {
+        specialize (Hu 3) as H1; flia Huv3 H1.
+      }
 ...
     replace (carry v (i + 1)) with 0. 2: {
       symmetry.
