@@ -3071,6 +3071,44 @@ destruct Huv2 as [Huv2| Huv2]. {
         apply rad_2_sum_2_half_A_lt_1; [ easy | ].
         now intros; do 2 rewrite <- Nat.add_assoc.
       } {
+        replace (i + 1 + 1 + 1) with (i + 3) by flia.
+        unfold "⊕"; rewrite (proj1 Huv3), Nat.add_0_l, Hr2; cbn.
+        rewrite (proj2 Huv3), Hr2.
+        replace (carry v (i + 3)) with 1; [ easy | ].
+        symmetry; unfold carry.
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + 3)) with (i + 0 + 4) by flia.
+        rewrite Hvn, Hr2, Nat.add_0_r, Q.pair_diag; [ | easy ].
+        rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+        symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
+        apply Q.intg_small.
+        split; [ now apply Q.le_0_mul_r | ].
+        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+        now intros; rewrite <- Nat.add_assoc.
+      } {
+        intros p; replace (i + 1 + 1 + p + 2) with (i + p + 4) by flia.
+        unfold "⊕"; rewrite Hr2; cbn; rewrite Hr2.
+        rewrite Hun, Hvn; replace 2 with (1 + 1) at 4 by easy; f_equal.
+        rewrite Nat_mod_add_same_l; [ | easy ].
+        replace (carry v (i + p + 4)) with 1; [ easy | ].
+        symmetry; unfold carry.
+        rewrite A_all_18. 2: {
+          intros q; rewrite Hr2; cbn.
+          now replace (i + p + 4 + q + 1) with (i + (p + q + 1) + 4) by flia.
+        }
+        apply (Q.intg_less_small 1).
+        rewrite Q.pair_diag; [ | easy ].
+        split. {
+          apply Q.le_add_le_sub_l.
+          replace 2%Q with (1 + 1)%Q by easy.
+          apply Q.add_le_mono_l.
+          apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
+          do 2 rewrite Nat.mul_1_r; rewrite Hr2.
+          replace 2 with (2 ^ 1) at 1 by easy.
+          apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
+        }
+        apply Q.sub_lt, Q.lt_0_pair; pauto.
+      }
 ...
     replace (carry v (i + 1)) with 0. 2: {
       symmetry.
