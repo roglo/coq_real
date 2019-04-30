@@ -3109,6 +3109,22 @@ destruct Huv2 as [Huv2| Huv2]. {
         }
         apply Q.sub_lt, Q.lt_0_pair; pauto.
       }
+      replace 1%Q with (1 // 2 + 1 * 1 // 2)%Q at 2 by easy.
+      apply Q.add_le_lt_mono. {
+        specialize (carry_upper_bound_for_adds 2 v i) as H1.
+        assert (H : 2 ≠ 0) by easy.
+        specialize (H1 H); clear H.
+        assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+          now intros; rewrite <- Nat.add_assoc, Hr2.
+        }
+        specialize (H1 H 1); clear H.
+        rewrite Hr2, Nat.mod_small; [ | easy ].
+        apply Q.le_pair_mono_r; flia H1.
+      }
+      apply Q.mul_lt_mono_pos_r; [ easy | ].
+      apply Q.sub_lt, Q.lt_0_pair.
+      destruct (le_dec (i + 1 + 1 + 1) (nk - 1)); pauto.
+    }
 ...
     replace (carry v (i + 1)) with 0. 2: {
       symmetry.
