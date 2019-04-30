@@ -2710,6 +2710,7 @@ Proof.
 intros * Hr2 Hu Hv Hjj Hj Hjk Hk Hauv Huv1 Huv2.
 induction m. {
   clear Huv2.
+(* mouais, encore un truc à faire par co-induction, ça ne marche pas *)
 ...
 }
 assert (H : ∀ k : nat, k < m → (u ⊕ v) (i + k + 2) = 2). {
