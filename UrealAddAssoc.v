@@ -2696,6 +2696,7 @@ Proof. easy. Qed.
 
 Theorem rad_2_glop {r : radix} : ∀ m j k u v i n,
   rad = 2
+  → i + 3 ≤ n
   → (∀ k, u (i + k) ≤ 1)
   → (∀ k, v (i + k) ≤ 2)
   → (∀ p, p < j → fA_ge_1_ε v i p = true)
@@ -2703,22 +2704,231 @@ Theorem rad_2_glop {r : radix} : ∀ m j k u v i n,
   → (∀ p, p < k → fA_ge_1_ε (u ⊕ P v) i p = true)
   → fA_ge_1_ε (u ⊕ P v) i k = false
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
-  → (u ⊕ v) (i + 1) = 0 ∧ (u ⊕ v) (i + 1) = 2
+  → (u ⊕ v) (i + 1) = 0 ∨ (u ⊕ v) (i + 1) = 2
   → (∀ k, k < m → (u ⊕ v) (i + k + 2) = 2)
-  → ((carry v (i + 1) mod rad) // 2 + A (i + 1) n (u ⊕ P v) * 1 // 2 < 1)%Q.
+  → ((carry v (i + 1) mod 2) // 2 + A (i + 1) n (u ⊕ P v) * 1 // 2 < 1)%Q.
 Proof.
-intros * Hr2 Hu Hv Hjj Hj Hjk Hk Hauv Huv1 Huv2.
-induction m. {
-  clear Huv2.
-(* mouais, encore un truc à faire par co-induction, ça ne marche pas *)
-...
+intros * Hr2 Hin Hu Hv Hjj Hj Hjk Hk Hauv Huv1 Huv2.
+assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
+  intros p.
+  unfold "⊕"; replace 3 with (1 + 2) by easy.
+  apply Nat.add_le_mono; [ apply Hu | apply Hv ].
 }
-assert (H : ∀ k : nat, k < m → (u ⊕ v) (i + k + 2) = 2). {
-  intros p Hp; apply Huv2; flia Hp.
+move Huvl3 before Hauv.
+specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) i Hr2) as Huv2'.
+assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3 * (rad - 1)). {
+  now intros; rewrite <- Nat.add_assoc; rewrite Hr2.
 }
-specialize (IHm H); clear H.
-apply IHm.
+specialize (Huv2' H Hauv Huv1); clear H.
+destruct Huv2' as [Huv2'| Huv2']. {
+  assert
+    (Huvn :
+       ∀ k, (u ⊕ v) (i + k + 3) = 3 ∧ carry (u ⊕ v) (i + k + 2) = 2). {
+    intros p.
+    apply rad_2_sum_3_all_9_02_1_333; [ easy | | easy | easy | easy ].
+    now rewrite Hr2.
+  }
+  assert (Hun : ∀ k, u (i + k + 3) = 1). {
+    intros p.
+    specialize (Huvn p) as (H1, _).
+    unfold "⊕" in H1.
+    specialize (Hu (p + 3)) as H2; rewrite Nat.add_assoc in H2.
+    specialize (Hv (p + 3)) as H3; rewrite Nat.add_assoc in H3.
+    flia H1 H2 H3.
+  }
+  assert (Hvn : ∀ k, v (i + k + 3) = 2). {
+    intros p.
+    specialize (Huvn p) as (H1, _).
+    unfold "⊕" in H1.
+    specialize (Hu (p + 3)) as H2; rewrite Nat.add_assoc in H2.
+    specialize (Hv (p + 3)) as H3; rewrite Nat.add_assoc in H3.
+    flia H1 H2 H3.
+  }
+  apply Nat.eq_add_1 in Huv2'.
+  destruct Huv2' as [Huv2'| Huv2']. {
+    rewrite A_all_18. 2: {
+      intros p; unfold "⊕"; rewrite Hr2; cbn; rewrite Hr2.
+      replace (i + 1 + p + 1) with (i + p + 2) by flia.
+      replace (u (i + p + 2)) with 1. 2: {
+        destruct p; [ now rewrite Nat.add_0_r | ].
+        now replace (i + S p + 2) with (i + p + 3) by flia.
+      }
+      symmetry; replace 2 with (1 + 1) at 1 by easy; symmetry; f_equal.
+      destruct p. {
+        rewrite Nat.add_0_r, (proj2 Huv2'), Nat.add_0_l.
+        replace (carry v (i + 2)) with 1; [ easy | ].
+        symmetry; unfold carry.
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + 2)) with (i + 0 + 3) by flia.
+        rewrite Hvn, Hr2.
+        rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+        symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
+        apply Q.intg_small.
+        split; [ now apply Q.le_0_mul_r | ].
+        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+        now intros; do 2 rewrite <- Nat.add_assoc.
+      }
+      replace (i + S p + 2) with (i + p + 3) by flia.
+      rewrite Hvn, Nat_mod_add_same_l; [ | easy ].
+      replace (carry v (i + p + 3)) with 1; [ easy | ].
+      symmetry; unfold carry.
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S (i + p + 3)) with (i + (p + 1) + 3) by flia.
+      rewrite Hvn, Hr2.
+      rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+      symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
+      apply Q.intg_small.
+      split; [ now apply Q.le_0_mul_r | ].
+      apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+      now intros; do 2 rewrite <- Nat.add_assoc.
+    }
+    replace (carry v (i + 1)) with 0. 2: {
+      symmetry; unfold carry.
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S (i + 1)) with (i + 2) by flia.
+      rewrite (proj2 Huv2'), Hr2, Q.add_0_l.
+      apply Q.intg_small.
+      split; [ now apply Q.le_0_mul_r | ].
+      apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+      now intros; rewrite <- Nat.add_assoc.
+    }
+    rewrite Nat.mod_0_l; [ | easy ].
+    rewrite Q.add_0_l, Q.mul_sub_distr_r.
+    replace 2%Q with (2 // 1)%Q by easy.
+    rewrite Q.mul_pair_den_num; [ | easy ].
+    now apply Q.sub_lt, Q.mul_pos_cancel_r.
+  }
+  replace 1%Q with (1 // 2 + 1 * 1 // 2)%Q by easy.
+  apply Q.add_le_lt_mono. {
+    specialize (carry_upper_bound_for_adds 2 v i) as H1.
+    assert (H : 2 ≠ 0) by easy.
+    specialize (H1 H); clear H.
+    assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+      now intros; rewrite <- Nat.add_assoc, Hr2.
+    }
+    specialize (H1 H 1); clear H.
+    rewrite Nat.mod_small; [ | easy ].
+    apply Q.le_pair_mono_r; flia H1.
+  }
+  apply Q.mul_lt_mono_pos_r; [ easy | ].
+  rewrite A_split_first; [ | flia Hin ].
+  replace (S (i + 1)) with (i + 2) by easy.
+  unfold "⊕" at 1.
+  rewrite (proj1 Huv2'), Nat.add_0_l.
+  replace (P v (i + 2)) with 0. 2: {
+    symmetry; cbn; rewrite (proj2 Huv2'), Hr2.
+    replace (carry v (i + 2)) with 1; [ easy | ].
+    symmetry; unfold carry.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 2)) with (i + 0 + 3) by flia.
+    rewrite Hvn, Hr2.
+    rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+    symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
+    apply Q.intg_small.
+    split; [ now apply Q.le_0_mul_r | ].
+    apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+    now intros; do 2 rewrite <- Nat.add_assoc.
+  }
+  rewrite Q.add_0_l, Hr2.
+  apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+  intros p; unfold "⊕"; rewrite <- Nat.add_assoc.
+  replace 2 with (1 + 1) by easy.
+  apply Nat.add_le_mono; [ apply Hu | ].
+  replace 1 with (rad - 1) by flia Hr2.
+  apply P_le.
+}
+destruct Huv2' as [Huv2'| Huv2']. {
 ...
+  apply Q.sub_lt, Q.lt_0_pair.
+  destruct (le_dec (i + 1 + 1 + 1) (nk - 1)); pauto.
+...
+  rewrite (A_9_8_all_18 1); cycle 1. {
+    intros p Hp; replace (i + 1 + p + 1) with (i + p + 2) by flia.
+    apply Nat.lt_1_r in Hp; rewrite Hp, Nat.add_0_r, Hr2; cbn.
+    unfold "⊕"; rewrite (proj1 Huv2).
+    symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
+    unfold P, d2n, prop_carr, dig.
+    rewrite (proj2 Huv2), Hr2.
+    replace (carry v (i + 2)) with 1; [ easy | ].
+    symmetry; unfold carry.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 2)) with (i + 3) by flia.
+    rewrite (proj2 Huv3), Hr2.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 3)) with (i + 0 + 4) by flia.
+    rewrite Hvn, Hr2.
+    rewrite Q.pair_diag; [ | easy ].
+    rewrite Q.mul_add_distr_r, Q.mul_1_l, Q.add_assoc.
+    rewrite (Q.intg_add_nat_l 1). 2: {
+      now rewrite <- Q.mul_assoc; apply Q.le_0_mul_r.
+    }
+    symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
+    apply Q.intg_small.
+    split; [ now rewrite <- Q.mul_assoc; apply Q.le_0_mul_r | ].
+    apply (Q.lt_le_trans _ (1 * 1 // 2)%Q). 2: {
+      rewrite Q.mul_1_l.
+      apply (Q.le_pair _ _ 1 1); [ easy | easy | flia ].
+    }
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
+    apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+    now intros; do 2 rewrite <- Nat.add_assoc.
+  } {
+    replace (i + 1 + 1 + 1) with (i + 3) by flia.
+    unfold "⊕"; rewrite (proj1 Huv3), Nat.add_0_l, Hr2; cbn.
+    rewrite (proj2 Huv3), Hr2.
+    replace (carry v (i + 3)) with 1; [ easy | ].
+    symmetry; unfold carry.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 3)) with (i + 0 + 4) by flia.
+    rewrite Hvn, Hr2, Nat.add_0_r, Q.pair_diag; [ | easy ].
+    rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+    symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
+    apply Q.intg_small.
+    split; [ now apply Q.le_0_mul_r | ].
+    apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+    now intros; rewrite <- Nat.add_assoc.
+  } {
+    intros p; replace (i + 1 + 1 + p + 2) with (i + p + 4) by flia.
+    unfold "⊕"; rewrite Hr2; cbn; rewrite Hr2.
+    rewrite Hun, Hvn; replace 2 with (1 + 1) at 4 by easy; f_equal.
+    rewrite Nat_mod_add_same_l; [ | easy ].
+    replace (carry v (i + p + 4)) with 1; [ easy | ].
+    symmetry; unfold carry.
+    rewrite A_all_18. 2: {
+      intros q; rewrite Hr2; cbn.
+      now replace (i + p + 4 + q + 1) with (i + (p + q + 1) + 4) by flia.
+    }
+    apply (Q.intg_less_small 1).
+    rewrite Q.pair_diag; [ | easy ].
+    split. {
+      apply Q.le_add_le_sub_l.
+      replace 2%Q with (1 + 1)%Q by easy.
+      apply Q.add_le_mono_l.
+      apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
+      do 2 rewrite Nat.mul_1_r; rewrite Hr2.
+      replace 2 with (2 ^ 1) at 1 by easy.
+      apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
+    }
+    apply Q.sub_lt, Q.lt_0_pair; pauto.
+  }
+  replace 1%Q with (1 // 2 + 1 * 1 // 2)%Q at 2 by easy.
+  apply Q.add_le_lt_mono. {
+    specialize (carry_upper_bound_for_adds 2 v i) as H1.
+    assert (H : 2 ≠ 0) by easy.
+    specialize (H1 H); clear H.
+    assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+      now intros; rewrite <- Nat.add_assoc, Hr2.
+    }
+    specialize (H1 H 1); clear H.
+    rewrite Hr2, Nat.mod_small; [ | easy ].
+    apply Q.le_pair_mono_r; flia H1.
+  }
+  apply Q.mul_lt_mono_pos_r; [ easy | ].
+  apply Q.sub_lt, Q.lt_0_pair.
+  destruct (le_dec (i + 1 + 1 + 1) (nk - 1)); pauto.
+}
+...
+*)
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   rad = 2
@@ -2921,6 +3131,7 @@ destruct Huv2 as [Huv2| Huv2]. {
     unfold P at 1, d2n, prop_carr, dig.
     rewrite (proj2 Huv1), Nat.add_0_l.
 (**)
+rewrite Hr2.
 apply (rad_2_glop 1 j k); try easy.
 ...
     specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) (i + 1) Hr2) as Huv3.
