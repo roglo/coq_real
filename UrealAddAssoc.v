@@ -1673,6 +1673,11 @@ assert (Hcu2 :  ∀ k, k ≤ j → carry u (i + k + 1) = 1). {
 }
 assert (H : u (i + j + 2) ≠ 0). {
   intros Hu30; move Hu30 before Huk.
+  specialize (all_fA_ge_1_ε_P_999 _ _ Hau j) as Hpu2.
+  unfold P, d2n, prop_carr, dig in Hpu2.
+...
+u 0 2 2 2 2 0
+   1 1 1 1 1
 ...
   induction j. {
     rewrite Nat.add_0_r in Hu30; clear Huk.
