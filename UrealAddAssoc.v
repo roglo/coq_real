@@ -1657,6 +1657,7 @@ assert (Hcu2 : carry u (i + 1) = 1). {
 }
 assert (H : u (i + j + 2) ≠ 0). {
   intros Hu30; move Hu30 before Hu1.
+...
   remember (carry u (i + j + 2)) as c eqn:Hc.
   symmetry in Hc.
   destruct (lt_dec c 2) as [Hc2| Hc2]. {
