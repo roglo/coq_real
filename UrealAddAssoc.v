@@ -2694,6 +2694,31 @@ Theorem fold_carry {r : radix} : ∀ u i,
   Q.intg (A i (min_n i (carry_cases u i)) u) = carry u i.
 Proof. easy. Qed.
 
+Theorem rad_2_glop {r : radix} : ∀ m j k u v i n,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 1)
+  → (∀ k, v (i + k) ≤ 2)
+  → (∀ p, p < j → fA_ge_1_ε v i p = true)
+  → fA_ge_1_ε v i j = false
+  → (∀ p, p < k → fA_ge_1_ε (u ⊕ P v) i p = true)
+  → fA_ge_1_ε (u ⊕ P v) i k = false
+  → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
+  → (u ⊕ v) (i + 1) = 0 ∧ (u ⊕ v) (i + 1) = 2
+  → (∀ k, k < m → (u ⊕ v) (i + k + 2) = 2)
+  → ((carry v (i + 1) mod rad) // 2 + A (i + 1) n (u ⊕ P v) * 1 // 2 < 1)%Q.
+Proof.
+intros * Hr2 Hu Hv Hjj Hj Hjk Hk Hauv Huv1 Huv2.
+induction m. {
+  clear Huv2.
+...
+}
+assert (H : ∀ k : nat, k < m → (u ⊕ v) (i + k + 2) = 2). {
+  intros p Hp; apply Huv2; flia Hp.
+}
+specialize (IHm H); clear H.
+apply IHm.
+...
+
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -2717,19 +2742,7 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   apply Nat.add_le_mono; [ apply Hu | apply Hv ].
 }
 unfold "⊕" in Huv1.
-(*
-rewrite A_additive.
-*)
 apply Nat.eq_add_0 in Huv1.
-(*
-rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
-replace (S i) with (i + 1) by flia.
-rewrite (proj1 Huv1), Q.add_0_l.
-rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
-replace (S i) with (i + 1) by flia.
-unfold P at 1, d2n, prop_carr, dig.
-rewrite (proj2 Huv1), Nat.add_0_l.
-*)
 assert
   (Huv2 :
      (u ⊕ v) (i + 2) = 1 ∨ (u ⊕ v) (i + 2) = 2 ∨
@@ -2906,6 +2919,9 @@ destruct Huv2 as [Huv2| Huv2]. {
     rewrite (proj1 Huv1), Nat.add_0_l, Hr2.
     unfold P at 1, d2n, prop_carr, dig.
     rewrite (proj2 Huv1), Nat.add_0_l.
+(**)
+apply (rad_2_glop 1 j k); try easy.
+...
     specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) (i + 1) Hr2) as Huv3.
     replace (i + 1 + 1) with (i + 2) in Huv3 by flia.
     replace (i + 1 + 2) with (i + 3) in Huv3 by flia.
@@ -3127,6 +3143,9 @@ destruct Huv2 as [Huv2| Huv2]. {
     }
     destruct Huv3 as [Huv3| Huv3]. {
       (* après 0 2 2, y a forcément 1, 2 ou 3 *)
+(* en fait devrait être traité par rad_2_glop lui-même par induction
+   sur m *)
+apply (rad_2_glop 2 j k); try easy.
 ...
       apply Nat_eq_add_2 in Huv3.
       destruct Huv3 as [Huv3| Huv3]. {
