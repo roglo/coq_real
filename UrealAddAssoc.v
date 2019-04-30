@@ -1637,29 +1637,42 @@ intros * Hr2 Hu3r Hau Hu1 Huk.
 assert (Hcu : ∀ k, carry u (i + k) < 3). {
   now apply carry_upper_bound_for_adds.
 }
-assert (Hcu2 : carry u (i + 1) = 1). {
-  clear - Hau Hu1 Hr2 Hcu.
-  specialize (all_fA_ge_1_ε_P_999 _ _ Hau 0) as Hpu2.
-  rewrite Nat.add_0_r in Hpu2.
+assert (Hcu2 :  ∀ k, k < j → carry u (i + k + 1) = 1). {
+  intros k Hk.
+  specialize (all_fA_ge_1_ε_P_999 _ _ Hau k) as Hpu2.
   unfold P, d2n, prop_carr, dig in Hpu2.
   rewrite Hr2 in Hpu2.
-  destruct (Nat.eq_dec (carry u (i + 1)) 2) as [Hc2| Hc2]. {
+  destruct (Nat.eq_dec (carry u (i + k + 1)) 2) as [Hc2| Hc2]. {
+    exfalso.
     rewrite Hc2, Nat_mod_add_same_r in Hpu2; [ | easy ].
-    now destruct Hu1 as [H| H]; rewrite H in Hpu2.
+    destruct k. {
+      rewrite Nat.add_0_r in Hpu2.
+      now destruct Hu1 as [H| H]; rewrite H in Hpu2.
+    }
+    assert (H : k < j) by flia Hk.
+    specialize (Huk _ H) as H1.
+    replace (i + k + 2) with (i + S k + 1) in H1 by flia.
+    now rewrite H1 in Hpu2.
   }
-  specialize (Hcu 1) as H1.
-  destruct Hu1 as [Hu1| Hu1]. {
-    rewrite Hu1, Nat.add_0_l in Hpu2.
+  specialize (Hcu (k + 1)) as H1.
+  rewrite Nat.add_assoc in H1.
+  destruct k. {
+    rewrite Nat.add_0_r in Hpu2, Hc2, H1 |-*.
+    destruct Hu1 as [Hu1| Hu1]. {
+      rewrite Hu1, Nat.add_0_l in Hpu2.
+      rewrite Nat.mod_small in Hpu2; [ easy | flia Hc2 H1 ].
+    }
+    rewrite Hu1, Nat_mod_add_same_l in Hpu2; [ | easy ].
     rewrite Nat.mod_small in Hpu2; [ easy | flia Hc2 H1 ].
   }
-  rewrite Hu1, Nat_mod_add_same_l in Hpu2; [ | easy ].
+  assert (H : k < j) by flia Hk.
+  specialize (Huk _ H) as H2; clear H.
+  replace (i + k + 2) with (i + S k + 1) in H2 by flia.
+  rewrite H2, Nat_mod_add_same_l in Hpu2; [ | easy ].
   rewrite Nat.mod_small in Hpu2; [ easy | flia Hc2 H1 ].
 }
 assert (H : u (i + j + 2) ≠ 0). {
   intros Hu30; move Hu30 before Hu1.
-(* faut faire peut-être plutôt, pour Hcu2 :
-      ∀ k, k < j → carry u (i + k + 1) = 1
-   un truc comme ça *)
 ...
   induction j. {
     rewrite Nat.add_0_r in Hu30; clear Huk.
