@@ -550,6 +550,55 @@ rewrite Nat.mul_1_l.
 now symmetry; apply Nat.sub_add.
 Qed.
 
+Theorem carry_succ_gen {r : radix} : ∀ m u i,
+  m < rad ^ (rad * (i + 3) - (i + 2))
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
+  → carry u i = (u (i + 1) + carry u (i + 1)) / rad.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hmrr Hur.
+destruct (le_dec m rad) as [Hmr| Hmr]; [ now apply (carry_succ m) | ].
+apply Nat.nle_gt in Hmr.
+unfold carry, carry_cases.
+destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
+  specialize (all_fA_ge_1_ε_P_999 u i H1 0) as H6.
+  rewrite Nat.add_0_r in H6.
+  unfold P, d2n, prop_carr, dig in H6.
+  unfold carry, carry_cases in H6.
+  destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
+    rewrite <- (all_fA_ge_1_ε_NQintg_A' m i) with (k := 1); try easy.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S i) with (i + 1) by flia.
+    replace 1 with (0 + 1) at 3 by easy.
+    rewrite min_n_add, <- min_n_add_l.
+    remember (A (i + 1) (min_n (i + 1) 0) u) as a eqn:Ha.
+    rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | ]. 2: {
+      now rewrite Ha; apply Q.le_0_mul_r.
+    }
+    rewrite Q.intg_pair; [ | easy ].
+    destruct
+      (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
+      as [H3| H3]. {
+      rewrite Nat.add_0_r.
+(* bin mon 'ieux, c'est pas d'la tarte *)
+...
+    specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H3.
+    specialize (Nat.div_mod (u (i + 1) + Q.intg a) rad radix_ne_0) as H3.
+    rewrite H6 in H3.
+
+Check carry_succ_lemma3.
+...
+    now apply (carry_succ_lemma3 m _ _ 0).
+  }
+  destruct H2 as (j & Hjj & Hj).
+  now rewrite A_ge_1_add_r_true_if in Hj.
+}
+destruct H1 as (j & Hjj & Hj).
+destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
+  specialize (all_fA_ge_1_ε_P_999 u (i + 1) H2 0) as H6.
+...
+
 Theorem P_999_after_7_gt {r : radix} : ∀ m u i,
   m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
