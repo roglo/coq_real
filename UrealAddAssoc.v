@@ -864,7 +864,7 @@ Qed.
 
 Theorem rad_2_sum_3_all_9_02_1_3 {r : radix} : ∀ u i,
   rad = 2
-  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
+  → (∀ k, u (i + k) ≤ 3)
   → (∀ k, fA_ge_1_ε u i k = true)
   → u (i + 1) = 0 ∨ u (i + 1) = 2
   → u (i + 2) = 1
@@ -874,7 +874,7 @@ intros * Hr2 Hu3r Hau Hu10 Hu21.
 assert (Hcu : ∀ k, carry u (i + k) < 3). {
   intros p.
   apply carry_upper_bound_for_adds; [ easy | ].
-  intros q; rewrite <- Nat.add_assoc; apply Hu3r.
+  intros q; rewrite <- Nat.add_assoc, Hr2; apply Hu3r.
 }
 assert (Hcu1 : carry u (i + 1) = 1). {
   specialize (all_fA_ge_1_ε_P_999 _ _ Hau 0) as Hpu1.
@@ -912,6 +912,7 @@ destruct (Nat.eq_dec c2 0) as [Hc20| Hc20]. {
   exfalso.
   move Hc20 at top; subst c2; clear Hcu2.
   rename Hc2 into Hcu2.
+  replace 3 with (3 * (rad - 1)) in Hu3r by flia Hr2.
   specialize (all_fA_ge_1_ε_carry_carry u i Hu3r Hau 1) as H1.
   replace (i + 1 + 1) with (i + 2) in H1 by flia.
   rewrite Hcu1, Hu21, Hcu2, Nat.add_0_r in H1.
@@ -969,7 +970,7 @@ destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
     cycle 1. {
     apply three_lt_rad_pow.
   } {
-    intros p.
+    intros p; rewrite Hr2.
     rewrite <- Nat.add_assoc; apply Hu3r.
   } {
     intros p.
@@ -990,7 +991,7 @@ destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
     rewrite <- Q.mul_assoc, Q.mul_pair_den_num; [ | easy ].
     rewrite Q.mul_1_r.
     eapply Q.le_lt_trans. {
-      apply (A_upper_bound_for_adds 3).
+      apply (A_upper_bound_for_adds 3); rewrite Hr2.
       intros p; do 2 rewrite <- Nat.add_assoc; apply Hu3r.
     }
     rewrite Q.mul_sub_distr_l, Q.mul_1_r.
@@ -1011,7 +1012,7 @@ destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
     rewrite <- Q.mul_assoc, Q.mul_pair_den_num; [ | easy ].
     rewrite Q.mul_1_r.
     eapply Q.le_lt_trans. {
-      apply (A_upper_bound_for_adds 3).
+      apply (A_upper_bound_for_adds 3); rewrite Hr2.
       intros p; do 2 rewrite <- Nat.add_assoc; apply Hu3r.
     }
     rewrite Q.mul_sub_distr_l, Q.mul_1_r.
@@ -1041,10 +1042,9 @@ destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
     rewrite (all_fA_ge_1_ε_NQintg_A' 3) in Hpu3; cycle 1. {
       apply three_lt_rad_pow.
     } {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+      intros p; rewrite <- Nat.add_assoc, Hr2; apply Hu3r.
     } {
-      intros p.
-      apply A_ge_1_add_r_true_if, Hau.
+      intros p; apply A_ge_1_add_r_true_if, Hau.
     }
     replace (i + 3) with (i + 2 + 1) in Hpu3 at 2 by flia.
     rewrite min_n_add_l, Nat.mul_1_r in Hpu3.
@@ -1063,7 +1063,7 @@ destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
     now rewrite Hr2.
   }
   specialize (Hu3r 3) as H.
-  rewrite Hu3, Hr2 in H.
+  rewrite Hu3 in H.
   flia Hu30 Hu31 Hu32 H.
 }
 exfalso.
@@ -1529,7 +1529,7 @@ Qed.
 
 Theorem rad_2_sum_3_all_9_0_1_22_3 {r : radix} : ∀ u i j,
   rad = 2
-  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
+  → (∀ k, u (i + k) ≤ 3)
   → (∀ k, fA_ge_1_ε u i k = true)
   → u (i + 1) = 0
   → (∀ k, k < j → u (i + k + 2) = 2)
@@ -1560,7 +1560,7 @@ destruct j. {
       specialize (carry_upper_bound_for_adds 3 u i) as H1.
       specialize (H1 (Nat.neq_succ_0 2)).
       assert (H : ∀ k, u (i + k + 1) ≤ 3 * (rad - 1)). {
-        now intros; rewrite <- Nat.add_assoc.
+        now intros; rewrite Hr2, <- Nat.add_assoc.
       }
       specialize (H1 H 2); clear H.
       destruct (Nat.eq_dec (carry u (i + 2)) 2) as [Hc2| Hc2]. {
@@ -1572,7 +1572,7 @@ destruct j. {
     rewrite (all_fA_ge_1_ε_NQintg_A' 3) in Hpu2; cycle 1. {
       apply three_lt_rad_pow.
     } {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+      intros p; rewrite <- Nat.add_assoc, Hr2; apply Hu3r.
     } {
       intros p; apply A_ge_1_add_r_true_if, Hau.
     }
@@ -1580,14 +1580,14 @@ destruct j. {
     rewrite (all_fA_ge_1_ε_NQintg_A' 3) in Hc3; cycle 1. {
       apply three_lt_rad_pow.
     } {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+      intros p; rewrite <- Nat.add_assoc, Hr2; apply Hu3r.
     } {
       intros p; apply A_ge_1_add_r_true_if, Hau.
     }
     rewrite <- (all_fA_ge_1_ε_NQintg_A 3) with (l := rad) in Hpu2; cycle 1. {
       apply three_lt_rad_pow.
     } {
-      intros p; rewrite <- Nat.add_assoc; apply Hu3r.
+      intros p; rewrite <- Nat.add_assoc, Hr2; apply Hu3r.
     } {
       intros p; apply A_ge_1_add_r_true_if, Hau.
     }
@@ -1617,7 +1617,7 @@ destruct j. {
 rewrite <- Hc3 at 3.
 replace (i + 4) with (i + 2 + 2) by flia.
 replace (i + 3) with (i + 2 + 1) by flia.
-apply rad_2_sum_3_all_9_3r2_3r2; [ easy | easy | easy | ].
+apply rad_2_sum_3_all_9_3r2_3r2; [ easy | now rewrite Hr2 | easy | ].
 Abort. (*
 ...
     apply Q.eq_intg_0 in Hc3; [ | easy ].
@@ -1627,7 +1627,7 @@ Abort. (*
 
 Theorem rad_2_sum_3_all_9_02_222_123 {r : radix} : ∀ j u i,
   rad = 2
-  → (∀ k, u (i + k + 1) ≤ 3 * (rad - 1))
+  → (∀ k, u (i + k + 1) ≤ 3)
   → (∀ k, fA_ge_1_ε u i k = true)
   → u (i + 1) = 0 ∨ u (i + 1) = 2
   → (∀ k, k < j → u (i + k + 2) = 2)
@@ -1635,7 +1635,7 @@ Theorem rad_2_sum_3_all_9_02_222_123 {r : radix} : ∀ j u i,
 Proof.
 intros * Hr2 Hu3r Hau Hu1 Huk.
 assert (Hcu : ∀ k, carry u (i + k) < 3). {
-  now apply carry_upper_bound_for_adds.
+  apply carry_upper_bound_for_adds; [ easy | now rewrite Hr2 ].
 }
 assert (Hcu2 :  ∀ k, k ≤ j → carry u (i + k + 1) = 1). {
   intros k Hk.
@@ -1688,7 +1688,7 @@ assert (H : u (i + j + 2) ≠ 0). {
     rewrite (all_fA_ge_1_ε_NQintg_A' 3) in Hc; cycle 1. {
       apply three_lt_rad_pow.
     } {
-      intros p.
+      intros p; rewrite Hr2.
       now replace (i + j + 2 + p) with (i + (j + p + 1) + 1) by flia.
     } {
       intros p; rewrite <- Nat.add_assoc.
@@ -1699,7 +1699,7 @@ assert (H : u (i + j + 2) ≠ 0). {
     rewrite (all_fA_ge_1_ε_NQintg_A' 3) in H1; cycle 1. {
       apply three_lt_rad_pow.
     } {
-      intros p.
+      intros p; rewrite Hr2.
       now replace (i + j + 1 + p) with (i + (j + p) + 1) by flia.
     } {
       intros p; rewrite <- Nat.add_assoc.
@@ -1708,7 +1708,7 @@ assert (H : u (i + j + 2) ≠ 0). {
     rewrite <- (all_fA_ge_1_ε_NQintg_A 3) with (l := rad) in H1; cycle 1. {
       apply three_lt_rad_pow.
     } {
-      intros p.
+      intros p; rewrite Hr2.
       now replace (i + j + 1 + p) with (i + (j + p) + 1) by flia.
     } {
       intros p; rewrite <- Nat.add_assoc.
@@ -1733,14 +1733,13 @@ assert (H : u (i + j + 2) ≠ 0). {
   destruct c; [ easy | flia H1 ].
 }
 specialize (Hu3r (j + 1)) as H1.
-rewrite Hr2 in H1.
 replace (i + (j + 1) + 1) with (i + j + 2) in H1 by flia.
 flia H H1.
 Qed.
 
 Theorem rad_2_sum_3_all_9_02_123 {r : radix} : ∀ u i,
   rad = 2
-  → (∀ k, u (i + k + 1) ≤ 3 * (rad - 1))
+  → (∀ k, u (i + k + 1) ≤ 3)
   → (∀ k, fA_ge_1_ε u i k = true)
   → u (i + 1) = 0 ∨ u (i + 1) = 2
   → u (i + 2) = 1 ∨ u (i + 2) = 2 ∨ u (i + 2) = 3.
@@ -1750,9 +1749,22 @@ rewrite <- (Nat.add_0_r i).
 now apply rad_2_sum_3_all_9_02_222_123.
 Qed.
 
+Theorem rad_2_sum_3_all_9_02_222_13 {r : radix} : ∀ j u i,
+  rad = 2
+  → (∀ k, u (i + k + 1) ≤ 3)
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → u (i + 1) = 0 ∨ u (i + 1) = 2
+  → (∀ k, k < j → u (i + k + 2) = 2)
+  → (∀ k, u (i + k + 2) = 2) ∨
+    ∃ k, (∀ p, p < k → u (i + p + 2) = 2) ∧
+     (u (i + k + 2) = 1 ∨ u (i + k + 2) = 3).
+Proof.
+intros * Hr2 Hu3r Hau Hu1 Huk.
+...
+
 Theorem rad_2_sum_3_all_9_0_22_1_333 {r : radix} : ∀ u i j,
   rad = 2
-  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
+  → (∀ k, u (i + k) ≤ 3)
   → (∀ k, fA_ge_1_ε u i k = true)
   → u (i + 1) = 0
   → (∀ k, k < j → u (i + k + 2) = 2)
@@ -1801,7 +1813,7 @@ rewrite <- all_fA_ge_1_ε_NQintg_A with (l := rad) in Hcw; cycle 1. {
 
 Theorem rad_2_sum_3_all_9_02_1_333 {r : radix} : ∀ u i,
   rad = 2
-  → (∀ k, u (i + k) ≤ 3 * (rad - 1))
+  → (∀ k, u (i + k) ≤ 3)
   → (∀ k, fA_ge_1_ε u i k = true)
   → u (i + 1) = 0 ∨ u (i + 1) = 2
   → u (i + 2) = 1
@@ -1817,7 +1829,7 @@ replace (i + S p + 3) with (i + (p + 2) + 2) by flia.
 replace (i + S p + 2) with (i + (p + 2) + 1) by flia.
 replace (i + p + 3) with (i + (p + 2) + 1) in IHp by flia.
 replace (i + p + 2) with (i + (p + 2)) in IHp by flia.
-now apply rad_2_sum_3_all_9_3r2_3r2.
+apply rad_2_sum_3_all_9_3r2_3r2; try easy; now rewrite Hr2.
 Qed.
 
 Theorem rad_2_sum_3_all_9_0_1_A_lt_1 {r : radix} : ∀ u v i,
@@ -1831,10 +1843,9 @@ Theorem rad_2_sum_3_all_9_0_1_A_lt_1 {r : radix} : ∀ u v i,
 Proof.
 intros * Hr2 Hu Hv Hauv Huv10 Huv21 *.
 remember (min_n i k) as nk eqn:Hnk.
-assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   intros p.
   unfold "⊕"; replace 3 with (1 + 2) by easy.
-  rewrite Nat.mul_add_distr_r, Nat.mul_1_l, Hr2.
   apply Nat.add_le_mono; [ apply Hu | apply Hv ].
 }
 remember (u ⊕ v) as w eqn:Hw.
@@ -2519,10 +2530,9 @@ destruct j. {
   rewrite Nat.add_0_r in Huvj.
   now apply rad_2_sum_3_all_9_0_1_A_lt_1.
 }
-assert (Huv3r : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
+assert (Huv3r : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   intros p.
   unfold "⊕"; replace 3 with (1 + 2) by easy.
-  rewrite Nat.mul_add_distr_r, Nat.mul_1_l, Hr2.
   apply Nat.add_le_mono; [ apply Hu | apply Hv ].
 }
 destruct j. {
@@ -2535,7 +2545,7 @@ destruct j. {
   replace (i + 1 + 1) with (i + 2) in H1 by flia.
   replace (i + 1 + 2) with (i + 3) in H1 by flia.
   replace (i + 1 + 3) with (i + 4) in H1 by flia.
-  assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3 * (rad - 1)). {
+  assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3). {
     now intros; rewrite <- Nat.add_assoc.
   }
   specialize (H1 H); clear H.
@@ -2741,18 +2751,13 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
 }
 move Huvl3 before Hauv.
 specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) i Hr2) as Huv2'.
-assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3 * (rad - 1)). {
-  now intros; rewrite <- Nat.add_assoc; rewrite Hr2.
+assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3). {
+  now intros; rewrite <- Nat.add_assoc.
 }
 specialize (Huv2' H Hauv Huv1); clear H.
 destruct Huv2' as [Huv2'| Huv2']. {
-  assert
-    (Huvn :
-       ∀ k, (u ⊕ v) (i + k + 3) = 3 ∧ carry (u ⊕ v) (i + k + 2) = 2). {
-    intros p.
-    apply rad_2_sum_3_all_9_02_1_333; [ easy | | easy | easy | easy ].
-    now rewrite Hr2.
-  }
+  specialize (rad_2_sum_3_all_9_02_1_333 _ i Hr2 Huvl3 Hauv Huv1) as Huvn.
+  specialize (Huvn Huv2').
   assert (Hun : ∀ k, u (i + k + 3) = 1). {
     intros p.
     specialize (Huvn p) as (H1, _).
@@ -2864,8 +2869,8 @@ destruct Huv2' as [Huv2'| Huv2']. {
 }
 destruct Huv2' as [Huv2'| Huv2']. {
   specialize (rad_2_sum_3_all_9_02_222_123 m (u ⊕ v) i Hr2) as H1.
-  assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3 * (rad - 1)). {
-    now intros; rewrite Hr2, <- Nat.add_assoc.
+  assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3). {
+    now intros; rewrite <- Nat.add_assoc.
   }
   specialize (H1 H Hauv Huv1 Huv2); clear H.
 ...
