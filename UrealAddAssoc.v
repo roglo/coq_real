@@ -612,6 +612,17 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
     apply Q.lt_pair; [ easy | easy | ].
     rewrite Nat.mul_1_r.
     rewrite Nat.mul_add_distr_l.
+Check Nat.mul_div_le.
+specialize (Nat.div_mod (u (i + 1) + Q.intg a) rad radix_ne_0) as H3.
+rewrite Hn, H6 in H3.
+rewrite (Q.num_den a) in H3; [ | now rewrite Ha ].
+rewrite Q.intg_pair in H3; [ | easy ].
+rewrite H3.
+rewrite (Nat.mul_comm rad), Nat.div_add_l; [ | easy ].
+rewrite Nat.div_small; [ | flia Hr ].
+rewrite Nat.add_0_r.
+rewrite <- Nat.mul_add_distr_l.
+replace (n * rad + rad) with ((n + 1) * rad) by lia.
 ...
 Q.intg_interv
      : ∀ (n : nat) (x : Q),
