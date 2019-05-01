@@ -2863,7 +2863,11 @@ destruct Huv2' as [Huv2'| Huv2']. {
   apply P_le.
 }
 destruct Huv2' as [Huv2'| Huv2']. {
-  specialize (rad_2_sum_3_all_9_02_222_123 m (u ⊕ v) i Hr2) as H.
+  specialize (rad_2_sum_3_all_9_02_222_123 m (u ⊕ v) i Hr2) as H1.
+  assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3 * (rad - 1)). {
+    now intros; rewrite Hr2, <- Nat.add_assoc.
+  }
+  specialize (H1 H Hauv Huv1 Huv2); clear H.
 ...
   apply Q.sub_lt, Q.lt_0_pair.
   destruct (le_dec (i + 1 + 1 + 1) (nk - 1)); pauto.
