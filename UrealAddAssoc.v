@@ -226,6 +226,11 @@ rewrite Q.mul_add_distr_r in H3.
 rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
 rewrite Q.mul_pair_den_num in H3; [ | easy ].
 rewrite Q.mul_1_r in H3.
+specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
+symmetry; rewrite H5 at 1.
+rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
+rewrite Nat.div_add; [ | easy ].
+rewrite Nat.add_comm; f_equal.
 rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
   rewrite Ha.
   now apply (A_mul_inv_rad_interv m _ i).
@@ -233,11 +238,6 @@ rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
 rewrite <- Q.mul_assoc in H3.
 rewrite Q.mul_pair_den_num in H3; [ | easy ].
 rewrite Q.mul_1_r in H3.
-specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
-symmetry; rewrite H5 at 1.
-rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
-rewrite Nat.div_add; [ | easy ].
-rewrite Nat.add_comm; f_equal.
 rewrite (Q.intg_small (_ * _)%Q). 2: {
   rewrite Ha.
   now apply (A_mul_inv_rad_interv m _ i).
