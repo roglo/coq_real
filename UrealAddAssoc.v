@@ -1676,10 +1676,28 @@ assert (H : u (i + j + 2) ≠ 0). {
   specialize (all_fA_ge_1_ε_P_999 _ _ Hau (j + 1)) as Hpu2.
   replace (i + (j + 1) + 1) with (i + j + 2) in Hpu2 by flia.
   unfold P, d2n, prop_carr, dig in Hpu2.
-  rewrite Hu30, Nat.add_0_l in Hpu2.
+  rewrite Hu30, Nat.add_0_l, Hr2 in Hpu2.
+  specialize (Hcu (j + 2)) as H1.
+  rewrite Nat.add_assoc in H1.
+  remember (carry u (i + j + 2)) as c eqn:Hc.
+  symmetry in Hc.
+  destruct c; [ easy | ].
+  destruct c. {
+    clear Hpu2 H1.
 ...
 u 0 2 2 2 2 0
    1 1 1 1 1 1
+  }
+  destruct c; [ easy | flia H1 ].
+}
+...
+  specialize (Hcu2 _ (le_refl _)) as H1.
+  unfold carry in H1.
+  rewrite A_split_first in H1; [ | min_n_ge ].
+  replace (S (i + j + 1)) with (i + j + 2) in H1 by easy.
+  rewrite Hu30, Q.add_0_l in H1.
+  unfold carry in Hpu2.
+...
 ...
   induction j. {
     rewrite Nat.add_0_r in Hu30; clear Huk.
