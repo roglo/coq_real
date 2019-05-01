@@ -611,6 +611,7 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
     rewrite Q.intg_pair; [ | easy ].
     apply Q.lt_pair; [ easy | easy | ].
     rewrite Nat.mul_1_r.
+    rewrite Nat.mul_add_distr_l.
 ...
 Q.intg_interv
      : ∀ (n : nat) (x : Q),
