@@ -575,6 +575,32 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
     remember (A (i + 1) (min_n (i + 1) 0) u) as a eqn:Ha.
     rewrite <- (Q.mul_pair_den_num _ 1); [ | easy ].
     rewrite <- Q.mul_add_distr_r.
+(**)
+    remember ((u (i + 1) + Q.intg a) / rad) as n eqn:Hn.
+    symmetry in Hn.
+    rewrite (Q.intg_less_small n). 2: {
+      split. {
+        rewrite <- Hn.
+        apply (Q.mul_le_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
+        rewrite <- Q.mul_assoc, Q.mul_pair_den_num; [ | easy ].
+        rewrite Q.mul_1_r, <- Q.pair_mul_r.
+        rewrite (Q.num_den a); [ | now rewrite Ha ].
+        rewrite Q.add_pair; [ | easy | easy ].
+        do 2 rewrite Nat.mul_1_l.
+        apply Q.le_pair; [ easy | easy | ].
+        rewrite Nat.mul_1_l.
+        rewrite Q.intg_pair; [ | easy ].
+        eapply le_trans. {
+          apply Nat.mul_le_mono_r.
+          rewrite Nat.mul_comm.
+          now apply Nat.mul_div_le.
+        }
+        rewrite Nat.mul_add_distr_r.
+        apply Nat.add_le_mono_l.
+        rewrite Nat.mul_comm.
+        now apply Nat.mul_div_le.
+      }
+...
     destruct (Q.lt_le_dec (u (i + 1)%nat // 1 + a)%Q (rad // 1))
       as [H3| H3]. {
       rewrite Q.intg_small. 2: {
