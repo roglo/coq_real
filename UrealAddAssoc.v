@@ -2889,6 +2889,38 @@ destruct Huv2' as [Huv2'| Huv2']. {
   specialize (Huv2'' H Hauv Huv1 Huv2); clear H.
   clear m Huv2 Huv2'; rename Huv2'' into Huv2.
   destruct Huv2 as [Huv2| Huv2]. {
+    destruct Huv1 as [Huv1| Huv1]. {
+      apply Nat.eq_add_0 in Huv1.
+(*
+    u 0 0 0 0 1 0 0 0 ...
+    v 0 2 2 2 1 2 2 2 ...
+  P v 1 1 1 1 0 1 1 1 ...
+u⊕Pv 1 1 1 1 1 1 1 1 ... ← impossible
+    u 0 1 0 0 0 0 0 0 ...
+    v 0 1 2 2 2 2 2 2 ...
+  P v 1 0 1 1 1 1 1 1 ...
+u⊕Pv 1 1 1 1 1 1 1 1 ... ← impossible
+*)
+assert (Hcont : ∀ k, (u ⊕ P v) (i + k + 1) = 1). {
+  intros p; unfold "⊕".
+  unfold P, d2n, prop_carr, dig; rewrite Hr2.
+  destruct p. {
+    rewrite Nat.add_0_r.
+    rewrite (proj1 Huv1), (proj2 Huv1), Nat.add_0_l, Nat.add_0_l.
+    replace (carry v (i + 1)) with 1; [ easy | ].
+    symmetry.
+    unfold carry.
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 1)) with (i + 2) by easy; rewrite Hr2.
+    specialize (Huv2 0) as Huv2'.
+    rewrite Nat.add_0_r in Huv2'.
+    apply Nat_eq_add_2 in Huv2'.
+    destruct Huv2' as [Huv2'| Huv2']. {
+      specialize (Hu 2); flia Hu Huv2'.
+    }
+    destruct Huv2' as [Huv2'| Huv2']. {
+      rewrite (proj2 Huv2').
+(* mmm... ça devrait être bon, mais faut réfléchir, hein... *)
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
