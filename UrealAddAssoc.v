@@ -684,65 +684,6 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
     rewrite Nat.div_add; [ | easy ].
     rewrite Nat.add_comm; f_equal.
-(*
-    destruct (lt_dec (u (i + 1) mod rad + Q.intg a) rad) as [H8| H8]. {
-      rewrite Nat.div_small; [ | easy ].
-      symmetry.
-      apply Q.intg_interv; [ now rewrite Ha; apply Q.le_0_mul_r | ].
-      split; [ now rewrite Ha; apply Q.le_0_mul_r | ].
-      apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
-      rewrite <- Q.mul_assoc.
-      rewrite Q.mul_pair_den_num; [ | easy ].
-      rewrite Q.mul_1_r, Q.mul_1_l.
-      apply Q.intg_lt_lt; [ now rewrite Ha | flia H8 ].
-    }
-    apply Nat.nlt_ge in H8.
-    (* ptet y faudrait faire Nat.div_mod (u (i + 1) mod rad + Q.intg a) rad
-       au lieu de H8 ? *)
-    destruct (lt_dec (u (i + 1) mod rad + Q.intg a) (2 * rad)) as [H9| H9]. {
-      rewrite (Nat_div_less_small 1); [ | now rewrite Nat.mul_1_l ].
-      symmetry.
-      apply Q.intg_interv; [ now rewrite Ha; apply Q.le_0_mul_r | ].
-      split. {
-        apply (Q.mul_le_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
-        rewrite <- Q.mul_assoc.
-        rewrite Q.mul_pair_den_num; [ | easy ].
-        rewrite Q.mul_1_r, Q.mul_1_l.
-        apply Q.nlt_ge; intros H10.
-        rewrite Q.frac_small in H3. 2: {
-          split; [ now rewrite Ha; apply Q.le_0_mul_r | ].
-          apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
-          rewrite <- Q.mul_assoc.
-          rewrite Q.mul_pair_den_num; [ | easy ].
-          now rewrite Q.mul_1_r, Q.mul_1_l.
-        }
-        rewrite <- Q.mul_assoc in H3.
-        rewrite Q.mul_pair_den_num in H3; [ | easy ].
-        rewrite Q.mul_1_r in H3.
-        apply Q.nle_gt in H3; apply H3; clear H3.
-        apply (Q.le_trans _ ((u (i + 1) mod rad + Q.intg a) // 1)). {
-          now apply Q.le_pair_mono_r.
-        }
-        rewrite Q.pair_add_l.
-        apply Q.add_le_mono_l.
-        apply Q.intg_interv; [ now rewrite Ha | easy ].
-      }
-      apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
-      rewrite <- Q.mul_assoc.
-      rewrite Q.mul_pair_den_num; [ | easy ].
-      rewrite Q.mul_1_r.
-      replace (1 // 1 + 1)%Q with (2 // 1)%Q by easy.
-      rewrite <- Q.pair_mul_r.
-      specialize (Q.intg_interv (Q.intg a) a) as H10.
-      assert (H : (0 ≤ a)%Q) by now rewrite Ha.
-      specialize (proj2 (H10 H) eq_refl) as (H11, H12); clear H H10.
-      eapply Q.lt_le_trans; [ apply H12 | ].
-      apply Q.le_add_le_sub_l.
-      rewrite <- (Q.pair_sub_l _ 1); [ | flia Hr ].
-      apply Q.le_pair_mono_r; flia H9.
-    }
-    apply Nat.nlt_ge in H9.
-*)
     specialize (Nat.div_mod (u (i + 1) mod rad + Q.intg a) rad radix_ne_0) as H7.
     remember ((u (i + 1) mod rad + Q.intg a) / rad) as n eqn:Hn.
     symmetry.
