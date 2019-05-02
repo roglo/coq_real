@@ -714,6 +714,10 @@ destruct (lt_dec (u (i + 1) mod rad + Q.intg a) (2 * rad)) as [H9| H9]. {
   symmetry.
   rewrite (Q.frac_less_small 1) in H3. 2: {
     split. {
+      apply (Q.mul_le_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
+      rewrite <- Q.mul_assoc.
+      rewrite Q.mul_pair_den_num; [ | easy ].
+      rewrite Q.mul_1_r, Q.mul_1_l.
 ...
     split; [ now rewrite Ha; apply Q.le_0_mul_r | ].
     apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
