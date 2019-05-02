@@ -670,6 +670,12 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
     as [H3| H3]. {
     rewrite Nat.add_0_r.
+clear - H3 Ha.
+remember (min_n (i + 1) j) as n eqn:Hn.
+clear Hn j.
+remember (i + 1) as j in Ha; clear Heqj.
+Check carry_succ_lemma1.
+specialize radix_ge_2 as Hr.
     rewrite Q.frac_pair in H3.
     rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
     apply (Q.mul_lt_mono_pos_r (rad // 1)%Q) in H3. 2: {
@@ -685,7 +691,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     rewrite Nat.div_add; [ | easy ].
     rewrite Nat.add_comm; f_equal.
     specialize (Nat.div_mod (u (i + 1) mod rad + Q.intg a) rad radix_ne_0) as H7.
-    remember ((u (i + 1) mod rad + Q.intg a) / rad) as n eqn:Hn.
+    remember ((u (i + 1) mod rad + Q.intg a) / rad) as m eqn:Hm.
     symmetry.
     apply Q.intg_interv; [ now rewrite Ha; apply Q.le_0_mul_r | ].
     split. {
@@ -694,7 +700,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
       rewrite Q.mul_pair_den_num; [ | easy ].
       rewrite Q.mul_1_r, <- Q.pair_mul_r.
       apply Q.nlt_ge; intros H10.
-      rewrite (Q.frac_less_small (n - 1)) in H3. 2: {
+      rewrite (Q.frac_less_small (m - 1)) in H3. 2: {
         split. 2: {
           rewrite <- (Q.pair_add_l _ 1).
           rewrite Nat.sub_add. 2: {
@@ -717,13 +723,13 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
         rewrite <- Q.pair_mul_l.
         rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
         rewrite Q.pair_sub_l. 2: {
-          destruct n; [ | cbn; flia ].
+          destruct m; [ | cbn; flia ].
           cbn in H10; exfalso.
           apply Q.nle_gt in H10; apply H10; clear H10.
           now rewrite Ha.
         }
         apply Q.le_sub_le_add_r.
-        rewrite Hn.
+        rewrite Hm.
         rewrite (Q.num_den a) at 2; [ | now rewrite Ha ].
         rewrite Q.add_pair; [ | easy | easy ].
         do 2 rewrite Nat.mul_1_r.
@@ -765,7 +771,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
         now rewrite Ha.
       }
       apply Q.nle_gt in H3; apply H3; clear H3.
-      rewrite Hn.
+      rewrite Hm.
       rewrite (Q.num_den a) at 2; [ | now rewrite Ha ].
       rewrite Q.add_pair; [ | easy | easy ].
       do 2 rewrite Nat.mul_1_l.
@@ -801,7 +807,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     }
     apply Q.le_pair_mono_r.
     apply Nat.le_add_le_sub_r.
-    rewrite Hn, Nat.mul_add_distr_r, Nat.mul_1_l.
+    rewrite Hm, Nat.mul_add_distr_r, Nat.mul_1_l.
     apply (le_trans _ (Q.intg a / rad * rad + rad)). 2: {
       apply Nat.add_le_mono_r.
       apply Nat.mul_le_mono_r.
