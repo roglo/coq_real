@@ -830,6 +830,8 @@ split. {
   rewrite Q.mul_pair_den_num; [ | easy ].
   rewrite Q.mul_1_r, <- Q.pair_mul_r.
   apply Q.nlt_ge; intros H10.
+  rewrite <- Nat.add_1_r in Hm.
+  apply Nat.add_sub_eq_r in Hm; symmetry in Hm.
   rewrite (Q.frac_less_small (m - 1)) in H3. 2: {
     split. 2: {
       rewrite <- (Q.pair_add_l _ 1).
@@ -858,7 +860,6 @@ split. {
       apply Q.nle_gt in H10; apply H10; clear H10.
       now rewrite Ha.
     }
-...
     apply Q.le_sub_le_add_r.
     rewrite Hm.
     rewrite (Q.num_den a) at 2; [ | now rewrite Ha ].
@@ -870,7 +871,9 @@ split. {
     apply (le_trans _ (x * Q.den a)). {
       apply Nat.mul_le_mono_r.
       rewrite Nat.mul_comm.
-      now apply Nat.mul_div_le.
+      rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+      apply Nat.le_sub_le_add_r.
+      eapply Nat.le_trans; [ now apply Nat.mul_div_le | flia ].
     }
     subst x.
     rewrite Nat.mul_add_distr_r, Nat.add_comm.
@@ -890,28 +893,28 @@ split. {
   rewrite Q.mul_1_r in H3.
   rewrite <- Q.pair_mul_l in H3.
   rewrite Q.add_sub_assoc in H3.
-  apply Q.lt_sub_lt_add_l in H3.
+  apply Q.le_add_le_sub_r in H3.
   rewrite <- Q.pair_add_l in H3.
-  replace rad with (1 * rad) in H3 at 3 by flia.
-  rewrite <- Nat.mul_add_distr_r in H3.
+  rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in H3.
   rewrite Nat.sub_add in H3. 2: {
-    apply Nat.nlt_ge; intros Hnz.
-    apply Nat.lt_1_r in Hnz; rewrite Hnz in H10.
-    cbn in H10.
-    apply Q.nle_gt in H10; apply H10; clear H10.
-    now rewrite Ha.
+    destruct m; [ | cbn; flia ].
+    now exfalso; apply Q.nle_gt in H10; apply H10; rewrite Ha.
   }
-  apply Q.nle_gt in H3; apply H3; clear H3.
+  apply Q.nlt_ge in H3; apply H3; clear H3.
   rewrite Hm.
-  rewrite (Q.num_den a) at 2; [ | now rewrite Ha ].
+  rewrite (Q.num_den a) at 1; [ | now rewrite Ha ].
   rewrite Q.add_pair; [ | easy | easy ].
   do 2 rewrite Nat.mul_1_l.
-  apply Q.le_pair; [ easy | easy | ].
-  rewrite Nat.mul_1_l.
+  apply Q.lt_pair; [ easy | easy | ].
+  rewrite Nat.mul_1_r.
   remember (u (i + 1) mod rad + Q.intg a) as x eqn:Hx.
-  apply (le_trans _ (x * Q.den a)). {
-    apply Nat.mul_le_mono_r.
+  rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+  rewrite Nat.mul_sub_distr_l.
+  apply -> Nat.lt_add_lt_sub_l.
+...
+  apply (lt_le_trans _ (x * Q.den a)). 2: {
     rewrite Nat.mul_comm.
+    apply Nat.mul_le_mono_l.
     now apply Nat.mul_div_le.
   }
   subst x.
