@@ -684,6 +684,21 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
     rewrite Nat.div_add; [ | easy ].
     rewrite Nat.add_comm; f_equal.
+rewrite (Q.num_den a) in H3; [ | now rewrite Ha ].
+rewrite <- Q.pair_inv_mul in H3; [ | easy | easy ].
+rewrite Q.frac_pair in H3.
+rewrite Q.pair_inv_mul in H3; [ | easy | easy ].
+rewrite <- Q.mul_assoc in H3.
+rewrite Q.mul_pair_den_num in H3; [ | easy ].
+rewrite Q.mul_1_r in H3.
+rewrite (Q.num_den a); [ | now rewrite Ha ].
+rewrite <- Q.pair_inv_mul; [ | easy | easy ].
+rewrite Q.intg_pair; [ | easy ].
+rewrite Q.intg_pair; [ | now apply Nat.neq_mul_0 ].
+rewrite Q.add_pair in H3; [ | easy | easy ].
+do 2 rewrite Nat.mul_1_l in H3.
+apply Q.lt_pair in H3; [ | easy | easy ].
+rewrite Nat.mul_1_r in H3.
 ...
 rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
   rewrite Ha.
