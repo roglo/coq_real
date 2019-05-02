@@ -741,6 +741,32 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
       apply Q.le_pair_mono_r; flia H9.
     }
     apply Nat.nlt_ge in H9.
+specialize (Nat.div_mod (u (i + 1) mod rad + Q.intg a) rad radix_ne_0) as H7.
+remember ((u (i + 1) mod rad + Q.intg a) / rad) as n eqn:Hn.
+symmetry.
+apply Q.intg_interv; [ now rewrite Ha; apply Q.le_0_mul_r | ].
+split. {
+  apply (Q.mul_le_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
+  rewrite <- Q.mul_assoc.
+  rewrite Q.mul_pair_den_num; [ | easy ].
+  rewrite Q.mul_1_r, <- Q.pair_mul_r.
+  apply Q.nlt_ge; intros H10.
+  rewrite (Q.frac_less_small (n - 1)) in H3. 2: {
+    split. 2: {
+      rewrite <- (Q.pair_add_l _ 1).
+      rewrite Nat.sub_add. 2: {
+        apply Nat.nlt_ge; intros Hnz.
+        apply Nat.lt_1_r in Hnz; rewrite Hnz in H10.
+        cbn in H10.
+        apply Q.nle_gt in H10; apply H10; clear H10.
+        now rewrite Ha.
+      }
+      apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
+      rewrite <- Q.mul_assoc.
+      rewrite Q.mul_pair_den_num; [ | easy ].
+      rewrite Q.mul_1_r.
+      now rewrite <- Q.pair_mul_l.
+    }
 ...
 
 Theorem P_999_after_7_gt {r : radix} : ∀ m u i,
