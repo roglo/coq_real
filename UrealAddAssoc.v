@@ -710,6 +710,9 @@ apply Nat.nlt_ge in H8.
 (* ptet y faudrait faire Nat.div_mod (u (i + 1) mod rad + Q.intg a) rad
    au lieu de H8 ? *)
 destruct (lt_dec (u (i + 1) mod rad + Q.intg a) (2 * rad)) as [H9| H9]. {
+  rewrite (Nat_div_less_small 1); [ | now rewrite Nat.mul_1_l ].
+  symmetry.
+  rewrite (Q.frac_less_small 1) in H3.
 ...
 Check Nat_div_less_small.
 Check Q.intg_less_small.
