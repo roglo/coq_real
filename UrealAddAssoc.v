@@ -208,15 +208,13 @@ apply Q.le_pair; [ easy | easy | ].
 now rewrite Nat.mul_1_r, Nat.mul_1_l.
 Qed.
 
-Theorem carry_succ_lemma1 {r : radix} : ∀ m u i j a n,
-  m ≤ rad
-  → i ≤ j + 1
-  → (∀ k, u (i + k) ≤ m * (rad - 1))
-  → a = A j n u
+Theorem carry_succ_lemma1 {r : radix} : ∀ u i j a n,
+  a = A j n u
   → (Q.frac (u (i + 1)%nat // rad) + Q.frac (a * 1 // rad) < 1)%Q
   → u (i + 1) / rad + Q.intg (a * (1 // rad)%Q) = (u (i + 1) + Q.intg a) / rad.
 Proof.
-intros * Hmr Hij Hur Ha H3.
+intros * Ha H3.
+specialize radix_ge_2 as Hr.
 rewrite Q.frac_pair in H3.
 rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
 apply (Q.mul_lt_mono_pos_r (rad // 1)%Q) in H3. 2: {
@@ -231,35 +229,136 @@ symmetry; rewrite H5 at 1.
 rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
 rewrite Nat.div_add; [ | easy ].
 rewrite Nat.add_comm; f_equal.
-rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
-  rewrite Ha.
-  now apply (A_mul_inv_rad_interv m _ i).
+specialize (Nat.div_mod (u (i + 1) mod rad + Q.intg a) rad radix_ne_0) as H7.
+remember ((u (i + 1) mod rad + Q.intg a) / rad) as m eqn:Hm.
+symmetry.
+apply Q.intg_interv; [ now rewrite Ha; apply Q.le_0_mul_r | ].
+split. {
+  apply (Q.mul_le_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
+  rewrite <- Q.mul_assoc.
+  rewrite Q.mul_pair_den_num; [ | easy ].
+  rewrite Q.mul_1_r, <- Q.pair_mul_r.
+  apply Q.nlt_ge; intros H10.
+  rewrite (Q.frac_less_small (m - 1)) in H3. 2: {
+    split. 2: {
+      rewrite <- (Q.pair_add_l _ 1).
+      rewrite Nat.sub_add. 2: {
+        apply Nat.nlt_ge; intros Hnz.
+        apply Nat.lt_1_r in Hnz; rewrite Hnz in H10.
+        cbn in H10.
+        apply Q.nle_gt in H10; apply H10; clear H10.
+        now rewrite Ha.
+      }
+      apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
+      rewrite <- Q.mul_assoc.
+      rewrite Q.mul_pair_den_num; [ | easy ].
+      rewrite Q.mul_1_r.
+      now rewrite <- Q.pair_mul_l.
+    }
+    apply (Q.mul_le_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
+    rewrite <- Q.mul_assoc.
+    rewrite Q.mul_pair_den_num; [ | easy ].
+    rewrite Q.mul_1_r.
+    rewrite <- Q.pair_mul_l.
+    rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+    rewrite Q.pair_sub_l. 2: {
+      destruct m; [ | cbn; flia ].
+      cbn in H10; exfalso.
+      apply Q.nle_gt in H10; apply H10; clear H10.
+      now rewrite Ha.
+    }
+    apply Q.le_sub_le_add_r.
+    rewrite Hm.
+    rewrite (Q.num_den a) at 2; [ | now rewrite Ha ].
+    rewrite Q.add_pair; [ | easy | easy ].
+    do 2 rewrite Nat.mul_1_r.
+    apply Q.le_pair; [ easy | easy | ].
+    rewrite Nat.mul_1_l.
+    remember (u (i + 1) mod rad + Q.intg a) as x eqn:Hx.
+    apply (le_trans _ (x * Q.den a)). {
+      apply Nat.mul_le_mono_r.
+      rewrite Nat.mul_comm.
+      now apply Nat.mul_div_le.
+    }
+    subst x.
+    rewrite Nat.mul_add_distr_r, Nat.add_comm.
+    apply Nat.add_le_mono. {
+      rewrite (Q.num_den a) at 1; [ | now rewrite Ha ].
+      rewrite Q.intg_pair; [ | easy ].
+      rewrite Nat.mul_comm.
+      now apply Nat.mul_div_le.
+    }
+    rewrite Nat.mul_comm.
+    apply Nat.mul_le_mono_l.
+    now apply Nat.lt_le_incl, Nat.mod_upper_bound.
+  }
+  rewrite Q.mul_sub_distr_r in H3.
+  rewrite <- Q.mul_assoc in H3.
+  rewrite Q.mul_pair_den_num in H3; [ | easy ].
+  rewrite Q.mul_1_r in H3.
+  rewrite <- Q.pair_mul_l in H3.
+  rewrite Q.add_sub_assoc in H3.
+  apply Q.lt_sub_lt_add_l in H3.
+  rewrite <- Q.pair_add_l in H3.
+  replace rad with (1 * rad) in H3 at 3 by flia.
+  rewrite <- Nat.mul_add_distr_r in H3.
+  rewrite Nat.sub_add in H3. 2: {
+    apply Nat.nlt_ge; intros Hnz.
+    apply Nat.lt_1_r in Hnz; rewrite Hnz in H10.
+    cbn in H10.
+    apply Q.nle_gt in H10; apply H10; clear H10.
+    now rewrite Ha.
+  }
+  apply Q.nle_gt in H3; apply H3; clear H3.
+  rewrite Hm.
+  rewrite (Q.num_den a) at 2; [ | now rewrite Ha ].
+  rewrite Q.add_pair; [ | easy | easy ].
+  do 2 rewrite Nat.mul_1_l.
+  apply Q.le_pair; [ easy | easy | ].
+  rewrite Nat.mul_1_l.
+  remember (u (i + 1) mod rad + Q.intg a) as x eqn:Hx.
+  apply (le_trans _ (x * Q.den a)). {
+    apply Nat.mul_le_mono_r.
+    rewrite Nat.mul_comm.
+    now apply Nat.mul_div_le.
+  }
+  subst x.
+  rewrite Nat.mul_add_distr_r.
+  apply Nat.add_le_mono_l.
+  rewrite (Q.num_den a) at 1; [ | now rewrite Ha ].
+  rewrite Q.intg_pair; [ | easy ].
+  rewrite Nat.mul_comm.
+  now apply Nat.mul_div_le.
 }
-rewrite <- Q.mul_assoc in H3.
-rewrite Q.mul_pair_den_num in H3; [ | easy ].
-rewrite Q.mul_1_r in H3.
-rewrite (Q.intg_small (_ * _)%Q). 2: {
-  rewrite Ha.
-  now apply (A_mul_inv_rad_interv m _ i).
-}
-destruct (lt_dec (u (i + 1) mod rad + Q.intg a) rad) as [H8| H8]. {
-  now apply Nat.div_small.
-}
-exfalso; apply H8; clear H8.
-specialize (Q.intg_interv (Q.intg a) a) as H9.
+apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
+rewrite <- Q.mul_assoc.
+rewrite Q.mul_pair_den_num; [ | easy ].
+rewrite Q.mul_1_r.
+rewrite <- (Q.pair_add_l _ 1).
+rewrite <- Q.pair_mul_r.
+specialize (Q.intg_interv (Q.intg a) a) as H10.
 assert (H : (0 ≤ a)%Q) by now rewrite Ha.
-specialize (proj2 (H9 H) eq_refl) as H10; clear H.
-clear H9.
-enough (H : ((u (i + 1)%nat mod rad + Q.intg a) // 1 < rad // 1)%Q). {
-  apply Q.lt_pair in H; [ | easy | easy ].
-  now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
+specialize (proj2 (H10 H) eq_refl) as (H11, H12); clear H H10.
+eapply Q.lt_le_trans; [ apply H12 | ].
+apply Q.le_add_le_sub_l.
+rewrite <- (Q.pair_sub_l _ 1). 2: {
+  rewrite Nat.mul_add_distr_r; flia Hr.
 }
-apply (Q.le_lt_trans _ ((u (i + 1)%nat mod rad) // 1 + a)%Q). {
-  rewrite Q.pair_add_l.
-  apply Q.add_le_mono_l.
-  now destruct H10.
+apply Q.le_pair_mono_r.
+apply Nat.le_add_le_sub_r.
+rewrite Hm, Nat.mul_add_distr_r, Nat.mul_1_l.
+apply (le_trans _ (Q.intg a / rad * rad + rad)). 2: {
+  apply Nat.add_le_mono_r.
+  apply Nat.mul_le_mono_r.
+  apply Nat.div_le_mono; [ easy | flia ].
 }
-easy.
+specialize (Nat.div_mod (Q.intg a) rad radix_ne_0) as H10.
+rewrite Nat.mul_comm in H10.
+rewrite H10 at 1.
+rewrite <- Nat.add_assoc.
+apply Nat.add_le_mono_l.
+rewrite Nat.add_comm.
+now apply Nat.mod_upper_bound.
 Qed.
 
 Theorem carry_succ_lemma2 {r : radix} : ∀ m u i j a,
@@ -337,7 +436,8 @@ destruct
   (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
   as [H3| H3]. {
   rewrite Nat.add_0_r.
-  apply (carry_succ_lemma1 m _ _ (i + 1) _ (min_n (i + 1) j)); try easy; flia.
+  clear - Ha H3.
+  now apply (carry_succ_lemma1 _ _ (i + 1) _ (min_n (i + 1) j)).
 }
 now apply (carry_succ_lemma2 m _ _ j).
 Qed.
@@ -670,157 +770,11 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
     as [H3| H3]. {
     rewrite Nat.add_0_r.
-clear - H3 Ha.
-remember (min_n (i + 1) j) as n eqn:Hn.
-clear Hn j.
-remember (i + 1) as j in Ha; clear Heqj.
-Check carry_succ_lemma1.
-specialize radix_ge_2 as Hr.
-    rewrite Q.frac_pair in H3.
-    rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
-    apply (Q.mul_lt_mono_pos_r (rad // 1)%Q) in H3. 2: {
-      now apply Q.lt_0_pair.
-    }
-    rewrite Q.mul_add_distr_r in H3.
-    rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
-    rewrite Q.mul_pair_den_num in H3; [ | easy ].
-    rewrite Q.mul_1_r in H3.
-    specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
-    symmetry; rewrite H5 at 1.
-    rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
-    rewrite Nat.div_add; [ | easy ].
-    rewrite Nat.add_comm; f_equal.
-    specialize (Nat.div_mod (u (i + 1) mod rad + Q.intg a) rad radix_ne_0) as H7.
-    remember ((u (i + 1) mod rad + Q.intg a) / rad) as m eqn:Hm.
-    symmetry.
-    apply Q.intg_interv; [ now rewrite Ha; apply Q.le_0_mul_r | ].
-    split. {
-      apply (Q.mul_le_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
-      rewrite <- Q.mul_assoc.
-      rewrite Q.mul_pair_den_num; [ | easy ].
-      rewrite Q.mul_1_r, <- Q.pair_mul_r.
-      apply Q.nlt_ge; intros H10.
-      rewrite (Q.frac_less_small (m - 1)) in H3. 2: {
-        split. 2: {
-          rewrite <- (Q.pair_add_l _ 1).
-          rewrite Nat.sub_add. 2: {
-            apply Nat.nlt_ge; intros Hnz.
-            apply Nat.lt_1_r in Hnz; rewrite Hnz in H10.
-            cbn in H10.
-            apply Q.nle_gt in H10; apply H10; clear H10.
-            now rewrite Ha.
-          }
-          apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
-          rewrite <- Q.mul_assoc.
-          rewrite Q.mul_pair_den_num; [ | easy ].
-          rewrite Q.mul_1_r.
-          now rewrite <- Q.pair_mul_l.
-        }
-        apply (Q.mul_le_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
-        rewrite <- Q.mul_assoc.
-        rewrite Q.mul_pair_den_num; [ | easy ].
-        rewrite Q.mul_1_r.
-        rewrite <- Q.pair_mul_l.
-        rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-        rewrite Q.pair_sub_l. 2: {
-          destruct m; [ | cbn; flia ].
-          cbn in H10; exfalso.
-          apply Q.nle_gt in H10; apply H10; clear H10.
-          now rewrite Ha.
-        }
-        apply Q.le_sub_le_add_r.
-        rewrite Hm.
-        rewrite (Q.num_den a) at 2; [ | now rewrite Ha ].
-        rewrite Q.add_pair; [ | easy | easy ].
-        do 2 rewrite Nat.mul_1_r.
-        apply Q.le_pair; [ easy | easy | ].
-        rewrite Nat.mul_1_l.
-        remember (u (i + 1) mod rad + Q.intg a) as x eqn:Hx.
-        apply (le_trans _ (x * Q.den a)). {
-          apply Nat.mul_le_mono_r.
-          rewrite Nat.mul_comm.
-          now apply Nat.mul_div_le.
-        }
-        subst x.
-        rewrite Nat.mul_add_distr_r, Nat.add_comm.
-        apply Nat.add_le_mono. {
-          rewrite (Q.num_den a) at 1; [ | now rewrite Ha ].
-          rewrite Q.intg_pair; [ | easy ].
-          rewrite Nat.mul_comm.
-          now apply Nat.mul_div_le.
-        }
-        rewrite Nat.mul_comm.
-        apply Nat.mul_le_mono_l.
-        now apply Nat.lt_le_incl, Nat.mod_upper_bound.
-      }
-      rewrite Q.mul_sub_distr_r in H3.
-      rewrite <- Q.mul_assoc in H3.
-      rewrite Q.mul_pair_den_num in H3; [ | easy ].
-      rewrite Q.mul_1_r in H3.
-      rewrite <- Q.pair_mul_l in H3.
-      rewrite Q.add_sub_assoc in H3.
-      apply Q.lt_sub_lt_add_l in H3.
-      rewrite <- Q.pair_add_l in H3.
-      replace rad with (1 * rad) in H3 at 3 by flia.
-      rewrite <- Nat.mul_add_distr_r in H3.
-      rewrite Nat.sub_add in H3. 2: {
-        apply Nat.nlt_ge; intros Hnz.
-        apply Nat.lt_1_r in Hnz; rewrite Hnz in H10.
-        cbn in H10.
-        apply Q.nle_gt in H10; apply H10; clear H10.
-        now rewrite Ha.
-      }
-      apply Q.nle_gt in H3; apply H3; clear H3.
-      rewrite Hm.
-      rewrite (Q.num_den a) at 2; [ | now rewrite Ha ].
-      rewrite Q.add_pair; [ | easy | easy ].
-      do 2 rewrite Nat.mul_1_l.
-      apply Q.le_pair; [ easy | easy | ].
-      rewrite Nat.mul_1_l.
-      remember (u (i + 1) mod rad + Q.intg a) as x eqn:Hx.
-      apply (le_trans _ (x * Q.den a)). {
-        apply Nat.mul_le_mono_r.
-        rewrite Nat.mul_comm.
-        now apply Nat.mul_div_le.
-      }
-      subst x.
-      rewrite Nat.mul_add_distr_r.
-      apply Nat.add_le_mono_l.
-      rewrite (Q.num_den a) at 1; [ | now rewrite Ha ].
-      rewrite Q.intg_pair; [ | easy ].
-      rewrite Nat.mul_comm.
-      now apply Nat.mul_div_le.
-    }
-    apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
-    rewrite <- Q.mul_assoc.
-    rewrite Q.mul_pair_den_num; [ | easy ].
-    rewrite Q.mul_1_r.
-    rewrite <- (Q.pair_add_l _ 1).
-    rewrite <- Q.pair_mul_r.
-    specialize (Q.intg_interv (Q.intg a) a) as H10.
-    assert (H : (0 ≤ a)%Q) by now rewrite Ha.
-    specialize (proj2 (H10 H) eq_refl) as (H11, H12); clear H H10.
-    eapply Q.lt_le_trans; [ apply H12 | ].
-    apply Q.le_add_le_sub_l.
-    rewrite <- (Q.pair_sub_l _ 1). 2: {
-      rewrite Nat.mul_add_distr_r; flia Hr.
-    }
-    apply Q.le_pair_mono_r.
-    apply Nat.le_add_le_sub_r.
-    rewrite Hm, Nat.mul_add_distr_r, Nat.mul_1_l.
-    apply (le_trans _ (Q.intg a / rad * rad + rad)). 2: {
-      apply Nat.add_le_mono_r.
-      apply Nat.mul_le_mono_r.
-      apply Nat.div_le_mono; [ easy | flia ].
-    }
-    specialize (Nat.div_mod (Q.intg a) rad radix_ne_0) as H10.
-    rewrite Nat.mul_comm in H10.
-    rewrite H10 at 1.
-    rewrite <- Nat.add_assoc.
-    apply Nat.add_le_mono_l.
-    rewrite Nat.add_comm.
-    now apply Nat.mod_upper_bound.
+    remember (min_n (i + 1) j) as n eqn:Hn.
+    now apply (carry_succ_lemma1 _ _ (i + 1) _ n).
   }
+(* dans carry_succ_lemma1, j'ai sucré plein d'hypothèses en fait inutiles
+   il se peut que carry_succ_lemma2 fasse pareil *)
 ...
 
 Theorem P_999_after_7_gt {r : radix} : ∀ m u i,
