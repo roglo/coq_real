@@ -2687,8 +2687,8 @@ destruct (lt_le_dec (frac x + frac y) 1) as [H1| H1].
   }
   now rewrite Hz in H.
 -unfold intg.
- rewrite Nat_div_less_small; [ easy | ].
- cbn in H1.
+ rewrite (Nat_div_less_small 1); [ easy | ].
+ rewrite Nat.mul_1_l; cbn in H1.
  remember (frac x + frac y)%Q as z eqn:Hz.
  symmetry in Hz.
  destruct z as [| zp| zp]; [ easy | | easy ].

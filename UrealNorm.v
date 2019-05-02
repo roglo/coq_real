@@ -122,7 +122,7 @@ Theorem NQintg_2_sub_2_ov_pow {r : radix} : ∀ s1,
 Proof.
 intros * Hs12.
 unfold Q.intg.
-apply Nat_div_less_small.
+apply Nat_div_less_small; rewrite Nat.mul_1_l.
 replace 2%Q with (2 // 1)%Q by easy.
 rewrite Q.sub_pair_pos; [ | easy | pauto | ]; cycle 1. {
   rewrite Nat.mul_comm; apply Nat.mul_le_mono_l.

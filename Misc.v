@@ -281,20 +281,21 @@ rewrite Nat.add_comm in Hab; cbn in Hab.
 now rewrite Nat.sub_add.
 Qed.
 
-Theorem Nat_div_less_small : ∀ a b,
-  b ≤ a < 2 * b
-  → a / b = 1.
+Theorem Nat_div_less_small : ∀ n a b,
+  n * b ≤ a < (n + 1) * b
+  → a / b = n.
 Proof.
 intros * Hab.
-assert (Hb : b ≠ 0) by now intros Hb; rewrite Hb in Hab.
-replace a with (a - b + 1 * b) at 1.
--rewrite Nat.div_add; [ | easy ].
- rewrite Nat.div_small; [ easy | ].
- apply Nat.add_lt_mono_r with (p := b).
- simpl in Hab; rewrite Nat.add_0_r in Hab.
- now rewrite Nat.sub_add.
--rewrite Nat.mul_1_l.
- now apply Nat.sub_add.
+assert (Hb : b ≠ 0). {
+  now intros Hb; rewrite Hb, (Nat.mul_comm (n + 1)) in Hab.
+}
+replace a with (a - n * b + n * b) at 1 by now apply Nat.sub_add.
+rewrite Nat.div_add; [ | easy ].
+replace n with (0 + n) at 3 by easy; f_equal.
+apply Nat.div_small.
+apply Nat.add_lt_mono_r with (p := n * b).
+rewrite Nat.add_comm in Hab; cbn in Hab.
+now rewrite Nat.sub_add.
 Qed.
 
 Theorem Nat_div_add_div : ∀ a b c,

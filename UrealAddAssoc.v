@@ -294,7 +294,7 @@ apply (Q.mul_le_mono_pos_r (rad // 1)%Q) in H3. 2: {
 rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
 rewrite Q.mul_pair_den_num in H3; [ | easy ].
 rewrite Q.mul_1_r in H3.
-apply Nat_div_less_small.
+apply Nat_div_less_small; rewrite Nat.mul_1_l.
 split. {
   apply Nat.lt_succ_r.
   rewrite <- Nat.add_1_r.
@@ -709,6 +709,14 @@ destruct (lt_dec (u (i + 1) mod rad + Q.intg a) rad) as [H8| H8]. {
 apply Nat.nlt_ge in H8.
 (* ptet y faudrait faire Nat.div_mod (u (i + 1) mod rad + Q.intg a) rad
    au lieu de H8 ? *)
+destruct (lt_dec (u (i + 1) mod rad + Q.intg a) (2 * rad)) as [H9| H9]. {
+...
+Check Nat_div_less_small.
+Check Q.intg_less_small.
+Q.intg_less_small
+     : ∀ (n : nat) (x : Q), (n // 1 ≤ x < n // 1 + 1)%Q → Q.intg x = n
+...
+  rewrite (Nat_div_less_small _ 2).
 ...
 }
 rewrite (Q.num_den a) in H3; [ | now rewrite Ha ].
