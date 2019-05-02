@@ -687,18 +687,7 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
 destruct (lt_dec (u (i + 1) mod rad + Q.intg a) rad) as [H8| H8]. {
   rewrite Nat.div_small; [ | easy ].
   symmetry.
-  rewrite Q.frac_small in H3. 2: {
-    split; [ now rewrite Ha; apply Q.le_0_mul_r | ].
-    apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
-    rewrite <- Q.mul_assoc.
-    rewrite Q.mul_pair_den_num; [ | easy ].
-    rewrite Q.mul_1_r, Q.mul_1_l.
-    apply Q.intg_lt_lt; [ now rewrite Ha | flia H8 ].
-  }
-  rewrite <- Q.mul_assoc in H3.
-  rewrite Q.mul_pair_den_num in H3; [ | easy ].
-  rewrite Q.mul_1_r in H3.
-  apply Q.intg_small.
+  apply Q.intg_interv; [ now rewrite Ha; apply Q.le_0_mul_r | ].
   split; [ now rewrite Ha; apply Q.le_0_mul_r | ].
   apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
   rewrite <- Q.mul_assoc.
@@ -712,28 +701,12 @@ apply Nat.nlt_ge in H8.
 destruct (lt_dec (u (i + 1) mod rad + Q.intg a) (2 * rad)) as [H9| H9]. {
   rewrite (Nat_div_less_small 1); [ | now rewrite Nat.mul_1_l ].
   symmetry.
-  rewrite (Q.frac_less_small 1) in H3. 2: {
-    split. {
-      apply (Q.mul_le_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
-      rewrite <- Q.mul_assoc.
-      rewrite Q.mul_pair_den_num; [ | easy ].
-      rewrite Q.mul_1_r, Q.mul_1_l.
-...
-    split; [ now rewrite Ha; apply Q.le_0_mul_r | ].
-    apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
+  apply Q.intg_interv; [ now rewrite Ha; apply Q.le_0_mul_r | ].
+  split. {
+    apply (Q.mul_le_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
     rewrite <- Q.mul_assoc.
     rewrite Q.mul_pair_den_num; [ | easy ].
     rewrite Q.mul_1_r, Q.mul_1_l.
-    apply Q.intg_lt_lt; [ now rewrite Ha | flia H8 ].
-  }
-
-...
-Check Nat_div_less_small.
-Check Q.intg_less_small.
-Q.intg_less_small
-     : ∀ (n : nat) (x : Q), (n // 1 ≤ x < n // 1 + 1)%Q → Q.intg x = n
-...
-  rewrite (Nat_div_less_small _ 2).
 ...
 }
 rewrite (Q.num_den a) in H3; [ | now rewrite Ha ].
