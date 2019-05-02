@@ -790,11 +790,12 @@ rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
 rewrite Nat.div_add; [ | easy ].
 rewrite Nat.add_comm, <- Nat.add_assoc; f_equal.
 specialize (Nat.div_mod (u (i + 1) mod rad + Q.intg a) rad radix_ne_0) as H7.
-remember ((u (i + 1) mod rad + Q.intg a) / rad) as mm eqn:Hmm.
-destruct mm. {
+rename m into mm.
+remember ((u (i + 1) mod rad + Q.intg a) / rad) as m eqn:Hm.
+destruct m. {
   exfalso.
-  symmetry in Hmm.
-  apply Nat.div_small_iff in Hmm; [ | easy ].
+  symmetry in Hm.
+  apply Nat.div_small_iff in Hm; [ | easy ].
   clear H7.
   rewrite Q.frac_small in H3. 2: {
     split; [ now rewrite Ha; apply Q.le_0_mul_r | ].
@@ -802,35 +803,26 @@ destruct mm. {
     rewrite <- Q.mul_assoc.
     rewrite Q.mul_pair_den_num; [ | easy ].
     rewrite Q.mul_1_r, Q.mul_1_l.
-    apply Q.intg_lt_lt; [ now rewrite Ha | flia Hmm ].
+    apply Q.intg_lt_lt; [ now rewrite Ha | flia Hm ].
   }
   rewrite <- Q.mul_assoc in H3.
   rewrite Q.mul_pair_den_num in H3; [ | easy ].
   rewrite Q.mul_1_r in H3.
   apply Q.nlt_ge in H3; apply H3; clear H3.
-...
-  rewrite (Q.num_den a) in Hmm; [ | now rewrite Ha ].
-  rewrite Q.intg_pair in Hmm; [ | easy ].
-  rewrite (Q.num_den a); [ | now rewrite Ha ].
-  rewrite Q.add_pair; [ | easy | easy ].
-  do 2 rewrite Nat.mul_1_l.
-  apply Q.lt_pair; [ easy | easy | ].
-  rewrite Nat.mul_1_r.
-  apply (Nat.mul_lt_mono_pos_l (Q.den a)) in Hmm. 2: {
-    now apply Nat.neq_0_lt_0.
+  apply Q.intg_lt_lt. {
+    apply Q.le_0_add; [ apply Q.le_0_pair | now rewrite Ha ].
   }
-  rewrite Nat.mul_add_distr_l in Hmm.
-  rewrite Nat.mul_comm.
-...
-  eapply le_lt_trans; [ | apply Hmm ].
-  rewrite Nat.mul_comm, Nat.mul_add_distr_l.
-  apply Nat.add_le_mono_l.
-(* ah bin non *)
-...
-  apply (Q.lt_pair_mono_r _ _ 1) in Hmm.
-...
-  eapply Q.le_lt_trans; [ | apply Hmm ].
-...
+  rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | now rewrite Ha ].
+  rewrite Q.intg_pair; [ | easy ].
+  rewrite Nat.div_1_r, Q.frac_pair, Nat.mod_1_r.
+  rewrite Q.add_0_l.
+  destruct (Q.lt_le_dec (Q.frac a) 1) as [H3| H3]. {
+    now rewrite Nat.add_0_r.
+  }
+  exfalso; apply Q.nlt_ge in H3; apply H3.
+  apply Q.frac_lt_1.
+}
+rewrite Nat.add_1_r; f_equal; symmetry.
 apply Q.intg_interv; [ now rewrite Ha; apply Q.le_0_mul_r | ].
 split. {
   apply (Q.mul_le_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
@@ -866,6 +858,7 @@ split. {
       apply Q.nle_gt in H10; apply H10; clear H10.
       now rewrite Ha.
     }
+...
     apply Q.le_sub_le_add_r.
     rewrite Hm.
     rewrite (Q.num_den a) at 2; [ | now rewrite Ha ].
