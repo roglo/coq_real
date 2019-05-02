@@ -670,6 +670,54 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
     as [H3| H3]. {
     rewrite Nat.add_0_r.
+    rewrite Q.frac_pair in H3.
+    rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
+    apply (Q.mul_lt_mono_pos_r (rad // 1)%Q) in H3. 2: {
+      now apply Q.lt_0_pair.
+    }
+    rewrite Q.mul_add_distr_r in H3.
+    rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
+    rewrite Q.mul_pair_den_num in H3; [ | easy ].
+    rewrite Q.mul_1_r in H3.
+    specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
+    symmetry; rewrite H5 at 1.
+    rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.add_comm; f_equal.
+...
+rewrite (Q.frac_small (_ * _)%Q) in H3. 2: {
+  rewrite Ha.
+  now apply (A_mul_inv_rad_interv m _ i).
+}
+rewrite <- Q.mul_assoc in H3.
+rewrite Q.mul_pair_den_num in H3; [ | easy ].
+rewrite Q.mul_1_r in H3.
+rewrite (Q.intg_small (_ * _)%Q). 2: {
+  rewrite Ha.
+  now apply (A_mul_inv_rad_interv m _ i).
+}
+destruct (lt_dec (u (i + 1) mod rad + Q.intg a) rad) as [H8| H8]. {
+  now apply Nat.div_small.
+}
+exfalso; apply H8; clear H8.
+specialize (Q.intg_interv (Q.intg a) a) as H9.
+assert (H : (0 ≤ a)%Q) by now rewrite Ha.
+specialize (proj2 (H9 H) eq_refl) as H10; clear H.
+clear H9.
+enough (H : ((u (i + 1)%nat mod rad + Q.intg a) // 1 < rad // 1)%Q). {
+  apply Q.lt_pair in H; [ | easy | easy ].
+  now rewrite Nat.mul_1_r, Nat.mul_1_l in H.
+}
+apply (Q.le_lt_trans _ ((u (i + 1)%nat mod rad) // 1 + a)%Q). {
+  rewrite Q.pair_add_l.
+  apply Q.add_le_mono_l.
+  now destruct H10.
+}
+easy.
+...
+rewrite A_split_first in Ha; [ | min_n_ge ].
+replace (S (i + 1)) with (i + 2) in Ha by easy.
+replace (i + 1 + 1) with (i + 2) in H6 by flia.
 ...
 
 Theorem P_999_after_7_gt {r : radix} : ∀ m u i,
