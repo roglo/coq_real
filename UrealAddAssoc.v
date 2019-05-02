@@ -558,6 +558,19 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmrr Hur.
+assert (Hmrj : ∀ j, m < rad ^ (rad * (i + j + 3) - i - j - 2)). {
+  intros j.
+  eapply lt_le_trans; [ apply Hmrr | ].
+  apply Nat.pow_le_mono_r; [ easy | ].
+  rewrite Nat.sub_add_distr.
+  apply Nat.sub_le_mono_r.
+  rewrite Nat_sub_sub_swap.
+  apply Nat.sub_le_mono_r.
+  rewrite Nat.add_shuffle0.
+  rewrite (Nat.mul_add_distr_l _ (i + 3)).
+  rewrite <- Nat.add_sub_assoc; [ flia | ].
+  destruct rad as [| rr]; [ easy | cbn; flia ].
+}
 destruct (le_dec m rad) as [Hmr| Hmr]; [ now apply (carry_succ m) | ].
 apply Nat.nle_gt in Hmr.
 unfold carry, carry_cases.
@@ -623,6 +636,36 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
 destruct H1 as (j & Hjj & Hj).
 destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
   specialize (all_fA_ge_1_ε_P_999 u (i + 1) H2 0) as H6.
+  rewrite Nat.add_0_r in H6.
+  unfold P, d2n, prop_carr, dig in H6.
+  unfold carry, carry_cases in H6.
+  destruct (LPO_fst (fA_ge_1_ε u (i + 1 + 1))) as [H1| H1]. 2: {
+    destruct H1 as (k & Hjk & Hk).
+    now rewrite A_ge_1_add_r_true_if in Hk.
+  }
+  assert
+    (H3 :
+     ∀ k, j ≤ k → Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i j) u)). {
+    intros k Hk.
+    apply (fA_lt_1_ε_NQintg_A m); try easy.
+    unfold min_n; apply Hmrj.
+  }
+  rewrite <- (H3 (j + 1)); [ | flia ].
+  symmetry.
+  rewrite <- (all_fA_ge_1_ε_NQintg_A' m) with (k := j); try easy; cycle 1. {
+    do 2 rewrite Nat.sub_add_distr; apply Hmrj.
+  } {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  symmetry.
+  rewrite min_n_add, <- min_n_add_l.
+  rewrite A_split_first; [ | min_n_ge ].
+  replace (S i) with (i + 1) by flia.
+  remember (A (i + 1) (min_n (i + 1) j) u) as a eqn:Ha.
+...
+  apply (carry_succ_lemma3 m _ _ j); try easy.
+}
+destruct H2 as (k & Hjk & Hk); move k before j.
 ...
 
 Theorem P_999_after_7_gt {r : radix} : ∀ m u i,
