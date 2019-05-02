@@ -732,6 +732,15 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
       rewrite Q.mul_1_r.
       replace (1 // 1 + 1)%Q with (2 // 1)%Q by easy.
       rewrite <- Q.pair_mul_r.
+      specialize (Q.intg_interv (Q.intg a) a) as H10.
+      assert (H : (0 ≤ a)%Q) by now rewrite Ha.
+      specialize (proj2 (H10 H) eq_refl) as (H11, H12); clear H H10.
+      eapply Q.lt_le_trans; [ apply H12 | ].
+      apply Q.le_add_le_sub_l.
+      rewrite <- (Q.pair_sub_l _ 1); [ | flia Hr ].
+      apply Q.le_pair_mono_r; flia H9.
+    }
+    apply Nat.nlt_ge in H9.
 ...
 
 Theorem P_999_after_7_gt {r : radix} : ∀ m u i,
