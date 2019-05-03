@@ -824,7 +824,6 @@ split. {
   rewrite <- Q.mul_assoc.
   rewrite Q.mul_pair_den_num; [ | easy ].
   rewrite Q.mul_1_r, <- Q.pair_mul_r.
-(**)
   rewrite <- Nat.add_1_r in Hm.
   apply (Q.add_le_mono_r _ _ (rad // 1)).
   rewrite Q.add_pair; [ | easy | easy ].
@@ -853,6 +852,17 @@ rewrite <- (Q.pair_add_l _ 1).
 rewrite <- Q.pair_mul_r.
 specialize (Q.intg_interv (Q.intg a) a) as H10.
 specialize (proj2 (H10 Haz) eq_refl) as (H11, H12); clear H10.
+rewrite <- Nat.add_1_r in Hm.
+rewrite Hm.
+(* mmm... ça ne marcherait pas avec u(i+1)=0 *)
+destruct (zerop (u (i + 1))) as [H10| H10]. {
+  rewrite H10, Nat.mod_0_l; [ | easy ].
+  rewrite Nat.add_0_l.
+  rewrite H10, Nat.mod_0_l in H3; [ | easy ].
+  rewrite Q.add_0_l in H3.
+  (* ouais, ça déconne en H3, ce qui veut dire que u(i+1) ne vaut
+     pas 0 ; c'est rassurant, mais ça démontre pas le truc *)
+...
 eapply Q.lt_le_trans; [ apply H12 | ].
 apply Q.le_add_le_sub_l.
 rewrite <- (Q.pair_sub_l _ 1). 2: {
@@ -860,6 +870,12 @@ rewrite <- (Q.pair_sub_l _ 1). 2: {
 }
 apply Q.le_pair_mono_r.
 apply Nat.le_add_le_sub_r.
+rewrite <- Nat.add_1_r in Hm.
+...
+specialize (Nat.div_mod (Q.intg a) rad radix_ne_0) as H10.
+rewrite Nat.mul_comm in H10.
+rewrite H10 at 1.
+rewrite Hm.
 ...
 rewrite Hm, Nat.mul_add_distr_r, Nat.mul_1_l.
 apply (le_trans _ (Q.intg a / rad * rad + rad)). 2: {
