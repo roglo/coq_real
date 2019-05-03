@@ -819,7 +819,7 @@ destruct m. {
 }
 rewrite Nat.add_1_r; f_equal; symmetry.
 apply Q.intg_interv; [ now apply Q.le_0_mul_r | ].
-split. {
+assert (Hma : (m // 1 ≤ a * 1 // rad)%Q). {
   apply (Q.mul_le_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
   rewrite <- Q.mul_assoc.
   rewrite Q.mul_pair_den_num; [ | easy ].
@@ -844,6 +844,17 @@ split. {
   rewrite Nat.mul_1_r, Nat.mul_1_l.
   now apply Nat.lt_le_incl, Nat.mod_upper_bound.
 }
+split; [ easy | ].
+rewrite <- Nat.add_1_r in Hm.
+rewrite (Q.num_den a) in Hma; [ | easy ].
+rewrite <- Q.pair_inv_mul in Hma; [ | easy | easy ].
+apply Q.le_pair in Hma; [ | easy | now apply Nat.neq_mul_0 ].
+rewrite Nat.mul_1_l in Hma.
+apply (Nat.add_le_mono_r _ _ (1 * (Q.den a * rad))) in Hma.
+rewrite <- Nat.mul_add_distr_r, Nat.mul_1_l in Hma.
+rewrite Hm, Nat.mul_assoc, Nat.mul_shuffle0 in Hma.
+rewrite (Q.num_den a) in Hma at 1; [ | easy ].
+rewrite Q.intg_pair in Hma; [ | easy ].
 move H3 at bottom.
 rewrite (Q.num_den a) in H3; [ | easy ].
 rewrite Q.mul_pair in H3; [ | easy | easy ].
@@ -861,7 +872,6 @@ rewrite Q.mul_pair_den_num; [ | easy ].
 rewrite Q.mul_1_r.
 rewrite <- (Q.pair_add_l _ 1).
 rewrite <- Q.pair_mul_r.
-rewrite <- Nat.add_1_r in Hm.
 rewrite Hm.
 rewrite (Q.num_den a); [ | easy ].
 apply Q.lt_pair; [ easy | easy | ].
