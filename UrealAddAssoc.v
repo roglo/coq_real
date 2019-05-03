@@ -844,18 +844,44 @@ split. {
   rewrite Nat.mul_1_r, Nat.mul_1_l.
   now apply Nat.lt_le_incl, Nat.mod_upper_bound.
 }
+move H3 at bottom.
+rewrite (Q.num_den a) in H3; [ | easy ].
+rewrite Q.mul_pair in H3; [ | easy | easy ].
+rewrite Nat.mul_1_r in H3.
+rewrite Q.frac_pair in H3.
+rewrite <- Q.pair_mul_l in H3.
+rewrite Q.mul_pair_mono_r in H3; [ | easy | easy ].
+rewrite Q.add_pair in H3; [ | easy | easy ].
+do 2 rewrite Nat.mul_1_l in H3.
+apply Q.le_pair in H3; [ | easy | easy ].
+rewrite Nat.mul_1_l in H3.
 apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
 rewrite <- Q.mul_assoc.
 rewrite Q.mul_pair_den_num; [ | easy ].
 rewrite Q.mul_1_r.
 rewrite <- (Q.pair_add_l _ 1).
 rewrite <- Q.pair_mul_r.
+rewrite <- Nat.add_1_r in Hm.
+rewrite Hm.
+rewrite (Q.num_den a); [ | easy ].
+apply Q.lt_pair; [ easy | easy | ].
+rewrite Nat.mul_1_r, Q.intg_pair; [ | easy ].
+(* mmm... ça ne marcherait pas avec u(i+1)=0
+destruct (zerop (u (i + 1))) as [H10| H10]. {
+  rewrite H10, Nat.mod_0_l; [ | easy ].
+  rewrite Nat.add_0_l.
+  rewrite H10, Nat.mod_0_l in H3; [ | easy ].
+  rewrite Nat.mul_0_l, Nat.add_0_l in H3.
+  (* ouais, ça déconne en H3, ce qui veut dire que u(i+1) ne vaut
+     pas 0 ; c'est rassurant, mais ça démontre pas le truc *)
+*)
+...
 specialize (Q.intg_interv (Q.intg a) a) as H10.
 specialize (proj2 (H10 Haz) eq_refl) as (H11, H12); clear H10.
 rewrite <- Nat.add_1_r in Hm.
 rewrite Hm.
 ...
-(* contre exemple : ah non !!!
+(* contre exemple : ah non, pas contre exemple !!
       a=42.5 r=12 u(i+1)=1
       H3 : 12≤1+F(42.5/12)*12=1+6.5/12*12=1+6.5 ah non !!!
       Hm : m+1=(1+42)/12=3 ok
