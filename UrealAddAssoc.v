@@ -880,7 +880,36 @@ assert (H8 : rad ≤ (Q.num a / Q.den a) mod rad + u (i + 1) mod rad). {
   apply Nat.mul_le_mono_r; flia H8.
 }
 ...
-specialize (Nat.div_mod (Q.num a) (Q.den a)) as H8.
+remember (u (i + 1) mod rad + Q.num a / Q.den a) as b eqn:Hb.
+generalize Hb; intros Hb'.
+apply (Nat.mul_cancel_r _ _ (Q.den a)) in Hb'; [ | easy ].
+rewrite Nat.mul_add_distr_r in Hb'.
+specialize (Nat.div_mod (Q.num a) (Q.den a)) as H9.
+assert (H : Q.den a ≠ 0) by easy.
+specialize (H9 H); clear H.
+symmetry in H9.
+apply Nat.add_sub_eq_r in H9.
+rewrite Nat.mul_comm in H9.
+rewrite <- H9 in Hb'.
+rewrite Nat.add_sub_assoc in Hb'; [ | now apply Nat.mod_le ].
+symmetry in Hb'.
+apply Nat.add_sub_eq_nz in Hb'. 2: {
+  apply Nat.neq_mul_0; split; [ | easy ].
+  rewrite Hb; intros H.
+  apply Nat.eq_add_0 in H.
+  destruct H as (H10, H11).
+  rewrite H10, H11 in H8.
+  rewrite Nat.mod_0_l in H8; [ | easy ].
+  flia H8 Hr.
+}
+rewrite Nat.add_comm in Hb'.
+apply (Nat.add_lt_mono_l _ _ (u (i + 1) mod rad * Q.den a)).
+rewrite <- Hb'.
+rewrite Hb at 1.
+rewrite Nat.mul_add_distr_r.
+rewrite <- Nat.add_assoc.
+apply Nat.add_lt_mono_l.
+...
 assert (H : Q.den a ≠ 0) by easy.
 specialize (H8 H); clear H.
 specialize (Nat.div_mod (u (i + 1) mod rad + Q.num a / Q.den a) rad radix_ne_0) as H9.
