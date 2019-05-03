@@ -855,9 +855,9 @@ specialize (proj2 (H10 Haz) eq_refl) as (H11, H12); clear H10.
 rewrite <- Nat.add_1_r in Hm.
 rewrite Hm.
 ...
-(* contre exemple :
+(* contre exemple : ah non !!!
       a=42.5 r=12 u(i+1)=1
-      H3 : 12≤1+F(42.5/12)*12=1+6.5/12*12=18.5/12*12=18.5 ok
+      H3 : 12≤1+F(42.5/12)*12=1+6.5/12*12=1+6.5 ah non !!!
       Hm : m+1=(1+42)/12=3 ok
    mais
       42.5<(1+42)/12*12=36 non *)
