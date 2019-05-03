@@ -855,14 +855,12 @@ specialize (proj2 (H10 Haz) eq_refl) as (H11, H12); clear H10.
 rewrite <- Nat.add_1_r in Hm.
 rewrite Hm.
 ...
-(* mmm... ça ne marcherait pas avec u(i+1)=0 *)
-destruct (zerop (u (i + 1))) as [H10| H10]. {
-  rewrite H10, Nat.mod_0_l; [ | easy ].
-  rewrite Nat.add_0_l.
-  rewrite H10, Nat.mod_0_l in H3; [ | easy ].
-  rewrite Q.add_0_l in H3.
-  (* ouais, ça déconne en H3, ce qui veut dire que u(i+1) ne vaut
-     pas 0 ; c'est rassurant, mais ça démontre pas le truc *)
+(* contre exemple :
+      a=42.5 r=12 u(i+1)=1
+      H3 : 12≤1+F(42.5/12)*12=1+6.5/12*12=18.5/12*12=18.5 ok
+      Hm : m+1=(1+42)/12=3 ok
+   mais
+      42.5<(1+42)/12*12=36 non *)
 ...
 eapply Q.lt_le_trans; [ apply H12 | ].
 apply Q.le_add_le_sub_l.
