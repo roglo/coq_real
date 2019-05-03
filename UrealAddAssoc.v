@@ -854,6 +854,7 @@ specialize (Q.intg_interv (Q.intg a) a) as H10.
 specialize (proj2 (H10 Haz) eq_refl) as (H11, H12); clear H10.
 rewrite <- Nat.add_1_r in Hm.
 rewrite Hm.
+...
 (* mmm... ça ne marcherait pas avec u(i+1)=0 *)
 destruct (zerop (u (i + 1))) as [H10| H10]. {
   rewrite H10, Nat.mod_0_l; [ | easy ].
