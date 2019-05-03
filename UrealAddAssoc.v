@@ -866,6 +866,7 @@ rewrite Hm.
 rewrite (Q.num_den a); [ | easy ].
 apply Q.lt_pair; [ easy | easy | ].
 rewrite Nat.mul_1_r, Q.intg_pair; [ | easy ].
+...
 (**)
 destruct (Nat.eq_dec (u (i + 1)) 1) as [H10| H10]. {
   rewrite H10, Nat.mod_1_l in H3; [ | easy ].
