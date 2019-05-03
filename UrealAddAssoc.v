@@ -873,6 +873,15 @@ rewrite Q.mul_1_r.
 rewrite <- (Q.pair_add_l _ 1).
 rewrite <- Q.pair_mul_r.
 rewrite Hm.
+(* a <? (1 + Q.intg a) / rad * rad *)
+(* Q.intg a ≤ a < 1 + Q.intg a *)
+(* Q.intg a / rad * rad ≤ Q.intg a *)
+destruct (zerop ((u (i + 1) mod rad + Q.intg a) mod rad)) as [H8| H8]. {
+  rewrite H8, Nat.add_0_r in H7.
+  rewrite H7.
+  rewrite (Nat.mul_comm rad), Nat.div_mul; [ | easy ].
+(* mouais bof *)
+...
 rewrite (Q.num_den a); [ | easy ].
 apply Q.lt_pair; [ easy | easy | ].
 rewrite Nat.mul_1_r, Q.intg_pair; [ | easy ].
