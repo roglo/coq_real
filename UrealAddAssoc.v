@@ -866,7 +866,29 @@ rewrite Hm.
 rewrite (Q.num_den a); [ | easy ].
 apply Q.lt_pair; [ easy | easy | ].
 rewrite Nat.mul_1_r, Q.intg_pair; [ | easy ].
-rewrite Nat.mul_assoc.
+assert (H8 : rad ≤ (Q.num a / Q.den a) mod rad + u (i + 1) mod rad). {
+  apply Nat.nlt_ge; intros H8.
+  apply Nat.lt_add_lt_sub_r in H8.
+  apply Nat.nlt_ge in H3; apply H3; clear H3.
+  rewrite Nat.mod_mul_r; [ | easy | easy ].
+  rewrite (Nat.mul_comm (Q.den a)).
+  rewrite Nat.add_assoc, Nat.add_shuffle0, <- Nat.mul_add_distr_r.
+  apply Nat.lt_add_lt_sub_l.
+  rewrite <- Nat.mul_sub_distr_r.
+  eapply Nat.lt_le_trans; [ now apply Nat.mod_upper_bound | ].
+  replace (Q.den a) with (1 * Q.den a) at 1 by flia.
+  apply Nat.mul_le_mono_r; flia H8.
+}
+...
+specialize (Nat.div_mod (Q.num a) (Q.den a)) as H8.
+assert (H : Q.den a ≠ 0) by easy.
+specialize (H8 H); clear H.
+specialize (Nat.div_mod (u (i + 1) mod rad + Q.num a / Q.den a) rad radix_ne_0) as H9.
+rewrite Nat.mul_comm in H9.
+remember ((u (i + 1) mod rad + Q.num a / Q.den a) / rad * rad) as x eqn:Hx.
+...
+rewrite H8 at 1.
+rewrite Nat.mod_mul_r in H3; [ | easy | easy ].
 ...
 (**)
 destruct (Nat.eq_dec (u (i + 1)) 1) as [H10| H10]. {
