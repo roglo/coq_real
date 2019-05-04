@@ -856,6 +856,8 @@ rewrite <- Q.mul_assoc in Hma.
 rewrite Q.mul_pair_den_num in Hma; [ | easy ].
 rewrite Q.mul_1_r in Hma.
 rewrite <- Q.pair_mul_r in Hma.
+clear - Hr Hm Hma H3. (* je pense que ça suffit *)
+move H3 at bottom.
 ...
 rewrite (Q.num_den a) in Hma; [ | easy ].
 rewrite <- Q.pair_inv_mul in Hma; [ | easy | easy ].
