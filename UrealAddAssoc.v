@@ -881,13 +881,6 @@ assert (H8 : rad ≤  Q.intg a mod rad + u (i + 1) mod rad). {
   apply Nat.mul_le_mono_r.
   unfold Q.intg in H8; flia H8.
 }
-assert ((m + 1) * rad ≤ Q.intg a + u (i + 1) mod rad). {
-  specialize (Nat.div_mod (Q.intg a) rad radix_ne_0) as H1.
-  rewrite H1, <- Nat.add_assoc.
-  eapply Nat.le_trans; [ | apply Nat.add_le_mono_l, H8 ].
-  rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-  apply Nat.add_le_mono_r.
-(* shit *)
 ...
 rewrite (Q.num_den a) in Hma; [ | easy ].
 rewrite <- Q.pair_inv_mul in Hma; [ | easy | easy ].
