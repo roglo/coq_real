@@ -856,8 +856,31 @@ rewrite <- Q.mul_assoc in Hma.
 rewrite Q.mul_pair_den_num in Hma; [ | easy ].
 rewrite Q.mul_1_r in Hma.
 rewrite <- Q.pair_mul_r in Hma.
-clear - Hr Hm Hma H3. (* je pense que ça suffit *)
+clear - Hr Hm Hma H3 Haz. (* je pense que ça suffit *)
 move H3 at bottom.
+assert (H8 : rad ≤  Q.intg a mod rad + u (i + 1) mod rad). {
+  apply Nat.nlt_ge; intros H8.
+  apply Nat.lt_add_lt_sub_r in H8.
+  apply Q.nlt_ge in H3; apply H3; clear H3.
+  rewrite (Q.num_den a); [ | easy ].
+  rewrite Q.mul_pair; [ | easy | easy ].
+  rewrite Nat.mul_1_r, Q.frac_pair, <- Q.pair_mul_l.
+  rewrite Q.mul_pair_mono_r; [ | easy | easy ].
+  rewrite Q.add_pair; [ | easy | easy ].
+  do 2 rewrite Nat.mul_1_l.
+  apply Q.lt_pair; [ easy | easy | ].
+  rewrite Nat.mul_1_r.
+  rewrite Nat.mod_mul_r; [ | easy | easy ].
+  rewrite (Nat.mul_comm (Q.den a)).
+  rewrite Nat.add_assoc, Nat.add_shuffle0, <- Nat.mul_add_distr_r.
+  apply Nat.lt_add_lt_sub_l.
+  rewrite Nat.mul_comm.
+  rewrite <- Nat.mul_sub_distr_r.
+  eapply Nat.lt_le_trans; [ now apply Nat.mod_upper_bound | ].
+  replace (Q.den a) with (1 * Q.den a) at 1 by flia.
+  apply Nat.mul_le_mono_r.
+  unfold Q.intg in H8; flia H8.
+}
 ...
 rewrite (Q.num_den a) in Hma; [ | easy ].
 rewrite <- Q.pair_inv_mul in Hma; [ | easy | easy ].
