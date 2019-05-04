@@ -817,6 +817,7 @@ destruct m. {
   exfalso; apply Q.nlt_ge in H3; apply H3.
   apply Q.frac_lt_1.
 }
+rewrite <- Nat.add_1_r in Hm.
 rewrite Nat.add_1_r; f_equal; symmetry.
 apply Q.intg_interv; [ now apply Q.le_0_mul_r | ].
 assert (Hma : (m // 1 ≤ a * 1 // rad)%Q). {
@@ -824,7 +825,6 @@ assert (Hma : (m // 1 ≤ a * 1 // rad)%Q). {
   rewrite <- Q.mul_assoc.
   rewrite Q.mul_pair_den_num; [ | easy ].
   rewrite Q.mul_1_r, <- Q.pair_mul_r.
-  rewrite <- Nat.add_1_r in Hm.
   apply (Q.add_le_mono_r _ _ (rad // 1)).
   rewrite Q.add_pair; [ | easy | easy ].
   do 2 rewrite Nat.mul_1_r.
