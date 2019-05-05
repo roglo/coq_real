@@ -208,10 +208,10 @@ apply Q.le_pair; [ easy | easy | ].
 now rewrite Nat.mul_1_r, Nat.mul_1_l.
 Qed.
 
-Theorem carry_succ_lemma1 {r : radix} : ∀ u i a,
+Theorem carry_succ_lemma1 {r : radix} : ∀ u a,
   (0 ≤ a)%Q
-  → (Q.frac (u (i + 1)%nat // rad) + Q.frac (a * 1 // rad) < 1)%Q
-  → u (i + 1) / rad + Q.intg (a * (1 // rad)%Q) = (u (i + 1) + Q.intg a) / rad.
+  → (Q.frac (u // rad) + Q.frac (a * 1 // rad) < 1)%Q
+  → u / rad + Q.intg (a * (1 // rad)%Q) = (u + Q.intg a) / rad.
 Proof.
 intros * Haz H3.
 specialize radix_ge_2 as Hr.
@@ -224,13 +224,13 @@ rewrite Q.mul_add_distr_r in H3.
 rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
 rewrite Q.mul_pair_den_num in H3; [ | easy ].
 rewrite Q.mul_1_r in H3.
-specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
+specialize (Nat.div_mod u rad radix_ne_0) as H5.
 symmetry; rewrite H5 at 1.
 rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
 rewrite Nat.div_add; [ | easy ].
 rewrite Nat.add_comm; f_equal.
-specialize (Nat.div_mod (u (i + 1) mod rad + Q.intg a) rad radix_ne_0) as H7.
-remember ((u (i + 1) mod rad + Q.intg a) / rad) as m eqn:Hm.
+specialize (Nat.div_mod (u mod rad + Q.intg a) rad radix_ne_0) as H7.
+remember ((u mod rad + Q.intg a) / rad) as m eqn:Hm.
 symmetry.
 apply Q.intg_interv; [ now apply Q.le_0_mul_r | ].
 split. {
@@ -272,7 +272,7 @@ split. {
     do 2 rewrite Nat.mul_1_r.
     apply Q.le_pair; [ easy | easy | ].
     rewrite Nat.mul_1_l.
-    remember (u (i + 1) mod rad + Q.intg a) as x eqn:Hx.
+    remember (u mod rad + Q.intg a) as x eqn:Hx.
     apply (le_trans _ (x * Q.den a)). {
       apply Nat.mul_le_mono_r.
       rewrite Nat.mul_comm.
@@ -313,7 +313,7 @@ split. {
   do 2 rewrite Nat.mul_1_l.
   apply Q.le_pair; [ easy | easy | ].
   rewrite Nat.mul_1_l.
-  remember (u (i + 1) mod rad + Q.intg a) as x eqn:Hx.
+  remember (u mod rad + Q.intg a) as x eqn:Hx.
   apply (le_trans _ (x * Q.den a)). {
     apply Nat.mul_le_mono_r.
     rewrite Nat.mul_comm.
@@ -357,11 +357,10 @@ rewrite Nat.add_comm.
 now apply Nat.mod_upper_bound.
 Qed.
 
-Theorem carry_succ_lemma2 {r : radix} : ∀ u i a,
+Theorem carry_succ_lemma2 {r : radix} : ∀ u a,
   (0 ≤ a)%Q
-  → (1 ≤ Q.frac (u (i + 1)%nat // rad) + Q.frac (a * 1 // rad))%Q
-  → u (i + 1) / rad + Q.intg (a * (1 // rad)%Q) + 1 =
-    (u (i + 1) + Q.intg a) / rad.
+  → (1 ≤ Q.frac (u // rad) + Q.frac (a * 1 // rad))%Q
+  → u / rad + Q.intg (a * (1 // rad)%Q) + 1 = (u + Q.intg a) / rad.
 Proof.
 intros * Haz H3.
 rewrite Q.frac_pair in H3.
@@ -373,13 +372,13 @@ rewrite Q.mul_add_distr_r in H3.
 rewrite <- Q.mul_assoc, Q.mul_1_l in H3.
 rewrite Q.mul_pair_den_num in H3; [ | easy ].
 rewrite Q.mul_1_r in H3.
-specialize (Nat.div_mod (u (i + 1)) rad radix_ne_0) as H5.
+specialize (Nat.div_mod u rad radix_ne_0) as H5.
 symmetry; rewrite H5 at 1.
 rewrite Nat.mul_comm, <- Nat.add_assoc, Nat.add_comm.
 rewrite Nat.div_add; [ | easy ].
 rewrite Nat.add_comm, <- Nat.add_assoc; f_equal.
-specialize (Nat.div_mod (u (i + 1) mod rad + Q.intg a) rad radix_ne_0) as H7.
-remember ((u (i + 1) mod rad + Q.intg a) / rad) as m eqn:Hm.
+specialize (Nat.div_mod (u mod rad + Q.intg a) rad radix_ne_0) as H7.
+remember ((u mod rad + Q.intg a) / rad) as m eqn:Hm.
 destruct m. {
   exfalso.
   symmetry in Hm.
@@ -422,7 +421,7 @@ assert (Hma : (m // 1 ≤ a * 1 // rad)%Q). {
   rewrite Q.add_pair; [ | easy | easy ].
   do 2 rewrite Nat.mul_1_r.
   rewrite <- Nat.mul_add_distr_r, Hm.
-  remember (u (i + 1) mod rad + Q.intg a) as x eqn:Hx.
+  remember (u mod rad + Q.intg a) as x eqn:Hx.
   apply (Q.le_trans _ (x // 1)). {
     apply Q.le_pair_mono_r; rewrite Nat.mul_comm.
     now apply Nat.mul_div_le.
@@ -449,9 +448,9 @@ rewrite <- Q.mul_assoc in Hma.
 rewrite Q.mul_pair_den_num in Hma; [ | easy ].
 rewrite Q.mul_1_r in Hma.
 rewrite <- Q.pair_mul_r in Hma.
-clear - (*Hr*) Hm Hma H3 Haz. (* je pense que ça suffit *)
+clear - Hm Hma H3 Haz.
 move H3 at bottom.
-assert (H8 : rad ≤  Q.intg a mod rad + u (i + 1) mod rad). {
+assert (H8 : rad ≤  Q.intg a mod rad + u mod rad). {
   apply Nat.nlt_ge; intros H8.
   apply Nat.lt_add_lt_sub_r in H8.
   apply Q.nlt_ge in H3; apply H3; clear H3.
@@ -485,8 +484,8 @@ rewrite <- (Q.pair_add_l _ 1) in Hma.
 apply Q.lt_pair in Hma; [ | easy | easy ].
 rewrite Nat.mul_1_r, Nat.mul_1_l in Hma.
 clear a Haz Hb H3.
-specialize (Nat.mod_upper_bound (u (i + 1)) rad radix_ne_0) as Hu.
-remember (u (i + 1) mod rad) as a eqn:Ha.
+specialize (Nat.mod_upper_bound u rad radix_ne_0) as Hu.
+remember (u mod rad) as a eqn:Ha.
 rewrite Nat.add_comm in H8.
 clear u Ha.
 symmetry in Hm.
@@ -513,16 +512,15 @@ rewrite Nat.add_comm.
 now apply Nat.mod_upper_bound.
 Qed.
 
-Theorem carry_succ_lemma3 {r : radix} : ∀ u i a,
+Theorem carry_succ_lemma3 {r : radix} : ∀ u a,
   (0 ≤ a)%Q
-  → Q.intg ((u (i + 1)%nat // rad)%Q + (a * 1 // rad)%Q) =
-    (u (i + 1) + Q.intg a) / rad.
+  → Q.intg ((u // rad)%Q + (a * 1 // rad)%Q) = (u + Q.intg a) / rad.
 Proof.
 intros * Ha.
 rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | now apply Q.le_0_mul_r ].
 rewrite Q.intg_pair; [ | easy ].
 destruct
-  (Q.lt_le_dec (Q.frac (u (i + 1) // rad) + Q.frac (a * (1 // rad)%Q)) 1)
+  (Q.lt_le_dec (Q.frac (u // rad) + Q.frac (a * (1 // rad)%Q)) 1)
   as [H3| H3]. {
   rewrite Nat.add_0_r.
   now apply carry_succ_lemma1.
