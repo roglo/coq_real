@@ -755,8 +755,10 @@ assert (Hmrj : ∀ j, m < rad ^ (rad * (i + j + 3) - i - j - 2)). {
   rewrite <- Nat.add_sub_assoc; [ flia | ].
   destruct rad as [| rr]; [ easy | cbn; flia ].
 }
+(* est-ce vraiment nécessaire ?
 destruct (le_dec m rad) as [Hmr| Hmr]; [ now apply (carry_succ_m_le_rad m) | ].
 apply Nat.nle_gt in Hmr.
+*)
 unfold carry, carry_cases.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
   specialize (all_fA_ge_1_ε_P_999 u i H1 0) as H6.
