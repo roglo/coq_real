@@ -3045,11 +3045,22 @@ assert (Hcont : ∀ k, (u ⊕ P v) (i + k + 1) = 1). {
     destruct Huv2' as [Huv2'| Huv2']. {
       specialize (Hu 2); flia Hu Huv2'.
     }
+Check carry_succ.
 (* assert (u (i + 2) ≥ 1) et même ∀ k, u (i + k + 2) ≥ 1 *)
     destruct Huv2' as [Huv2'| Huv2']. {
       rewrite (proj2 Huv2').
       rewrite A_split_first; [ | min_n_ge ].
       replace (S (i + 2)) with (i + 3) by easy; rewrite Hr2.
+      specialize (Huv2 1) as Huv3.
+      replace (i + 1 + 2) with (i + 3) in Huv3 by flia.
+      apply Nat_eq_add_2 in Huv3.
+      destruct Huv3 as [Huv3| Huv3]. {
+        specialize (Hu 3); flia Hu Huv3.
+      }
+      destruct Huv3 as [Huv3| Huv3]. {
+        rewrite (proj2 Huv3).
+        rewrite Q.mul_add_distr_r.
+(* bin non, ça marchera pas, j'arriverai jamais à 1 *)
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
