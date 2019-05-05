@@ -528,6 +528,8 @@ destruct
 now apply carry_succ_lemma2.
 Qed.
 
+...
+
 Theorem carry_succ {r : radix} : ∀ m u i,
   m ≤ rad
   → (∀ k, u (i + k) ≤ m * (rad - 1))
