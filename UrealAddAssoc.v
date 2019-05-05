@@ -3045,6 +3045,7 @@ assert (Hcont : ∀ k, (u ⊕ P v) (i + k + 1) = 1). {
     destruct Huv2' as [Huv2'| Huv2']. {
       specialize (Hu 2); flia Hu Huv2'.
     }
+(* assert (u (i + 2) ≥ 1) et même ∀ k, u (i + k + 2) ≥ 1 *)
     destruct Huv2' as [Huv2'| Huv2']. {
       rewrite (proj2 Huv2').
       rewrite A_split_first; [ | min_n_ge ].
