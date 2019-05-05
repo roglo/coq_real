@@ -3047,7 +3047,8 @@ assert (Hcont : ∀ k, (u ⊕ P v) (i + k + 1) = 1). {
     }
     destruct Huv2' as [Huv2'| Huv2']. {
       rewrite (proj2 Huv2').
-(* mmm... ça devrait être bon, mais faut réfléchir, hein... *)
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S (i + 2)) with (i + 3) by easy; rewrite Hr2.
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
