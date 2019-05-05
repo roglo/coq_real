@@ -881,6 +881,22 @@ assert (H8 : rad ≤  Q.intg a mod rad + u (i + 1) mod rad). {
   apply Nat.mul_le_mono_r.
   unfold Q.intg in H8; flia H8.
 }
+specialize (proj2 (Q.intg_interv (Q.intg a) a Haz) eq_refl) as H.
+eapply Q.lt_le_trans; [ apply H | ].
+rewrite <- (Q.pair_add_l _ 1).
+apply Q.le_pair; [ easy | easy | ].
+rewrite Nat.mul_1_r, Nat.mul_1_l.
+eapply Q.le_lt_trans in Hma; [ clear H | apply H ].
+remember (Q.intg a) as b eqn:Hb.
+rewrite <- (Q.pair_add_l _ 1) in Hma.
+apply Q.lt_pair in Hma; [ | easy | easy ].
+rewrite Nat.mul_1_r, Nat.mul_1_l in Hma.
+clear a Haz Hb H3.
+specialize (Nat.mod_upper_bound (u (i + 1)) rad radix_ne_0) as Hu.
+remember (u (i + 1) mod rad) as a eqn:Ha.
+rewrite Nat.add_comm in H8.
+clear u Ha.
+symmetry in Hm.
 ...
 rewrite (Q.num_den a) in Hma; [ | easy ].
 rewrite <- Q.pair_inv_mul in Hma; [ | easy | easy ].
