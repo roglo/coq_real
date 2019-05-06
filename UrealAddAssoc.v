@@ -3018,7 +3018,10 @@ destruct Huv2' as [Huv2'| Huv2']. {
   destruct Huv2 as [Huv2| Huv2]. {
     destruct Huv1 as [Huv1| Huv1]. {
       apply Nat.eq_add_0 in Huv1.
-      (* the carry must be 1 in that case *)
+      (* if v has only 1s, the carry is 0 and it is ok
+         otherwize, the carry is 1 *)
+...
+      (* case when carry = 1 *)
       eapply Q.le_lt_trans. {
         apply (Q.add_le_mono_r _ (1 // 2)%Q).
         apply Q.le_pair_mono_r.
