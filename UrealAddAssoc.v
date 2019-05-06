@@ -3018,6 +3018,15 @@ destruct Huv2' as [Huv2'| Huv2']. {
   destruct Huv2 as [Huv2| Huv2]. {
     destruct Huv1 as [Huv1| Huv1]. {
       apply Nat.eq_add_0 in Huv1.
+      (* the carry must be 1 in that case *)
+      eapply Q.le_lt_trans. {
+        apply (Q.add_le_mono_r _ (1 // 2)%Q).
+        apply Q.le_pair_mono_r.
+        now apply Nat.succ_le_mono, Nat.mod_upper_bound.
+      }
+      apply Q.lt_add_lt_sub_l.
+      replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+      apply Q.mul_lt_mono_pos_r; [ easy | ].
 ...
       (*
     u 0 0 0 0 1 0 0 0 ...
