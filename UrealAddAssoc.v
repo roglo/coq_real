@@ -3046,7 +3046,7 @@ assert (Hcont : ∀ k, (u ⊕ P v) (i + k + 1) = 1). {
       specialize (Hu 2); flia Hu Huv2'.
     }
 Check carry_succ.
-(* assert (u (i + 2) ≥ 1) et même ∀ k, u (i + k + 2) ≥ 1 *)
+(* assert (v (i + 2) ≥ 1) et même ∀ k, v (i + k + 2) ≥ 1 *)
     destruct Huv2' as [Huv2'| Huv2']. {
       rewrite (proj2 Huv2').
       rewrite A_split_first; [ | min_n_ge ].
@@ -3061,6 +3061,8 @@ Check carry_succ.
         rewrite (proj2 Huv3).
         rewrite Q.mul_add_distr_r.
 (* bin non, ça marchera pas, j'arriverai jamais à 1 *)
+(* en fait, dans le cas où v est une infinité de 1, il doit y avoir une
+   contradiction avec Hj ou Hk ; faut voir *)
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
