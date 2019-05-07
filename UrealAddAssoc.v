@@ -3045,8 +3045,24 @@ destruct Huv2' as [Huv2'| Huv2']. {
         replace 1 with (rad - 1) by flia Hr2.
         apply P_le.
       }
-      destruct H1 as (p & Hjp & Hp).
-      apply Nat.eqb_neq in Hp.
+      destruct H1 as (p & Hjp1 & Hp1).
+      assert (Hjp : ∀ j, j < p → v (i + j + 2) = 1). {
+        intros q Hq; specialize (Hjp1 q Hq).
+        now apply Nat.eqb_eq in Hjp1.
+      }
+      assert (Hp : v (i + p + 2) = 2). {
+        apply Nat.eqb_neq in Hp1.
+        specialize (Huv2 p).
+        apply Nat_eq_add_2 in Huv2.
+        destruct Huv2 as [Huv2| Huv2]. {
+          specialize (Hu (p + 2)); rewrite Nat.add_assoc in Hu.
+          flia Hu Huv2.
+        }
+        destruct Huv2 as [Huv2| Huv2]; [ flia Huv2 Hp1 | easy ].
+      }
+      clear Hjp1 Hp1.
+...
+
       eapply Q.le_lt_trans. {
         apply (Q.add_le_mono_r _ (1 // 2)%Q).
         apply Q.le_pair_mono_r.
