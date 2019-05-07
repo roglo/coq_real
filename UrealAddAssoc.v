@@ -3092,18 +3092,6 @@ destruct Huv2' as [Huv2'| Huv2']. {
 u+Pv 1 1 1 1 1 1 0 2 2 2 2 2 2 2 ...
 *)
         unfold carry.
-exfalso.
-apply A_ge_1_false_iff in Hk.
-rewrite (A_9_8_all_18 (p + 1)) in Hk; cycle 1. {
-  intros s Hs.
-  unfold "⊕", P, d2n, prop_carr, dig.
-  destruct s. {
-    rewrite Nat.add_0_r, (proj1 Huv1), (proj2 Huv1), Hr2.
-    replace (carry v (i + 1)) with 1; [ easy | symmetry ].
-    unfold carry.
-
-  replace (i + s + 1) with (i + (s - 1) + 2)
-  rewrite Hjp.
 ...
         apply Q.intg_interv; [ easy | ].
         rewrite A_split_first; [ | min_n_ge ].
