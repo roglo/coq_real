@@ -3084,8 +3084,10 @@ destruct Huv2' as [Huv2'| Huv2']. {
         rewrite (proj1 Huvq2), (proj2 Huvq2).
         symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
         replace (carry v (i + q + 2)) with 1; [ easy | ].
-        symmetry.
-        unfold carry.
+        symmetry; unfold carry.
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + q + 2)) with (i + q + 3) by flia.
+        rewrite Hr2.
 ...
 (* même chose que le "assert Hcont" ci-dessous *)
 (*
