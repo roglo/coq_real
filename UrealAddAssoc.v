@@ -3083,67 +3083,21 @@ destruct Huv2' as [Huv2'| Huv2']. {
       destruct Huvq2 as [Huvq2| Huvq2]. {
         rewrite (proj1 Huvq2), (proj2 Huvq2).
         symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
-        replace (carry v (i + q + 2)) with 1; [ easy | ].
-        symmetry; unfold carry.
+        replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
 (*
-   u 0 1 1 1 1 1 0
-   v 0 1 1 1 1 1 2
+             v p         v q
+   u 0 1 1 1 1 1 0 1 1 1 1 1 1 1 ...
+   v 0 1 1 1 1 1 2 1 1 1 1 1 1 1 ...
+  Pv 1 0 0 0 0 0 0 1 1 1 1 1 1 1 ...
+u+Pv 1 1 1 1 1 1 0 2 2 2 2 2 2 2 ...
 *)
+        unfold carry.
 ...
         apply Q.intg_interv; [ easy | ].
         rewrite A_split_first; [ | min_n_ge ].
         replace (S (i + q + 2)) with (i + q + 3) by flia.
         rewrite Hr2.
         split. {
-...
-(* même chose que le "assert Hcont" ci-dessous *)
-(*
-    u 0 1 1 1 1 0 0 0 0 ...
-    v 0 1 1 1 1 2 2 2 2 ...
-   Pv 1 0 0 0 0 1 1 1 1 ...
- u+Pv 1 1 1 1 1 1 1 1 1 ...
-
-    u 0 1 1 1 1 0 1 1 1 ...
-    v 0 1 1 1 1 2 1 1 1 ...
-   Pv 1 0 0 0 0 0 1 1 1 ...
- u+Pv 1 1 1 1 1 1 1 1 1 ...
-*)
-...
-      assert (Hcont : ∀ k, (u ⊕ P v) (i + k + 1) = 1). {
-        intros p; unfold "⊕".
-        unfold P, d2n, prop_carr, dig; rewrite Hr2.
-        destruct p. {
-          rewrite Nat.add_0_r.
-          rewrite (proj1 Huv1), (proj2 Huv1), Nat.add_0_l, Nat.add_0_l.
-          replace (carry v (i + 1)) with 1; [ easy | ].
-          symmetry.
-          unfold carry.
-          rewrite A_split_first; [ | min_n_ge ].
-          replace (S (i + 1)) with (i + 2) by easy; rewrite Hr2.
-          specialize (Huv2 0) as Huv2'.
-          rewrite Nat.add_0_r in Huv2'.
-          apply Nat_eq_add_2 in Huv2'.
-          destruct Huv2' as [Huv2'| Huv2']. {
-            specialize (Hu 2); flia Hu Huv2'.
-          }
-          Check carry_succ.
-          (* assert (v (i + 2) ≥ 1) et même ∀ k, v (i + k + 2) ≥ 1 *)
-          destruct Huv2' as [Huv2'| Huv2']. {
-            rewrite (proj2 Huv2').
-            rewrite A_split_first; [ | min_n_ge ].
-            replace (S (i + 2)) with (i + 3) by easy; rewrite Hr2.
-            specialize (Huv2 1) as Huv3.
-            replace (i + 1 + 2) with (i + 3) in Huv3 by flia.
-            apply Nat_eq_add_2 in Huv3.
-            destruct Huv3 as [Huv3| Huv3]. {
-              specialize (Hu 3); flia Hu Huv3.
-            }
-            destruct Huv3 as [Huv3| Huv3]. {
-              rewrite (proj2 Huv3).
-              rewrite Q.mul_add_distr_r.
-              (* bin non, ça marchera pas, j'arriverai jamais à 1 *)
-              (* en fait, dans le cas où v est une infinité de 1, il doit y avoir une
-   contradiction avec Hj ou Hk ; faut voir *)
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
