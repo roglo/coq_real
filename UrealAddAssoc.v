@@ -3020,8 +3020,33 @@ destruct Huv2' as [Huv2'| Huv2']. {
       apply Nat.eq_add_0 in Huv1.
       (* if v has only 1s, the carry is 0 and it is ok
          otherwize, the carry is 1 *)
-...
-      (* case when carry = 1 *)
+      destruct (LPO_fst (λ k, Nat.eqb (v (i + k + 2)) 1)) as [H1| H1]. {
+        assert (Hv1 : ∀ k, v (i + k + 2) = 1). {
+          now intros p; specialize (H1 p); apply Nat.eqb_eq in H1.
+        }
+        clear H1.
+        replace (carry v (i + 1)) with 0. 2: {
+          symmetry; unfold carry.
+          rewrite A_all_9. 2: {
+            intros p Hp; rewrite Hr2.
+            now replace (i + 1 + p + 1) with (i + p + 2) by flia.
+          }
+          apply Q.intg_small.
+          split; [ | now apply Q.sub_lt ].
+          apply Q.le_0_sub, (Q.le_pair_mono_l 1).
+          split; [ pauto | ].
+          apply Nat.neq_0_lt_0; pauto.
+        }
+        rewrite Q.add_0_l.
+        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+        intros p; unfold "⊕"; rewrite <- Nat.add_assoc.
+        replace 2 with (1 + 1) by easy.
+        apply Nat.add_le_mono; [ apply Hu | ].
+        replace 1 with (rad - 1) by flia Hr2.
+        apply P_le.
+      }
+      destruct H1 as (p & Hjp & Hp).
+      apply Nat.eqb_neq in Hp.
       eapply Q.le_lt_trans. {
         apply (Q.add_le_mono_r _ (1 // 2)%Q).
         apply Q.le_pair_mono_r.
