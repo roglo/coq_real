@@ -3086,6 +3086,36 @@ destruct Huv2' as [Huv2'| Huv2']. {
         replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
         unfold carry.
         apply Q.intg_interv; [ easy | ].
+destruct (lt_dec q p) as [Hlqp| Hlqp]. {
+remember (p - q - 1) as s eqn:Hs.
+replace p with (q + s + 1) in Hjp, Hp by flia Hs Hlqp.
+clear p Hlqp Hs.
+replace (i + (q + s + 1) + 2) with (i + q + s + 3) in Hp by flia.
+rewrite Q.pair_diag; [ | easy ].
+clear Huvq2.
+(*
+replace (i + 1 + q + 1) with (i + q + 2) in Hq by flia.
+*)
+clear Hq.
+revert q Hjp Hp.
+induction s; intros. {
+  rewrite Nat.add_0_r in Hp.
+  rewrite A_split_first; [ | min_n_ge ].
+  replace (S (i + q + 2)) with (i + q + 3) by flia.
+  rewrite Hp, Hr2, Q.pair_diag; [ | easy ].
+  split; [ now apply Q.le_add_r, Q.le_0_mul_r | ].
+  apply Q.add_lt_mono_l.
+  apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+  now intros; do 2 rewrite <- Nat.add_assoc.
+}
+replace (q + S s + 1) with (S q + s + 1) in Hjp by flia.
+replace (i + q + S s + 3) with (i + S q + s + 3) in Hp by flia.
+specialize (IHs (S q) Hjp Hp).
+rewrite A_split_first; [ | min_n_ge ].
+replace (S (i + q + 2)) with (i + q + 3) by flia.
+replace (i + S q + 2) with (i + q + 3) in IHs by flia.
+(* ouais, faut glibouiller avec les min_n de IHs et de |-* avant le merdier *)
+...
         rewrite A_split_first; [ | min_n_ge ].
         replace (S (i + q + 2)) with (i + q + 3) by flia.
         rewrite Hr2, Q.pair_diag; [ | easy ].
@@ -3100,6 +3130,7 @@ destruct Huv2' as [Huv2'| Huv2']. {
           now intros; do 2 rewrite <- Nat.add_assoc.
         }
         destruct (lt_dec (q + 1) p) as [Hlqp| Hlqp]. {
+...
           specialize (Hjp _ Hlqp) as H1.
           replace (i + (q + 1) + 2) with (i + q + 3) in H1 by flia.
           rewrite H1.
