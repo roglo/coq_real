@@ -3085,18 +3085,24 @@ destruct Huv2' as [Huv2'| Huv2']. {
         symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
         replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
         unfold carry.
-        apply Q.intg_interv; [ easy | ].
 destruct (lt_dec q p) as [Hlqp| Hlqp]. {
+specialize (fA_lt_1_ε_NQintg_A 2 i v j) as H1.
+rewrite Hr2 in H1.
+assert (H : 2 < 2 ^ (min_n i j - i - j - 2)). {
+  replace 2 with (2 ^ 1) at 1 by easy.
+  apply Nat.pow_lt_mono_r; [ pauto | ].
+  unfold min_n; rewrite Hr2; cbn; flia.
+}
+specialize (H1 H Hv Hjj Hj); clear H.
+(* ouais, il faut sauter les q+2 premiers termes des A dans H1. *)
+...
+apply Q.intg_interv; [ easy | ].
 remember (p - q - 1) as s eqn:Hs.
 replace p with (q + s + 1) in Hjp, Hp by flia Hs Hlqp.
 clear p Hlqp Hs.
 replace (i + (q + s + 1) + 2) with (i + q + s + 3) in Hp by flia.
 rewrite Q.pair_diag; [ | easy ].
-clear Huvq2.
-(*
-replace (i + 1 + q + 1) with (i + q + 2) in Hq by flia.
-*)
-clear Hq.
+clear Huvq2 Hq.
 revert q Hjp Hp.
 induction s; intros. {
   rewrite Nat.add_0_r in Hp.
