@@ -3084,6 +3084,28 @@ destruct Huv2' as [Huv2'| Huv2']. {
         rewrite (proj1 Huvq2), (proj2 Huvq2).
         symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
         replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
+        unfold carry.
+        apply Q.intg_interv; [ easy | ].
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + q + 2)) with (i + q + 3) by flia.
+        rewrite Hr2, Q.pair_diag; [ | easy ].
+        destruct (Nat.eq_dec (q + 1) p) as [Hqp| Hqp]. {
+          (* bon, pas vraiment utile, vaudrait mieux faire par récurrence
+             pour tout q+1 < p *)
+          replace (i + p + 2) with (i + q + 3) in Hp by flia Hqp.
+          rewrite Hp, Q.pair_diag; [ | easy ].
+          split; [ now apply Q.le_add_r, Q.le_0_mul_r | ].
+          apply Q.add_lt_mono_l.
+          apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+          now intros; do 2 rewrite <- Nat.add_assoc.
+        }
+        destruct (lt_dec (q + 1) p) as [Hlqp| Hlqp]. {
+          specialize (Hjp _ Hlqp) as H1.
+          replace (i + (q + 1) + 2) with (i + q + 3) in H1 by flia.
+          rewrite H1.
+(* ouais, par récurrence, vu que v(i+q+3)=v(i+q+4)=...=v(i+p+1)=1
+   et que v(i+p+2)=2 *)
+...
 (*
              v p         v q
    u 0 1 1 1 1 1 0 1 1 1 1 1 1 1 ...
@@ -3091,13 +3113,6 @@ destruct Huv2' as [Huv2'| Huv2']. {
   Pv 1 0 0 0 0 0 0 1 1 1 1 1 1 1 ...
 u+Pv 1 1 1 1 1 1 0 2 2 2 2 2 2 2 ...
 *)
-        unfold carry.
-...
-        apply Q.intg_interv; [ easy | ].
-        rewrite A_split_first; [ | min_n_ge ].
-        replace (S (i + q + 2)) with (i + q + 3) by flia.
-        rewrite Hr2.
-        split. {
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
