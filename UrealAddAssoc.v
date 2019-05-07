@@ -3085,6 +3085,10 @@ destruct Huv2' as [Huv2'| Huv2']. {
         symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
         replace (carry v (i + q + 2)) with 1; [ easy | ].
         symmetry; unfold carry.
+(*
+   u 0 1 1 1 1 1 0
+   v 0 1 1 1 1 1 2
+*)
 ...
         apply Q.intg_interv; [ easy | ].
         rewrite A_split_first; [ | min_n_ge ].
