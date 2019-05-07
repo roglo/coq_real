@@ -3061,8 +3061,6 @@ destruct Huv2' as [Huv2'| Huv2']. {
         destruct Huv2 as [Huv2| Huv2]; [ flia Huv2 Hp1 | easy ].
       }
       clear Hjp1 Hp1.
-...
-
       eapply Q.le_lt_trans. {
         apply (Q.add_le_mono_r _ (1 // 2)%Q).
         apply Q.le_pair_mono_r.
@@ -3071,6 +3069,12 @@ destruct Huv2' as [Huv2'| Huv2']. {
       apply Q.lt_add_lt_sub_l.
       replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
       apply Q.mul_lt_mono_pos_r; [ easy | ].
+(*
+    u 0 1 1 1 1 0
+    v 0 1 1 1 1 2
+   Pv 1 0 0 0 0 .
+ u+Pv 1 1 1 1 1 .
+*)
 ...
       (*
     u 0 0 0 0 1 0 0 0 ...
