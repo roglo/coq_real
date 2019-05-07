@@ -3074,6 +3074,18 @@ destruct Huv2' as [Huv2'| Huv2']. {
       replace (i + 1 + q + 1) with (i + q + 2) by flia.
       unfold "⊕", P, d2n, prop_carr, dig; rewrite Hr2.
       remember modulo as f; cbn; subst f.
+      specialize (Huv2 q) as Huvq2.
+      unfold "⊕" in Huvq2.
+      apply Nat_eq_add_2 in Huvq2.
+      destruct Huvq2 as [Huvq2| Huvq2]. {
+        specialize (Hu (q + 2)); rewrite Nat.add_assoc in Hu; flia Hu Huvq2.
+      }
+      destruct Huvq2 as [Huvq2| Huvq2]. {
+        rewrite (proj1 Huvq2), (proj2 Huvq2).
+        symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
+        replace (carry v (i + q + 2)) with 1; [ easy | ].
+        symmetry.
+        unfold carry.
 ...
 (* même chose que le "assert Hcont" ci-dessous *)
 (*
