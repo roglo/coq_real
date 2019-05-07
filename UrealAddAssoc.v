@@ -3085,9 +3085,12 @@ destruct Huv2' as [Huv2'| Huv2']. {
         symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
         replace (carry v (i + q + 2)) with 1; [ easy | ].
         symmetry; unfold carry.
+...
+        apply Q.intg_interv; [ easy | ].
         rewrite A_split_first; [ | min_n_ge ].
         replace (S (i + q + 2)) with (i + q + 3) by flia.
         rewrite Hr2.
+        split. {
 ...
 (* même chose que le "assert Hcont" ci-dessous *)
 (*
