@@ -364,10 +364,10 @@ Definition NA {r : radix} (rg := nat_ord_ring) i n u :=
 
 (**)
 
-Definition min_n {r : radix} i k := rad * (i + k + 3).
+Definition min_n {r : radix} i := rad * (i + 3).
 
 Definition fA_ge_1_ε {r : radix} u i k :=
-  let n := min_n i k in
+  let n := min_n (i + k) in
   let s := n - i - 1 in
   if Q.lt_le_dec (Q.frac (A i n u)) (1 - 1 // rad ^ S k)%Q then false
   else true.
@@ -377,11 +377,11 @@ Ltac min_n_ge_in h :=
   unfold min_n in h; destruct rad; [ easy | cbn in h; flia h ].
 
 Theorem rad_pow_min_n {r : radix} : ∀ i j,
-  2 ≤ rad ^ (min_n i j - i - 1).
+  2 ≤ rad ^ (min_n (i + j) - i - 1).
 Proof.
 intros.
 specialize radix_ge_2 as Hr.
-remember (min_n i j - i - 1) as s eqn:Hs.
+remember (min_n (i + j) - i - 1) as s eqn:Hs.
 destruct s; [ min_n_ge_in Hs | ].
 cbn.
 replace 2 with (2 * 1) by flia.
@@ -389,11 +389,11 @@ apply Nat.mul_le_mono; [ easy | now apply Nat_pow_ge_1 ].
 Qed.
 
 Theorem rad_pow_min_n_3 {r : radix} : ∀ i j,
-  3 ≤ rad ^ (min_n i j - i - 1).
+  3 ≤ rad ^ (min_n (i + j) - i - 1).
 Proof.
 intros.
 specialize radix_ge_2 as Hr.
-remember (min_n i j - i - 1) as s eqn:Hs.
+remember (min_n (i + j) - i - 1) as s eqn:Hs.
 destruct s; [ min_n_ge_in Hs | ].
 destruct s; [ min_n_ge_in Hs | ].
 cbn.
@@ -414,7 +414,7 @@ Definition carry_cases {r : radix} u i :=
   end.
 
 Definition carry {r : radix} u i :=
-  Q.intg (A i (min_n i (carry_cases u i)) u).
+  Q.intg (A i (min_n (i + carry_cases u i)) u).
 
 Definition prop_carr {r : radix} u i :=
   let d := u i + carry u i in
@@ -1012,11 +1012,11 @@ Qed.
 
 Theorem B_upper_bound_for_mul {r : radix} : ∀ u i k l,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
-  → (B i (min_n i k) u l < 1 // rad ^ S k)%Q.
+  → (B i (min_n (i + k)) u l < 1 // rad ^ S k)%Q.
 Proof.
 intros * Hur.
 specialize radix_ge_2 as Hr.
-remember (min_n i k) as n eqn:Hn.
+remember (min_n (i + k)) as n eqn:Hn.
 eapply Q.le_lt_trans.
 -apply B_gen_upper_bound_for_mul; [ | subst n; min_n_ge | ]. {
    subst n; unfold min_n.
@@ -1248,7 +1248,7 @@ now replace (S (n + l - 1)) with (n + l) by flia Hnl.
 Qed.
 
 Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
-  let n := min_n i k in
+  let n := min_n (i + k) in
   let s := n - i - 1 in
   fA_ge_1_ε u i k = false ↔ (Q.frac (A i n u) < 1 - 1 // rad ^ S k)%Q.
 Proof.
@@ -1262,7 +1262,7 @@ destruct (Q.lt_le_dec (Q.frac (A i n u)) (1 - 1 // rad ^ S k)%Q) as [H1| H1].
 Qed.
 
 Theorem A_ge_1_true_iff {r : radix} : ∀ i u k,
-  let n := min_n i k in
+  let n := min_n (i + k) in
   let s := n - i - 1 in
   fA_ge_1_ε u i k = true ↔ (Q.frac (A i n u) ≥ 1 - 1 // rad ^ S k)%Q.
 Proof.
@@ -1296,17 +1296,8 @@ symmetry; apply A_split.
 flia Hin.
 Qed.
 
-Theorem min_n_add {r : radix} : ∀ i k l,
-  min_n i (k + l) = min_n i k + rad * l.
-Proof.
-intros.
-unfold min_n.
-rewrite <- Nat.mul_add_distr_l.
-f_equal; flia.
-Qed.
-
-Theorem min_n_add_l {r : radix} : ∀ i j k,
-  min_n (i + j) k = min_n i k + rad * j.
+Theorem min_n_add {r : radix} : ∀ i k,
+  min_n (i + k) = min_n i + rad * k.
 Proof.
 intros.
 unfold min_n.
@@ -1336,12 +1327,12 @@ Theorem frac_ge_if_all_fA_ge_1_ε_le_rad_for_add {r : radix} : ∀ m u i,
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l, l ≤ rad
-  → (Q.frac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%Q.
+  → (Q.frac (A i (min_n (i + k) + l) u) ≥ 1 - 1 // rad ^ S k)%Q.
 Proof.
 intros * Hmr Hur.
 specialize radix_ge_2 as Hr.
 intros H1 * Hlr.
-remember (min_n i k) as n eqn:Hn.
+remember (min_n (i + k)) as n eqn:Hn.
 assert (Hin : i + 1 ≤ n) by (rewrite Hn; min_n_ge).
 specialize (H1 k) as H3.
 apply A_ge_1_true_iff in H3.
@@ -1387,7 +1378,7 @@ destruct (Q.lt_le_dec (Q.frac (A i n u) + B i n u l) 1) as [H4| H4].
  eapply Q.le_trans; [ apply H3 | now apply Q.le_add_r ].
 -specialize (H1 (k + 1)) as H5.
  apply A_ge_1_true_iff in H5.
- rewrite min_n_add, Nat.mul_1_r in H5.
+ rewrite Nat.add_assoc, min_n_add, Nat.mul_1_r in H5.
  rewrite <- Hn in H5.
  rewrite <- ApB_A in H5; [ | easy ].
  rewrite Q.frac_add in H5; [ | easy | easy ].
@@ -1459,7 +1450,7 @@ Theorem frac_ge_if_all_fA_ge_1_ε_for_add {r : radix} : ∀ m u i,
   m < rad ^ (rad * (i + 3) - (i + 2))
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
-  ↔ (∀ k l, (Q.frac (A i (min_n i k + l) u) ≥ 1 - 1 // rad ^ S k)%Q).
+  ↔ (∀ k l, (Q.frac (A i (min_n (i + k) + l) u) ≥ 1 - 1 // rad ^ S k)%Q).
 Proof.
 intros m u i Hm Hur.
 specialize radix_ge_2 as Hr.
@@ -1477,7 +1468,7 @@ split.
     now apply Nat.lt_le_incl, Nat.mod_upper_bound.
   }
   specialize (H4 H); clear H.
-  rewrite min_n_add, <- Nat.add_assoc, <- H3 in H4.
+  rewrite Nat.add_assoc, min_n_add, <- Nat.add_assoc, <- H3 in H4.
   eapply Q.le_trans; [ | apply H4 ].
   apply Q.sub_le_mono; [ easy | ].
   apply Q.le_pair; [ pauto | pauto | ].
@@ -1492,21 +1483,21 @@ Qed.
 
 Theorem frac_ge_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
-  ↔ ∀ k, (Q.frac (A i (min_n i k) u) ≥ 1 - 1 // rad ^ S k)%Q.
+  ↔ ∀ k, (Q.frac (A i (min_n (i + k)) u) ≥ 1 - 1 // rad ^ S k)%Q.
 Proof.
 intros u i; split; intros H k; specialize (H k).
 -unfold fA_ge_1_ε in H.
  now destruct
-     (Q.lt_le_dec (Q.frac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%Q).
+     (Q.lt_le_dec (Q.frac (A i (min_n (i + k)) u)) (1 - 1 // rad ^ S k)%Q).
 -apply Q.nlt_ge in H.
  unfold fA_ge_1_ε.
  now destruct
-     (Q.lt_le_dec (Q.frac (A i (min_n i k) u)) (1 - 1 // rad ^ S k)%Q).
+     (Q.lt_le_dec (Q.frac (A i (min_n (i + k)) u)) (1 - 1 // rad ^ S k)%Q).
 Qed.
 
 Theorem fApB_lower_bound {r : radix} : ∀ u i k l,
   (∀ k, fA_ge_1_ε u i k = true)
-  → (1 - 1 // rad ^ S k ≤ Q.frac (A i (min_n i k) u) + B i (min_n i k) u l)%Q.
+  → (1 - 1 // rad ^ S k ≤ Q.frac (A i (min_n (i + k)) u) + B i (min_n (i + k)) u l)%Q.
 Proof.
 intros * HfA.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε u i) HfA k) as H.
@@ -1518,7 +1509,7 @@ Qed.
 Theorem fApB_upper_bound_for_add {r : radix} : ∀ u i,
   (∀ j, j ≥ i → u j ≤ 2 * (rad - 1))
   → ∀ k l,
-      (Q.frac (A i (min_n i k) u) + B i (min_n i k) u l <
+      (Q.frac (A i (min_n (i + k)) u) + B i (min_n (i + k)) u l <
       1 + 1 // rad ^ S k)%Q.
 Proof.
 intros * Hur *.
@@ -1532,7 +1523,7 @@ Qed.
 
 Theorem fApB_upper_bound_for_mul {r : radix} : ∀ u i k l,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
-  → (Q.frac (A i (min_n i k) u) + B i (min_n i k) u l <
+  → (Q.frac (A i (min_n (i + k)) u) + B i (min_n (i + k)) u l <
       1 + 1 // rad ^ S k)%Q.
 Proof.
 intros * Hur.
@@ -1542,7 +1533,7 @@ Qed.
 
 Theorem ApB_lower_bound {r : radix} : ∀ u i k l n,
   (∀ k, fA_ge_1_ε u i k = true)
-  → n = min_n i k
+  → n = min_n (i + k)
   → (Q.intg (A i n u + 1) // 1 - 1 // rad ^ S k ≤ A i n u + B i n u l)%Q.
 Proof.
 intros * Hfa Hn.
@@ -1564,7 +1555,7 @@ Qed.
 
 Theorem ApB_upper_bound_for_mul {r : radix} : ∀ u i k l n,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
-  → n = min_n i k
+  → n = min_n (i + k)
   → (A i n u + B i n u l < Q.intg (A i n u + 1) // 1 + 1 // rad ^ S k)%Q.
 Proof.
 intros * Hur Hn.
@@ -1586,12 +1577,12 @@ Qed.
 Theorem A_lower_bound_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k l,
-     (Q.intg (A i (min_n i k) u + 1) // 1 - 1 // rad ^ S k ≤
-      A i (min_n i k + l) u)%Q.
+     (Q.intg (A i (min_n (i + k)) u + 1) // 1 - 1 // rad ^ S k ≤
+      A i (min_n (i + k) + l) u)%Q.
 Proof.
 intros u i HfA k l.
 specialize radix_ge_2 as Hr.
-remember (min_n i k) as n eqn:Hn.
+remember (min_n (i + k)) as n eqn:Hn.
 move n before l.
 specialize (ApB_lower_bound u i k l n HfA Hn) as H1.
 rewrite ApB_A in H1; [ easy | ].
@@ -1601,12 +1592,12 @@ Qed.
 Theorem A_upper_bound_for_mul {r : radix} : ∀ u i,
   (∀ j, j ≥ i → u j ≤ (j + 1) * (rad - 1) ^ 2)
   → ∀ k l,
-     (A i (min_n i k + l) u <
-      Q.intg (A i (min_n i k) u + 1) // 1 + 1 // rad ^ S k)%Q.
+     (A i (min_n (i + k) + l) u <
+      Q.intg (A i (min_n (i + k)) u + 1) // 1 + 1 // rad ^ S k)%Q.
 Proof.
 intros u i Hur k l.
 specialize radix_ge_2 as Hr.
-remember (min_n i k) as n eqn:Hn.
+remember (min_n (i + k)) as n eqn:Hn.
 move n before l.
 specialize (ApB_upper_bound_for_mul u i k l n Hur Hn) as H1.
 rewrite ApB_A in H1; [ easy | ].
@@ -1616,12 +1607,12 @@ Qed.
 Theorem frac_eq_if_all_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, fA_ge_1_ε u i k = true)
   → ∀ k, ∃ x, (x < 1 // rad ^ S k)%Q ∧
-     Q.frac (A i (min_n i k) u) = (1 - 1 // rad ^ S k + x)%Q.
+     Q.frac (A i (min_n (i + k)) u) = (1 - 1 // rad ^ S k + x)%Q.
 Proof.
 intros u i H k.
 specialize (H k).
 unfold fA_ge_1_ε in H.
-remember (A i (min_n i k) u) as x eqn:Hx.
+remember (A i (min_n (i + k)) u) as x eqn:Hx.
 destruct (Q.lt_le_dec (Q.frac x) (1 - 1 // rad ^ S k)%Q) as [H1| H1];
   [ easy | clear H ].
 exists (Q.frac x - (1 - 1 // rad ^ S k))%Q.
@@ -3054,7 +3045,7 @@ apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
 intros H5; apply Nat.nlt_ge in H5.
 apply Bool.not_true_iff_false.
 apply A_ge_1_false_iff.
-remember (min_n i k) as n eqn:Hn.
+remember (min_n (i + k)) as n eqn:Hn.
 remember (n - i - 1) as s eqn:Hs.
 move n before k; move s before n.
 assert (H6 : i + k + 3 ≤ n - 1). {

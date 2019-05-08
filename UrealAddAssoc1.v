@@ -49,11 +49,11 @@ Qed.
 (* generalizes Q.intg_A_le_1_for_add *)
 Theorem NQintg_A_le_for_adds {r : radix} : ∀ m u i j,
   (∀ k, u (i + k + 1) ≤ m * (rad - 1))
-  → Q.intg (A i (min_n i j) u) ≤ m - 1.
+  → Q.intg (A i (min_n (i + j)) u) ≤ m - 1.
 Proof.
 intros * Hmr.
 specialize radix_ge_2 as Hr.
-remember (min_n i j) as n eqn:Hn.
+remember (min_n (i + j)) as n eqn:Hn.
 destruct (zerop m) as [Hm| Hm]. {
   subst m.
   unfold A.
@@ -91,7 +91,7 @@ Proof.
 intros * Hm Hur *.
 specialize radix_ge_2 as Hr.
 unfold carry.
-enough (∀ l, Q.intg (A (i + k) (min_n (i + k) l) u) < m). {
+enough (∀ l, Q.intg (A (i + k) (min_n (i + k + l)) u) < m). {
   destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [| (j & Hj)]; apply H.
 }
 intros l.
@@ -179,7 +179,8 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H1| H1]. 2: {
   destruct H1 as (j & Hj & H1).
   rewrite A_ge_1_add_r_true_if in H1; [ easy | apply Hu ].
 }
-remember (min_n (i + 1) 0) as n eqn:Hn.
+rewrite Nat.add_0_r.
+remember (min_n (i + 1)) as n eqn:Hn.
 apply Nat.le_antisymm. {
   rewrite Nat.sub_1_r.
   now apply Nat.lt_le_pred, Nat.mod_upper_bound.
@@ -187,10 +188,7 @@ apply Nat.le_antisymm. {
 apply Nat.nlt_ge; intros H2.
 specialize (Hu 1) as H3.
 apply A_ge_1_true_iff in H3.
-remember (min_n i 1) as m eqn:Hm.
-move m before n; move Hm before Hn.
-assert (H : n = m) by (rewrite Hn, Hm; unfold min_n; ring).
-clear Hm; subst m.
+rewrite <- Hn in H3.
 apply Q.nlt_ge in H3; apply H3; clear H3.
 rewrite A_split_first; [ | subst n; min_n_ge ].
 replace (u (i + 1) + Q.intg (A (i + 1) n u)) with
@@ -414,12 +412,13 @@ Theorem all_fA_ge_1_ε_NQintg_A {r : radix} : ∀ m i u,
   m < rad ^ (rad * (i + 3) - (i + 2))
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k l, Q.intg (A i (min_n i k + l) u) = Q.intg (A i (min_n i k) u).
+  → ∀ k l,
+     Q.intg (A i (min_n (i + k) + l) u) = Q.intg (A i (min_n (i + k)) u).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hut k l.
-remember (min_n i k) as n eqn:Hn.
+remember (min_n (i + k)) as n eqn:Hn.
 assert (Hun : ∀ l, u (n + l) < rad ^ (n + l - i)). {
   rename l into l'; intros.
   replace (n + l) with (i + (n + l - i)) at 1 by (rewrite Hn; min_n_ge).
@@ -536,40 +535,41 @@ Theorem all_fA_ge_1_ε_NQintg_A' {r : radix} : ∀ m i u,
   m < rad ^ (rad * (i + 3) - (i + 2))
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, fA_ge_1_ε u i k = true)
-  → ∀ k, Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i 0) u).
+  → ∀ k, Q.intg (A i (min_n (i + k)) u) = Q.intg (A i (min_n i) u).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hut k.
-replace (min_n i k) with (min_n i 0 + rad * k). 2: {
+replace (min_n (i + k)) with (min_n i + rad * k). 2: {
   unfold min_n.
-  rewrite Nat.add_0_r.
   do 3 rewrite Nat.mul_add_distr_l.
   apply Nat.add_shuffle0.
 }
+replace i with (i + 0) at 2 4 by flia.
 now apply (all_fA_ge_1_ε_NQintg_A m).
 Qed.
 
 Theorem fA_lt_1_ε_NQintg_A {r : radix} : ∀ m i u j,
-  m < rad ^ (min_n i j - i - j - 2)
+  m < rad ^ (min_n (i + j) - i - j - 2)
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, k < j → fA_ge_1_ε u i k = true)
   → fA_ge_1_ε u i j = false
-  → ∀ k, j ≤ k → Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i j) u).
+  → ∀ k, j ≤ k →
+     Q.intg (A i (min_n (i + k)) u) = Q.intg (A i (min_n (i + j)) u).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hmr Hur Hjj Huf * Hjk.
 replace k with (j + (k - j)) by flia Hjk.
-rewrite min_n_add.
+rewrite Nat.add_assoc, min_n_add.
 rewrite <- ApB_A by min_n_ge.
 rewrite Q.intg_add; [ | easy | easy ].
 rewrite <- Nat.add_assoc, <- Nat.add_0_r.
 f_equal.
-assert (HB : (B i (min_n i j) u (rad * (k - j)) < 1 // rad ^ S j)%Q). {
-  specialize (B_upper_bound_for_adds m u i j (min_n i j)) as HB.
+assert (HB : (B i (min_n (i + j)) u (rad * (k - j)) < 1 // rad ^ S j)%Q). {
+  specialize (B_upper_bound_for_adds m u i j (min_n (i + j))) as HB.
   specialize (HB (rad * (k - j))).
-  assert (H : i + j + 5 < min_n i j). {
+  assert (H : i + j + 5 < min_n (i + j)). {
     unfold min_n.
     destruct rad as [| rr]; [ easy | ].
     destruct rr; [ flia Hr | cbn; flia ].
@@ -604,11 +604,11 @@ Qed.
 
 Theorem NQintg_A_le_1_for_add {r : radix} : ∀ u i j,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
-  → Q.intg (A i (min_n i j) u) ≤ 1.
+  → Q.intg (A i (min_n (i + j)) u) ≤ 1.
 Proof.
 intros * Hur.
 specialize radix_ge_2 as Hr.
-remember (min_n i j) as n eqn:Hn.
+remember (min_n (i + j)) as n eqn:Hn.
 specialize (A_upper_bound_for_add u i n Hur) as H2.
 apply Q.intg_le_mono in H2; [ | easy ].
 eapply le_trans; [ apply H2 | ].
@@ -643,7 +643,7 @@ Proof.
 intros * Hur.
 specialize radix_ge_2 as Hr.
 unfold carry.
-enough (∀ j, Q.intg (A i (min_n i j) u) ≤ 1). {
+enough (∀ j, Q.intg (A i (min_n (i + j)) u) ≤ 1). {
   destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]; [ apply H | ].
   destruct H1 as (j & Hj & Hjj); apply H.
 }
@@ -931,7 +931,7 @@ Proof.
 intros * Hur Hpr k.
 specialize radix_ge_2 as Hr.
 specialize (all_P_9_all_8_9_18 u i Hur Hpr k) as H1.
-assert (Hc : ∃ n, carry u (i + k) = Q.intg (A (i + k) (min_n (i + k) n) u)). {
+assert (Hc : ∃ n, carry u (i + k) = Q.intg (A (i + k) (min_n (i + k + n)) u)). {
   unfold carry, carry_cases.
   destruct (LPO_fst (fA_ge_1_ε u (i + k))) as [H3| H3].
   -exists 0; easy.
@@ -939,7 +939,7 @@ assert (Hc : ∃ n, carry u (i + k) = Q.intg (A (i + k) (min_n (i + k) n) u)). {
    exists j; easy.
 }
 destruct Hc as (m & Hm).
-remember (min_n (i + k) m) as n eqn:Hn.
+remember (min_n (i + k + m)) as n eqn:Hn.
 assert (Hin : i + k + 1 ≤ n - 1) by (rewrite Hn; min_n_ge).
 destruct (zerop (carry u (i + k))) as [H2| H2].
 -split; [ easy | ].
@@ -1129,7 +1129,8 @@ intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hi j.
 specialize (all_P_9_all_8_9_18 u i Hur Hi j) as H1.
-assert (Hc : ∃ n, carry u (i + j) = Q.intg (A (i + j) (min_n (i + j) n) u)). {
+assert
+  (Hc : ∃ n, carry u (i + j) = Q.intg (A (i + j) (min_n (i + j + n)) u)). {
   unfold carry, carry_cases.
   destruct (LPO_fst (fA_ge_1_ε u (i + j))) as [H3| H3].
   -exists 0; easy.
@@ -1140,7 +1141,7 @@ destruct Hc as (m & Hm).
 destruct (zerop (carry u (i + j))) as [H2| H2].
 -left; split; [ easy | ].
  rewrite H2 in Hm; symmetry in Hm.
- remember (min_n (i + j) m) as n eqn:Hn.
+ remember (min_n (i + j + m)) as n eqn:Hn.
  assert (Hin : i + j + 1 ≤ n - 1) by (rewrite Hn; min_n_ge).
  apply Q.eq_intg_0 in Hm; [ | easy ].
  apply Q.nle_gt in Hm.
@@ -1418,14 +1419,14 @@ destruct H1 as [H1| [H1| H1]].
      apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
      do 2 rewrite Nat.mul_1_r.
      apply (le_trans _ 2); [ | apply rad_pow_min_n ].
-     destruct (le_dec (i + j + 1) (min_n i k - 1)); [ easy | pauto ].
+     destruct (le_dec (i + j + 1) (min_n (i + k) - 1)); [ easy | pauto ].
     -apply Q.sub_lt, Q.lt_0_pair.
-     destruct (le_dec (i + j + 1) (min_n i k - 1)); pauto.
+     destruct (le_dec (i + j + 1) (min_n (i + k) - 1)); pauto.
   }
   apply Q.sub_le_mono; [ easy | ].
   apply Q.le_pair; [ pauto | pauto | ].
   rewrite Nat.mul_1_r.
-  destruct (le_dec (i + j + 1) (min_n i k - 1)) as [H1| H1].
+  destruct (le_dec (i + j + 1) (min_n (i + k) - 1)) as [H1| H1].
   *apply (le_trans _ (rad ^ S (S k))).
   --rewrite (Nat.pow_succ_r' _ (S k)).
     now apply Nat.mul_le_mono.
@@ -1444,11 +1445,12 @@ Theorem carry_cases_NQintg_A {r : radix} : ∀ m u i j,
   → (∀ k, u (i + k) ≤ m * (rad - 1))
   → j = carry_cases u i
   → ∀ k, j ≤ k →
-    Q.intg (A i (min_n i k) u) = Q.intg (A i (min_n i j) u).
+    Q.intg (A i (min_n (i + k)) u) = Q.intg (A i (min_n (i + j)) u).
 Proof.
 intros * Hmr Hur Hj k Hjk.
 unfold carry_cases in Hj; subst j.
 destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
+  rewrite Nat.add_0_r.
   now apply (all_fA_ge_1_ε_NQintg_A' m).
 }
 destruct H1 as (j & Hjj & Hj).
@@ -1500,16 +1502,16 @@ Theorem pre_Hugo_Herbelin_1 {r : radix} : ∀ u v i kup kuv,
           | inl _ => 0
           | inr (exist _ k _) => k
           end
-  → Q.intg (A i (min_n i kuv) v) = 0
-  → (A i (min_n i kup) u + A i (min_n i kup) (P v) < 1)%Q
-  → (A i (min_n i kuv) u + A i (min_n i kuv) v < 1)%Q.
+  → Q.intg (A i (min_n (i + kuv)) v) = 0
+  → (A i (min_n (i + kup)) u + A i (min_n (i + kup)) (P v) < 1)%Q
+  → (A i (min_n (i + kuv)) u + A i (min_n (i + kuv)) v < 1)%Q.
 Proof.
 intros * Hu H3 Hkup Hkuv Hm H4.
 apply Q.nle_gt; intros H5.
 specialize radix_ge_2 as Hr.
-remember (min_n i 0) as nv eqn:Hnv.
-remember (min_n i kup) as nup eqn:Hnup.
-remember (min_n i kuv) as nuv eqn:Hnuv.
+remember (min_n i) as nv eqn:Hnv.
+remember (min_n (i + kup)) as nup eqn:Hnup.
+remember (min_n (i + kuv)) as nuv eqn:Hnuv.
 specialize (all_fA_ge_1_ε_P_999 _ _ H3) as A3.
 rewrite (A_all_9 (P v)) in H4; [ | intros; apply A3 ].
 rewrite Q.add_comm, <- Q.add_sub_swap, <- Q.add_sub_assoc in H4.
@@ -1528,7 +1530,7 @@ assert (HAu : A i nup u = 0%Q). {
 }
 clear H4.
 destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
--subst kuv.
+-subst kuv; rewrite Nat.add_0_r in Hnuv.
  rewrite <- Hnv in Hnuv; subst nuv.
  apply Q.eq_intg_0 in Hm; [ | easy ].
  apply Q.nlt_ge in H5; apply H5; clear H5.
@@ -1573,7 +1575,7 @@ destruct (LPO_fst (fA_ge_1_ε (u ⊕ v) i)) as [H6| H6].
   rewrite (Q.frac_small (A i nuv u)) in Hj; [ | easy ].
   rewrite Nat.add_0_l.
   destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) i)) as [H2| H2].
-  *subst kup.
+  *subst kup; rewrite Nat.add_0_r in Hnup.
    rewrite <- Hnv in Hnup; subst nup.
    rewrite <- (Q.frac_small (A i nuv u)); [ | easy ].
    rewrite Q.intg_add_frac.
@@ -1634,14 +1636,14 @@ Theorem pre_Hugo_Herbelin_21 {r : radix} : ∀ u v i,
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε v i k = true)
   → (∀ k, fA_ge_1_ε (u ⊕ P v) i k = true)
-  → (A i (min_n i 0) u + A i (min_n i 0) v < 1)%Q
-  → (A i (min_n i 0) u + A i (min_n i 0) (P v) < 1)%Q.
+  → (A i (min_n i) u + A i (min_n i) v < 1)%Q
+  → (A i (min_n i) u + A i (min_n i) (P v) < 1)%Q.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hvt Hupt Huv1.
-assert (Hin : i + 1 ≤ min_n i 0) by min_n_ge.
-remember (min_n i 0) as nv eqn:Hnv.
+assert (Hin : i + 1 ≤ min_n i) by min_n_ge.
+remember (min_n i) as nv eqn:Hnv.
 specialize (A_ge_1_add_all_true_if v i) as H4.
 assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
   intros k; rewrite <- Nat.add_assoc; apply Hv.
@@ -1761,15 +1763,15 @@ Theorem pre_Hugo_Herbelin_22 {r : radix} : ∀ u v i j,
   → (∀ k, fA_ge_1_ε v i k = true)
   → (∀ k, fA_ge_1_ε (u ⊕ P v) i k = true)
   → fA_ge_1_ε (u ⊕ v) i j = false
-  → Q.intg (A i (min_n i j) v) = 0
-  → (A i (min_n i j) u + A i (min_n i j) v < 1)%Q
-  → (A i (min_n i 0) u + A i (min_n i 0) (P v) < 1)%Q.
+  → Q.intg (A i (min_n (i + j)) v) = 0
+  → (A i (min_n (i + j)) u + A i (min_n (i + j)) v < 1)%Q
+  → (A i (min_n i) u + A i (min_n i) (P v) < 1)%Q.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hvt Hupt Huvf Hm H5.
-remember (min_n i 0) as nv eqn:Hnv.
-remember (min_n i j) as nuv eqn:Hnuv.
+remember (min_n i) as nv eqn:Hnv.
+remember (min_n (i + j)) as nuv eqn:Hnuv.
 assert (Hin : i + 1 ≤ nv) by (rewrite Hnv; min_n_ge).
 apply A_ge_1_false_iff in Huvf.
 rewrite <- Hnuv in Huvf.
@@ -1832,7 +1834,9 @@ destruct H4 as [Hva| [Hva| Hva]].
  replace 1%Q with (1 // 1)%Q by easy.
  apply Q.le_pair; [ pauto | easy | ].
  apply Nat.mul_le_mono_r.
- rewrite Hs, Hnv; apply rad_pow_min_n.
+ rewrite Hs, Hnv.
+ replace i with (i + 0) at 1 by easy.
+ apply rad_pow_min_n.
 -destruct Hva as (k & Hbef & Hwhi & Haft).
  rewrite (A_all_9 (P v)); [ | easy ].
  rewrite (A_9_8_all_18 k v) in Huvf; [ | easy | easy | easy ].
@@ -1946,15 +1950,15 @@ Theorem pre_Hugo_Herbelin_31 {r : radix} : ∀ u v i j,
   → (∀ k, fA_ge_1_ε v i k = true)
   → fA_ge_1_ε (u ⊕ P v) i j = false
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
-  → (A i (min_n i 0) u + A i (min_n i 0) v < 1)%Q
+  → (A i (min_n i) u + A i (min_n i) v < 1)%Q
   → (∀ k, P v (i + k + 1) = rad - 1)
-  → A i (min_n i j) u = 0%Q.
+  → A i (min_n (i + j)) u = 0%Q.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hvt Hj Huvt H5 H2.
-remember (min_n i 0) as nv eqn:Hnv.
-remember (min_n i j) as nup eqn:Hnup.
+remember (min_n i) as nv eqn:Hnv.
+remember (min_n (i + j)) as nup eqn:Hnup.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Huvt) as A7.
 specialize (A_ge_1_add_all_true_if v i) as H4.
 assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
@@ -2046,6 +2050,7 @@ destruct H4 as [H4| [H4| H4]].
  replace 1%Q with (1 // 1)%Q by easy.
  apply Q.le_pair; [ pauto | easy | ].
  apply Nat.mul_le_mono_r.
+...
  rewrite Hnv; apply rad_pow_min_n.
 -destruct H4 as (k & Hbef & Hwhi & Haft).
  specialize (A7 j) as H7.
@@ -2361,17 +2366,17 @@ Qed.
 Theorem pre_Hugo_Herbelin_32_lemma_999 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, P v (i + k + 1) = rad - 1)
-  → (∀ p, i + p + 1 < min_n i k → v (i + p + 1) = rad - 1)
+  → (∀ p, i + p + 1 < min_n (i + k) → v (i + p + 1) = rad - 1)
   → fA_ge_1_ε (u ⊕ P v) i j = false
   → fA_ge_1_ε (u ⊕ v) i k = false
-  → (A i (min_n i k) u + A i (min_n i k) v < 1)%Q
-  → A i (min_n i j) u = 0%Q.
+  → (A i (min_n (i + k)) u + A i (min_n (i + k)) v < 1)%Q
+  → A i (min_n (i + j)) u = 0%Q.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hpr Hbef Hup Huv Haa.
-remember (min_n i j) as nij eqn:Hnij.
-remember (min_n i k) as nik eqn:Hnik.
+remember (min_n (i + j)) as nij eqn:Hnij.
+remember (min_n (i + k)) as nik eqn:Hnik.
 apply A_ge_1_false_iff in Huv.
 rewrite <- Hnik in Huv.
 rewrite A_additive in Huv.
@@ -2460,15 +2465,15 @@ Theorem pre_Hugo_Herbelin_32 {r : radix} : ∀ u v i j k,
   → (∀ k, fA_ge_1_ε v i k = true)
   → fA_ge_1_ε (u ⊕ P v) i j = false
   → fA_ge_1_ε (u ⊕ v) i k = false
-  → (A i (min_n i k) u + A i (min_n i k) v < 1)%Q
-  → A i (min_n i j) u = 0%Q.
+  → (A i (min_n (i + k)) u + A i (min_n (i + k)) v < 1)%Q
+  → A i (min_n (i + j)) u = 0%Q.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hvt Hup Huv Haa.
 specialize (all_fA_ge_1_ε_P_999 v i Hvt) as Hpr.
-remember (min_n i j) as nij eqn:Hnij.
-remember (min_n i k) as nik eqn:Hnik.
+remember (min_n (i + j)) as nij eqn:Hnij.
+remember (min_n (i + k)) as nik eqn:Hnik.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Hvt) as Avt.
 specialize (A_ge_1_add_all_true_if v i) as Hvr.
 assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
@@ -2533,15 +2538,15 @@ Theorem pre_Hugo_Herbelin_41 {r : radix} : ∀ u v i j,
   → (∀ k : nat, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k : nat, fA_ge_1_ε v i k = true)
   → (∀ k : nat, fA_ge_1_ε (u ⊕ P v) i k = true)
-  → A i (min_n i 0) u = 0%Q
-  → (A i (min_n i j) u + A i (min_n i j) v < 2)%Q.
+  → A i (min_n i) u = 0%Q
+  → (A i (min_n (i + j)) u + A i (min_n (i + j)) v < 2)%Q.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hvt H2 H1.
 specialize (all_fA_ge_1_ε_P_999 v i Hvt) as Hpr.
-remember (min_n i 0) as ni eqn:Hni.
-remember (min_n i j) as nij eqn:Hnij.
+remember (min_n i) as ni eqn:Hni.
+remember (min_n (i + j)) as nij eqn:Hnij.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H2) as Hup.
 specialize (Hup j) as H4; rewrite <- Hnij in H4.
 rewrite A_additive in H4.
@@ -2629,17 +2634,17 @@ Theorem pre_Hugo_Herbelin_42 {r : radix} : ∀ u v i j k,
   → fA_ge_1_ε (u ⊕ P v) i k = false
   → (∀ j0 : nat, j0 < j → fA_ge_1_ε (u ⊕ v) i j0 = true)
   → fA_ge_1_ε (u ⊕ v) i j = false
-  → Q.intg (A i (min_n i j) v) = 1
-  → B i (min_n i 0) u (rad * k) = 0%Q
-  → A i (min_n i 0) u = 0%Q
-  → (A i (min_n i j) u + A i (min_n i j) v < 2)%Q.
+  → Q.intg (A i (min_n (i + j)) v) = 1
+  → B i (min_n i) u (rad * k) = 0%Q
+  → A i (min_n i) u = 0%Q
+  → (A i (min_n (i + j)) u + A i (min_n (i + j)) v < 2)%Q.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv H3 Hk Hjj Hj Hm H4 H1.
-remember (min_n i 0) as nv eqn:Hnv.
-remember (min_n i k) as nup eqn:Hnup.
-remember (min_n i j) as nuv eqn:Hnuv.
+remember (min_n i) as nv eqn:Hnv.
+remember (min_n (i + k)) as nup eqn:Hnup.
+remember (min_n (i + j)) as nuv eqn:Hnuv.
 move nv after nuv; move nup before nuv.
 move Hnv after Hnuv; move Hnup before Hnuv.
 specialize (all_fA_ge_1_ε_P_999 v i H3) as Hap.
@@ -2750,14 +2755,14 @@ Theorem pre_Hugo_Herbelin_51 {r : radix} : ∀ u v i,
   → (∀ k : nat, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k : nat, fA_ge_1_ε v i k = true)
   → (∀ k : nat, fA_ge_1_ε (u ⊕ P v) i k = true)
-  → Q.intg (A i (min_n i 0) v) = 1
-  → (A i (min_n i 0) u + A i (min_n i 0) v < 2)%Q
-  → (A i (min_n i 0) u + A i (min_n i 0) (P v) < 1)%Q.
+  → Q.intg (A i (min_n i) v) = 1
+  → (A i (min_n i) u + A i (min_n i) v < 2)%Q
+  → (A i (min_n i) u + A i (min_n i) (P v) < 1)%Q.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hvt Hupt Ha1 Haa.
-remember (min_n i 0) as ni eqn:Hni.
+remember (min_n i) as ni eqn:Hni.
 move ni before i.
 specialize (all_fA_ge_1_ε_P_999 v i Hvt) as Hpr.
 rewrite (A_all_9 (P _)); [ | easy ].
@@ -2857,14 +2862,14 @@ Theorem pre_Hugo_Herbelin_52 {r : radix} : ∀ u v i j,
   → (∀ k : nat, fA_ge_1_ε v i k = true)
   → (∀ k : nat, fA_ge_1_ε (u ⊕ v) i k = true)
   → fA_ge_1_ε (u ⊕ P v) i j = false
-  → Q.intg (A i (min_n i 0) v) = 1
-  → (A i (min_n i j) u + A i (min_n i j) (P v) < 1)%Q.
+  → Q.intg (A i (min_n i) v) = 1
+  → (A i (min_n (i + j)) u + A i (min_n (i + j)) (P v) < 1)%Q.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hvt Huvt Hpi Ha1.
-remember (min_n i 0) as ni eqn:Hni.
-remember (min_n i j) as nij eqn:Hnij.
+remember (min_n i) as ni eqn:Hni.
+remember (min_n (i + j)) as nij eqn:Hnij.
 move ni before j; move nij before ni.
 move Hnij before Hni.
 specialize (all_fA_ge_1_ε_P_999 v i Hvt) as Hpr.
@@ -3099,15 +3104,15 @@ Theorem pre_Hugo_Herbelin_61 {r : radix} : ∀ u v i j,
   → (∀ k : nat, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k : nat, fA_ge_1_ε v i k = true)
   → (∀ k : nat, fA_ge_1_ε (u ⊕ P v) i k = true)
-  → Q.intg (A i (min_n i j) v) = 1
-  → (A i (min_n i j) u + A i (min_n i j) v < 2)%Q
-  → (A i (min_n i 0) u + A i (min_n i 0) (P v) < 1)%Q.
+  → Q.intg (A i (min_n (i + j)) v) = 1
+  → (A i (min_n (i + j)) u + A i (min_n (i + j)) v < 2)%Q
+  → (A i (min_n i) u + A i (min_n i) (P v) < 1)%Q.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hvt Hupt Haj Haa.
-remember (min_n i 0) as ni eqn:Hni.
-remember (min_n i j) as nij eqn:Hnij.
+remember (min_n i) as ni eqn:Hni.
+remember (min_n (i + j)) as nij eqn:Hnij.
 move ni before j; move nij before ni.
 move Hnij before Hni.
 specialize (all_fA_ge_1_ε_P_999 v i Hvt) as Hpr.
@@ -3232,16 +3237,16 @@ Theorem pre_Hugo_Herbelin_62 {r : radix} : ∀ u v i j k,
   → (∀ k : nat, fA_ge_1_ε v i k = true)
   → fA_ge_1_ε (u ⊕ P v) i k = false
   → fA_ge_1_ε (u ⊕ v) i j = false
-  → Q.intg (A i (min_n i j) v) = 1
-  → (A i (min_n i j) u + A i (min_n i j) v < 2)%Q
-  → (A i (min_n i k) u + A i (min_n i k) (P v) < 1)%Q.
+  → Q.intg (A i (min_n (i + j)) v) = 1
+  → (A i (min_n (i + j)) u + A i (min_n (i + j)) v < 2)%Q
+  → (A i (min_n (i + k)) u + A i (min_n (i + k)) (P v) < 1)%Q.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hvt Hk Hj Haj Haa.
-remember (min_n i 0) as ni eqn:Hni.
-remember (min_n i j) as nij eqn:Hnij.
-remember (min_n i k) as nik eqn:Hnik.
+remember (min_n i) as ni eqn:Hni.
+remember (min_n (i + j)) as nij eqn:Hnij.
+remember (min_n (i + k)) as nik eqn:Hnik.
 move ni before k; move nij before ni; move nik before nij.
 move Hnij before Hni; move Hnik before Hnij.
 specialize (all_fA_ge_1_ε_P_999 v i Hvt) as Hpr.
@@ -3347,16 +3352,16 @@ Theorem pre_Hugo_Herbelin_71 {r : radix} : ∀ u v i j,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
-  → Q.intg (A i (min_n i 0) v) ≤ 1
-  → Q.intg (A i (min_n i j) v) ≤ 1
-  → (A i (min_n i 0) u + Q.frac (A i (min_n i 0) v) < 1)%Q
-  → Q.intg (A i (min_n i 0) v) = Q.intg (A i (min_n i j) v).
+  → Q.intg (A i (min_n i) v) ≤ 1
+  → Q.intg (A i (min_n (i + j)) v) ≤ 1
+  → (A i (min_n i) u + Q.frac (A i (min_n i) v) < 1)%Q
+  → Q.intg (A i (min_n i) v) = Q.intg (A i (min_n (i + j)) v).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Huvt Ha0 Haj Haav.
-remember (min_n i 0) as n eqn:Hn.
-remember (min_n i j) as nj eqn:Hnj.
+remember (min_n i) as n eqn:Hn.
+remember (min_n (i + j)) as nj eqn:Hnj.
 move nj before n; move Hnj before Hn.
 assert (Hii : Q.intg (A i nj (u ⊕ v)) = Q.intg (A i n (u ⊕ v))). {
   specialize (all_fA_ge_1_ε_NQintg_A' 3 i (u ⊕ v)) as Hii.
@@ -3403,9 +3408,9 @@ Theorem pre_Hugo_Herbelin_72_lemma_1 {r : radix} : ∀ u v i j k,
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → fA_ge_1_ε v i j = false
   → (∀ j, j < k → fA_ge_1_ε (u ⊕ v) i j = true)
-  → Q.intg (A i (min_n i k) v) ≤ 1
-  → Q.intg (A i (min_n i j) v) = 0
-  → Q.intg (A i (min_n i k) v) = 0.
+  → Q.intg (A i (min_n (i + k)) v) ≤ 1
+  → Q.intg (A i (min_n (i + j)) v) = 0
+  → Q.intg (A i (min_n (i + k)) v) = 0.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -3414,8 +3419,8 @@ apply A_ge_1_false_iff in Hj.
 rewrite Q.frac_small in Hj; [ | split ]; [ | easy | ]. 2: {
    now apply Q.eq_intg_0 in Haj0.
 }
-remember (min_n i j) as nj eqn:Hnj.
-remember (min_n i k) as nk eqn:Hnk.
+remember (min_n (i + j)) as nj eqn:Hnj.
+remember (min_n (i + k)) as nk eqn:Hnk.
 assert (Haui : ∀ n, (0 ≤ A i n u < 1)%Q). {
   intros; split; [ easy | ].
   apply A_upper_bound_for_dig.
@@ -3466,8 +3471,8 @@ destruct (Q.lt_le_dec (A i nj u + A i nj v)%Q 1) as [Hajv| Hajv].
  destruct Havi as (Havi, _).
  apply Q.nlt_ge in Havi; apply Havi; clear Havi.
  subst nj nk.
- remember (min_n i j) as nj eqn:Hnj.
- remember (min_n i k) as nk eqn:Hnk.
+ remember (min_n (i + j)) as nj eqn:Hnj.
+ remember (min_n (i + k)) as nk eqn:Hnk.
  move nj before k; move nk before nj.
  move Hnk before Hnj.
  assert (Hinij : i + 1 ≤ nj - 1) by (rewrite Hnj; min_n_ge).
@@ -3603,16 +3608,16 @@ Theorem pre_Hugo_Herbelin_72_lemma_2 {r : radix} : ∀ u v i j k,
   → (∀ j0 : nat, j0 < j → fA_ge_1_ε v i j0 = true)
   → fA_ge_1_ε v i j = false
   → fA_ge_1_ε (u ⊕ v) i k = false
-  → (A i (min_n i k) u + Q.frac (A i (min_n i k) v) < 1)%Q
-  → Q.intg (A i (min_n i j) v) = 1
-  → Q.intg (A i (min_n i k) v) ≤ 1
-  → Q.intg (A i (min_n i k) v) = 1.
+  → (A i (min_n (i + k)) u + Q.frac (A i (min_n (i + k)) v) < 1)%Q
+  → Q.intg (A i (min_n (i + j)) v) = 1
+  → Q.intg (A i (min_n (i + k)) v) ≤ 1
+  → Q.intg (A i (min_n (i + k)) v) = 1.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hjj Hj Hk Haav Haj Hak.
-remember (min_n i j) as nj eqn:Hnj.
-remember (min_n i k) as nk eqn:Hnk.
+remember (min_n (i + j)) as nj eqn:Hnj.
+remember (min_n (i + k)) as nk eqn:Hnk.
 move nj before k; move nk before nj; move Hnk before Hnj.
 destruct (Nat.eq_dec (Q.intg (A i nk v)) 1) as [Hak0| Hak0]; [ easy | ].
 exfalso.
@@ -3677,15 +3682,15 @@ Theorem pre_Hugo_Herbelin_72 {r : radix} : ∀ u v i j k,
   → fA_ge_1_ε v i j = false
   → (∀ j : nat, j < k → fA_ge_1_ε (u ⊕ v) i j = true)
   → fA_ge_1_ε (u ⊕ v) i k = false
-  → Q.intg (A i (min_n i j) v) ≤ 1
-  → Q.intg (A i (min_n i k) v) ≤ 1
-  → (A i (min_n i k) u + Q.frac (A i (min_n i k) v) < 1)%Q
-  → Q.intg (A i (min_n i k) v) = Q.intg (A i (min_n i j) v).
+  → Q.intg (A i (min_n (i + j)) v) ≤ 1
+  → Q.intg (A i (min_n (i + k)) v) ≤ 1
+  → (A i (min_n (i + k)) u + Q.frac (A i (min_n (i + k)) v) < 1)%Q
+  → Q.intg (A i (min_n (i + k)) v) = Q.intg (A i (min_n (i + j)) v).
 Proof.
 intros *.
 intros Hu Hv Hjj Hj Hjk Hk Haj Hak Haav.
-remember (min_n i j) as nj eqn:Hnj.
-remember (min_n i k) as nk eqn:Hnk.
+remember (min_n (i + j)) as nj eqn:Hnj.
+remember (min_n (i + k)) as nk eqn:Hnk.
 move nj before k; move nk before nj; move Hnk before Hnj.
 destruct (Nat.eq_dec (Q.intg (A i nj v)) 0) as [Haj0| Haj0].
 -rewrite Haj0; subst nj nk.
@@ -3699,15 +3704,15 @@ Theorem pre_Hugo_Herbelin_81 {r : radix} : ∀ u v i j,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
   → (∀ k, fA_ge_1_ε (u ⊕ P v) i k = true)
-  → (1 ≤ A i (min_n i 0) u + A i (min_n i 0) (P v))%Q
-  → (A i (min_n i 0) u + Q.frac (A i (min_n i 0) v) < 1)%Q
-  → Q.intg (A i (min_n i 0) v) = (Q.intg (A i (min_n i j) v) + 1) mod rad.
+  → (1 ≤ A i (min_n i) u + A i (min_n i) (P v))%Q
+  → (A i (min_n i) u + Q.frac (A i (min_n i) v) < 1)%Q
+  → Q.intg (A i (min_n i) v) = (Q.intg (A i (min_n (i + j)) v) + 1) mod rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Haup Hup Huv.
-remember (min_n i 0) as n eqn:Hn.
-remember (min_n i j) as nj eqn:Hnj.
+remember (min_n i) as n eqn:Hn.
+remember (min_n (i + j)) as nj eqn:Hnj.
 move n after nj; move Hn after Hnj.
 assert (Hiup : ∀ p,
   Q.intg (A i (min_n i p) (u ⊕ P v)) = Q.intg (A i n (u ⊕ P v))). {
@@ -3864,7 +3869,7 @@ destruct H4 as [H4| [H4| H4]].
 Qed.
 
 Theorem pre_Hugo_Herbelin_lemma {r : radix} : ∀ i n u v,
-  n = min_n i 0
+  n = min_n i
   → (∀ k, fA_ge_1_ε (u ⊕ P v) i k = true)
   → (∀ k, fA_ge_1_ε v i k = true)
   → Q.intg (Q.frac (A i n u) + (1 - 1 // rad ^ (n - i - 1))%Q) =
@@ -3962,7 +3967,7 @@ Qed.
 Theorem pre_Hugo_Herbelin_111 {r : radix} : ∀ u v i n,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
-  → n = min_n i 0
+  → n = min_n i
   → (∀ k, fA_ge_1_ε (u ⊕ P v) i k = true)
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
   → (∀ k, fA_ge_1_ε v i k = true)
