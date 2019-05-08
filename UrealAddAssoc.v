@@ -3090,6 +3090,8 @@ destruct Huv2' as [Huv2'| Huv2']. {
       apply Q.lt_add_lt_sub_l.
       replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
       apply Q.mul_lt_mono_pos_r; [ easy | ].
+...
+(* c'est vrai, ça qu'il y a que des 9 (c'est-à-dire des 1) ? *)
       rewrite A_all_9; [ now apply Q.sub_lt | ].
       intros q Hq.
       replace (i + 1 + q + 1) with (i + q + 2) by flia.
