@@ -1851,7 +1851,7 @@ assert (H : u (i + j + 2) ≠ 0). {
       intros p; rewrite <- Nat.add_assoc.
       now apply A_ge_1_add_r_true_if.
     }
-...
+    rewrite <- (Nat.add_0_r (i + j + 1)) in H1 at 2.
     rewrite <- (all_fA_ge_1_ε_NQintg_A 3) with (l := rad) in H1; cycle 1. {
       apply three_lt_rad_pow.
     } {
@@ -1861,11 +1861,12 @@ assert (H : u (i + j + 2) ≠ 0). {
       intros p; rewrite <- Nat.add_assoc.
       now apply A_ge_1_add_r_true_if.
     }
+    rewrite Nat.add_0_r in H1.
     rewrite A_split_first in H1; [ | min_n_ge ].
     replace (S (i + j + 1)) with (i + j + 2) in H1 by easy.
     rewrite Hu30, Q.add_0_l in H1.
     replace (i + j + 2) with (i + j + 1 + 1) in Hc at 2 by flia.
-    rewrite min_n_add_l, Nat.mul_1_r in Hc.
+    rewrite min_n_add, Nat.mul_1_r in Hc.
     apply Q.intg_interv in H1; [ | now apply Q.le_0_mul_r ].
     apply Q.intg_interv in Hc; [ | easy ].
     destruct Hc as (_, Hc); rewrite Hr2 in Hc.
@@ -2082,7 +2083,7 @@ destruct pv. {
       destruct
         (Q.lt_le_dec
            (Q.frac
-              (A (i + 3) (min_n (i + 2) (carry_cases v (i + 2))) v *
+              (A (i + 3) (min_n (i + 2 + carry_cases v (i + 2))) v *
                (1 // 2)%Q)) 1) as [H7| H7]. 2: {
         exfalso.
         apply Q.nlt_ge in H7; apply H7; clear H7.
@@ -2120,7 +2121,7 @@ destruct pv. {
       destruct
         (Q.lt_le_dec
            (Q.frac
-              (A (i + 3) (min_n (i + 2) (carry_cases v (i + 2))) v *
+              (A (i + 3) (min_n (i + 2 + carry_cases v (i + 2))) v *
                (1 // 2)%Q)) 1) as [H7| H7]. 2: {
         exfalso.
         apply Q.nlt_ge in H7; apply H7; clear H7.
@@ -2286,7 +2287,7 @@ destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
     rewrite Q.mul_add_distr_r, Q.mul_1_l, Q.add_assoc.
     rewrite Q.add_pair; [ | easy | easy ].
     rewrite Q.pair_diag; [ | easy ].
-    assert (HA : (0 ≤ A (i + 4) (min_n (i + 2) c) v * 1 // 2 * 1 // 2)%Q). {
+    assert (HA : (0 ≤ A (i + 4) (min_n (i + 2 + c)) v * 1 // 2 * 1 // 2)%Q). {
       apply Q.le_0_mul_r; [ easy | ].
       now apply Q.le_0_mul_r.
     }
@@ -2594,7 +2595,7 @@ destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
       replace (1 // 1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
       apply Q.mul_lt_mono_pos_r; [ easy | ].
       rewrite Hr2 in Hc2.
-      remember (min_n (i + 1) (carry_cases v (i + 1))) as n eqn:Hn.
+      remember (min_n (i + 1 + carry_cases v (i + 1))) as n eqn:Hn.
       rewrite (A_split n) in Hc2. 2: {
         split; [ rewrite Hn; min_n_ge | ].
         rewrite Hn; unfold min_n.
@@ -2887,7 +2888,7 @@ now apply A_upper_bound_for_dig.
 Qed.
 
 Theorem fold_carry {r : radix} : ∀ u i,
-  Q.intg (A i (min_n i (carry_cases u i)) u) = carry u i.
+  Q.intg (A i (min_n (i + carry_cases u i)) u) = carry u i.
 Proof. easy. Qed.
 
 Theorem rad_2_glop {r : radix} : ∀ m j k u v i n,
@@ -3120,7 +3121,7 @@ clear p Hlqp Hs.
 replace (i + (q + s + 1) + 2) with (i + q + s + 3) in Hp by flia.
 clear Huvq2 Hq.
 replace (Q.intg  _) with
-  (Q.intg (A (i + q + 2) (min_n (i + j + s + q) 0) v)). 2: {
+  (Q.intg (A (i + q + 2) (min_n (i + j + s + q)) v)). 2: {
 ...
 revert q Hjp Hp.
 induction s; intros. {
