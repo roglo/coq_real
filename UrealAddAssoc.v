@@ -1183,8 +1183,7 @@ destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
       intros p; apply A_ge_1_add_r_true_if, Hau.
     }
     replace (i + 3) with (i + 2 + 1) in Hpu3 at 2 by flia.
-...
-    rewrite min_n_add_l, Nat.mul_1_r in Hpu3.
+    rewrite min_n_add, Nat.mul_1_r in Hpu3.
     apply Q.intg_interv in Hpu3; [ | easy ].
     rewrite Hr2, Q.pair_diag in H6; [ | easy ].
     destruct H6 as (H6, _).
@@ -1235,6 +1234,7 @@ rewrite (all_fA_ge_1_ε_NQintg_A' 3) in Hcw; cycle 1. {
 } {
   intros; apply A_ge_1_add_r_true_if, Hau.
 }
+replace (i + p) with (i + p + 0) in Hcw at 2 by easy.
 rewrite <- (all_fA_ge_1_ε_NQintg_A 3) with (l := rad) in Hcw; cycle 1. {
   apply three_lt_rad_pow.
 } {
@@ -1243,7 +1243,8 @@ rewrite <- (all_fA_ge_1_ε_NQintg_A 3) with (l := rad) in Hcw; cycle 1. {
   intros; apply A_ge_1_add_r_true_if, Hau.
 }
 rewrite A_split_first in Hcw; [ | min_n_ge ].
-remember (min_n (i + p) 0 + rad) as nr eqn:Hnr.
+rewrite Nat.add_0_r in Hcw.
+remember (min_n (i + p) + rad) as nr eqn:Hnr.
 replace (S (i + p)) with (i + p + 1) in Hcw by flia.
 rewrite Huv33 in Hcw.
 rewrite Q.intg_add_cond in Hcw; [ | easy | ]. 2: {
@@ -1286,7 +1287,7 @@ destruct
     } {
       intros; rewrite <- Nat.add_assoc; apply A_ge_1_add_r_true_if, Hau.
     }
-    now rewrite min_n_add_l, Nat.mul_1_r, <- Hnr.
+    now rewrite min_n_add, Nat.mul_1_r, <- Hnr.
   }
   move Hcuv3 before Hcuv2.
   unfold carry, d2n, prop_carr, dig.
@@ -1297,7 +1298,7 @@ destruct
   } {
     intros; rewrite <- Nat.add_assoc; apply A_ge_1_add_r_true_if, Hau.
   }
-  rewrite min_n_add_l, Nat.mul_1_r, <- Hnr.
+  rewrite min_n_add, Nat.mul_1_r, <- Hnr.
   split; [ | easy ].
   rewrite A_split_first in HA; [ | rewrite Hnr; min_n_ge ].
   rewrite Q.intg_add_cond in HA; [ | apply Q.le_0_pair | ]. 2: {
@@ -1390,6 +1391,7 @@ destruct
       generalize Hcuv3; intros H7.
       generalize Hcuv4; intros H8.
       unfold carry in H7, H8.
+...
       rewrite (all_fA_ge_1_ε_NQintg_A' 3) in H7; cycle 1. {
         apply three_lt_rad_pow.
       } {
@@ -1415,7 +1417,7 @@ destruct
         apply A_ge_1_add_r_true_if, Hau.
       }
       replace (i + p + 2) with (i + p + 1 + 1) in H8 at 2 by flia.
-      rewrite min_n_add_l, Nat.mul_1_r in H8.
+      rewrite min_n_add, Nat.mul_1_r in H8.
       rewrite A_split_first in H7; [ | min_n_ge ].
       replace (S (i + p + 1)) with (i + p + 2) in H7 by flia.
       rewrite Huv42 in H7.
@@ -1424,7 +1426,7 @@ destruct
       rewrite (Q.intg_add_nat_l 1) in H7; [ | now apply Q.le_0_mul_r ].
       replace 2 with (1 + 1) in H7 at 3 by easy.
       apply Nat.add_cancel_l in H7.
-      remember (A (i + p + 2) (min_n (i + p + 2) 0 + rad) u) as x eqn:Hx.
+      remember (A (i + p + 2) (min_n (i + p + 2) + rad) u) as x eqn:Hx.
       apply Q.intg_interv in H7; [ | now apply Q.le_0_mul_r; subst x ].
       apply Q.intg_interv in H8; [ | now subst x ].
       destruct H7 as (H7, _).
