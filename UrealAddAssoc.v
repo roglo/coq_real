@@ -953,10 +953,12 @@ rewrite Q.frac_small in Hci1. 2: {
   apply Q.le_pair; [ easy | easy | flia Hr ].
 }
 remember (A (i + 2) (min_n (i + 1) + rad) u) as a eqn:Ha.
+rewrite Nat.add_0_r, min_n_add, Nat.mul_1_r in Hci2.
+rewrite Nat.add_0_r, <- Ha in Hci1.
+rewrite <- Ha in Hci2.
 destruct (Q.lt_le_dec (((rad - 2) // rad)%Q + (a * 1 // rad)%Q) 1)
   as [H1| H1]. {
   rewrite Nat.add_0_r in Hci1.
-...
   rewrite Q.intg_small in Hci1; [ now rewrite Nat.mod_0_l in Hci1 | ].
   apply Q.intg_interv in Hci2; [ | now rewrite Ha ].
   rewrite Ha.
@@ -1065,7 +1067,7 @@ destruct (Nat.eq_dec c2 0) as [Hc20| Hc20]. {
   }
   rewrite Nat.add_0_l in H1.
   assert
-    (HF : (0 ≤ Q.frac (A (i + 2) (min_n (i + 1) 1) u) * 1 // rad < 1)%Q). {
+    (HF : (0 ≤ Q.frac (A (i + 2) (min_n (i + 2)) u) * 1 // rad < 1)%Q). {
     split; [ now apply Q.le_0_mul_r | ].
     apply (Q.mul_lt_mono_pos_r (rad // 1)%Q). {
       now apply Q.lt_0_pair.
@@ -1082,7 +1084,7 @@ destruct (Nat.eq_dec c2 0) as [Hc20| Hc20]. {
   destruct
     (Q.lt_le_dec
        (1 // rad +
-        Q.frac (A (i + 2) (min_n (i + 1) 1) u) *
+        Q.frac (A (i + 2) (min_n (i + 2)) u) *
         1 // rad)%Q 1) as [H6| H6]; [ easy | clear H1 ].
   apply Q.nlt_ge in H6; apply H6; clear H6.
   apply Q.lt_add_lt_sub_l.
@@ -1181,6 +1183,7 @@ destruct (Nat.eq_dec c2 2) as [Hc22| Hc22]. {
       intros p; apply A_ge_1_add_r_true_if, Hau.
     }
     replace (i + 3) with (i + 2 + 1) in Hpu3 at 2 by flia.
+...
     rewrite min_n_add_l, Nat.mul_1_r in Hpu3.
     apply Q.intg_interv in Hpu3; [ | easy ].
     rewrite Hr2, Q.pair_diag in H6; [ | easy ].
