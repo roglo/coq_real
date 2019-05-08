@@ -2050,7 +2050,7 @@ destruct H4 as [H4| [H4| H4]].
  replace 1%Q with (1 // 1)%Q by easy.
  apply Q.le_pair; [ pauto | easy | ].
  apply Nat.mul_le_mono_r.
-...
+ replace i with (i + 0) in Hnv by easy.
  rewrite Hnv; apply rad_pow_min_n.
 -destruct H4 as (k & Hbef & Hwhi & Haft).
  specialize (A7 j) as H7.
@@ -2098,6 +2098,7 @@ destruct H4 as [H4| [H4| H4]].
    clear Ha0 Ha1.
    specialize (A7 (j + 1)) as H7.
    replace (S (j + 1)) with (j + 2) in H7 by easy.
+   rewrite Nat.add_assoc in H7.
    rewrite min_n_add, Nat.mul_1_r, <- Hnup in H7.
    rewrite <- ApB_A in H7 by (rewrite Hnup; min_n_ge).
    rewrite A_additive in H7.
@@ -2317,7 +2318,7 @@ destruct H4 as [H4| [H4| H4]].
    specialize (H1 H); clear H.
    assert (H : 1 < rad ^ (nv - i - 0 - 2)). {
      rewrite Hnv; unfold min_n.
-     rewrite Nat.add_0_r, Nat.sub_0_r.
+     rewrite Nat.sub_0_r.
      apply (le_lt_trans _ 3); [ pauto | ].
      rewrite <- Nat.sub_add_distr.
      apply three_lt_rad_pow.
@@ -2391,6 +2392,7 @@ apply Q.le_antisymm in Haa; [ | easy ].
 symmetry in Haa; remember A as f; cbn in Haa; subst f.
 destruct (le_dec j k) as [Hljk| Hljk].
 -rewrite Hnik in Haa; replace k with (j + (k - j)) in Haa by flia Hljk.
+ rewrite Nat.add_assoc in Haa.
  rewrite min_n_add, <- Hnij in Haa.
  rewrite <- ApB_A in Haa by (rewrite Hnij; min_n_ge).
  now apply Q.eq_add_0 in Haa.
@@ -2600,7 +2602,7 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ s)%Q 1) as [Har| Har].
    destruct rad as [| rr]; [ easy | ].
    destruct rr; [ flia Hr | cbn; flia ].
   *unfold min_n.
-   rewrite Nat.add_0_r, Nat.sub_0_r.
+   rewrite Nat.sub_0_r.
    apply (le_lt_trans _ 3); [ pauto | ].
    rewrite <- Nat.sub_add_distr.
    apply three_lt_rad_pow.
@@ -2650,12 +2652,10 @@ move Hnv after Hnuv; move Hnup before Hnuv.
 specialize (all_fA_ge_1_ε_P_999 v i H3) as Hap.
 assert (Hau : A i nup u = 0%Q). {
   rewrite Hnup.
-  replace k with (0 + k) by easy.
   rewrite min_n_add, <- Hnv.
   rewrite <- ApB_A, H1, H4; [ easy | rewrite Hnv; min_n_ge ].
 }
 rewrite Hnuv at 1.
-replace j with (0 + j) at 1 by easy.
 rewrite min_n_add, <- Hnv.
 rewrite <- ApB_A by (rewrite Hnv; min_n_ge).
 rewrite H1, Q.add_0_l.
@@ -2683,7 +2683,7 @@ destruct (le_dec j k) as [Hljk| Hljk].
    rewrite Hnv in H; min_n_ge_in H.
  }
  rewrite H4, Q.add_0_l.
- rewrite Hnv, <- min_n_add, Nat.add_0_l, <- Hnup.
+ rewrite Hnv, <- min_n_add, <- Hnup.
  specialize (Hjj _ Hljk) as H2.
  apply A_ge_1_true_iff in H2.
  apply A_ge_1_false_iff in Hj.
@@ -2723,6 +2723,7 @@ destruct (le_dec j k) as [Hljk| Hljk].
   replace j with (k + (j - k)) in Hj at 1 by flia Hljk.
   rewrite min_n_add in Hj.
   rewrite <- ApB_A in Hj; [ | min_n_ge ].
+...
   rewrite <- Hnik in Hj.
   rewrite Hau, Q.add_0_l in Hj.
   eapply Q.lt_le_trans; [ apply Hj | ].
