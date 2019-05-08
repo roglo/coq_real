@@ -3106,6 +3106,8 @@ destruct Huv2' as [Huv2'| Huv2']. {
         symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
         replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
         unfold carry.
+...
+(* mouais... faut réfléchir... *)
 destruct (lt_dec q p) as [Hlqp| Hlqp]. {
 specialize (fA_lt_1_ε_NQintg_A 2 i v j) as H1.
 rewrite Hr2 in H1.
@@ -3115,6 +3117,10 @@ assert (H : 2 < 2 ^ (min_n (i + j) - i - j - 2)). {
   unfold min_n; rewrite Hr2; cbn; flia.
 }
 specialize (H1 H Hv Hjj Hj); clear H.
+destruct (le_dec j (q + 2 + carry_cases v (i + q + 2))) as [Hqj| Hqj]. {
+replace (Q.intg  _) with (Q.intg (A (i + q + 2) (min_n (i + j)) v)). 2: {
+specialize (H1 _ Hqj) as H2.
+...
 remember (p - q - 1) as s eqn:Hs.
 replace p with (q + s + 1) in Hjp, Hp by flia Hs Hlqp.
 clear p Hlqp Hs.
@@ -3142,6 +3148,12 @@ specialize (IHs (S q) Hjp Hp).
 rewrite A_split_first; [ | min_n_ge ].
 replace (S (i + q + 2)) with (i + q + 3) by flia.
 replace (i + S q + 2) with (i + q + 3) in IHs by flia.
+specialize (Hjp (q + 1)) as H2.
+assert (H : q + 1 < S q + s + 1) by flia.
+specialize (H2 H); clear H.
+replace (i + (q + 1) + 2) with (i + q + 3) in H2 by flia.
+rewrite H2, Hr2.
+...
 replace (i + j + S s + q) with (i + j + s + S q) by flia.
 remember (A (i + q + 3) (min_n (i + j + s + S q) 0) v) as x.
 ...
