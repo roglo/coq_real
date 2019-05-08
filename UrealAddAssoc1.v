@@ -3566,8 +3566,7 @@ destruct (Q.lt_le_dec (A i nj u + A i nj v)%Q 1) as [Hajv| Hajv].
  move Hum at bottom.
  apply Q.nlt_ge in Havi; apply Havi; clear Havi.
  rewrite Hnk.
- replace k with (j + (k - j)) by flia Hljk.
-...
+ replace (i + k) with (i + j + (k - j)) by flia Hljk.
  rewrite min_n_add, <- Hnj.
  rewrite <- ApB_A; [ | flia Hinij ].
  rewrite Hvm, <- Q.sub_add_distr.
@@ -3716,7 +3715,7 @@ remember (min_n i) as n eqn:Hn.
 remember (min_n (i + j)) as nj eqn:Hnj.
 move n after nj; move Hn after Hnj.
 assert (Hiup : ∀ p,
-  Q.intg (A i (min_n i p) (u ⊕ P v)) = Q.intg (A i n (u ⊕ P v))). {
+  Q.intg (A i (min_n (i + p)) (u ⊕ P v)) = Q.intg (A i n (u ⊕ P v))). {
   specialize (all_fA_ge_1_ε_NQintg_A' 2 i (u ⊕ P v)) as Hiup.
   assert (H : 2 < rad ^ (rad * (i + 3) - (i + 2))). {
     apply (le_lt_trans _ 3); [ pauto | ].
@@ -3785,11 +3784,13 @@ destruct H4 as [H4| [H4| H4]].
  assert (H2r1 : (2 // rad ^ (n - i - 1) ≤ 1)%Q). {
    apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
    apply Nat.mul_le_mono_r.
+   replace i with (i + 0) in Hn by easy.
    rewrite Hn; apply rad_pow_min_n.
  }
  assert (H3r1 : (3 // rad ^ (n - i - 1) ≤ 1)%Q). {
    apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
    apply Nat.mul_le_mono_r.
+   replace i with (i + 0) in Hn by easy.
    rewrite Hn; apply rad_pow_min_n_3.
  }
  destruct H5 as [H5| [H5| H5]].
@@ -3821,6 +3822,7 @@ destruct H4 as [H4| [H4| H4]].
   rewrite <- Q.pair_add_l.
   apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
   apply Nat.mul_le_mono_r.
+  replace i with (i + 0) in Hn by easy.
   rewrite Hn; apply rad_pow_min_n_3.
  +destruct H5 as (k & Hbef & Hwhi & Haft).
   apply Q.nle_gt in Huv.
@@ -3883,6 +3885,7 @@ assert (H4 : (0 ≤ 1 - 2 // rad ^ (n - i - 1))%Q). {
   replace 1%Q with (1 // 1)%Q by easy.
   rewrite Q.sub_pair_pos; [ | easy | pauto | ]. 2: {
     do 2 rewrite Nat.mul_1_l.
+    replace i with (i + 0) in Hn by easy.
     rewrite Hn; apply rad_pow_min_n.
   }
   do 2 rewrite Nat.mul_1_l.
@@ -3945,6 +3948,7 @@ destruct (Q.lt_le_dec x (1 // rad ^ s)%Q) as [H5| H5].
   }
   exfalso; subst x.
   specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) H1 0) as AA1.
+  replace i with (i + 0) in Hn by easy.
   rewrite <- Hn, A_additive, Nat.pow_1_r in AA1.
   rewrite Q.frac_add in AA1; [ | pauto | pauto ].
   rewrite H7 in AA1.
@@ -4000,6 +4004,7 @@ specialize (A_ge_1_add_all_true_if v i H H3) as H'3; clear H.
 assert (H4 : (0 ≤ 1 - 2 // rad ^ (n - i - 1))%Q). {
   rewrite (Q.sub_pair_pos 1 1); [ | easy | pauto | ]. 2: {
     do 2 rewrite Nat.mul_1_l.
+    replace i with (i + 0) in Hn by easy.
     rewrite Hn; apply rad_pow_min_n.
   }
   do 2 rewrite Nat.mul_1_l.
