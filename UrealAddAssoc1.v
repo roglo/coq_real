@@ -2720,10 +2720,9 @@ destruct (le_dec j k) as [Hljk| Hljk].
   rewrite Q.add_sub_assoc in Hj.
   replace (1 + 1)%Q with 2%Q in Hj by easy.
   rewrite Hnij in Hj at 1.
-  replace j with (k + (j - k)) in Hj at 1 by flia Hljk.
+  replace (i + j) with (i + k + (j - k)) in Hj at 1 by flia Hljk.
   rewrite min_n_add in Hj.
   rewrite <- ApB_A in Hj; [ | min_n_ge ].
-...
   rewrite <- Hnik in Hj.
   rewrite Hau, Q.add_0_l in Hj.
   eapply Q.lt_le_trans; [ apply Hj | ].
@@ -2774,7 +2773,7 @@ rewrite Nat.sub_diag.
 enough (H : A i ni u = 0%Q) by now rewrite H.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Hupt) as Haup.
 specialize (Haup 0) as H1.
-rewrite <- Hni in H1.
+rewrite Nat.add_0_r, <- Hni in H1.
 rewrite A_additive in H1.
 rewrite (A_all_9 (P _)) in H1; [ | easy ].
 remember (ni - i - 1) as s eqn:Hs.
@@ -2964,7 +2963,7 @@ destruct (Q.lt_le_dec (A i nij u + 1 - 1 // rad ^ sij)%Q 1) as [Hau1| Hau1].
    move Hau1 at bottom.
    clear H1 Hpi.
    specialize (Hauv (j + 1)) as H1.
-   rewrite A_additive in H1.
+   rewrite Nat.add_assoc, A_additive in H1.
    rewrite (A_all_18 v) in H1; [ | easy ].
    rewrite min_n_add, Nat.mul_1_r, <- Hnij in H1.
    rewrite <- Nat.sub_add_distr in H1.
@@ -3125,7 +3124,7 @@ rewrite Nat.sub_diag.
 enough (H : A i ni u = 0%Q) by now rewrite H.
 specialize (proj1 (frac_ge_if_all_fA_ge_1_ε _ _) Hupt) as Haup.
 specialize (Haup 0) as H1.
-rewrite <- Hni in H1.
+rewrite Nat.add_0_r, <- Hni in H1.
 rewrite A_additive in H1.
 rewrite (A_all_9 (P _)) in H1; [ | easy ].
 remember (ni - i - 1) as si eqn:Hsi.
@@ -3169,14 +3168,13 @@ destruct (Q.lt_le_dec (A i ni u + (1 - 1 // rad ^ si))%Q 1) as [H2| H2].
   rewrite Q.add_sub_assoc in H2.
   apply Q.le_add_le_sub_r, Q.add_le_mono_r in H2.
   rewrite Hnij at 2.
-  replace j with (0 + j) by easy.
   rewrite min_n_add, <- Hni.
   rewrite <- ApB_A by (rewrite Hni; min_n_ge).
   rewrite Q.add_sub_assoc, Q.sub_sub_swap, Q.add_sub in H1.
   apply Q.le_add_le_sub_l in H1.
   rewrite Nat.pow_1_r in H1.
   destruct j.
- --rewrite <- Hni in Hnij; subst nij; rewrite <- Hsi.
+ --rewrite Nat.add_0_r, <- Hni in Hnij; subst nij; rewrite <- Hsi.
    rewrite Nat.mul_0_r.
    unfold B; rewrite summation_empty. 2: {
      rewrite Nat.add_0_r; apply Nat.sub_lt; [ rewrite Hni; min_n_ge | pauto ].
@@ -3195,6 +3193,7 @@ destruct (Q.lt_le_dec (A i ni u + (1 - 1 // rad ^ si))%Q 1) as [H2| H2].
    }
    rewrite Nat.add_comm.
    apply Nat.mul_le_mono_r, Nat.add_le_mul; [ easy | ].
+   replace i with (i + 0) in Hni by easy.
    rewrite Hsi, Hni; apply rad_pow_min_n.
  --eapply Q.le_trans; [ | apply Q.le_add_r, B_ge_0 ].
    eapply Q.le_trans; [ | apply H2 ].
@@ -3490,7 +3489,7 @@ destruct (Q.lt_le_dec (A i nj u + A i nj v)%Q 1) as [Hajv| Hajv].
    as [Hum1| Hum1]. {
    apply Q.nle_gt in Hajv; apply Hajv; clear Hajv.
    eapply Q.le_trans; [ apply Havi | ].
-   rewrite Hnk; replace k with (j + (k - j)) by flia Hljk.
+   rewrite Hnk; replace (i + k) with (i + j + (k - j)) by flia Hljk.
    rewrite min_n_add, <- Hnj.
    rewrite Q.add_comm, <- ApB_A; [ | flia Hinij ].
    apply Q.add_le_mono_l.
@@ -3568,6 +3567,7 @@ destruct (Q.lt_le_dec (A i nj u + A i nj v)%Q 1) as [Hajv| Hajv].
  apply Q.nlt_ge in Havi; apply Havi; clear Havi.
  rewrite Hnk.
  replace k with (j + (k - j)) by flia Hljk.
+...
  rewrite min_n_add, <- Hnj.
  rewrite <- ApB_A; [ | flia Hinij ].
  rewrite Hvm, <- Q.sub_add_distr.
