@@ -638,18 +638,17 @@ destruct (LPO_fst (fA_ge_1_ε u (i + 1))) as [H2| H2]. {
     now intros; rewrite <- Nat.add_assoc.
   }
   symmetry.
-...
-  rewrite min_n_add, <- min_n_add_l.
   rewrite A_split_first; [ | min_n_ge ].
   replace (S i) with (i + 1) by flia.
+  rewrite Nat.add_assoc, Nat.add_shuffle0.
   now apply carry_succ_lemma3.
 }
 destruct H2 as (k & Hjk & Hk).
 assert
   (H4 :
      ∀ p, k ≤ p →
-     Q.intg (A (i + 1) (min_n (i + 1) p) u) =
-     Q.intg (A (i + 1) (min_n (i + 1) k) u)). {
+     Q.intg (A (i + 1) (min_n (i + 1 + p)) u) =
+     Q.intg (A (i + 1) (min_n (i + 1 + k)) u)). {
   intros p Hp.
   apply (fA_lt_1_ε_NQintg_A m); try easy. {
     unfold min_n.
@@ -662,9 +661,9 @@ assert
 rewrite H3; [ | flia ].
 rewrite <- (H3 (j + k + 1)); [ | flia ].
 rewrite <- (H4 (j + k)); [ | flia ].
-rewrite min_n_add, <- min_n_add_l.
 rewrite A_split_first; [ | min_n_ge ].
 replace (S i) with (i + 1) by flia.
+replace (i + (j + k + 1)) with (i + 1 + (j + k)) by flia.
 now apply carry_succ_lemma3.
 Qed.
 
@@ -923,7 +922,6 @@ rewrite <- (all_fA_ge_1_ε_NQintg_A 3) with (l := rad) in Hci1; cycle 1. {
   now intros; apply A_ge_1_add_r_true_if.
 }
 replace (i + 2) with (i + 1 + 1) in Hci2 at 2 by flia.
-rewrite min_n_add_l, Nat.mul_1_r in Hci2.
 rewrite A_split_first in Hci1; [ | min_n_ge ].
 replace (S (i + 1)) with (i + 2) in Hci1 by easy.
 rewrite Hu2 in Hci1.
@@ -947,15 +945,18 @@ rewrite Q.frac_small in Hci1. 2: {
   apply (Q.mul_lt_mono_pos_r (rad // 1)%Q); [ now apply Q.lt_0_pair | ].
   rewrite <- Q.mul_assoc, Q.mul_pair_den_num; [ | easy ].
   rewrite Q.mul_1_r, Q.mul_1_l.
+  rewrite Nat.add_0_r.
+  rewrite Nat.add_0_r, min_n_add, Nat.mul_1_r in Hci2.
   eapply Q.lt_le_trans; [ apply Hci2 | ].
   replace 1%Q with (1 // 1)%Q by easy.
   rewrite <- Q.pair_add_l.
   apply Q.le_pair; [ easy | easy | flia Hr ].
 }
-remember (A (i + 2) (min_n (i + 1) 0 + rad) u) as a eqn:Ha.
+remember (A (i + 2) (min_n (i + 1) + rad) u) as a eqn:Ha.
 destruct (Q.lt_le_dec (((rad - 2) // rad)%Q + (a * 1 // rad)%Q) 1)
   as [H1| H1]. {
   rewrite Nat.add_0_r in Hci1.
+...
   rewrite Q.intg_small in Hci1; [ now rewrite Nat.mod_0_l in Hci1 | ].
   apply Q.intg_interv in Hci2; [ | now rewrite Ha ].
   rewrite Ha.
