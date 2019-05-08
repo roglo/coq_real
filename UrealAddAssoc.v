@@ -3099,12 +3099,15 @@ replace p with (q + s + 1) in Hjp, Hp by flia Hs Hlqp.
 clear p Hlqp Hs.
 replace (i + (q + s + 1) + 2) with (i + q + s + 3) in Hp by flia.
 clear Huvq2 Hq.
+replace (Q.intg  _) with
+  (Q.intg (A (i + q + 2) (min_n (i + j + s + q) 0) v)). 2: {
+...
 revert q Hjp Hp.
 induction s; intros. {
   apply Q.intg_interv; [ easy | ].
   rewrite Q.pair_diag; [ | easy ].
   rewrite Nat.add_0_r in Hp.
-  rewrite A_split_first; [ | min_n_ge ].
+  rewrite A_split_first; [ | unfold min_n; rewrite Hr2; cbn; flia ].
   replace (S (i + q + 2)) with (i + q + 3) by flia.
   rewrite Hp, Hr2, Q.pair_diag; [ | easy ].
   split; [ now apply Q.le_add_r, Q.le_0_mul_r | ].
@@ -3118,9 +3121,9 @@ specialize (IHs (S q) Hjp Hp).
 rewrite A_split_first; [ | min_n_ge ].
 replace (S (i + q + 2)) with (i + q + 3) by flia.
 replace (i + S q + 2) with (i + q + 3) in IHs by flia.
-(* ouais, faut glibouiller avec les min_n de IHs et de |-* avant le merdier *)
+replace (i + j + S s + q) with (i + j + s + S q) by flia.
+remember (A (i + q + 3) (min_n (i + j + s + S q) 0) v) as x.
 ...
-(* ouais, il faut sauter les q+2 premiers termes des A dans H1. *)
 replace (Q.intg  _) with (Q.intg (A (i + q + 2) (min_n (i + q + 2) j) v)).
 ...
         rewrite A_split_first; [ | min_n_ge ].
