@@ -3103,7 +3103,6 @@ destruct Huv2' as [Huv2'| Huv2']. {
     Pv 1 0 0 0 0 0 1 1 1 1 ...
   u+Pv 1 1 1 1 1 0 2 2 2 2 ...
 *)
-Check A_9_8_all_18.
         rewrite (A_9_8_all_18 p); cycle 1. {
           intros q Hq; rewrite Hr2.
           replace (i + 1 + q + 1) with (i + q + 2) by flia.
@@ -3115,7 +3114,41 @@ Check A_9_8_all_18.
           apply Nat.add_sub_eq_r in H1.
           rewrite <- H1, Hr2.
           replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
-          admit.
+          unfold carry.
+          rewrite A_split_first; [ | min_n_ge ].
+          replace (S (i + q + 2)) with (i + q + 3) by flia.
+          rewrite Hr2.
+          destruct (lt_dec (q + 1) p) as [Hqp| Hqp]. {
+            specialize (Hjp _ Hqp) as H2.
+            replace (i + (q + 1) + 2) with (i + q + 3) in H2 by flia.
+            rewrite H2.
+... (* suite ok *)
+          }
+          apply Nat.nlt_ge in Hqp.
+          replace (i + q + 3) with (i + p + 2) by flia Hq Hqp.
+          rewrite Hp, Q.pair_diag; [ | easy ].
+          rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+          rewrite <- Nat.add_0_r; f_equal.
+          rewrite A_all_9. 2: {
+            intros s Hs; rewrite Hr2.
+            now replace (i + p + 2 + s + 1) with (i + p + s + 3) by flia.
+          }
+          apply Q.intg_small.
+          split. {
+            apply Q.le_0_mul_r; [ easy | ].
+            apply Q.le_0_sub.
+            apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
+            apply Nat.mul_le_mono_r.
+            apply Nat.neq_0_lt_0; pauto.
+          }
+          apply (Q.mul_lt_mono_pos_r 2); [ easy | ].
+          rewrite <- Q.mul_assoc.
+          rewrite (Q.mul_pair_den_num _ 2 1); [ | easy ].
+          rewrite Q.mul_1_r, Q.mul_1_l.
+          apply (Q.le_lt_trans _ 1). 2: {
+            apply (Q.lt_pair 1 1 2 1); [ easy | easy | flia ].
+          }
+          now apply Q.le_sub_l.
         } {
           replace (i + 1 + p + 1) with (i + p + 2) by flia.
           unfold "⊕"; rewrite Hr2.
@@ -3123,15 +3156,48 @@ Check A_9_8_all_18.
           unfold "⊕" in H1.
           replace (u (i + p + 2)) with 0 by flia Hp H1.
           rewrite Nat.add_0_l.
-...
+          unfold P, d2n, prop_carr, dig.
+          rewrite Hp, Hr2.
+          replace (carry v (i + p + 2)) with 0; [ easy | symmetry ].
           unfold carry.
-          rewrite A_split_first; [ | min_n_ge ].
-          replace (S (i + q + 2)) with (i + q + 3) by flia.
-destruct (Nat.eq_dec q (p - 1)) as [H2| H2]. {
-  specialize (Hjp _ Hq) as H3.
-          replace (i + 1 + p + 1) with (i + p + 2) by flia.
-
-
+          rewrite A_all_9. 2: {
+            intros q Hq; rewrite Hr2.
+            now replace (i + p + 2 + q + 1) with (i + p + q + 3) by flia.
+          }
+          apply Q.intg_small.
+          split; [ | now apply Q.sub_lt ].
+          apply Q.le_0_sub.
+          apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
+          apply Nat.mul_le_mono_r.
+          apply Nat.neq_0_lt_0; pauto.
+        } {
+          intros q; rewrite Hr2.
+          replace (i + 1 + p + q + 2) with (i + p + q + 3) by flia.
+          unfold "⊕".
+          replace (u (i + p + q + 3)) with 1. 2: {
+            specialize (Huv2 (p + q + 1)) as H1.
+            replace (i + (p + q + 1) + 2) with (i + p + q + 3) in H1 by flia.
+            unfold "⊕" in H1.
+            specialize (Hv1 q) as H2.
+            flia H1 H2.
+          }
+          replace (P v (i + p + q + 3)) with 1; [ easy | symmetry ].
+          unfold P, d2n, prop_carr, dig.
+          rewrite Hv1, Hr2.
+          replace (carry v (i + p + q + 3)) with 0; [ easy | symmetry ].
+          unfold carry.
+          rewrite A_all_9. 2: {
+            intros s Hs; rewrite Hr2.
+            now replace (i + p + q + 3 + s + 1) with (i + p + (q + s + 1) + 3)
+              by flia.
+          }
+          apply Q.intg_small.
+          split; [ | now apply Q.sub_lt ].
+          apply Q.le_0_sub.
+          apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
+          apply Nat.mul_le_mono_r.
+          apply Nat.neq_0_lt_0; pauto.
+        }
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
