@@ -3090,105 +3090,25 @@ destruct Huv2' as [Huv2'| Huv2']. {
       apply Q.lt_add_lt_sub_l.
       replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
       apply Q.mul_lt_mono_pos_r; [ easy | ].
-...
-(* c'est vrai, ça qu'il y a que des 9 (c'est-à-dire des 1) ? *)
-      rewrite A_all_9; [ now apply Q.sub_lt | ].
-      intros q Hq.
-      replace (i + 1 + q + 1) with (i + q + 2) by flia.
-      unfold "⊕", P, d2n, prop_carr, dig; rewrite Hr2.
-      remember modulo as f; cbn; subst f.
-      specialize (Huv2 q) as Huvq2.
-      unfold "⊕" in Huvq2.
-      apply Nat_eq_add_2 in Huvq2.
-      destruct Huvq2 as [Huvq2| Huvq2]. {
-        specialize (Hu (q + 2)); rewrite Nat.add_assoc in Hu; flia Hu Huvq2.
-      }
-      destruct Huvq2 as [Huvq2| Huvq2]. {
-        rewrite (proj1 Huvq2), (proj2 Huvq2).
-        symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
-        replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
-        unfold carry.
-...
-(* mouais... faut réfléchir... *)
-destruct (lt_dec q p) as [Hlqp| Hlqp]. {
-specialize (fA_lt_1_ε_NQintg_A 2 i v j) as H1.
-rewrite Hr2 in H1.
-assert (H : 2 < 2 ^ (min_n (i + j) - i - j - 2)). {
-  replace 2 with (2 ^ 1) at 1 by easy.
-  apply Nat.pow_lt_mono_r; [ pauto | ].
-  unfold min_n; rewrite Hr2; cbn; flia.
-}
-specialize (H1 H Hv Hjj Hj); clear H.
-destruct (le_dec j (q + 2 + carry_cases v (i + q + 2))) as [Hqj| Hqj]. {
-replace (Q.intg  _) with (Q.intg (A (i + q + 2) (min_n (i + j)) v)). 2: {
-specialize (H1 _ Hqj) as H2.
-...
-remember (p - q - 1) as s eqn:Hs.
-replace p with (q + s + 1) in Hjp, Hp by flia Hs Hlqp.
-clear p Hlqp Hs.
-replace (i + (q + s + 1) + 2) with (i + q + s + 3) in Hp by flia.
-clear Huvq2 Hq.
-replace (Q.intg  _) with
-  (Q.intg (A (i + q + 2) (min_n (i + j + s + q)) v)). 2: {
-...
-revert q Hjp Hp.
-induction s; intros. {
-  apply Q.intg_interv; [ easy | ].
-  rewrite Q.pair_diag; [ | easy ].
-  rewrite Nat.add_0_r in Hp.
-  rewrite A_split_first; [ | unfold min_n; rewrite Hr2; cbn; flia ].
-  replace (S (i + q + 2)) with (i + q + 3) by flia.
-  rewrite Hp, Hr2, Q.pair_diag; [ | easy ].
-  split; [ now apply Q.le_add_r, Q.le_0_mul_r | ].
-  apply Q.add_lt_mono_l.
-  apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-  now intros; do 2 rewrite <- Nat.add_assoc.
-}
-replace (q + S s + 1) with (S q + s + 1) in Hjp by flia.
-replace (i + q + S s + 3) with (i + S q + s + 3) in Hp by flia.
-specialize (IHs (S q) Hjp Hp).
-rewrite A_split_first; [ | min_n_ge ].
-replace (S (i + q + 2)) with (i + q + 3) by flia.
-replace (i + S q + 2) with (i + q + 3) in IHs by flia.
-specialize (Hjp (q + 1)) as H2.
-assert (H : q + 1 < S q + s + 1) by flia.
-specialize (H2 H); clear H.
-replace (i + (q + 1) + 2) with (i + q + 3) in H2 by flia.
-rewrite H2, Hr2.
-...
-replace (i + j + S s + q) with (i + j + s + S q) by flia.
-remember (A (i + q + 3) (min_n (i + j + s + S q) 0) v) as x.
-...
-replace (Q.intg  _) with (Q.intg (A (i + q + 2) (min_n (i + q + 2) j) v)).
-...
-        rewrite A_split_first; [ | min_n_ge ].
-        replace (S (i + q + 2)) with (i + q + 3) by flia.
-        rewrite Hr2, Q.pair_diag; [ | easy ].
-        destruct (Nat.eq_dec (q + 1) p) as [Hqp| Hqp]. {
-          (* bon, pas vraiment utile, vaudrait mieux faire par récurrence
-             pour tout q+1 < p *)
-          replace (i + p + 2) with (i + q + 3) in Hp by flia Hqp.
-          rewrite Hp, Q.pair_diag; [ | easy ].
-          split; [ now apply Q.le_add_r, Q.le_0_mul_r | ].
-          apply Q.add_lt_mono_l.
-          apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-          now intros; do 2 rewrite <- Nat.add_assoc.
+      destruct (LPO_fst (λ k, Nat.eqb (v (i + p + k + 3)) 1)) as [H1| H1]. {
+        assert (Hv1 : ∀ k, v (i + p + k + 3) = 1). {
+          now intros q; specialize (H1 q); apply Nat.eqb_eq in H1.
         }
-        destruct (lt_dec (q + 1) p) as [Hlqp| Hlqp]. {
-...
-          specialize (Hjp _ Hlqp) as H1.
-          replace (i + (q + 1) + 2) with (i + q + 3) in H1 by flia.
-          rewrite H1.
-(* ouais, par récurrence, vu que v(i+q+3)=v(i+q+4)=...=v(i+p+1)=1
-   et que v(i+p+2)=2 *)
-...
-(*
-             v p         v q
-   u 0 1 1 1 1 1 0 1 1 1 1 1 1 1 ...
-   v 0 1 1 1 1 1 2 1 1 1 1 1 1 1 ...
-  Pv 1 0 0 0 0 0 0 1 1 1 1 1 1 1 ...
-u+Pv 1 1 1 1 1 1 0 2 2 2 2 2 2 2 ...
-*)
+        clear H1.
+        rewrite (A_9_8_all_18 p); cycle 1. {
+          intros q Hq; rewrite Hr2.
+          replace (i + 1 + q + 1) with (i + q + 2) by flia.
+          specialize (Huv2 q) as H1.
+          unfold "⊕" in H1.
+          rewrite Hjp in H1; [ | easy ].
+          apply Nat.add_sub_eq_r in H1.
+          unfold "⊕"; rewrite <- H1, <- Nat.add_0_r; f_equal.
+          unfold P, d2n, prop_carr, dig.
+          rewrite Hr2, Hjp; [ | easy ].
+          replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
+          unfold carry.
+          rewrite A_split_first; [ | min_n_ge ].
+          replace (S (i + q + 2)) with (i + q + 3) by flia.
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
