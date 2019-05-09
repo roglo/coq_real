@@ -3114,7 +3114,54 @@ destruct Huv2' as [Huv2'| Huv2']. {
           apply Nat.add_sub_eq_r in H1.
           rewrite <- H1, Hr2.
           replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
-          unfold carry.
+          assert (Hcp3 : ∀ k, carry v (i + p + k + 3) = 0). {
+            intros s.
+            unfold carry.
+            rewrite A_all_9. 2: {
+              intros t Ht; rewrite Hr2.
+              replace (i + p + s + 3 + t + 1) with (i + p + (s + t + 1) + 3)
+                by flia; easy.
+            }
+            apply Q.intg_small.
+            split; [ | now apply Q.sub_lt ].
+              apply Q.le_0_sub.
+              apply (Q.le_pair_mono_l 1).
+              split; [ pauto | apply Nat.neq_0_lt_0; pauto ].
+          }
+          assert (Hcp2 : carry v (i + p + 2) = 0). {
+            specialize (carry_succ 2 v (i + p + 2)) as H2.
+            rewrite Hr2 in H2.
+            assert (H : 2 < 2 ^ (2 * (i + p + 2 + 3) - (i + p + 2 + 2))). {
+              replace 2 with (2 ^ 1) at 1 by easy.
+              apply Nat.pow_lt_mono_r; [ pauto | cbn; flia ].
+            }
+            specialize (H2 H); clear H.
+            assert (H : ∀ k, v (i + p + 2 + k) ≤ 2 * (2 - 1)). {
+              now intros s; do 2 rewrite <- Nat.add_assoc.
+            }
+            specialize (H2 H); clear H.
+            replace (i + p + 2 + 1) with (i + p + 0 + 3) in H2 by flia.
+            now rewrite Hv1, Hcp3 in H2.
+          }
+          move Hcp2 after Hcp3.
+          remember (p - q - 1) as s eqn:Hs.
+          replace (i + q + 2) with (i + p - s + 1) by flia Hq Hs.
+          assert (Hsp : s < i + p) by flia Hs Hq.
+          clear Hs.
+          induction s. {
+            rewrite Nat.sub_0_r.
+            rewrite (carry_succ 2).
+            -replace (i + p + 1 + 1) with (i + p + 2) by flia.
+             now rewrite Hp, Hcp2, Hr2.
+            -rewrite Hr2.
+             replace 2 with (2 ^ 1) at 1 by easy.
+             apply Nat.pow_lt_mono_r; [ pauto | cbn; flia ].
+            -now intros; do 2 rewrite <- Nat.add_assoc; rewrite Hr2.
+          }
+          destruct (Nat.eq_dec s (i + p)) as [Hsip| Hsip]. {
+            rewrite Hsip.
+            replace (i + p - S (i + p)) with 0 by flia; cbn.
+(* ah fait chier *)
 ...
           rewrite A_split_first; [ | min_n_ge ].
           replace (S (i + q + 2)) with (i + q + 3) by flia.
