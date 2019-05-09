@@ -3146,7 +3146,7 @@ destruct Huv2' as [Huv2'| Huv2']. {
           move Hcp2 after Hcp3.
           remember (p - q - 1) as s eqn:Hs.
           replace (i + q + 2) with (i + p - s + 1) by flia Hq Hs.
-          assert (Hsp : s < i + p) by flia Hs Hq.
+          assert (Hsp : s ≤ p - 1) by flia Hs Hq.
           clear Hs.
           induction s. {
             rewrite Nat.sub_0_r.
@@ -3158,45 +3158,27 @@ destruct Huv2' as [Huv2'| Huv2']. {
              apply Nat.pow_lt_mono_r; [ pauto | cbn; flia ].
             -now intros; do 2 rewrite <- Nat.add_assoc; rewrite Hr2.
           }
-          destruct (Nat.eq_dec s (i + p)) as [Hsip| Hsip]. {
-            rewrite Hsip.
-            replace (i + p - S (i + p)) with 0 by flia; cbn.
-(* ah fait chier *)
-...
-          rewrite A_split_first; [ | min_n_ge ].
-          replace (S (i + q + 2)) with (i + q + 3) by flia.
-          rewrite Hr2.
-          destruct (lt_dec (q + 1) p) as [Hqp| Hqp]. {
-            specialize (Hjp _ Hqp) as H2.
-            replace (i + (q + 1) + 2) with (i + q + 3) in H2 by flia.
-            rewrite H2.
+          destruct (Nat.eq_dec s (p - 2)) as [Hsep| Hsep]. {
+            rewrite Hsep.
+            replace (i + p - S (p - 2) + 1) with (i + 2) by flia Hsp.
 ... (* suite ok *)
           }
-          apply Nat.nlt_ge in Hqp.
-          replace (i + q + 3) with (i + p + 2) by flia Hq Hqp.
-          rewrite Hp, Q.pair_diag; [ | easy ].
-          rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
-          rewrite <- Nat.add_0_r; f_equal.
-          rewrite A_all_9. 2: {
-            intros s Hs; rewrite Hr2.
-            now replace (i + p + 2 + s + 1) with (i + p + s + 3) by flia.
+          assert (H : s ≤ p - 1) by flia Hsp Hsep.
+          specialize (IHs H); clear H.
+          replace (i + p - S s + 1) with (i + p - s) by flia Hsp.
+          rewrite (carry_succ 2); cycle 1. {
+            rewrite Hr2.
+            replace 2 with (2 ^ 1) at 1 by easy.
+            apply Nat.pow_lt_mono_r; [ pauto | cbn; flia ].
+          } {
+            intros; rewrite Hr2.
+            rewrite <- Nat.add_sub_assoc; [ | flia Hsp ].
+            now rewrite <- Nat.add_assoc.
           }
-          apply Q.intg_small.
-          split. {
-            apply Q.le_0_mul_r; [ easy | ].
-            apply Q.le_0_sub.
-            apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
-            apply Nat.mul_le_mono_r.
-            apply Nat.neq_0_lt_0; pauto.
-          }
-          apply (Q.mul_lt_mono_pos_r 2); [ easy | ].
-          rewrite <- Q.mul_assoc.
-          rewrite (Q.mul_pair_den_num _ 2 1); [ | easy ].
-          rewrite Q.mul_1_r, Q.mul_1_l.
-          apply (Q.le_lt_trans _ 1). 2: {
-            apply (Q.lt_pair 1 1 2 1); [ easy | easy | flia ].
-          }
-          now apply Q.le_sub_l.
+          rewrite IHs, Hr2.
+          specialize (Hjp (p - s - 1)) as H2.
+          replace (i + (p - s - 1) + 2) with (i + p - s + 1) in H2 by flia Hsp.
+          rewrite H2; [ easy | flia Hsp ].
         } {
           replace (i + 1 + p + 1) with (i + p + 2) by flia.
           unfold "⊕"; rewrite Hr2.
