@@ -3095,6 +3095,15 @@ destruct Huv2' as [Huv2'| Huv2']. {
           now intros q; specialize (H1 q); apply Nat.eqb_eq in H1.
         }
         clear H1.
+(*
+  i+   1         p+2
+     u 0 1 1 1 1 0 1 1 1 1 ...
+     v 0 1 1 1 1 2 1 1 1 1 ...
+   u+v 0 2 2 2 2 2 2 2 2 2 ...
+    Pv 1 0 0 0 0 0 1 1 1 1 ...
+  u+Pv 1 1 1 1 1 0 2 2 2 2 ...
+*)
+Check A_9_8_all_18.
         rewrite (A_9_8_all_18 p); cycle 1. {
           intros q Hq; rewrite Hr2.
           replace (i + 1 + q + 1) with (i + q + 2) by flia.
@@ -3106,9 +3115,23 @@ destruct Huv2' as [Huv2'| Huv2']. {
           apply Nat.add_sub_eq_r in H1.
           rewrite <- H1, Hr2.
           replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
+          admit.
+        } {
+          replace (i + 1 + p + 1) with (i + p + 2) by flia.
+          unfold "⊕"; rewrite Hr2.
+          specialize (Huv2 p) as H1.
+          unfold "⊕" in H1.
+          replace (u (i + p + 2)) with 0 by flia Hp H1.
+          rewrite Nat.add_0_l.
+...
           unfold carry.
           rewrite A_split_first; [ | min_n_ge ].
           replace (S (i + q + 2)) with (i + q + 3) by flia.
+destruct (Nat.eq_dec q (p - 1)) as [H2| H2]. {
+  specialize (Hjp _ Hq) as H3.
+          replace (i + 1 + p + 1) with (i + p + 2) by flia.
+
+
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
