@@ -3098,13 +3098,13 @@ destruct Huv2' as [Huv2'| Huv2']. {
         rewrite (A_9_8_all_18 p); cycle 1. {
           intros q Hq; rewrite Hr2.
           replace (i + 1 + q + 1) with (i + q + 2) by flia.
+          unfold "⊕", P, d2n, prop_carr, dig.
+          rewrite Hjp; [ | easy ].
           specialize (Huv2 q) as H1.
           unfold "⊕" in H1.
           rewrite Hjp in H1; [ | easy ].
           apply Nat.add_sub_eq_r in H1.
-          unfold "⊕"; rewrite <- H1, <- Nat.add_0_r; f_equal.
-          unfold P, d2n, prop_carr, dig.
-          rewrite Hr2, Hjp; [ | easy ].
+          rewrite <- H1, Hr2.
           replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
           unfold carry.
           rewrite A_split_first; [ | min_n_ge ].
