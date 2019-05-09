@@ -3115,6 +3115,7 @@ destruct Huv2' as [Huv2'| Huv2']. {
           rewrite <- H1, Hr2.
           replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
           unfold carry.
+...
           rewrite A_split_first; [ | min_n_ge ].
           replace (S (i + q + 2)) with (i + q + 3) by flia.
           rewrite Hr2.
