@@ -3144,6 +3144,7 @@ destruct Huv2' as [Huv2'| Huv2']. {
             now rewrite Hv1, Hcp3 in H2.
           }
           move Hcp2 after Hcp3.
+...
           remember (p - q - 1) as s eqn:Hs.
           replace (i + q + 2) with (i + p - s + 1) by flia Hq Hs.
           assert (Hsp : s ≤ p - 1) by flia Hs Hq.
