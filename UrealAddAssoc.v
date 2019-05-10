@@ -3161,6 +3161,19 @@ destruct Huv2' as [Huv2'| Huv2']. {
           destruct (Nat.eq_dec s (p - 2)) as [Hsep| Hsep]. {
             rewrite Hsep.
             replace (i + p - S (p - 2) + 1) with (i + 2) by flia Hsp.
+rewrite (carry_succ 2); cycle 1. {
+  rewrite Hr2.
+  replace 2 with (2 ^ 1) at 1 by easy.
+  apply Nat.pow_lt_mono_r; [ pauto | cbn; flia ].
+} {
+  intros; rewrite Hr2.
+  now rewrite <- Nat.add_assoc.
+}
+rewrite Hr2, Nat.add_shuffle0.
+rewrite Hjp; [ | flia Hsp ].
+replace (i + 1 + 2) with (i + 3) by flia.
+replace (carry v (i + 3)) with 1; [ easy | symmetry ].
+(* c'est une fuite en avant *)
 ... (* suite ok *)
           }
           assert (H : s ≤ p - 1) by flia Hsp Hsep.
