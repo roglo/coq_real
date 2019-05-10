@@ -3187,17 +3187,13 @@ destruct Huv2' as [Huv2'| Huv2']. {
           assert (H : q < p) by flia Hq H1.
           move H before Hq; clear Hq H1; rename H into Hq.
           replace (i + S p + 2) with (i + p + 3) in Hp, Hcp2 by flia.
-rewrite <- (carry_nth_carry 2 (p - q)). {
+rewrite <- (carry_nth_carry 2 (p - q - 1)). {
 (* faut voir si ça marche, ça ; c'est pas dit *)
 remember (p - q) as s eqn:Hs.
-assert (H : 0 < s) by flia Hq Hs.
-move H before Hq; clear Hq Hs; rename H into Hq.
-induction s; [ easy | ].
-clear Hq.
+induction s; [ flia Hq Hs | ].
 destruct s. {
-  rewrite (carry_nth_carry 2).
+  cbn.
   rewrite <- (carry_nth_carry 2 42).
-  clear IHs; cbn.
   (* mouais, j'ai des doutes *)
 ...
 remember 1 as t eqn:Ht in |-*.
