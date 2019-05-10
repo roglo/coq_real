@@ -2891,35 +2891,34 @@ Theorem fold_carry {r : radix} : ∀ u i,
   Q.intg (A i (min_n (i + carry_cases u i)) u) = carry u i.
 Proof. easy. Qed.
 
-(* mouais... faut voir avec les bonnes hypothèses, parce que, celles-là,
-   j'en suis pas sûr
-Theorem several_9s_gt_9_carry {r : radix} : ∀ m i j u,
+Fixpoint carry_nth {r : radix} n u i :=
+  match n with
+  | 0 => carry u i
+  | S n' => (u (i + 1) + carry_nth n' u (i + 1)) / rad
+  end.
+
+Theorem carry_nth_carry {r : radix} : ∀ m n u i,
   m < rad ^ (rad * (i + 3) - (i + 2))
   → (∀ k, u (i + k) ≤ m * (rad - 1))
-  → (∀ k, k < j → u (i + k) = rad - 1)
-  → u (i + j) ≥ rad
-  → ∀ k, k < j → carry u (i + k) = 1.
+  → carry_nth n u i = carry u i.
 Proof.
-intros * Hm Humr Hujr Hur k Hkj.
-revert i j Hm Humr Hujr Hur Hkj.
-induction k; intros. {
-  rewrite Nat.add_0_r.
-  unfold carry.
-  unfold A.
+intros * Hmr Hur.
+specialize radix_ne_0 as Hr.
+revert i Hmr Hur.
+induction n; intros; [ easy | cbn ].
+rewrite (carry_succ m); [ | easy | easy ].
+rewrite IHn; [ easy | | now intros; rewrite <- Nat.add_assoc ].
+eapply lt_le_trans; [ apply Hmr | ].
+apply Nat.pow_le_mono_r; [ easy | ].
+setoid_rewrite Nat.add_shuffle0.
+rewrite (Nat.sub_add_distr _ (i + 2)).
+rewrite Nat_sub_sub_swap.
+apply Nat.sub_le_mono_r.
+rewrite (Nat.mul_add_distr_l _ (i + 3)), Nat.mul_1_r.
+flia Hr.
+Qed.
+
 ...
-}
-destruct j; [ flia Hkj | ].
-replace (i + S k) with (S i + k) by flia.
-replace (i + S j) with (S i + j) in Hj, Hur by flia.
-apply Nat.succ_lt_mono in Hkj.
-apply (IHk _ j); [ | | easy | easy ]. {
-  eapply le_trans; [ apply Hj | flia ].
-}
-intros l Hl.
-replace (S i + l) with (i + S l) by flia.
-apply Hujr; flia Hl.
-...
-*)
 
 Theorem rad_2_glop {r : radix} : ∀ m j k u v i n,
   rad = 2
