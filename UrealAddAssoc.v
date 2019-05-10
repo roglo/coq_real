@@ -3210,37 +3210,70 @@ destruct Huv2' as [Huv2'| Huv2']. {
               rewrite Nat.add_shuffle0, Hr2.
               rewrite Hjp; [ | flia ].
               replace (i + 1 + 2) with (i + 3) by flia.
-rewrite (carry_succ 2). {
-  destruct p. {
-    replace (i + 3 + 1) with (i + 0 + 4) by flia.
-    rewrite Hp, Hr2.
-    rewrite Nat_div_add_same_l; [ | easy ].
-    rewrite Nat.add_assoc, Nat_div_add_same_l; [ | easy ].
-...
-              remember (carry v (i + 3)) as c eqn:Hc; symmetry in Hc.
-              destruct c. {
-                exfalso.
-                rewrite (carry_succ 2) in Hc. {
-                  destruct p. {
-                    replace (i + 3 + 1) with (i + 0 + 4) in Hc by flia.
-                    rewrite Hp, Hr2 in Hc.
-                    now rewrite Nat_div_add_same_l in Hc.
+              rewrite (carry_succ 2). {
+                destruct p. {
+                  rewrite Nat.add_0_r in Hp.
+                  replace (i + 3 + 1) with (i + 4) by flia.
+                  rewrite Hp, Hr2.
+                  rewrite Nat_div_add_same_l; [ | easy ].
+                  rewrite Nat.add_assoc, Nat_div_add_same_l; [ | easy ].
+                  specialize (carry_upper_bound_for_adds 2 v i) as H1.
+                  assert (H : 2 ≠ 0) by easy.
+                  specialize (H1 H); clear H.
+                  assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+                    now intros; rewrite Hr2, <- Nat.add_assoc.
                   }
-                  replace (i + 3 + 1) with (i + 2 + 2) in Hc by flia.
-                  rewrite Hr2, Hjp in Hc; [ | flia ].
-                  replace (i + 2 + 2) with (i + 4) in Hc by flia.
-                  rewrite (carry_succ 2) in Hc. {
-                    destruct p. {
-                      replace (i + 4 + 1) with (i + 1 + 4) in Hc by flia.
-                      rewrite Hp, Hr2 in Hc.
-                      rewrite Nat_div_add_same_l in Hc; [ | easy ].
-                      rewrite Nat.add_assoc in Hc.
-                      now rewrite Nat_div_add_same_l in Hc.
+                  specialize (H1 H 4); clear H.
+                  remember (carry v (i + 4)) as c eqn:Hc.
+                  destruct c; [ easy | ].
+                  destruct c; [ easy | flia H1 ].
+                }
+                replace (i + S p + 4) with (i + p + 5) in Hp by flia.
+                replace (i + 3 + 1) with (i + 2 + 2) at 1 by flia.
+                replace (i + 3 + 1) with (i + 4) by flia.
+                rewrite Hr2, Hjp; [ | flia ].
+                rewrite (carry_succ 2). {
+                  destruct p. {
+                    rewrite Nat.add_0_r in Hp.
+                    replace (i + 4 + 1) with (i + 5) by flia.
+                    rewrite Hp, Hr2.
+                    rewrite Nat_div_add_same_l; [ | easy ].
+                    rewrite Nat.add_assoc, Nat_div_add_same_l; [ | easy ].
+                    rewrite Nat.add_assoc, Nat_div_add_same_l; [ | easy ].
+                    specialize (carry_upper_bound_for_adds 2 v i) as H1.
+                    assert (H : 2 ≠ 0) by easy.
+                    specialize (H1 H); clear H.
+                    assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+                      now intros; rewrite Hr2, <- Nat.add_assoc.
                     }
-                    replace (i + 4 + 1) with (i + 3 + 2) in Hc by flia.
-                    rewrite Hjp, Hr2 in Hc; [ | flia ].
-                    rewrite (carry_succ 2) in Hc. {
-(* etc. *)
+                    specialize (H1 H 5); clear H.
+                    remember (carry v (i + 5)) as c eqn:Hc.
+                    destruct c; [ easy | ].
+                    destruct c; [ easy | flia H1 ].
+                  }
+                  replace (i + S p + 5) with (i + p + 6) in Hp by flia.
+                  replace (i + 4 + 1) with (i + 3 + 2) at 1 by flia.
+                  replace (i + 4 + 1) with (i + 5) by flia.
+                  rewrite Hr2, Hjp; [ | flia ].
+                  rewrite (carry_succ 2). {
+                    destruct p. {
+                      rewrite Nat.add_0_r in Hp.
+                      replace (i + 5 + 1) with (i + 6) by flia.
+                      rewrite Hp, Hr2.
+                      rewrite Nat_div_add_same_l; [ | easy ].
+                      rewrite Nat.add_assoc, Nat_div_add_same_l; [ | easy ].
+                      rewrite Nat.add_assoc, Nat_div_add_same_l; [ | easy ].
+                      specialize (carry_upper_bound_for_adds 2 v i) as H1.
+                      assert (H : 2 ≠ 0) by easy.
+                      specialize (H1 H); clear H.
+                      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+                        now intros; rewrite Hr2, <- Nat.add_assoc.
+                      }
+                      specialize (H1 H 6); clear H.
+                      remember (carry v (i + 6)) as c eqn:Hc.
+                      destruct c; [ easy | ].
+                      destruct c; [ easy | flia H1 ].
+                    }
 ...
           }
 ... suite ok
