@@ -2918,8 +2918,6 @@ rewrite (Nat.mul_add_distr_l _ (i + 3)), Nat.mul_1_r.
 flia Hr.
 Qed.
 
-...
-
 Theorem rad_2_glop {r : radix} : ∀ m j k u v i n,
   rad = 2
   → i + 3 ≤ n
@@ -3189,6 +3187,8 @@ destruct Huv2' as [Huv2'| Huv2']. {
           assert (H : q < p) by flia Hq H1.
           move H before Hq; clear Hq H1; rename H into Hq.
           replace (i + S p + 2) with (i + p + 3) in Hp, Hcp2 by flia.
+rewrite <- (carry_nth_carry 2 (p - q)).
+(* faut voir si ça marche, ça ; c'est pas dit *)
 ...
 remember 1 as t eqn:Ht in |-*.
 rewrite Ht at 2.
