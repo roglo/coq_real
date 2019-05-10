@@ -3209,6 +3209,38 @@ destruct Huv2' as [Huv2'| Huv2']. {
             rewrite (carry_succ 2). {
               rewrite Nat.add_shuffle0, Hr2.
               rewrite Hjp; [ | flia ].
+              replace (i + 1 + 2) with (i + 3) by flia.
+rewrite (carry_succ 2). {
+  destruct p. {
+    replace (i + 3 + 1) with (i + 0 + 4) by flia.
+    rewrite Hp, Hr2.
+    rewrite Nat_div_add_same_l; [ | easy ].
+    rewrite Nat.add_assoc, Nat_div_add_same_l; [ | easy ].
+...
+              remember (carry v (i + 3)) as c eqn:Hc; symmetry in Hc.
+              destruct c. {
+                exfalso.
+                rewrite (carry_succ 2) in Hc. {
+                  destruct p. {
+                    replace (i + 3 + 1) with (i + 0 + 4) in Hc by flia.
+                    rewrite Hp, Hr2 in Hc.
+                    now rewrite Nat_div_add_same_l in Hc.
+                  }
+                  replace (i + 3 + 1) with (i + 2 + 2) in Hc by flia.
+                  rewrite Hr2, Hjp in Hc; [ | flia ].
+                  replace (i + 2 + 2) with (i + 4) in Hc by flia.
+                  rewrite (carry_succ 2) in Hc. {
+                    destruct p. {
+                      replace (i + 4 + 1) with (i + 1 + 4) in Hc by flia.
+                      rewrite Hp, Hr2 in Hc.
+                      rewrite Nat_div_add_same_l in Hc; [ | easy ].
+                      rewrite Nat.add_assoc in Hc.
+                      now rewrite Nat_div_add_same_l in Hc.
+                    }
+                    replace (i + 4 + 1) with (i + 3 + 2) in Hc by flia.
+                    rewrite Hjp, Hr2 in Hc; [ | flia ].
+                    rewrite (carry_succ 2) in Hc. {
+(* etc. *)
 ...
           }
 ... suite ok
