@@ -2897,6 +2897,18 @@ Theorem several_9s_gt_9_carry {r : radix} : ∀ i j u,
   → ∀ k, k < j → carry u (i + k) = 1.
 Proof.
 intros * Hujr Hur k Hkj.
+revert i j Hujr Hur Hkj.
+induction k; intros. {
+...
+}
+destruct j; [ flia Hkj | ].
+replace (i + S k) with (S i + k) by flia.
+replace (i + S j) with (S i + j) in Hur by flia.
+apply Nat.succ_lt_mono in Hkj.
+apply (IHk _ j); [ | easy | easy ].
+intros l Hl.
+replace (S i + l) with (i + S l) by flia.
+apply Hujr; flia Hl.
 ...
 
 Theorem rad_2_glop {r : radix} : ∀ m j k u v i n,
