@@ -3191,68 +3191,54 @@ destruct Huv2' as [Huv2'| Huv2']. {
           move H before Hq; clear Hq H1; rename H into Hq.
           replace (i + S p + 2) with (i + p + 3) in Hp, Hcp2 by flia.
 (*1*)
-          rewrite (carry_succ 2). {
-            replace (i + q + 2 + 1) with (i + (q + 1) + 2) at 1 by flia.
-            replace (i + q + 2 + 1) with (i + q + 3) by flia.
-            rewrite Hr2, Hjp; [ | flia Hq ].
-            destruct (Nat.eq_dec (q + 1) p) as [H1| H1]. {
-              rewrite (carry_succ 2). {
-                replace (i + q + 3 + 1) with (i + p + 3) by flia H1.
-                now rewrite Hr2, Hp, Hcp2.
-              } {
-                rewrite Hr2.
-                replace 2 with (2 ^ 1) at 1 by easy.
-                apply Nat.pow_lt_mono_r; [ pauto | flia ].
-              }
-              now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
-            }
-            assert (H : q + 1 < p) by flia Hq H1.
-            move H before Hq; clear Hq H1; rename H into Hq.
-(*2*)
-          rewrite (carry_succ 2). {
-            replace (i + q + 3 + 1) with (i + (q + 2) + 2) at 1 by flia.
-            replace (i + q + 3 + 1) with (i + q + 4) by flia.
-            rewrite Hr2, Hjp; [ | flia Hq ].
-            destruct (Nat.eq_dec (q + 2) p) as [H1| H1]. {
-              rewrite (carry_succ 2). {
-                replace (i + q + 4 + 1) with (i + p + 3) by flia H1.
-                now rewrite Hr2, Hp, Hcp2.
-              } {
-                rewrite Hr2.
-                replace 2 with (2 ^ 1) at 1 by easy.
-                apply Nat.pow_lt_mono_r; [ pauto | flia ].
-              }
-              now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
-            }
-            assert (H : q + 2 < p) by flia Hq H1.
-            move H before Hq; clear Hq H1; rename H into Hq.
-... suite ok
-          assert (H : q < p) by flia Hq.
-          specialize (IHq H); clear H.
-          rewrite (carry_succ 2) in IHq. {
-            replace (i + q + 2 + 1) with (i + S q + 2) in IHq by flia.
-            rewrite Hjp in IHq; [ | flia Hq ].
-            rewrite Hr2 in IHq.
-            remember (carry v (i + S q + 2)) as c eqn:Hc.
-            destruct c; [ flia IHq | ].
-            destruct c; [ easy | exfalso ].
-            specialize (carry_upper_bound_for_adds 2 v i) as H2.
-            rewrite Hr2 in H2.
-            assert (H : 2 ≠ 0) by easy.
-            specialize (H2 H); clear H.
-            assert (H : ∀ k, v (i + k + 1) ≤ 2 * (2 - 1)). {
-              now intros; rewrite <- Nat.add_assoc.
-            }
-            specialize (H2 H (S q + 2)); clear H.
-            rewrite Nat.add_assoc in H2; flia Hc H2.
-          } {
+          rewrite (carry_succ 2); cycle 1. {
             rewrite Hr2.
             replace 2 with (2 ^ 1) at 1 by easy.
             apply Nat.pow_lt_mono_r; [ pauto | flia ].
           } {
-            intros s; rewrite Hr2.
-            now do 2 rewrite <- Nat.add_assoc.
+            now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
           }
+          replace (i + q + 2 + 1) with (i + (q + 1) + 2) at 1 by flia.
+          replace (i + q + 2 + 1) with (i + q + 3) by flia.
+          rewrite Hr2, Hjp; [ | flia Hq ].
+          destruct (Nat.eq_dec (q + 1) p) as [H1| H1]. {
+            rewrite (carry_succ 2). {
+              replace (i + q + 3 + 1) with (i + p + 3) by flia H1.
+              now rewrite Hr2, Hp, Hcp2.
+            } {
+              rewrite Hr2.
+              replace 2 with (2 ^ 1) at 1 by easy.
+              apply Nat.pow_lt_mono_r; [ pauto | flia ].
+            }
+            now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+          }
+          assert (H : q + 1 < p) by flia Hq H1.
+          move H before Hq; clear Hq H1; rename H into Hq.
+(*2*)
+          rewrite (carry_succ 2); cycle 1. {
+            rewrite Hr2.
+            replace 2 with (2 ^ 1) at 1 by easy.
+            apply Nat.pow_lt_mono_r; [ pauto | flia ].
+          } {
+            now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+          }
+          replace (i + q + 3 + 1) with (i + (q + 2) + 2) at 1 by flia.
+          replace (i + q + 3 + 1) with (i + q + 4) by flia.
+          rewrite Hr2, Hjp; [ | flia Hq ].
+          destruct (Nat.eq_dec (q + 2) p) as [H1| H1]. {
+            rewrite (carry_succ 2). {
+              replace (i + q + 4 + 1) with (i + p + 3) by flia H1.
+              now rewrite Hr2, Hp, Hcp2.
+            } {
+              rewrite Hr2.
+              replace 2 with (2 ^ 1) at 1 by easy.
+              apply Nat.pow_lt_mono_r; [ pauto | flia ].
+            }
+            now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+          }
+          assert (H : q + 2 < p) by flia Hq H1.
+          move H before Hq; clear Hq H1; rename H into Hq.
+... suite ok
         } {
           replace (i + 1 + p + 1) with (i + p + 2) by flia.
           unfold "⊕"; rewrite Hr2.
