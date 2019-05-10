@@ -2891,6 +2891,14 @@ Theorem fold_carry {r : radix} : ∀ u i,
   Q.intg (A i (min_n (i + carry_cases u i)) u) = carry u i.
 Proof. easy. Qed.
 
+Theorem several_9s_gt_9_carry {r : radix} : ∀ i j u,
+  (∀ k, k < j → u (i + k) = rad - 1)
+  → u (i + j) ≥ rad
+  → ∀ k, k < j → carry u (i + k) = 1.
+Proof.
+intros * Hujr Hur k Hkj.
+...
+
 Theorem rad_2_glop {r : radix} : ∀ m j k u v i n,
   rad = 2
   → i + 3 ≤ n
@@ -3144,55 +3152,11 @@ destruct Huv2' as [Huv2'| Huv2']. {
             now rewrite Hv1, Hcp3 in H2.
           }
           move Hcp2 after Hcp3.
+          rewrite Nat.add_shuffle0 in Hp |-*.
 ...
-          remember (p - q - 1) as s eqn:Hs.
-          replace (i + q + 2) with (i + p - s + 1) by flia Hq Hs.
-          assert (Hsp : s ≤ p - 1) by flia Hs Hq.
-          clear Hs.
-          induction s. {
-            rewrite Nat.sub_0_r.
-            rewrite (carry_succ 2).
-            -replace (i + p + 1 + 1) with (i + p + 2) by flia.
-             now rewrite Hp, Hcp2, Hr2.
-            -rewrite Hr2.
-             replace 2 with (2 ^ 1) at 1 by easy.
-             apply Nat.pow_lt_mono_r; [ pauto | cbn; flia ].
-            -now intros; do 2 rewrite <- Nat.add_assoc; rewrite Hr2.
-          }
-          destruct (Nat.eq_dec s (p - 2)) as [Hsep| Hsep]. {
-            rewrite Hsep.
-            replace (i + p - S (p - 2) + 1) with (i + 2) by flia Hsp.
-rewrite (carry_succ 2); cycle 1. {
-  rewrite Hr2.
-  replace 2 with (2 ^ 1) at 1 by easy.
-  apply Nat.pow_lt_mono_r; [ pauto | cbn; flia ].
-} {
-  intros; rewrite Hr2.
-  now rewrite <- Nat.add_assoc.
-}
-rewrite Hr2, Nat.add_shuffle0.
-rewrite Hjp; [ | flia Hsp ].
-replace (i + 1 + 2) with (i + 3) by flia.
-replace (carry v (i + 3)) with 1; [ easy | symmetry ].
-(* c'est une fuite en avant *)
-... (* suite ok *)
-          }
-          assert (H : s ≤ p - 1) by flia Hsp Hsep.
-          specialize (IHs H); clear H.
-          replace (i + p - S s + 1) with (i + p - s) by flia Hsp.
-          rewrite (carry_succ 2); cycle 1. {
-            rewrite Hr2.
-            replace 2 with (2 ^ 1) at 1 by easy.
-            apply Nat.pow_lt_mono_r; [ pauto | cbn; flia ].
-          } {
-            intros; rewrite Hr2.
-            rewrite <- Nat.add_sub_assoc; [ | flia Hsp ].
-            now rewrite <- Nat.add_assoc.
-          }
-          rewrite IHs, Hr2.
-          specialize (Hjp (p - s - 1)) as H2.
-          replace (i + (p - s - 1) + 2) with (i + p - s + 1) in H2 by flia Hsp.
-          rewrite H2; [ easy | flia Hsp ].
+          apply (several_9s_gt_9_carry _ p); [ | flia Hp Hr2 | easy ].
+          intros s Hs; rewrite Nat.add_shuffle0, Hr2.
+          now apply Hjp.
         } {
           replace (i + 1 + p + 1) with (i + p + 2) by flia.
           unfold "⊕"; rewrite Hr2.
