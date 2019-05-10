@@ -3190,6 +3190,7 @@ destruct Huv2' as [Huv2'| Huv2']. {
           assert (H : q < p) by flia Hq H1.
           move H before Hq; clear Hq H1; rename H into Hq.
           replace (i + S p + 2) with (i + p + 3) in Hp, Hcp2 by flia.
+...
 remember 1 as t eqn:Ht in |-*.
 rewrite Ht at 2.
 assert (H : q + t < p + 1) by flia Hq Ht.
