@@ -3177,9 +3177,37 @@ destruct Huv2' as [Huv2'| Huv2']. {
           clear H1.
           induction q. {
             rewrite Nat.add_0_r.
+            destruct p; [ flia Hq | clear Hq ].
+            clear - Hr2 Hjp Hp Hv.
+            revert i Hv Hjp Hp.
+            induction p; intros. {
+              rewrite Nat.add_shuffle0 in Hp.
+              rewrite (carry_succ 2). {
+                rewrite Hp, Hr2.
+                rewrite Nat_div_add_same_l; [ | easy ].
+                rewrite <- Nat.add_assoc.
+                specialize (carry_upper_bound_for_adds 2 v i) as H1.
+                assert (H : 2 ≠ 0) by flia.
+                specialize (H1 H); clear H.
+                rewrite Hr2 in H1.
+                assert (H : ∀ k, v (i + k + 1) ≤ 2 * (2 - 1)). {
+                  now intros; rewrite <- Nat.add_assoc.
+                }
+                specialize (H1 H (2 + 1)); clear H.
+                remember (carry v (i + (2 + 1))) as c eqn:Hc.
+                destruct c; [ easy | ].
+                destruct c; [ easy | flia H1 ].
+              } {
+                rewrite Hr2.
+                replace 2 with (2 ^ 1) at 1 by easy.
+                apply Nat.pow_lt_mono_r; [ pauto | flia ].
+              } {
+                intros s; rewrite Hr2.
+                now rewrite <- Nat.add_assoc.
+              }
+            }
 ...
           }
-... suite ok
           assert (H : q < p) by flia Hq.
           specialize (IHq H); clear H.
           rewrite (carry_succ 2) in IHq. {
