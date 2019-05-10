@@ -2891,24 +2891,31 @@ Theorem fold_carry {r : radix} : ∀ u i,
   Q.intg (A i (min_n (i + carry_cases u i)) u) = carry u i.
 Proof. easy. Qed.
 
-Theorem several_9s_gt_9_carry {r : radix} : ∀ i j u,
-  (∀ k, k < j → u (i + k) = rad - 1)
+Theorem several_9s_gt_9_carry {r : radix} : ∀ m i j u,
+  m < rad ^ (rad * (i + 3) - (i + 2))
+  → (∀ k, k < j → u (i + k) = rad - 1)
   → u (i + j) ≥ rad
   → ∀ k, k < j → carry u (i + k) = 1.
 Proof.
-intros * Hujr Hur k Hkj.
-revert i j Hujr Hur Hkj.
+intros * Hm Hujr Hur k Hkj.
+revert i j Hm Hujr Hur Hkj.
 induction k; intros. {
-...
+  rewrite Nat.add_0_r.
+  unfold carry.
+
+  rewrite (carry_succ m).
 }
 destruct j; [ flia Hkj | ].
 replace (i + S k) with (S i + k) by flia.
 replace (i + S j) with (S i + j) in Hur by flia.
 apply Nat.succ_lt_mono in Hkj.
-apply (IHk _ j); [ | easy | easy ].
-intros l Hl.
-replace (S i + l) with (i + S l) by flia.
-apply Hujr; flia Hl.
+apply (IHk _ j); [ | | easy | easy ]. {
+...
+} {
+  intros l Hl.
+  replace (S i + l) with (i + S l) by flia.
+  apply Hujr; flia Hl.
+}
 ...
 
 Theorem rad_2_glop {r : radix} : ∀ m j k u v i n,
