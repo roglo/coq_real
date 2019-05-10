@@ -3195,6 +3195,8 @@ move H before Hq; clear Hq Hs; rename H into Hq.
 induction s; [ easy | ].
 clear Hq.
 destruct s. {
+  rewrite (carry_nth_carry 2).
+  rewrite <- (carry_nth_carry 2 42).
   clear IHs; cbn.
   (* mouais, j'ai des doutes *)
 ...
