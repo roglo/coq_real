@@ -2891,32 +2891,35 @@ Theorem fold_carry {r : radix} : ∀ u i,
   Q.intg (A i (min_n (i + carry_cases u i)) u) = carry u i.
 Proof. easy. Qed.
 
+(* mouais... faut voir avec les bonnes hypothèses, parce que, celles-là,
+   j'en suis pas sûr
 Theorem several_9s_gt_9_carry {r : radix} : ∀ m i j u,
   m < rad ^ (rad * (i + 3) - (i + 2))
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
   → (∀ k, k < j → u (i + k) = rad - 1)
   → u (i + j) ≥ rad
   → ∀ k, k < j → carry u (i + k) = 1.
 Proof.
-intros * Hm Hujr Hur k Hkj.
-revert i j Hm Hujr Hur Hkj.
+intros * Hm Humr Hujr Hur k Hkj.
+revert i j Hm Humr Hujr Hur Hkj.
 induction k; intros. {
   rewrite Nat.add_0_r.
   unfold carry.
-
-  rewrite (carry_succ m).
+  unfold A.
+...
 }
 destruct j; [ flia Hkj | ].
 replace (i + S k) with (S i + k) by flia.
-replace (i + S j) with (S i + j) in Hur by flia.
+replace (i + S j) with (S i + j) in Hj, Hur by flia.
 apply Nat.succ_lt_mono in Hkj.
 apply (IHk _ j); [ | | easy | easy ]. {
-...
-} {
-  intros l Hl.
-  replace (S i + l) with (i + S l) by flia.
-  apply Hujr; flia Hl.
+  eapply le_trans; [ apply Hj | flia ].
 }
+intros l Hl.
+replace (S i + l) with (i + S l) by flia.
+apply Hujr; flia Hl.
 ...
+*)
 
 Theorem rad_2_glop {r : radix} : ∀ m j k u v i n,
   rad = 2
@@ -3171,11 +3174,38 @@ destruct Huv2' as [Huv2'| Huv2']. {
             now rewrite Hv1, Hcp3 in H2.
           }
           move Hcp2 after Hcp3.
-          rewrite Nat.add_shuffle0 in Hp |-*.
+          clear H1.
+          induction q. {
+            rewrite Nat.add_0_r.
 ...
-          apply (several_9s_gt_9_carry _ p); [ | flia Hp Hr2 | easy ].
-          intros s Hs; rewrite Nat.add_shuffle0, Hr2.
-          now apply Hjp.
+          }
+... suite ok
+          assert (H : q < p) by flia Hq.
+          specialize (IHq H); clear H.
+          rewrite (carry_succ 2) in IHq. {
+            replace (i + q + 2 + 1) with (i + S q + 2) in IHq by flia.
+            rewrite Hjp in IHq; [ | flia Hq ].
+            rewrite Hr2 in IHq.
+            remember (carry v (i + S q + 2)) as c eqn:Hc.
+            destruct c; [ flia IHq | ].
+            destruct c; [ easy | exfalso ].
+            specialize (carry_upper_bound_for_adds 2 v i) as H2.
+            rewrite Hr2 in H2.
+            assert (H : 2 ≠ 0) by easy.
+            specialize (H2 H); clear H.
+            assert (H : ∀ k, v (i + k + 1) ≤ 2 * (2 - 1)). {
+              now intros; rewrite <- Nat.add_assoc.
+            }
+            specialize (H2 H (S q + 2)); clear H.
+            rewrite Nat.add_assoc in H2; flia Hc H2.
+          } {
+            rewrite Hr2.
+            replace 2 with (2 ^ 1) at 1 by easy.
+            apply Nat.pow_lt_mono_r; [ pauto | flia ].
+          } {
+            intros s; rewrite Hr2.
+            now do 2 rewrite <- Nat.add_assoc.
+          }
         } {
           replace (i + 1 + p + 1) with (i + p + 2) by flia.
           unfold "⊕"; rewrite Hr2.
