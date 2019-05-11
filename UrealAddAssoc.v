@@ -3258,6 +3258,16 @@ destruct Huv2' as [Huv2'| Huv2']. {
           apply Nat.mul_le_mono_r.
           apply Nat.neq_0_lt_0; pauto.
         }
+        apply Q.sub_lt, Q.lt_0_pair.
+        destruct (le_dec (i + 1 + p + 1) (n - 1)); pauto.
+      }
+      destruct H1 as (p1 & Hjp1 & Hp1).
+      apply Nat.eqb_neq in Hp1.
+      assert (H : ∀ j, j < p1 → v (i + p + j + 3) = 1). {
+        intros q Hq; specialize (Hjp1 q Hq).
+        now apply Nat.eqb_eq in Hjp1.
+      }
+      move H before Hjp1; clear Hjp1; rename H into Hjp1.
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
