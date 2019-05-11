@@ -3117,6 +3117,7 @@ destruct Huv2' as [Huv2'| Huv2']. {
       apply Q.lt_add_lt_sub_l.
       replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
       apply Q.mul_lt_mono_pos_r; [ easy | ].
+...
       destruct (LPO_fst (λ k, Nat.eqb (v (i + p + k + 3)) 1)) as [H1| H1]. {
         assert (Hv1 : ∀ k, v (i + p + k + 3) = 1). {
           now intros q; specialize (H1 q); apply Nat.eqb_eq in H1.
