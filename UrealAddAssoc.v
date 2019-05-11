@@ -3117,6 +3117,29 @@ destruct Huv2' as [Huv2'| Huv2']. {
       apply Q.lt_add_lt_sub_l.
       replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
       apply Q.mul_lt_mono_pos_r; [ easy | ].
+(**)
+rewrite A_split_first; [ | flia Hin ].
+replace (S (i + 1)) with (i + 2) by flia.
+specialize (Huv2 0) as H1.
+rewrite Nat.add_0_r in H1.
+destruct p. {
+  rewrite Nat.add_0_r in Hp; clear Hjp.
+  unfold "⊕" in H1.
+  unfold "⊕" at 1.
+  replace (u (i + 2)) with 0 by flia Hp H1.
+  rewrite Nat.add_0_l, Hr2.
+  unfold P at 1, d2n, prop_carr, dig.
+  rewrite Hp, Hr2, Nat_mod_add_same_l; [ | easy ].
+  rewrite Nat.mod_small. 2: {
+    specialize (carry_upper_bound_for_adds 2 v i) as H2.
+    assert (H : 2 ≠ 0) by flia.
+    specialize (H2 H); clear H.
+    assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+      now intros; rewrite Hr2, <- Nat.add_assoc.
+    }
+    now specialize (H2 H); clear H.
+  }
+...
       destruct (LPO_fst (λ k, Nat.eqb (v (i + p + k + 3)) 1)) as [H1| H1]. {
         assert (Hv1 : ∀ k, v (i + p + k + 3) = 1). {
           now intros q; specialize (H1 q); apply Nat.eqb_eq in H1.
