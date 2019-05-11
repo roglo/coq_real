@@ -3187,6 +3187,7 @@ destruct Huv2' as [Huv2'| Huv2']. {
           assert (H : q < p) by flia Hq H1.
           move H before Hq; clear Hq H1; rename H into Hq.
           replace (i + S p + 2) with (i + p + 3) in Hp, Hcp2 by flia.
+(*
 rewrite <- (carry_nth_carry 2 (p - q - 1)). {
 (* faut voir si ça marche, ça ; c'est pas dit *)
 remember (p - q) as s eqn:Hs.
@@ -3196,6 +3197,7 @@ destruct s. {
   rewrite <- (carry_nth_carry 2 42).
   (* mouais, j'ai des doutes *)
 ...
+*)
 remember 1 as t eqn:Ht in |-*.
 rewrite Ht at 2.
 assert (H : q + t < p + 1) by flia Hq Ht.
@@ -3229,6 +3231,7 @@ replace (i + q + S t) with (i + q + t + 1) by flia.
           replace (i + q + t + 2) with (i + q + S t + 1) by flia.
           remember (S t) as t' eqn:Ht'.
           clear t Ht'; rename t' into t.
+          replace (carry v (i + q + t + 1)) with 1; [ easy | symmetry ].
 (*2*)
           rewrite (carry_succ 2); cycle 1. {
             rewrite Hr2.
@@ -3256,6 +3259,7 @@ replace (i + q + S t) with (i + q + t + 1) by flia.
           replace (i + q + t + 2) with (i + q + S t + 1) by flia.
           remember (S t) as t' eqn:Ht'.
           clear t Ht'; rename t' into t.
+          replace (carry v (i + q + t + 1)) with 1; [ easy | symmetry ].
 (*3*)
           rewrite (carry_succ 2); cycle 1. {
             rewrite Hr2.
@@ -3283,6 +3287,7 @@ replace (i + q + S t) with (i + q + t + 1) by flia.
           replace (i + q + t + 2) with (i + q + S t + 1) by flia.
           remember (S t) as t' eqn:Ht'.
           clear t Ht'; rename t' into t.
+          replace (carry v (i + q + t + 1)) with 1; [ easy | symmetry ].
 ... suite ok
         } {
           replace (i + 1 + p + 1) with (i + p + 2) by flia.
