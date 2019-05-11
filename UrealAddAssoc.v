@@ -3152,6 +3152,13 @@ destruct Huv2' as [Huv2'| Huv2']. {
         replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
         apply Q.mul_lt_mono_pos_r; [ easy | ].
         clear Huv1 Hp H1.
+(*   u . . . . . .
+
+     v . . . . . .
+         ←1
+
+   u+v . 2 2 2 2 2 ...
+ *)
 ...
       destruct (LPO_fst (λ k, Nat.eqb (v (i + p + k + 3)) 1)) as [H1| H1]. {
         assert (Hv1 : ∀ k, v (i + p + k + 3) = 1). {
