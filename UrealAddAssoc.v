@@ -3118,27 +3118,40 @@ destruct Huv2' as [Huv2'| Huv2']. {
       replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
       apply Q.mul_lt_mono_pos_r; [ easy | ].
 (**)
-rewrite A_split_first; [ | flia Hin ].
-replace (S (i + 1)) with (i + 2) by flia.
-specialize (Huv2 0) as H1.
-rewrite Nat.add_0_r in H1.
-destruct p. {
-  rewrite Nat.add_0_r in Hp; clear Hjp.
-  unfold "⊕" in H1.
-  unfold "⊕" at 1.
-  replace (u (i + 2)) with 0 by flia Hp H1.
-  rewrite Nat.add_0_l, Hr2.
-  unfold P at 1, d2n, prop_carr, dig.
-  rewrite Hp, Hr2, Nat_mod_add_same_l; [ | easy ].
-  rewrite Nat.mod_small. 2: {
-    specialize (carry_upper_bound_for_adds 2 v i) as H2.
-    assert (H : 2 ≠ 0) by flia.
-    specialize (H2 H); clear H.
-    assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
-      now intros; rewrite Hr2, <- Nat.add_assoc.
-    }
-    now specialize (H2 H); clear H.
-  }
+      rewrite A_split_first; [ | flia Hin ].
+      replace (S (i + 1)) with (i + 2) by flia.
+      specialize (Huv2 0) as H1.
+      rewrite Nat.add_0_r in H1.
+      specialize (carry_upper_bound_for_adds 2 v i (Nat.neq_succ_0 _)) as Hc2.
+      assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+        now intros; rewrite Hr2, <- Nat.add_assoc.
+      }
+      specialize (Hc2 H); clear H.
+      move Hc2 after Huv1.
+      destruct p. {
+        rewrite Nat.add_0_r in Hp; clear Hjp.
+        unfold "⊕" in H1.
+        unfold "⊕" at 1.
+        replace (u (i + 2)) with 0 by flia Hp H1.
+        rewrite Nat.add_0_l, Hr2.
+        unfold P at 1, d2n, prop_carr, dig.
+        rewrite Hp, Hr2, Nat_mod_add_same_l; [ | easy ].
+        rewrite Nat.mod_small; [ | easy ].
+        remember (carry v (i + 2)) as c eqn:Hc; symmetry in Hc.
+        destruct c. {
+          rewrite Q.add_0_l.
+          apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+          intros p; unfold "⊕"; rewrite <- Nat.add_assoc.
+          replace 2 with (1 + 1) by easy.
+          apply Nat.add_le_mono; [ apply Hu | ].
+          replace 1 with (rad - 1) by flia Hr2.
+          apply P_le.
+        }
+        destruct c; [ | specialize (Hc2 2) as H3; flia Hc H3 ].
+        apply Q.lt_add_lt_sub_l.
+        replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+        apply Q.mul_lt_mono_pos_r; [ easy | ].
+        clear Huv1 Hp H1.
 ...
       destruct (LPO_fst (λ k, Nat.eqb (v (i + p + k + 3)) 1)) as [H1| H1]. {
         assert (Hv1 : ∀ k, v (i + p + k + 3) = 1). {
