@@ -3172,6 +3172,7 @@ destruct Huv2' as [Huv2'| Huv2']. {
           }
           move Hcp2 after Hcp3.
           clear H1.
+...
           destruct (Nat.eq_dec (q + 1) p) as [H1| H1]. {
             rewrite (carry_succ 2). {
               replace (i + q + 2 + 1) with (i + p + 2) by flia H1.
