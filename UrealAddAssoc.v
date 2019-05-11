@@ -3117,7 +3117,6 @@ destruct Huv2' as [Huv2'| Huv2']. {
       apply Q.lt_add_lt_sub_l.
       replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
       apply Q.mul_lt_mono_pos_r; [ easy | ].
-...
       destruct (LPO_fst (λ k, Nat.eqb (v (i + p + k + 3)) 1)) as [H1| H1]. {
         assert (Hv1 : ∀ k, v (i + p + k + 3) = 1). {
           now intros q; specialize (H1 q); apply Nat.eqb_eq in H1.
@@ -3269,6 +3268,18 @@ destruct Huv2' as [Huv2'| Huv2']. {
         now apply Nat.eqb_eq in Hjp1.
       }
       move H before Hjp1; clear Hjp1; rename H into Hjp1.
+      assert (H : v (i + p + p1 + 3) = 2). {
+        specialize (Huv2 (p + p1 + 1)) as H1.
+        replace (i + (p + p1 + 1) + 2) with (i + p + p1 + 3) in H1 by flia.
+        unfold "⊕" in H1.
+        specialize (Hu (p + p1 + 3)) as H2.
+        do 2 rewrite Nat.add_assoc in H2.
+        flia Hp1 H1 H2.
+      }
+      clear Hp1; rename H into Hp1.
+      move p1 before p.
+      move Hjp1 before Hjp.
+      (* same problem... an induction seems to be required *)
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
