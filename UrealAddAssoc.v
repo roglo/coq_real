@@ -3123,6 +3123,8 @@ destruct Huv2' as [Huv2'| Huv2']. {
 2: {
 destruct s as (p1 & Hjp1 & Hpq).
 (* oui mais non mais c'est pas ça *)
+Abort. (* bon, je préfère reprendre ce théorème depuis le début,
+par l'endroit de son appel
 ...
       rewrite A_split_first; [ | flia Hin ].
       replace (S (i + 1)) with (i + 2) by flia.
@@ -3341,6 +3343,7 @@ destruct s as (p1 & Hjp1 & Hpq).
       move Hjp1 before Hjp.
       (* same problem... an induction seems to be required *)
 ...
+*)
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   rad = 2
@@ -3355,7 +3358,7 @@ Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   → (A i (min_n (i + k)) (u ⊕ P v) < 1)%Q.
 Proof.
 intros * Hr2 Hu Hv Hjj Hj Hjk Hk Hauv Huv1.
-remember (min_n i 0) as n eqn:Hn.
+remember (min_n i) as n eqn:Hn.
 remember (min_n (i + j)) as nj eqn:Hnj.
 remember (min_n (i + k)) as nk eqn:Hnk.
 move nj before n; move nk before nj.
@@ -3544,6 +3547,7 @@ destruct Huv2 as [Huv2| Huv2]. {
     rewrite (proj2 Huv1), Nat.add_0_l.
 (**)
 rewrite Hr2.
+Abort. (* bon, retour à l'appelant, y a peut-être mieux à faire ...
 apply (rad_2_glop 1 j k); try easy.
 ...
     specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) (i + 1) Hr2) as Huv3.
@@ -4132,6 +4136,7 @@ apply (rad_2_glop 2 j k); try easy.
           apply Nat.eq_add_1 in Huv4.
           destruct Huv4 as [Huv4| Huv4]. {
 ...
+*)
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
@@ -4142,20 +4147,21 @@ Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
   → fA_ge_1_ε (u ⊕ P v) i k = false
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
   → Q.intg (A i (min_n (i + j)) v) ≤ 1
-  → Q.intg (A i (min_n i 0) v) ≤ 1
-  → (A i (min_n i 0) u + Q.frac (A i (min_n i 0) v) < 1)%Q
+  → Q.intg (A i (min_n i) v) ≤ 1
+  → (A i (min_n i) u + Q.frac (A i (min_n i) v) < 1)%Q
   → (1 ≤ A i (min_n (i + k)) u + A i (min_n (i + k)) (P v))%Q
-  → Q.intg (A i (min_n i 0) v) = (Q.intg (A i (min_n (i + j)) v) + 1) mod rad.
+  → Q.intg (A i (min_n i) v) = (Q.intg (A i (min_n (i + j)) v) + 1) mod rad.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hu Hv Hjj Hj Hjk Hk Hauv Haj Ha0 Huv Hup.
-remember (min_n i 0) as n eqn:Hn.
+remember (min_n i) as n eqn:Hn.
 remember (min_n (i + j)) as nj eqn:Hnj.
 remember (min_n (i + k)) as nk eqn:Hnk.
 move n before k; move nj before n; move nk before nj.
 move nk before nj; move Hnk before Hnj; move Hn after Hnj.
-assert (Hiv : ∀ p, j ≤ p → Q.intg (A i (min_n i p) v) = Q.intg (A i nj v)). {
+assert
+  (Hiv : ∀ p, j ≤ p → Q.intg (A i (min_n (i + p)) v) = Q.intg (A i nj v)). {
   specialize (fA_lt_1_ε_NQintg_A 2 i v j) as H1.
   assert (H : 2 < rad ^ (min_n (i + j) - i - j - 2)). {
     apply (le_lt_trans _ 3); [ pauto | ].
@@ -4169,7 +4175,7 @@ assert (Hiv : ∀ p, j ≤ p → Q.intg (A i (min_n i p) v) = Q.intg (A i nj v))
 generalize Hk; intros HHHHHHk.
 assert
   (Hiup : ∀ p, k ≤ p
-   → Q.intg (A i (min_n i p) (u ⊕ P v)) = Q.intg (A i nk (u ⊕ P v))). {
+   → Q.intg (A i (min_n (i + p)) (u ⊕ P v)) = Q.intg (A i nk (u ⊕ P v))). {
   specialize (fA_lt_1_ε_NQintg_A 2 i (u ⊕ P v) k) as H1.
   assert (H : 2 < rad ^ (min_n (i + k) - i - k - 2)). {
     apply (le_lt_trans _ 3); [ pauto | ].
@@ -4189,7 +4195,8 @@ assert
   now rewrite Hnk.
 }
 assert
-  (Hiuv : ∀ p, Q.intg (A i (min_n i p) (u ⊕ v)) = Q.intg (A i n (u ⊕ v))). {
+  (Hiuv :
+  ∀ p, Q.intg (A i (min_n (i + p)) (u ⊕ v)) = Q.intg (A i n (u ⊕ v))). {
   specialize (all_fA_ge_1_ε_NQintg_A' 3 i (u ⊕ v)) as Hiuv.
   specialize (Hiuv (three_lt_rad_pow _)).
   assert (H : ∀ k, (u ⊕ v) (i + k) ≤ 3 * (rad - 1)). {
@@ -4270,11 +4277,11 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      split; [ easy | ].
      now rewrite A_additive.
    }
-   assert (Hiauv : ∀ p, Q.intg (A i (min_n i p) (u ⊕ v)) = 0). {
+   assert (Hiauv : ∀ p, Q.intg (A i (min_n (i + p)) (u ⊕ v)) = 0). {
      now intros; rewrite Hiuv.
    }
    clear Hiuv.
-   assert (Hiau : ∀ p, Q.intg (A i (min_n i p) u) = 0). {
+   assert (Hiau : ∀ p, Q.intg (A i (min_n (i + p)) u) = 0). {
      intros.
      specialize (Hiauv p); rewrite A_additive in Hiauv.
      rewrite Q.intg_add in Hiauv; [ | easy | easy ].
@@ -4282,7 +4289,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      destruct Hiauv as (H, _).
      now apply Nat.eq_add_0 in H.
    }
-   assert (Hiav : ∀ p, Q.intg (A i (min_n i p) v) = 0). {
+   assert (Hiav : ∀ p, Q.intg (A i (min_n (i + p)) v) = 0). {
      intros.
      specialize (Hiauv p); rewrite A_additive in Hiauv.
      rewrite Q.intg_add in Hiauv; [ | easy | easy ].
