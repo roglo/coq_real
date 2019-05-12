@@ -4352,6 +4352,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      flia H3 H7 H8.
    }
    destruct Huv789 as [Huv1| Huv1]. {
+...
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
        apply Q.nlt_ge in Hup; apply Hup; clear Hup.
        rewrite <- A_additive, Hnk.
