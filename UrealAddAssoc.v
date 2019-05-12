@@ -3119,8 +3119,10 @@ destruct Huv2' as [Huv2'| Huv2']. {
       apply Q.mul_lt_mono_pos_r; [ easy | ].
 (* chercher j tel que v(i+j)=2 & ∀ k, j < k → v(i+k)=1 et dans ce
    cas A_9_8_18 j ou, s'il n'existe pas alors... A_all_9 *)
-...
       destruct (LPO_fst (λ k, Nat.eqb (u (i + k)) 1)).
+2: {
+destruct s as (p1 & Hjp1 & Hpq).
+(* oui mais non mais c'est pas ça *)
 ...
       rewrite A_split_first; [ | flia Hin ].
       replace (S (i + 1)) with (i + 2) by flia.
