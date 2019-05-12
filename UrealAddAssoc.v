@@ -3117,7 +3117,9 @@ destruct Huv2' as [Huv2'| Huv2']. {
       apply Q.lt_add_lt_sub_l.
       replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
       apply Q.mul_lt_mono_pos_r; [ easy | ].
-(**)
+(* chercher le premier j tel que v(i+j)=2 & ∀ k, j < k → v(i+k)=1
+   et dans ce cas A_9_8_18 j ou, s'il n'existe pas alors... A_all_9 *)
+...
       rewrite A_split_first; [ | flia Hin ].
       replace (S (i + 1)) with (i + 2) by flia.
       specialize (Huv2 0) as H1.
@@ -3128,7 +3130,6 @@ destruct Huv2' as [Huv2'| Huv2']. {
       }
       specialize (Hc2 H); clear H.
       move Hc2 after Huv1.
-...
       destruct p. {
         rewrite Nat.add_0_r in Hp; clear Hjp.
         unfold "⊕" in H1.
@@ -3169,6 +3170,8 @@ destruct Huv2' as [Huv2'| Huv2']. {
         replace (S (i + 2)) with (i + 3) by flia.
         specialize (Huv2 1) as H1.
         replace (i + 1 + 2) with (i + 3) in H1 by flia.
+        unfold "⊕" at 1.
+        unfold P at 1, d2n, prop_carr, dig.
 ...
       destruct (LPO_fst (λ k, Nat.eqb (v (i + p + k + 3)) 1)) as [H1| H1]. {
         assert (Hv1 : ∀ k, v (i + p + k + 3) = 1). {
