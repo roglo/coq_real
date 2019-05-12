@@ -3128,6 +3128,7 @@ destruct Huv2' as [Huv2'| Huv2']. {
       }
       specialize (Hc2 H); clear H.
       move Hc2 after Huv1.
+...
       destruct p. {
         rewrite Nat.add_0_r in Hp; clear Hjp.
         unfold "⊕" in H1.
@@ -3159,6 +3160,15 @@ destruct Huv2' as [Huv2'| Huv2']. {
 
    u+v . 2 2 2 2 2 ...
  *)
+        destruct (lt_dec n (i + 4)) as [Hin2| Hin2]. {
+          unfold A; rewrite summation_empty; [ easy | flia Hin2 ].
+        }
+        apply Nat.nlt_ge in Hin2.
+        move Hin2 before Hin; clear Hin.
+        rewrite A_split_first; [ | flia Hin2 ].
+        replace (S (i + 2)) with (i + 3) by flia.
+        specialize (Huv2 1) as H1.
+        replace (i + 1 + 2) with (i + 3) in H1 by flia.
 ...
       destruct (LPO_fst (λ k, Nat.eqb (v (i + p + k + 3)) 1)) as [H1| H1]. {
         assert (Hv1 : ∀ k, v (i + p + k + 3) = 1). {
