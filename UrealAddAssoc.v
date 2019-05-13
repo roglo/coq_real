@@ -3532,12 +3532,28 @@ destruct Huv2 as [Huv2| Huv2]. {
     specialize (Hu 2) as H1; flia Huv2 H1.
   }
   destruct Huv2 as [Huv2| Huv2]. {
-...
     rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
     replace (S i) with (i + 1) by flia.
     unfold "⊕" at 1.
     apply Nat.eq_add_0 in Huv1.
     rewrite (proj1 Huv1), Nat.add_0_l, Hr2.
+    specialize (P_le v) as H1; rewrite Hr2 in H1.
+    destruct (Nat.eq_dec (P v (i + 1)) 0) as [Hpv1| Hpv1]. {
+      rewrite Hpv1, Q.add_0_l.
+      apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+      intros p; unfold "⊕"; rewrite <- Nat.add_assoc.
+      replace 2 with (1 + 1) by easy.
+      apply Nat.add_le_mono; [ apply Hu | easy ].
+    }
+    replace (P v (i + 1)) with 1 by now specialize (H1 (i + 1)); flia H1 Hpv1.
+    clear H1 Hpv1.
+    apply Q.lt_add_lt_sub_l.
+    replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
+(* mais si P v (i+1)=1 (cf plus haut), alors ça veut dire que carry v (i+1)=1
+   et donc carry v (i+2)=1 et donc P v (i+2)=0 ; du coup, le premier terme
+   de A vaut 1+0=1 *)
+...
     unfold P at 1, d2n, prop_carr, dig.
     rewrite (proj2 Huv1), Nat.add_0_l.
 (**)
