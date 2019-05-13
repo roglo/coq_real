@@ -3362,6 +3362,7 @@ remember (min_n i) as n eqn:Hn.
 remember (min_n (i + j)) as nj eqn:Hnj.
 remember (min_n (i + k)) as nk eqn:Hnk.
 move nj before n; move nk before nj.
+...
 assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   intros p.
   unfold "⊕"; replace 3 with (1 + 2) by easy.
@@ -3547,7 +3548,6 @@ destruct Huv2 as [Huv2| Huv2]. {
     rewrite (proj2 Huv1), Nat.add_0_l.
 (**)
 rewrite Hr2.
-Abort. (* bon, retour à l'appelant, y a peut-être mieux à faire ...
 apply (rad_2_glop 1 j k); try easy.
 ...
     specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) (i + 1) Hr2) as Huv3.
@@ -4352,7 +4352,6 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
      flia H3 H7 H8.
    }
    destruct Huv789 as [Huv1| Huv1]. {
-...
      destruct (Nat.eq_dec rad 2) as [Hr2| Hr2]. {
        apply Q.nlt_ge in Hup; apply Hup; clear Hup.
        rewrite <- A_additive, Hnk.
