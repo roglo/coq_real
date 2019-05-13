@@ -3526,16 +3526,17 @@ destruct Huv2 as [Huv2| Huv2]. {
   destruct (le_dec (i + 1 + 1) (nk - 1)); pauto.
 }
 destruct Huv2 as [Huv2| Huv2]. {
-...
   unfold "⊕" in Huv2.
   apply Nat_eq_add_2 in Huv2.
   destruct Huv2 as [Huv2| Huv2]. {
     specialize (Hu 2) as H1; flia Huv2 H1.
   }
   destruct Huv2 as [Huv2| Huv2]. {
+...
     rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
     replace (S i) with (i + 1) by flia.
     unfold "⊕" at 1.
+    apply Nat.eq_add_0 in Huv1.
     rewrite (proj1 Huv1), Nat.add_0_l, Hr2.
     unfold P at 1, d2n, prop_carr, dig.
     rewrite (proj2 Huv1), Nat.add_0_l.
