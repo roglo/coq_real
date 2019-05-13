@@ -3537,7 +3537,7 @@ destruct Huv2 as [Huv2| Huv2]. {
     unfold "⊕" at 1.
     apply Nat.eq_add_0 in Huv1.
     rewrite (proj1 Huv1), Nat.add_0_l, Hr2.
-    specialize (P_le v) as H1; rewrite Hr2 in H1.
+    specialize (P_le v) as Hapv1; rewrite Hr2 in Hapv1.
     specialize (carry_upper_bound_for_adds 2 v i (Nat.neq_succ_0 _)) as Hc2.
     assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
       now intros; rewrite Hr2, <- Nat.add_assoc.
@@ -3550,7 +3550,9 @@ destruct Huv2 as [Huv2| Huv2]. {
       replace 2 with (1 + 1) by easy.
       apply Nat.add_le_mono; [ apply Hu | easy ].
     }
-    assert (H : P v (i + 1) = 1) by now specialize (H1 (i + 1)); flia H1 Hpv1.
+    assert (H : P v (i + 1) = 1). {
+      specialize (Hapv1 (i + 1)); flia Hapv1 Hpv1.
+    }
     clear Hpv1; rename H into Hpv1; rewrite Hpv1.
     apply Q.lt_add_lt_sub_l.
     replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
@@ -3586,12 +3588,11 @@ destruct Huv2 as [Huv2| Huv2]. {
     apply Q.lt_add_lt_sub_l.
     replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
     apply Q.mul_lt_mono_pos_r; [ easy | ].
-...
     specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) (i + 1) Hr2) as Huv3.
     replace (i + 1 + 1) with (i + 2) in Huv3 by flia.
     replace (i + 1 + 2) with (i + 3) in Huv3 by flia.
-    assert (H : ∀ k, (u ⊕ v) (i + 1 + k + 1) ≤ 3 * (rad - 1)). {
-      now intros; do 2 rewrite <- Nat.add_assoc; rewrite Hr2.
+    assert (H : ∀ k, (u ⊕ v) (i + 1 + k + 1) ≤ 3). {
+      now intros; do 2 rewrite <- Nat.add_assoc.
     }
     specialize (Huv3 H); clear H.
     assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
@@ -3603,6 +3604,7 @@ destruct Huv2 as [Huv2| Huv2]. {
     }
     specialize (Huv3 H); clear H.
     destruct Huv3 as [Huv3| Huv3]. {
+      move Huv3 before Huv2.
       assert
         (Huvn :
            ∀ k, (u ⊕ v) (i + k + 4) = 3 ∧ carry (u ⊕ v) (i + k + 3) = 2). {
@@ -3610,7 +3612,7 @@ destruct Huv2 as [Huv2| Huv2]. {
         replace (i + p + 4) with (i + 1 + p + 3) by flia.
         replace (i + p + 3) with (i + 1 + p + 2) by flia.
         apply rad_2_sum_3_all_9_02_1_333; [ easy | | | | ]. {
-          now intros; rewrite Hr2; rewrite <- Nat.add_assoc.
+          now intros; rewrite <- Nat.add_assoc.
         } {
           now intros; apply A_ge_1_add_r_true_if.
         } {
@@ -3637,6 +3639,7 @@ destruct Huv2 as [Huv2| Huv2]. {
         specialize (Hv (p + 4)) as H3; rewrite Nat.add_assoc in H3.
         flia H1 H2 H3.
       }
+...
       apply Nat.eq_add_1 in Huv3.
       destruct Huv3 as [Huv3| Huv3]. {
         rewrite A_all_18. 2: {
