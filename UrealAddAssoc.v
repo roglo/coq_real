@@ -3538,6 +3538,11 @@ destruct Huv2 as [Huv2| Huv2]. {
     apply Nat.eq_add_0 in Huv1.
     rewrite (proj1 Huv1), Nat.add_0_l, Hr2.
     specialize (P_le v) as H1; rewrite Hr2 in H1.
+    specialize (carry_upper_bound_for_adds 2 v i (Nat.neq_succ_0 _)) as Hc2.
+    assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+      now intros; rewrite Hr2, <- Nat.add_assoc.
+    }
+    specialize (Hc2 H); clear H.
     destruct (Nat.eq_dec (P v (i + 1)) 0) as [Hpv1| Hpv1]. {
       rewrite Hpv1, Q.add_0_l.
       apply rad_2_sum_2_half_A_lt_1; [ easy | ].
@@ -3545,20 +3550,42 @@ destruct Huv2 as [Huv2| Huv2]. {
       replace 2 with (1 + 1) by easy.
       apply Nat.add_le_mono; [ apply Hu | easy ].
     }
-    replace (P v (i + 1)) with 1 by now specialize (H1 (i + 1)); flia H1 Hpv1.
-    clear H1 Hpv1.
+    assert (H : P v (i + 1) = 1) by now specialize (H1 (i + 1)); flia H1 Hpv1.
+    clear Hpv1; rename H into Hpv1; rewrite Hpv1.
     apply Q.lt_add_lt_sub_l.
     replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
     apply Q.mul_lt_mono_pos_r; [ easy | ].
-(* mais si P v (i+1)=1 (cf plus haut), alors ça veut dire que carry v (i+1)=1
-   et donc carry v (i+2)=1 et donc P v (i+2)=0 ; du coup, le premier terme
-   de A vaut 1+0=1 *)
-...
-    unfold P at 1, d2n, prop_carr, dig.
-    rewrite (proj2 Huv1), Nat.add_0_l.
-(**)
-rewrite Hr2.
-apply (rad_2_glop 1 j k); try easy.
+    unfold P, d2n, prop_carr, dig in Hpv1.
+    rewrite (proj2 Huv1), Nat.add_0_l, Hr2 in Hpv1.
+    rewrite Nat.mod_small in Hpv1; [ | easy ].
+    rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
+    replace (S (i + 1)) with (i + 2) by easy.
+    unfold "⊕" at 1, P at 1, d2n, prop_carr, dig.
+    rewrite Hr2, (proj1 Huv2), (proj2 Huv2).
+    assert (Hcv2 : carry v (i + 2) = 1). {
+      specialize (carry_succ 2 v (i + 1)) as H2.
+      assert (H : 2 < rad ^ (rad * (i + 1 + 3) - (i + 1 + 2))). {
+        rewrite Hr2; replace 2 with (2 ^ 1) at 1 by easy.
+        apply Nat.pow_lt_mono_r; [ pauto | cbn; flia ].
+      }
+      specialize (H2 H); clear H.
+      assert (H : ∀ k, v (i + 1 + k) ≤ 2 * (rad - 1)). {
+        now intros; rewrite Hr2, Nat.add_shuffle0, <- Nat.add_assoc.
+      }
+      specialize (H2 H); clear H.
+      replace (i + 1 + 1) with (i + 2) in H2 by flia.
+      rewrite Hpv1, (proj2 Huv2), Hr2 in H2.
+      destruct (Nat.eq_dec (carry v (i + 2)) 0) as [H3| H3]. {
+        now rewrite H3 in H2.
+      }
+      specialize (Hc2 2).
+      flia Hc2 H3.
+    }
+    rewrite Hcv2, Nat.mod_same; [ | easy ].
+    rewrite Nat.add_0_r.
+    apply Q.lt_add_lt_sub_l.
+    replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
 ...
     specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) (i + 1) Hr2) as Huv3.
     replace (i + 1 + 1) with (i + 2) in Huv3 by flia.
