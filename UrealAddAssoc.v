@@ -3648,6 +3648,7 @@ u+Pv . . . 2 2 2 2 ...
 *)
       apply Nat.eq_add_1 in Huv3.
       destruct Huv3 as [Huv3| Huv3]. {
+...
         rewrite A_all_18. 2: {
           intros p; unfold "⊕"; rewrite Hr2; cbn; rewrite Hr2.
           replace (i + 2 + p + 1) with (i + p + 3) by flia.
@@ -3663,29 +3664,14 @@ u+Pv . . . 2 2 2 2 ...
             rewrite A_split_first; [ | min_n_ge ].
             replace (S (i + 3)) with (i + 0 + 4) by flia.
             rewrite Hvn, Hr2, Q.pair_diag; [ | easy ].
-            rewrite (Q.intg_add_nat_l 1).
-...
-            apply Q.intg_small.
-            split; [ now apply Q.le_0_mul_r | ].
-            apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-            now intros; rewrite <- Nat.add_assoc.
-          }
-          destruct p. {
-            replace (i + 1 + 2) with (i + 3) by flia.
-            rewrite (proj2 Huv3), Nat.add_0_l.
-            replace (carry v (i + 3)) with 1; [ easy | ].
-            symmetry; unfold carry.
-            rewrite A_split_first; [ | min_n_ge ].
-            replace (S (i + 3)) with (i + 0 + 4) by flia.
-            rewrite Hvn, Hr2, Nat.add_0_r, Q.pair_diag; [ | easy ].
             rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
-            symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
+            symmetry; replace 1 with (1 + 0) at 1 by easy; f_equal; symmetry.
             apply Q.intg_small.
             split; [ now apply Q.le_0_mul_r | ].
             apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-            now intros; rewrite <- Nat.add_assoc.
+            now intros; do 2 rewrite <- Nat.add_assoc.
           }
-          replace (i + S (S p) + 2) with (i + p + 4) by flia.
+          replace (i + S p + 3) with (i + p + 4) by flia.
           rewrite Hvn, Nat_mod_add_same_l; [ | easy ].
           replace (carry v (i + p + 4)) with 1; [ easy | ].
           symmetry; unfold carry.
@@ -3707,6 +3693,7 @@ u+Pv . . . 2 2 2 2 ...
           }
           apply Q.sub_lt, Q.lt_0_pair; pauto.
         }
+...
         replace (carry v (i + 1)) with 0. 2: {
           symmetry; unfold carry.
           rewrite A_split_first; [ | min_n_ge ].
