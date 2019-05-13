@@ -3639,25 +3639,32 @@ destruct Huv2 as [Huv2| Huv2]. {
         specialize (Hv (p + 4)) as H3; rewrite Nat.add_assoc in H3.
         flia H1 H2 H3.
       }
-...
+(*
+   u 0 1 . 1 1 1 1 ...
+   v 0 1 . 2 2 2 2 ...
+ u+v 0 2 1 3 3 3 3 ...
+  Pv . . . 1 1 1 1 ...
+u+Pv . . . 2 2 2 2 ...
+*)
       apply Nat.eq_add_1 in Huv3.
       destruct Huv3 as [Huv3| Huv3]. {
         rewrite A_all_18. 2: {
           intros p; unfold "⊕"; rewrite Hr2; cbn; rewrite Hr2.
-          replace (i + 1 + p + 1) with (i + p + 2) by flia.
-          replace (u (i + p + 2)) with 1. 2: {
+          replace (i + 2 + p + 1) with (i + p + 3) by flia.
+          replace (u (i + p + 3)) with 1. 2: {
             destruct p; [ now rewrite Nat.add_0_r | ].
-            destruct p; [ now rewrite <- Nat.add_assoc | ].
-            now replace (i + S (S p) + 2) with (i + p + 4) by flia.
+            now replace (i + S p + 3) with (i + p + 4) by flia.
           }
           symmetry; replace 2 with (1 + 1) at 1 by easy; symmetry; f_equal.
           destruct p. {
-            rewrite Nat.add_0_r, (proj2 Huv2).
-            replace (carry v (i + 2)) with 0; [ easy | ].
+            rewrite Nat.add_0_r, (proj2 Huv3), Nat.add_0_l.
+            replace (carry v (i + 3)) with 1; [ easy | ].
             symmetry; unfold carry.
             rewrite A_split_first; [ | min_n_ge ].
-            replace (S (i + 2)) with (i + 3) by flia.
-            rewrite (proj2 Huv3), Hr2, Q.add_0_l.
+            replace (S (i + 3)) with (i + 0 + 4) by flia.
+            rewrite Hvn, Hr2, Q.pair_diag; [ | easy ].
+            rewrite (Q.intg_add_nat_l 1).
+...
             apply Q.intg_small.
             split; [ now apply Q.le_0_mul_r | ].
             apply rad_2_sum_2_half_A_lt_1; [ easy | ].
