@@ -3354,7 +3354,7 @@ Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   → (∀ p, p < k → fA_ge_1_ε (u ⊕ P v) i p = true)
   → fA_ge_1_ε (u ⊕ P v) i k = false
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
-  → (u ⊕ v) (i + 1) = 0
+  → (u ⊕ v) (i + 1) = 0 ∨ (u ⊕ v) (i + 1) = 2
   → (A i (min_n (i + k)) (u ⊕ P v) < 1)%Q.
 Proof.
 intros * Hr2 Hu Hv Hjj Hj Hjk Hk Hauv Huv1.
@@ -3367,26 +3367,22 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   unfold "⊕"; replace 3 with (1 + 2) by easy.
   apply Nat.add_le_mono; [ apply Hu | apply Hv ].
 }
+(*
 unfold "⊕" in Huv1.
 apply Nat.eq_add_0 in Huv1.
+*)
 assert
   (Huv2 :
      (u ⊕ v) (i + 2) = 1 ∨ (u ⊕ v) (i + 2) = 2 ∨
      (u ⊕ v) (i + 2) = 3). {
-  apply rad_2_sum_3_all_9_02_123; [ easy | | easy | ]. {
-    now intros; rewrite <- Nat.add_assoc.
-  }
-  left; unfold "⊕".
-  now apply Nat.eq_add_0.
+  apply rad_2_sum_3_all_9_02_123; [ easy | | easy | easy ].
+  now intros; rewrite <- Nat.add_assoc.
 }
 move Huv1 at bottom; move Huv2 at bottom.
 destruct Huv2 as [Huv2| Huv2]. {
   assert
     (Huvn : ∀ k, (u ⊕ v) (i + k + 3) = 3 ∧ carry (u ⊕ v) (i + k + 2) = 2). {
-    intros p.
-    apply rad_2_sum_3_all_9_02_1_333; try easy.
-    left; unfold "⊕".
-    now apply Nat.eq_add_0.
+    now apply rad_2_sum_3_all_9_02_1_333.
   }
   assert (Hun : ∀ k, u (i + k + 3) = 1). {
     intros p.
@@ -3404,6 +3400,8 @@ destruct Huv2 as [Huv2| Huv2]. {
     specialize (Hv (p + 3)) as H3; rewrite Nat.add_assoc in H3.
     flia H1 H2 H3.
   }
+Search (_ = 0 ∨ _ = 2).
+...
   unfold "⊕" in Huv2.
   apply Nat.eq_add_1 in Huv2.
   destruct Huv2 as [Huv2| Huv2]. {
