@@ -3400,7 +3400,6 @@ destruct Huv2 as [Huv2| Huv2]. {
     specialize (Hv (p + 3)) as H3; rewrite Nat.add_assoc in H3.
     flia H1 H2 H3.
   }
-Search (_ = 0 ∨ _ = 2).
 ...
   unfold "⊕" in Huv2.
   apply Nat.eq_add_1 in Huv2.
