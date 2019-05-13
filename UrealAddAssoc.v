@@ -3648,6 +3648,16 @@ u+Pv . . . 2 2 2 2 ...
 *)
       apply Nat.eq_add_1 in Huv3.
       destruct Huv3 as [Huv3| Huv3]. {
+        unfold carry in Hcv2.
+        rewrite A_split_first in Hcv2; [ | min_n_ge ].
+        replace (S (i + 2)) with (i + 3) in Hcv2 by easy.
+        rewrite (proj2 Huv3), Q.add_0_l, Hr2 in Hcv2.
+        apply Q.intg_interv in Hcv2; [ | now apply Q.le_0_mul_r ].
+        destruct Hcv2 as (H, _); apply Q.nlt_ge in H.
+        exfalso; apply H; clear H.
+        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+        intros; now rewrite <- Nat.add_assoc.
+      }
 ...
         rewrite A_all_18. 2: {
           intros p; unfold "⊕"; rewrite Hr2; cbn; rewrite Hr2.
