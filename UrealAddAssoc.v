@@ -3362,7 +3362,6 @@ remember (min_n i) as n eqn:Hn.
 remember (min_n (i + j)) as nj eqn:Hnj.
 remember (min_n (i + k)) as nk eqn:Hnk.
 move nj before n; move nk before nj.
-...
 assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   intros p.
   unfold "⊕"; replace 3 with (1 + 2) by easy.
@@ -3534,6 +3533,7 @@ destruct Huv2 as [Huv2| Huv2]. {
   destruct (le_dec (i + 1 + 1) (nk - 1)); pauto.
 }
 destruct Huv2 as [Huv2| Huv2]. {
+(* en fait, (u+v)(i+2)=2 est dans le même état que (u+v)(i+1)=0 ou 2 *)
 ...
   unfold "⊕" in Huv2.
   apply Nat_eq_add_2 in Huv2.
