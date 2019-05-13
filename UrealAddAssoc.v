@@ -3367,10 +3367,6 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   unfold "⊕"; replace 3 with (1 + 2) by easy.
   apply Nat.add_le_mono; [ apply Hu | apply Hv ].
 }
-(*
-unfold "⊕" in Huv1.
-apply Nat.eq_add_0 in Huv1.
-*)
 assert
   (Huv2 :
      (u ⊕ v) (i + 2) = 1 ∨ (u ⊕ v) (i + 2) = 2 ∨
@@ -3400,9 +3396,9 @@ destruct Huv2 as [Huv2| Huv2]. {
     specialize (Hv (p + 3)) as H3; rewrite Nat.add_assoc in H3.
     flia H1 H2 H3.
   }
-...
   unfold "⊕" in Huv2.
   apply Nat.eq_add_1 in Huv2.
+...
   destruct Huv2 as [Huv2| Huv2]. {
     rewrite (A_9_8_all_18 0); [ | now intros | | ]; cycle 1. {
       unfold "⊕"; rewrite Nat.add_0_r, Hr2, (proj1 Huv1), Nat.add_0_l.
