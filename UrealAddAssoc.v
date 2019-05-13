@@ -3534,6 +3534,7 @@ destruct Huv2 as [Huv2| Huv2]. {
   destruct (le_dec (i + 1 + 1) (nk - 1)); pauto.
 }
 destruct Huv2 as [Huv2| Huv2]. {
+...
   unfold "⊕" in Huv2.
   apply Nat_eq_add_2 in Huv2.
   destruct Huv2 as [Huv2| Huv2]. {
