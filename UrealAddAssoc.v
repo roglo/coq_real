@@ -3367,6 +3367,16 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   unfold "⊕"; replace 3 with (1 + 2) by easy.
   apply Nat.add_le_mono; [ apply Hu | apply Hv ].
 }
+(**)
+specialize (rad_2_sum_3_all_9_02_222_13 0 (u ⊕ v) i Hr2) as H1.
+assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3). {
+  now intros; rewrite <- Nat.add_assoc.
+}
+specialize (H1 H Hauv (or_introl Huv1)); clear H.
+assert (H : ∀ k, k < 0 → (u ⊕ v) (i + k + 2) = 2) by (intros p H; flia H).
+specialize (H1 H); clear H.
+destruct H1 as [Huvn| H1]. {
+...
 assert
   (Huv2 :
      (u ⊕ v) (i + 2) = 1 ∨ (u ⊕ v) (i + 2) = 2 ∨
