@@ -3383,16 +3383,30 @@ destruct H1 as [Huvn| H1]. {
   }
   destruct Hv1 as (p & Hjp & Hp).
   (* v(i+p+2)≠2 therefore v(i+p+2)=1 *)
+...
   destruct
     (LPO_fst
        (λ q,
-        match LPO_fst (λ s, negb (Nat.eqb (v (i + q + s)) 2)) with
+        match LPO_fst (λ s, orb (Nat.leb s q) (Nat.eqb (v (i + s)) 1)) with
         | inl _ => true
         | inr _ _ => false
         end)) as [Hv2| Hv2]. {
+    specialize (Hv2 0).
+...
+  destruct
+    (LPO_fst
+       (λ q,
+        match LPO_fst (λ s, andb (Nat.ltb q s) (Nat.eqb (v (i + s)) 1)) with
+        | inl _ => true
+        | inr _ _ => false
+        end)) as [Hv2| Hv2]. {
+    specialize (Hv2 0).
+    destruct (LPO_fst (λ s : nat, ((0 <? s) && (v (i + 0 + s) =? 1))%bool)) as [H| H1]; [ | easy ].
+    clear Hv2.
+    assert (Hv2 : ∀ k, ((0 <? k) && (v (i + 0 + k) =? 1))%bool = true). {
 ...
     specialize (Hv2 (p + 3)).
-    destruct (LPO_fst (λ s, negb (v (i + (p + 3) + s) =? 2))) as [Hv3| Hv3]; [ | easy ].
+    destruct (LPO_fst (λ s, v (i + (p + 3) + s) =? 1)) as [Hv3| Hv3]; [ | easy ].
     clear Hv2.
 ...
   destruct (LPO_fst (λ p, Nat.eqb ((u ⊕ P v) (i + p + 2)) 2)) as [Hv1| Hv1]. {
