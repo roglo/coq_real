@@ -3376,6 +3376,26 @@ specialize (H1 H Hauv (or_introl Huv1)); clear H.
 assert (H : ∀ k, k < 0 → (u ⊕ v) (i + k + 2) = 2) by (intros p H; flia H).
 specialize (H1 H); clear H.
 destruct H1 as [Huvn| H1]. {
+  destruct (LPO_fst (λ p, Nat.eqb (v (i + p + 2)) 1)) as [H1| H1]. {
+    assert (H : ∀ p, v (i + p + 2) = 1). {
+      intros p; specialize (H1 p).
+      now apply Nat.eqb_eq in H1.
+    }
+    clear H1; rename H into Hv2.
+    (* v=01111..., then u=01111... and Pv=01111..., then u+Pv=02222...
+       then resolved by A_split_first and A_all_18 *)
+    admit.
+  }
+  destruct H1 as (p & Hjp & Hp).
+  assert (H : v (i + p + 2) = 2). {
+    apply Nat.eqb_neq in Hp.
+    specialize (Huvn p) as H1.
+    specialize (Hu (p + 2)) as H2.
+    rewrite Nat.add_assoc in H2.
+    unfold "⊕" in H1.
+    flia Hp H1 H2.
+  }
+  clear Hp; rename H into Hp.
   destruct
     (LPO_fst
        (λ q,
@@ -3383,21 +3403,42 @@ destruct H1 as [Huvn| H1]. {
         | inl _ => false
         | inr _ _ => true
         end)) as [Hv2| Hv2]. {
-    assert (H : ∀ p, ∃ q, v (i + p + q + 2) = 2). {
-      intros p.
-      specialize (Hv2 p).
-      destruct (LPO_fst (λ s, v (i + p + s + 2) =? 1)) as [H| H]; [ easy | ].
-      destruct H as (q & Hjq & Hq); clear Hv2.
-      exists q.
-      apply Nat.eqb_neq in Hq.
-      specialize (Huvn (p + q)) as H1.
-      specialize (Hu (p + q + 2)) as H2.
+    assert (H : ∀ q, ∃ s, v (i + q + s + 2) = 2). {
+      intros q.
+      specialize (Hv2 q).
+      destruct (LPO_fst (λ s, v (i + q + s + 2) =? 1)) as [H| H]; [ easy | ].
+      destruct H as (s & Hjs & Hs); clear Hv2.
+      exists s.
+      apply Nat.eqb_neq in Hs.
+      specialize (Huvn (q + s)) as H1.
+      specialize (Hu (q + s + 2)) as H2.
       rewrite Nat.add_assoc in H1.
       do 2 rewrite Nat.add_assoc in H2.
       unfold "⊕" in H1.
-      flia Hq H1 H2.
+      flia Hs H1 H2.
     }
     clear Hv2; rename H into Hv2.
+    (* v=0111211211112..., then u=0111011011110... and Pv=10000100100000...,
+       then u+Pv=111111..., then resolved by A_all_9 *)
+    admit.
+  }
+  destruct Hv2 as (q & Hjq & Hq).
+  destruct (LPO_fst (λ s, v (i + q + s + 2) =? 1)) as [H1| H1]; [ | easy ].
+  clear Hq.
+  assert (H : ∀ k, v (i + q + k + 2) = 1). {
+    intros s; specialize (H1 s).
+    now apply Nat.eqb_eq in H1.
+  }
+  clear H1; rename H into Hq.
+  assert (H : ∀ j, ∃ s, j < q → v (i + j + s + 2) = 2). {
+    intros t.
+    specialize (Hjq t) as H1.
+    destruct (lt_dec t q) as [Htq| Htq]. {
+      specialize (H1 Htq).
+      destruct (LPO_fst (λ s, v (i + t + s + 2) =? 1)) as [H2| H2]; [ easy | ].
+      clear H1.
+      destruct H2 as (s & Hjs & Hs).
+(* là chais pas, faut que je réfléchisse... *)
 ...
   destruct
     (LPO_fst
