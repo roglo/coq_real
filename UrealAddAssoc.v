@@ -3384,7 +3384,7 @@ destruct H1 as [Huvn| H1]. {
     clear H1; rename H into Hv2.
     (* v=01111..., then u=01111... and Pv=01111..., then u+Pv=02222...
        then resolved by A_split_first and A_all_18 *)
-    admit.
+...
   }
   destruct H1 as (p & Hjp & Hp).
   assert (H : v (i + p + 2) = 2). {
@@ -3420,7 +3420,7 @@ destruct H1 as [Huvn| H1]. {
     clear Hv2; rename H into Hv2.
     (* v=0111211211112..., then u=0111011011110... and Pv=10000100100000...,
        then u+Pv=111111..., then resolved by A_all_9 *)
-    admit.
+...
   }
   destruct Hv2 as (q & Hjq & Hq).
   destruct (LPO_fst (λ s, v (i + q + s + 2) =? 1)) as [H1| H1]; [ | easy ].
@@ -3430,135 +3430,23 @@ destruct H1 as [Huvn| H1]. {
     now apply Nat.eqb_eq in H1.
   }
   clear H1; rename H into Hq.
-  assert (H : ∀ j, ∃ s, j < q → v (i + j + s + 2) = 2). {
-    intros t.
-    specialize (Hjq t) as H1.
-    destruct (lt_dec t q) as [Htq| Htq]. {
-      specialize (H1 Htq).
-      destruct (LPO_fst (λ s, v (i + t + s + 2) =? 1)) as [H2| H2]; [ easy | ].
-      clear H1.
-      destruct H2 as (s & Hjs & Hs).
-(* là chais pas, faut que je réfléchisse... *)
-...
-  destruct
-    (LPO_fst
-       (λ q,
-        match LPO_fst (λ s, orb (Nat.leb s q) (Nat.eqb (v (i + s)) 1)) with
-        | inl _ => false
-        | inr _ _ => true
-        end)) as [Hv2| Hv2]. {
-    specialize (Hv2 0).
-    destruct (LPO_fst (λ s : nat, ((s <=? 0) || (v (i + s) =? 1))%bool)) as [H| H]; [ easy | ].
-    destruct H as (p & Hjp & Hp).
-...
-  (* v cannot hold 0s *)
-  destruct (LPO_fst (λ p, Nat.eqb ((u ⊕ P v) (i + p)) 2)) as [Hv1| Hv1]. {
-    (* u+Pv = all 2s => A_all_18 *)
-    admit.
+  assert (H : ∀ j, j < q → ∃ s, v (i + j + s + 2) = 2). {
+    intros t Htq.
+    specialize (Hjq t Htq) as H1.
+    destruct (LPO_fst (λ s, v (i + t + s + 2) =? 1)) as [H2| H2]; [ easy | ].
+    clear H1.
+    destruct H2 as (s & Hjs & Hs).
+    exists s.
+    apply Nat.eqb_neq in Hs.
+    specialize (Huvn (t + s)) as H1.
+    specialize (Hu (t + s + 2)) as H2.
+    rewrite Nat.add_assoc in H1.
+    do 2 rewrite Nat.add_assoc in H2.
+    unfold "⊕" in H1.
+    flia Hs H1 H2.
   }
-  destruct Hv1 as (p & Hjp & Hp).
-  destruct (LPO_fst (λ q, Nat.eqb ((u ⊕ P v) (i + q)) 1)) as [Hv1| Hv1]. {
-    (* u+Pv = all 1s => A_all_9 *)
-    admit.
-  }
-  destruct Hv1 as (q & Hjq & Hq).
-...
-  destruct (LPO_fst (λ p, Nat.eqb (v (i + p + 2)) 2)) as [Hv1| Hv1]. {
-    (* v = all 2s => Pv = all 1s => u+Pv = A_all_18 *)
-    admit.
-  }
-  destruct Hv1 as (p & Hjp & Hp).
-  (* v(i+p+2)≠2 therefore v(i+p+2)=1 *)
-...
-  destruct
-    (LPO_fst
-       (λ q,
-        match LPO_fst (λ s, andb (Nat.ltb q s) (Nat.eqb (v (i + s)) 1)) with
-        | inl _ => true
-        | inr _ _ => false
-        end)) as [Hv2| Hv2]. {
-    specialize (Hv2 0).
-    destruct (LPO_fst (λ s : nat, ((0 <? s) && (v (i + 0 + s) =? 1))%bool)) as [H| H1]; [ | easy ].
-    clear Hv2.
-    assert (Hv2 : ∀ k, ((0 <? k) && (v (i + 0 + k) =? 1))%bool = true). {
-...
-    specialize (Hv2 (p + 3)).
-    destruct (LPO_fst (λ s, v (i + (p + 3) + s) =? 1)) as [Hv3| Hv3]; [ | easy ].
-    clear Hv2.
-...
-  destruct (LPO_fst (λ p, Nat.eqb ((u ⊕ P v) (i + p + 2)) 2)) as [Hv1| Hv1]. {
-    (* all 2s => A_all_18 *)
-    admit.
-  }
-  destruct Hv1 as (p & Hjp & Hp).
-  destruct (LPO_fst (λ q, Nat.eqb ((u ⊕ P v) (i + q + 2)) 1)) as [Hv1| Hv1]. {
-    (* p must be 0, otherwize would contradict Hv1; A_all_9 *)
-    admit.
-  }
-  destruct Hv1 as (q & Hjq & Hq).
-  (* u+Pv  2  2  2  2  ≠2 .  .  . (p)
-     u+Pv  1  1  1  1  1  1 #1  . (q)
-     either
-       p=0
-*)
-(* oh et puis merde, c'est pas ça *)
-...
-
-  destruct (LPO_fst (λ p, negb (Nat.eqb ((u ⊕ P v) (i + p + 2)) 0)))
-    as [Hv1| Hv1]. {
-    (* no 0 => must be all 2 => A_all_18 *)
-    admit.
-  }
-  destruct Hv1 as (p & Hjp & Hp).
-...
-  destruct (LPO_fst (λ p, Nat.eqb (v (i + p + 2)) 1)) as [Hv1| Hv1]. {
-    (* v is an infinity of 1s from i+2; then u also; then u⊕Pv is an infinity
-       of 2s; should be good: A_all_18 *)
-    admit.
-  }
-  destruct Hv1 as (p & Hjp & Hp).
-  (* v 0 1 1 1 2 *)
-  destruct (LPO_fst (λ q, Nat.eqb (v (i + p + q + 3)) 1)) as [Hv2| Hv2]. {
-
-...
-  destruct (LPO_fst (λ p, Nat.eqb (v (i + p + 2)) 2)) as [Hv1| Hv1]. {
-    (* A_all_9 *)
-    admit.
-  }
-  destruct Hv1 as (p & Hjp & Hp).
-...
-  destruct (LPO_fst (λ p, Nat.eqb (v (i + p + 2)) 1)) as [Hv1| Hv1]. {
-    (* v is an infinity of 1s from i+2; then u also; then u⊕Pv is an infinity
-       of 2s; should be good *)
-    admit.
-  }
-  destruct Hv1 as (p & Hjp & Hp).
-  destruct
-    (LPO_fst
-       (λ q,
-        match LPO_fst (λ q, Nat.eqb (v (i + p + q + 3)) 2) with
-        | inl _ =>
-...
-  destruct
-    (LPO_fst
-       (λ p,
-        match LPO_fst (λ q, Nat.eqb (v (i + p + q + 2)) 1) with
-        | inl _ => true
-        | inr _ _ => false
-        end)) as [Hv1| Hv1]. {
-    specialize (Hv1 0).
-    destruct (LPO_fst (λ q, (v (i + 0 + q + 2) =? 1))) as [H| H]; [ | easy ].
-    clear Hv1; rename H into Hv1.
-    (* v is an infinity of 1s from i+2; then u also; then u⊕Pv is an infinity
-       of 2s; should be good *)
-    admit.
-  }
-  destruct Hv1 as (p & Hjp & Hp).
-  destruct (LPO_fst (λ q, (v (i + p + q + 2) =? 1))) as [H| H]; [ easy | ].
-  clear Hp; destruct H as (q & Hjq & Hq).
-  specialize (Hjp (p + 1)).
-  (* non ça va pas; il me faut 3 cas *)
-...
+  move H before Hjq; clear Hjq; rename H into Hjq.
+  (* should be A_9_8_all_18 here *)
 ...
 assert
   (Huv2 :
