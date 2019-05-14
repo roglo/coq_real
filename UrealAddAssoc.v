@@ -3376,6 +3376,14 @@ specialize (H1 H Hauv (or_introl Huv1)); clear H.
 assert (H : ∀ k, k < 0 → (u ⊕ v) (i + k + 2) = 2) by (intros p H; flia H).
 specialize (H1 H); clear H.
 destruct H1 as [Huvn| H1]. {
+  (* v cannot hold 0s *)
+  destruct (LPO_fst (λ p, Nat.eqb (v (i + p + 2)) 2)) as [Hv1| Hv1]. {
+    (* v = all 2s => Pv = all 1s => u+Pv = A_all_18 *)
+    admit.
+  }
+  destruct Hv1 as (p & Hjp & Hp).
+  (* v(i+p+2)≠2 therefore v(i+p+2)=1 *)
+...
   destruct (LPO_fst (λ p, Nat.eqb ((u ⊕ P v) (i + p + 2)) 2)) as [Hv1| Hv1]. {
     (* all 2s => A_all_18 *)
     admit.
