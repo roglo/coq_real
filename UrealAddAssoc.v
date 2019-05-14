@@ -3376,6 +3376,79 @@ specialize (H1 H Hauv (or_introl Huv1)); clear H.
 assert (H : ∀ k, k < 0 → (u ⊕ v) (i + k + 2) = 2) by (intros p H; flia H).
 specialize (H1 H); clear H.
 destruct H1 as [Huvn| H1]. {
+  destruct (LPO_fst (λ p, Nat.eqb ((u ⊕ P v) (i + p + 2)) 2)) as [Hv1| Hv1]. {
+    (* all 2s => A_all_18 *)
+    admit.
+  }
+  destruct Hv1 as (p & Hjp & Hp).
+  destruct (LPO_fst (λ q, Nat.eqb ((u ⊕ P v) (i + q + 2)) 1)) as [Hv1| Hv1]. {
+    (* p must be 0, otherwize would contradict Hv1; A_all_9 *)
+    admit.
+  }
+  destruct Hv1 as (q & Hjq & Hq).
+  (* u+Pv  2  2  2  2  ≠2 .  .  . (p)
+     u+Pv  1  1  1  1  1  1 #1  . (q)
+     either
+       p=0
+*)
+(* oh et puis merde, c'est pas ça *)
+...
+
+  destruct (LPO_fst (λ p, negb (Nat.eqb ((u ⊕ P v) (i + p + 2)) 0)))
+    as [Hv1| Hv1]. {
+    (* no 0 => must be all 2 => A_all_18 *)
+    admit.
+  }
+  destruct Hv1 as (p & Hjp & Hp).
+...
+  destruct (LPO_fst (λ p, Nat.eqb (v (i + p + 2)) 1)) as [Hv1| Hv1]. {
+    (* v is an infinity of 1s from i+2; then u also; then u⊕Pv is an infinity
+       of 2s; should be good: A_all_18 *)
+    admit.
+  }
+  destruct Hv1 as (p & Hjp & Hp).
+  (* v 0 1 1 1 2 *)
+  destruct (LPO_fst (λ q, Nat.eqb (v (i + p + q + 3)) 1)) as [Hv2| Hv2]. {
+
+...
+  destruct (LPO_fst (λ p, Nat.eqb (v (i + p + 2)) 2)) as [Hv1| Hv1]. {
+    (* A_all_9 *)
+    admit.
+  }
+  destruct Hv1 as (p & Hjp & Hp).
+...
+  destruct (LPO_fst (λ p, Nat.eqb (v (i + p + 2)) 1)) as [Hv1| Hv1]. {
+    (* v is an infinity of 1s from i+2; then u also; then u⊕Pv is an infinity
+       of 2s; should be good *)
+    admit.
+  }
+  destruct Hv1 as (p & Hjp & Hp).
+  destruct
+    (LPO_fst
+       (λ q,
+        match LPO_fst (λ q, Nat.eqb (v (i + p + q + 3)) 2) with
+        | inl _ =>
+...
+  destruct
+    (LPO_fst
+       (λ p,
+        match LPO_fst (λ q, Nat.eqb (v (i + p + q + 2)) 1) with
+        | inl _ => true
+        | inr _ _ => false
+        end)) as [Hv1| Hv1]. {
+    specialize (Hv1 0).
+    destruct (LPO_fst (λ q, (v (i + 0 + q + 2) =? 1))) as [H| H]; [ | easy ].
+    clear Hv1; rename H into Hv1.
+    (* v is an infinity of 1s from i+2; then u also; then u⊕Pv is an infinity
+       of 2s; should be good *)
+    admit.
+  }
+  destruct Hv1 as (p & Hjp & Hp).
+  destruct (LPO_fst (λ q, (v (i + p + q + 2) =? 1))) as [H| H]; [ easy | ].
+  clear Hp; destruct H as (q & Hjq & Hq).
+  specialize (Hjp (p + 1)).
+  (* non ça va pas; il me faut 3 cas *)
+...
 ...
 assert
   (Huv2 :
