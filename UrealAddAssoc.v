@@ -3379,14 +3379,25 @@ destruct H1 as [Huvn| H1]. {
   destruct
     (LPO_fst
        (λ q,
-        match LPO_fst (λ s, Nat.eqb (v (i + q + s + 3)) 1) with
+        match LPO_fst (λ s, Nat.eqb (v (i + q + s + 2)) 1) with
         | inl _ => false
         | inr _ _ => true
         end)) as [Hv2| Hv2]. {
-    specialize (Hv2 0).
-    destruct (LPO_fst (λ s, v (i + 0 + s + 3) =? 1)) as [H| H]; [ easy | ].
-    destruct H as (p & Hjp & Hp); clear Hv2.
-    rewrite Nat.add_0_r in Hjp, Hp.
+    assert (H : ∀ p, ∃ q, v (i + p + q + 2) = 2). {
+      intros p.
+      specialize (Hv2 p).
+      destruct (LPO_fst (λ s, v (i + p + s + 2) =? 1)) as [H| H]; [ easy | ].
+      destruct H as (q & Hjq & Hq); clear Hv2.
+      exists q.
+      apply Nat.eqb_neq in Hq.
+      specialize (Huvn (p + q)) as H1.
+      specialize (Hu (p + q + 2)) as H2.
+      rewrite Nat.add_assoc in H1.
+      do 2 rewrite Nat.add_assoc in H2.
+      unfold "⊕" in H1.
+      flia Hq H1 H2.
+    }
+    clear Hv2; rename H into Hv2.
 ...
   destruct
     (LPO_fst
