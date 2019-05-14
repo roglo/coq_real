@@ -3423,6 +3423,12 @@ destruct H1 as [Huvn| H1]. {
     admit.
   }
   destruct Hv2 as (q & Hjq & Hq).
+  assert (H : ∀ j, j < p → v (i + j + 2) = 1). {
+    intros s Hs.
+    specialize (Hjp _ Hs).
+    now apply Nat.eqb_eq in Hjp.
+  }
+  move H before Hjp; clear Hjp; rename H into Hjp.
   destruct (LPO_fst (λ s, v (i + q + s + 2) =? 1)) as [H1| H1]; [ | easy ].
   clear Hq.
   assert (H : ∀ k, v (i + q + k + 2) = 1). {
@@ -3446,8 +3452,11 @@ destruct H1 as [Huvn| H1]. {
     flia Hs H1 H2.
   }
   move H before Hjq; clear Hjq; rename H into Hjq.
-  (* v=..., then u=... and Pv=...,
-     then u+Pv=..., then resolved by A_9_8_all_18 *)
+  (*         p+2  q+2
+             |    |
+     v=0111112...21111..., then u=0111110...01111... and
+    Pv=0000001...01111... then u+Pv=0111111...02222...,
+    then resolved by A_9_8_all_18 *)
 ...
 assert
   (Huv2 :
