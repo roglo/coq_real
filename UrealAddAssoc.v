@@ -3376,6 +3376,29 @@ specialize (H1 H Hauv (or_introl Huv1)); clear H.
 assert (H : ∀ k, k < 0 → (u ⊕ v) (i + k + 2) = 2) by (intros p H; flia H).
 specialize (H1 H); clear H.
 destruct H1 as [Huvn| H1]. {
+  destruct
+    (LPO_fst
+       (λ q,
+        match LPO_fst (λ s, Nat.eqb (v (i + q + s + 3)) 1) with
+        | inl _ => false
+        | inr _ _ => true
+        end)) as [Hv2| Hv2]. {
+    specialize (Hv2 0).
+    destruct (LPO_fst (λ s, v (i + 0 + s + 3) =? 1)) as [H| H]; [ easy | ].
+    destruct H as (p & Hjp & Hp); clear Hv2.
+    rewrite Nat.add_0_r in Hjp, Hp.
+...
+  destruct
+    (LPO_fst
+       (λ q,
+        match LPO_fst (λ s, orb (Nat.leb s q) (Nat.eqb (v (i + s)) 1)) with
+        | inl _ => false
+        | inr _ _ => true
+        end)) as [Hv2| Hv2]. {
+    specialize (Hv2 0).
+    destruct (LPO_fst (λ s : nat, ((s <=? 0) || (v (i + s) =? 1))%bool)) as [H| H]; [ easy | ].
+    destruct H as (p & Hjp & Hp).
+...
   (* v cannot hold 0s *)
   destruct (LPO_fst (λ p, Nat.eqb ((u ⊕ P v) (i + p)) 2)) as [Hv1| Hv1]. {
     (* u+Pv = all 2s => A_all_18 *)
@@ -3394,15 +3417,6 @@ destruct H1 as [Huvn| H1]. {
   }
   destruct Hv1 as (p & Hjp & Hp).
   (* v(i+p+2)≠2 therefore v(i+p+2)=1 *)
-...
-  destruct
-    (LPO_fst
-       (λ q,
-        match LPO_fst (λ s, orb (Nat.leb s q) (Nat.eqb (v (i + s)) 1)) with
-        | inl _ => true
-        | inr _ _ => false
-        end)) as [Hv2| Hv2]. {
-    specialize (Hv2 0).
 ...
   destruct
     (LPO_fst
