@@ -3384,7 +3384,7 @@ destruct H1 as [Huvn| H1]. {
     clear H1; rename H into Hv2.
     (* v=01111..., then u=01111... and Pv=01111..., then u+Pv=02222...
        then resolved by A_split_first and A_all_18 *)
-...
+    admit.
   }
   destruct H1 as (p & Hjp & Hp).
   assert (H : v (i + p + 2) = 2). {
@@ -3420,7 +3420,7 @@ destruct H1 as [Huvn| H1]. {
     clear Hv2; rename H into Hv2.
     (* v=0111211211112..., then u=0111011011110... and Pv=10000100100000...,
        then u+Pv=111111..., then resolved by A_all_9 *)
-...
+    admit.
   }
   destruct Hv2 as (q & Hjq & Hq).
   destruct (LPO_fst (λ s, v (i + q + s + 2) =? 1)) as [H1| H1]; [ | easy ].
@@ -3446,7 +3446,8 @@ destruct H1 as [Huvn| H1]. {
     flia Hs H1 H2.
   }
   move H before Hjq; clear Hjq; rename H into Hjq.
-  (* should be A_9_8_all_18 here *)
+  (* v=..., then u=... and Pv=...,
+     then u+Pv=..., then resolved by A_9_8_all_18 *)
 ...
 assert
   (Huv2 :
