@@ -3526,6 +3526,20 @@ destruct Huv2 as [Huv2| Huv2]. {
   destruct (le_dec (i + 1 + 1) (nk - 1)); pauto.
 }
 destruct Huv2 as [Huv2| Huv2]. {
+(**)
+  specialize (rad_2_sum_3_all_9_02_222_13 1 (u ⊕ v) i Hr2) as H1.
+  assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3). {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  specialize (H1 H Hauv (or_introl Huv1)); clear H.
+  assert (H : ∀ k, k < 1 → (u ⊕ v) (i + k + 2) = 2). {
+    now intros p Hp; apply Nat.lt_1_r in Hp; rewrite Hp, Nat.add_0_r.
+  }
+  specialize (H1 H); clear H.
+  destruct H1 as [Huvn| H1]. {
+...
+  }
+...
   unfold "⊕" in Huv2.
   apply Nat_eq_add_2 in Huv2.
   destruct Huv2 as [Huv2| Huv2]. {
@@ -3701,6 +3715,7 @@ u+Pv . . . 2 2 2 2 ...
       destruct (le_dec (i + 2 + 0 + 1) (nk - 1)); pauto.
     }
     destruct Huv3 as [Huv3| Huv3]. {
+Check rad_2_sum_3_all_9_02_222_13.
 ...
 apply (rad_2_glop 2 j k); try easy.
 ...
