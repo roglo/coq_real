@@ -3377,6 +3377,17 @@ assert (H : ∀ k, k < 0 → (u ⊕ v) (i + k + 2) = 2) by (intros p H; flia H).
 specialize (H1 H); clear H.
 destruct H1 as [Huvn| H1]. {
   (* v cannot hold 0s *)
+  destruct (LPO_fst (λ p, Nat.eqb ((u ⊕ P v) (i + p)) 2)) as [Hv1| Hv1]. {
+    (* u+Pv = all 2s => A_all_18 *)
+    admit.
+  }
+  destruct Hv1 as (p & Hjp & Hp).
+  destruct (LPO_fst (λ q, Nat.eqb ((u ⊕ P v) (i + q)) 1)) as [Hv1| Hv1]. {
+    (* u+Pv = all 1s => A_all_9 *)
+    admit.
+  }
+  destruct Hv1 as (q & Hjq & Hq).
+...
   destruct (LPO_fst (λ p, Nat.eqb (v (i + p + 2)) 2)) as [Hv1| Hv1]. {
     (* v = all 2s => Pv = all 1s => u+Pv = A_all_18 *)
     admit.
