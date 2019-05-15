@@ -3488,6 +3488,34 @@ destruct H1 as [Huvn| H1]. {
       replace (carry v (i + s + 2)) with 1; [ easy | symmetry ].
       specialize (Hv2 s) as H1.
       destruct H1 as (t & Hjt & Ht).
+      destruct t. {
+        now rewrite Nat.add_0_r in Ht; rewrite Ht in Huv2.
+      }
+      replace (i + s + S t + 2) with (i + s + t + 3) in Ht by flia.
+      clear Hs Huv2.
+      revert s Hjt Ht.
+      induction t; intros. {
+        rewrite Nat.add_0_r in Ht.
+        rewrite (carry_succ 2); cycle 1. {
+          rewrite Hr2.
+          replace 2 with (2 ^ 1) at 1 by easy.
+          apply Nat.pow_lt_mono_r; [ pauto | flia ].
+        } {
+          now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+        }
+        replace (i + s + 2 + 1) with (i + s + 3) by flia.
+        rewrite Ht, Hr2, Nat_div_add_same_l; [ | easy ].
+        specialize (carry_upper_bound_for_adds 2 v i) as H1.
+        specialize (H1 (Nat.neq_succ_0 _)).
+        assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+          now intros; rewrite Hr2, <- Nat.add_assoc.
+        }
+        specialize (H1 H (s + 3)); clear H.
+        rewrite Nat.add_assoc in H1.
+        remember (carry v (i + s + 3)) as c eqn:Hc.
+        destruct c; [ easy | ].
+        destruct c; [ easy | flia H1 ].
+      }
 ...
       rewrite <- (carry_nth_carry 2 t); cycle 1. {
         rewrite Hr2.
