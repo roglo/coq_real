@@ -3429,7 +3429,9 @@ destruct H1 as [Huvn| H1]. {
         | inl _ => false
         | inr _ _ => true
         end)) as [Hv2| Hv2]. {
-    assert (H : ∀ q, ∃ s, v (i + q + s + 2) = 2). {
+    assert
+      (H : ∀ q, ∃ s,
+      (∀ j, j < s → v (i + q + j + 2) = 1) ∧ v (i + q + s + 2) = 2). {
       intros q.
       specialize (Hv2 q).
       destruct (LPO_fst (λ s, v (i + q + s + 2) =? 1)) as [H| H]; [ easy | ].
@@ -3441,7 +3443,10 @@ destruct H1 as [Huvn| H1]. {
       rewrite Nat.add_assoc in H1.
       do 2 rewrite Nat.add_assoc in H2.
       unfold "⊕" in H1.
-      flia Hs H1 H2.
+      split; [ | flia Hs H1 H2 ].
+      intros t Ht.
+      specialize (Hjs _ Ht) as H3.
+      now apply Nat.eqb_eq in H3.
     }
     clear Hv2; rename H into Hv2.
     assert (H : ∀ j, j < p → v (i + j + 2) = 1). {
@@ -3482,7 +3487,8 @@ destruct H1 as [Huvn| H1]. {
       rewrite (proj2 Huv2), Hr2.
       replace (carry v (i + s + 2)) with 1; [ easy | symmetry ].
       specialize (Hv2 s) as H1.
-      destruct H1 as (t, Ht).
+      destruct H1 as (t & Hjt & Ht).
+...
       rewrite <- (carry_nth_carry 2 t); cycle 1. {
         rewrite Hr2.
         replace 2 with (2 ^ 1) at 1 by easy.
@@ -3493,17 +3499,19 @@ destruct H1 as [Huvn| H1]. {
 (*
       clear - Hr2 Hu Hv Huvn Ht.
 *)
-clear Hs Huv2.
-      revert s Ht.
+clear Hs Hjt.
+      revert s Ht Huv2.
       induction t; intros. {
         cbn; rewrite Nat.add_0_r in Ht.
-...
+        now rewrite Ht in Huv2.
       }
       replace (i + s + S t) with (i + S s + t) in Ht by flia.
       specialize (IHt (S s) Ht); cbn.
-      replace (i + s + 2 + 1) with (i + S s + 2) by flia.
-      rewrite IHt, Hr2.
-      (* ouais, v vaut 1 ou 2, donc c'est bon *)
+      replace (i + S s + 2) with (i + s + 3) in IHt by flia.
+      replace (i + s + 2 + 1) with (i + s + 3) by flia.
+      specialize (Huvn (s + 1)) as H1.
+      replace (i + (s + 1) + 2) with (i + s + 3) in H1 by flia.
+      apply Nat_eq_add_2 in H1.
 ...
   }
   destruct Hv2 as (q & Hjq & Hq).
