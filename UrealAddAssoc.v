@@ -3492,7 +3492,7 @@ destruct H1 as [Huvn| H1]. {
         now rewrite Nat.add_0_r in Ht; rewrite Ht in Huv2.
       }
       replace (i + s + S t + 2) with (i + s + t + 3) in Ht by flia.
-      clear Hs Huv2.
+      clear - Hr2 Hu Hv Hjt Ht Huvn.
       revert s Hjt Ht.
       induction t; intros. {
         rewrite Nat.add_0_r in Ht.
@@ -3501,7 +3501,10 @@ destruct H1 as [Huvn| H1]. {
           replace 2 with (2 ^ 1) at 1 by easy.
           apply Nat.pow_lt_mono_r; [ pauto | flia ].
         } {
-          now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+          intros; rewrite Hr2.
+          specialize (Huvn (s + k)) as H1.
+          replace (i + (s + k) + 2) with (i + s + 2 + k) in H1 by flia.
+          unfold "⊕" in H1; flia H1.
         }
         replace (i + s + 2 + 1) with (i + s + 3) by flia.
         rewrite Ht, Hr2, Nat_div_add_same_l; [ | easy ].
@@ -3545,9 +3548,9 @@ destruct H1 as [Huvn| H1]. {
     unfold P, d2n, prop_carr, dig.
     rewrite (proj2 Huv2), Hr2, Nat_mod_add_same_l; [ | easy ].
     replace (carry v (i + s + 2)) with 1; [ easy | symmetry ].
-...
-    specialize (Hv2 s) as H1.
+    specialize (Hv2 (s + 1)) as H1.
     destruct H1 as (t & Hjt & Ht).
+    replace (i + (s + 1) + t + 2) with (i + s + t + 3) in Ht by flia.
 ...
   }
   destruct Hv2 as (q & Hjq & Hq).
