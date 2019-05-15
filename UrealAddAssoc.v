@@ -3594,6 +3594,17 @@ destruct H1 as [Huvn| H1]. {
      v=0111112...21111..., then u=0111110...01111... and
     Pv=0000001...01111... then u+Pv=0111111...02222...,
     then resolved by A_9_8_all_18 *)
+  destruct q. {
+    rewrite Nat.add_0_r in Hq; clear Hjq.
+    now rewrite Hq in Hp.
+  }
+  specialize (Hjq q (Nat.lt_succ_diag_r _)) as H1.
+  destruct H1 as (s, Hs).
+  rewrite (A_9_8_all_18 (q + s + 1)); cycle 1. {
+    admit.
+  } {
+    rewrite Hr2.
+    replace (i + (q + s + 1) + 1) with (i + q + s + 2) by flia.
 ...
 assert
   (Huv2 :
