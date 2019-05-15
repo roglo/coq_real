@@ -3542,6 +3542,9 @@ destruct H1 as [Huvn| H1]. {
       now destruct H1 as [H1| H1]; rewrite (proj2 H1).
     }
     rewrite (proj1 Huv2), Nat.add_0_l.
+    unfold P, d2n, prop_carr, dig.
+    rewrite (proj2 Huv2), Hr2, Nat_mod_add_same_l; [ | easy ].
+    replace (carry v (i + s + 2)) with 1; [ easy | symmetry ].
 ...
   }
   destruct Hv2 as (q & Hjq & Hq).
