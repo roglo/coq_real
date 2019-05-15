@@ -3460,8 +3460,9 @@ destruct H1 as [Huvn| H1]. {
       symmetry.
       unfold P, d2n, prop_carr, dig.
       rewrite (proj2 Huv1), Nat.add_0_l, Hr2.
-      replace (carry v (i + 1)) with 1; [ easy | ].
-      symmetry; unfold carry.
+      replace (carry v (i + 1)) with 1; [ easy | symmetry ].
+...
+      unfold carry.
       clear - Hr2 Hv Hjp Hp.
       revert i Hv Hjp Hp.
       induction p; intros. {
@@ -3488,10 +3489,10 @@ destruct H1 as [Huvn| H1]. {
       rewrite <- (Nat.add_assoc _ 1) in IHp.
       specialize (IHp H Hp); clear H.
       replace (i + 1 + 1) with (i + 2) in IHp by flia.
-...
       rewrite A_split_first, Hr2; [ | min_n_ge ].
       replace (S (i + 1)) with (i + 2) by easy.
       rewrite Q.intg_add_cond.
+...
 rewrite IHp.
 ...
   }
