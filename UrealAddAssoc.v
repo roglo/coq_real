@@ -3456,48 +3456,18 @@ destruct H1 as [Huvn| H1]. {
     apply Nat.eq_add_0 in Huv1.
     unfold "⊕" at 1.
     rewrite (proj1 Huv1), Nat.add_0_l, Hr2.
-    replace (P v (i + 1)) with 1. 2: {
-      symmetry.
-      unfold P, d2n, prop_carr, dig.
-      rewrite (proj2 Huv1), Nat.add_0_l, Hr2.
-      replace (carry v (i + 1)) with 1; [ easy | symmetry ].
-      rewrite <- (carry_nth_carry 2 p); cycle 1. {
-        rewrite Hr2.
-        replace 2 with (2 ^ 1) at 1 by easy.
-        apply Nat.pow_lt_mono_r; [ pauto | flia ].
-      } {
-        now intros; rewrite Hr2; rewrite <- Nat.add_assoc.
-      }
-      clear - Hr2 Hv Hjp Hp.
-      revert i Hv Hjp Hp.
-      induction p; intros. {
-        cbn.
-        unfold carry.
-        rewrite A_split_first, Hr2; [ | min_n_ge ].
-        replace (S (i + 1)) with (i + 2) by easy.
-        rewrite Nat.add_0_r in Hp; rewrite Hp.
-        rewrite Q.pair_diag; [ | easy ].
-        rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
-        symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
-        apply Q.intg_small; split; [ now apply Q.le_0_mul_r | ].
-        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-        now intros q; rewrite <- Nat.add_assoc.
-      }
-      cbn.
-      rewrite IHp; cycle 1. {
-        now intros k; rewrite <- Nat.add_assoc.
-      } {
-        intros j Hj.
-        rewrite <- (Nat.add_assoc _ 1).
-        apply Hjp; flia Hj.
-      } {
-        now rewrite <- (Nat.add_assoc _ 1).
-      }
-      specialize (Hjp 0 (Nat.lt_0_succ _)).
-      rewrite Nat.add_0_r in Hjp.
-      replace (i + 1 + 1) with (i + 2) by flia.
-      now rewrite Hjp, Hr2.
+    eapply Q.le_lt_trans. {
+      apply Q.add_le_mono_r with (y := (1 // 2)%Q).
+      apply Q.le_pair_mono_r.
+      replace 1 with (rad - 1) at 2 by flia Hr2.
+      apply P_le.
     }
+    apply Q.lt_add_lt_sub_l.
+    replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+    apply Q.mul_lt_mono_pos_r; [ easy | ].
+    rewrite A_all_9; [ now apply Q.sub_lt | ].
+    intros s Hs.
+    replace (i + 1 + s + 1) with (i + s + 2) in Hs |-* by flia.
 ...
   }
   destruct Hv2 as (q & Hjq & Hq).
