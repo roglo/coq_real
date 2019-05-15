@@ -3462,19 +3462,37 @@ destruct H1 as [Huvn| H1]. {
       rewrite (proj2 Huv1), Nat.add_0_l, Hr2.
       replace (carry v (i + 1)) with 1; [ easy | ].
       symmetry; unfold carry.
-...
-      rewrite A_split_first, Hr2; [ | min_n_ge ].
-      replace (S (i + 1)) with (i + 2) by easy.
-      destruct (zerop p) as [Hzp| Hzp]. {
-        rewrite Hzp, Nat.add_0_r in Hp.
-        rewrite Hp, Q.pair_diag; [ | easy ].
+      clear - Hr2 Hv Hjp Hp.
+      revert i Hv Hjp Hp.
+      induction p; intros. {
+        rewrite A_split_first, Hr2; [ | min_n_ge ].
+        replace (S (i + 1)) with (i + 2) by easy.
+        rewrite Nat.add_0_r in Hp; rewrite Hp.
+        rewrite Q.pair_diag; [ | easy ].
         rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
         symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
         apply Q.intg_small; split; [ now apply Q.le_0_mul_r | ].
         apply rad_2_sum_2_half_A_lt_1; [ easy | ].
         now intros q; rewrite <- Nat.add_assoc.
       }
-      specialize (Hjp _ Hzp) as H1; rewrite Nat.add_0_r in H1; rewrite H1.
+      specialize (IHp (i + 1)).
+      assert (H : ∀ k, v (i + 1 + k) ≤ 2). {
+        now intros k; rewrite <- Nat.add_assoc.
+      }
+      specialize (IHp H); clear H.
+      assert (H : ∀ j, j < p → v (i + 1 + j + 2) = 1). {
+        intros j Hj.
+        rewrite <- (Nat.add_assoc _ 1).
+        apply Hjp; flia Hj.
+      }
+      rewrite <- (Nat.add_assoc _ 1) in IHp.
+      specialize (IHp H Hp); clear H.
+      replace (i + 1 + 1) with (i + 2) in IHp by flia.
+...
+      rewrite A_split_first, Hr2; [ | min_n_ge ].
+      replace (S (i + 1)) with (i + 2) by easy.
+      rewrite Q.intg_add_cond.
+rewrite IHp.
 ...
   }
   destruct Hv2 as (q & Hjq & Hq).
