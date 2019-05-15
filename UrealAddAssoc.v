@@ -3462,6 +3462,7 @@ destruct H1 as [Huvn| H1]. {
       rewrite (proj2 Huv1), Nat.add_0_l, Hr2.
       replace (carry v (i + 1)) with 1; [ easy | ].
       symmetry; unfold carry.
+...
       rewrite A_split_first, Hr2; [ | min_n_ge ].
       replace (S (i + 1)) with (i + 2) by easy.
       destruct (zerop p) as [Hzp| Hzp]. {
