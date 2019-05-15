@@ -3480,18 +3480,13 @@ destruct H1 as [Huvn| H1]. {
       specialize (Hu (s + 2)) as H1.
       rewrite Nat.add_assoc in H1; flia Huv2 H1.
     }
-    destruct Huv2 as [Huv2| Huv2]. {
-      rewrite (proj1 Huv2).
-      replace (2 - 1) with (1 + 0) by easy; f_equal.
-      unfold P, d2n, prop_carr, dig.
-      rewrite (proj2 Huv2), Hr2.
-      replace (carry v (i + s + 2)) with 1; [ easy | symmetry ].
-      specialize (Hv2 s) as H1.
-      destruct H1 as (t & Hjt & Ht).
-      destruct t. {
-        now rewrite Nat.add_0_r in Ht; rewrite Ht in Huv2.
-      }
-      replace (i + s + S t + 2) with (i + s + t + 3) in Ht by flia.
+    assert
+      (Hcs : ∀ s t,
+        (∀ j, j < t → v (i + S s + j + 2) = 1)
+        → v (i + s + t + 3) = 2
+        → carry v (i + s + 2) = 1). {
+      clear s Hs Huv2.
+      intros * Hjt Ht.
       clear - Hr2 Hu Hv Hjt Ht Huvn.
       revert s Hjt Ht.
       induction t; intros. {
@@ -3520,9 +3515,9 @@ destruct H1 as [Huvn| H1]. {
         destruct c; [ easy | flia H1 ].
       }
       specialize (IHt (S s)).
-      assert (H : ∀ j, j < S t → v (i + S s + j + 2) = 1). {
+      assert (H : ∀ j, j < t → v (i + S (S s) + j + 2) = 1). {
         intros q Hq.
-        replace (i + S s + q) with (i + s + S q) by flia.
+        replace (i + S (S s) + q) with (i + S s + S q) by flia.
         apply Hjt; flia Hq.
       }
       replace (i + s + S t) with (i + S s + t) in Ht by flia.
@@ -3544,14 +3539,25 @@ destruct H1 as [Huvn| H1]. {
       }
       now destruct H1 as [H1| H1]; rewrite (proj2 H1).
     }
+    destruct Huv2 as [Huv2| Huv2]. {
+      rewrite (proj1 Huv2).
+      replace (2 - 1) with (1 + 0) by easy; f_equal.
+      unfold P, d2n, prop_carr, dig.
+      rewrite (proj2 Huv2), Hr2.
+      replace (carry v (i + s + 2)) with 1; [ easy | symmetry ].
+      specialize (Hv2 (S s)) as H1.
+      destruct H1 as (t & Hjt & Ht).
+      replace (i + S s + t + 2) with (i + s + t + 3) in Ht by flia.
+      now apply (Hcs _ t).
+    }
     rewrite (proj1 Huv2), Nat.add_0_l.
     unfold P, d2n, prop_carr, dig.
     rewrite (proj2 Huv2), Hr2, Nat_mod_add_same_l; [ | easy ].
     replace (carry v (i + s + 2)) with 1; [ easy | symmetry ].
-    specialize (Hv2 (s + 1)) as H1.
+    specialize (Hv2 (S s)) as H1.
     destruct H1 as (t & Hjt & Ht).
-    replace (i + (s + 1) + t + 2) with (i + s + t + 3) in Ht by flia.
-...
+    replace (i + S s + t + 2) with (i + s + t + 3) in Ht by flia.
+    now apply (Hcs _ t).
   }
   destruct Hv2 as (q & Hjq & Hq).
   assert (H : ∀ j, j < p → v (i + j + 2) = 1). {
