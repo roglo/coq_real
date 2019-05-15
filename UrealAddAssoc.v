@@ -3444,6 +3444,11 @@ destruct H1 as [Huvn| H1]. {
       flia Hs H1 H2.
     }
     clear Hv2; rename H into Hv2.
+    assert (H : ∀ j, j < p → v (i + j + 2) = 1). {
+      intros q Hq; specialize (Hjp q Hq) as H1.
+      now apply Nat.eqb_eq in H1.
+    }
+    move H before Hjp; clear Hjp; rename H into Hjp.
     (* v=0111211211112..., then u=0111011011110... and Pv=10000100100000...,
        then u+Pv=111111..., then resolved by A_all_9 *)
     rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
@@ -3457,6 +3462,18 @@ destruct H1 as [Huvn| H1]. {
       rewrite (proj2 Huv1), Nat.add_0_l, Hr2.
       replace (carry v (i + 1)) with 1; [ easy | ].
       symmetry; unfold carry.
+      rewrite A_split_first, Hr2; [ | min_n_ge ].
+      replace (S (i + 1)) with (i + 2) by easy.
+      destruct (zerop p) as [Hzp| Hzp]. {
+        rewrite Hzp, Nat.add_0_r in Hp.
+        rewrite Hp, Q.pair_diag; [ | easy ].
+        rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+        symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
+        apply Q.intg_small; split; [ now apply Q.le_0_mul_r | ].
+        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+        now intros q; rewrite <- Nat.add_assoc.
+      }
+      specialize (Hjp _ Hzp) as H1; rewrite Nat.add_0_r in H1; rewrite H1.
 ...
   }
   destruct Hv2 as (q & Hjq & Hq).
