@@ -3466,8 +3466,18 @@ destruct H1 as [Huvn| H1]. {
     replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
     apply Q.mul_lt_mono_pos_r; [ easy | ].
     rewrite A_all_9; [ now apply Q.sub_lt | ].
-    intros s Hs.
+    intros s Hs; rewrite Hr2.
     replace (i + 1 + s + 1) with (i + s + 2) in Hs |-* by flia.
+    unfold "⊕".
+    specialize (Huvn s) as Huv2.
+    apply Nat_eq_add_2 in Huv2.
+    destruct Huv2 as [Huv2| Huv2]. {
+      specialize (Hu (s + 2)) as H1.
+      rewrite Nat.add_assoc in H1; flia Huv2 H1.
+    }
+    destruct Huv2 as [Huv2| Huv2]. {
+      rewrite (proj1 Huv2).
+      replace (2 - 1) with (1 + 0) by easy; f_equal.
 ...
   }
   destruct Hv2 as (q & Hjq & Hq).
