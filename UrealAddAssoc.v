@@ -3516,30 +3516,32 @@ destruct H1 as [Huvn| H1]. {
         destruct c; [ easy | ].
         destruct c; [ easy | flia H1 ].
       }
-...
-      rewrite <- (carry_nth_carry 2 t); cycle 1. {
+      specialize (IHt (S s)).
+      assert (H : ∀ j, j < S t → v (i + S s + j + 2) = 1). {
+        intros q Hq.
+        replace (i + S s + q) with (i + s + S q) by flia.
+        apply Hjt; flia Hq.
+      }
+      replace (i + s + S t) with (i + S s + t) in Ht by flia.
+      specialize (IHt H Ht); clear H.
+      rewrite (carry_succ 2); cycle 1. {
         rewrite Hr2.
         replace 2 with (2 ^ 1) at 1 by easy.
         apply Nat.pow_lt_mono_r; [ pauto | flia ].
       } {
         now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
       }
-(*
-      clear - Hr2 Hu Hv Huvn Ht.
-*)
-clear Hs Hjt.
-      revert s Ht Huv2.
-      induction t; intros. {
-        cbn; rewrite Nat.add_0_r in Ht.
-        now rewrite Ht in Huv2.
-      }
-      replace (i + s + S t) with (i + S s + t) in Ht by flia.
-      specialize (IHt (S s) Ht); cbn.
-      replace (i + S s + 2) with (i + s + 3) in IHt by flia.
-      replace (i + s + 2 + 1) with (i + s + 3) by flia.
-      specialize (Huvn (s + 1)) as H1.
-      replace (i + (s + 1) + 2) with (i + s + 3) in H1 by flia.
+      replace (i + s + 2 + 1) with (i + S s + 2) by flia.
+      rewrite IHt, Hr2.
+      specialize (Huvn (S s)) as H1.
       apply Nat_eq_add_2 in H1.
+      destruct H1 as [H1| H1]. {
+        specialize (Hu (S s + 2)) as H2.
+        rewrite Nat.add_assoc in H2; flia H1 H2.
+      }
+      now destruct H1 as [H1| H1]; rewrite (proj2 H1).
+    }
+    rewrite (proj1 Huv2), Nat.add_0_l.
 ...
   }
   destruct Hv2 as (q & Hjq & Hq).
