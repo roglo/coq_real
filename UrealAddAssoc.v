@@ -3546,6 +3546,9 @@ destruct H1 as [Huvn| H1]. {
     rewrite (proj2 Huv2), Hr2, Nat_mod_add_same_l; [ | easy ].
     replace (carry v (i + s + 2)) with 1; [ easy | symmetry ].
 ...
+    specialize (Hv2 s) as H1.
+    destruct H1 as (t & Hjt & Ht).
+...
   }
   destruct Hv2 as (q & Hjq & Hq).
   assert (H : ∀ j, j < p → v (i + j + 2) = 1). {
