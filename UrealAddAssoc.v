@@ -3478,6 +3478,31 @@ destruct H1 as [Huvn| H1]. {
     destruct Huv2 as [Huv2| Huv2]. {
       rewrite (proj1 Huv2).
       replace (2 - 1) with (1 + 0) by easy; f_equal.
+      unfold P, d2n, prop_carr, dig.
+      rewrite (proj2 Huv2), Hr2.
+      replace (carry v (i + s + 2)) with 1; [ easy | symmetry ].
+      specialize (Hv2 s) as H1.
+      destruct H1 as (t, Ht).
+(* prove first in Hv2 that all v before i+q+s+2 are 1 *)
+...
+      rewrite <- (carry_nth_carry 2 t); cycle 1. {
+        rewrite Hr2.
+        replace 2 with (2 ^ 1) at 1 by easy.
+        apply Nat.pow_lt_mono_r; [ pauto | flia ].
+      } {
+        now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+      }
+      clear - Hr2 Hu Hv Huvn Ht.
+      revert s Ht.
+      induction t; intros. {
+        cbn; rewrite Nat.add_0_r in Ht.
+...
+      }
+      replace (i + s + S t) with (i + S s + t) in Ht by flia.
+      specialize (IHt (S s) Ht); cbn.
+      replace (i + s + 2 + 1) with (i + S s + 2) by flia.
+      rewrite IHt, Hr2.
+      (* ouais, v vaut 1 ou 2, donc c'est bon *)
 ...
   }
   destruct Hv2 as (q & Hjq & Hq).
