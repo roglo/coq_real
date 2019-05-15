@@ -3446,6 +3446,17 @@ destruct H1 as [Huvn| H1]. {
     clear Hv2; rename H into Hv2.
     (* v=0111211211112..., then u=0111011011110... and Pv=10000100100000...,
        then u+Pv=111111..., then resolved by A_all_9 *)
+    rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
+    replace (S i) with (i + 1) by flia.
+    apply Nat.eq_add_0 in Huv1.
+    unfold "⊕" at 1.
+    rewrite (proj1 Huv1), Nat.add_0_l, Hr2.
+    replace (P v (i + 1)) with 1. 2: {
+      symmetry.
+      unfold P, d2n, prop_carr, dig.
+      rewrite (proj2 Huv1), Nat.add_0_l, Hr2.
+      replace (carry v (i + 1)) with 1; [ easy | ].
+      symmetry; unfold carry.
 ...
   }
   destruct Hv2 as (q & Hjq & Hq).
