@@ -3429,9 +3429,7 @@ destruct H1 as [Huvn| H1]. {
         | inl _ => false
         | inr _ _ => true
         end)) as [Hv2| Hv2]. {
-    assert
-      (H : ∀ q, ∃ s,
-      (∀ j, j < s → v (i + q + j + 2) = 1) ∧ v (i + q + s + 2) = 2). {
+    assert (H : ∀ q, ∃ s, v (i + q + s + 2) = 2). {
       intros q.
       specialize (Hv2 q).
       destruct (LPO_fst (λ s, v (i + q + s + 2) =? 1)) as [H| H]; [ easy | ].
@@ -3443,10 +3441,7 @@ destruct H1 as [Huvn| H1]. {
       rewrite Nat.add_assoc in H1.
       do 2 rewrite Nat.add_assoc in H2.
       unfold "⊕" in H1.
-      split; [ | flia Hs H1 H2 ].
-      intros t Ht.
-      specialize (Hjs _ Ht) as H3.
-      now apply Nat.eqb_eq in H3.
+      flia Hs H1 H2.
     }
     clear Hv2; rename H into Hv2.
     assert (H : ∀ j, j < p → v (i + j + 2) = 1). {
@@ -3495,12 +3490,13 @@ destruct H1 as [Huvn| H1]. {
       } {
         now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
       }
+(*
       clear - Hr2 Hu Hv Huvn Ht.
+*)
+clear Hs Huv2.
       revert s Ht.
       induction t; intros. {
         cbn; rewrite Nat.add_0_r in Ht.
-(* prove first in Hv2 that all v before i+q+s+2 are 1 *)
-...
 ...
       }
       replace (i + s + S t) with (i + S s + t) in Ht by flia.
