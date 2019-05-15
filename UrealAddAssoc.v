@@ -3384,7 +3384,33 @@ destruct H1 as [Huvn| H1]. {
     clear H1; rename H into Hv2.
     (* v=01111..., then u=01111... and Pv=01111..., then u+Pv=02222...
        then resolved by A_split_first and A_all_18 *)
-    admit.
+    rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
+    replace (S i) with (i + 1) by flia.
+    apply Nat.eq_add_0 in Huv1.
+    unfold "⊕" at 1.
+    rewrite (proj1 Huv1), Nat.add_0_l, Hr2.
+    replace (P v (i + 1)) with 0. 2: {
+      symmetry.
+      unfold P, d2n, prop_carr, dig.
+      rewrite (proj2 Huv1), Nat.add_0_l, Hr2.
+      replace (carry v (i + 1)) with 0; [ easy | ].
+      symmetry; unfold carry.
+      apply Q.intg_small.
+      split; [ easy | ].
+      rewrite A_all_9. 2: {
+        intros p Hp.
+        replace (i + 1 + p + 1) with (i + p + 2) by flia.
+        now rewrite Hr2.
+      }
+      apply Q.sub_lt, Q.lt_0_pair; pauto.
+    }
+    rewrite Q.add_0_l.
+    apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+    intros p; unfold "⊕"; rewrite <- Nat.add_assoc.
+    replace 2 with (1 + 1) by easy.
+    apply Nat.add_le_mono; [ apply Hu | ].
+    replace 1 with (rad - 1) by flia Hr2.
+    apply P_le.
   }
   destruct H1 as (p & Hjp & Hp).
   assert (H : v (i + p + 2) = 2). {
@@ -3420,7 +3446,7 @@ destruct H1 as [Huvn| H1]. {
     clear Hv2; rename H into Hv2.
     (* v=0111211211112..., then u=0111011011110... and Pv=10000100100000...,
        then u+Pv=111111..., then resolved by A_all_9 *)
-    admit.
+...
   }
   destruct Hv2 as (q & Hjq & Hq).
   assert (H : ∀ j, j < p → v (i + j + 2) = 1). {
