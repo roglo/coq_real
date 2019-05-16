@@ -2836,7 +2836,30 @@ destruct H1 as [Huvn| H1]. {
         destruct H1 as [H1| H1]; [ now left | now right ].
       }
       move Hvq2 after Hvq1.
-      clear - Hr2 Hvq1 Hvq2.
+      clear - Hr2 Hv Hvq1 Hvq2.
+      revert i Hv Hvq1 Hvq2.
+      induction q; intros. {
+        rewrite Nat.add_0_r in Hvq2.
+        rewrite (carry_succ 2); cycle 1. {
+          rewrite Hr2.
+          replace 2 with (2 ^ 1) at 1 by easy.
+          apply Nat.pow_lt_mono_r; [ pauto | flia ].
+        } {
+          intros; rewrite Hr2.
+          now rewrite <- Nat.add_assoc.
+        }
+        replace (i + 1 + 1) with (i + 2) by flia.
+        rewrite Hvq2, Hr2, Nat_div_add_same_l; [ | easy ].
+        specialize (carry_upper_bound_for_adds 2 v i) as H1.
+        specialize (H1 (Nat.neq_succ_0 _)).
+        assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+          now intros; rewrite Hr2, <- Nat.add_assoc.
+        }
+        specialize (H1 H 2).
+        remember (carry v (i + 2)) as c eqn:Hc.
+        destruct c; [ easy | ].
+        destruct c; [ easy | flia H1 ].
+      }
 ...
       unfold carry.
       clear Hjj Hj Hjk Hk Hauv Huv1 n Hn nj Hnj nk Hnk Huvl3.
