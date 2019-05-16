@@ -2825,7 +2825,12 @@ destruct H1 as [Huvn| H1]. {
       rewrite (proj1 Huv1), (proj2 Huv1), Hr2.
       replace (carry v (i + 1)) with 1; [ easy | symmetry ].
       unfold carry.
-(**)
+Check fA_lt_1_ε_NQintg_A.
+rewrite (fA_lt_1_ε_NQintg_A 2 _ _ j).
+(* ça marche pas à cause du i+1 *)
+(* peut-être faudrait-il un lemme comme fA_lt_1_ε_NQintg_A mais
+   en plus général : s'il est vrai ! *)
+...
       clear Hjj Hj Hjk Hk Hauv Huv1 n Hn nj Hnj nk Hnk Huvl3.
       clear p Hjp Hp j k.
       revert i Hu Hv Huvn Hjq Hq Hs.
@@ -2864,6 +2869,13 @@ destruct H1 as [Huvn| H1]. {
       rewrite <- Nat.add_succ_r, Hr2.
       specialize (Huvn 0) as H1.
       rewrite Nat.add_0_r in H1.
+      apply Q.intg_interv in IHq; [ | easy ].
+      apply Q.intg_interv. {
+        apply Q.le_0_add; [ | now apply Q.le_0_mul_r ].
+        apply Q.le_0_pair.
+      }
+(* faudrait pouvoir se débarasser de ce "carry_cases", là. Y a bien
+   fA_lt_1_ε_NQintg_A, mais ... *)
 ...
       rewrite A_split_first; [ | min_n_ge ].
       replace (S (i + 1)) with (i + 2) by easy.
