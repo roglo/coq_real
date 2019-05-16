@@ -2825,6 +2825,46 @@ destruct H1 as [Huvn| H1]. {
       rewrite (proj1 Huv1), (proj2 Huv1), Hr2.
       replace (carry v (i + 1)) with 1; [ easy | symmetry ].
       unfold carry.
+(**)
+      clear Hjj Hj Hjk Hk Hauv Huv1 n Hn nj Hnj nk Hnk Huvl3.
+      clear p Hjp Hp j k.
+      revert i Hu Hv Huvn Hjq Hq Hs.
+      induction q; intros. {
+        rewrite Nat.add_0_r in Hs.
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + 1)) with (i + 2) by easy.
+        rewrite Hs, Hr2, Q.pair_diag; [ | easy ].
+        rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+        symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
+        apply Q.intg_small.
+        split; [ now apply Q.le_0_mul_r | ].
+        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+        now intros; rewrite <- Nat.add_assoc.
+      }
+      specialize (IHq (S i)).
+      do 3 rewrite Nat.add_succ_comm in IHq.
+      assert (H : ∀ k, u (S i + k) ≤ 1). {
+        now intros; rewrite Nat.add_succ_comm.
+      }
+      specialize (IHq H); clear H.
+      assert (H : ∀ k, v (S i + k) ≤ 2). {
+        now intros; rewrite Nat.add_succ_comm.
+      }
+      specialize (IHq H); clear H.
+      assert (H : ∀ k, (u ⊕ v) (S i + k + 2) = 2). {
+        now intros; rewrite Nat.add_succ_comm.
+      }
+      specialize (IHq H); clear H.
+      assert (H : ∀ j, j < S q → ∃ s : nat, v (S i + j + s + 2) = 2). {
+        intros j Hj; rewrite Nat.add_succ_comm.
+        apply Hjq; flia Hj.
+      }
+      specialize (IHq H Hq Hs); clear H.
+      rewrite A_split_first; [ | min_n_ge ].
+      rewrite <- Nat.add_succ_r, Hr2.
+      specialize (Huvn 0) as H1.
+      rewrite Nat.add_0_r in H1.
+...
       rewrite A_split_first; [ | min_n_ge ].
       replace (S (i + 1)) with (i + 2) by easy.
       destruct p. {
@@ -2840,6 +2880,7 @@ destruct H1 as [Huvn| H1]. {
       specialize (Hjp 0 (Nat.lt_0_succ _)) as H1.
       rewrite Nat.add_0_r in H1.
       rewrite H1, Hr2.
+...
       destruct q; [ now rewrite Nat.add_0_r, H1 in Hs | ].
 ...
       destruct q. {
