@@ -3601,10 +3601,30 @@ destruct H1 as [Huvn| H1]. {
   specialize (Hjq q (Nat.lt_succ_diag_r _)) as H1.
   destruct H1 as (s, Hs).
   rewrite (A_9_8_all_18 (q + s + 1)); cycle 1. {
-    admit.
+...
   } {
     rewrite Hr2.
+    specialize (Huvn (q + s)) as H1.
+    replace (i + (q + s) + 2) with (i + q + s + 2) in H1 by flia.
     replace (i + (q + s + 1) + 1) with (i + q + s + 2) by flia.
+    unfold "⊕" in H1 |-*.
+    replace (u (i + q + s + 2)) with 0 by flia Hs H1.
+    rewrite Nat.add_0_l.
+    unfold P, d2n, prop_carr, dig.
+    rewrite Hs, Hr2, Nat_mod_add_same_l; [ | easy ].
+    replace (carry v (i + q + s + 2)) with 0; [ easy | ].
+    symmetry; unfold carry.
+    apply Q.intg_small.
+    split; [ easy | ].
+    rewrite A_all_9. 2: {
+      intros t Ht.
+      replace (i + q + s + 2 + t + 1) with (i + S q + (s + t) + 2) by flia.
+      now rewrite Hr2.
+    }
+    apply Q.sub_lt, Q.lt_0_pair; pauto.
+  } {
+...
+  }
 ...
 assert
   (Huv2 :
