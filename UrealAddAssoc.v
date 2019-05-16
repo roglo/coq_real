@@ -2556,6 +2556,62 @@ rewrite (Nat.mul_add_distr_l _ (i + 3)), Nat.mul_1_r.
 flia Hr.
 Qed.
 
+Theorem rad_2_all_12_2_carry_1 {r : radix} : ∀ u i j,
+  rad = 2
+  → (∀ p, u (i + p) ≤ 2)
+  → (∀ p, p < j → u (i + p + 2) = 1 ∨ u (i + p + 2) = 2)
+  → u (i + j + 2) = 2
+  → ∀ k, k ≤ j → carry u (i + k + 1) = 1.
+Proof.
+intros * Hr2 Hu Huj1 Huj2 k Hkj.
+revert i Hu Huj1 Huj2.
+induction j; intros. {
+  rewrite Nat.add_0_r in Huj2.
+  rewrite (carry_succ 2); cycle 1. {
+    rewrite Hr2.
+    replace 2 with (2 ^ 1) at 1 by easy.
+    apply Nat.pow_lt_mono_r; [ pauto | flia ].
+  } {
+    intros; rewrite Hr2.
+    now do 2 rewrite <- Nat.add_assoc.
+  }
+  replace (i + k + 1 + 1) with (i + k + 2) by flia.
+...
+  rewrite Huj2, Hr2, Nat_div_add_same_l; [ | easy ].
+        specialize (carry_upper_bound_for_adds 2 v i) as H1.
+        specialize (H1 (Nat.neq_succ_0 _)).
+        assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+          now intros; rewrite Hr2, <- Nat.add_assoc.
+        }
+        specialize (H1 H 2).
+        remember (carry v (i + 2)) as c eqn:Hc.
+        destruct c; [ easy | ].
+        destruct c; [ easy | flia H1 ].
+      }
+      rewrite (carry_succ 2); cycle 1. {
+        rewrite Hr2.
+        replace 2 with (2 ^ 1) at 1 by easy.
+        apply Nat.pow_lt_mono_r; [ pauto | flia ].
+      } {
+        intros; rewrite Hr2.
+        now rewrite <- Nat.add_assoc.
+      }
+      rewrite IHq; cycle 1. {
+        now intros; rewrite <- Nat.add_assoc.
+      } {
+        intros j Hj.
+        rewrite <- (Nat.add_assoc i).
+        apply Hvq1; flia Hj.
+      } {
+        now rewrite <- (Nat.add_assoc i).
+      }
+      replace (i + 1 + 1) with (i + 0 + 2) by flia.
+      specialize (Hvq1 0 (Nat.lt_0_succ _)) as H1.
+      remember (v (i + 0 + 2)) as x eqn:Hx.
+      rewrite Hr2.
+      destruct H1 as [H1| H1]; now rewrite H1.
+...
+
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -2836,6 +2892,9 @@ destruct H1 as [Huvn| H1]. {
       rewrite (proj1 Huv1), (proj2 Huv1), Hr2.
       replace (carry v (i + 1)) with 1; [ easy | symmetry ].
       clear - Hr2 Hv Hvq1 Hvq2.
+specialize (rad_2_all_12_2_carry_1 v i q Hr2 Hv Hvq1 Hvq2 0 (Nat.le_0_l _)) as H1.
+now rewrite Nat.add_0_r in H1.
+(*
       revert i Hv Hvq1 Hvq2.
       induction q; intros. {
         rewrite Nat.add_0_r in Hvq2.
@@ -2881,6 +2940,7 @@ destruct H1 as [Huvn| H1]. {
       remember (v (i + 0 + 2)) as x eqn:Hx.
       rewrite Hr2.
       destruct H1 as [H1| H1]; now rewrite H1.
+*)
     }
     replace (i + S t + 1) with (i + t + 2) by flia.
     unfold "⊕", P, d2n, prop_carr, dig.
@@ -2894,21 +2954,11 @@ destruct H1 as [Huvn| H1]. {
       rewrite Hr2.
       replace (carry v (i + t + 2)) with 1; [ easy | symmetry ].
       assert (Htq : t < q) by flia Ht; clear Ht.
-...
-      clear - Hr2 Hv Hvq1 Hvq2 Htq.
-      revert i Hv Hvq1 Hvq2.
-      induction t; intros. {
-        rewrite Nat.add_0_r.
-        rewrite (carry_succ 2); cycle 1. {
-          rewrite Hr2.
-          replace 2 with (2 ^ 1) at 1 by easy.
-          apply Nat.pow_lt_mono_r; [ pauto | flia ].
-        } {
-          intros; rewrite Hr2.
-          now rewrite <- Nat.add_assoc.
-        }
-        replace (i + 2 + 1) with (i + 3) by flia.
-destruct q. {
+clear - Hv Hr2 Htq Hvq1 Hvq2.
+specialize (rad_2_all_12_2_carry_1 v i q Hr2 Hv Hvq1 Hvq2 (t + 1)) as H1.
+assert (H : t + 1 ≤ q) by flia Htq.
+specialize (H1 H); clear H.
+now replace (i + (t + 1) + 1) with (i + t + 2) in H1 by flia.
 ... suite ok
   } {
     rewrite Hr2.
