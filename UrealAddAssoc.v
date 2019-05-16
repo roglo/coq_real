@@ -2815,6 +2815,17 @@ destruct H1 as [Huvn| H1]. {
     now rewrite Hq in Hs.
   }
   rewrite Nat.add_0_r in Hs.
+  rename Hs into Hvq2.
+  assert (Hvq1 : ∀ j, j < q → v (i + j + 2) = 1 ∨ v (i + j + 2) = 2). {
+    intros s Hs.
+    specialize (Huvn s) as H1.
+    apply Nat_eq_add_2 in H1.
+    destruct H1 as [H1| H1]. {
+      specialize (Hu (s + 2)); rewrite Nat.add_assoc in Hu; flia Hu H1.
+    }
+    destruct H1 as [H1| H1]; [ now left | now right ].
+  }
+  move Hvq2 after Hvq1.
   rewrite (A_9_8_all_18 (q + 1)); cycle 1. {
     intros t Ht; rewrite Hr2.
     destruct t. {
@@ -2824,18 +2835,6 @@ destruct H1 as [Huvn| H1]. {
       unfold "⊕", P, d2n, prop_carr, dig.
       rewrite (proj1 Huv1), (proj2 Huv1), Hr2.
       replace (carry v (i + 1)) with 1; [ easy | symmetry ].
-(**)
-      rename Hs into Hvq2.
-      assert (Hvq1 : ∀ j, j < q → v (i + j + 2) = 1 ∨ v (i + j + 2) = 2). {
-        intros s Hs.
-        specialize (Huvn s) as H1.
-        apply Nat_eq_add_2 in H1.
-        destruct H1 as [H1| H1]. {
-          specialize (Hu (s + 2)); rewrite Nat.add_assoc in Hu; flia Hu H1.
-        }
-        destruct H1 as [H1| H1]; [ now left | now right ].
-      }
-      move Hvq2 after Hvq1.
       clear - Hr2 Hv Hvq1 Hvq2.
       revert i Hv Hvq1 Hvq2.
       induction q; intros. {
@@ -2860,105 +2859,30 @@ destruct H1 as [Huvn| H1]. {
         destruct c; [ easy | ].
         destruct c; [ easy | flia H1 ].
       }
-...
-      unfold carry.
-      clear Hjj Hj Hjk Hk Hauv Huv1 n Hn nj Hnj nk Hnk Huvl3.
-      clear p Hjp Hp j k.
-      revert i Hu Hv Huvn Hjq Hq Hs.
-      induction q; intros. {
-        rewrite Nat.add_0_r in Hs.
-        rewrite A_split_first; [ | min_n_ge ].
-        replace (S (i + 1)) with (i + 2) by easy.
-        rewrite Hs, Hr2, Q.pair_diag; [ | easy ].
-        rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
-        symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
-        apply Q.intg_small.
-        split; [ now apply Q.le_0_mul_r | ].
-        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+      rewrite (carry_succ 2); cycle 1. {
+        rewrite Hr2.
+        replace 2 with (2 ^ 1) at 1 by easy.
+        apply Nat.pow_lt_mono_r; [ pauto | flia ].
+      } {
+        intros; rewrite Hr2.
+        now rewrite <- Nat.add_assoc.
+      }
+      rewrite IHq; cycle 1. {
         now intros; rewrite <- Nat.add_assoc.
+      } {
+        intros j Hj.
+        rewrite <- (Nat.add_assoc i).
+        apply Hvq1; flia Hj.
+      } {
+        now rewrite <- (Nat.add_assoc i).
       }
-      specialize (IHq (S i)).
-      do 3 rewrite Nat.add_succ_comm in IHq.
-      assert (H : ∀ k, u (S i + k) ≤ 1). {
-        now intros; rewrite Nat.add_succ_comm.
-      }
-      specialize (IHq H); clear H.
-      assert (H : ∀ k, v (S i + k) ≤ 2). {
-        now intros; rewrite Nat.add_succ_comm.
-      }
-      specialize (IHq H); clear H.
-      assert (H : ∀ k, (u ⊕ v) (S i + k + 2) = 2). {
-        now intros; rewrite Nat.add_succ_comm.
-      }
-      specialize (IHq H); clear H.
-      assert (H : ∀ j, j < S q → ∃ s : nat, v (S i + j + s + 2) = 2). {
-        intros j Hj; rewrite Nat.add_succ_comm.
-        apply Hjq; flia Hj.
-      }
-      specialize (IHq H Hq Hs); clear H.
-      rewrite A_split_first; [ | min_n_ge ].
-      rewrite <- Nat.add_succ_r, Hr2.
-      specialize (Huvn 0) as H1.
-      rewrite Nat.add_0_r in H1.
-      apply Q.intg_interv in IHq; [ | easy ].
-      apply Q.intg_interv. {
-        apply Q.le_0_add; [ | now apply Q.le_0_mul_r ].
-        apply Q.le_0_pair.
-      }
-(* faudrait pouvoir se débarasser de ce "carry_cases", là. Y a bien
-   fA_lt_1_ε_NQintg_A, mais ... *)
-...
-      rewrite A_split_first; [ | min_n_ge ].
-      replace (S (i + 1)) with (i + 2) by easy.
-      destruct p. {
-        rewrite Nat.add_0_r in Hp.
-        rewrite Hp, Hr2, Q.pair_diag; [ | easy ].
-        rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
-        symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
-        apply Q.intg_small.
-        split; [ now apply Q.le_0_mul_r | ].
-        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-        now intros; rewrite <- Nat.add_assoc.
-      }
-      specialize (Hjp 0 (Nat.lt_0_succ _)) as H1.
-      rewrite Nat.add_0_r in H1.
-      rewrite H1, Hr2.
-...
-      destruct q; [ now rewrite Nat.add_0_r, H1 in Hs | ].
-...
-      destruct q. {
-        replace (i + 1 + 2) with (i + 3) in Hs by flia.
-        rewrite A_split_first; [ | min_n_ge ].
-        replace (S (i + 2)) with (i + 3) by easy.
-        rewrite Hs, Hr2, Q.pair_diag; [ | easy ].
-        rewrite Q.mul_add_distr_r, Q.mul_1_l.
-        rewrite Q.add_assoc.
-        replace (1 // 2 + 1 // 2)%Q with 1%Q by easy.
-        rewrite (Q.intg_add_nat_l 1). 2: {
-          apply Q.le_0_mul_r; [ easy | now apply Q.le_0_mul_r ].
-        }
-        symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
-        apply Q.intg_small.
-        split. {
-          apply Q.le_0_mul_r; [ easy | now apply Q.le_0_mul_r ].
-        }
-        rewrite <- Q.mul_assoc.
-        apply (Q.mul_lt_mono_pos_r 4%Q); [ easy | ].
-        rewrite <- Q.mul_assoc, Q.mul_1_l.
-        replace (1 // 2 * 1 // 2 * 4)%Q with 1%Q by easy.
-        rewrite Q.mul_1_r.
-        eapply Q.le_lt_trans. {
-          apply (A_upper_bound_for_adds 2).
-          now intros; do 2 rewrite <- Nat.add_assoc; rewrite Hr2.
-        }
-        rewrite Q.mul_sub_distr_l, Q.mul_1_r.
-        eapply Q.lt_trans. {
-          apply Q.sub_lt, Q.mul_pos_cancel_r; [ | easy ].
-          apply Q.lt_0_pair; pauto.
-        }
-        apply (Q.lt_pair_mono_r _ 4); pauto.
-      }
-...
+      replace (i + 1 + 1) with (i + 0 + 2) by flia.
+      specialize (Hvq1 0 (Nat.lt_0_succ _)) as H1.
+      remember (v (i + 0 + 2)) as x eqn:Hx.
+      rewrite Hr2.
+      destruct H1 as [H1| H1]; now rewrite H1.
+    }
+... suite ok
   } {
     rewrite Hr2.
     specialize (Huvn q) as H1.
