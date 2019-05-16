@@ -3601,6 +3601,7 @@ destruct H1 as [Huvn| H1]. {
   specialize (Hjq q (Nat.lt_succ_diag_r _)) as H1.
   destruct H1 as (s, Hs).
   rewrite (A_9_8_all_18 (q + s + 1)); cycle 1. {
+    intros t Ht; rewrite Hr2.
 ...
   } {
     rewrite Hr2.
