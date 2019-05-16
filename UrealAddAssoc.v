@@ -2882,6 +2882,21 @@ destruct H1 as [Huvn| H1]. {
       rewrite Hr2.
       destruct H1 as [H1| H1]; now rewrite H1.
     }
+    replace (i + S t + 1) with (i + t + 2) by flia.
+    unfold "⊕", P, d2n, prop_carr, dig.
+    specialize (Huvn t) as H1.
+    apply Nat_eq_add_2 in H1.
+    destruct H1 as [H1| H1]. {
+      specialize (Hu (t + 2)); rewrite Nat.add_assoc in Hu; flia Hu H1.
+    }
+    destruct H1 as [H1| H1]; rewrite (proj1 H1), (proj2 H1). {
+      replace (2 - 1) with (1 + 0) by easy; f_equal.
+      rewrite Hr2.
+      replace (carry v (i + t + 2)) with 1; [ easy | symmetry ].
+      assert (Htq : t < q) by flia Ht; clear Ht.
+      clear - Hvq1 Hvq2 Htq.
+      revert i Hvq1 Hvq2.
+      induction t; intros. {
 ... suite ok
   } {
     rewrite Hr2.
