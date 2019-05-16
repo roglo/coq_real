@@ -2817,6 +2817,28 @@ destruct H1 as [Huvn| H1]. {
   rewrite Nat.add_0_r in Hs.
   rewrite (A_9_8_all_18 (q + 1)); cycle 1. {
     intros t Ht; rewrite Hr2.
+    destruct t. {
+      rewrite Nat.add_0_r.
+      apply Nat.eq_add_0 in Huv1.
+      unfold "⊕", P, d2n, prop_carr, dig.
+      rewrite (proj1 Huv1), (proj2 Huv1), Hr2.
+      replace (carry v (i + 1)) with 1; [ easy | symmetry ].
+      unfold carry.
+      rewrite A_split_first; [ | min_n_ge ].
+      replace (S (i + 1)) with (i + 2) by easy.
+      destruct p. {
+        rewrite Nat.add_0_r in Hp.
+        rewrite Hp, Hr2, Q.pair_diag; [ | easy ].
+        rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+        symmetry; replace 1 with (1 + 0) at 1 by easy; symmetry; f_equal.
+        apply Q.intg_small.
+        split; [ now apply Q.le_0_mul_r | ].
+        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+        now intros; rewrite <- Nat.add_assoc.
+      }
+      specialize (Hjp 0 (Nat.lt_0_succ _)) as H1.
+      rewrite Nat.add_0_r in H1.
+      rewrite H1, Hr2.
 ...
   } {
     rewrite Hr2.
