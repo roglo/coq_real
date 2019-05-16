@@ -2824,6 +2824,20 @@ destruct H1 as [Huvn| H1]. {
       unfold "⊕", P, d2n, prop_carr, dig.
       rewrite (proj1 Huv1), (proj2 Huv1), Hr2.
       replace (carry v (i + 1)) with 1; [ easy | symmetry ].
+(**)
+      rename Hs into Hvq2.
+      assert (Hvq1 : ∀ j, j < q → v (i + j + 2) = 1 ∨ v (i + j + 2) = 2). {
+        intros s Hs.
+        specialize (Huvn s) as H1.
+        apply Nat_eq_add_2 in H1.
+        destruct H1 as [H1| H1]. {
+          specialize (Hu (s + 2)); rewrite Nat.add_assoc in Hu; flia Hu H1.
+        }
+        destruct H1 as [H1| H1]; [ now left | now right ].
+      }
+      move Hvq2 after Hvq1.
+      clear - Hr2 Hvq1 Hvq2.
+...
       unfold carry.
       clear Hjj Hj Hjk Hk Hauv Huv1 n Hn nj Hnj nk Hnk Huvl3.
       clear p Hjp Hp j k.
