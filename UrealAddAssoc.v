@@ -2894,9 +2894,21 @@ destruct H1 as [Huvn| H1]. {
       rewrite Hr2.
       replace (carry v (i + t + 2)) with 1; [ easy | symmetry ].
       assert (Htq : t < q) by flia Ht; clear Ht.
-      clear - Hvq1 Hvq2 Htq.
-      revert i Hvq1 Hvq2.
+...
+      clear - Hr2 Hv Hvq1 Hvq2 Htq.
+      revert i Hv Hvq1 Hvq2.
       induction t; intros. {
+        rewrite Nat.add_0_r.
+        rewrite (carry_succ 2); cycle 1. {
+          rewrite Hr2.
+          replace 2 with (2 ^ 1) at 1 by easy.
+          apply Nat.pow_lt_mono_r; [ pauto | flia ].
+        } {
+          intros; rewrite Hr2.
+          now rewrite <- Nat.add_assoc.
+        }
+        replace (i + 2 + 1) with (i + 3) by flia.
+destruct q. {
 ... suite ok
   } {
     rewrite Hr2.
