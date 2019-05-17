@@ -3052,6 +3052,15 @@ destruct Huv2 as [Huv2| Huv2]. {
     Pv . . . . . . 1 1 1 1 ...
   u+Pv . . . . . . 2 2 2 2 ...
 *)
+  assert (Hvq1 : ∀ j, j < q → v (i + j + 2) = 1 ∨ v (i + j + 2) = 2). {
+    intros s Hs.
+    specialize (Hjq _ Hs) as H3.
+    apply Nat_eq_add_2 in H3.
+    destruct H3 as [H3| H3]. {
+      specialize (Hu (s + 2)); rewrite Nat.add_assoc in Hu; flia Hu H3.
+    }
+    destruct H3 as [H3| H3]; [ now left | now right ].
+  }
   apply Nat.eq_add_1 in Huv2.
   destruct Huv2 as [Huv2| Huv2]. {
 (*
