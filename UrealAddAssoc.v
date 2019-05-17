@@ -1845,6 +1845,47 @@ replace (i + p + 2) with (i + (p + 2)) in IHp by flia.
 apply rad_2_sum_3_all_9_3r2_3r2; try easy; now rewrite Hr2.
 Qed.
 
+Theorem rad_2_sum_3_all_9_02_222_1_333 {r : radix} : ∀ u i j,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 3)
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → u (i + 1) = 0 ∨ u (i + 1) = 2
+  → (∀ k, k < j → u (i + k + 2) = 2)
+  → u (i + j + 2) = 1
+  → ∀ k, u (i + j + k + 3) = 3 ∧ carry u (i + j + k + 2) = 2.
+Proof.
+intros * Hr2 Hur3 Hau Hu1 Hu2 Huj2 k.
+revert i Hur3 Hau Hu1 Hu2 Huj2.
+induction j; intros. {
+  rewrite Nat.add_0_r in Huj2 |-*.
+  now apply rad_2_sum_3_all_9_02_1_333.
+}
+specialize (IHj (i + 1)).
+assert (H : ∀ k, u (i + 1 + k) ≤ 3) by now intros; rewrite <- Nat.add_assoc.
+specialize (IHj H); clear H.
+assert (H : ∀ k, fA_ge_1_ε u (i + 1) k = true). {
+  now intros; apply A_ge_1_add_r_true_if.
+}
+specialize (IHj H); clear H.
+assert (H : u (i + 1 + 1) = 0 ∨ u (i + 1 + 1) = 2). {
+  right.
+  replace (i + 1 + 1) with (i + 0 + 2) by flia.
+  apply Hu2, Nat.lt_0_succ.
+}
+specialize (IHj H); clear H.
+assert (H : ∀ k, k < j → u (i + 1 + k + 2) = 2). {
+  intros p Hp.
+  replace (i + 1 + p + 2) with (i + (p + 1) + 2) by flia.
+  apply Hu2; flia Hp.
+}
+specialize (IHj H); clear H.
+replace (i + 1 + j + 2) with (i + S j + 2) in IHj by flia.
+specialize (IHj Huj2).
+replace (i + S j + k + 3) with (i + 1 + j + k + 3) by flia.
+replace (i + S j + k + 2) with (i + 1 + j + k + 2) by flia.
+easy.
+Qed.
+
 Theorem rad_2_sum_3_all_9_0_1_A_lt_1 {r : radix} : ∀ u v i,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -2972,11 +3013,8 @@ destruct H1 as [Huvn| H1]. {
 }
 destruct H1 as (q & Hjq & Huv2).
 destruct Huv2 as [Huv2| Huv2]. {
-  (* normalement, j'ai une infinité de 3, là *)
-Check rad_2_sum_3_all_9_02_1_333.
-...
-(* à faire *)
-Check rad_2_sum_3_all_9_02_222_1_333.
+  specialize (rad_2_sum_3_all_9_02_222_1_333 _ i q Hr2 Huvl3 Hauv) as H1.
+  specialize (H1 (or_introl Huv1) Hjq Huv2).
   ...
 }
 ...
