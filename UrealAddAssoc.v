@@ -2972,6 +2972,7 @@ destruct H1 as [Huvn| H1]. {
 }
 destruct H1 as (q & Hjq & Huv2).
 destruct Huv2 as [Huv2| Huv2]. {
+  (* normalement, j'ai une infinité de 3, là *)
   ...
 }
 ...
