@@ -2957,7 +2957,15 @@ destruct H1 as [Huvn| H1]. {
     rewrite H1, Hr2; replace (u t) with 1 by flia H1 H2.
     replace (2 * (2 - 1)) with (1 + 1) by easy; f_equal.
     replace (carry v t) with 0; [ easy | symmetry ].
-...
+    unfold carry.
+    apply Q.intg_small; split; [ easy | ].
+    rewrite A_all_9. 2: {
+      intros x Hx.
+      rewrite Ht, Hr2.
+      replace (i + q + s + 3 + x + 1) with (i + S q + S (x + s) + 2) by flia.
+      apply Hq.
+    }
+    apply Q.sub_lt, Q.lt_0_pair; pauto.
   }
   apply Q.sub_lt, Q.lt_0_pair.
   destruct (le_dec (i + (q + 1) + 1) (nk - 1)); pauto.
