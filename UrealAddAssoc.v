@@ -3071,10 +3071,11 @@ destruct Huv2 as [Huv2| Huv2]. {
   u+Pv . . . . . 2 2 2 2 2 ...
 *)
     remember
-      (first_such_that (λ t, Nat.eqb (u (i + q + 2 - t)) 0) (q + 2) 0) as t
-      eqn:Ht.
+      (first_such_that (λ t, negb (Nat.eqb (u (i + q + 2 - t)) 1)) (q + 2) 0)
+      as t eqn:Ht.
 Search first_such_that.
-specialize (first_such_that_has_prop) as H1.
+specialize (first_such_that_has_prop 1 v (q + 2) 0) as H1.
+(* hou la la, ça va pas, ça *)
     rewrite (A_9_8_all_18 t); cycle 1. {
 ...
     destruct q. {
