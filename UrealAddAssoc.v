@@ -3013,8 +3013,8 @@ destruct H1 as [Huvn| H1]. {
 }
 destruct H1 as (q & Hjq & Huv2).
 destruct Huv2 as [Huv2| Huv2]. {
-  specialize (rad_2_sum_3_all_9_02_222_1_333 _ i q Hr2 Huvl3 Hauv) as H1.
-  specialize (H1 (or_introl Huv1) Hjq Huv2).
+  specialize (rad_2_sum_3_all_9_02_222_1_333 _ i q Hr2 Huvl3 Hauv) as Hqk3.
+  specialize (Hqk3 (or_introl Huv1) Hjq Huv2).
   rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
   replace (S i) with (i + 1) by flia.
   unfold "⊕" at 1, P at 1, d2n, prop_carr, dig.
@@ -3031,16 +3031,16 @@ destruct Huv2 as [Huv2| Huv2]. {
     replace 1 with (rad - 1) by flia Hr2.
     apply P_le.
   }
-  specialize (carry_upper_bound_for_adds 2 v i) as H2.
-  specialize (H2 (Nat.neq_succ_0 _)).
+  specialize (carry_upper_bound_for_adds 2 v i) as Hcv.
+  specialize (Hcv (Nat.neq_succ_0 _)).
   assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
     now intros; rewrite Hr2, <- Nat.add_assoc.
   }
-  specialize (H2 H); clear H.
-  specialize (H2 1) as H3.
-  rewrite <- Hc in H3.
-  destruct c; [ | flia H3 ].
-  clear H3; symmetry in Hc.
+  specialize (Hcv H); clear H.
+  specialize (Hcv 1) as H1.
+  rewrite <- Hc in H1.
+  destruct c; [ | flia H1 ].
+  clear H1; symmetry in Hc.
   rewrite Nat.mod_small; [ | pauto ].
   apply Q.lt_add_lt_sub_l.
   replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
@@ -3070,10 +3070,10 @@ destruct Huv2 as [Huv2| Huv2]. {
     Pv . . . . . 1 1 1 1 1 ...
   u+Pv . . . . . 2 2 2 2 2 ...
 *)
-    induction q. {
+    destruct q. {
       rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
       replace (S (i + 1)) with (i + 2) by easy.
-      rewrite Nat.add_0_r in Huv2, H1; clear Hjq.
+      rewrite Nat.add_0_r in Huv2, Hqk3; clear Hjq.
       rewrite (carry_succ 2) in Hc; cycle 1. {
         rewrite Hr2.
         replace 2 with (2 ^ 1) at 1 by easy.
@@ -3083,11 +3083,20 @@ destruct Huv2 as [Huv2| Huv2]. {
       }
       replace (i + 1 + 1) with (i + 2) in Hc by flia.
       rewrite (proj2 Huv2), Nat.add_0_l, Hr2 in Hc.
-      specialize (H2 2) as H3.
+      specialize (Hcv 2) as H1.
       remember (carry v (i + 2)) as c1 eqn:Hc1.
       destruct c1; [ easy | ].
-      destruct c1; [ easy | flia H3 ].
+      destruct c1; [ easy | flia H1 ].
     }
+(**)
+    specialize (Hvq1 q (Nat.lt_succ_diag_r _)) as Hvq2.
+    destruct Hvq2 as [Hvq2| Hvq2]. {
+      specialize (Hjq q (Nat.lt_succ_diag_r _)) as H1.
+      unfold "⊕" in H1.
+      rename Huv2 into Huvq3.
+      assert (Huvq2 : u (i + q + 2) = 1 ∧ v (i + q + 2) = 1) by flia Hvq2 H1.
+      move Huvq3 after Huvq2; clear H1 Hvq2.
+...
     specialize (Hjq 0 (Nat.lt_0_succ _)) as H3.
     rewrite Nat.add_0_r in H3.
     apply Nat_eq_add_2 in H3.
