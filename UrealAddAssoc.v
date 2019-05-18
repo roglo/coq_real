@@ -3070,7 +3070,6 @@ destruct Huv2 as [Huv2| Huv2]. {
     Pv . . . . . 1 1 1 1 1 ...
   u+Pv . . . . . 2 2 2 2 2 ...
 *)
-...
     rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
     replace (S (i + 1)) with (i + 2) by easy.
     destruct q. {
@@ -3091,6 +3090,20 @@ destruct Huv2 as [Huv2| Huv2]. {
     }
     specialize (Hjq 0 (Nat.lt_0_succ _)) as H3.
     rewrite Nat.add_0_r in H3.
+    apply Nat_eq_add_2 in H3.
+    destruct H3 as [H3| H3]; [ specialize (Hu 2); flia Hu H3 | ].
+    destruct H3 as [H3| H3]. {
+      unfold "⊕" at 1, P at 1, d2n, prop_carr, dig.
+      rewrite (proj1 H3), (proj2 H3), Hr2.
+      replace (carry v (i + 2)) with 1. 2: {
+        symmetry.
+...
+      }
+      rewrite Nat.mod_same; [ | easy ].
+      rewrite Nat.add_0_r.
+      apply Q.lt_add_lt_sub_l.
+      replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+      apply Q.mul_lt_mono_pos_r; [ easy | ].
 ...
 }
 ...
