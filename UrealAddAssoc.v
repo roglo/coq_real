@@ -3070,9 +3070,9 @@ destruct Huv2 as [Huv2| Huv2]. {
     Pv . . . . . 1 1 1 1 1 ...
   u+Pv . . . . . 2 2 2 2 2 ...
 *)
-    rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
-    replace (S (i + 1)) with (i + 2) by easy.
-    destruct q. {
+    induction q. {
+      rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
+      replace (S (i + 1)) with (i + 2) by easy.
       rewrite Nat.add_0_r in Huv2, H1; clear Hjq.
       rewrite (carry_succ 2) in Hc; cycle 1. {
         rewrite Hr2.
