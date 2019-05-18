@@ -3074,9 +3074,8 @@ destruct Huv2 as [Huv2| Huv2]. {
       (first_such_that (λ t, Nat.eqb (u (i + q + 2 - t)) 0) (q + 2) 0) as t
       eqn:Ht.
 Search first_such_that.
-...
-    destruct (Nat.eq_dec t (q + 2)) as [Htq| Htq]. {
-      rewrite (A_9_8_all_18 t); cycle 1. {
+specialize (first_such_that_has_prop) as H1.
+    rewrite (A_9_8_all_18 t); cycle 1. {
 ...
     destruct q. {
       rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].

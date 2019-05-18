@@ -25,10 +25,10 @@ Fixpoint first_such_that (P : nat → bool) n i :=
   | S n' => if P i then i else first_such_that P n' (S i)
   end.
 
-Theorem first_such_that_has_prop : ∀ u n i k,
-  u (n + i) ≠ 0
-  → k = first_such_that (λ j, negb (Nat.eqb (u j) 0)) n i
-  → u k ≠ 0 ∧ (∀ j, i ≤ j → j < k → u j = 0).
+Theorem first_such_that_has_prop : ∀ x u n i k,
+  u (n + i) ≠ x
+  → k = first_such_that (λ j, negb (Nat.eqb (u j) x)) n i
+  → u k ≠ x ∧ (∀ j, i ≤ j → j < k → u j = x).
 Proof.
 intros * Hn Hk.
 revert i k Hn Hk; induction n; intros.
@@ -38,7 +38,7 @@ revert i k Hn Hk; induction n; intros.
 
  rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hn.
  cbn in Hk.
- remember (u i =? 0) as b eqn:Hb.
+ remember (u i =? x) as b eqn:Hb.
  symmetry in Hb.
  destruct b; cbn in Hk.
   apply Nat.eqb_eq in Hb.
@@ -67,7 +67,7 @@ specialize (LPO v) as [H| (i, Hi)]; [ left | right ].
 -remember (first_such_that (λ i, negb (Nat.eqb (v i) 0)) i 0) as j eqn:Hj.
  exists j.
  assert (Hui : v (i + 0) ≠ 0) by now rewrite Nat.add_0_r.
- specialize (first_such_that_has_prop v i 0 j Hui Hj) as (Huj, H).
+ specialize (first_such_that_has_prop 0 v i 0 j Hui Hj) as (Huj, H).
  subst v; split.
  +intros k Hkj; cbn in H.
   specialize (H k (Nat.le_0_l k) Hkj).
