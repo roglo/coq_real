@@ -3091,9 +3091,10 @@ destruct Huv2 as [Huv2| Huv2]. {
 (**)
     specialize (Hvq1 q (Nat.lt_succ_diag_r _)) as Hvq2.
     destruct Hvq2 as [Hvq2| Hvq2]. {
+      replace (i + S q + 2) with (i + q + 3) in Huv2.
+      rename Huv2 into Huvq3.
       specialize (Hjq q (Nat.lt_succ_diag_r _)) as H1.
       unfold "⊕" in H1.
-      rename Huv2 into Huvq3.
       assert (Huvq2 : u (i + q + 2) = 1 ∧ v (i + q + 2) = 1) by flia Hvq2 H1.
       move Huvq3 after Huvq2; clear H1 Hvq2.
 (*
@@ -3106,7 +3107,7 @@ destruct Huv2 as [Huv2| Huv2]. {
       destruct q. {
         rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
         replace (S (i + 1)) with (i + 2) by easy.
-        rewrite Nat.add_0_r in Huvq2; clear Hjq.
+        rewrite Nat.add_0_r in Huvq2, Huvq3; clear Hjq.
         unfold "⊕" at 1, P at 1, d2n, prop_carr, dig.
         rewrite (proj1 Huvq2), (proj2 Huvq2), Hr2.
         rewrite (carry_succ 2) in Hc; cycle 1. {
@@ -3130,6 +3131,24 @@ destruct Huv2 as [Huv2| Huv2]. {
         apply Q.lt_add_lt_sub_l.
         replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
         apply Q.mul_lt_mono_pos_r; [ easy | ].
+        rewrite (carry_succ 2) in Hc; cycle 1. {
+          rewrite Hr2.
+          replace 2 with (2 ^ 1) at 1 by easy.
+          apply Nat.pow_lt_mono_r; [ pauto | flia ].
+        } {
+          now intros; rewrite Hr2, <- Nat.add_assoc.
+        }
+        replace (i + 2 + 1) with (i + 3)in Hc by flia.
+        rewrite (proj2 Huvq3), Nat.add_0_l, Hr2 in Hc.
+        specialize (Hcv 3) as H1.
+        remember (carry v (i + 3)) as c1 eqn:Hc1.
+        destruct c1; [ easy | ].
+        destruct c1; [ easy | flia H1 ].
+      }
+      replace (i + S q + 3) with (i + q + 4) in Huvq3.
+      rename Huvq3 into Huvq4.
+      replace (i + S q + 2) with (i + q + 3) in Huvq2.
+      rename Huvq2 into Huvq3.
 ...
 }
 ...
