@@ -25,34 +25,33 @@ Fixpoint first_such_that (P : nat → bool) n i :=
   | S n' => if P i then i else first_such_that P n' (S i)
   end.
 
-Theorem first_such_that_has_prop : ∀ x u n i k,
-  u (n + i) ≠ x
-  → k = first_such_that (λ j, negb (Nat.eqb (u j) x)) n i
-  → u k ≠ x ∧ (∀ j, i ≤ j → j < k → u j = x).
+Theorem first_such_that_has_prop : ∀ P n i k,
+  P (n + i) = true
+  → k = first_such_that P n i
+  → P k = true ∧ (∀ j, i ≤ j → j < k → P j = false).
 Proof.
 intros * Hn Hk.
-revert i k Hn Hk; induction n; intros.
- split; [ now subst k | cbn ].
- cbn in Hk; destruct Hk; intros j H1 H2.
- now apply lt_not_le in H2.
-
- rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hn.
- cbn in Hk.
- remember (u i =? x) as b eqn:Hb.
- symmetry in Hb.
- destruct b; cbn in Hk.
-  apply Nat.eqb_eq in Hb.
-  specialize (IHn (S i) k Hn Hk).
-  destruct IHn as (H2, H3).
-  split; [ apply H2 | intros j H4 H5 ].
-  destruct (Nat.eq_dec i j) as [H6| H6]; [ now destruct H6 | ].
-  apply H3; [ | easy ].
-  now apply Nat_le_neq_lt.
-
-  apply Nat.eqb_neq in Hb.
-  subst k; split; [ easy | ].
-  intros j H2 H3.
-  now apply lt_not_le in H3.
+revert i k Hn Hk; induction n; intros. {
+  cbn in Hk; subst k.
+  split; [ easy | ].
+  intros j Hij Hji.
+  now apply Nat.nle_gt in Hji.
+}
+cbn in Hk.
+remember (P i) as b eqn:Hb; symmetry in Hb.
+destruct b. {
+  subst k.
+  split; [ easy | ].
+  intros j Hij Hji.
+  now apply Nat.nle_gt in Hji.
+}
+rewrite Nat.add_succ_comm in Hn.
+cbn in Hk.
+specialize (IHn (S i) k Hn Hk) as H1.
+split; [ easy | ].
+intros j Hij Hji.
+destruct (Nat.eq_dec i j) as [H2| H2]; [ now subst j | ].
+apply H1; [ flia Hij H2 | easy ].
 Qed.
 
 Theorem LPO_fst : ∀ (u : nat → bool),
@@ -64,15 +63,28 @@ set (v i := if u i then 0 else 1).
 specialize (LPO v) as [H| (i, Hi)]; [ left | right ].
 -intros k; subst v; specialize (H k); cbn in H.
  now destruct (u k).
--remember (first_such_that (λ i, negb (Nat.eqb (v i) 0)) i 0) as j eqn:Hj.
+-set (P := λ i, negb (Nat.eqb (v i) 0)).
+ remember (first_such_that P i 0) as j eqn:Hj.
  exists j.
  assert (Hui : v (i + 0) ≠ 0) by now rewrite Nat.add_0_r.
- specialize (first_such_that_has_prop 0 v i 0 j Hui Hj) as (Huj, H).
- subst v; split.
- +intros k Hkj; cbn in H.
+ specialize (first_such_that_has_prop P i 0 j) as Huj.
+ assert (H : P (i + 0) = true). {
+   unfold P; cbn.
+   apply Bool.eq_true_not_negb.
+   apply Bool.not_true_iff_false.
+   now apply Nat.eqb_neq.
+ }
+ specialize (Huj H Hj); clear H; destruct Huj as (Huj, H).
+ split.
+ +intros k Hkj.
   specialize (H k (Nat.le_0_l k) Hkj).
+  unfold P in H.
+  apply Bool.negb_false_iff, Nat.eqb_eq in H.
+  unfold v in H.
   now destruct (u k).
- +cbn in Huj.
+ +unfold P in Huj.
+  apply Bool.negb_true_iff, Nat.eqb_neq in Huj.
+  unfold v in Huj.
   now destruct (u j).
 Qed.
 
