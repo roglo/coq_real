@@ -3120,6 +3120,7 @@ destruct Huv2 as [Huv2| Huv2]. {
       replace (i + 1 + (q - t - 1) + 1) with (i + q + 1 - t) by flia Htlq.
       unfold "⊕", P, d2n, prop_carr, dig.
       rewrite Hut, Hvt, Nat.add_0_l, Hr2, Nat_mod_add_same_l; [ | easy ].
+      replace (carry v (i + q + 1 - t)) with 0; [ easy | symmetry ].
 ...
     destruct q. {
       rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
