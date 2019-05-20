@@ -3100,11 +3100,26 @@ destruct Huv2 as [Huv2| Huv2]. {
       now rewrite H1 in Huv1.
     }
     clear Htq.
+    specialize (Hjq (q - t - 1)) as Huvqt.
+    assert (H : q - t - 1 < q) by flia Htlq.
+    specialize (Huvqt H); clear H.
+    replace (i + (q - t - 1) + 2) with (i + q + 1 - t) in Huvqt by flia Htlq.
+    unfold "⊕" in Huvqt.
+    assert (H : v (i + q + 1 - t) = 2). {
+      specialize (Hu (q + 1 - t)) as H2.
+      replace (i + (q + 1 - t)) with (i + q + 1 - t) in H2 by flia Htlq.
+      flia Hvt Huvqt H2.
+    }
+    move H before Hvt; clear Hvt; rename H into Hvt.
+    assert (Hut : u (i + q + 1 - t) = 0) by flia Hvt Huvqt.
+    move Hut after Hvt; clear Huvqt.
     rewrite (A_9_8_all_18 (q - t - 1)); cycle 1. {
       admit.
     } {
       rewrite Hr2.
       replace (i + 1 + (q - t - 1) + 1) with (i + q + 1 - t) by flia Htlq.
+      unfold "⊕", P, d2n, prop_carr, dig.
+      rewrite Hut, Hvt, Nat.add_0_l, Hr2, Nat_mod_add_same_l; [ | easy ].
 ...
     destruct q. {
       rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
