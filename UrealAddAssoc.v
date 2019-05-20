@@ -3115,10 +3115,13 @@ destruct Huv2 as [Huv2| Huv2]. {
     move Hut after Hvt; clear Huvqt.
     assert (H : ∀ s, q - t < s → P v (i + s + 1) = 1). {
       intros s Hqs.
-...
       destruct (le_dec (q + 2) s) as [Hq2s| Hq2s]. {
-        specialize (Hqk3 (s - 1)) as H1.
-        replace (i + q + (s - 1) + 3) with (i + q + s + 2) in H1 by flia Hq2s.
+        specialize (Hqk3 (s - q - 1)) as H1.
+        replace (i + q + (s - q - 1) + 3) with (i + s + 2) in H1 by flia Hq2s.
+        replace (i + q + (s - q - 1) + 2) with (i + s + 1) in H1 by flia Hq2s.
+        unfold P, d2n, prop_carr, dig.
+        unfold "⊕" in H1 at 1.
+(* bon faut prouver que les v sont égaux à 2 à partir de i+q+3 *)
 ...
     rewrite (A_9_8_all_18 (q - t - 1)); cycle 1. {
       admit.
