@@ -3107,6 +3107,21 @@ destruct Huv2 as [Huv2| Huv2]. {
         unfold "⊕", P, d2n, prop_carr, dig.
         destruct (lt_dec s q) as [Hsq| Hsq]. {
           specialize (Hjq _ Hsq) as H1.
+          apply Nat_eq_add_2 in H1.
+          destruct H1 as [H1| H1]. {
+            specialize (Hu (s + 2)) as H2.
+            rewrite Nat.add_assoc, (proj1 H1) in H2; flia H2.
+          }
+          destruct H1 as [H1| H1]. {
+            rewrite (proj1 H1), (proj2 H1), Hr2.
+            replace (carry v (i + s + 2)) with 0; [ easy | symmetry ].
+            unfold carry.
+...
+            destruct q; [ flia Hsq | ].
+            specialize (Hvjt (q - s - 1)) as H2.
+            assert (H : q - s - 1 < S q) by flia Hsq.
+            specialize (H2 H); clear H.
+            replace (i + S q + 1 - (q - s - 1)) with (i + s + 3) by flia Hsq.
 ...
     }
     assert (Htlq : t < q). {
