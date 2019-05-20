@@ -3113,6 +3113,13 @@ destruct Huv2 as [Huv2| Huv2]. {
     move H before Hvt; clear Hvt; rename H into Hvt.
     assert (Hut : u (i + q + 1 - t) = 0) by flia Hvt Huvqt.
     move Hut after Hvt; clear Huvqt.
+    assert (H : ∀ s, q - t < s → P v (i + s + 1) = 1). {
+      intros s Hqs.
+...
+      destruct (le_dec (q + 2) s) as [Hq2s| Hq2s]. {
+        specialize (Hqk3 (s - 1)) as H1.
+        replace (i + q + (s - 1) + 3) with (i + q + s + 2) in H1 by flia Hq2s.
+...
     rewrite (A_9_8_all_18 (q - t - 1)); cycle 1. {
       admit.
     } {
