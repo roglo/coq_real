@@ -3070,14 +3070,41 @@ destruct Huv2 as [Huv2| Huv2]. {
     Pv . . . . . 1 1 1 1 1 ...
   u+Pv . . . . . 2 2 2 2 2 ...
 *)
-...
-    remember
-      (first_such_that (λ t, negb (Nat.eqb (u (i + q + 2 - t)) 1)) (q + 2) 0)
-      as t eqn:Ht.
-...
-specialize (first_such_that_has_prop 1 v (q + 2) 0) as H1.
-(* hou la la, ça va pas, ça *)
-    rewrite (A_9_8_all_18 t); cycle 1. {
+    set (T := λ t, negb (Nat.eqb (v (i + q + 1 - t)) 1)).
+    remember (first_such_that T q 0) as t eqn:Ht.
+    specialize (first_such_that_has_prop T q 0 t) as H1.
+    assert (H : T (q + 0) = true). {
+      unfold T.
+      replace (i + q + 1 - (q + 0)) with (i + 1) by flia.
+      apply Bool.negb_true_iff, Nat.eqb_neq.
+      now intros H; rewrite H in Huv1.
+    }
+    specialize (H1 H Ht); clear H.
+    unfold T in H1.
+    destruct H1 as (Hvt, Hvjt).
+    apply Bool.negb_true_iff, Nat.eqb_neq in Hvt.
+    assert (H : ∀ j, j < t → v (i + q + 1 - j) = 1). {
+      intros s Hs.
+      specialize (Hvjt _ (Nat.le_0_l s) Hs) as H1.
+      now apply Bool.negb_false_iff, Nat.eqb_eq in H1.
+    }
+    clear Hvjt; rename H into Hvjt; move Hvt after Hvjt.
+    destruct (Nat.eq_dec t q) as [Htq| Htq]. {
+      admit.
+    }
+    assert (Htlq : t < q). {
+      apply Nat_le_neq_lt; [ | easy ].
+      apply Nat.nlt_ge; intros H.
+      specialize (Hvjt _ H) as H1.
+      replace (i + q + 1 - q) with (i + 1) in H1 by flia.
+      now rewrite H1 in Huv1.
+    }
+    clear Htq.
+    rewrite (A_9_8_all_18 (q - t - 1)); cycle 1. {
+      admit.
+    } {
+      rewrite Hr2.
+      replace (i + 1 + (q - t - 1) + 1) with (i + q + 1 - t) by flia Htlq.
 ...
     destruct q. {
       rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
