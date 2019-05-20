@@ -3099,6 +3099,14 @@ destruct Huv2 as [Huv2| Huv2]. {
     }
     clear Hvjt; rename H into Hvjt; move Hvt after Hvjt.
     destruct (Nat.eq_dec t q) as [Htq| Htq]. {
+      rewrite Htq in Ht, Hvjt.
+      clear t Htq Hvt.
+      rewrite A_all_18. 2: {
+        intros s.
+        replace (i + 1 + s + 1) with (i + s + 2) by flia.
+        unfold "⊕", P, d2n, prop_carr, dig.
+        destruct (lt_dec s q) as [Hsq| Hsq]. {
+          specialize (Hjq _ Hsq) as H1.
 ...
     }
     assert (Htlq : t < q). {
