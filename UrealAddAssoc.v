@@ -3013,8 +3013,17 @@ destruct H1 as [Huvn| H1]. {
 }
 destruct H1 as (q & Hjq & Huv2).
 destruct Huv2 as [Huv2| Huv2]. {
-  specialize (rad_2_sum_3_all_9_02_222_1_333 _ i q Hr2 Huvl3 Hauv) as Hqk3.
-  specialize (Hqk3 (or_introl Huv1) Hjq Huv2).
+  specialize (rad_2_sum_3_all_9_02_222_1_333 _ i q Hr2 Huvl3 Hauv) as Huvqc3.
+  specialize (Huvqc3 (or_introl Huv1) Hjq Huv2).
+  assert (Huvq3 : ∀ k, u (i + q + k + 3) = 1 ∧ v (i + q + k + 3) = 2). {
+    intros p.
+    specialize (Huvqc3 p) as (H1, _).
+    unfold "⊕" in H1.
+    specialize (Hu (q + p + 3)) as H2.
+    specialize (Hv (q + p + 3)) as H3.
+    do 2 rewrite Nat.add_assoc in H2, H3.
+    flia H1 H2 H3.
+  }
   rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
   replace (S i) with (i + 1) by flia.
   unfold "⊕" at 1, P at 1, d2n, prop_carr, dig.
@@ -3090,7 +3099,7 @@ destruct Huv2 as [Huv2| Huv2]. {
     }
     clear Hvjt; rename H into Hvjt; move Hvt after Hvjt.
     destruct (Nat.eq_dec t q) as [Htq| Htq]. {
-      admit.
+...
     }
     assert (Htlq : t < q). {
       apply Nat_le_neq_lt; [ | easy ].
@@ -3116,12 +3125,21 @@ destruct Huv2 as [Huv2| Huv2]. {
     assert (H : ∀ s, q - t < s → P v (i + s + 1) = 1). {
       intros s Hqs.
       destruct (le_dec (q + 2) s) as [Hq2s| Hq2s]. {
-        specialize (Hqk3 (s - q - 1)) as H1.
-        replace (i + q + (s - q - 1) + 3) with (i + s + 2) in H1 by flia Hq2s.
-        replace (i + q + (s - q - 1) + 2) with (i + s + 1) in H1 by flia Hq2s.
+        specialize (Huvq3 (s - q - 2)) as H1.
+        replace (i + q + (s - q - 2) + 3) with (i + s + 1) in H1 by flia Hq2s.
         unfold P, d2n, prop_carr, dig.
-        unfold "⊕" in H1 at 1.
-(* bon faut prouver que les v sont égaux à 2 à partir de i+q+3 *)
+        rewrite (proj2 H1), Hr2, Nat_mod_add_same_l; [ | easy ].
+        replace (carry v (i + s + 1)) with 1; [ easy | symmetry ].
+        unfold carry.
+        rewrite A_all_18. 2: {
+          intros t1.
+          replace (i + s + 1 + t1 + 1) with (i + q + (s + t1 - q - 1) + 3)
+            by flia Hq2s.
+          rewrite Hr2; apply Huvq3.
+        }
+        admit. (* ouais *)
+      }
+      apply Nat.nle_gt in Hq2s.
 ...
     rewrite (A_9_8_all_18 (q - t - 1)); cycle 1. {
       admit.
@@ -3448,6 +3466,7 @@ destruct (Q.lt_le_dec (A i nk u + Q.frac (A i nk v)) 1) as [H5| H5].
        unfold "⊕" in H1.
        replace 3 with (1 + 2) in H1 by easy.
        rewrite Nat.mul_add_distr_r, Nat.mul_1_l in H1.
+...
        specialize (Hu (p + 2)) as H2; rewrite Nat.add_assoc in H2.
        specialize (Hv (p + 2)) as H3; rewrite Nat.add_assoc in H3.
        flia H1 H2 H3.
