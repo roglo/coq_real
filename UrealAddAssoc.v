@@ -3101,113 +3101,41 @@ destruct Huv2 as [Huv2| Huv2]. {
     destruct (Nat.eq_dec t q) as [Htq| Htq]. {
       rewrite Htq in Ht, Hvjt.
       clear t Htq Hvt.
-(**)
-      exfalso.
-...
-      rewrite A_all_18. 2: {
-        intros s.
-        replace (i + 1 + s + 1) with (i + s + 2) by flia.
-        unfold "⊕", P, d2n, prop_carr, dig.
-        destruct (lt_dec s q) as [Hsq| Hsq]. {
-          specialize (Hjq _ Hsq) as H1.
-          apply Nat_eq_add_2 in H1.
-          destruct H1 as [H1| H1]. {
-            specialize (Hu (s + 2)) as H2.
-            rewrite Nat.add_assoc, (proj1 H1) in H2; flia H2.
-          }
-          destruct H1 as [H1| H1]. {
-            rewrite (proj1 H1), (proj2 H1), Hr2.
-            replace (carry v (i + s + 2)) with 0; [ easy | symmetry ].
-            unfold carry.
-            rewrite (A_9_8_all_18 (q - s - 1)); cycle 1. {
-              intros t Ht1.
-              specialize (Hvjt (q - t - s - 2)) as H2.
-              assert (H : q - t - s - 2 < q) by flia Ht1.
-              specialize (H2 H); clear H.
-              Time replace (i + q + 1 - (q - t - s - 2)) with (i + s + 2 + t + 1)
-                in H2 by flia Ht1.
-              now rewrite Hr2.
-            } {
-              replace (i + s + 2 + (q - s - 1) + 1) with (i + q + 2)
-                by flia Hsq.
-              now rewrite (proj2 Huv2), Hr2.
-            } {
-              intros t.
-              replace (i + s + 2 + (q - s - 1) + t + 2) with (i + q + t + 3)
-                by flia Hsq.
-              specialize (Huvq3 t) as H2.
-              now rewrite Hr2.
-            }
-            apply Q.intg_small.
-            remember (min_n (i + s + 2 + carry_cases v (i + s + 2))) as x eqn:Hx.
-            remember (i + s + 2 + (q - s - 1) + 1) as y eqn:Hy.
-            split. {
-              apply Q.le_0_sub.
-              apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
-              apply Nat.mul_le_mono_r.
-              destruct (le_dec y (x - 1)) as [H2| H2]. {
-                rewrite Hr2.
-                replace 2 with (2 ^ 1) at 1 by easy.
-                apply Nat.pow_le_mono_r; [ easy | rewrite Hx; min_n_ge ].
-              }
-              apply Nat.neq_0_lt_0; pauto.
-            }
-            apply Q.sub_lt, Q.lt_0_pair.
-            destruct (le_dec y (x - 1)); pauto.
-          }
-          exfalso.
-          specialize (Hvjt (q - s - 1)) as H2.
-          assert (H : q - s - 1 < q) by flia Hsq.
-          specialize (H2 H); clear H.
-          replace (i + q + 1 - (q - s - 1)) with (i + s + 2) in H2
-            by flia Hsq.
-          now rewrite H2 in H1.
-        }
-        apply Nat.nlt_ge in Hsq.
-        destruct (Nat.eq_dec q s) as [Heqs| Hneqs]. {
-          rewrite <- Heqs.
-          rewrite (proj1 Huv2), (proj2 Huv2), Nat.add_0_l, Hr2.
-          replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
-          rewrite (carry_succ 2); cycle 1. {
-            rewrite Hr2.
-            replace 2 with (2 ^ 1) at 1 by easy.
-            apply Nat.pow_lt_mono_r; [ pauto | flia ].
-          } {
-            now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
-          }
-          replace (i + q + 2 + 1) with (i + q + 3) by flia.
-          specialize (Huvq3 0) as H1.
-          rewrite Nat.add_0_r in H1.
-          rewrite (proj2 H1), Hr2, Nat_div_add_same_l; [ | easy ].
-          specialize (Hcv (q + 3)) as H2.
-          rewrite Nat.add_assoc in H2.
-          remember (carry v (i + q + 3)) as c eqn:Hc1.
-          destruct c; [ easy | ].
-          destruct c; [ easy | flia H2 ].
-        }
-        assert (Hqs : q < s) by flia Hsq Hneqs; clear Hsq Hneqs.
-        specialize (Huvq3 (s - q - 1)) as H1.
-        replace (i + q + (s - q - 1) + 3) with (i + s + 2) in H1 by flia Hqs.
-        rewrite (proj1 H1), (proj2 H1), Hr2, Nat_mod_add_same_l; [ | easy ].
-        replace (carry v (i + s + 2)) with 1; [ easy | symmetry ].
-        rewrite (carry_succ 2); cycle 1. {
+      replace (carry v (i + 1)) with 0 in Hc; [ easy | symmetry ].
+      clear Hc; unfold carry.
+      rewrite (A_9_8_all_18 q); cycle 1. {
+        intros t Ht1.
+        specialize (Hvjt (q - t - 1)) as H1.
+        assert (H : q - t - 1 < q) by flia Ht1.
+        specialize (H1 H); clear H.
+        replace (i + q + 1 - (q - t - 1)) with (i + 1 + t + 1) in H1
+          by flia Ht1.
+        now rewrite Hr2.
+      } {
+        replace (i + 1 + q + 1) with (i + q + 2) by flia.
+        now rewrite Hr2.
+      } {
+        intros t.
+        replace (i + 1 + q + t + 2) with (i + q + t + 3) by flia.
+        specialize (Huvq3 t) as H1.
+        now rewrite Hr2.
+      }
+      apply Q.intg_small.
+      remember (min_n (i + 1 + carry_cases v (i + 1))) as x eqn:Hx.
+      remember (i + 1 + q + 1) as y eqn:Hy.
+      split. {
+        apply Q.le_0_sub.
+        apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
+        apply Nat.mul_le_mono_r.
+        destruct (le_dec y (x - 1)) as [H2| H2]. {
           rewrite Hr2.
           replace 2 with (2 ^ 1) at 1 by easy.
-          apply Nat.pow_lt_mono_r; [ pauto | flia ].
-        } {
-          now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+          apply Nat.pow_le_mono_r; [ easy | rewrite Hx; min_n_ge ].
         }
-        replace (i + s + 2 + 1) with (i + s + 3) by flia.
-        specialize (Huvq3 (s - q)) as H2.
-        replace (i + q + (s - q)) with (i + s) in H2 by flia Hqs.
-        rewrite (proj2 H2), Hr2, Nat_div_add_same_l; [ | easy ].
-        specialize (Hcv (s + 3)) as H3.
-        rewrite Nat.add_assoc in H3.
-        remember (carry v (i + s + 3)) as c eqn:Hc1.
-        destruct c; [ easy | ].
-        destruct c; [ easy | flia H3 ].
+        apply Nat.neq_0_lt_0; pauto.
       }
-...
+      apply Q.sub_lt, Q.lt_0_pair.
+      destruct (le_dec y (x - 1)); pauto.
     }
     assert (Htlq : t < q). {
       apply Nat_le_neq_lt; [ | easy ].
@@ -3245,7 +3173,7 @@ destruct Huv2 as [Huv2| Huv2]. {
             by flia Hq2s.
           rewrite Hr2; apply Huvq3.
         }
-        admit. (* ouais *)
+...
       }
       apply Nat.nle_gt in Hq2s.
 ...
