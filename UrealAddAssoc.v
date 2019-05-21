@@ -3263,6 +3263,66 @@ destruct Huv2 as [Huv2| Huv2]. {
       apply Q.sub_lt, Q.lt_0_pair.
       destruct (le_dec y (x - 1)); pauto.
     }
+    rewrite (A_9_8_all_18 (q - t - 1)); cycle 1. {
+      intros s Hs.
+      replace (i + 1 + s + 1) with (i + s + 2) by flia.
+      unfold "⊕", P, d2n, prop_carr, dig.
+      specialize (Hjq s) as H1.
+      assert (H : s < q) by flia Hs.
+      specialize (H1 H); clear H.
+      unfold "⊕" in H1.
+      apply Nat_eq_add_2 in H1.
+      destruct H1 as [H1| H1]. {
+        specialize (Hu (s + 2)); rewrite Nat.add_assoc in Hu; flia Hu H1.
+      }
+      assert (Hc1 : carry v (i + s + 2) = 1). {
+        unfold carry.
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + s + 2)) with (i + s + 3) by flia.
+(* pas gagné... *)
+...
+      }
+... suite ok
+      now destruct H1 as [H1| H1]; rewrite (proj1 H1), (proj2 H1), Hr2, Hc1.
+    } {
+      replace (i + 1 + (q - t - 1) + 1) with (i + q + 1 - t) by flia Htlq.
+      unfold "⊕", P, d2n, prop_carr, dig.
+      rewrite Hut, Hvt, Nat.add_0_l, Hr2, Nat_mod_add_same_l; [ | easy ].
+      replace (carry v (i + q + 1 - t)) with 0; [ easy | symmetry ].
+      unfold carry.
+      rewrite (A_9_8_all_18 t); cycle 1. {
+        intros s Hst.
+        replace (i + q + 1 - t + s + 1) with (i + q + 1 - (t - s - 1))
+          by flia Htlq Hst.
+        rewrite Hr2; apply Hvjt.
+        flia Hst.
+      } {
+        rewrite Nat.sub_add; [ | flia Htlq ].
+        now rewrite <- Nat.add_assoc, Hr2.
+      } {
+        intros s; rewrite Nat.sub_add; [ | flia Htlq ].
+        replace (i + q + 1 + s + 2) with (i + q + s + 3) by flia.
+        now rewrite Hr2, (proj2 (Huvq3 _)).
+      }
+      rewrite Nat.sub_add; [ | flia Htlq ].
+      apply Q.intg_small.
+      remember (i + q + 1 - t) as z eqn:Hz.
+      remember (min_n (z + carry_cases v z)) as x eqn:Hx.
+      remember (i + q + 1 + 1) as y eqn:Hy.
+      split. {
+        apply Q.le_0_sub.
+        apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
+        apply Nat.mul_le_mono_r.
+        destruct (le_dec y (x - 1)) as [H2| H2]. {
+          rewrite Hr2.
+          replace 2 with (2 ^ 1) at 1 by easy.
+          apply Nat.pow_le_mono_r; [ easy | rewrite Hx; min_n_ge ].
+        }
+        apply Nat.neq_0_lt_0; pauto.
+      }
+      apply Q.sub_lt, Q.lt_0_pair.
+      destruct (le_dec y (x - 1)); pauto.
+    } {
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
