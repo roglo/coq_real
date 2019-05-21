@@ -3276,14 +3276,14 @@ destruct Huv2 as [Huv2| Huv2]. {
         specialize (Hu (s + 2)); rewrite Nat.add_assoc in Hu; flia Hu H1.
       }
       assert (Hc1 : carry v (i + s + 2) = 1). {
-        unfold carry.
-        rewrite A_split_first; [ | min_n_ge ].
-        replace (S (i + s + 2)) with (i + s + 3) by flia.
-assert (i + s + 3 ≤ i + q + 1 - t) by lia.
-(* pas gagné... *)
-...
+        replace (i + s + 2) with (i + (s + 1) + 1) by flia.
+        apply (rad_2_all_12_2_carry_1 _ _ (q - t - 1)); try easy. {
+          intros p Hp; apply Hvq1; flia Hp.
+        } {
+          now replace (i + (q - t - 1) + 2) with (i + q + 1 - t) by flia Hs.
+        }
+        flia Hs.
       }
-... suite ok
       now destruct H1 as [H1| H1]; rewrite (proj1 H1), (proj2 H1), Hr2, Hc1.
     } {
       replace (i + 1 + (q - t - 1) + 1) with (i + q + 1 - t) by flia Htlq.
@@ -3324,7 +3324,41 @@ assert (i + s + 3 ≤ i + q + 1 - t) by lia.
       apply Q.sub_lt, Q.lt_0_pair.
       destruct (le_dec y (x - 1)); pauto.
     } {
+      intros s.
+      replace (i + 1 + (q - t - 1) + s + 2) with (i + (q - t + s + 1) + 1)
+        by flia Htlq.
+      specialize (Hqts (q - t + s + 1)) as H1.
+      assert (H : q - t < q - t + s + 1) by flia Htlq.
+      specialize (H1 H); clear H.
+      unfold "⊕"; rewrite H1, Hr2.
+      destruct (le_dec (s + 1) t) as [Hst| Hst]. {
+        specialize (Hvjt (t - s - 1)) as H2.
+        assert (H : t - s - 1 < t) by flia Hst.
+        specialize (H2 H); clear H.
+        specialize (Hjq (q + s - t)) as H3.
+        assert (H : q + s - t < q) by flia Hst Htlq.
+        specialize (H3 H); clear H.
+        remember (i + q + s - t + 2) as x eqn:Hx.
+        replace (i + q + 1 - (t - s - 1)) with x in H2 by flia Hst Htlq Hx.
+        replace (i + (q + s - t) + 2) with x in H3 by flia Htlq Hx.
+        replace (i + (q - t + s + 1) + 1) with x by flia Htlq Hx.
+        unfold "⊕" in H3.
+        flia H2 H3.
+      }
+      apply Nat.nle_gt in Hst.
+      destruct (Nat.eq_dec t s) as [Hts| Hts]. {
+        replace (i + (q - t + s + 1) + 1) with (i + q + 2) by flia Htlq Hts.
+        now rewrite (proj1 Huv2).
+      }
+      replace (i + (q - t + s + 1) + 1) with (i + q + (s - t - 1) + 3)
+        by flia Htlq Hst Hts.
+      now rewrite (proj1 (Huvq3 _)).
+    }
+    apply Q.sub_lt, Q.lt_0_pair.
+    destruct (le_dec (i + 1 + (q - t - 1) + 1) (nk - 1)); pauto.
+  }
 ...
+
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
