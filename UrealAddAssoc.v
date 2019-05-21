@@ -3116,12 +3116,43 @@ destruct Huv2 as [Huv2| Huv2]. {
             rewrite (proj1 H1), (proj2 H1), Hr2.
             replace (carry v (i + s + 2)) with 0; [ easy | symmetry ].
             unfold carry.
-...
-            destruct q; [ flia Hsq | ].
-            specialize (Hvjt (q - s - 1)) as H2.
-            assert (H : q - s - 1 < S q) by flia Hsq.
-            specialize (H2 H); clear H.
-            replace (i + S q + 1 - (q - s - 1)) with (i + s + 3) by flia Hsq.
+            rewrite (A_9_8_all_18 (q - s - 1)); cycle 1. {
+              intros t Ht1.
+              specialize (Hvjt (q - t - s - 2)) as H2.
+              assert (H : q - t - s - 2 < q) by flia Ht1.
+              specialize (H2 H); clear H.
+              Time replace (i + q + 1 - (q - t - s - 2)) with (i + s + 2 + t + 1)
+                in H2 by flia Ht1.
+              now rewrite Hr2.
+            } {
+              replace (i + s + 2 + (q - s - 1) + 1) with (i + q + 2)
+                by flia Hsq.
+              now rewrite (proj2 Huv2), Hr2.
+            } {
+              intros t.
+              replace (i + s + 2 + (q - s - 1) + t + 2) with (i + q + t + 3)
+                by flia Hsq.
+              specialize (Huvq3 t) as H2.
+              now rewrite Hr2.
+            }
+            apply Q.intg_small.
+            remember (min_n (i + s + 2 + carry_cases v (i + s + 2))) as x eqn:Hx.
+            remember (i + s + 2 + (q - s - 1) + 1) as y eqn:Hy.
+            split. {
+              apply Q.le_0_sub.
+              apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
+              apply Nat.mul_le_mono_r.
+              destruct (le_dec y (x - 1)) as [H2| H2]. {
+                rewrite Hr2.
+                replace 2 with (2 ^ 1) at 1 by easy.
+                apply Nat.pow_le_mono_r; [ easy | rewrite Hx; min_n_ge ].
+              }
+              apply Nat.neq_0_lt_0; pauto.
+            }
+            apply Q.sub_lt, Q.lt_0_pair.
+            destruct (le_dec y (x - 1)); pauto.
+          }
+          exfalso.
 ...
     }
     assert (Htlq : t < q). {
