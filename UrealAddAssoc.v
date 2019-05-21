@@ -3279,6 +3279,7 @@ destruct Huv2 as [Huv2| Huv2]. {
         unfold carry.
         rewrite A_split_first; [ | min_n_ge ].
         replace (S (i + s + 2)) with (i + s + 3) by flia.
+assert (i + s + 3 ≤ i + q + 1 - t) by lia.
 (* pas gagné... *)
 ...
       }
