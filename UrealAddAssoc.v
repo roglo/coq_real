@@ -3079,6 +3079,16 @@ destruct Huv2 as [Huv2| Huv2]. {
     Pv . . . . . 1 1 1 1 1 ...
   u+Pv . . . . . 2 2 2 2 2 ...
 *)
+    clear - q Huv1 Hc Hr2 Huv2 Huvq3 Hjq Hu Hv.
+    assert (Hvq1 : ∀ j, j < q → v (i + j + 2) = 1 ∨ v (i + j + 2) = 2). {
+      intros s Hs.
+      specialize (Hjq _ Hs) as H3.
+      apply Nat_eq_add_2 in H3.
+      destruct H3 as [H3| H3]. {
+        specialize (Hu (s + 2)); rewrite Nat.add_assoc in Hu; flia Hu H3.
+      }
+      destruct H3 as [H3| H3]; [ now left | now right ].
+    }
     set (T := λ t, negb (Nat.eqb (v (i + q + 1 - t)) 1)).
     remember (first_such_that T q 0) as t eqn:Ht.
     specialize (first_such_that_has_prop T q 0 t) as H1.
