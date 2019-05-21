@@ -3158,7 +3158,7 @@ destruct Huv2 as [Huv2| Huv2]. {
     move H before Hvt; clear Hvt; rename H into Hvt.
     assert (Hut : u (i + q + 1 - t) = 0) by flia Hvt Huvqt.
     move Hut after Hvt; clear Huvqt.
-    assert (H : ∀ s, q - t < s → P v (i + s + 1) = 1). {
+    assert (Hqts : ∀ s, q - t < s → P v (i + s + 1) = 1). {
       intros s Hqs.
       destruct (le_dec (q + 2) s) as [Hq2s| Hq2s]. {
         specialize (Huvq3 (s - q - 2)) as H1.
@@ -3247,6 +3247,22 @@ destruct Huv2 as [Huv2| Huv2]. {
         now rewrite Hr2.
       }
       apply Q.intg_small.
+      remember (min_n (i + s + 1 + carry_cases v (i + s + 1))) as x eqn:Hx.
+      remember (i + s + 1 + (q - s) + 1) as y eqn:Hy.
+      split. {
+        apply Q.le_0_sub.
+        apply (Q.le_pair _ _ 1 1); [ pauto | easy | ].
+        apply Nat.mul_le_mono_r.
+        destruct (le_dec y (x - 1)) as [H2| H2]. {
+          rewrite Hr2.
+          replace 2 with (2 ^ 1) at 1 by easy.
+          apply Nat.pow_le_mono_r; [ easy | rewrite Hx; min_n_ge ].
+        }
+        apply Nat.neq_0_lt_0; pauto.
+      }
+      apply Q.sub_lt, Q.lt_0_pair.
+      destruct (le_dec y (x - 1)); pauto.
+    }
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
