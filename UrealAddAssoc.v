@@ -3153,6 +3153,14 @@ destruct Huv2 as [Huv2| Huv2]. {
             destruct (le_dec y (x - 1)); pauto.
           }
           exfalso.
+          specialize (Hvjt (q - s - 1)) as H2.
+          assert (H : q - s - 1 < q) by flia Hsq.
+          specialize (H2 H); clear H.
+          replace (i + q + 1 - (q - s - 1)) with (i + s + 2) in H2
+            by flia Hsq.
+          now rewrite H2 in H1.
+        }
+        apply Nat.nlt_ge in Hsq.
 ...
     }
     assert (Htlq : t < q). {
