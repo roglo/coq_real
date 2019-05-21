@@ -2975,8 +2975,8 @@ destruct H1 as [Huvn| H1]. {
     rewrite Nat.add_0_l.
     unfold P, d2n, prop_carr, dig.
     rewrite Hvq2, Hr2, Nat_mod_add_same_l; [ | easy ].
-    replace (carry v (i + q + 2)) with 0; [ easy | ].
-    symmetry; unfold carry.
+    replace (carry v (i + q + 2)) with 0; [ easy | symmetry ].
+    unfold carry.
     apply Q.intg_small.
     split; [ easy | ].
     rewrite A_all_9. 2: {
@@ -3191,6 +3191,62 @@ destruct Huv2 as [Huv2| Huv2]. {
         apply Nat.neq_0_lt_0; pauto.
       }
       apply Nat.nle_gt in Hq2s.
+      unfold P, d2n, prop_carr, dig.
+      destruct (Nat.eq_dec (q + 1) s) as [H| H]. {
+        rewrite <- H.
+        replace (i + (q + 1) + 1) with (i + q + 2) by flia.
+        rewrite (proj2 Huv2), Nat.add_0_l, Hr2.
+        replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
+        unfold carry.
+        rewrite A_all_18. 2: {
+          intros t1.
+          replace (i + q + 2 + t1 + 1) with (i + q + t1 + 3) by flia.
+          rewrite Hr2; apply Huvq3.
+        }
+        apply Q.intg_interv. 2: {
+          split. {
+            apply Q.le_add_le_sub_r.
+            apply Q.le_add_le_sub_l.
+            replace (2 - 1 // 1)%Q with (1 // 1)%Q by easy.
+            apply Q.le_pair; [ pauto | easy | ].
+            apply Nat.mul_le_mono_r.
+            rewrite Hr2.
+            replace 2 with (2 ^ 1) at 1 by easy.
+            apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
+          }
+          apply Q.sub_lt, Q.lt_0_pair; pauto.
+        }
+        apply Q.le_0_sub, (Q.le_pair_mono_l 1).
+        split; [ pauto | ].
+        apply Nat.neq_0_lt_0; pauto.
+      }
+      assert (Hq1s : s < q + 1) by flia Hq2s H; clear Hq2s H.
+      specialize (Hvjt (q - s)) as H1.
+      assert (H : q - s < t) by flia Hqs Hq1s.
+      specialize (H1 H); clear H.
+      replace (i + q + 1 - (q - s)) with (i + s + 1) in H1 by flia Hq1s.
+      rewrite H1, Hr2.
+      replace (carry v (i + s + 1)) with 0; [ easy | symmetry ].
+      unfold carry.
+      rewrite (A_9_8_all_18 (q - s)); cycle 1. {
+        intros t1 Ht1.
+        specialize (Hvjt (q - s - t1 - 1)) as H2.
+        assert (H : q - s - t1 - 1 < t) by flia Hqs Ht1.
+        specialize (H2 H); clear H.
+        replace (i + q + 1 - (q - s - t1 - 1)) with (i + s + 1 + t1 + 1) in H2
+          by flia Ht1.
+        now rewrite Hr2.
+      } {
+        replace (i + s + 1 + (q - s) + 1) with (i + q + 2) by flia Hq1s.
+        now rewrite Hr2.
+      } {
+        intros t1.
+        replace (i + s + 1 + (q - s) + t1 + 2) with (i + q + t1 + 3)
+          by flia Hq1s.
+        specialize (Huvq3 t1) as H2.
+        now rewrite Hr2.
+      }
+      apply Q.intg_small.
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
