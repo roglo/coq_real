@@ -3581,7 +3581,30 @@ destruct Huv2 as [Huv2| Huv2]; [ now apply (rad_2_sum_3_0_222_1_A_lt_1 q) | ].
     Pv . . . . . . . . . .
   u+Pv . . . . . . . . . .
 *)
-assert (Hcq2 : carry (u ⊕ v) (i + q + 3) = 0). {
+assert (Hcq2 : carry (u ⊕ v) (i + q + 2) = 0). {
+  specialize (all_fA_ge_1_ε_P_999 _ i Hauv (q + 1)) as H1.
+  replace (i + (q + 1) + 1) with (i + q + 2) in H1 by flia.
+  unfold P, d2n, prop_carr, dig in H1.
+  rewrite Huv2, Hr2 in H1.
+  remember (carry (u ⊕ v) (i + q + 2)) as c eqn:Hc; symmetry in Hc.
+  destruct c; [ easy | exfalso ].
+  destruct c; [ easy | ].
+  destruct c. 2: {
+    specialize (carry_upper_bound_for_adds 3 (u ⊕ v) i) as H2.
+    specialize (H2 (Nat.neq_succ_0 _)) as H2.
+    assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3 * (rad - 1)). {
+      now intros; rewrite Hr2, <- Nat.add_assoc.
+    }
+    specialize (H2 H (q + 2)); clear H.
+    rewrite Nat.add_assoc in H2; flia Hc H2.
+  }
+  clear H1.
+...
+assert (Hcuv3_3 : (u ⊕ v) (i + q + 3) ≠ 3). {
+  intros H.
+...
+assert (Hcuv3_2 : (u ⊕ v) (i + q + 3) ≠ 2). {
+  intros H.
 ...
 assert (Hcu2 : carry u (i + q + 3) = 0). {
 ...
