@@ -3599,7 +3599,25 @@ assert (Hcq2 : carry (u ⊕ v) (i + q + 2) = 0). {
     rewrite Nat.add_assoc in H2; flia Hc H2.
   }
   clear H1.
-...
+  assert (Hc1 : carry (u ⊕ v) (i + q + 1) = 2). {
+    rewrite (carry_succ 3); cycle 1. {
+      rewrite Hr2.
+      apply (Nat.lt_le_trans _ (2 ^ 2)); [ pauto | ].
+      apply Nat.pow_le_mono_r; [ easy | ].
+      destruct (i + q); cbn; [ pauto | flia ].
+    } {
+      now intros; do 2 rewrite <- Nat.add_assoc; rewrite Hr2.
+    }
+    replace (i + q + 1 + 1) with (i + q + 2) by flia.
+    now rewrite Huv2, Hc, Hr2.
+  }
+  specialize (all_fA_ge_1_ε_P_999 _ i Hauv q) as H1.
+  unfold P, d2n, prop_carr, dig in H1.
+  rewrite Hc1, Hr2, Nat_mod_add_same_r in H1; [ | easy ].
+  destruct q; [ now rewrite Nat.add_0_r, Huv1 in H1 | ].
+  replace (i + S q + 1) with (i + q + 2) in H1 by flia.
+  rewrite Hjq in H1; [ easy | pauto ].
+}
 assert (Hcuv3_3 : (u ⊕ v) (i + q + 3) ≠ 3). {
   intros H.
 ...
