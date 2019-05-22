@@ -3099,7 +3099,7 @@ destruct Huv2 as [Huv2| Huv2]. {
       now intros H; rewrite H in Huv1.
     }
     specialize (H1 H Ht); clear H.
-    unfold T in H1.
+    unfold T in H1; clear T Ht.
     destruct H1 as (Hvt, Hvjt).
     apply Bool.negb_true_iff, Nat.eqb_neq in Hvt.
     assert (H : ∀ j, j < t → v (i + q + 1 - j) = 1). {
@@ -3109,7 +3109,7 @@ destruct Huv2 as [Huv2| Huv2]. {
     }
     clear Hvjt; rename H into Hvjt; move Hvt after Hvjt.
     destruct (Nat.eq_dec t q) as [Htq| Htq]. {
-      rewrite Htq in Ht, Hvjt.
+      rewrite Htq in Hvjt.
       clear t Htq Hvt.
       replace (carry v (i + 1)) with 0 in Hc; [ easy | symmetry ].
       clear Hc; unfold carry.
