@@ -3618,12 +3618,21 @@ assert (Hcq2 : carry (u ⊕ v) (i + q + 2) = 0). {
   replace (i + S q + 1) with (i + q + 2) in H1 by flia.
   rewrite Hjq in H1; [ easy | pauto ].
 }
-assert (Hcuv3_3 : (u ⊕ v) (i + q + 3) ≠ 3). {
-  intros H.
-...
-assert (Hcuv3_2 : (u ⊕ v) (i + q + 3) ≠ 2). {
-  intros H.
-...
+assert (Hcuv3_lt_2 : (u ⊕ v) (i + q + 3) < 2). {
+  apply Nat.nle_gt; intros H.
+  rewrite (carry_succ 3) in Hcq2; cycle 1. {
+    rewrite Hr2.
+    apply (Nat.lt_le_trans _ (2 ^ 2)); [ pauto | ].
+    apply Nat.pow_le_mono_r; [ easy | ].
+    destruct (i + q); cbn; [ pauto | flia ].
+  } {
+    now intros; do 2 rewrite <- Nat.add_assoc; rewrite Hr2.
+  }
+  replace (i + q + 2 + 1) with (i + q + 3) in Hcq2 by flia.
+  remember ((u ⊕ v) (i + q + 3)) as uv eqn:Huv.
+  replace uv with (2 + (uv - 2)) in Hcq2 by flia H.
+  now rewrite Hr2, <- Nat.add_assoc, Nat_div_add_same_l in Hcq2.
+}
 assert (Hcu2 : carry u (i + q + 3) = 0). {
 ...
 assert (Hcv2 : carry v (i + q + 3) = 0). {
