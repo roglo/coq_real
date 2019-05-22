@@ -2671,7 +2671,7 @@ rewrite Hr2.
 now destruct H1 as [H1| H1]; rewrite H1.
 Qed.
 
-Theorem rad_2_sum_3_0_222_1_A_lt_1 {r : radix} : ∀ u v i n q,
+Theorem rad_2_sum_3_0_222_1_A_lt_1 {r : radix} : ∀ q u v i n,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
   → (∀ k, v (i + k) ≤ 2)
@@ -3555,9 +3555,7 @@ destruct H1 as [Huvn| H1]. {
   destruct (le_dec (i + (q + 1) + 1) (nk - 1)); pauto.
 }
 destruct H1 as (q & Hjq & Huv2).
-destruct Huv2 as [Huv2| Huv2]. {
-  now apply (rad_2_sum_3_0_222_1_A_lt_1 _ _ _ _ q).
-}
+destruct Huv2 as [Huv2| Huv2]; [ now apply (rad_2_sum_3_0_222_1_A_lt_1 q) | ].
 (*
      u 0 . . . . 1 . . . .
      v 0 . . . . 2 . . . .
