@@ -3423,6 +3423,37 @@ destruct Huv2 as [Huv2| Huv2]. {
   }
   rewrite (A_9_8_all_18 q); cycle 1. {
     intros s Hs.
+replace (i + 1 + s + 1) with (i + s + 2) by flia.
+destruct (lt_dec (q - t) (s + 1)) as [Hqts| Hqts]. {
+unfold "⊕", P, d2n, prop_carr, dig.
+specialize (Hvjt (q - s - 1)) as H1.
+assert (q - s - 1 < t) by flia Hs Hqts.
+specialize (H1 H); clear H.
+replace (i + q + 1 - (q - s - 1)) with (i + s + 2) in H1 by flia Hs Hqts.
+specialize (Hjq _ Hs) as H2.
+unfold "⊕" in H2.
+replace (u (i + s + 2)) with 1 by flia H1 H2.
+rewrite H1, Hr2.
+replace (carry v (i + s + 2)) with 1; [ easy | symmetry ].
+replace (i + s + 2) with (i + (s + 1) + 1) by flia.
+apply (rad_2_all_12_2_carry_1 _ _ (q + 1)); try easy. {
+intros p Hp.
+destruct (lt_dec p q) as [Hpq| Hpq]; [ now apply Hvq1 | ].
+replace p with q by flia Hp Hpq.
+now left.
+        } {
+replace (i + (q + 1) + 2) with (i + q + 0 + 3) by flia.
+apply (proj2 (Huvq3 _)).
+}
+        flia Hs.
+      }
+apply Nat.nlt_ge in Hqts.
+destruct (Nat.eq_dec (q - t) (s + 1)) as [Hqs| Hqs]. {
+  replace (i + s + 2) with (i + q + 1 - t) by flia Hqs.
+  unfold "⊕", P, d2n, prop_carr, dig.
+  rewrite Hut, Hvt, Nat.add_0_l, Hr2, Nat_mod_add_same_l; [ | easy ].
+replace (carry v (i + q + 1 - t)) with 1; [ easy | symmetry ].
+...
 ... suite ok
   } {
     replace (i + 1 + q + 1) with (i + q + 2) by flia.
