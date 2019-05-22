@@ -3636,6 +3636,8 @@ assert (Hcuv3_lt_2 : (u ⊕ v) (i + q + 3) < 2). {
 remember (i + q + 3) as p eqn:Hp.
 assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
 subst p; clear Hcuv3_lt_2.
+destruct Huvq3 as [Huvq3| Huvq3]. {
+  apply Nat.eq_add_0 in Huvq3.
 ...
 assert (Hcu2 : carry u (i + q + 3) = 0). {
 ...
