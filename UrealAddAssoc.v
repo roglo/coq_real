@@ -3563,6 +3563,11 @@ destruct Huv2 as [Huv2| Huv2]; [ now apply (rad_2_sum_3_0_222_1_A_lt_1 q) | ].
     Pv . . . . . . . . . .
   u+Pv . . . . . . . . . .
 *)
+assert (Hcq2 : carry (u ⊕ v) (i + q + 3) = 0). {
+...
+assert (Hcu2 : carry u (i + q + 3) = 0). {
+...
+assert (Hcv2 : carry v (i + q + 3) = 0). {
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
