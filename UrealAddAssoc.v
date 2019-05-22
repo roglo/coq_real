@@ -3633,6 +3633,10 @@ assert (Hcuv3_lt_2 : (u ⊕ v) (i + q + 3) < 2). {
   replace uv with (2 + (uv - 2)) in Hcq2 by flia H.
   now rewrite Hr2, <- Nat.add_assoc, Nat_div_add_same_l in Hcq2.
 }
+remember (i + q + 3) as p eqn:Hp.
+assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
+subst p; clear Hcuv3_lt_2.
+...
 assert (Hcu2 : carry u (i + q + 3) = 0). {
 ...
 assert (Hcv2 : carry v (i + q + 3) = 0). {
