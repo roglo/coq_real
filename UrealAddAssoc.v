@@ -3421,7 +3421,52 @@ destruct Huv2 as [Huv2| Huv2]. {
     apply Q.sub_lt, Q.lt_0_pair.
     destruct (le_dec (i + 1 + (q - t - 1) + 1) (nk - 1)); pauto.
   }
-...
+  rewrite (A_9_8_all_18 q); cycle 1. {
+    intros s Hs.
+... suite ok
+  } {
+    replace (i + 1 + q + 1) with (i + q + 2) by flia.
+    unfold "⊕", P, d2n, prop_carr, dig.
+    rewrite (proj1 Huv2), (proj2 Huv2), Nat.add_0_l, Hr2.
+    replace (carry v (i + q + 2)) with 1; [ easy | symmetry ].
+    rewrite (carry_succ 2); cycle 1. {
+      rewrite Hr2.
+      replace 2 with (2 ^ 1) at 1 by easy.
+      apply Nat.pow_lt_mono_r; [ pauto | flia ].
+    } {
+      now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+    }
+    replace (i + q + 2 + 1) with (i + q + 0 + 3) at 1 by flia.
+    replace (i + q + 2 + 1) with (i + (q + 3)) by flia.
+    rewrite (proj2 (Huvq3 _)), Hr2, Nat_div_add_same_l; [ | easy ].
+    specialize (Hcv (q + 3)).
+    remember (carry v (i + (q + 3))) as c eqn:Hc1.
+    destruct c; [ easy | ].
+    destruct c; [ easy | flia Hcv ].
+  } {
+    intros s.
+    replace (i + 1 + q + s + 2) with (i + q + s + 3) by flia.
+    specialize (Huvq3 s) as H1.
+    unfold "⊕", P, d2n, prop_carr, dig.
+    rewrite (proj1 H1), (proj2 H1), Hr2, Nat_mod_add_same_l; [ | easy ].
+    replace (carry v (i + q + s + 3)) with 1; [ easy | symmetry ].
+    rewrite (carry_succ 2); cycle 1. {
+      rewrite Hr2.
+      replace 2 with (2 ^ 1) at 1 by easy.
+      apply Nat.pow_lt_mono_r; [ pauto | flia ].
+    } {
+      now intros; rewrite Hr2; do 3 rewrite <- Nat.add_assoc.
+    }
+    replace (i + q + s + 3 + 1) with (i + q + (s + 1) + 3) at 1 by flia.
+    rewrite (proj2 (Huvq3 _)), Hr2, Nat_div_add_same_l; [ | easy ].
+    specialize (Hcv (q + s + 3 + 1)) as H2.
+    do 3 rewrite Nat.add_assoc in H2.
+    remember (carry v (i + q + s + 3 + 1)) as c eqn:Hc1.
+    destruct c; [ easy | ].
+    destruct c; [ easy | flia H2 ].
+  }
+  apply Q.sub_lt, Q.lt_0_pair.
+  destruct (le_dec (i + 1 + q + 1) (nk - 1)); pauto.
 }
 (*
      u 0 . . . . 0 1 1 1 1 ...
@@ -3431,7 +3476,6 @@ destruct Huv2 as [Huv2| Huv2]. {
   u+Pv . . . . . 2 2 2 2 2 ...
 *)
 ...
-
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
