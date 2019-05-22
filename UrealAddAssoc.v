@@ -3560,6 +3560,8 @@ destruct Huv2 as [Huv2| Huv2]. {
     Pv . . . . . . . . . .
   u+Pv . . . . . . . . . .
 *)
+Inspect 1.
+Search (_ → (A _ _ _ < 1)%Q).
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
