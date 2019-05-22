@@ -2108,10 +2108,9 @@ Theorem rad_2_sum_3_213c1_A_lt_1 {r : radix} : ∀ u v i n,
   → (u ⊕ v) (i + 3) = 1
   → (u ⊕ v) (i + 4) = 3
   → carry v (i + 1) ≠ 0
-  → i + 4 ≤ n
   → (A (i + 1) n (u ⊕ P v) < 1)%Q.
 Proof.
-intros * Hr2 Hu Hv Huv2 Huv3 Huv4 Hc1z Hin.
+intros * Hr2 Hu Hv Huv2 Huv3 Huv4 Hc1z.
 remember (carry v (i + 1)) as c1 eqn:Hc1.
 symmetry in Hc1.
 destruct c1; [ easy | clear Hc1z ].
@@ -2160,7 +2159,11 @@ destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
     apply rad_2_sum_2_half_A_lt_1; [ easy | ].
     now intros; rewrite <- Nat.add_assoc.
   }
-  rewrite A_split_first; [ | flia Hin ].
+  destruct (lt_dec (n - 1) (i + 1 + 1)) as [Hin| Hin]. {
+    now unfold A; rewrite summation_empty.
+  }
+  apply Nat.nlt_ge in Hin.
+  rewrite A_split_first; [ | easy ].
   replace (S (i + 1)) with (i + 2) by flia.
   unfold "⊕" at 1; rewrite Hu2.
   replace (P v (i + 2)) with 0. 2: {
@@ -2207,7 +2210,11 @@ destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
   apply Q.lt_add_lt_sub_l; rewrite Hr2.
   replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
   apply Q.mul_lt_mono_pos_r; [ easy | ].
-  rewrite A_split_first; [ | flia Hin ].
+  destruct (lt_dec (n - 1) (i + 2 + 1)) as [Hin2| Hin2]. {
+    now unfold A; rewrite summation_empty.
+  }
+  apply Nat.nlt_ge in Hin2.
+  rewrite A_split_first; [ | easy ].
   replace (S (i + 2)) with (i + 3) by easy.
   unfold "⊕" at 1.
   rewrite Hu3, Nat.add_0_l.
@@ -2240,14 +2247,18 @@ destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
   apply Nat.add_le_mono; [ easy | ].
   replace 1 with (rad - 1) by flia Hr2; apply P_le.
 }
-rewrite A_split_first; [ | flia Hin ].
+destruct (lt_dec (n - 1) (i + 1 + 1)) as [Hin| Hin]. {
+  now unfold A; rewrite summation_empty.
+}
+apply Nat.nlt_ge in Hin.
+rewrite A_split_first; [ | easy ].
 replace (S (i + 1)) with (i + 2) by flia.
 unfold "⊕" at 1; rewrite Hu2, Nat.add_0_l.
 apply Nat.eq_add_1 in Huv3.
 destruct Huv3 as [(Hu3, Hv3)| (Hu3, Hv3)]. {
   replace (P v (i + 2)) with 0. 2: {
     symmetry; unfold P, d2n, prop_carr, dig.
-    rewrite Hv2, (*Huv2,*) Hr2, Nat_mod_add_same_l; [ | easy ].
+    rewrite Hv2, Hr2, Nat_mod_add_same_l; [ | easy ].
     replace (carry v (i + 2)) with 0; [ easy | ].
     symmetry; unfold carry.
     apply Q.intg_small; split; [ easy | ].
@@ -2275,7 +2286,11 @@ apply (Q.lt_le_trans _ (1 * 1 // 2)%Q). 2: {
 }
 rewrite Hr2.
 apply Q.mul_lt_mono_pos_r; [ easy | ].
-rewrite A_split_first; [ | flia Hin ].
+destruct (lt_dec (n - 1) (i + 2 + 1)) as [Hin2| Hin2]. {
+  now unfold A; rewrite summation_empty.
+}
+apply Nat.nlt_ge in Hin2.
+rewrite A_split_first; [ | easy ].
 replace (S (i + 2)) with (i + 3) by easy.
 unfold "⊕" at 1.
 rewrite Hu3, Nat.add_0_l.
@@ -2305,7 +2320,7 @@ apply Nat.add_le_mono; [ easy | ].
 replace 1 with (rad - 1) by flia Hr2; apply P_le.
 Qed.
 
-Theorem rad_2_sum_3_0213_A_lt_1 {r : radix} : ∀ u v i k,
+Theorem rad_2_sum_3_0213_A_lt_1 {r : radix} : ∀ u v i n,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
   → (∀ k, v (i + k) ≤ 2)
@@ -2313,12 +2328,16 @@ Theorem rad_2_sum_3_0213_A_lt_1 {r : radix} : ∀ u v i k,
   → (u ⊕ v) (i + 2) = 2
   → (u ⊕ v) (i + 3) = 1
   → (u ⊕ v) (i + 4) = 3
-  → (A i (min_n (i + k)) (u ⊕ P v) < 1)%Q.
+  → (A i n (u ⊕ P v) < 1)%Q.
 Proof.
 intros * Hr2 Hu Hv Huv1 Huv2 Huv3 Huv4.
 unfold "⊕" in Huv1; apply Nat.eq_add_0 in Huv1.
 destruct Huv1 as (Hu1, Hv1).
-rewrite A_split_first; [ | min_n_ge ].
+destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+  now unfold A; rewrite summation_empty.
+}
+apply Nat.nlt_ge in Hin.
+rewrite A_split_first; [ | easy ].
 replace (S i) with (i + 1) by flia.
 unfold "⊕" at 1; rewrite Hu1, Nat.add_0_l, Hr2.
 clear Hu1.
@@ -2355,8 +2374,7 @@ rewrite Nat.mod_small in Hc1. 2: {
   now rewrite Hr2.
 }
 apply rad_2_sum_3_213c1_A_lt_1; try easy.
--now intros H; rewrite H in Hc1.
--unfold min_n; rewrite Hr2; flia.
+now intros H; rewrite H in Hc1.
 Qed.
 
 Theorem rad_2_sum_3_22_1_lt_2 {r : radix} : ∀ u v i j n p,
