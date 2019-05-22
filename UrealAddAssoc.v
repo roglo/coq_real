@@ -1886,17 +1886,16 @@ replace (i + S j + k + 2) with (i + 1 + j + k + 2) by flia.
 easy.
 Qed.
 
-Theorem rad_2_sum_3_all_9_0_1_A_lt_1 {r : radix} : ∀ u v i,
+Theorem rad_2_sum_3_all_9_0_1_A_lt_1 {r : radix} : ∀ u v i n,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
   → (∀ k, v (i + k) ≤ 2)
   → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
   → (u ⊕ v) (i + 1) = 0
   → (u ⊕ v) (i + 2) = 1
-  → ∀ k, (A i (min_n (i + k)) (u ⊕ P v) < 1)%Q.
+  → (A i n (u ⊕ P v) < 1)%Q.
 Proof.
 intros * Hr2 Hu Hv Hauv Huv10 Huv21 *.
-remember (min_n (i + k)) as nk eqn:Hnk.
 assert (Huv3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   intros p.
   unfold "⊕"; replace 3 with (1 + 2) by easy.
@@ -1908,18 +1907,20 @@ assert (Huv33 : ∀ k, w (i + k + 3) = 3 ∧ carry w (i + k + 2) = 2). {
   apply rad_2_sum_3_all_9_02_1_333; try easy; now left.
 }
 move Huv3 before Hv; move w before v; move Hw after Hu.
-(**)
-clear - Hr2 Hnk Hw Huv10 Hu Huv21 Huv33 Hv.
-(**)
+clear - Hr2 Hw Huv10 Hu Huv21 Huv33 Hv.
+destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+  now unfold A; rewrite summation_empty.
+}
+apply Nat.nlt_ge in Hin.
 rewrite A_additive.
-rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
+rewrite A_split_first; [ | easy ].
 rewrite <- Nat.add_1_r.
 replace (u (i + 1)) with 0. 2: {
   rewrite Hw in Huv10.
   now apply Nat.eq_add_0 in Huv10.
 }
 rewrite Q.add_0_l.
-rewrite (A_split_first _ _ (P _)); [ | rewrite Hnk; min_n_ge ].
+rewrite (A_split_first _ _ (P _)); [ | easy ].
 rewrite <- (Nat.add_1_r i).
 rewrite Q.add_assoc, Q.add_add_swap, <- Q.mul_add_distr_r.
 rewrite <- A_additive.
@@ -1938,7 +1939,11 @@ destruct pv. {
   rewrite Hr2.
   replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
   apply Q.mul_lt_mono_pos_r; [ easy | ].
-  rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
+  destruct (lt_dec (n - 1) (i + 1 + 1)) as [Hin2| Hin2]. {
+    now unfold A; rewrite summation_empty.
+  }
+  apply Nat.nlt_ge in Hin2.
+  rewrite A_split_first; [ | easy ].
   replace (S (i + 1)) with (i + 2) by flia.
   generalize Huv21; intros H1.
   rewrite Hw in H1; unfold "⊕" in H1.
@@ -3560,8 +3565,6 @@ destruct Huv2 as [Huv2| Huv2]. {
     Pv . . . . . . . . . .
   u+Pv . . . . . . . . . .
 *)
-Inspect 1.
-Search (_ → (A _ _ _ < 1)%Q).
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
