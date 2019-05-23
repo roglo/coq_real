@@ -2620,7 +2620,7 @@ rewrite (Nat.mul_add_distr_l _ (i + 3)), Nat.mul_1_r.
 flia Hr.
 Qed.
 
-Theorem rad_2_all_12_2_carry_1 {r : radix} : ∀ u i j,
+Theorem rad_2_all_12_2_carry_1 {r : radix} : ∀ j u i,
   rad = 2
   → (∀ p, u (i + p) ≤ 2)
   → (∀ p, p < j → u (i + p + 2) = 1 ∨ u (i + p + 2) = 2)
@@ -2841,7 +2841,7 @@ destruct (Nat.eq_dec t q) as [Htq| Htq]. {
     rewrite H1, Hr2.
     replace (carry v (i + t + 2)) with 1; [ easy | symmetry ].
     replace (i + t + 2) with (i + (t + 1) + 1) by flia.
-    apply (rad_2_all_12_2_carry_1 _ _ (q + 1)); try easy. {
+    apply (rad_2_all_12_2_carry_1 (q + 1)); try easy. {
       intros p Hp.
       destruct (lt_dec p q) as [Hpq| Hpq]; [ now apply Hvq1 | ].
       replace p with q by flia Hp Hpq.
@@ -3037,7 +3037,7 @@ destruct Huv2 as [Huv2| Huv2]. {
     }
     assert (Hc1 : carry v (i + s + 2) = 1). {
       replace (i + s + 2) with (i + (s + 1) + 1) by flia.
-      apply (rad_2_all_12_2_carry_1 _ _ (q - t - 1)); try easy. {
+      apply (rad_2_all_12_2_carry_1 (q - t - 1)); try easy. {
         intros p Hp; apply Hvq1; flia Hp.
       } {
         now replace (i + (q - t - 1) + 2) with (i + q + 1 - t) by flia Hs.
@@ -3132,7 +3132,7 @@ rewrite (A_9_8_all_18 q); cycle 1. {
     rewrite H1, Hr2.
     replace (carry v (i + s + 2)) with 1; [ easy | symmetry ].
     replace (i + s + 2) with (i + (s + 1) + 1) by flia.
-    apply (rad_2_all_12_2_carry_1 _ _ (q + 1)); try easy. {
+    apply (rad_2_all_12_2_carry_1 (q + 1)); try easy. {
       intros p Hp.
       destruct (lt_dec p q) as [Hpq| Hpq]; [ now apply Hvq1 | ].
       replace p with q by flia Hp Hpq.
@@ -3150,7 +3150,7 @@ rewrite (A_9_8_all_18 q); cycle 1. {
     rewrite Hut, Hvt, Nat.add_0_l, Hr2, Nat_mod_add_same_l; [ | easy ].
     replace (carry v (i + q + 1 - t)) with 1; [ easy | symmetry ].
     replace (i + q + 1 - t) with (i + (q - t) + 1) by flia Hqs.
-    apply (rad_2_all_12_2_carry_1 _ _ (q + 1)); try easy. {
+    apply (rad_2_all_12_2_carry_1 (q + 1)); try easy. {
       intros p Hp.
       destruct (lt_dec p q) as [Hpq| Hpq]; [ now apply Hvq1 | ].
       replace p with q by flia Hp Hpq.
@@ -3167,7 +3167,7 @@ rewrite (A_9_8_all_18 q); cycle 1. {
   replace (carry v (i + s + 2)) with 1. 2: {
     symmetry.
     replace (i + s + 2) with (i + (s + 1) + 1) by flia.
-    apply (rad_2_all_12_2_carry_1 _ _ (q - t - 1)); try easy. {
+    apply (rad_2_all_12_2_carry_1 (q - t - 1)); try easy. {
       intros p Hp.
       destruct (lt_dec p q) as [Hpq| Hpq]; [ now apply Hvq1 | ].
       replace p with q by flia Hp Hpq.
@@ -3507,7 +3507,7 @@ destruct H1 as [Huvn| H1]. {
       rewrite (proj1 Huv1), (proj2 Huv1), Hr2.
       replace (carry v (i + 1)) with 1; [ easy | symmetry ].
       clear - Hr2 Hv Hvq1 Hvq2.
-      specialize (rad_2_all_12_2_carry_1 v i q Hr2 Hv Hvq1 Hvq2 0) as H1.
+      specialize (rad_2_all_12_2_carry_1 q v i Hr2 Hv Hvq1 Hvq2 0) as H1.
       specialize (H1 (Nat.le_0_l _)) as H1.
       now rewrite Nat.add_0_r in H1.
     }
@@ -3521,7 +3521,7 @@ destruct H1 as [Huvn| H1]. {
     replace (carry v (i + t + 2)) with 1. 2: {
       symmetry.
       assert (Htq : t < q) by flia Ht; clear Ht.
-      specialize (rad_2_all_12_2_carry_1 v i q Hr2 Hv Hvq1 Hvq2 (S t)) as H2.
+      specialize (rad_2_all_12_2_carry_1 q v i Hr2 Hv Hvq1 Hvq2 (S t)) as H2.
       assert (H : S t ≤ q) by flia Htq.
       specialize (H2 H); clear H.
       now replace (i + S t + 1) with (i + t + 2) in H2 by flia.
@@ -3636,6 +3636,38 @@ assert (Hcuv3_lt_2 : (u ⊕ v) (i + q + 3) < 2). {
 remember (i + q + 3) as p eqn:Hp.
 assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
 subst p; clear Hcuv3_lt_2.
+assert (Hpv1 : P v (i + 1) = 1). {
+  unfold P, d2n, prop_carr, dig.
+  apply Nat.eq_add_0 in Huv1.
+  rewrite (proj2 Huv1), Nat.add_0_l, Hr2.
+  replace (carry v (i + 1)) with 1; [ easy | symmetry ].
+  replace (i + 1) with (i + 0 + 1) by flia.
+  apply (rad_2_all_12_2_carry_1 q); try easy; [ | | flia ]. {
+    intros p Hp.
+    specialize (Hjq _ Hp) as H1.
+    apply Nat_eq_add_2 in H1.
+    destruct H1 as [H1| H1]. {
+      specialize (Hu (p + 2)); rewrite Nat.add_assoc in Hu; flia Hu H1.
+    }
+    destruct H1; [ now left | now right ].
+  }
+  unfold "⊕" in Huv2.
+  specialize (Hu (q + 2)) as H1.
+  specialize (Hv (q + 2)) as H2.
+  rewrite Nat.add_assoc in H1, H2.
+  flia H1 H2 Huv2.
+}
+move Hpv1 before Huv1.
+rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
+replace (S i) with (i + 1) by flia.
+unfold "⊕" at 1.
+apply Nat.eq_add_0 in Huv1.
+rewrite (proj1 Huv1), Hpv1, Hr2, Nat.add_0_l.
+apply Q.lt_add_lt_sub_l.
+replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+apply Q.mul_lt_mono_pos_r; [ easy | ].
+...
+
 destruct Huvq3 as [Huvq3| Huvq3]. {
   apply Nat.eq_add_0 in Huvq3.
 ...
