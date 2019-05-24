@@ -3695,16 +3695,56 @@ assert (Hupv : ∀ p, p < q → (u ⊕ P v) (i + p + 2) = 1). {
   }
   now destruct H1 as [H1| H1]; rewrite (proj1 H1), (proj2 H1).
 }
+assert (H : carry v (i + q + 2) = 0). {
+  unfold carry in Hcq2 |-*.
+  apply Q.intg_small.
+  split; [ easy | ].
+  rewrite (all_fA_ge_1_ε_NQintg_A' 3) in Hcq2; cycle 1. {
+    rewrite Hr2.
+    apply (Nat.lt_le_trans _ (2 ^ 2)); [ pauto | ].
+    apply Nat.pow_le_mono_r; [ easy | ].
+    destruct (i + q); cbn; [ pauto | flia ].
+  } {
+    now intros; do 2 rewrite <- Nat.add_assoc; rewrite Hr2.
+  } {
+    intros; rewrite <- Nat.add_assoc.
+    apply A_ge_1_add_r_true_if, Hauv.
+  }
+  apply Q.eq_intg_0 in Hcq2; [ | easy ].
+  rewrite A_split_first, Hr2; [ | min_n_ge ].
+  rewrite A_split_first, Hr2 in Hcq2; [ | min_n_ge ].
+  replace (S (i + q + 2)) with (i + q + 3) in Hcq2 |-* by easy.
+  remember ((u ⊕ v) (i + q + 3)) as uv eqn:Huv; symmetry in Huv.
+  destruct uv. {
+    apply Nat.eq_add_0 in Huv.
+    rewrite (proj2 Huv), Q.add_0_l.
+    apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+    now intros p; do 2 rewrite <- Nat.add_assoc.
+  }
+  destruct uv; [ | flia Hcuv3_lt_2 ].
+  apply Nat.eq_add_1 in Huv.
+  destruct Huv as [Huv| Huv]; rewrite (proj2 Huv). {
+    rewrite Q.add_0_l.
+    apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+    now intros p; do 2 rewrite <- Nat.add_assoc.
+  }
+  move Hcq2 at bottom.
+  apply Q.lt_add_lt_sub_l in Hcq2.
+  apply Q.lt_add_lt_sub_l.
+  replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q in Hcq2 |-* by easy.
+  apply Q.mul_lt_mono_pos_r in Hcq2; [ | easy ].
+  apply Q.mul_lt_mono_pos_r; [ easy | ].
+  rewrite A_additive in Hcq2.
+...
+assert (H : P v (i + q + 2) = 0). {
+  unfold P, d2n, prop_carr, dig.
+  rewrite (proj2 Huvq2), Hr2, Nat_mod_add_same_l; [ | easy ].
 ...
 remember (i + q + 3) as p eqn:Hp.
 assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
 subst p; clear Hcuv3_lt_2.
 destruct Huvq3 as [Huvq3| Huvq3]. {
   apply Nat.eq_add_0 in Huvq3.
-...
-assert (Hcu2 : carry u (i + q + 3) = 0). {
-...
-assert (Hcv2 : carry v (i + q + 3) = 0). {
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
