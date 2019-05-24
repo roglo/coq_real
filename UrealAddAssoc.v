@@ -3663,6 +3663,14 @@ rewrite (proj1 Huv1), Hpv1, Hr2, Nat.add_0_l.
 apply Q.lt_add_lt_sub_l.
 replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
 apply Q.mul_lt_mono_pos_r; [ easy | ].
+assert (Huvq2 : u (i + q + 2) = 1 ∧ v (i + q + 2) = 2). {
+  unfold "⊕" in Huv2.
+  specialize (Hu (q + 2)) as H1.
+  specialize (Hv (q + 2)) as H2.
+  rewrite Nat.add_assoc in H1, H2.
+  flia Huv2 H1 H2.
+}
+move Huvq2 before Huv2.
 ...
 remember (i + q + 3) as p eqn:Hp.
 assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
