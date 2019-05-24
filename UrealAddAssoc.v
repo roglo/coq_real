@@ -3758,6 +3758,25 @@ assert (Hpvq2 : P v (i + q + 2) = 0). {
   unfold P, d2n, prop_carr, dig.
   now rewrite (proj2 Huvq2), Hcvq2, Hr2, Nat_mod_add_same_l.
 }
+enough (H : (A (i + q + 2) nk (u ⊕ P v) < 1)%Q). {
+  assert (H1 : (u ⊕ P v) (i + q + 2) = 1). {
+    now unfold "⊕"; rewrite (proj1 Huvq2), Hpvq2.
+  }
+  clear - q H Hr2 H1.
+  revert i H1 H.
+  induction q; intros. {
+    rewrite Nat.add_0_r in H, H1.
+    destruct (lt_dec (nk - 1) (i + 1 + 1)) as [Hin| Hin]. {
+      now unfold A; rewrite summation_empty.
+    }
+    apply Nat.nlt_ge in Hin.
+    rewrite A_split_first, Hr2; [ | easy ].
+    replace (S (i + 1)) with (i + 2) by easy.
+    rewrite H1.
+    apply Q.lt_add_lt_sub_l.
+    replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+    now apply Q.mul_lt_mono_pos_r.
+  }
 ...
 remember (i + q + 3) as p eqn:Hp.
 assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
