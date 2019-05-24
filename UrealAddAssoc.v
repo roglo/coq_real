@@ -3671,6 +3671,30 @@ assert (Huvq2 : u (i + q + 2) = 1 ∧ v (i + q + 2) = 2). {
   flia Huv2 H1 H2.
 }
 move Huvq2 before Huv2.
+assert (Hc2 : ∀ p, p < q → carry v (i + p + 2) = 1). {
+  intros p Hp.
+  replace (i + p + 2) with (i + (p + 1) + 1) by flia.
+  apply (rad_2_all_12_2_carry_1 q); try easy; [ | flia Hp ].
+  intros s Hs.
+  specialize (Hjq _ Hs) as H1.
+  apply Nat_eq_add_2 in H1.
+  destruct H1 as [H1| H1]. {
+    specialize (Hu (s + 2)); rewrite Nat.add_assoc in Hu; flia Hu H1.
+  }
+  destruct H1 as [H1| H1]; [ now left | now right ].
+}
+move Hc2 after Hcq2.
+assert (Hupv : ∀ p, p < q → (u ⊕ P v) (i + p + 2) = 1). {
+  intros p Hp.
+  specialize (Hjq _ Hp) as H1.
+  unfold "⊕", P, d2n, prop_carr, dig; rewrite Hr2.
+  rewrite Hc2; [ | easy ].
+  apply Nat_eq_add_2 in H1.
+  destruct H1 as [H1| H1]. {
+    specialize (Hu (p + 2)); rewrite Nat.add_assoc in Hu; flia Hu H1.
+  }
+  now destruct H1 as [H1| H1]; rewrite (proj1 H1), (proj2 H1).
+}
 ...
 remember (i + q + 3) as p eqn:Hp.
 assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
