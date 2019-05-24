@@ -3788,6 +3788,18 @@ enough (H : (A (i + q + 2) nk (u ⊕ P v) < 1)%Q). {
   }
   apply Nat.nlt_ge in Hin.
   rewrite A_split_first, Hr2; [ | easy ].
+  replace (S (i + 1)) with (i + 0 + 2) at 1 by flia.
+  rewrite H1; [ | flia ].
+  apply Q.lt_add_lt_sub_l.
+  replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+  apply Q.mul_lt_mono_pos_r; [ easy | ].
+  replace (S (i + 1)) with (i + 1 + 1) by flia.
+  replace (i + S q + 2) with (i + 1 + q + 2) in H by flia.
+  apply IHq; [ | easy ].
+  intros p Hp.
+  rewrite <- (Nat.add_assoc i).
+  apply H1; flia Hp.
+}
 ...
 remember (i + q + 3) as p eqn:Hp.
 assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
