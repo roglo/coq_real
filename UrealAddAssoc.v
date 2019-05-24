@@ -3695,7 +3695,7 @@ assert (Hupv : ∀ p, p < q → (u ⊕ P v) (i + p + 2) = 1). {
   }
   now destruct H1 as [H1| H1]; rewrite (proj1 H1), (proj2 H1).
 }
-assert (H : carry v (i + q + 2) = 0). {
+assert (Hcvq2 : carry v (i + q + 2) = 0). {
   unfold carry in Hcq2 |-*.
   apply Q.intg_small.
   split; [ easy | ].
@@ -3710,6 +3710,22 @@ assert (H : carry v (i + q + 2) = 0). {
     intros; rewrite <- Nat.add_assoc.
     apply A_ge_1_add_r_true_if, Hauv.
   }
+  replace (i + q + 2) with (i + q + 2 + 0) in Hcq2 at 2 by easy.
+  remember (carry_cases v (i + q + 2)) as ccv eqn:Hccv.
+  rewrite <- (all_fA_ge_1_ε_NQintg_A 3) with (l := rad * ccv)
+    in Hcq2; cycle 1. {
+    rewrite Hr2.
+    apply (Nat.lt_le_trans _ (2 ^ 2)); [ pauto | ].
+    apply Nat.pow_le_mono_r; [ easy | ].
+    destruct (i + q); cbn; [ pauto | flia ].
+  } {
+    now intros; do 2 rewrite <- Nat.add_assoc; rewrite Hr2.
+  } {
+    intros; rewrite <- Nat.add_assoc.
+    apply A_ge_1_add_r_true_if, Hauv.
+  }
+  rewrite Nat.add_0_r in Hcq2.
+  rewrite <- min_n_add in Hcq2.
   apply Q.eq_intg_0 in Hcq2; [ | easy ].
   rewrite A_split_first, Hr2; [ | min_n_ge ].
   rewrite A_split_first, Hr2 in Hcq2; [ | min_n_ge ].
@@ -3735,10 +3751,13 @@ assert (H : carry v (i + q + 2) = 0). {
   apply Q.mul_lt_mono_pos_r in Hcq2; [ | easy ].
   apply Q.mul_lt_mono_pos_r; [ easy | ].
   rewrite A_additive in Hcq2.
-...
-assert (H : P v (i + q + 2) = 0). {
+  eapply Q.le_lt_trans; [ | apply Hcq2 ].
+  now apply Q.le_add_l.
+}
+assert (Hpvq2 : P v (i + q + 2) = 0). {
   unfold P, d2n, prop_carr, dig.
-  rewrite (proj2 Huvq2), Hr2, Nat_mod_add_same_l; [ | easy ].
+  now rewrite (proj2 Huvq2), Hcvq2, Hr2, Nat_mod_add_same_l.
+}
 ...
 remember (i + q + 3) as p eqn:Hp.
 assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
