@@ -3784,7 +3784,7 @@ enough (H : (A (i + q + 2) nk (u ⊕ P v) < 1)%Q). {
     now apply Q.mul_lt_mono_pos_r.
   }
   destruct (lt_dec (nk - 1) (i + 1 + 1)) as [Hin| Hin]. {
-      now unfold A; rewrite summation_empty.
+    now unfold A; rewrite summation_empty.
   }
   apply Nat.nlt_ge in Hin.
   rewrite A_split_first, Hr2; [ | easy ].
@@ -3800,12 +3800,46 @@ enough (H : (A (i + q + 2) nk (u ⊕ P v) < 1)%Q). {
   rewrite <- (Nat.add_assoc i).
   apply H1; flia Hp.
 }
-...
 remember (i + q + 3) as p eqn:Hp.
 assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
 subst p; clear Hcuv3_lt_2.
 destruct Huvq3 as [Huvq3| Huvq3]. {
   apply Nat.eq_add_0 in Huvq3.
+  destruct (lt_dec (nk - 1) (i + q + 2 + 1)) as [Hin| Hin]. {
+    now unfold A; rewrite summation_empty.
+  }
+  apply Nat.nlt_ge in Hin.
+  rewrite A_split_first, Hr2; [ | easy ].
+  replace (S (i + q + 2)) with (i + q + 3) by flia.
+  unfold "⊕" at 1, P at 1, d2n, prop_carr, dig.
+  rewrite (proj1 Huvq3), (proj2 Huvq3), Hr2.
+  do 2 rewrite Nat.add_0_l.
+  remember (carry v (i + q + 3)) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3. {
+    rewrite Q.add_0_l.
+    apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+    intros p; unfold "⊕"; do 2 rewrite <- Nat.add_assoc.
+    replace 2 with (1 + 1) by easy.
+    apply Nat.add_le_mono; [ apply Hu | ].
+    replace 1 with (rad - 1) by flia Hr2.
+    apply P_le.
+  }
+  destruct c3. 2: {
+    specialize (carry_upper_bound_for_adds 2 v i) as H1.
+    specialize (H1 (Nat.neq_succ_0 _)).
+    assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+      now intros; rewrite Hr2, <- Nat.add_assoc.
+    }
+    specialize (H1 H (q + 3)); clear H.
+    rewrite Nat.add_assoc in H1.
+    remember (carry v (i + q + 3)) as c eqn:Hc.
+    destruct c; [ easy | ].
+    destruct c; [ easy | flia H1 ].
+  }
+  rewrite Nat.mod_small; [ | pauto ].
+  apply Q.lt_add_lt_sub_l.
+  replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+  apply Q.mul_lt_mono_pos_r; [ easy | ].
 ...
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
