@@ -3633,9 +3633,6 @@ assert (Hcuv3_lt_2 : (u ⊕ v) (i + q + 3) < 2). {
   replace uv with (2 + (uv - 2)) in Hcq2 by flia H.
   now rewrite Hr2, <- Nat.add_assoc, Nat_div_add_same_l in Hcq2.
 }
-remember (i + q + 3) as p eqn:Hp.
-assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
-subst p; clear Hcuv3_lt_2.
 assert (Hpv1 : P v (i + 1) = 1). {
   unfold P, d2n, prop_carr, dig.
   apply Nat.eq_add_0 in Huv1.
@@ -3667,7 +3664,9 @@ apply Q.lt_add_lt_sub_l.
 replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
 apply Q.mul_lt_mono_pos_r; [ easy | ].
 ...
-
+remember (i + q + 3) as p eqn:Hp.
+assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
+subst p; clear Hcuv3_lt_2.
 destruct Huvq3 as [Huvq3| Huvq3]. {
   apply Nat.eq_add_0 in Huvq3.
 ...
