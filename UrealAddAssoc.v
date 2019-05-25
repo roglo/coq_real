@@ -3244,6 +3244,24 @@ remember (min_n i) as n eqn:Hn.
 remember (min_n (i + j)) as nj eqn:Hnj.
 remember (min_n (i + k)) as nk eqn:Hnk.
 move nj before n; move nk before nj.
+(**)
+destruct (zerop (carry (u ⊕ v) i)) as [Hcuv| Hcuv]. {
+  destruct (LPO_fst (λ j, negb ((u ⊕ P v) (i + j + 1) =? 0))) as [H| Hupv0]. {
+    assert (Hupv0 : ∀ k, (u ⊕ P v) (i + k + 1) ≠ 0). {
+      intros p; specialize (H p).
+      apply Bool.negb_true_iff in H.
+      now apply Nat.eqb_neq in H.
+    }
+    clear H.
+    rewrite A_all_9; [ now apply Q.sub_lt | ].
+    intros p Hp.
+...
+... (* ancienne preuve, non finie, pas sûr qu'elle soit finissable, faut
+voir, mais ne prenant pas les choses à bras le corps ; je me lance,
+ci-dessus, dans une preuve qui part de u+Pv avec deux considérations :
+soit la retenue en i de u+v vaut 0 et alors u+Pv serait un
+999...8/18/18/18... ou un 999... ; soit la retenue de u+v en i vaut 1
+et alors u+Pv serait forcément un 18/18/18... *)
 assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   intros p.
   unfold "⊕"; replace 3 with (1 + 2) by easy.
@@ -3832,45 +3850,6 @@ rename Hpvq2 into Hpv1.
 rename Huvq2 into Huv11.
 clear nj q; rename nk into n.
 ...
-(*
-destruct Huvq3 as [Huvq3| Huvq3]. {
-  apply Nat.eq_add_0 in Huvq3.
-  destruct (lt_dec (nk - 1) (i + q + 2 + 1)) as [Hin| Hin]. {
-    now unfold A; rewrite summation_empty.
-  }
-  apply Nat.nlt_ge in Hin.
-  rewrite A_split_first, Hr2; [ | easy ].
-  replace (S (i + q + 2)) with (i + q + 3) by flia.
-  unfold "⊕" at 1, P at 1, d2n, prop_carr, dig.
-  rewrite (proj1 Huvq3), (proj2 Huvq3), Hr2.
-  do 2 rewrite Nat.add_0_l.
-  remember (carry v (i + q + 3)) as c3 eqn:Hc3; symmetry in Hc3.
-  destruct c3. {
-    rewrite Q.add_0_l.
-    apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-    intros p; unfold "⊕"; do 2 rewrite <- Nat.add_assoc.
-    replace 2 with (1 + 1) by easy.
-    apply Nat.add_le_mono; [ apply Hu | ].
-    replace 1 with (rad - 1) by flia Hr2.
-    apply P_le.
-  }
-  destruct c3. 2: {
-    specialize (carry_upper_bound_for_adds 2 v i) as H1.
-    specialize (H1 (Nat.neq_succ_0 _)).
-    assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
-      now intros; rewrite Hr2, <- Nat.add_assoc.
-    }
-    specialize (H1 H (q + 3)); clear H.
-    rewrite Nat.add_assoc in H1.
-    remember (carry v (i + q + 3)) as c eqn:Hc.
-    destruct c; [ easy | ].
-    destruct c; [ easy | flia H1 ].
-  }
-  rewrite Nat.mod_small; [ | pauto ].
-  apply Q.lt_add_lt_sub_l.
-  replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
-  apply Q.mul_lt_mono_pos_r; [ easy | ].
-*)
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
