@@ -3254,7 +3254,8 @@ destruct (zerop (carry (u ⊕ v) i)) as [Hcuv| Hcuv]. {
     }
     clear H.
     rewrite A_all_9; [ now apply Q.sub_lt | ].
-    intros p Hp.
+    intros p Hp; rewrite Hr2.
+    specialize (Hupv0 p) as Hupvp.
 ...
 ... (* ancienne preuve, non finie, pas sûr qu'elle soit finissable, faut
 voir, mais ne prenant pas les choses à bras le corps ; je me lance,
