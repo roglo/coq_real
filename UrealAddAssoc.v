@@ -3803,8 +3803,9 @@ enough (H : (A (i + q + 2) nk (u ⊕ P v) < 1)%Q). {
 remember (i + q + 3) as p eqn:Hp.
 assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
 subst p; clear Hcuv3_lt_2.
-remember (i + q + 2) as ii.
-replace (i + q + 3) with (ii + 1) in * by flia Heqii.
+remember (i + q + 1) as ii.
+replace (i + q + 2) with (ii + 1) in * by flia Heqii.
+replace (i + q + 3) with (ii + 2) in * by flia Heqii.
 assert (H : ∀ k, u (ii + k) ≤ 1). {
   now intros; rewrite Heqii; do 2 rewrite <- Nat.add_assoc.
 }
@@ -3821,7 +3822,15 @@ move H before Hauv; clear Hauv; rename H into Hauv.
 clear n Hn.
 clear i j k Hjj Hj Hjk Hk Huv1 Hpv1 Hnj Hnk Huvl3 Hjq Heqii Hc2 Hupv.
 rename ii into i.
-(* ouais, fallait peut-être plutôt prendre i+q+1 au lieu de i+q+2 *)
+move Huvq3 before Huvq2.
+rename Huv2 into Huv1.
+rename Huvq3 into Huv2.
+move Huv2 before Huv1.
+rename Hcq2 into Hcuv1.
+rename Hcvq2 into Hcv1.
+rename Hpvq2 into Hpv1.
+rename Huvq2 into Huv11.
+clear nj q; rename nk into n.
 ...
 (*
 destruct Huvq3 as [Huvq3| Huvq3]. {
