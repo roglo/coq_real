@@ -3266,6 +3266,15 @@ destruct (zerop (carry (u ⊕ v) i)) as [Hcuv| Hcuv]. {
       specialize (P_le v (i + (p + 1))) as H2.
       flia Hr2 Hx H1 H2.
     }
+    apply Nat_eq_add_2 in Hx.
+    destruct Hx as [Hx| Hx]. {
+      specialize (Hu (p + 1)) as H1.
+      rewrite Nat.add_assoc in H1; flia Hx H1.
+    }
+    destruct Hx as [Hx| Hx]. 2: {
+      specialize (P_le v (i + (p + 1))) as H1.
+      rewrite Nat.add_assoc, Hr2 in H1; flia Hx H1.
+    }
 ...
     destruct p. {
       apply Nat.eq_add_0 in Huv1.
