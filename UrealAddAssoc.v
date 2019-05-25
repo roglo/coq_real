@@ -3803,6 +3803,27 @@ enough (H : (A (i + q + 2) nk (u ⊕ P v) < 1)%Q). {
 remember (i + q + 3) as p eqn:Hp.
 assert (Huvq3 : (u ⊕ v) p = 0 ∨ (u ⊕ v) p = 1) by flia Hcuv3_lt_2.
 subst p; clear Hcuv3_lt_2.
+remember (i + q + 2) as ii.
+replace (i + q + 3) with (ii + 1) in * by flia Heqii.
+assert (H : ∀ k, u (ii + k) ≤ 1). {
+  now intros; rewrite Heqii; do 2 rewrite <- Nat.add_assoc.
+}
+move H before Hu; clear Hu; rename H into Hu.
+assert (H : ∀ k, v (ii + k) ≤ 2). {
+  now intros; rewrite Heqii; do 2 rewrite <- Nat.add_assoc.
+}
+move H before Hv; clear Hv; rename H into Hv.
+assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) ii k = true). {
+  intros; rewrite Heqii, <- Nat.add_assoc.
+  now apply A_ge_1_add_r_true_if.
+}
+move H before Hauv; clear Hauv; rename H into Hauv.
+clear n Hn.
+clear i j k Hjj Hj Hjk Hk Huv1 Hpv1 Hnj Hnk Huvl3 Hjq Heqii Hc2 Hupv.
+rename ii into i.
+(* ouais, fallait peut-être plutôt prendre i+q+1 au lieu de i+q+2 *)
+...
+(*
 destruct Huvq3 as [Huvq3| Huvq3]. {
   apply Nat.eq_add_0 in Huvq3.
   destruct (lt_dec (nk - 1) (i + q + 2 + 1)) as [Hin| Hin]. {
@@ -3840,26 +3861,7 @@ destruct Huvq3 as [Huvq3| Huvq3]. {
   apply Q.lt_add_lt_sub_l.
   replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
   apply Q.mul_lt_mono_pos_r; [ easy | ].
-remember (i + q + 2) as ii.
-replace (i + q + 3) with (ii + 1) in * by flia Heqii.
-assert (H : ∀ k, u (ii + k) ≤ 1). {
-  now intros; rewrite Heqii; do 2 rewrite <- Nat.add_assoc.
-}
-move H before Hu; clear Hu; rename H into Hu.
-assert (H : ∀ k, v (ii + k) ≤ 2). {
-  now intros; rewrite Heqii; do 2 rewrite <- Nat.add_assoc.
-}
-move H before Hv; clear Hv; rename H into Hv.
-assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) ii k = true). {
-  intros; rewrite Heqii, <- Nat.add_assoc.
-  now apply A_ge_1_add_r_true_if.
-}
-move H before Hauv; clear Hauv; rename H into Hauv.
-clear n Hn Hin.
-clear i j k Hjj Hj Hjk Hk Huv1 Hpv1 Hnj Hnk Huvl3 Hjq Heqii Hc2 Hupv.
-rename ii into i.
-(* ouais, fallait peut-être plutôt prendre i+q+1 au lieu de i+q+2 *)
-...
+*)
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
