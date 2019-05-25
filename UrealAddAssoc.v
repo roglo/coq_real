@@ -3256,6 +3256,28 @@ destruct (zerop (carry (u ⊕ v) i)) as [Hcuv| Hcuv]. {
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p Hp; rewrite Hr2.
     specialize (Hupv0 p) as Hupvp.
+    remember ((u ⊕ P v) (i + p + 1)) as x eqn:Hx; symmetry in Hx.
+    destruct x; [ easy | clear Hupvp ].
+    destruct x; [ easy | exfalso ].
+    destruct x. 2: {
+      unfold "⊕" in Hx.
+      rewrite <- Nat.add_assoc in Hx.
+      specialize (Hu (p + 1)) as H1.
+      specialize (P_le v (i + (p + 1))) as H2.
+      flia Hr2 Hx H1 H2.
+    }
+...
+    destruct p. {
+      apply Nat.eq_add_0 in Huv1.
+      unfold "⊕" in Hx.
+      rewrite Nat.add_0_r, (proj1 Huv1), Nat.add_0_l in Hx.
+      specialize (P_le v (i + 1)) as H1.
+      rewrite Hx, Hr2 in H1; flia H1.
+    }
+...
+    replace (i + S p + 1) with (i + p + 2) in Hx.
+    specialize (rad_2_all_12_2_carry_1 p (u ⊕ P v) i Hr2) as H1.
+    rewrite (carry_succ 2) in Hcuv.
 ...
 ... (* ancienne preuve, non finie, pas sûr qu'elle soit finissable, faut
 voir, mais ne prenant pas les choses à bras le corps ; je me lance,
