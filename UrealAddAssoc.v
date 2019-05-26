@@ -3382,7 +3382,7 @@ destruct (zerop (carry (u ⊕ v) (i + 1))) as [Hcuv| Hcuv]. {
 Search (A _ _ _ ≤ A _ _ _)%Q.
 (* est-ce qu'on peut prouver que A i n (P u) ≤ A i n u ? Est-ce toujours
 vrai, d'ailleurs ? *)
-(* bin non, je pense que soit ils sont soit, soit A (P u) = A u + ε, où
+(* bin non, je pense que soit ils sont égaux, soit A (P u) = A u + ε, où
 ε = 1/r^(n-i-1), ce 2e cas arrivant si c(n-i-1)=1 *)
 ...
 ... (* ancienne preuve, non finie, pas sûr qu'elle soit finissable, faut
