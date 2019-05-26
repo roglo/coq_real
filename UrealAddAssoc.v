@@ -3383,7 +3383,7 @@ Search (A _ _ _ ≤ A _ _ _)%Q.
 (* est-ce qu'on peut prouver que A i n (P u) ≤ A i n u ? Est-ce toujours
 vrai, d'ailleurs ? *)
 (* bin non, je pense que soit ils sont égaux, soit A (P u) = A u + ε, où
-ε = 1/r^(n-i-1), ce 2e cas arrivant si c(n-1)=1 *)
+ε = 1/r^(n-i-1), ce 2e cas arrivant si c(n-1)=1 et que A u = 1-ε *)
 ...
 ... (* ancienne preuve, non finie, pas sûr qu'elle soit finissable, faut
 voir, mais ne prenant pas les choses à bras le corps ; je me lance,
