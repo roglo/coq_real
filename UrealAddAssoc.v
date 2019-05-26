@@ -3275,6 +3275,25 @@ destruct (zerop (carry (u ⊕ v) i)) as [Hcuv| Hcuv]. {
       specialize (P_le v (i + (p + 1))) as H1.
       rewrite Nat.add_assoc, Hr2 in H1; flia Hx H1.
     }
+    assert (Hupvle : ∀ k, (u ⊕ P v) (i + k) ≤ 2). {
+      intros q; unfold "⊕".
+      specialize (Hu q) as H1.
+      specialize (P_le v (i + q)) as H2.
+      rewrite Hr2 in H2; flia H1 H2.
+    }
+    assert (H : carry (u ⊕ P v) (i + 1) = 1). {
+      replace i with (i + 0) by easy.
+      apply (rad_2_all_12_2_carry_1 (p - 1)).
+      -easy.
+      -easy.
+      -intros q Hq.
+...
+       apply Nat.lt_1_r in Hq; subst q; rewrite Nat.add_0_r.
+       specialize (Hupv0 1) as H1.
+       replace (i + 1 + 1) with (i + 2) in H1 by flia.
+       specialize (Hupvle 2) as H2.
+       flia H1 H2.
+      -idtac.
 ...
     destruct p. {
       apply Nat.eq_add_0 in Huv1.
