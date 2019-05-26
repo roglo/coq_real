@@ -3245,7 +3245,7 @@ remember (min_n (i + j)) as nj eqn:Hnj.
 remember (min_n (i + k)) as nk eqn:Hnk.
 move nj before n; move nk before nj.
 (**)
-destruct (zerop (carry (u ⊕ v) i)) as [Hcuv| Hcuv]. {
+destruct (zerop (carry (u ⊕ v) (i + 1))) as [Hcuv| Hcuv]. {
   destruct (LPO_fst (λ j, negb ((u ⊕ P v) (i + j + 1) =? 0))) as [H| Hupv0]. {
     assert (Hupv0 : ∀ k, (u ⊕ P v) (i + k + 1) ≠ 0). {
       intros p; specialize (H p).
@@ -3281,31 +3281,26 @@ destruct (zerop (carry (u ⊕ v) i)) as [Hcuv| Hcuv]. {
       specialize (P_le v (i + q)) as H2.
       rewrite Hr2 in H2; flia H1 H2.
     }
-    assert (H : carry (u ⊕ P v) (i + 1) = 1). {
+    assert (Hcupv : carry (u ⊕ P v) (i + 1) = 1). {
       replace i with (i + 0) by easy.
-      apply (rad_2_all_12_2_carry_1 (p - 1)).
-      -easy.
-      -easy.
+      destruct p. {
+        apply Nat.eq_add_0 in Huv1.
+        unfold "⊕" in Hx.
+        rewrite Nat.add_0_r, (proj1 Huv1) in Hx.
+        flia Hx.
+      }
+      apply (rad_2_all_12_2_carry_1 p); [ easy | easy | | | flia ].
       -intros q Hq.
-...
-       apply Nat.lt_1_r in Hq; subst q; rewrite Nat.add_0_r.
-       specialize (Hupv0 1) as H1.
-       replace (i + 1 + 1) with (i + 2) in H1 by flia.
-       specialize (Hupvle 2) as H2.
+       specialize (Hupv0 (q + 1)) as H1.
+       replace (i + (q + 1) + 1) with (i + q + 2) in H1 by flia.
+       specialize (Hupvle (q + 2)) as H2.
+       rewrite Nat.add_assoc in H2.
        flia H1 H2.
-      -idtac.
-...
-    destruct p. {
-      apply Nat.eq_add_0 in Huv1.
-      unfold "⊕" in Hx.
-      rewrite Nat.add_0_r, (proj1 Huv1), Nat.add_0_l in Hx.
-      specialize (P_le v (i + 1)) as H1.
-      rewrite Hx, Hr2 in H1; flia H1.
+      -replace (i + S p + 1) with (i + p + 2) in Hx by flia.
+       now unfold "⊕"; rewrite (proj1 Hx), (proj2 Hx).
     }
-...
-    replace (i + S p + 1) with (i + p + 2) in Hx.
-    specialize (rad_2_all_12_2_carry_1 p (u ⊕ P v) i Hr2) as H1.
-    rewrite (carry_succ 2) in Hcuv.
+    move Hcuv before Hcupv.
+    (* y devrait y avoir une contradiction entre Hcuv et Hcupv *)
 ...
 ... (* ancienne preuve, non finie, pas sûr qu'elle soit finissable, faut
 voir, mais ne prenant pas les choses à bras le corps ; je me lance,
