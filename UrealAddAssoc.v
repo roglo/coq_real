@@ -3245,6 +3245,11 @@ remember (min_n (i + j)) as nj eqn:Hnj.
 remember (min_n (i + k)) as nk eqn:Hnk.
 move nj before n; move nk before nj.
 (**)
+assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
+  intros p.
+  unfold "⊕"; replace 3 with (1 + 2) by easy.
+  apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+}
 destruct (zerop (carry (u ⊕ v) (i + 1))) as [Hcuv| Hcuv]. {
   destruct (LPO_fst (λ j, negb ((u ⊕ P v) (i + j + 1) =? 0))) as [H| Hupv0]. {
     assert (Hupv0 : ∀ k, (u ⊕ P v) (i + k + 1) ≠ 0). {
@@ -3301,29 +3306,84 @@ destruct (zerop (carry (u ⊕ v) (i + 1))) as [Hcuv| Hcuv]. {
     }
     move Hcuv before Hcupv.
     (* y devrait y avoir une contradiction entre Hcuv et Hcupv *)
-unfold carry in Hcuv, Hcupv.
-rewrite (all_fA_ge_1_ε_NQintg_A' 3) in Hcuv.
-rewrite <- (all_fA_ge_1_ε_NQintg_A' 3) with (k0 := carry_cases (u ⊕ P v) (i + 1)) in Hcuv.
-remember (min_n (i + 1 + carry_cases (u ⊕ P v) (i + 1))) as n1 eqn:Hn1.
-rewrite A_additive in Hcuv, Hcupv.
-rewrite Q.intg_add_cond in Hcuv, Hcupv.
-rewrite Q.intg_small, Nat.add_0_l in Hcuv, Hcupv.
-rewrite Q.intg_small, Nat.add_0_l in Hcupv.
-rewrite Q.frac_small in Hcuv, Hcupv.
-rewrite Q.frac_small in Hcupv.
-rewrite Nat.add_comm in Hcuv.
-destruct (Q.lt_le_dec (A (i + 1) n1 u + Q.frac (A (i + 1) n1 v)) 1) as [H1| H1]; [ | easy ].
-rewrite Nat.add_0_l in Hcuv.
-destruct (Q.lt_le_dec (A (i + 1) n1 u + A (i + 1) n1 (P v)) 1) as [H2| H2]; [ easy | ].
-clear Hcupv.
-rewrite Q.frac_small in H1.
-apply Q.nlt_ge in H2.
-apply H2; clear H2.
-eapply Q.le_lt_trans; [ | apply H1 ].
-apply Q.add_le_mono_l.
+    unfold carry in Hcuv, Hcupv.
+    rewrite (all_fA_ge_1_ε_NQintg_A' 3) in Hcuv; cycle 1. {
+      apply three_lt_rad_pow.
+    } {
+      intros s; rewrite Hr2.
+      now replace (i + 1 + s) with (i + (s + 1)) by flia.
+    } {
+      intros s.
+      now apply A_ge_1_add_r_true_if.
+    }
+    remember (carry_cases (u ⊕ P v) (i + 1)) as n1 eqn:Hn1.
+    rewrite <- (all_fA_ge_1_ε_NQintg_A' 3) with (k0 := n1) in Hcuv; cycle 1. {
+      apply three_lt_rad_pow.
+    } {
+      intros s; rewrite Hr2.
+      now replace (i + 1 + s) with (i + (s + 1)) by flia.
+    } {
+      intros s.
+      now apply A_ge_1_add_r_true_if.
+    }
+    rewrite A_additive in Hcuv, Hcupv.
+    rewrite Q.intg_add_cond in Hcuv; [ | easy | easy ].
+    rewrite Q.intg_add_cond in Hcupv; [ | easy | easy ].
+    rewrite Q.intg_small, Nat.add_0_l in Hcuv. 2: {
+      split; [ easy | ].
+      apply A_upper_bound_for_dig; intros s Hs; rewrite Hr2.
+      now replace s with (i + (s - i)) by flia Hs.
+    }
+    rewrite Q.intg_small, Nat.add_0_l in Hcupv. 2: {
+      split; [ easy | ].
+      apply A_upper_bound_for_dig; intros s Hs; rewrite Hr2.
+      now replace s with (i + (s - i)) by flia Hs.
+    }
+    rewrite Q.intg_small, Nat.add_0_l in Hcupv. 2: {
+      split; [ easy | ].
+      apply A_upper_bound_for_dig; intros s Hs; rewrite Hr2.
+      replace (2 - 1) with (rad - 1) by flia Hr2.
+      apply P_le.
+    }
+    rewrite Q.frac_small in Hcuv. 2: {
+      split; [ easy | ].
+      apply A_upper_bound_for_dig; intros s Hs; rewrite Hr2.
+      now replace s with (i + (s - i)) by flia Hs.
+    }
+    rewrite Q.frac_small in Hcupv. 2: {
+      split; [ easy | ].
+      apply A_upper_bound_for_dig; intros s Hs; rewrite Hr2.
+      now replace s with (i + (s - i)) by flia Hs.
+    }
+    rewrite Q.frac_small in Hcupv. 2: {
+      split; [ easy | ].
+      apply A_upper_bound_for_dig; intros s Hs; rewrite Hr2.
+      replace (2 - 1) with (rad - 1) by flia Hr2.
+      apply P_le.
+    }
+    rewrite Nat.add_comm in Hcuv.
+    destruct
+      (Q.lt_le_dec
+         (A (i + 1) (min_n (i + 1 + n1)) u +
+          Q.frac (A (i + 1) (min_n (i + 1 + n1)) v)) 1) as [H1| H1];
+      [ | easy ].
+    rewrite Nat.add_0_l in Hcuv.
+    destruct
+      (Q.lt_le_dec
+         (A (i + 1) (min_n (i + 1 + n1)) u +
+          A (i + 1) (min_n (i + 1 + n1)) (P v)) 1) as [H2| H2]; [ easy | ].
+    clear Hcupv.
+    apply Q.eq_intg_0 in Hcuv; [ | easy ].
+    rewrite Q.frac_small in H1; [ | easy ].
+    apply Q.nlt_ge in H2.
+    apply H2; clear H2.
+    eapply Q.le_lt_trans; [ | apply H1 ].
+    apply Q.add_le_mono_l.
 Search (A _ _ _ ≤ A _ _ _)%Q.
 (* est-ce qu'on peut prouver que A i n (P u) ≤ A i n u ? Est-ce toujours
 vrai, d'ailleurs ? *)
+(* bin non, je pense que soit ils sont soit, soit A (P u) = A u + ε, où
+ε = 1/r^(n-i-1), ce 2e cas arrivant si c(n-i-1)=1 *)
 ...
 ... (* ancienne preuve, non finie, pas sûr qu'elle soit finissable, faut
 voir, mais ne prenant pas les choses à bras le corps ; je me lance,
