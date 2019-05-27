@@ -3247,8 +3247,9 @@ destruct Hcu as [Hcu| Hcu]. {
   rewrite A_split_last; [ symmetry | flia Hin ].
   unfold P at 2, d2n, prop_carr, dig.
   rewrite Hcu, Nat.add_0_r.
+  rewrite (Nat.div_mod (u (n - 1)) rad) at 2; [ | easy ].
+  rewrite Q.pair_add_l, Q.add_assoc; f_equal.
 ...
-
   induction n. {
     unfold A.
     rewrite summation_empty; [ | flia ].
