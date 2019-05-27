@@ -3236,6 +3236,8 @@ Theorem A_P_eq_A {r : radix} : ∀ m u i n,
 Proof.
 intros * Hmr Humr Hcu.
 destruct Hcu as [Hcu| Hcu]. {
+(* bon, faut réfléchir... *)
+...
   induction n. {
     unfold A.
     rewrite summation_empty; [ | flia ].
