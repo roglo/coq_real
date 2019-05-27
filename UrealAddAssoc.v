@@ -3227,13 +3227,80 @@ apply Q.sub_lt, Q.lt_0_pair.
 destruct (le_dec (i + 1 + q + 1) (n - 1)); pauto.
 Qed.
 
-Theorem A_P_eq_A {r : radix} : ∀ u i n,
-  carry u (n - 1) = 0
-  ∨ ¬ (∀ j, j < n - i - 1 → u (i + j + 1) = rad - 1)
+Theorem A_P_eq_A {r : radix} : ∀ m u i n,
+  m < rad ^ 3
+  → (∀ k, u (i + k) ≤ m * (rad - 1))
+  → carry u (n - 1) = 0
+    ∨ ¬ (∀ j, j < n - i - 1 → u (i + j + 1) = rad - 1)
   → A i n (P u) = A i n u.
 Proof.
-intros * Hcu.
+intros * Hmr Humr Hcu.
 destruct Hcu as [Hcu| Hcu]. {
+  induction n. {
+    unfold A.
+    rewrite summation_empty; [ | flia ].
+    rewrite summation_empty; [ easy | flia ].
+  }
+  remember (carry u (n - 1)) as c eqn:Hc; symmetry in Hc.
+  destruct (lt_dec n (i + 1)) as [Hin| Hin]. {
+    unfold A.
+    rewrite summation_empty; [ | flia Hin ].
+    rewrite summation_empty; [ easy | flia Hin ].
+  }
+  apply Nat.nlt_ge in Hin.
+  destruct c. {
+    specialize (IHn eq_refl).
+    rewrite A_split_last; [ symmetry | flia Hin ].
+    rewrite A_split_last; [ symmetry | flia Hin ].
+    replace (S n - 1) with n in Hcu |-* by flia.
+    replace (S n - i - 1) with (n - i) by flia.
+    destruct (lt_dec (u n) rad) as [Hur| Hur]. {
+      rewrite IHn; f_equal; f_equal.
+      unfold P, d2n, prop_carr, dig.
+      rewrite Hcu, Nat.add_0_r.
+      now apply Nat.mod_small.
+    }
+    apply Nat.nlt_ge in Hur.
+    rewrite (carry_succ m) in Hc; cycle 1. {
+      eapply Nat.lt_le_trans; [ apply Hmr | ].
+      apply Nat.pow_le_mono_r; [ easy | ].
+      replace (n - 1 + 3) with (n + 2) by flia Hin.
+      replace (n - 1 + 2) with (n + 1) by flia Hin.
+      specialize radix_ge_2 as Hr.
+      destruct rad as [| rr]; [ easy | cbn ].
+      destruct rr; [ flia Hr | cbn; flia ].
+    } {
+      intros.
+      replace (n - 1 + k) with (i + (n - 1 + k - i)) by flia Hin.
+      apply Humr.
+    }
+    replace (n - 1 + 1) with n in Hc by flia Hin.
+    rewrite Hcu, Nat.add_0_r in Hc.
+    apply Nat.div_small_iff in Hc; [ | easy ].
+    now apply Nat.nlt_ge in Hur.
+  }
+  clear IHn.
+  rewrite A_split_last; [ symmetry | flia Hin ].
+  rewrite A_split_last; [ symmetry | flia Hin ].
+  replace (S n - 1) with n in Hcu |-* by flia.
+  replace (S n - i - 1) with (n - i) by flia.
+  rewrite (carry_succ m) in Hc; cycle 1. {
+    eapply Nat.lt_le_trans; [ apply Hmr | ].
+    apply Nat.pow_le_mono_r; [ easy | ].
+    replace (n - 1 + 3) with (n + 2) by flia Hin.
+    replace (n - 1 + 2) with (n + 1) by flia Hin.
+    specialize radix_ge_2 as Hr.
+    destruct rad as [| rr]; [ easy | cbn ].
+    destruct rr; [ flia Hr | cbn; flia ].
+  } {
+    intros.
+    replace (n - 1 + k) with (i + (n - 1 + k - i)) by flia Hin.
+    apply Humr.
+  }
+  replace (n - 1 + 1) with n in Hc by flia Hin.
+  rewrite Hcu, Nat.add_0_r in Hc.
+  unfold P at 2, d2n, prop_carr, dig.
+  rewrite Hcu, Nat.add_0_r.
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
