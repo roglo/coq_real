@@ -3379,6 +3379,8 @@ destruct (zerop (carry (u ⊕ v) (i + 1))) as [Hcuv| Hcuv]. {
     apply H2; clear H2.
     eapply Q.le_lt_trans; [ | apply H1 ].
     apply Q.add_le_mono_l.
+    remember (min_n (i + 1 + n1)) as n2 eqn:Hn2; subst n1.
+    clear Hcuv.
 Search (A _ _ _ ≤ A _ _ _)%Q.
 (* est-ce qu'on peut prouver que A i n (P u) ≤ A i n u ? Est-ce toujours
 vrai, d'ailleurs ? *)
