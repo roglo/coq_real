@@ -3228,6 +3228,37 @@ destruct (le_dec (i + 1 + q + 1) (n - 1)); pauto.
 Qed.
 
 Theorem A_P_eq_A {r : radix} : ∀ u i n,
+  i + 1 ≤ n - 1
+  → A i n (P u) = Q.frac (A i n u + carry u (n - 1) // rad ^ (n - i - 1))%Q.
+Proof.
+intros * Hin.
+induction n; [ flia Hin | ].
+replace (S n - 1) with n in Hin by flia.
+destruct (Nat.eq_dec (i + 1) n) as [Hi1n| Hi1n]. {
+  unfold A.
+  rewrite Nat_sub_sub_swap.
+  replace (S n - 1) with n by flia.
+  rewrite Hi1n.
+  do 2 rewrite summation_only_one.
+  rewrite <- Q.pair_add_l.
+  unfold P, d2n, prop_carr, dig.
+  rewrite Q.frac_pair; f_equal.
+  replace (n - i) with 1 by flia Hi1n.
+  now rewrite Nat.pow_1_r.
+}
+rewrite Nat_sub_sub_swap.
+replace (S n - 1) with n by flia.
+assert (H : i + 1 ≤ n - 1) by flia Hin Hi1n.
+specialize (IHn H); clear H.
+rewrite A_split_last; [ symmetry | flia Hin Hi1n ].
+rewrite A_split_last; [ symmetry | flia Hin Hi1n ].
+rewrite Nat_sub_sub_swap.
+replace (S n - 1) with n by flia.
+rewrite IHn.
+unfold P, d2n, prop_carr, dig.
+...
+
+Theorem A_P_eq_A {r : radix} : ∀ u i n,
   carry u (n - 1) = 0
   → A i n (P u) = A i n u.
 Proof.
