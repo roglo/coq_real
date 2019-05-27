@@ -3228,6 +3228,43 @@ destruct (le_dec (i + 1 + q + 1) (n - 1)); pauto.
 Qed.
 
 Theorem A_P_eq_A {r : radix} : ∀ u i n,
+  carry u (n - 1) < rad ^ (n - i - 1)
+  → A i n (P u) = (A i n u + carry u (n - 1) // rad ^ (n - i - 1))%Q.
+Proof.
+intros * Hcr.
+induction n. {
+  apply Nat.lt_1_r in Hcr.
+  rewrite Hcr, Q.add_0_r.
+  unfold A.
+  rewrite summation_empty; [ | flia ].
+  rewrite summation_empty; [ easy | flia ].
+}
+rewrite Nat_sub_sub_swap in Hcr |-*.
+replace (S n - 1) with n in Hcr |-* by flia.
+assert (H : carry u (n - 1) < rad ^ (n - i - 1)). {
+  destruct n; [ easy | ].
+  rewrite Nat_sub_sub_swap in IHn |-*.
+  replace (S n - 1) with n in IHn |-* by flia.
+  rewrite (carry_succ 2).
+  rewrite Nat.add_1_r.
+  apply (Nat.lt_le_trans _ (u (S n) + rad ^ (n - i))).
+(* oui, non *)
+...
+destruct (Nat.eq_dec (i + 1) n) as [Hi1n| Hi1n]. {
+  unfold A.
+  rewrite Nat_sub_sub_swap.
+  replace (S n - 1) with n by flia.
+  rewrite Hi1n.
+  do 2 rewrite summation_only_one.
+  rewrite <- Q.pair_add_l.
+  unfold P, d2n, prop_carr, dig.
+  rewrite Q.frac_pair; f_equal.
+  replace (n - i) with 1 by flia Hi1n.
+  now rewrite Nat.pow_1_r.
+}
+...
+
+Theorem A_P_eq_A {r : radix} : ∀ u i n,
   i + 1 ≤ n - 1
   → A i n (P u) = Q.frac (A i n u + carry u (n - 1) // rad ^ (n - i - 1))%Q.
 Proof.
