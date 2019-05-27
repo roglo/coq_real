@@ -3381,6 +3381,15 @@ destruct (zerop (carry (u ⊕ v) (i + 1))) as [Hcuv| Hcuv]. {
     apply Q.add_le_mono_l.
     remember (min_n (i + 1 + n1)) as n2 eqn:Hn2; subst n1.
     clear Hcuv.
+    assert (Hpv1 : P v (i + 1) = 1). {
+      specialize (Hupv0 0) as H2.
+      apply Nat.eq_add_0 in Huv1.
+      unfold "⊕" in H2.
+      rewrite Nat.add_0_r, (proj1 Huv1), Nat.add_0_l in H2.
+      specialize (P_le v (i + 1)) as H3.
+      rewrite Hr2 in H3; flia H2 H3.
+    }
+    move Hpv1 after Hx.
 Search (A _ _ _ ≤ A _ _ _)%Q.
 (* est-ce qu'on peut prouver que A i n (P u) ≤ A i n u ? Est-ce toujours
 vrai, d'ailleurs ? *)
