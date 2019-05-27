@@ -3229,46 +3229,17 @@ Qed.
 
 Theorem A_P_eq_A {r : radix} : ∀ u i n,
   carry u (n - 1) < rad ^ (n - i - 1)
-  → A i n (P u) = (A i n u + carry u (n - 1) // rad ^ (n - i - 1))%Q.
+  → A i n (P u) = Q.frac (A i n u + carry u (n - 1) // rad ^ (n - i - 1))%Q.
 Proof.
 intros * Hcr.
-induction n. {
-  apply Nat.lt_1_r in Hcr.
-  rewrite Hcr, Q.add_0_r.
-  unfold A.
-  rewrite summation_empty; [ | flia ].
-  rewrite summation_empty; [ easy | flia ].
-}
-rewrite Nat_sub_sub_swap in Hcr |-*.
-replace (S n - 1) with n in Hcr |-* by flia.
-...
-assert (H : carry u (n - 1) < rad ^ (n - i - 1)). {
-  destruct n; [ easy | ].
-  rewrite Nat_sub_sub_swap in IHn |-*.
-  replace (S n - 1) with n in IHn |-* by flia.
-  rewrite (carry_succ 2). {
-    rewrite Nat.add_1_r.
-    apply (Nat.mul_lt_mono_pos_r rad); [ easy | ].
-    replace rad with (rad ^ 1) at 4 by (cbn; flia).
-    rewrite <- Nat.pow_add_r.
-    replace (n - i + 1) with (S n - i).
-    eapply Nat.le_lt_trans; [ | apply Hcr ].
-  apply (Nat.lt_le_trans _ ((u (S n) + rad ^ (n - i)) / rad)). {
-Search (_ / _ < _ / _).
-(* oui, non *)
-...
-destruct (Nat.eq_dec (i + 1) n) as [Hi1n| Hi1n]. {
-  unfold A.
-  rewrite Nat_sub_sub_swap.
-  replace (S n - 1) with n by flia.
-  rewrite Hi1n.
-  do 2 rewrite summation_only_one.
-  rewrite <- Q.pair_add_l.
-  unfold P, d2n, prop_carr, dig.
-  rewrite Q.frac_pair; f_equal.
-  replace (n - i) with 1 by flia Hi1n.
-  now rewrite Nat.pow_1_r.
-}
+rewrite Q.frac_add_cond; [ | easy | apply Q.le_0_pair ].
+rewrite Q.frac_pair.
+remember (n - i - 1) as s eqn:Hs.
+rewrite Nat.mod_small; [ | easy ].
+rewrite A_split_last; [ symmetry | ].
+rewrite A_split_last; [ symmetry | ].
+rewrite <- Hs.
+unfold P at 2, d2n, prop_carr, dig.
 ...
 
 Theorem A_P_eq_A {r : radix} : ∀ u i n,
