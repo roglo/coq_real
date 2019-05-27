@@ -3227,6 +3227,15 @@ apply Q.sub_lt, Q.lt_0_pair.
 destruct (le_dec (i + 1 + q + 1) (n - 1)); pauto.
 Qed.
 
+Theorem A_P_eq_A {r : radix} : ∀ u i n,
+  carry u (n - 1) = 0
+  ∨ ¬ (∀ j, j < n - i - 1 → u (i + j + 1) = rad - 1)
+  → A i n (P u) = A i n u.
+Proof.
+intros * Hcu.
+destruct Hcu as [Hcu| Hcu]. {
+...
+
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
