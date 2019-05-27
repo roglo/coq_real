@@ -3227,6 +3227,26 @@ apply Q.sub_lt, Q.lt_0_pair.
 destruct (le_dec (i + 1 + q + 1) (n - 1)); pauto.
 Qed.
 
+Theorem A_P_eq_A {r : radix} : ∀ u i n,
+  carry u (n - 1) = 0
+  → A i n (P u) = A i n u.
+Proof.
+intros * Hcu.
+destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+  unfold A.
+  rewrite summation_empty; [ | flia Hin ].
+  rewrite summation_empty; [ easy | flia Hin ].
+}
+apply Nat.nlt_ge in Hin.
+rewrite A_split_last; [ symmetry | flia Hin ].
+rewrite A_split_last; [ symmetry | flia Hin ].
+unfold P at 2, d2n, prop_carr, dig.
+rewrite Hcu, Nat.add_0_r.
+rewrite (Nat.div_mod (u (n - 1)) rad) at 2; [ | easy ].
+rewrite Q.pair_add_l, Q.add_assoc; f_equal.
+unfold carry in Hcu.
+...
+
 Theorem A_P_eq_A {r : radix} : ∀ m u i n,
   m < rad ^ 3
   → (∀ k, u (i + k) ≤ m * (rad - 1))
