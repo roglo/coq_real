@@ -3235,21 +3235,32 @@ Theorem A_P_eq_A {r : radix} : ∀ m u i n,
   → A i n (P u) = A i n u.
 Proof.
 intros * Hmr Humr Hcu.
+clear Hmr Humr.
 destruct Hcu as [Hcu| Hcu]. {
-(* bon, faut réfléchir... *)
+  destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+    unfold A.
+    rewrite summation_empty; [ | flia Hin ].
+    rewrite summation_empty; [ easy | flia Hin ].
+  }
+  apply Nat.nlt_ge in Hin.
+  rewrite A_split_last; [ symmetry | flia Hin ].
+  rewrite A_split_last; [ symmetry | flia Hin ].
+  unfold P at 2, d2n, prop_carr, dig.
+  rewrite Hcu, Nat.add_0_r.
 ...
+
   induction n. {
     unfold A.
     rewrite summation_empty; [ | flia ].
     rewrite summation_empty; [ easy | flia ].
   }
+  replace (S n - 1) with n in Hcu by flia.
   remember (carry u (n - 1)) as c eqn:Hc; symmetry in Hc.
   destruct (lt_dec n (i + 1)) as [Hin| Hin]. {
     unfold A.
     rewrite summation_empty; [ | flia Hin ].
     rewrite summation_empty; [ easy | flia Hin ].
   }
-  apply Nat.nlt_ge in Hin.
   destruct c. {
     specialize (IHn eq_refl).
     rewrite A_split_last; [ symmetry | flia Hin ].
