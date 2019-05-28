@@ -3393,7 +3393,7 @@ destruct (zerop (carry (u ⊕ v) (i + 1))) as [Hcuv| Hcuv]. {
 (* situation
 
      i+1     i+p+1
-     |       |
+     ↓       ↓
    u 0 . . . 1
    v 0 . . . .
  u+v 0 . . . .
