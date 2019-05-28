@@ -3377,10 +3377,6 @@ destruct (zerop (carry (u ⊕ v) (i + 1))) as [Hcuv| Hcuv]. {
     rewrite Q.frac_small in H1; [ | easy ].
     apply Q.nlt_ge in H2.
     apply H2; clear H2.
-(*
-    eapply Q.le_lt_trans; [ | apply H1 ].
-    apply Q.add_le_mono_l.
-*)
     remember (min_n (i + 1 + n1)) as n2 eqn:Hn2; subst n1.
     clear Hcuv.
     assert (Hpv1 : P v (i + 1) = 1). {
