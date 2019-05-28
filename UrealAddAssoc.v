@@ -3416,8 +3416,10 @@ vrai, d'ailleurs ? *)
 (* bin non, je pense que soit ils sont égaux, soit A (P u) = A u + ε, où
 ε = 1/r^(n-i-1), ce 2e cas arrivant si c(n-1)=1 et que A u = 1-ε; du coup
 c(i)=1 aussi, la retenue se propageant partout *)
+rename H1 into HAA1.
+rename p into p1.
 ...
-... (* ancienne preuve, non finie, pas sûr qu'elle soit finissable, faut
+(* ancienne preuve, non finie, pas sûr qu'elle soit finissable, faut
 voir, mais ne prenant pas les choses à bras le corps ; je me lance,
 ci-dessus, dans une preuve qui part de u+Pv avec deux considérations :
 soit la retenue en i de u+v vaut 0 et alors u+Pv serait un
