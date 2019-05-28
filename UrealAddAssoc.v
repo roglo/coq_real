@@ -3390,12 +3390,14 @@ destruct (zerop (carry (u ⊕ v) (i + 1))) as [Hcuv| Hcuv]. {
       rewrite Hr2 in H3; flia H2 H3.
     }
     move Hpv1 after Hx.
-(* contre-exemple
+(* contre-exemple ?
    u 0 1 1 1 1
    v 0 2 0 0 0 2
- u+v 0 3 1 1 1
+ u+v 0 3 1 1 1 .
   Pv 1 0 0 0 1
 u+Pv 1 1 1 1 2
+  non, car en . ci-dessus, il ne peut y avoir que 0 ou 1, d'après
+  l'automate, ce qui est incompatible avec la valeur en v
 *)
 Search (A _ _ _ ≤ A _ _ _)%Q.
 (* est-ce qu'on peut prouver que A i n (P u) ≤ A i n u ? Est-ce toujours
