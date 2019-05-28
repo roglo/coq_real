@@ -3377,17 +3377,19 @@ destruct (zerop (carry (u ⊕ v) (i + 1))) as [Hcuv| Hcuv]. {
     rewrite Q.frac_small in H1; [ | easy ].
     apply Q.nlt_ge in H2.
     apply H2; clear H2.
+(*
     eapply Q.le_lt_trans; [ | apply H1 ].
     apply Q.add_le_mono_l.
+*)
     remember (min_n (i + 1 + n1)) as n2 eqn:Hn2; subst n1.
     clear Hcuv.
     assert (Hpv1 : P v (i + 1) = 1). {
-      specialize (Hupv0 0) as H2.
+      specialize (Hupv0 0) as H3.
       apply Nat.eq_add_0 in Huv1.
-      unfold "⊕" in H2.
-      rewrite Nat.add_0_r, (proj1 Huv1), Nat.add_0_l in H2.
-      specialize (P_le v (i + 1)) as H3.
-      rewrite Hr2 in H3; flia H2 H3.
+      unfold "⊕" in H3.
+      rewrite Nat.add_0_r, (proj1 Huv1), Nat.add_0_l in H3.
+      specialize (P_le v (i + 1)) as H4.
+      rewrite Hr2 in H4; flia H3 H4.
     }
     move Hpv1 after Hx.
 (* situation
