@@ -3390,6 +3390,17 @@ destruct (zerop (carry (u ⊕ v) (i + 1))) as [Hcuv| Hcuv]. {
       rewrite Hr2 in H3; flia H2 H3.
     }
     move Hpv1 after Hx.
+(* situation
+
+     i+1     i+p+1
+     |       |
+   u 0 . . . 1
+   v 0 . . . .
+ u+v 0 . . . .
+  Pv 1 . . . 1
+u+Pv 1 . . . 2
+
+*)
 (* contre-exemple ?
    u 0 1 1 1 1
    v 0 2 0 0 0 2
