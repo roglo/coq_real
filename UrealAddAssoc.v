@@ -3323,6 +3323,34 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
   rewrite (A_9_8_all_18 p); rewrite Hr2; [ | | easy | ]; cycle 1. {
     intros q Hq.
     specialize (Hjp _ Hq) as H1.
+    destruct (Nat.eq_dec ((u ⊕ P v) (i + q + 1)) 2) as [H2| H2]. {
+      rewrite <- (Nat.add_0_r i) in Hcuv.
+      rewrite (rad_2_all_12_2_carry_1 (q + 1)) in Hcuv; try easy; try flia. {
+        intros s.
+        unfold "⊕".
+        specialize (Hu s) as H3.
+        specialize (P_le v (i + s)) as H4.
+        rewrite Hr2 in H4.
+        flia H3 H4.
+      } {
+        intros s Hs.
+...
+        specialize (Hjp (s + 1)) as H3.
+        replace (i + (s + 1) + 1) with (i + s + 2) in H3 by flia.
+        assert (H : s + 1 < p) by flia Hq Hs.
+        specialize (H3 H); clear H.
+        remember ((u ⊕ P v) (i + s + 2)) as x eqn:Hx.
+        destruct x; [ easy | ].
+        destruct x; [ now left | ].
+        destruct x; [ now right | ].
+        exfalso; clear H3.
+        specialize (Hu (s + 2)) as H3.
+        specialize (P_le v (i + s + 2)) as H4.
+        rewrite Nat.add_assoc in H3.
+        rewrite Hr2 in H4.
+        unfold "⊕" in Hx.
+        flia Hx H3 H4.
+      }
 ...
 ... (* code quand je testais (zerop (carry (u ⊕ v) (i + 1)))
        au lieu de u ⊕ P v *)
