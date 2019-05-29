@@ -3324,6 +3324,7 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
     intros q Hq.
     specialize (Hjp _ Hq) as H1.
     destruct (Nat.eq_dec ((u ⊕ P v) (i + q + 1)) 2) as [H2| H2]. {
+...
       rewrite <- (Nat.add_0_r i) in Hcuv.
       rewrite (rad_2_all_12_2_carry_1 (q + 1)) in Hcuv; try easy; try flia. {
         intros s.
@@ -3334,10 +3335,14 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
         flia H3 H4.
       } {
         intros s Hs.
+        destruct (Nat.eq_dec p (q + 1)) as [Hpq| Hpq]. {
+          rewrite <- Hpq in Hs.
+          specialize (Hjp _ Hs) as H3.
 ...
+        }
         specialize (Hjp (s + 1)) as H3.
         replace (i + (s + 1) + 1) with (i + s + 2) in H3 by flia.
-        assert (H : s + 1 < p) by flia Hq Hs.
+        assert (H : s + 1 < p) by flia Hq Hs Hpq.
         specialize (H3 H); clear H.
         remember ((u ⊕ P v) (i + s + 2)) as x eqn:Hx.
         destruct x; [ easy | ].
