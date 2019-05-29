@@ -3324,9 +3324,17 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
     intros q Hq.
     specialize (Hjp _ Hq) as H1.
     destruct (Nat.eq_dec ((u ⊕ P v) (i + q + 1)) 2) as [H2| H2]. {
-...
+      destruct (zerop q) as [Hzq| Hzq]. {
+        subst q.
+        apply Nat.eq_add_0 in Huv1.
+        rewrite Nat.add_0_r in H2.
+        unfold "⊕" in H2.
+        rewrite (proj1 Huv1), Nat.add_0_l in H2.
+        specialize (P_le v (i + 1)) as H3.
+        rewrite H2, Hr2 in H3; flia H3.
+      }
       rewrite <- (Nat.add_0_r i) in Hcuv.
-      rewrite (rad_2_all_12_2_carry_1 (q + 1)) in Hcuv; try easy; try flia. {
+      rewrite (rad_2_all_12_2_carry_1 (q - 1)) in Hcuv; try easy. {
         intros s.
         unfold "⊕".
         specialize (Hu s) as H3.
@@ -3335,14 +3343,9 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
         flia H3 H4.
       } {
         intros s Hs.
-        destruct (Nat.eq_dec p (q + 1)) as [Hpq| Hpq]. {
-          rewrite <- Hpq in Hs.
-          specialize (Hjp _ Hs) as H3.
-...
-        }
         specialize (Hjp (s + 1)) as H3.
         replace (i + (s + 1) + 1) with (i + s + 2) in H3 by flia.
-        assert (H : s + 1 < p) by flia Hq Hs Hpq.
+        assert (H : s + 1 < p) by flia Hq Hs.
         specialize (H3 H); clear H.
         remember ((u ⊕ P v) (i + s + 2)) as x eqn:Hx.
         destruct x; [ easy | ].
@@ -3355,7 +3358,29 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
         rewrite Hr2 in H4.
         unfold "⊕" in Hx.
         flia Hx H3 H4.
+      } {
+        now replace (i + (q - 1) + 2) with (i + q + 1) by flia Hzq.
       }
+      flia.
+    }
+    remember ((u ⊕ P v) (i + q + 1)) as x eqn:Hx.
+    destruct x; [ easy | ].
+    destruct x; [ easy | exfalso ].
+    destruct x; [ easy | ].
+    specialize (Hu (q + 1)) as H3.
+    specialize (P_le v (i + q + 1)) as H4.
+    rewrite Nat.add_assoc in H3.
+    rewrite Hr2 in H4.
+    unfold "⊕" in Hx.
+    flia Hx H3 H4.
+  } {
+    intros q.
+...
+... suite ok
+  }
+  apply Q.sub_lt, Q.lt_0_pair.
+  destruct (le_dec (i + p + 1) (nk - 1)); pauto.
+}
 ...
 ... (* code quand je testais (zerop (carry (u ⊕ v) (i + 1)))
        au lieu de u ⊕ P v *)
