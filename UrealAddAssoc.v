@@ -3377,6 +3377,12 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
   move H before Hjp; clear Hjp; rename H into Hjp.
   specialize (all_fA_ge_1_ε_P_999 _ _ Hauv) as Hpuv.
   rewrite Hr2 in Hpuv.
+  specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) i Hr2) as Huv2.
+  assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3). {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  specialize (Huv2 H Hauv (or_introl Huv1)); clear H.
+  move Huv2 before Huv1.
   rewrite (A_9_8_all_18 p); rewrite Hr2; [ | easy | easy | ]; cycle 1. {
     intros q.
     destruct p. {
@@ -3409,14 +3415,6 @@ u+Pv 1 1 1 1 1 0
         apply Nat.eq_add_0 in Huv1.
         rewrite (proj1 Huv1), Nat.add_0_l in Hp.
 ...
-    specialize (all_fA_ge_1_ε_P_999 _ _ Hauv) as Hpuv.
-    rewrite Hr2 in Hpuv.
-    specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) i Hr2) as Huv2.
-    assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3). {
-      now intros; rewrite <- Nat.add_assoc.
-    }
-    specialize (Huv2 H Hauv (or_introl Huv1)); clear H.
-    move Huv2 before Huv1.
     destruct Huv2 as [Huv2| Huv2]. {
       specialize (rad_2_sum_3_all_9_02_1_333 (u ⊕ v) i Hr2 Huvl3 Hauv) as H1.
       specialize (H1 (or_introl Huv1) Huv2 0).
