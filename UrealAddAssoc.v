@@ -3398,7 +3398,15 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
   Pv 0 . . . . .
 u+Pv 0 . . . . .
 *)
-(* pfffff... désespérant *)
+      destruct Huv2 as [Huv2| Huv2]. {
+(* état de la situation
+     i+1
+   u 0 . 1 1 1 1
+   v 0 . 2 2 2 2
+ u+v 0 1 3 3 3 3
+  Pv 0 . 1 1 1 1
+u+Pv 0 . 2 2 2 2
+*)
 ...
 (* état de la situation (p > 0)
      i+1       i+p+1
