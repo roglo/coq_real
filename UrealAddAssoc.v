@@ -3375,6 +3375,8 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
     flia Hx H3 H4.
   }
   move H before Hjp; clear Hjp; rename H into Hjp.
+  specialize (all_fA_ge_1_ε_P_999 _ _ Hauv) as Hpuv.
+  rewrite Hr2 in Hpuv.
   rewrite (A_9_8_all_18 p); rewrite Hr2; [ | easy | easy | ]; cycle 1. {
     intros q.
     destruct p. {
