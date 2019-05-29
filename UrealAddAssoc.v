@@ -3320,7 +3320,7 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
     now apply Nat.eqb_eq in H2.
   }
   clear H2.
-  rewrite (A_9_8_all_18 p); rewrite Hr2; [ | | easy | ]; cycle 1. {
+  assert (H : ∀ q, q < p → (u ⊕ P v) (i + q + 1) = 1). {
     intros q Hq.
     specialize (Hjp _ Hq) as H1.
     destruct (Nat.eq_dec ((u ⊕ P v) (i + q + 1)) 2) as [H2| H2]. {
@@ -3373,8 +3373,20 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
     rewrite Hr2 in H4.
     unfold "⊕" in Hx.
     flia Hx H3 H4.
-  } {
+  }
+  move H before Hjp; clear Hjp; rename H into Hjp.
+  rewrite (A_9_8_all_18 p); rewrite Hr2; [ | easy | easy | ]; cycle 1. {
     intros q.
+(* état de la situation
+     i+1       i+p+1
+   u 0 . . . . 0
+   v 0 . . . . .
+ u+v 0 . . . . .
+  Pv 1 . . . . 0
+u+Pv 1 1 1 1 1 0
+*)
+    specialize (all_fA_ge_1_ε_P_999 _ _ Hauv) as Hpuv.
+    rewrite Hr2 in Hpuv.
 ...
 ... suite ok
   }
