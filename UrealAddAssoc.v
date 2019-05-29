@@ -3250,7 +3250,7 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   unfold "⊕"; replace 3 with (1 + 2) by easy.
   apply Nat.add_le_mono; [ apply Hu | apply Hv ].
 }
-destruct (zerop (carry (u ⊕ v) (i + 1))) as [Hcuv| Hcuv]. {
+destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
   destruct (LPO_fst (λ j, negb ((u ⊕ P v) (i + j + 1) =? 0))) as [H| Hupv0]. {
     assert (Hupv0 : ∀ k, (u ⊕ P v) (i + k + 1) ≠ 0). {
       intros p; specialize (H p).
@@ -3305,7 +3305,27 @@ destruct (zerop (carry (u ⊕ v) (i + 1))) as [Hcuv| Hcuv]. {
        now unfold "⊕"; rewrite (proj1 Hx), (proj2 Hx).
     }
     move Hcuv before Hcupv.
-    (* y devrait y avoir une contradiction entre Hcuv et Hcupv *)
+    now rewrite Hcuv in Hcupv.
+  }
+  destruct Hupv0 as (p & H1 & H2).
+  assert (Hjp : ∀ q, q < p → (u ⊕ P v) (i + q + 1) ≠ 0). {
+    intros q Hq.
+    specialize (H1 _ Hq).
+    apply Bool.negb_true_iff in H1.
+    now apply Nat.eqb_neq in H1.
+  }
+  move Hjp before H1; clear H1.
+  assert (Hp : (u ⊕ P v) (i + p + 1) = 0). {
+    apply Bool.negb_false_iff in H2.
+    now apply Nat.eqb_eq in H2.
+  }
+  clear H2.
+  rewrite (A_9_8_all_18 p); rewrite Hr2; [ | | easy | ]; cycle 1. {
+    intros q Hq.
+    specialize (Hjp _ Hq) as H1.
+...
+... (* code quand je testais (zerop (carry (u ⊕ v) (i + 1)))
+       au lieu de u ⊕ P v *)
     unfold carry in Hcuv, Hcupv.
     rewrite (all_fA_ge_1_ε_NQintg_A' 3) in Hcuv; cycle 1. {
       apply three_lt_rad_pow.
