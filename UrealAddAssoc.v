@@ -3421,6 +3421,8 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
     intros p Hp; rewrite Hr2; replace (2 - 1) with 1 by easy.
 (* u+v
   0(2*[$|13*$|31*[$|0]])*
+   u+Pv
+  [1*[$|02*$]|2*$]
 
   02*∞
   02*13*∞
