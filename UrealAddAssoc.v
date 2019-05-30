@@ -3559,6 +3559,27 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
   Pv 1 . . . . .
 u+Pv 1 1 1 1 1 0
 *)
+      specialize (rad_2_sum_3_all_9_02_222_123 1 (u ⊕ v) i Hr2) as Huv3.
+      replace (i + 1 + 2) with (i + 3) in Huv3 by flia.
+      assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3). {
+        now intros; rewrite <- Nat.add_assoc.
+      }
+      specialize (Huv3 H Hauv (or_introl Huv1)); clear H.
+      assert (H : ∀ k, k < 1 → (u ⊕ v) (i + k + 2) = 2). {
+        intros s Hs.
+        now apply Nat.lt_1_r in Hs; rewrite Hs, Nat.add_0_r.
+      }
+      specialize (Huv3 H); clear H.
+      move Huv3 before Huv2.
+      destruct Huv3 as [Huv3| Huv3]. {
+(* state
+     i+1       i+p+1
+   u 0 . . . . .
+   v 0 . . . . .
+ u+v 0 2 1 . . .
+  Pv 1 . . . . .
+u+Pv 1 1 1 1 1 0
+*)
 ...
 ... suite ok
   }
