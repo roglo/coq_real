@@ -3464,6 +3464,31 @@ u+Pv . . . . . . .
 u+v between i+1 and i+p+2 must be (2*31*0)*
 in particular (u+v)(i+p+1) must be 0 (to be proven)
 *)
+  assert (H : (u ⊕ v) (i + p + 1) = 0). {
+    remember ((u ⊕ v) (i + p + 1)) as x eqn:Hx; symmetry in Hx.
+    destruct x; [ easy | exfalso ].
+    destruct x. {
+      clear Huvp1.
+(* state
+     i+1         i+p+2
+   u 0 . . . . . .
+   v 0 . . . . . .
+ u+v 0 . . . . 1 2 2 2 ...
+  Pv . . . . . . .
+u+Pv . . . . . . .
+*)
+      specialize (all_fA_ge_1_ε_P_999 _ _ Hauv p) as H1.
+      unfold P, d2n, prop_carr, dig in H1.
+      rewrite Hx, Hr2 in H1.
+      replace (carry (u ⊕ v) (i + p + 1)) with 1 in H1; [ easy | symmetry ].
+      clear H1.
+...
+    }
+    destruct x; [ easy | clear Huvp1 ].
+    destruct x. 2: {
+      specialize (Huvl3 (p + 1)) as H1.
+      rewrite Nat.add_assoc, Hx in H1; flia H1.
+    }
 ...
 ... (* works, but restricted *)
 destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
