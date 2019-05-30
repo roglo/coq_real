@@ -3418,7 +3418,27 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
     }
     clear H.
     rewrite A_all_9; [ now apply Q.sub_lt | ].
-    intros p Hp; rewrite Hr2.
+    intros p Hp; rewrite Hr2; replace (2 - 1) with 1 by easy.
+(* u+v
+  02*∞
+  02*13*∞
+  02*31*∞
+  02*31*02*∞
+  02*31*02*13*∞
+  02*31*02*31*∞
+  02*31*02*31*02*13*∞
+  02*31*02*31*02*31*∞
+  02*31*02*31*02*31*02*∞
+  02*31*02*31*02*31*02*13*∞
+  02*31*02*31*02*31*02*31*∞
+  02*31*02*31*02*31*02*31*02*∞
+  02*31*02*31*02*31*02*31*02*13∞
+  02*31*02*31*02*31*02*31*02*31*∞
+  02*31*02*31*02*31*02*31*02*31*0
+  02*31*1
+*)
+...
+(**)
     specialize (Hupv0 p) as Hupvp.
     remember ((u ⊕ P v) (i + p + 1)) as x eqn:Hx; symmetry in Hx.
     destruct x; [ easy | clear Hupvp ].
