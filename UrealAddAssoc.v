@@ -3420,13 +3420,37 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p Hp; rewrite Hr2; replace (2 - 1) with 1 by easy.
 (* u+v
-  0(2*31*0)*
-  0(2*31*0)*2*
-  0(2*31*0)*2*13*
-  0(2*31*0)*2*31*
+  [0|2](2*31*0)*
+  [0|2](2*31*0)*2*
+  [0|2](2*31*0)*2*13*
+  [0|2](2*31*0)*2*31*
 *)
+  destruct
+    (LPO_fst
+       (λ k,
+        match LPO_fst (λ s, Nat.eqb (v (i + k + s + 2)) 2) with
+        | inl _ => false
+        | inr _ _ => true
+        end)) as [Hv2| Hv2]. 2: {
+    (* u+v ends with an infinity of 2s, then must be 0(2*31*0)*2* *)
+    destruct Hv2 as (q & Hjq & Hq).
+    assert (H : ∀ s, s < q → ∃ t, v (i + s + t + 2) ≠ 2). {
+      intros s Hsq.
+      specialize (Hjq _ Hsq).
+      destruct (LPO_fst (λ t, v (i + s + t + 2) =? 2)) as [H| H]; [ easy | ].
+      destruct H as (t & Hjt & Ht).
+      exists t.
+      now apply Nat.eqb_neq in Ht.
+    }
+    move H before Hjq; clear Hjq; rename H into Hjq.
+    assert (H : ∀ s, v (i + q + s + 2) = 2). {
+      destruct (LPO_fst (λ s, v (i + q + s + 2) =? 2)) as [H1| H1]; [ | easy ].
+      intros s; specialize (H1 s).
+      now apply Nat.eqb_eq in H1.
+    }
+    clear Hq; rename H into Hq.
 ...
-(**)
+... (* works, but restricted *)
     specialize (Hupv0 p) as Hupvp.
     remember ((u ⊕ P v) (i + p + 1)) as x eqn:Hx; symmetry in Hx.
     destruct x; [ easy | clear Hupvp ].
