@@ -3227,6 +3227,165 @@ apply Q.sub_lt, Q.lt_0_pair.
 destruct (le_dec (i + 1 + q + 1) (n - 1)); pauto.
 Qed.
 
+Theorem rad_2_sum_3_all_9_uv_0_1_uPv_0_222 {r : radix} : ∀ u v i,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 1)
+  → (∀ k, v (i + k) ≤ 2)
+  → (∀ k, fA_ge_1_ε (u ⊕ v) i k = true)
+  → (u ⊕ v) (i + 1) = 0
+  → (u ⊕ v) (i + 2) = 1
+  → ∀ p, (u ⊕ P v) (i + p + 1) = 0
+  → ∀ q, (u ⊕ P v) (i + p + q + 2) = 2.
+Proof.
+intros * Hr2 Hu Hv Hauv Huv1 Huv2 p Hp q.
+assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
+  intros j.
+  unfold "⊕"; replace 3 with (1 + 2) by easy.
+  apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+}
+specialize (rad_2_sum_3_all_9_02_1_333 _ _ Hr2 Huvl3 Hauv) as Huvc3.
+specialize (Huvc3 (or_introl Huv1) Huv2).
+assert (Huv3 : ∀ k, u (i + k + 3) = 1 ∧ v (i + k + 3) = 2). {
+  intros s.
+  specialize (Huvc3 s) as H2.
+  destruct H2 as (H2, _).
+  unfold "⊕" in H2.
+  specialize (Hu (s + 3)) as H3.
+  specialize (Hv (s + 3)) as H4.
+  rewrite Nat.add_assoc in H3, H4.
+  flia H2 H3 H4.
+}
+move Huv3 before Huv2.
+move Huvc3 before Huv3.
+destruct p. 2: {
+  destruct p. 2: {
+    (* state (p > 1)
+     i+1       i+p+1
+   u 0 . . . . 0/1 ← contrad
+   v 0 . . . . .
+ u+v 0 1 3 3 3 3
+  Pv 1 . . . . 0
+u+Pv 1 1 1 1 1 0
+     *)
+    specialize (Huv3 p) as H2.
+    replace (i + S (S p) + 1) with (i + p + 3) in Hp by flia.
+    apply Nat.eq_add_0 in Hp.
+    now rewrite (proj1 Hp) in H2.
+  }
+  (* state (p = 1)
+     i+1
+   u 0 0 1 1 1 1
+   v 0 1 2 2 2 2
+ u+v 0 1 3 3 3 3
+  Pv 1 0 1 1 1 1
+u+Pv 1 0 2 2 2 2
+   *)
+  replace (i + 1 + q + 2) with (i + q + 3) by flia.
+  specialize (Huv3 q) as H1.
+  unfold "⊕", P, d2n, prop_carr, dig.
+  rewrite (proj1 H1), (proj2 H1), Hr2.
+  rewrite Nat_mod_add_same_l; [ | easy ].
+  replace (carry v (i + q + 3)) with 1; [ easy | symmetry ].
+  unfold carry.
+  rewrite A_split_first; [ | min_n_ge ].
+  replace (S (i + q + 3)) with (i + S q + 3) at 1 by flia.
+  rewrite (proj2 (Huv3 _)), Hr2, Q.pair_diag; [ | easy ].
+  rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+  symmetry; replace 1 with (1 + 0) at 1 by flia; symmetry; f_equal.
+  apply Q.intg_small.
+  split; [ now apply Q.le_0_mul_r | ].
+  apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+  intros p.
+  now replace (S (i + q + 3) + p) with (i + (p + q + 4)) by flia.
+}
+(* state (p = 0)
+     i+1
+   u 0 . 1 1 1 1
+   v 0 . 2 2 2 2
+ u+v 0 1 3 3 3 3
+  Pv 0 . 1 1 1 1
+u+Pv 0 . 2 2 2 2
+ *)
+(*clear Hjp;*) rewrite Nat.add_0_r in Hp |-*.
+(* seems true for q > 0 *)
+destruct q. 2: {
+  replace (i + S q + 2) with (i + q + 3) by flia.
+  unfold "⊕", P, d2n, prop_carr, dig.
+  specialize (Huv3 q) as H1.
+  rewrite (proj1 H1), (proj2 H1), Hr2.
+  rewrite Nat_mod_add_same_l; [ | easy ].
+  replace (carry v (i + q + 3)) with 1; [ easy | symmetry ].
+  unfold carry.
+  rewrite A_split_first; [ | min_n_ge ].
+  replace (S (i + q + 3)) with (i + S q + 3) at 1 by flia.
+  rewrite (proj2 (Huv3 _)), Hr2, Q.pair_diag; [ | easy ].
+  rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+  symmetry; replace 1 with (1 + 0) at 1 by flia; symmetry; f_equal.
+  apply Q.intg_small.
+  split; [ now apply Q.le_0_mul_r | ].
+  apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+  intros p.
+  now replace (S (i + q + 3) + p) with (i + (p + q + 4)) by flia.
+}
+(* state (p = 0 & q = 0)
+     i+1
+   u 0
+   v 0
+ u+v 0 1
+  Pv 0
+u+Pv 0
+ *)
+rewrite Nat.add_0_r.
+unfold "⊕", P, d2n, prop_carr, dig.
+apply Nat.eq_add_1 in Huv2.
+destruct Huv2 as [Huv2| Huv2]. {
+  rewrite (proj1 Huv2), (proj2 Huv2), Nat.add_0_l, Hr2.
+  (* state (p = 0 & q = 0 & u2 = 1, v2 = 0)
+     i+1
+   u 0 1 1 1 1 1
+   v 0 0 2 2 2 2
+ u+v 0 1 3 3 3 3
+  Pv 0 1 1 1 1 1
+u+Pv 0 2 2 2 2 2
+   *)
+  replace (carry v (i + 2)) with 1; [ easy | symmetry ].
+  unfold carry.
+  rewrite A_split_first; [ | min_n_ge ].
+  replace (S (i + 2)) with (i + 0 + 3) at 1 by flia.
+  rewrite (proj2 (Huv3 _)), Hr2, Q.pair_diag; [ | easy ].
+  rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
+  symmetry; replace 1 with (1 + 0) at 1 by flia; symmetry; f_equal.
+  apply Q.intg_small.
+  split; [ now apply Q.le_0_mul_r | ].
+  apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+  intros p.
+  now replace (S (i + 2) + p) with (i + (p + 3)) by flia.
+}
+(* state (p = 0 & q = 0 & u2 = 0, v2 = 1)
+     i+1
+   u 0 0 1 1 1 1
+   v 0 1 2 2 2 2
+ u+v 0 . 3 3 3 3
+  Pv 0/1 0 1 1 1 1 <- contrad
+u+Pv 0 . 2 2 2 2
+ *)
+exfalso.
+unfold "⊕", P, d2n, prop_carr, dig in Hp.
+apply Nat.eq_add_0 in Huv1.
+rewrite (proj1 Huv1), (proj2 Huv1), Nat.add_0_l, Hr2 in Hp.
+replace (carry v (i + 1)) with 1 in Hp; [ easy | symmetry ].
+replace (i + 1) with (i + 0 + 1) by flia.
+apply (rad_2_all_12_2_carry_1 1); try easy; try pauto. {
+  intros p Hp1.
+  apply Nat.lt_1_r in Hp1.
+  rewrite Hp1, Nat.add_0_r.
+  now rewrite (proj2 Huv2); left.
+} {
+  replace (i + 1 + 2) with (i + 0 + 3) by flia.
+  now rewrite (proj2 (Huv3 _)).
+}
+Qed.
+
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -3389,154 +3548,7 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
     move q before p.
     replace (2 * (2 - 1)) with 2 by easy.
     destruct Huv2 as [Huv2| Huv2]. {
-clear - Hr2 Hauv Huv2 Huv1 Hu Hv Hp.
-... faire un lemme rad_2_sum_3_all_9_0_1_uPv_0_222
-assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
-  intros j.
-  unfold "⊕"; replace 3 with (1 + 2) by easy.
-  apply Nat.add_le_mono; [ apply Hu | apply Hv ].
-}
-      specialize (rad_2_sum_3_all_9_02_1_333 _ _ Hr2 Huvl3 Hauv) as Huvc3.
-      specialize (Huvc3 (or_introl Huv1) Huv2).
-      assert (Huv3 : ∀ k, u (i + k + 3) = 1 ∧ v (i + k + 3) = 2). {
-        intros s.
-        specialize (Huvc3 s) as H2.
-        destruct H2 as (H2, _).
-        unfold "⊕" in H2.
-        specialize (Hu (s + 3)) as H3.
-        specialize (Hv (s + 3)) as H4.
-        rewrite Nat.add_assoc in H3, H4.
-        flia H2 H3 H4.
-      }
-      move Huv3 before Huv2.
-      move Huvc3 before Huv3.
-      destruct p. 2: {
-        destruct p. 2: {
-(* state (p > 1)
-     i+1       i+p+1
-   u 0 . . . . 0/1 ← contrad
-   v 0 . . . . .
- u+v 0 1 3 3 3 3
-  Pv 1 . . . . 0
-u+Pv 1 1 1 1 1 0
-*)
-          specialize (Huv3 p) as H2.
-          replace (i + S (S p) + 1) with (i + p + 3) in Hp by flia.
-          apply Nat.eq_add_0 in Hp.
-          now rewrite (proj1 Hp) in H2.
-        }
-(* state (p = 1)
-     i+1
-   u 0 0 1 1 1 1
-   v 0 1 2 2 2 2
- u+v 0 1 3 3 3 3
-  Pv 1 0 1 1 1 1
-u+Pv 1 0 2 2 2 2
-*)
-        replace (i + 1 + q + 2) with (i + q + 3) by flia.
-        specialize (Huv3 q) as H1.
-        unfold "⊕", P, d2n, prop_carr, dig.
-        rewrite (proj1 H1), (proj2 H1), Hr2.
-        rewrite Nat_mod_add_same_l; [ | easy ].
-        replace (carry v (i + q + 3)) with 1; [ easy | symmetry ].
-        unfold carry.
-        rewrite A_split_first; [ | min_n_ge ].
-        replace (S (i + q + 3)) with (i + S q + 3) at 1 by flia.
-        rewrite (proj2 (Huv3 _)), Hr2, Q.pair_diag; [ | easy ].
-        rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
-        symmetry; replace 1 with (1 + 0) at 1 by flia; symmetry; f_equal.
-        apply Q.intg_small.
-        split; [ now apply Q.le_0_mul_r | ].
-        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-        intros p.
-        now replace (S (i + q + 3) + p) with (i + (p + q + 4)) by flia.
-      }
-(* state (p = 0)
-     i+1
-   u 0 . 1 1 1 1
-   v 0 . 2 2 2 2
- u+v 0 1 3 3 3 3
-  Pv 0 . 1 1 1 1
-u+Pv 0 . 2 2 2 2
-*)
-      (*clear Hjp;*) rewrite Nat.add_0_r in Hp |-*.
-      (* seems true for q > 0 *)
-      destruct q. 2: {
-        replace (i + S q + 2) with (i + q + 3) by flia.
-        unfold "⊕", P, d2n, prop_carr, dig.
-        specialize (Huv3 q) as H1.
-        rewrite (proj1 H1), (proj2 H1), Hr2.
-        rewrite Nat_mod_add_same_l; [ | easy ].
-        replace (carry v (i + q + 3)) with 1; [ easy | symmetry ].
-        unfold carry.
-        rewrite A_split_first; [ | min_n_ge ].
-        replace (S (i + q + 3)) with (i + S q + 3) at 1 by flia.
-        rewrite (proj2 (Huv3 _)), Hr2, Q.pair_diag; [ | easy ].
-        rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
-        symmetry; replace 1 with (1 + 0) at 1 by flia; symmetry; f_equal.
-        apply Q.intg_small.
-        split; [ now apply Q.le_0_mul_r | ].
-        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-        intros p.
-        now replace (S (i + q + 3) + p) with (i + (p + q + 4)) by flia.
-      }
-(* state (p = 0 & q = 0)
-     i+1
-   u 0
-   v 0
- u+v 0 1
-  Pv 0
-u+Pv 0
-*)
-      rewrite Nat.add_0_r.
-      unfold "⊕", P, d2n, prop_carr, dig.
-      apply Nat.eq_add_1 in Huv2.
-      destruct Huv2 as [Huv2| Huv2]. {
-        rewrite (proj1 Huv2), (proj2 Huv2), Nat.add_0_l, Hr2.
-(* state (p = 0 & q = 0 & u2 = 1, v2 = 0)
-     i+1
-   u 0 1 1 1 1 1
-   v 0 0 2 2 2 2
- u+v 0 1 3 3 3 3
-  Pv 0 1 1 1 1 1
-u+Pv 0 2 2 2 2 2
-*)
-        replace (carry v (i + 2)) with 1; [ easy | symmetry ].
-        unfold carry.
-        rewrite A_split_first; [ | min_n_ge ].
-        replace (S (i + 2)) with (i + 0 + 3) at 1 by flia.
-        rewrite (proj2 (Huv3 _)), Hr2, Q.pair_diag; [ | easy ].
-        rewrite (Q.intg_add_nat_l 1); [ | now apply Q.le_0_mul_r ].
-        symmetry; replace 1 with (1 + 0) at 1 by flia; symmetry; f_equal.
-        apply Q.intg_small.
-        split; [ now apply Q.le_0_mul_r | ].
-        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-        intros p.
-        now replace (S (i + 2) + p) with (i + (p + 3)) by flia.
-      }
-(* state (p = 0 & q = 0 & u2 = 0, v2 = 1)
-     i+1
-   u 0 0 1 1 1 1
-   v 0 1 2 2 2 2
- u+v 0 . 3 3 3 3
-  Pv 0/1 0 1 1 1 1 <- contrad
-u+Pv 0 . 2 2 2 2
-*)
-      exfalso.
-      unfold "⊕", P, d2n, prop_carr, dig in Hp.
-      apply Nat.eq_add_0 in Huv1.
-      rewrite (proj1 Huv1), (proj2 Huv1), Nat.add_0_l, Hr2 in Hp.
-      replace (carry v (i + 1)) with 1 in Hp; [ easy | symmetry ].
-      replace (i + 1) with (i + 0 + 1) by flia.
-      apply (rad_2_all_12_2_carry_1 1); try easy; try pauto. {
-        intros p Hp1.
-        apply Nat.lt_1_r in Hp1.
-        rewrite Hp1, Nat.add_0_r.
-        now rewrite (proj2 Huv2); left.
-      } {
-        replace (i + 1 + 2) with (i + 0 + 3) by flia.
-        now rewrite (proj2 (Huv3 _)).
-      }
+      now apply rad_2_sum_3_all_9_uv_0_1_uPv_0_222.
     }
     destruct Huv2 as [Huv2| Huv2]. {
 (* state
