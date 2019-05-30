@@ -3386,8 +3386,16 @@ destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
   move Huv2 before Huv1.
   rewrite (A_9_8_all_18 p); rewrite Hr2; [ | easy | easy | ]; cycle 1. {
     intros q.
+    move q before p.
     replace (2 * (2 - 1)) with 2 by easy.
     destruct Huv2 as [Huv2| Huv2]. {
+clear - Hr2 Hauv Huv2 Huv1 Hu Hv Hp.
+... faire un lemme rad_2_sum_3_all_9_0_1_uPv_0_222
+assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
+  intros j.
+  unfold "⊕"; replace 3 with (1 + 2) by easy.
+  apply Nat.add_le_mono; [ apply Hu | apply Hv ].
+}
       specialize (rad_2_sum_3_all_9_02_1_333 _ _ Hr2 Huvl3 Hauv) as Huvc3.
       specialize (Huvc3 (or_introl Huv1) Huv2).
       assert (Huv3 : ∀ k, u (i + k + 3) = 1 ∧ v (i + k + 3) = 2). {
@@ -3451,7 +3459,7 @@ u+Pv 1 0 2 2 2 2
   Pv 0 . 1 1 1 1
 u+Pv 0 . 2 2 2 2
 *)
-      clear Hjp; rewrite Nat.add_0_r in Hp |-*.
+      (*clear Hjp;*) rewrite Nat.add_0_r in Hp |-*.
       (* seems true for q > 0 *)
       destruct q. 2: {
         replace (i + S q + 2) with (i + q + 3) by flia.
