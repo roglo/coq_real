@@ -3462,9 +3462,20 @@ destruct
 u+Pv . . . . . . .
 
 u+v between i+1 and i+p+2 must be (2*31*0)*
-in particular (u+v)(i+p+1) must be 0 (to be proven)
+in particular (u+v)(i+p+1) must be 0 (proven below)
 *)
   assert (H : (u ⊕ v) (i + p + 1) = 0). {
+    assert (Hcp1 : carry (u ⊕ v) (i + p + 1) = 1). {
+      unfold carry.
+      rewrite A_all_18. 2: {
+        intros q; rewrite Hr2.
+        now replace (i + p + 1 + q + 1) with (i + p + q + 2) by flia.
+      }
+      apply NQintg_2_sub_2_ov_pow.
+      replace 2 with (2 ^ 1) by easy.
+      rewrite Hr2.
+      apply Nat.pow_le_mono_r; [ easy | min_n_ge ].
+    }
     remember ((u ⊕ v) (i + p + 1)) as x eqn:Hx; symmetry in Hx.
     destruct x; [ easy | exfalso ].
     destruct x. {
@@ -3479,16 +3490,36 @@ u+Pv . . . . . . .
 *)
       specialize (all_fA_ge_1_ε_P_999 _ _ Hauv p) as H1.
       unfold P, d2n, prop_carr, dig in H1.
-      rewrite Hx, Hr2 in H1.
-      replace (carry (u ⊕ v) (i + p + 1)) with 1 in H1; [ easy | symmetry ].
-      clear H1.
-...
+      now rewrite Hx, Hr2, Hcp1 in H1.
     }
     destruct x; [ easy | clear Huvp1 ].
     destruct x. 2: {
       specialize (Huvl3 (p + 1)) as H1.
       rewrite Nat.add_assoc, Hx in H1; flia H1.
     }
+(* state
+     i+1         i+p+2
+   u 0 . . . . 1 .
+   v 0 . . . . 2 .
+ u+v 0 . . . . 3 2 2 2 ...
+  Pv . . . . . . .
+u+Pv . . . . . . .
+*)
+      specialize (all_fA_ge_1_ε_P_999 _ _ Hauv p) as H1.
+      unfold P, d2n, prop_carr, dig in H1.
+      now rewrite Hx, Hr2, Hcp1 in H1.
+  }
+  move H before Huvp1; clear Huvp1; rename H into Huvp1.
+(* state
+     i+1         i+p+2
+   u 0 . . . . . .
+   v 0 . . . . . .
+ u+v 0 . . . . 0 2 2 2 ...
+  Pv . . . . . . .
+u+Pv . . . . . . .
+
+u+v between i+1 and i+p+2 must be (2*31*0)*
+*)
 ...
 ... (* works, but restricted *)
 destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
