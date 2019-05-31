@@ -3512,8 +3512,8 @@ u+Pv . . . . . . .
   move H before Huvp1; clear Huvp1; rename H into Huvp1.
 (* state
      i+1         i+p+2
-   u 0 . . . . . .
-   v 0 . . . . . .
+   u 0 . . . . 0 .
+   v 0 . . . . 0 .
  u+v 0 . . . . 0 2 2 2 ...
   Pv . . . . . . .
 u+Pv . . . . . . .
