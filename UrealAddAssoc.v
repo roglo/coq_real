@@ -3520,6 +3520,44 @@ u+Pv . . . . . . .
 
 u+v between i+1 and i+p+2 must be (2*31*0)*
 *)
+  rewrite A_split_first; [ | rewrite Hnk; min_n_ge ].
+  replace (S i) with (i + 1) by flia.
+  unfold "⊕" at 1, P at 1, d2n, prop_carr, dig.
+  apply Nat.eq_add_0 in Huv1.
+  rewrite (proj1 Huv1), (proj2 Huv1), Hr2.
+  do 2 rewrite Nat.add_0_l.
+  remember (carry v (i + 1)) as cv1 eqn:Hcv1; symmetry in Hcv1.
+  destruct cv1. {
+    rewrite Nat.mod_0_l; [ | easy ].
+    rewrite Q.add_0_l.
+    apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+    intros q; unfold "⊕"; rewrite <- Nat.add_assoc.
+    replace 2 with (1 + 1) by easy.
+    apply Nat.add_le_mono; [ apply Hu | ].
+    replace 1 with (rad - 1) by flia Hr2.
+    apply P_le.
+  }
+  destruct cv1. 2: {
+    specialize (carry_upper_bound_for_adds 2 v i (Nat.neq_succ_0 _)) as H1.
+    assert (H : ∀ k, v (i + k + 1) ≤ 2 * (rad - 1)). {
+      now intros; rewrite <- Nat.add_assoc, Hr2.
+    }
+    specialize (H1 H 1); flia Hcv1 H1.
+  }
+  rewrite Nat.mod_small; [ | pauto ].
+  apply Q.lt_add_lt_sub_l.
+  replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
+  apply Q.mul_lt_mono_pos_r; [ easy | ].
+(* state
+     i+1         i+p+2
+   u 0 . . . . 0 .
+   v 0 . . . . 0 .
+ u+v 0 . . . . 0 2 2 2 ...
+  Pv 1 . . . . . .
+u+Pv 1 . . . . . .
+
+u+v between i+1 and i+p+2 must be (2*31*0)*
+*)
 ...
 ... (* works, but restricted *)
 destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
