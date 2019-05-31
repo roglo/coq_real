@@ -3387,21 +3387,40 @@ apply (rad_2_all_12_2_carry_1 1); try easy; try pauto. {
 }
 Qed.
 
-(* fact that u, from index i, matches regexp "(2*31*0)*" described by a list
-   l of pairs (n2, n1) where n2 is the number of 2s and n1 the numbers of 1s
+(* creates a list of pairs representing the regexp "(2*31*0)*" found in u
+   from index i, of the form (n2, n1) where n2 is the number of 2s and n1
+   the numbers of 1s
       u = 22222231111111111111022311110...
           <-n2-> <----n1----->
+   e.g. a result of [(3, 2); (0, 1)] would mean that u contains three 2s,
+   one 3, two 1s, one 0, one 3, one 1, and something else
+
+   this regexp is found in sequences whose propagation of carry P returns
+   an infinity of 1s in radix 2
 *)
-Fixpoint tagada u l i :=
-  match l with
-  | [] => True
-  | (n2, n1) :: l' =>
-      (∀ j, j < n2 → u (i + j) = 2) ∧
-      u (i + n2) = 3 ∧
-      (∀ j, j < n1 → u (i + n2 + j + 1) = 1) ∧
-      u (i + n2 + n1 + 1) = 0 ∧
-      tagada u l' (i + n2 + 1 + n1 + 1)
+Fixpoint rep_2s_3_1s_0_loop m u i (in2 : bool) n2 n1 :=
+  match m with
+  | 0 => []
+  | S m' =>
+      if in2 then
+        match u (i + n2) with
+        | 2 => rep_2s_3_1s_0_loop m' u i in2 (n2 + 1) n1
+        | 3 => rep_2s_3_1s_0_loop m' u i false n2 n1
+        | _ => []
+        end
+      else
+        match u (i + n2 + 1 + n1) with
+        | 1 => rep_2s_3_1s_0_loop m' u i in2 n2 (n1 + 1)
+        | 0 => (n2, n1) :: rep_2s_3_1s_0_loop m' u (i + n1 + n2 + 2) true 0 0
+        | _ => []
+        end
   end.
+
+Definition rep_2s_3_1s_0 u i di := rep_2s_3_1s_0_loop di u i true 0 0.
+
+Compute
+  (let l := [2;2;2;3;1;1;0;3;1;0;1;2;3;4;5] in
+   rep_2s_3_1s_0 (λ i, List.nth i l 42) 0 (length l)).
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   rad = 2
@@ -3575,7 +3594,15 @@ u+Pv 1 . . . . . .
 
 u+v between i+1 and i+p+2 must be (2*31*0)*
 *)
-  assert (∃ l, tagada v l (i + 2)) .
+  remember (rep_2s_3_1s_0 (u ⊕ v) (i + 1) p) as l eqn:Hl.
+  (* l contains a list of pairs (n2, n1) such that u, from index i+1,
+     contains n2 2s, a 3, n1 1s, a 0 and so on; we must prove that
+     it runs exactly up to i+p+1 with the 0 in u(i+p+1) is exactly
+     the 0 at the end of the regexp "(2*31*0)*"; we must prove
+     that the sum of all n2 and all n1 is p (something like that,
+     actually we must add 2 by loop for the 3 and the 0); well,
+     this could be interesting but I still don't know how I prove
+     my goal with that :-) *)
 ...
 ... (* works, but restricted *)
 destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
