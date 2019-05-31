@@ -3,6 +3,7 @@
 Require Import Utf8 Arith NPeano Psatz PeanoNat.
 Require Import Misc Summation Rational Ureal UrealNorm UrealAddAssoc1.
 Import Q.Notations.
+Import List.ListNotations.
 
 Set Nested Proofs Allowed.
 
@@ -3386,6 +3387,22 @@ apply (rad_2_all_12_2_carry_1 1); try easy; try pauto. {
 }
 Qed.
 
+(* fact that u, from index i, matches regexp "(2*31*0)*" described by a list
+   l of pairs (n2, n1) where n2 is the number of 2s and n1 the numbers of 1s
+      u = 22222231111111111111022311110...
+          <-n2-> <----n1----->
+*)
+Fixpoint tagada u l i :=
+  match l with
+  | [] => True
+  | (n2, n1) :: l' =>
+      (∀ j, j < n2 → u (i + j) = 2) ∧
+      u (i + n2) = 3 ∧
+      (∀ j, j < n1 → u (i + n2 + j + 1) = 1) ∧
+      u (i + n2 + n1 + 1) = 0 ∧
+      tagada u l' (i + n2 + 1 + n1 + 1)
+  end.
+
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -3558,6 +3575,7 @@ u+Pv 1 . . . . . .
 
 u+v between i+1 and i+p+2 must be (2*31*0)*
 *)
+  assert (∃ l, tagada v l (i + 2)) .
 ...
 ... (* works, but restricted *)
 destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
