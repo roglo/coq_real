@@ -3585,12 +3585,13 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
   replace (1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
   apply Q.mul_lt_mono_pos_r; [ easy | ].
 (* state
-     i+1         i+p+2
-   u 0 . . . . 0 .
-   v 0 . . . . 0 .
- u+v 0 . . . . 0 2 2 2 ...
-  Pv 1 . . . . . .
-u+Pv 1 . . . . . .
+       i+1         i+p+2
+     u 0 . . . . 0 .
+     v 0 . . . . 0 .
+c(u+v) 1 . . . 0 1 1 1 1 ...
+   u+v 0 . . . . 0 2 2 2 ...
+    Pv 1 . . . . . .
+  u+Pv 1 . . . . . .
 
 u+v between i+1 and i+p+2 must be (2*31*0)*
 *)
