@@ -3595,6 +3595,7 @@ c(u+v) 1 . . . 0 1 1 1 1 ...
 
 u+v between i+1 and i+p+2 must be (2*31*0)*
 *)
+(*
   remember (rep_2s_3_1s_0 (u ⊕ v) (i + 1) p) as l eqn:Hl.
   (* l contains a list of pairs (n2, n1) such that u, from index i+1,
      contains n2 2s, a 3, n1 1s, a 0 and so on; we must prove that
@@ -3604,8 +3605,56 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
      actually we must add 2 by loop for the 3 and the 0); well,
      this could be interesting but I still don't know how I prove
      my goal with that :-) *)
+*)
+  destruct (LPO_fst (λ j, negb ((u ⊕ P v) (i + j + 1) =? 0))) as [H| Hupv0]. {
+    assert (Hupv0 : ∀ k, (u ⊕ P v) (i + k + 1) ≠ 0). {
+      intros p1; specialize (H p1).
+      apply Bool.negb_true_iff in H.
+      now apply Nat.eqb_neq in H.
+    }
+    clear H.
+    rewrite A_all_9; [ now apply Q.sub_lt | ].
+    intros p1 Hp1; rewrite Hr2; replace (2 - 1) with 1 by easy.
+    specialize (Hupv0 (p1 + 1)) as Hupvp.
+    replace (i + (p1 + 1) + 1) with (i + p1 + 2) in Hupvp by flia.
+    replace (i + 1 + p1 + 1) with (i + p1 + 2) by flia.
+    remember ((u ⊕ P v) (i + p1 + 2)) as x eqn:Hx; symmetry in Hx.
+    destruct x; [ easy | clear Hupvp ].
+    destruct x; [ easy | exfalso ].
+    destruct x. 2: {
+      unfold "⊕" in Hx.
+      rewrite <- Nat.add_assoc in Hx.
+      specialize (Hu (p1 + 2)) as H1.
+      specialize (P_le v (i + (p1 + 2))) as H2.
+      flia Hr2 Hx H1 H2.
+    }
+    apply Nat_eq_add_2 in Hx.
+    destruct Hx as [Hx| Hx]. {
+      specialize (Hu (p1 + 2)) as H1.
+      rewrite Nat.add_assoc in H1; flia Hx H1.
+    }
+    destruct Hx as [Hupvp2| Hx]. 2: {
+      specialize (P_le v (i + (p1 + 2))) as H1.
+      rewrite Nat.add_assoc, Hr2 in H1; flia Hx H1.
+    }
+    destruct (lt_dec p1 p) as [Hp1p| Hp1p]. {
+      assert (Hpvp1 : P v (i + p + 1) = 1). {
+        specialize (Hupv0 p) as H1.
+        unfold "⊕" in H1; rewrite (...
+
+(* state
+       i+1   i+p1+2  i+p+2
+       |     |       |
+     u 0 . . 1 . . 0 .
+     v 0 . . . . . 0 .
+c(u+v) 1 . . . . 0 1 1 1 1 ...
+   u+v 0 . . . . . 0 2 2 2 ...
+    Pv 1 . . 1 . . . .
+  u+Pv 1 . . 2 . . . .
+*)
+      (* m'avance pas beaucoup... *)
 ...
-... (* works, but restricted *)
+... (* below: works, but restricted *)
 destruct (zerop (carry (u ⊕ P v) (i + 1))) as [Hcuv| Hcuv]. {
   destruct (LPO_fst (λ j, negb ((u ⊕ P v) (i + j + 1) =? 0))) as [H| Hupv0]. {
     assert (Hupv0 : ∀ k, (u ⊕ P v) (i + k + 1) ≠ 0). {
