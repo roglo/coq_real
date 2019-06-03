@@ -3676,9 +3676,7 @@ c(u+v) . . . . 0 1 1 1 1 ...
       rewrite Nat.add_assoc, Hr2 in H1; flia Hx H1.
     }
 ...
-
     destruct (lt_dec p1 p) as [Hp1p| Hp1p]. {
-
 (* state
        i+1   i+p1+2  i+p+2
        |     |       |
