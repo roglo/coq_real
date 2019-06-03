@@ -3650,35 +3650,6 @@ c(u+v) . . . . 0 1 1 1 1 ...
     Pv 1 . . . . 1 .
   u+Pv 1 . . . . 1 .
 *)
-    Check carry_0_A_lt_1.
-apply carry_0_A_lt_1. {
-  rewrite Hnk.
-  unfold min_n.
-  apply Nat.mul_le_mono_l.
-  apply Nat.add_le_mono_r.
-  rewrite <- Nat.add_assoc.
-  apply Nat.add_le_mono_l.
-  unfold carry_cases.
-  destruct (LPO_fst (fA_ge_1_ε (u ⊕ P v) (i + 1))) as [H1| H1]. {
-    rewrite Nat.add_0_r.
-    specialize (fA_lt_1_ε_NQintg_A 2 i (u ⊕ P v) k) as H2.
-    assert (H : 2 < rad ^ (min_n (i + k) - i - k - 2)). {
-      admit.
-    }
-    specialize (H2 H); clear H.
-    assert (H : ∀ k, (u ⊕ P v) (i + k) ≤ 2 * (rad - 1)). {
-      admit.
-    }
-    specialize (H2 H Hjk Hk); clear H.
-    specialize (all_fA_ge_1_ε_NQintg_A 2 (i + 1) (u ⊕ P v)) as H3.
-    assert (H : 2 < rad ^ (rad * (i + 1 + 3) - (i + 1 + 2))). {
-      admit.
-    }
-    specialize (H3 H); clear H.
-    assert (H : ∀ k, (u ⊕ P v) (i + 1 + k) ≤ 2 * (rad - 1)). {
-      admit.
-    }
-    specialize (H3 H H1); clear H.
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p1 Hp1; rewrite Hr2; replace (2 - 1) with 1 by easy.
