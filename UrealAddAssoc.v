@@ -3633,14 +3633,19 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       now apply Nat.eqb_neq in H.
     }
     clear H.
+    apply Nat.eq_add_0 in Huvp1.
     assert (Hpvp1 : P v (i + p + 1) = 1). {
       specialize (Hupv0 p) as H1.
-      apply Nat.eq_add_0 in Huvp1.
       unfold "⊕" in H1; rewrite (proj1 Huvp1), Nat.add_0_l in H1.
       specialize (P_le v (i + p + 1)) as H2.
       rewrite Hr2 in H2; flia H1 H2.
     }
     move Hpvp1 before Huvp1.
+    assert (Hpv1 : P v (i + 1) = 1). {
+      unfold P, d2n, prop_carr, dig.
+      now rewrite (proj2 Huv1), Hcv1, Hr2.
+    }
+    move Hpv1 before Huv1.
 (* state
        i+1         i+p+2
      u 0 . . . . 0 .
