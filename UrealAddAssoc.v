@@ -3422,6 +3422,26 @@ Compute
   (let l := [2;2;2;3;1;1;0;3;1;0;1;2;3;4;5] in
    rep_2s_3_1s_0 (λ i, List.nth i l 42) 0 (length l)).
 
+Theorem carry_0_A_lt_1 {r : radix} : ∀ u i n,
+  n ≤ min_n (i + carry_cases u i)
+  → carry u i = 0
+  → (A i n u < 1)%Q.
+Proof.
+intros * Hn Hc.
+specialize radix_ge_2 as Hr.
+apply Q.eq_intg_0; [ easy | ].
+unfold carry in Hc.
+destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+  now unfold A; rewrite summation_empty.
+}
+apply Nat.nlt_ge in Hin.
+rewrite (A_split n) in Hc. 2: {
+  split; [ flia Hin | easy ].
+}
+rewrite Q.intg_add_cond in Hc; [ | easy | now apply Q.le_0_mul_r ].
+flia Hc.
+Qed.
+
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -3630,6 +3650,7 @@ c(u+v) . . . . 0 1 1 1 1 ...
     Pv 1 . . . . 1 .
   u+Pv 1 . . . . 1 .
 *)
+    Check carry_0_A_lt_1.
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p1 Hp1; rewrite Hr2; replace (2 - 1) with 1 by easy.
