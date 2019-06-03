@@ -3654,19 +3654,6 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
         specialize (Hu (p + 2)); rewrite Nat.add_assoc in Hu; flia Hu H1.
       }
       unfold "⊕".
-(*
-      replace (carry v (i + p + 2)) with 1. 2: {
-        rewrite (carry_succ 2) in Hpvp1; cycle 1. {
-          rewrite Hr2.
-          replace 2 with (2 ^ 1) at 1 by easy.
-          apply Nat.pow_lt_mono_r; [ pauto | flia ].
-        } {
-          now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
-        }
-        replace (i + p + 1 + 1) with (i + p + 2) in Hpvp1 by flia.
-...
-        rewrite (proj2 H1), Hr2 in Hpvp1.
-*)
       destruct H1 as [H1| H1]; rewrite (proj1 H1). {
         move Hpvp1 at bottom.
         unfold P, d2n, prop_carr, dig in Hpvp1 |-*.
