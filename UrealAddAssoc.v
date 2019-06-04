@@ -3856,6 +3856,7 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
 
   u+v between i+1 and i+p+2 are supposed to be (2*31*0)*
 *)
+...
       apply Nat_eq_add_2 in Huv2.
       destruct Huv2 as [Huv2| Huv2]; [ specialize (Hu 2); flia Hu Huv2 | ].
       destruct Huv2 as [Huv2| Huv2]. {
