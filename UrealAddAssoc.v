@@ -3757,6 +3757,7 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       rewrite Hcvps, Hr2.
       now destruct H1 as [H1| H1]; rewrite (proj1 H1), (proj2 H1).
     }
+    clear Hcvp2 Hupvp2.
 (* state
        i+1         i+p+2
      u 0 . . . . 0 .
