@@ -3769,6 +3769,104 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
   u+v between i+1 and i+p+2 are supposed to be (2*31*0)*
 *)
 (* reste à prouver que u+Pv vaut 1 même avant i+p+1 *)
+    assert (Huv2 : (u ⊕ v) (i + 2) = 2 ∨ (u ⊕ v) (i + 2) = 3). {
+      destruct p. {
+        specialize (Hp 0) as H1.
+        now do 2 rewrite Nat.add_0_r in H1; left.
+      }
+      replace (i + S p + 1) with (i + p + 2) in Huvp1, Hpvp1 by flia.
+      remember ((u ⊕ v) (i + 2)) as uv eqn:Huv; symmetry in Huv.
+      destruct uv. {
+        exfalso.
+        move Hcv1 at bottom.
+        rewrite (carry_succ 2) in Hcv1; cycle 1. {
+          rewrite Hr2.
+          replace 2 with (2 ^ 1) at 1 by easy.
+          apply Nat.pow_lt_mono_r; [ pauto | flia ].
+        } {
+          now intros; rewrite Hr2; rewrite <- Nat.add_assoc.
+        }
+        replace (i + 1 + 1) with (i + 2) in Hcv1 by flia.
+        apply Nat.eq_add_0 in Huv.
+        rewrite (proj2 Huv), Hr2, Nat.add_0_l in Hcv1.
+        specialize (carry_upper_bound_for_add v (i + 2)) as H3.
+        assert (H : ∀ k, v (i + 2 + k + 1) ≤ 2 * (rad - 1)). {
+          now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+        }
+        specialize (H3 H); clear H.
+        remember (carry v (i + 2)) as c eqn:Hc; symmetry in Hc.
+        destruct c; [ easy | ].
+        destruct c; [ easy | flia H3 ].
+      }
+      destruct uv. {
+        exfalso.
+        move Hcv1 at bottom.
+        rewrite (carry_succ 2) in Hcv1; cycle 1. {
+          rewrite Hr2.
+          replace 2 with (2 ^ 1) at 1 by easy.
+          apply Nat.pow_lt_mono_r; [ pauto | flia ].
+        } {
+          now intros; rewrite Hr2; rewrite <- Nat.add_assoc.
+        }
+        replace (i + 1 + 1) with (i + 2) in Hcv1 by flia.
+        apply Nat.eq_add_1 in Huv.
+        destruct Huv as [Huv| Huv]. {
+          rewrite (proj2 Huv), Hr2, Nat.add_0_l in Hcv1.
+          specialize (carry_upper_bound_for_add v (i + 2)) as H3.
+          assert (H : ∀ k, v (i + 2 + k + 1) ≤ 2 * (rad - 1)). {
+            now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+          }
+          specialize (H3 H); clear H.
+          remember (carry v (i + 2)) as c eqn:Hc; symmetry in Hc.
+          destruct c; [ easy | ].
+          destruct c; [ easy | flia H3 ].
+        }
+        rewrite (proj2 Huv), Hr2 in Hcv1.
+        remember (carry v (i + 2)) as c eqn:Hc; symmetry in Hc.
+        destruct c; [ easy | ].
+        destruct c. 2: {
+          specialize (carry_upper_bound_for_add v (i + 2)) as H3.
+          assert (H : ∀ k, v (i + 2 + k + 1) ≤ 2 * (rad - 1)). {
+            now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+          }
+          specialize (H3 H); clear H.
+          flia Hc H3.
+        }
+        clear Hcv1.
+        rename Huv into Huv2; move Huv2 before Huv1.
+        specialize (Hupv0 1) as H1.
+        unfold "⊕", P, d2n, prop_carr, dig in H1.
+        replace (i + 1 + 1) with (i + 2) in H1 by flia.
+        now rewrite (proj1 Huv2), (proj2 Huv2), Hc, Hr2 in H1.
+      }
+      destruct uv; [ now left | ].
+      destruct uv; [ now right | ].
+      specialize (Huvl3 2) as H1.
+      flia Huv H1.
+    }
+    move Huv2 before Huv1.
+    destruct Huv2 as [Huv2| Huv2]. {
+(* state
+       i+1         i+p+2
+     u 0 . . . . 0 . . .
+     v 0 . . . . 0 . . .
+   u+v 0 2 . . . 0 2 2 2 ...
+    Pv 1 . . . . 1 . . .
+  u+Pv 1 . . . . 1 1 1 1 ...
+
+  u+v between i+1 and i+p+2 are supposed to be (2*31*0)*
+*)
+      apply Nat_eq_add_2 in Huv2.
+      destruct Huv2 as [Huv2| Huv2]; [ specialize (Hu 2); flia Hu Huv2 | ].
+      destruct Huv2 as [Huv2| Huv2]. {
+(* state
+       i+1         i+p+2
+     u 0 1 . . . 0 . . .
+     v 0 1 . . . 0 . . .
+   u+v 0 2 . . . 0 2 2 2 ...
+    Pv 1 . . . . 1 . . .
+  u+Pv 1 . . . . 1 1 1 1 ...
+*)
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p1 Hp1; rewrite Hr2; replace (2 - 1) with 1 by easy.
