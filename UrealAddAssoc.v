@@ -3650,6 +3650,7 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       (Hupvps : ∀ s,
        carry v (i + p + s + 2) = 1 ∧ (u ⊕ P v) (i + p + s + 2) = 1). {
       intros s.
+      clear - Hp Hu Hv Hpvp1 Huvp1 Hr2 Hupv0.
       induction s. {
         rewrite Nat.add_0_r.
         assert (Hcvp2 : carry v (i + p + 2) = 1). {
