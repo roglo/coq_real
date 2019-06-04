@@ -3712,6 +3712,9 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
     Pv 1 . . . . 1 .
   u+Pv 1 . . . . 1 1
 *)
+(* faut peut-être, probablement, que je considère les deux cas u(i+p+2)=0 ou
+   1 pour faire la suite, du moins si j'ai envie de prouver que u+Pv vaut
+   toujours 1 après i+p+2 *)
 ...
     assert (Hcvp3 : carry v (i + p + 3) = 1). { (* pas sûr *)
       rewrite (carry_succ 2) in Hcvp2; cycle 1. {
