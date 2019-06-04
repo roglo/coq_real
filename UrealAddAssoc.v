@@ -3704,85 +3704,30 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       rewrite Hcvp2, Hr2.
       now destruct H1 as [H1| H1]; rewrite (proj1 H1), (proj2 H1).
     }
-(* state
-       i+1         i+p+2
-     u 0 . . . . 0 .
-     v 0 . . . . 0 .
-   u+v 0 . . . . 0 2 2 2 ...
-    Pv 1 . . . . 1 .
-  u+Pv 1 . . . . 1 1
-*)
-    assert (Hupvp3 : (u ⊕ P v) (i + p + 3) = 1). {
-      specialize (Hp 1) as H1.
-      replace (i + p + 1 + 2) with (i + p + 3) in H1 by flia.
-      apply Nat_eq_add_2 in H1.
-      destruct H1 as [H1| H1]. {
-        specialize (Hu (p + 3)); rewrite Nat.add_assoc in Hu; flia Hu H1.
-      }
-      specialize (Hupv0 (p + 2)) as H2.
-      unfold "⊕", P, d2n, prop_carr, dig in H2 |-*.
-      replace (i + (p + 2) + 1) with (i + p + 3) in H2 by flia.
-      rewrite Hr2 in H2 |-*.
-      specialize (carry_upper_bound_for_add v (i + p + 3)) as H3.
-      assert (H : ∀ k, v (i + p + 3 + k + 1) ≤ 2 * (rad - 1)). {
-        now intros; rewrite Hr2; do 3 rewrite <- Nat.add_assoc.
-      }
-      specialize (H3 H); clear H.
-      destruct H1 as [H1| H1]; rewrite (proj1 H1), (proj2 H1) in H2 |-*. {
-        rewrite (carry_succ 2) in Hcvp2; cycle 1. {
-          rewrite Hr2.
-          replace 2 with (2 ^ 1) at 1 by easy.
-          apply Nat.pow_lt_mono_r; [ pauto | flia ].
-        } {
-          now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
-        }
-        replace (i + p + 2 + 1) with (i + p + 3) in Hcvp2 by flia.
-        rewrite (proj2 H1), Hr2 in Hcvp2.
-        remember (carry v (i + p + 3)) as c eqn:Hc; symmetry in Hc.
-        destruct c; [ easy | ].
-        destruct c; [ easy | flia H3 ].
-      }
-      rewrite Nat_mod_add_same_l in H2; [ | easy ].
-      remember (carry v (i + p + 3)) as c eqn:Hc; symmetry in Hc.
-      destruct c; [ easy | ].
-      destruct c; [ easy | flia H3 ].
-    }
-(* state
-       i+1         i+p+2
-     u 0 . . . . 0 .
-     v 0 . . . . 0 .
-   u+v 0 . . . . 0 2 2 2 ...
-    Pv 1 . . . . 1 .
-  u+Pv 1 . . . . 1 1 1
-*)
-...
-    assert (Hupvps : ∀ s, (u ⊕ P v) (i + p + s + 2) = 1). {
+    assert
+      (Hupvps : ∀ s,
+       carry v (i + p + s + 2) = 1 ∧ (u ⊕ P v) (i + p + s + 2) = 1). {
       intros s.
       induction s; [ now rewrite Nat.add_0_r | ].
-...
-      specialize (Hp (S s)) as H1.
-      apply Nat_eq_add_2 in H1.
-      destruct H1 as [H1| H1]. {
-        specialize (Hu (p + S s + 2)); do 2 rewrite Nat.add_assoc in Hu.
-        flia Hu H1.
-      }
-      unfold "⊕".
-      apply Nat.eq_add_1 in IHs.
-      unfold P, d2n, prop_carr, dig in IHs.
-      specialize (Hp s) as H2.
-      apply Nat_eq_add_2 in H2.
-      destruct H2 as [H2| H2]. {
-        specialize (Hu (p + s + 2)); do 2 rewrite Nat.add_assoc in Hu.
-        flia Hu H2.
-      }
-      destruct H2 as [H2| H2]. {
-        rewrite (proj1 H2), (proj2 H2), Hr2 in IHs.
-        destruct IHs as [IHs| IHs]; [ | easy ].
-        destruct IHs as (_, IHs).
-        destruct H1 as [H1| H1]; rewrite (proj1 H1). {
-          unfold P, d2n, prop_carr, dig.
-          rewrite (proj2 H1), Hr2.
-          replace (carry v (i + p + S s + 2)) with 1; [ easy | symmetry ].
+      replace (i + p + S s + 2) with (i + p + s + 3) by flia.
+      assert (Hcvps : carry v (i + p + s + 3) = 1). {
+        specialize (Hp (S s)) as H1.
+        replace (i + p + S s + 2) with (i + p + s + 3) in H1 by flia.
+        apply Nat_eq_add_2 in H1.
+        destruct H1 as [H1| H1]. {
+          specialize (Hu (p + s + 3)); do 2 rewrite Nat.add_assoc in Hu.
+          flia Hu H1.
+        }
+        specialize (Hupv0 (p + s + 2)) as H2.
+        replace (i + (p + s + 2) + 1) with (i + p + s + 3) in H2 by flia.
+        unfold "⊕", P, d2n, prop_carr, dig in H2.
+        rewrite Hr2 in H2.
+        specialize (carry_upper_bound_for_add v (i + p + s + 3)) as H3.
+        assert (H : ∀ k, v (i + p + s + 3 + k + 1) ≤ 2 * (rad - 1)). {
+          now intros; rewrite Hr2; do 4 rewrite <- Nat.add_assoc.
+        }
+        specialize (H3 H); clear H.
+        destruct H1 as [H1| H1]; rewrite (proj1 H1), (proj2 H1) in H2. {
           rewrite (carry_succ 2) in IHs; cycle 1. {
             rewrite Hr2.
             replace 2 with (2 ^ 1) at 1 by easy.
@@ -3791,30 +3736,36 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
             now intros; rewrite Hr2; do 3 rewrite <- Nat.add_assoc.
           }
           replace (i + p + s + 2 + 1) with (i + p + s + 3) in IHs by flia.
-          replace (i + p + S s + 2) with (i + p + s + 3) in H1 |-* by flia.
           rewrite (proj2 H1), Hr2 in IHs.
-          remember (carry v (i + p + s + 3)) as x eqn:Hx; symmetry in Hx.
-          destruct x; [ easy | ].
-          destruct x; [ easy | ].
-          specialize (carry_upper_bound_for_add v (i + p + s + 3)) as H3.
-          assert (H : ∀ k, v (i + p + s + 3 + k + 1) ≤ 2 * (rad - 1)). {
-            now intros; rewrite Hr2; do 4 rewrite <- Nat.add_assoc.
-          }
-          specialize (H3 H); clear H.
-          flia Hx H3.
+          remember (carry v (i + p + s + 3)) as c eqn:Hc; symmetry in Hc.
+          destruct c; [ easy | ].
+          destruct c; [ easy | flia H3 ].
         }
-...
-    move Hupvp2 before Hpvp1.
-(* (peut-être vrai : ∀ s, (u+Pv)(i+p+s+1)=1 *)
+        remember (carry v (i + p + s + 3)) as c eqn:Hc; symmetry in Hc.
+        destruct c; [ easy | ].
+        destruct c; [ easy | flia H3 ].
+      }
+      split; [ easy | ].
+      specialize (Hp (S s)) as H1.
+      replace (i + p + S s + 2) with (i + p + s + 3) in H1 by flia.
+      apply Nat_eq_add_2 in H1.
+      destruct H1 as [H1| H1]. {
+        specialize (Hu (p + s + 3)); do 2 rewrite Nat.add_assoc in Hu.
+        flia Hu H1.
+      }
+      unfold "⊕", P, d2n, prop_carr, dig.
+      rewrite Hcvps, Hr2.
+      now destruct H1 as [H1| H1]; rewrite (proj1 H1), (proj2 H1).
+    }
 (* state
        i+1         i+p+2
      u 0 . . . . 0 .
      v 0 . . . . 0 .
-c(u+v) . . . . 0 1 1 1 1 ...
    u+v 0 . . . . 0 2 2 2 ...
     Pv 1 . . . . 1 .
-  u+Pv 1 . . . . 1 1
+  u+Pv 1 . . . . 1 1 1 1 ...
 *)
+(* reste à prouver que u+Pv vaut 1 même avant i+p+1 *)
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p1 Hp1; rewrite Hr2; replace (2 - 1) with 1 by easy.
