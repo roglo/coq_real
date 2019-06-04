@@ -3704,6 +3704,45 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       rewrite Hcvp2, Hr2.
       now destruct H1 as [H1| H1]; rewrite (proj1 H1), (proj2 H1).
     }
+(* state
+       i+1         i+p+2
+     u 0 . . . . 0 .
+     v 0 . . . . 0 .
+   u+v 0 . . . . 0 2 2 2 ...
+    Pv 1 . . . . 1 .
+  u+Pv 1 . . . . 1 1
+*)
+...
+    assert (Hcvp3 : carry v (i + p + 3) = 1). { (* pas sûr *)
+      rewrite (carry_succ 2) in Hcvp2; cycle 1. {
+        rewrite Hr2.
+        replace 2 with (2 ^ 1) at 1 by easy.
+        apply Nat.pow_lt_mono_r; [ pauto | flia ].
+      } {
+        now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+      }
+      replace (i + p + 2 + 1) with (i + p + 3) in Hcvp2 by flia.
+      rewrite Hr2 in Hcvp2.
+      specialize (Hp 1) as H1.
+      replace (i + p + 1 + 2) with (i + p + 3) in H1 by flia.
+      apply Nat_eq_add_2 in H1.
+      destruct H1 as [H1| H1]. {
+        specialize (Hu (p + 3)); rewrite Nat.add_assoc in Hu; flia Hu H1.
+      }
+      unfold "⊕".
+      destruct H1 as [H1| H1]. {
+        rewrite (proj2 H1) in Hcvp2.
+        remember (carry v (i + p + 3)) as x eqn:Hx; symmetry in Hx.
+        destruct x; [ easy | ].
+        destruct x; [ easy | ].
+        specialize (carry_upper_bound_for_add v (i + p + 3)) as H3.
+        assert (H : ∀ k, v (i + p + 3 + k + 1) ≤ 2 * (rad - 1)). {
+          now intros; rewrite Hr2; do 3 rewrite <- Nat.add_assoc.
+        }
+        specialize (H3 H); flia Hx H3.
+      }
+      clear Hcvp2.
+...
     assert (Hupvps : ∀ s, (u ⊕ P v) (i + p + s + 2) = 1). {
       intros s.
       induction s; [ now rewrite Nat.add_0_r | ].
