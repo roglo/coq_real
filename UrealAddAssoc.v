@@ -3760,10 +3760,10 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
     clear Hcvp2 Hupvp2.
 (* state
        i+1         i+p+2
-     u 0 . . . . 0 .
-     v 0 . . . . 0 .
+     u 0 . . . . 0 . . .
+     v 0 . . . . 0 . . .
    u+v 0 . . . . 0 2 2 2 ...
-    Pv 1 . . . . 1 .
+    Pv 1 . . . . 1 . . .
   u+Pv 1 . . . . 1 1 1 1 ...
 *)
 (* reste à prouver que u+Pv vaut 1 même avant i+p+1 *)
