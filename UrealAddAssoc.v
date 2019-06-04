@@ -3646,7 +3646,7 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       now rewrite (proj2 Huv1), Hcv1, Hr2.
     }
     move Hpv1 before Huv1.
-    assert (Hupvp2 : (u ⊕ P v) (i + p + 2) = 1). {
+    assert (Hcvp2 : carry v (i + p + 2) = 1). {
       specialize (Hp 0) as H1.
       rewrite Nat.add_0_r in H1.
       apply Nat_eq_add_2 in H1.
@@ -3654,12 +3654,10 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
         specialize (Hu (p + 2)); rewrite Nat.add_assoc in Hu; flia Hu H1.
       }
       unfold "⊕".
-      destruct H1 as [H1| H1]; rewrite (proj1 H1). {
+      destruct H1 as [H1| H1]. {
         move Hpvp1 at bottom.
         unfold P, d2n, prop_carr, dig in Hpvp1 |-*.
         rewrite (proj2 Huvp1), Nat.add_0_l, Hr2 in Hpvp1.
-        rewrite (proj2 H1), Hr2.
-        replace (carry v (i + p + 2)) with 1; [ easy | symmetry ].
         rewrite (carry_succ 2) in Hpvp1; cycle 1. {
           rewrite Hr2.
           replace 2 with (2 ^ 1) at 1 by easy.
@@ -3681,12 +3679,30 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       specialize (Hupv0 (p + 1)) as H2.
       replace (i + (p + 1) + 1) with (i + p + 2) in H2 by flia.
       unfold "⊕" in H2.
-      rewrite (proj1 H1) in H2.
-      remember (P v (i + p + 2)) as x eqn:Hx; symmetry in Hx.
+      rewrite (proj1 H1), Nat.add_0_l in H2.
+      unfold P, d2n, prop_carr, dig in H2.
+      rewrite (proj2 H1), Hr2 in H2.
+      remember (carry v (i + p + 2)) as x eqn:Hx; symmetry in Hx.
       destruct x; [ easy | ].
       destruct x; [ easy | ].
-      specialize (P_le v (i + p + 2)) as H3.
-      flia Hr2 Hx H3.
+      specialize (carry_upper_bound_for_add v (i + p + 2)) as H3.
+      assert (H : ∀ k, v (i + p + 2 + k + 1) ≤ 2 * (rad - 1)). {
+        now intros; rewrite Hr2; do 3 rewrite <- Nat.add_assoc.
+      }
+      specialize (H3 H); flia Hx H3.
+    }
+    move Hcvp2 before Hcv1.
+    assert (Hupvp2 : (u ⊕ P v) (i + p + 2) = 1). {
+      specialize (Hp 0) as H1.
+      rewrite Nat.add_0_r in H1.
+      apply Nat_eq_add_2 in H1.
+      destruct H1 as [H1| H1]. {
+        specialize (Hu (p + 2)); rewrite Nat.add_assoc in Hu; flia Hu H1.
+      }
+      unfold "⊕".
+      unfold P, d2n, prop_carr, dig.
+      rewrite Hcvp2, Hr2.
+      now destruct H1 as [H1| H1]; rewrite (proj1 H1), (proj2 H1).
     }
     assert (Hupvps : ∀ s, (u ⊕ P v) (i + p + s + 2) = 1). {
       intros s.
