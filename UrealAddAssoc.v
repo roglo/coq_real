@@ -3867,6 +3867,38 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
     Pv 1 . . . . 1 . . .
   u+Pv 1 . . . . 1 1 1 1 ...
 *)
+        assert (Hpv2 : P v (i + 2) = 0). {
+          unfold P, d2n, prop_carr, dig.
+          rewrite (proj2 Huv2), Hr2.
+          replace (carry v (i + 2)) with 1; [ easy | symmetry ].
+          rewrite (carry_succ 2) in Hcv1; cycle 1. {
+            rewrite Hr2.
+            replace 2 with (2 ^ 1) at 1 by easy.
+            apply Nat.pow_lt_mono_r; [ pauto | flia ].
+          } {
+            now intros; rewrite Hr2; rewrite <- Nat.add_assoc.
+          }
+          replace (i + 1 + 1) with (i + 2) in Hcv1 by flia.
+          rewrite (proj2 Huv2), Hr2 in Hcv1.
+          remember (carry v (i + 2)) as c eqn:Hc; symmetry in Hc.
+          destruct c; [ easy | ].
+          destruct c; [ easy | ].
+          specialize (carry_upper_bound_for_add v (i + 2)) as H3.
+          assert (H : ∀ k, v (i + 2 + k + 1) ≤ 2 * (rad - 1)). {
+            now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+          }
+          specialize (H3 H); clear H.
+          flia Hc H3.
+        }
+        move Hpv2 before Hpv1.
+(* state
+       i+1         i+p+2
+     u 0 1 . . . 0 . . .
+     v 0 1 . . . 0 . . .
+   u+v 0 2 . . . 0 2 2 2 ...
+    Pv 1 0 . . . 1 . . .
+  u+Pv 1 1 . . . 1 1 1 1 ...
+*)
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p1 Hp1; rewrite Hr2; replace (2 - 1) with 1 by easy.
