@@ -3828,7 +3828,6 @@ Definition autom_regexp_2s31s0_next st u i p :=
       end
   | _ => 0 (* failure *)
   end.
-
 ...
     assert (Huv2 : (u ⊕ v) (i + 2) = 2 ∨ (u ⊕ v) (i + 2) = 3). {
       destruct p. {
