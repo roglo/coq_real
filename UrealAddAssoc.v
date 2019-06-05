@@ -3769,6 +3769,42 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
   u+v between i+1 and i+p+2 are supposed to be (2*31*0)*
 *)
 (* reste à prouver que u+Pv vaut 1 même avant i+p+1 *)
+    destruct p. {
+      rewrite A_all_9. 2: {
+        intros q Hq.
+        specialize (Hupvps q) as H1.
+        rewrite Nat.add_0_r in H1.
+        replace (i + 1 + q + 1) with (i + q + 2) by flia.
+        now rewrite Hr2.
+      }
+      now apply Q.sub_lt.
+    }
+    replace (i + S p + 1) with (i + p + 2) in Huvp1, Hpvp1 by flia.
+    rename Huvp1 into Huvp2; rename Hpvp1 into Hpvp2.
+    assert (Huvp2a : ∀ s, (u ⊕ v) (i + p + s + 3) = 2). {
+      intros ; specialize (Hp s).
+      now replace (i + S p + s + 2) with (i + p + s + 3) in Hp by flia.
+    }
+    move Huvp2a before Hp; clear Hp.
+    assert
+      (H : ∀ s,
+       carry v (i + p + s + 3) = 1 ∧ (u ⊕ P v) (i + p + s + 3) = 1). {
+      intros s.
+      specialize (Hupvps s).
+      now replace (i + S p + s + 2) with (i + p + s + 3) in Hupvps by flia.
+    }
+    clear Hupvps; rename H into Hupvps.
+(* state
+       i+1       i+p+2
+     u 0 . . . . 0 . . .
+     v 0 . . . . 0 . . .
+   u+v 0 . . . . 0 2 2 2 ...
+    Pv 1 . . . . 1 . . .
+  u+Pv 1 . . . . 1 1 1 1 ...
+
+  u+v between i+1 and i+p+2 are supposed to be (2*31*0)*
+*)
+...
     assert (Huv2 : (u ⊕ v) (i + 2) = 2 ∨ (u ⊕ v) (i + 2) = 3). {
       destruct p. {
         specialize (Hp 0) as H1.
