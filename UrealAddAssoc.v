@@ -4861,6 +4861,7 @@ rename Hpvq2 into Hpv1.
 rename Huvq2 into Huv11.
 clear nj q; rename nk into n.
 ...
+(**)
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
@@ -5320,7 +5321,7 @@ assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
 }
 specialize (H1 H); clear H.
 ...
-*)
+(**)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
