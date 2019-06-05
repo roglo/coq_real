@@ -3804,6 +3804,11 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
 
   u+v between i+1 and i+p+2 are supposed to be (2*31*0)*
 *)
+    assert
+      (H : ∃ q,
+       (∀ s, s < q → (u ⊕ v) (i + s + 2) = 2) ∧ (u ⊕ v) (i + q + 2) = 3 ∧
+       (∀ s, s < q → carry v (i + s + 2) = 1) ∧ carry v (i + q + 2) = 0). {
+(* meh... *)
 ...
     assert (Huv2 : (u ⊕ v) (i + 2) = 2 ∨ (u ⊕ v) (i + 2) = 3). {
       destruct p. {
