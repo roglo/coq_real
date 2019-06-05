@@ -3804,11 +3804,31 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
 
   u+v between i+1 and i+p+2 are supposed to be (2*31*0)*
 *)
-    assert
-      (H : ∃ q,
-       (∀ s, s < q → (u ⊕ v) (i + s + 2) = 2) ∧ (u ⊕ v) (i + q + 2) = 3 ∧
-       (∀ s, s < q → carry v (i + s + 2) = 1) ∧ carry v (i + q + 2) = 0). {
-(* meh... *)
+    assert (∀ s, (u ⊕ P v) (i + s + 1) = 1). {
+      intros s.
+      destruct (lt_dec (p + 1) s) as [Hsp| Hsp]. {
+        specialize (Hupvps (s - p - 2)) as H1.
+        replace (i + p + (s - p - 2) + 3) with (i + s + 1) in H1 by flia Hsp.
+        easy.
+      }
+      apply Nat.nlt_ge in Hsp.
+Definition autom_regexp_2s31s0_next st u i p :=
+  match st with
+  | 2 => (* 2* *)
+      match u i with
+      | 2 => 2
+      | 3 => 3
+      | _ => 0 (* failure *)
+      end
+  | 3 => (* 2*31* *)
+      match u i with
+      | 1 => 3
+      | 0 => if Nat.eq_dec i p then 1 (* success *) else 2
+      | _ => 0 (* failure *)
+      end
+  | _ => 0 (* failure *)
+  end.
+
 ...
     assert (Huv2 : (u ⊕ v) (i + 2) = 2 ∨ (u ⊕ v) (i + 2) = 3). {
       destruct p. {
