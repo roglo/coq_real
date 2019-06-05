@@ -3766,7 +3766,7 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
     Pv 1 . . . . 1 . . .
   u+Pv 1 . . . . 1 1 1 1 ...
 
-  u+v between i+1 and i+p+2 are supposed to be (2*31*0)*
+  u+v between i+1 and i+p+1 are supposed to be (2*31*0)*
 *)
 (* reste à prouver que u+Pv vaut 1 même avant i+p+1 *)
     destruct p. {
