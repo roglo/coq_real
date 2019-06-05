@@ -4861,7 +4861,7 @@ rename Hpvq2 into Hpv1.
 rename Huvq2 into Huv11.
 clear nj q; rename nk into n.
 ...
-(**)
+*)
 
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
@@ -5321,7 +5321,7 @@ assert (H : ∀ k, P (u ⊕ v) (i + 1 + k) = rad - 1). {
 }
 specialize (H1 H); clear H.
 ...
-(**)
+*)
 
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
@@ -5348,9 +5348,9 @@ remember
    | inr (exist _ k _) => k
    end) as kuv eqn:Hkuv.
 move kuv before kv; move kup before kv.
-remember (min_n (i + k)v) as nv eqn:Hnv.
-remember (min_n (i + k)up) as nup eqn:Hnup.
-remember (min_n (i + k)uv) as nuv eqn:Hnuv.
+remember (min_n (i + kv)) as nv eqn:Hnv.
+remember (min_n (i + kup)) as nup eqn:Hnup.
+remember (min_n (i + kuv)) as nuv eqn:Hnuv.
 move nuv before kuv; move nup before kuv; move nv before kuv.
 (*
 destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
