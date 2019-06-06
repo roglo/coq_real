@@ -3853,7 +3853,9 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
     Pv 1 . . . . 1 . . .
   u+Pv 1 . . . . 1 1 1 1 ...
 *)
-      destruct p. {
+      clear - Huvp2 Hpvp2 Hr2 Hauv Huv1 Huvp2a Huvl3.
+      revert i Hauv Huv1 Huvp2 Hpvp2 Huvl3 Huvp2a.
+      induction p; intros. {
         replace (i + 1 + 2) with (i + 3) in Huvp2, Hpvp2 by flia.
 (* state
        i+1
@@ -3923,6 +3925,7 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
         destruct p. {
           rewrite Nat.add_0_r in Hp2.
           flia Huv2 Hp2.
+
         }
         destruct p. {
           replace (i + 1 + 2) with (i + 3) in Hp2 by flia.
@@ -3934,7 +3937,14 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
         rewrite Huvp2a in Hp2.
         now destruct Hp2.
       }
-(* state... *)
+(* state
+       i+1       i+p+4
+     u 0 . . . . 0 . . .
+     v 0 . . . . 0 . . .
+   u+v 0 . . . . 0 2 2 2 ...
+    Pv 1 . . . . 1 . . .
+  u+Pv 1 . . . . 1 1 1 1 ...
+*)
 ...
     assert (∀ s, (u ⊕ P v) (i + s + 1) = 1). {
       intros s.
