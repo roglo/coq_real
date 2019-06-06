@@ -3769,7 +3769,6 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
   u+v between i+1 and i+p+1 are supposed to be (2*31*0)*
 *)
 (* reste à prouver que u+Pv vaut 1 même avant i+p+1 *)
-(*
     destruct p. {
       rewrite A_all_9. 2: {
         intros q Hq.
@@ -3795,7 +3794,6 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       now replace (i + S p + s + 2) with (i + p + s + 3) in Hupvps by flia.
     }
     clear Hupvps; rename H into Hupvps.
-*)
 (* state
        i+1       i+p+2
      u 0 . . . . 0 . . .
@@ -3806,6 +3804,57 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
 
   u+v between i+1 and i+p+2 are supposed to be (2*31*0)*
 *)
+    assert
+      (Hn2 : ∃ n2,
+       n2 < p + 1 ∧ (∀ s, s < n2 → (u ⊕ v) (i + s + 2) = 2) ∧
+       (u ⊕ v) (i + n2 + 2) = 3). {
+(**)
+      clear - Hr2 Hauv Huv1 Huvp2 Huvp2a.
+      revert i Hauv Huv1 Huvp2 Huvp2a.
+      induction p; intros. {
+(* state
+       i+1
+     u 0 0 . . .
+     v 0 0 . . .
+   u+v 0 0 2 2 2 ...
+    Pv 1 1 . . .
+  u+Pv 1 1 1 1 1 ...
+*)
+        exfalso.
+        specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as H1.
+        rewrite Hr2, Nat.add_0_r in H1.
+        unfold P, d2n, prop_carr, dig in H1.
+        unfold "⊕" at 1 in H1.
+        rewrite (proj1 Huv1), (proj2 Huv1), Hr2 in H1.
+        rewrite Nat.add_0_l in H1.
+        replace (carry (u ⊕ v) (i + 1)) with 0 in H1; [ easy | symmetry ].
+        unfold carry.
+        apply Q.intg_small.
+        split; [ easy | ].
+        rewrite A_split_first; [ | min_n_ge ].
+        replace (S (i + 1)) with (i + 2) by flia.
+        unfold "⊕" at 1.
+        rewrite Nat.add_0_r in Huvp2.
+        rewrite (proj1 Huvp2), (proj2 Huvp2), Hr2.
+        rewrite Q.add_0_l.
+        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+        intros q; unfold "⊕"; rewrite <- Nat.add_assoc.
+        destruct q. {
+          rewrite Nat.add_0_r.
+          rewrite (proj1 Huvp2), (proj2 Huvp2); pauto.
+        }
+        replace (i + (2 + S q)) with (i + 0 + q + 3) by flia.
+        specialize (Huvp2a q) as H2.
+        now unfold "⊕" in H2; rewrite H2.
+      }
+...
+      destruct (Nat.eq_dec ((u ⊕ v) (i + 2)) 3) as [Hi3| Hi3]. {
+        exists 0.
+        split; [ flia | ].
+        split; [ now intros | ].
+        now rewrite Nat.add_0_r.
+      }
+...
     assert (∀ s, (u ⊕ P v) (i + s + 1) = 1). {
       intros s.
 (**)
