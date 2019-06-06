@@ -3854,9 +3854,15 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
   u+Pv 1 . . . . 1 1 1 1 ...
 *)
       clear - Huvp2 Hpvp2 Hr2 Hauv Huv1 Huvp2a Huvl3.
+      assert (H : (u ⊕ v) (i + 1) = 0 ∨ (u ⊕ v) (i + 1) = 2). {
+        unfold "⊕".
+        now left; rewrite (proj1 Huv1), (proj2 Huv1).
+      }
+      move H before Huv1; clear Huv1; rename H into Huv1.
+      replace (i + S p + 2) with (i + p + 3) in Huvp2, Hpvp2 by flia.
       revert i Hauv Huv1 Huvp2 Hpvp2 Huvl3 Huvp2a.
       induction p; intros. {
-        replace (i + 1 + 2) with (i + 3) in Huvp2, Hpvp2 by flia.
+        rewrite Nat.add_0_r in Huvp2, Hpvp2.
 (* state
        i+1
      u 0 . 0 . . .
@@ -3873,10 +3879,7 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
         assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3). {
           now intros; rewrite <- Nat.add_assoc.
         }
-        specialize (Huv2 H Hauv); clear H.
-        unfold "⊕" in Huv2 at 1.
-        rewrite (proj1 Huv1), (proj2 Huv1) in Huv2.
-        specialize (Huv2 (or_introl eq_refl)).
+        specialize (Huv2 H Hauv Huv1); clear H.
         destruct Huv2 as [Huv2| Huv2]. {
           exfalso.
 (* state
@@ -3888,10 +3891,9 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
   u+Pv 1 . 1 1 1 1 ...
 *)
           specialize (rad_2_sum_3_all_9_02_1_3 _ i Hr2 Huvl3 Hauv) as H1.
-          unfold "⊕" in H1 at 1 4.
-          rewrite (proj1 Huv1), (proj2 Huv1) in H1.
-          rewrite (proj1 Huvp2), (proj2 Huvp2) in H1.
-          now specialize (H1 (or_introl eq_refl) Huv2).
+          specialize (H1 Huv1 Huv2).
+          unfold "⊕" in H1.
+          now rewrite (proj1 Huvp2), (proj2 Huvp2) in H1.
         }
         destruct Huv2 as [Huv2| Huv2]; [ exfalso | easy ].
 (* state
@@ -3906,10 +3908,7 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
         assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3). {
           now intros; rewrite <- Nat.add_assoc.
         }
-        specialize (H1 H Hauv); clear H.
-        unfold "⊕" in H1 at 1.
-        rewrite (proj1 Huv1), (proj2 Huv1) in H1.
-        specialize (H1 (or_introl eq_refl)).
+        specialize (H1 H Hauv Huv1); clear H.
         assert (H : ∀ k, k < 1 → (u ⊕ v) (i + k + 2) = 2). {
           intros p Hp.
           now apply Nat.lt_1_r in Hp; rewrite Hp, Nat.add_0_r.
@@ -3925,7 +3924,6 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
         destruct p. {
           rewrite Nat.add_0_r in Hp2.
           flia Huv2 Hp2.
-
         }
         destruct p. {
           replace (i + 1 + 2) with (i + 3) in Hp2 by flia.
@@ -3945,6 +3943,30 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
     Pv 1 . . . . 1 . . .
   u+Pv 1 . . . . 1 1 1 1 ...
 *)
+      specialize (IHp (i + 1)).
+      assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
+        now intros; apply A_ge_1_add_r_true_if.
+      }
+      specialize (IHp H); clear H.
+      replace (i + 1 + 1) with (i + 2) in IHp by flia.
+      replace (i + 1 + p + 3) with (i + p + 4) in IHp by flia.
+      replace (i + S p + 3) with (i + p + 4) in Huvp2, Hpvp2 by flia.
+      specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) i Hr2) as Huv2.
+      assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3). {
+        now intros; rewrite <- Nat.add_assoc.
+      }
+      specialize (Huv2 H Hauv Huv1); clear H.
+      destruct Huv2 as [Huv2| Huv2]. {
+Check rad_2_sum_3_all_9_02_1_333.
+...
+      }
+      destruct Huv2 as [Huv2| Huv2]. {
+        specialize (IHp (or_intror Huv2)).
+        (* seems feasible *)
+...
+      }
+      exists 0.
+      (* etc. *)
 ...
     assert (∀ s, (u ⊕ P v) (i + s + 1) = 1). {
       intros s.
