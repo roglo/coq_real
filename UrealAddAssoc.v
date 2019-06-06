@@ -3867,7 +3867,6 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
         split; [ pauto | ].
         split; [ now intros | ].
         rewrite Nat.add_0_r.
-...
         specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as H1.
         rewrite Hr2, Nat.add_0_r in H1.
         unfold P, d2n, prop_carr, dig in H1.
@@ -3892,6 +3891,51 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
           flia Hc H2.
         }
         clear H1.
+        specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 1) as H1.
+        replace (i + 1 + 1) with (i + 2) in H1 by flia.
+        rewrite Hr2 in H1.
+        unfold P, d2n, prop_carr, dig in H1.
+        rewrite Hr2 in H1.
+        rewrite (carry_succ 3) in Hc; cycle 1. {
+          rewrite Hr2.
+          apply (Nat.lt_le_trans _ (2 ^ 2)); [ pauto | ].
+          apply Nat.pow_le_mono_r; [ easy | flia ].
+        } {
+          now intros q; rewrite <- Nat.add_assoc; rewrite Hr2.
+        }
+        replace (i + 1 + 1) with (i + 2) in Hc by flia.
+        rewrite Hr2 in Hc.
+        specialize (Nat.div_mod ((u ⊕ v) (i + 2) + carry (u ⊕ v) (i + 2)) 2)
+          as H2.
+        specialize (H2 (Nat.neq_succ_0 _)).
+        rewrite Hc, H1 in H2.
+        replace (2 * 1 + (2 - 1)) with 3 in H2 by easy.
+...
+        remember ((u ⊕ v) (i + 2)) as uv eqn:Huv; symmetry in Huv.
+        destruct uv. {
+          exfalso.
+          rewrite Nat.add_0_l in H1.
+          rewrite carry_cus
+...
+        specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as H1.
+        rewrite Nat.add_0_l in H1.
+        remember (carry (u ⊕ v) (i + 1)) as c eqn:Hc; symmetry in Hc.
+        destruct c; [ easy | ].
+        destruct c. 2: {
+          destruct c; [ easy | ].
+          specialize (carry_upper_bound_for_adds 3 (u ⊕ v) (i + 1)) as H2.
+          specialize (H2 (Nat.neq_succ_0 _)).
+          assert (H : ∀ k, (u ⊕ v) (i + 1 + k + 1) ≤ 3 * (rad - 1)). {
+            intros q; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
+            unfold "⊕".
+            specialize (Hu (1 + (q + 1))) as H3.
+            specialize (Hv (1 + (q + 1))) as H4.
+            flia H3 H4.
+          }
+          specialize (H2 H 0); clear H.
+          rewrite Nat.add_0_r in H2.
+          flia Hc H2.
+        }
 ...
     assert (∀ s, (u ⊕ P v) (i + s + 1) = 1). {
       intros s.
