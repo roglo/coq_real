@@ -3812,6 +3812,37 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
         easy.
       }
       apply Nat.nlt_ge in Hsp.
+      destruct (Nat.eq_dec s (p + 1)) as [Hsp1| Hsp1]. {
+        replace (i + s + 1) with (i + p + 2) by flia Hsp1.
+        unfold "⊕".
+        now rewrite (proj1 Huvp2), Hpvp2.
+      }
+      assert (H : s < p + 1) by flia Hsp Hsp1.
+      clear Hsp Hsp1; rename H into Hsp.
+      destruct (Nat.eq_dec s p) as [Hsp1| Hsp1]. {
+        subst s; clear Hsp.
+        specialize (Hupv0 p) as H1.
+        remember ((u ⊕ P v) (i + p + 1)) as x eqn:Hx; symmetry in Hx.
+        destruct x; [ easy | ].
+        destruct x; [ easy | clear H1; exfalso ].
+        destruct x. 2: {
+          specialize (Hu (p + 1)) as H2.
+          specialize (P_le v (i + p + 1)) as H3.
+          rewrite Nat.add_assoc in H2.
+          rewrite Hr2 in H3.
+          unfold "⊕" in Hx; flia Hx H2 H3.
+        }
+        apply Nat_eq_add_2 in Hx.
+        destruct Hx as [Hx| Hx]. {
+          specialize (Hu (p + 1)) as H2.
+          rewrite Nat.add_assoc in H2.
+          flia Hx H2.
+        }
+        destruct Hx as [Hx| Hx]. 2: {
+          specialize (P_le v (i + p + 1)) as H3.
+          rewrite Hr2 in H3; flia Hx H3.
+        }
+...
 Definition autom_regexp_2s31s0_next st u i p :=
   match st with
   | 2 => (* 2* *)
