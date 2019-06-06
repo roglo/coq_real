@@ -3769,6 +3769,7 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
   u+v between i+1 and i+p+1 are supposed to be (2*31*0)*
 *)
 (* reste à prouver que u+Pv vaut 1 même avant i+p+1 *)
+(*
     destruct p. {
       rewrite A_all_9. 2: {
         intros q Hq.
@@ -3794,6 +3795,7 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       now replace (i + S p + s + 2) with (i + p + s + 3) in Hupvps by flia.
     }
     clear Hupvps; rename H into Hupvps.
+*)
 (* state
        i+1       i+p+2
      u 0 . . . . 0 . . .
@@ -3806,6 +3808,22 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
 *)
     assert (∀ s, (u ⊕ P v) (i + s + 1) = 1). {
       intros s.
+(**)
+      induction s as (s, IHs) using lt_wf_rec.
+      destruct s. {
+        rewrite Nat.add_0_r.
+        now unfold "⊕"; rewrite (proj1 Huv1), Hpv1.
+      }
+      replace (i + S s + 1) with (i + s + 2) by flia.
+(* state
+       i+1   i+s+1   i+p+2
+     u 0 . . . . . . 0 . . .
+     v 0 . . . . . . 0 . . .
+   u+v 0 . . . . . . 0 2 2 2 ...
+    Pv 1 . . . . . . 1 . . .
+  u+Pv 1 1 1 1 . . . 1 1 1 1 ...
+*)
+...
       destruct (lt_dec (p + 1) s) as [Hsp| Hsp]. {
         specialize (Hupvps (s - p - 2)) as H1.
         replace (i + p + (s - p - 2) + 3) with (i + s + 1) in H1 by flia Hsp.
