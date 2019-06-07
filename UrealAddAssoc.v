@@ -3938,10 +3938,13 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
 
   u+v between i+1 and i+p+2 are supposed to be (2*31*0)*
 *)
-    apply Nat.eq_add_0 in Huv1.
-    apply Nat.eq_add_0 in Huvp2.
-    specialize (rad_2_sum_3_all_9_02_p0_all_2_ex_222_3 (u ⊕ v) i p) as Hn2.
-    specialize (Hn2 Hr2 Hauv Huv1 Huvp2 Huvl3 Huvp2a).
+    assert (Hn2 : ∃ n2,
+      n2 < p ∧ (∀ s : nat, s < n2 → (u ⊕ v) (i + s + 2) = 2) ∧
+      (u ⊕ v) (i + n2 + 2) = 3). {
+      apply Nat.eq_add_0 in Huv1.
+      apply Nat.eq_add_0 in Huvp2.
+      now apply rad_2_sum_3_all_9_02_p0_all_2_ex_222_3.
+    }
 (* state
        i+1   i+n2+2  i+p+2
      u 0 . . . . . . 0 . . .
