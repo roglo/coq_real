@@ -3962,14 +3962,37 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       remember (p - n2 - 1) as q eqn:Hq.
       replace p with (q + n2 + 1) in * by flia Hn2p Hq.
       clear Hn2p Hq.
-      induction q. {
+      replace (i + (q + n2 + 1)) with (i + n2 + q + 1) in * by flia.
+      replace (i + q + n2 + 1 + 2) with (i + n2 + q + 3) in * by flia.
+      replace (S (q + n2 + 1)) with (q + n2 + 2) in * by flia.
+(*
+      revert i Hu Hv Hjj Hj Hjk Hk Hauv Huv1 Hpv1 Huvp2 Hpvp2 Hn Hnj Hnk Huvl3
+        Hjp Huvp2a Hcv1 Hupv0 Hupvps Huv_bef_n2 Huvn2.
+*)
+      revert n2 Huvp2 Hpvp2 Hjp Huvp2a Hupvps Huv_bef_n2 Huvn2.
+      induction q; intros. {
         exists 0.
         split; [ flia | ].
         split; [ now intros | ].
-        rewrite Nat.add_0_l in Huvp2.
-        rewrite Nat.add_0_r.
-        now replace (i + (n2 + 1) + 2) with (i + n2 + 3) in Huvp2 by flia.
+        now rewrite <- Nat.add_assoc in Huvp2.
       }
+      replace (i + n2 + S q + 1) with (i + n2 + q + 2) in * by flia.
+      replace (i + n2 + q + 2 +  2) with (i + n2 + q + 4) in * by flia.
+      replace (S q + n2 + 2) with (q + n2 + 3) in * by flia.
+(* state
+       i+1   i+n2+2  i+n2+q+4
+     u 0 . . . . . . 0 . . .
+     v 0 . . . . . . 0 . . .
+   u+v 0 2 2 3 . . . 0 2 2 2 ...
+    Pv 1 . . . . . . 1 . . .
+  u+Pv 1 . . . . . . 1 1 1 1 ...
+*)
+      specialize (IHq (n2 + 1)).
+      replace (i + (n2 + 1) + q + 1 + 2) with (i + n2 + q + 4) in IHq by flia.
+      replace (q + (n2 + 1) + 2) with (q + n2 + 3) in IHq by flia.
+      replace (i + (n2 + 1) + q + 1) with (i + n2 + q + 2) in IHq by flia.
+      specialize (IHq Huvp2 Hpvp2 Hjp Huvp2a Hupvps).
+(* ah oui mais non ça va pas *)
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p1 Hp1; rewrite Hr2; replace (2 - 1) with 1 by easy.
