@@ -3945,6 +3945,7 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       apply Nat.eq_add_0 in Huvp2.
       now apply rad_2_sum_3_all_9_02_p0_all_2_ex_222_3.
     }
+    destruct Hn2 as (n2 & Hn2p & Huv_bef_n2 & Huvn2).
 (* state
        i+1   i+n2+2  i+p+2
      u 0 . . . . . . 0 . . .
@@ -3953,6 +3954,9 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
     Pv 1 . . . . . . 1 . . .
   u+Pv 1 . . . . . . 1 1 1 1 ...
 *)
+    assert (Hn2 : ∃ n1,
+      n2 + n1 < p ∧ (∀ s : nat, s < n1 → (u ⊕ v) (i + n2 + s + 3) = 1) ∧
+      (u ⊕ v) (i + n2 + n1 + 3) = 0). {
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p1 Hp1; rewrite Hr2; replace (2 - 1) with 1 by easy.
