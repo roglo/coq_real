@@ -3445,7 +3445,7 @@ Qed.
 Theorem rad_2_sum_3_all_9_02_p0_all_2_ex_222_3 {r : radix} : ∀ u i p,
   rad = 2
   → (∀ k, fA_ge_1_ε u i k = true)
-  → u (i + 1) = 0
+  → u (i + 1) = 0 ∨ u (i + 1) = 2
   → u (i + p + 2) = 0
   → (∀ k, u (i + k) ≤ 3)
   → (∀ s, u (i + p + s + 3) = 2)
@@ -3458,28 +3458,29 @@ destruct p. {
   specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as H1.
   rewrite Hr2, Nat.add_0_r in H1.
   unfold P, d2n, prop_carr, dig in H1.
-  rewrite Huv1, Hr2, Nat.add_0_l in H1.
-  replace (carry u (i + 1)) with 0 in H1; [ easy | symmetry ].
-  unfold carry.
-  apply Q.intg_small.
-  split; [ easy | ].
-  rewrite A_split_first; [ | min_n_ge ].
-  replace (S (i + 1)) with (i + 2) by flia.
-  rewrite Nat.add_0_r in Huvp2.
-  rewrite Huvp2, Hr2.
-  rewrite Q.add_0_l.
-  apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-  intros q; rewrite <- Nat.add_assoc.
-  destruct q. {
-    rewrite Nat.add_0_r.
-    rewrite Huvp2; pauto.
+  rewrite Hr2 in H1.
+  replace (carry u (i + 1)) with 0 in H1. 2: {
+    symmetry.
+    unfold carry.
+    apply Q.intg_small.
+    split; [ easy | ].
+    rewrite A_split_first; [ | min_n_ge ].
+    replace (S (i + 1)) with (i + 2) by flia.
+    rewrite Nat.add_0_r in Huvp2.
+    rewrite Huvp2, Hr2.
+    rewrite Q.add_0_l.
+    apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+    intros q; rewrite <- Nat.add_assoc.
+    destruct q. {
+      rewrite Nat.add_0_r.
+      rewrite Huvp2; pauto.
+    }
+    replace (i + (2 + S q)) with (i + 0 + q + 3) by flia.
+    specialize (Huvp2a q) as H2.
+    now rewrite H2.
   }
-  replace (i + (2 + S q)) with (i + 0 + q + 3) by flia.
-  specialize (Huvp2a q) as H2.
-  now rewrite H2.
+  now destruct Huv1 as [Huv1| Huv1]; rewrite Huv1 in H1.
 }
-assert (H : u (i + 1) = 0 ∨ u (i + 1) = 2) by now left.
-move H before Huv1; clear Huv1; rename H into Huv1.
 replace (i + S p + 2) with (i + p + 3) in Huvp2 by flia.
 revert i Hauv Huv1 Huvp2 Huvl3 Huvp2a.
 induction p; intros. {
@@ -3943,7 +3944,8 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       (u ⊕ v) (i + n2 + 2) = 3). {
       apply Nat.eq_add_0 in Huv1.
       apply Nat.eq_add_0 in Huvp2.
-      now apply rad_2_sum_3_all_9_02_p0_all_2_ex_222_3.
+      apply rad_2_sum_3_all_9_02_p0_all_2_ex_222_3; try easy.
+      now left.
     }
     destruct Hn2 as (n2 & Hn2p & Huv_bef_n2 & Huvn2).
 (* state
