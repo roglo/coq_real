@@ -4041,16 +4041,6 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
           replace 3 with (2 + 1) in H1 by easy.
           rewrite <- Nat.add_assoc in H1.
           rewrite Nat_mod_add_same_l in H1; [ | easy ].
-...
-          rewrite (carry_succ 3) in H1.
-replace (i + 2 + 1) with (i + 3) in H1 by flia.
-rewrite Huv, Hr2 in H1.
-replace 3 with (2 + 1) in H1 at 1 2 by easy.
-do 2 rewrite <- Nat.add_assoc in H1.
-rewrite Nat_mod_add_same_l in H1; [ | easy ].
-rewrite Nat_div_add_same_l in H1; [ | easy ].
-rewrite Nat.add_assoc in H1.
-rewrite Nat_mod_add_same_l in H1; [ | easy ].
 (* state
        i+1   i+4
      u 0 . . 0 . . .
@@ -4059,33 +4049,63 @@ rewrite Nat_mod_add_same_l in H1; [ | easy ].
     Pv 1 . . 1 . . .
   u+Pv 1 . . 1 1 1 1 ...
 *)
-remember (carry (u ⊕ v) (i + 3)) as c eqn:Hc; symmetry in Hc.
-destruct c; [ easy | ].
-rewrite (carry_succ 3) in Hc.
-replace (i + 3 + 1) with (i + 4) in Hc by flia.
-unfold "⊕" at 1 in Hc.
-rewrite Huvp2, Nat.add_0_l, Hr2 in Hc.
-unfold carry in Hc.
-rewrite A_split_first in Hc; [ | min_n_ge ].
-replace (S (i + 4)) with (i + 1 + 1 + 0 + 3) in Hc at 1 by flia.
-rewrite Huvp2a, Hr2, Q.pair_diag in Hc.
-rewrite (Q.intg_add_nat_l 1) in Hc.
-destruct c. {
-  clear H1.
-...
-}
-destruct c. {
-  clear H1.
-  admit.
-}
-destruct c; [ easy | ].
-specialize (carry_upper_bound_for_adds 3 (u ⊕ v) i) as H2.
-specialize (H2 (Nat.neq_succ_0 _)).
-assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3 * (rad - 1)). {
-      now intros; rewrite Hr2, <- Nat.add_assoc.
-    }
-    specialize (H2 H 3); clear H.
-    flia Hc H2.
+          rewrite (carry_succ 3) in H1; cycle 1. {
+            rewrite Hr2.
+            apply (Nat.lt_le_trans _ (2 ^ 2)); [ pauto | ].
+            apply Nat.pow_le_mono_r; [ easy | ].
+            destruct i; cbn; [ pauto | flia ].
+          } {
+            now intros; rewrite <- Nat.add_assoc; rewrite Hr2.
+          }
+          replace (i + 2 + 1) with (i + 3) in H1 by flia.
+          rewrite Huv, Hr2 in H1.
+          replace 3 with (2 + 1) in H1 at 1 by easy.
+          rewrite <- Nat.add_assoc in H1.
+          rewrite Nat_div_add_same_l in H1; [ | easy ].
+          rewrite Nat.add_assoc in H1.
+          rewrite Nat_mod_add_same_l in H1; [ | easy ].
+          unfold carry in H1.
+          rewrite A_split_first in H1; [ | min_n_ge ].
+          replace (S (i + 3)) with (i + 4) in H1 by flia.
+          unfold "⊕" in H1 at 1.
+          rewrite Huvp2, Hr2, Q.add_0_l in H1.
+          rewrite A_all_18 in H1. 2: {
+            intros q.
+            replace (i + 4 + q + 1) with (i + 1 + 1 + q + 3) by flia.
+            now rewrite Huvp2a, Hr2.
+          }
+          rewrite Q.intg_small in H1; [ easy | ].
+          rewrite Q.mul_sub_distr_r, Hr2.
+          replace 2%Q with (2 // 1)%Q by easy.
+          rewrite (Q.mul_inv_pair 2 1); [ | now clear | now clear ].
+          split. {
+            apply Q.le_0_sub.
+            replace 1%Q with (2 // 1 * 1 // 2)%Q. 2: {
+                apply Q.mul_inv_pair; clear; easy.
+            }
+            apply Q.mul_le_mono_pos_r; [ easy | ].
+            apply Q.le_pair; [ pauto | clear; easy | ].
+            rewrite Nat.mul_1_r.
+            replace 2 with (2 ^ 0 * 2) at 1 by easy.
+            apply Nat.mul_le_mono_r.
+            apply Nat.pow_le_mono_r; [ now clear | flia ].
+          }
+          now apply Q.sub_lt.
+        }
+        replace (i + S p + 4) with (i + p + 5) in * by flia.
+(* state
+       i+1   . i+5
+     u 0 . . . 0 . . .
+     v 0 . . . 0 . . .
+   u+v 0 3 . . 0 2 2 2 ...
+    Pv 1 . . . 1 . . .
+  u+Pv 1 . . . 1 1 1 1 ...
+*)
+(* it can be either
+   u+v 0 3 1 1 0 2 2 2 ... (1 regexp)
+ or
+   u+v 0 3 0 3 0 2 2 2 ... (2 regexps)
+*)
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p1 Hp1; rewrite Hr2; replace (2 - 1) with 1 by easy.
