@@ -3987,7 +3987,10 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
         now replace (i + 1 + n2 + 2) with (i + (n2 + 1) + 2) in Hn2 by flia.
       }
       exists 0.
-      (* etc. *)
+      split; [ flia | ].
+      split; [ now intros | ].
+      now rewrite Nat.add_0_r.
+    }
 ...
     assert (∀ s, (u ⊕ P v) (i + s + 1) = 1). {
       intros s.
