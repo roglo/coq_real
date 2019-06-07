@@ -3973,64 +3973,38 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
         replace (i + 0) with i in * by easy.
         destruct p; [ easy | ].
         clear Hn2p.
+(* state
+       i+1       i+p+3
+     u 0 . . . . 0 . . .
+     v 0 . . . . 0 . . .
+   u+v 0 3 . . . 0 2 2 2 ...
+    Pv 1 . . . . 1 . . .
+  u+Pv 1 . . . . 1 1 1 1 ...
+*)
         replace (i + S p) with (i + p + 1) in * by flia.
         replace (i + p + 1 + 2) with (i + p + 3) in * by flia.
-assert (H : (u ⊕ v) (i + 1) = 0 ∨ (u ⊕ v) (i + 1) = 2) by now left.
-move H before Huv1; clear Huv1; rename H into Huv1.
-clear Hu Hv Hjj Hj Hjk Hk Hpv1 Hn Hnj Hnk Hjp Hcv1 Hupv0 Hupvps.
-revert i Huvp2 Hpvp2 Hauv Huv1 Huvl3 Huvp2a Huvn2.
-        induction p; intros. {
+        destruct p. {
           exists 0.
           split; [ pauto | ].
           split; [ now intros | easy ].
         }
         replace (i + S p + 3) with (i + p + 4) in * by flia.
-        specialize (IHp (i + 1)).
-        replace (i + 1 + p + 3) with (i + p + 4) in IHp by flia.
-        replace (i + 1 + 1) with (i + 2) in IHp by flia.
-        specialize (IHp Huvp2 Hpvp2).
-        assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
-          assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
-            now intros; apply A_ge_1_add_r_true_if.
-          }
-          specialize (IHp H); clear H.
-(* ah bin non, ça va pas du tout, ça *)
-...
-      remember (p - n2 - 1) as q eqn:Hq.
-      replace p with (q + n2 + 1) in * by flia Hn2p Hq.
-      clear Hn2p Hq.
-      replace (i + (q + n2 + 1)) with (i + n2 + q + 1) in * by flia.
-      replace (i + q + n2 + 1 + 2) with (i + n2 + q + 3) in * by flia.
-      clear Hjp.
-(**)
-      revert i n2 Hu Hv Hjj Hj Hjk Hk Hauv Huv1 Hpv1 Huvp2 Hpvp2 Hn Hnj Hnk Huvl3
-        Huvp2a Hcv1 Hupv0 Hupvps Huvn2 Huv_bef_n2.
-(*
-      revert n2 Huvp2 Hpvp2 Huvp2a Hupvps Huvn2.
-*)
-      induction q; intros. {
-        exists 0.
-        split; [ flia | ].
-        split; [ now intros | ].
-        now rewrite <- Nat.add_assoc in Huvp2.
-      }
-      replace (i + n2 + S q + 1) with (i + n2 + q + 2) in * by flia.
-      replace (i + n2 + q + 2 +  2) with (i + n2 + q + 4) in * by flia.
+        destruct p. {
 (* state
-       i+1   i+n2+2  i+n2+q+4
-     u 0 . . . . . . 0 . . .
-     v 0 . . . . . . 0 . . .
-   u+v 0 2 2 3 . . . 0 2 2 2 ...
-    Pv 1 . . . . . . 1 . . .
-  u+Pv 1 . . . . . . 1 1 1 1 ...
+       i+1   i+4
+     u 0 . . 0 . . .
+     v 0 . . 0 . . .
+   u+v 0 3 . 0 2 2 2 ...
+    Pv 1 . . 1 . . .
+  u+Pv 1 . . 1 1 1 1 ...
 *)
-      destruct n2 as [Hn2| Hn2]. {
-      specialize (IHq (n2 + 1)).
-      replace (i + (n2 + 1) + q + 1 + 2) with (i + n2 + q + 4) in IHq by flia.
-      replace (q + (n2 + 1) + 2) with (q + n2 + 3) in IHq by flia.
-      replace (i + (n2 + 1) + q + 1) with (i + n2 + q + 2) in IHq by flia.
-      specialize (IHq Huvp2 Hpvp2 Huvp2a Hupvps).
-(* ah oui mais non ça va pas *)
+          replace (i + 0) with i in * by flia.
+          exists 1.
+          replace (i + 1 + 3) with (i + 4) by flia.
+          split; [ pauto | ].
+          split; [ | easy ].
+          intros s Hs.
+          apply Nat.lt_1_r in Hs; subst s; rewrite Nat.add_0_r.
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p1 Hp1; rewrite Hr2; replace (2 - 1) with 1 by easy.
