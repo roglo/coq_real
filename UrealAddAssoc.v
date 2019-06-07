@@ -4005,6 +4005,35 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
           split; [ | easy ].
           intros s Hs.
           apply Nat.lt_1_r in Hs; subst s; rewrite Nat.add_0_r.
+          specialize (all_fA_ge_1_ε_P_999 _ i Hauv 2) as H1.
+          replace (i + 2 + 1) with (i + 3) in H1 by flia.
+          unfold P, d2n, prop_carr, dig in H1.
+          rewrite Hr2 in H1; replace (2 - 1) with 1 in H1 by easy.
+          replace (carry (u ⊕ v) (i + 3)) with 0 in H1. 2: {
+            symmetry.
+            unfold carry.
+            apply Q.intg_small; split; [ easy | ].
+            rewrite A_split_first; [ | min_n_ge ].
+            replace (S (i + 3)) with (i + 4) by easy.
+            unfold "⊕" at 1; rewrite Huvp2, Q.add_0_l, Hr2.
+            apply (Q.mul_lt_mono_pos_r 2%Q); [ easy | ].
+            rewrite <- Q.mul_assoc.
+            rewrite Q.mul_inv_pair; [ | easy | easy ].
+            rewrite Q.mul_1_r, Q.mul_1_l.
+            rewrite A_all_18. 2: {
+              intros q.
+              replace (i + 4 + q + 1) with (i + 1 + 1 + q + 3) by flia.
+              now rewrite Hr2.
+            }
+            now apply Q.sub_lt.
+          }
+          rewrite Nat.add_0_r in H1.
+          remember ((u ⊕ v) (i + 3)) as uv eqn:Huv; symmetry in Huv.
+          destruct uv; [ easy | ].
+          destruct uv; [ easy | exfalso ].
+          destruct uv; [ easy | ].
+          specialize (Huvl3 3) as H2.
+          destruct uv; [ clear H1 H2 | flia Huv H2 ].
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p1 Hp1; rewrite Hr2; replace (2 - 1) with 1 by easy.
