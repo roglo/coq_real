@@ -3959,19 +3959,55 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
     assert (Hn2 : ∃ n1,
       n2 + n1 < p ∧ (∀ s : nat, s < n1 → (u ⊕ v) (i + n2 + s + 3) = 1) ∧
       (u ⊕ v) (i + n2 + n1 + 3) = 0). {
+(**)
+      destruct n2. {
+(* state
+       i+1       i+p+2
+     u 0 . . . . 0 . . .
+     v 0 . . . . 0 . . .
+   u+v 0 3 . . . 0 2 2 2 ...
+    Pv 1 . . . . 1 . . .
+  u+Pv 1 . . . . 1 1 1 1 ...
+*)
+        clear Huv_bef_n2.
+        replace (i + 0) with i in * by easy.
+        destruct p; [ easy | ].
+        clear Hn2p.
+        replace (i + S p) with (i + p + 1) in * by flia.
+        replace (i + p + 1 + 2) with (i + p + 3) in * by flia.
+assert (H : (u ⊕ v) (i + 1) = 0 ∨ (u ⊕ v) (i + 1) = 2) by now left.
+move H before Huv1; clear Huv1; rename H into Huv1.
+clear Hu Hv Hjj Hj Hjk Hk Hpv1 Hn Hnj Hnk Hjp Hcv1 Hupv0 Hupvps.
+revert i Huvp2 Hpvp2 Hauv Huv1 Huvl3 Huvp2a Huvn2.
+        induction p; intros. {
+          exists 0.
+          split; [ pauto | ].
+          split; [ now intros | easy ].
+        }
+        replace (i + S p + 3) with (i + p + 4) in * by flia.
+        specialize (IHp (i + 1)).
+        replace (i + 1 + p + 3) with (i + p + 4) in IHp by flia.
+        replace (i + 1 + 1) with (i + 2) in IHp by flia.
+        specialize (IHp Huvp2 Hpvp2).
+        assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
+          assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
+            now intros; apply A_ge_1_add_r_true_if.
+          }
+          specialize (IHp H); clear H.
+(* ah bin non, ça va pas du tout, ça *)
 ...
       remember (p - n2 - 1) as q eqn:Hq.
       replace p with (q + n2 + 1) in * by flia Hn2p Hq.
       clear Hn2p Hq.
       replace (i + (q + n2 + 1)) with (i + n2 + q + 1) in * by flia.
       replace (i + q + n2 + 1 + 2) with (i + n2 + q + 3) in * by flia.
-      clear Hjp Huv_bef_n2.
-(*
-      revert i n2 Hu Hv Hjj Hj Hjk Hk Hauv Huv1 Hpv1 Huvp2 Hpvp2 Hn Hnj Hnk Huvl3
-        Huvp2a Hcv1 Hupv0 Hupvps Huv_bef_n2 Huvn2.
-*)
-      revert n2 Huvp2 Hpvp2 Huvp2a Hupvps Huvn2.
+      clear Hjp.
 (**)
+      revert i n2 Hu Hv Hjj Hj Hjk Hk Hauv Huv1 Hpv1 Huvp2 Hpvp2 Hn Hnj Hnk Huvl3
+        Huvp2a Hcv1 Hupv0 Hupvps Huvn2 Huv_bef_n2.
+(*
+      revert n2 Huvp2 Hpvp2 Huvp2a Hupvps Huvn2.
+*)
       induction q; intros. {
         exists 0.
         split; [ flia | ].
