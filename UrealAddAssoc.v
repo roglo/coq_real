@@ -4034,6 +4034,37 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
           destruct uv; [ easy | ].
           specialize (Huvl3 3) as H2.
           destruct uv; [ clear H1 H2 | flia Huv H2 ].
+          specialize (all_fA_ge_1_ε_P_999 _ i Hauv 1) as H1.
+          replace (i + 1 + 1) with (i + 2) in H1 by flia.
+          unfold P, d2n, prop_carr, dig in H1.
+          rewrite Huvn2, Hr2 in H1.
+          rewrite (carry_succ 3) in H1.
+replace (i + 2 + 1) with (i + 3) in H1 by flia.
+rewrite Huv, Hr2 in H1.
+replace 3 with (2 + 1) in H1 at 1 2 by easy.
+do 2 rewrite <- Nat.add_assoc in H1.
+rewrite Nat_mod_add_same_l in H1; [ | easy ].
+rewrite Nat_div_add_same_l in H1; [ | easy ].
+rewrite Nat.add_assoc in H1.
+rewrite Nat_mod_add_same_l in H1; [ | easy ].
+remember (carry (u ⊕ v) (i + 3)) as c eqn:Hc; symmetry in Hc.
+destruct c; [ easy | ].
+destruct c. {
+  clear H1.
+  admit.
+}
+destruct c. {
+  clear H1.
+  admit.
+}
+destruct c; [ easy | ].
+specialize (carry_upper_bound_for_adds 3 (u ⊕ v) i) as H2.
+specialize (H2 (Nat.neq_succ_0 _)).
+assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3 * (rad - 1)). {
+      now intros; rewrite Hr2, <- Nat.add_assoc.
+    }
+    specialize (H2 H 3); clear H.
+    flia Hc H2.
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p1 Hp1; rewrite Hr2; replace (2 - 1) with 1 by easy.
