@@ -3450,7 +3450,7 @@ Theorem rad_2_sum_3_all_9_02_p0_all_2_ex_222_3 {r : radix} : ∀ u i p,
   → (∀ k, u (i + k) ≤ 3)
   → (∀ s, u (i + p + s + 3) = 2)
   → ∃ n2 : nat,
-     n2 ≤ p ∧ (∀ s, s < n2 → u (i + s + 2) = 2) ∧ u (i + n2 + 2) = 3.
+     n2 < p ∧ (∀ s, s < n2 → u (i + s + 2) = 2) ∧ u (i + n2 + 2) = 3.
 Proof.
 intros * Hr2 Hauv Huv1 Huvp2 Huvl3 Huvp2a.
 destruct p. {
