@@ -4038,6 +4038,10 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
           replace (i + 1 + 1) with (i + 2) in H1 by flia.
           unfold P, d2n, prop_carr, dig in H1.
           rewrite Huvn2, Hr2 in H1.
+          replace 3 with (2 + 1) in H1 by easy.
+          rewrite <- Nat.add_assoc in H1.
+          rewrite Nat_mod_add_same_l in H1; [ | easy ].
+...
           rewrite (carry_succ 3) in H1.
 replace (i + 2 + 1) with (i + 3) in H1 by flia.
 rewrite Huv, Hr2 in H1.
@@ -4047,11 +4051,28 @@ rewrite Nat_mod_add_same_l in H1; [ | easy ].
 rewrite Nat_div_add_same_l in H1; [ | easy ].
 rewrite Nat.add_assoc in H1.
 rewrite Nat_mod_add_same_l in H1; [ | easy ].
+(* state
+       i+1   i+4
+     u 0 . . 0 . . .
+     v 0 . . 0 . . .
+   u+v 0 3 3 0 2 2 2 ...
+    Pv 1 . . 1 . . .
+  u+Pv 1 . . 1 1 1 1 ...
+*)
 remember (carry (u ⊕ v) (i + 3)) as c eqn:Hc; symmetry in Hc.
 destruct c; [ easy | ].
+rewrite (carry_succ 3) in Hc.
+replace (i + 3 + 1) with (i + 4) in Hc by flia.
+unfold "⊕" at 1 in Hc.
+rewrite Huvp2, Nat.add_0_l, Hr2 in Hc.
+unfold carry in Hc.
+rewrite A_split_first in Hc; [ | min_n_ge ].
+replace (S (i + 4)) with (i + 1 + 1 + 0 + 3) in Hc at 1 by flia.
+rewrite Huvp2a, Hr2, Q.pair_diag in Hc.
+rewrite (Q.intg_add_nat_l 1) in Hc.
 destruct c. {
   clear H1.
-  admit.
+...
 }
 destruct c. {
   clear H1.
