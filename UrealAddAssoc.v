@@ -3442,6 +3442,140 @@ rewrite Q.intg_add_cond in Hc; [ | easy | now apply Q.le_0_mul_r ].
 flia Hc.
 Qed.
 
+Theorem rad_2_sum_3_all_9_02_p0_all_2_ex_222_3 {r : radix} : ∀ u i p,
+  rad = 2
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → u (i + 1) = 0
+  → u (i + p + 2) = 0
+  → (∀ k, u (i + k) ≤ 3)
+  → (∀ s, u (i + p + s + 3) = 2)
+  → ∃ n2 : nat,
+     n2 ≤ p ∧ (∀ s, s < n2 → u (i + s + 2) = 2) ∧ u (i + n2 + 2) = 3.
+Proof.
+intros * Hr2 Hauv Huv1 Huvp2 Huvl3 Huvp2a.
+destruct p. {
+  exfalso.
+  specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as H1.
+  rewrite Hr2, Nat.add_0_r in H1.
+  unfold P, d2n, prop_carr, dig in H1.
+  rewrite Huv1, Hr2, Nat.add_0_l in H1.
+  replace (carry u (i + 1)) with 0 in H1; [ easy | symmetry ].
+  unfold carry.
+  apply Q.intg_small.
+  split; [ easy | ].
+  rewrite A_split_first; [ | min_n_ge ].
+  replace (S (i + 1)) with (i + 2) by flia.
+  rewrite Nat.add_0_r in Huvp2.
+  rewrite Huvp2, Hr2.
+  rewrite Q.add_0_l.
+  apply rad_2_sum_2_half_A_lt_1; [ easy | ].
+  intros q; rewrite <- Nat.add_assoc.
+  destruct q. {
+    rewrite Nat.add_0_r.
+    rewrite Huvp2; pauto.
+  }
+  replace (i + (2 + S q)) with (i + 0 + q + 3) by flia.
+  specialize (Huvp2a q) as H2.
+  now rewrite H2.
+}
+assert (H : u (i + 1) = 0 ∨ u (i + 1) = 2) by now left.
+move H before Huv1; clear Huv1; rename H into Huv1.
+replace (i + S p + 2) with (i + p + 3) in Huvp2 by flia.
+revert i Hauv Huv1 Huvp2 Huvl3 Huvp2a.
+induction p; intros. {
+  rewrite Nat.add_0_r in Huvp2.
+  exists 0.
+  split; [ flia | ].
+  split; [ now intros | ].
+  rewrite Nat.add_0_r.
+  specialize (rad_2_sum_3_all_9_02_123 u i Hr2) as Huv2.
+  assert (H : ∀ k, u (i + k + 1) ≤ 3). {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  specialize (Huv2 H Hauv Huv1); clear H.
+  destruct Huv2 as [Huv2| Huv2]. {
+    exfalso.
+    specialize (rad_2_sum_3_all_9_02_1_3 _ i Hr2 Huvl3 Hauv) as H1.
+    specialize (H1 Huv1 Huv2).
+    now rewrite Huvp2 in H1.
+  }
+  destruct Huv2 as [Huv2| Huv2]; [ exfalso | easy ].
+  specialize (rad_2_sum_3_all_9_02_222_13 1 u i Hr2) as H1.
+  assert (H : ∀ k, u (i + k + 1) ≤ 3). {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  specialize (H1 H Hauv Huv1); clear H.
+  assert (H : ∀ k, k < 1 → u (i + k + 2) = 2). {
+    intros p Hp.
+    now apply Nat.lt_1_r in Hp; rewrite Hp, Nat.add_0_r.
+  }
+  specialize (H1 H); clear H.
+  destruct H1 as [H1| H1]. {
+    specialize (H1 1).
+    replace (i + 1 + 2) with (i + 3) in H1 by flia.
+    now rewrite Huvp2 in H1.
+  }
+  destruct H1 as (p & Hp1 & Hp2).
+  destruct p. {
+    rewrite Nat.add_0_r in Hp2.
+    flia Huv2 Hp2.
+  }
+  destruct p. {
+    replace (i + 1 + 2) with (i + 3) in Hp2 by flia.
+    rewrite Huvp2 in Hp2.
+    now destruct Hp2.
+  }
+  replace (i + S (S p) + 2) with (i + 1 + p + 3) in Hp2 by flia.
+  rewrite Huvp2a in Hp2.
+  now destruct Hp2.
+}
+specialize (IHp (i + 1)).
+assert (H : ∀ k, fA_ge_1_ε u (i + 1) k = true). {
+  now intros; apply A_ge_1_add_r_true_if.
+}
+specialize (IHp H); clear H.
+replace (i + 1 + 1) with (i + 2) in IHp by flia.
+replace (i + 1 + p + 3) with (i + p + 4) in IHp by flia.
+replace (i + S p + 3) with (i + p + 4) in Huvp2 by flia.
+specialize (rad_2_sum_3_all_9_02_123 u i Hr2) as Huv2.
+assert (H : ∀ k, u (i + k + 1) ≤ 3). {
+  now intros; rewrite <- Nat.add_assoc.
+}
+specialize (Huv2 H Hauv Huv1); clear H.
+destruct Huv2 as [Huv2| Huv2]. {
+  specialize (rad_2_sum_3_all_9_02_1_333 u i Hr2 Huvl3) as H1.
+  specialize (H1 Hauv Huv1 Huv2 (p + 1)).
+  replace (i + (p + 1) + 3) with (i + p + 4) in H1 by flia.
+  now rewrite Huvp2 in H1.
+}
+destruct Huv2 as [Huv2| Huv2]. {
+  specialize (IHp (or_intror Huv2) Huvp2).
+  assert (H : ∀ k, u (i + 1 + k) ≤ 3). {
+    now intros; rewrite <- Nat.add_assoc.
+  }
+  specialize (IHp H); clear H.
+  assert (H : ∀ s, u (i + 1 + S p + s + 3) = 2). {
+    intros j.
+    now replace (i + 1 + S p) with (i + S (S p)) by flia.
+  }
+  specialize (IHp H); clear H.
+  destruct IHp as (n2 & Hn2p & Hbef & Hn2).
+  exists (n2 + 1).
+  split; [ flia Hn2p | ].
+  split. {
+    intros s Hs.
+    destruct s; [ now rewrite Nat.add_0_r | ].
+    replace (i + S s + 2) with (i + 1 + s + 2) by flia.
+    apply Hbef; flia Hs.
+  }
+  now replace (i + 1 + n2 + 2) with (i + (n2 + 1) + 2) in Hn2 by flia.
+}
+exists 0.
+split; [ flia | ].
+split; [ now intros | ].
+now rewrite Nat.add_0_r.
+Qed.
+
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -3804,396 +3938,17 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
 
   u+v between i+1 and i+p+2 are supposed to be (2*31*0)*
 *)
-    assert
-      (Hn2 : ∃ n2,
-       n2 < p + 1 ∧ (∀ s, s < n2 → (u ⊕ v) (i + s + 2) = 2) ∧
-       (u ⊕ v) (i + n2 + 2) = 3). {
-(**)
-      destruct p. {
+    apply Nat.eq_add_0 in Huv1.
+    apply Nat.eq_add_0 in Huvp2.
+    specialize (rad_2_sum_3_all_9_02_p0_all_2_ex_222_3 (u ⊕ v) i p) as Hn2.
+    specialize (Hn2 Hr2 Hauv Huv1 Huvp2 Huvl3 Huvp2a).
 (* state
-       i+1
-     u 0 0 . . .
-     v 0 0 . . .
-   u+v 0 0 2 2 2 ...
-    Pv 1 1 . . .
-  u+Pv 1 1 1 1 1 ...
-*)
-        exfalso.
-        specialize (all_fA_ge_1_ε_P_999 _ _ Hauv 0) as H1.
-        rewrite Hr2, Nat.add_0_r in H1.
-        unfold P, d2n, prop_carr, dig in H1.
-        unfold "⊕" at 1 in H1.
-        rewrite (proj1 Huv1), (proj2 Huv1), Hr2 in H1.
-        rewrite Nat.add_0_l in H1.
-        replace (carry (u ⊕ v) (i + 1)) with 0 in H1; [ easy | symmetry ].
-        unfold carry.
-        apply Q.intg_small.
-        split; [ easy | ].
-        rewrite A_split_first; [ | min_n_ge ].
-        replace (S (i + 1)) with (i + 2) by flia.
-        unfold "⊕" at 1.
-        rewrite Nat.add_0_r in Huvp2.
-        rewrite (proj1 Huvp2), (proj2 Huvp2), Hr2.
-        rewrite Q.add_0_l.
-        apply rad_2_sum_2_half_A_lt_1; [ easy | ].
-        intros q; unfold "⊕"; rewrite <- Nat.add_assoc.
-        destruct q. {
-          rewrite Nat.add_0_r.
-          rewrite (proj1 Huvp2), (proj2 Huvp2); pauto.
-        }
-        replace (i + (2 + S q)) with (i + 0 + q + 3) by flia.
-        specialize (Huvp2a q) as H2.
-        now unfold "⊕" in H2; rewrite H2.
-      }
-(* state
-       i+1       i+p+3
-     u 0 . . . . 0 . . .
-     v 0 . . . . 0 . . .
-   u+v 0 . . . . 0 2 2 2 ...
-    Pv 1 . . . . 1 . . .
-  u+Pv 1 . . . . 1 1 1 1 ...
-*)
-      clear - Huvp2 Hpvp2 Hr2 Hauv Huv1 Huvp2a Huvl3.
-      assert (H : (u ⊕ v) (i + 1) = 0 ∨ (u ⊕ v) (i + 1) = 2). {
-        unfold "⊕".
-        now left; rewrite (proj1 Huv1), (proj2 Huv1).
-      }
-      move H before Huv1; clear Huv1; rename H into Huv1.
-      replace (i + S p + 2) with (i + p + 3) in Huvp2, Hpvp2 by flia.
-      revert i Hauv Huv1 Huvp2 Hpvp2 Huvl3 Huvp2a.
-      induction p; intros. {
-        rewrite Nat.add_0_r in Huvp2, Hpvp2.
-(* state
-       i+1
-     u 0 . 0 . . .
-     v 0 . 0 . . .
-   u+v 0 . 0 2 2 2 ...
-    Pv 1 . 1 . . .
-  u+Pv 1 . 1 1 1 1 ...
-*)
-        exists 0.
-        split; [ pauto | ].
-        split; [ now intros | ].
-        rewrite Nat.add_0_r.
-        specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) i Hr2) as Huv2.
-        assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3). {
-          now intros; rewrite <- Nat.add_assoc.
-        }
-        specialize (Huv2 H Hauv Huv1); clear H.
-        destruct Huv2 as [Huv2| Huv2]. {
-          exfalso.
-(* state
-       i+1
-     u 0 . 0 . . .
-     v 0 . 0 . . .
-   u+v 0 1 0 2 2 2 ...
-    Pv 1 . 1 . . .
-  u+Pv 1 . 1 1 1 1 ...
-*)
-          specialize (rad_2_sum_3_all_9_02_1_3 _ i Hr2 Huvl3 Hauv) as H1.
-          specialize (H1 Huv1 Huv2).
-          unfold "⊕" in H1.
-          now rewrite (proj1 Huvp2), (proj2 Huvp2) in H1.
-        }
-        destruct Huv2 as [Huv2| Huv2]; [ exfalso | easy ].
-(* state
-       i+1
-     u 0 . 0 . . .
-     v 0 . 0 . . .
-   u+v 0 2 0 2 2 2 ...
-    Pv 1 . 1 . . .
-  u+Pv 1 . 1 1 1 1 ...
-*)
-        specialize (rad_2_sum_3_all_9_02_222_13 1 (u ⊕ v) i Hr2) as H1.
-        assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3). {
-          now intros; rewrite <- Nat.add_assoc.
-        }
-        specialize (H1 H Hauv Huv1); clear H.
-        assert (H : ∀ k, k < 1 → (u ⊕ v) (i + k + 2) = 2). {
-          intros p Hp.
-          now apply Nat.lt_1_r in Hp; rewrite Hp, Nat.add_0_r.
-        }
-        specialize (H1 H); clear H.
-        destruct H1 as [H1| H1]. {
-          specialize (H1 1).
-          replace (i + 1 + 2) with (i + 3) in H1 by flia.
-          unfold "⊕" in H1.
-          now rewrite (proj1 Huvp2), (proj2 Huvp2) in H1.
-        }
-        destruct H1 as (p & Hp1 & Hp2).
-        destruct p. {
-          rewrite Nat.add_0_r in Hp2.
-          flia Huv2 Hp2.
-        }
-        destruct p. {
-          replace (i + 1 + 2) with (i + 3) in Hp2 by flia.
-          unfold "⊕" in Hp2.
-          rewrite (proj1 Huvp2), (proj2 Huvp2) in Hp2.
-          now destruct Hp2.
-        }
-        replace (i + S (S p) + 2) with (i + 1 + p + 3) in Hp2 by flia.
-        rewrite Huvp2a in Hp2.
-        now destruct Hp2.
-      }
-(* state
-       i+1       i+p+4
-     u 0 . . . . 0 . . .
-     v 0 . . . . 0 . . .
-   u+v 0 . . . . 0 2 2 2 ...
-    Pv 1 . . . . 1 . . .
-  u+Pv 1 . . . . 1 1 1 1 ...
-*)
-      specialize (IHp (i + 1)).
-      assert (H : ∀ k, fA_ge_1_ε (u ⊕ v) (i + 1) k = true). {
-        now intros; apply A_ge_1_add_r_true_if.
-      }
-      specialize (IHp H); clear H.
-      replace (i + 1 + 1) with (i + 2) in IHp by flia.
-      replace (i + 1 + p + 3) with (i + p + 4) in IHp by flia.
-      replace (i + S p + 3) with (i + p + 4) in Huvp2, Hpvp2 by flia.
-      specialize (rad_2_sum_3_all_9_02_123 (u ⊕ v) i Hr2) as Huv2.
-      assert (H : ∀ k, (u ⊕ v) (i + k + 1) ≤ 3). {
-        now intros; rewrite <- Nat.add_assoc.
-      }
-      specialize (Huv2 H Hauv Huv1); clear H.
-      destruct Huv2 as [Huv2| Huv2]. {
-        specialize (rad_2_sum_3_all_9_02_1_333 (u ⊕ v) i Hr2 Huvl3) as H1.
-        specialize (H1 Hauv Huv1 Huv2 (p + 1)).
-        replace (i + (p + 1) + 3) with (i + p + 4) in H1 by flia.
-        unfold "⊕" in H1 at 1.
-        now rewrite (proj1 Huvp2), (proj2 Huvp2) in H1.
-      }
-      destruct Huv2 as [Huv2| Huv2]. {
-        specialize (IHp (or_intror Huv2) Huvp2 Hpvp2).
-        assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3). {
-          now intros; rewrite <- Nat.add_assoc.
-        }
-        specialize (IHp H); clear H.
-        assert (H : ∀ s, (u ⊕ v) (i + 1 + S p + s + 3) = 2). {
-          intros j.
-          replace (i + 1 + S p + j + 3) with (i + S (S p) + j + 3) by flia.
-          easy.
-        }
-        specialize (IHp H); clear H.
-        destruct IHp as (n2 & Hn2p & Hbef & Hn2).
-        exists (n2 + 1).
-        split; [ flia Hn2p | ].
-        split. {
-          intros s Hs.
-          destruct s; [ now rewrite Nat.add_0_r | ].
-          replace (i + S s + 2) with (i + 1 + s + 2) by flia.
-          apply Hbef; flia Hs.
-        }
-        now replace (i + 1 + n2 + 2) with (i + (n2 + 1) + 2) in Hn2 by flia.
-      }
-      exists 0.
-      split; [ flia | ].
-      split; [ now intros | ].
-      now rewrite Nat.add_0_r.
-    }
-...
-    assert (∀ s, (u ⊕ P v) (i + s + 1) = 1). {
-      intros s.
-(**)
-      induction s as (s, IHs) using lt_wf_rec.
-      destruct s. {
-        rewrite Nat.add_0_r.
-        now unfold "⊕"; rewrite (proj1 Huv1), Hpv1.
-      }
-      replace (i + S s + 1) with (i + s + 2) by flia.
-(* state
-       i+1   i+s+1   i+p+2
+       i+1   i+n2+2  i+p+2
      u 0 . . . . . . 0 . . .
      v 0 . . . . . . 0 . . .
-   u+v 0 . . . . . . 0 2 2 2 ...
+   u+v 0 2 2 3 . . . 0 2 2 2 ...
     Pv 1 . . . . . . 1 . . .
-  u+Pv 1 1 1 1 . . . 1 1 1 1 ...
-*)
-...
-      destruct (lt_dec (p + 1) s) as [Hsp| Hsp]. {
-        specialize (Hupvps (s - p - 2)) as H1.
-        replace (i + p + (s - p - 2) + 3) with (i + s + 1) in H1 by flia Hsp.
-        easy.
-      }
-      apply Nat.nlt_ge in Hsp.
-      destruct (Nat.eq_dec s (p + 1)) as [Hsp1| Hsp1]. {
-        replace (i + s + 1) with (i + p + 2) by flia Hsp1.
-        unfold "⊕".
-        now rewrite (proj1 Huvp2), Hpvp2.
-      }
-      assert (H : s < p + 1) by flia Hsp Hsp1.
-      clear Hsp Hsp1; rename H into Hsp.
-      destruct (Nat.eq_dec s p) as [Hsp1| Hsp1]. {
-        subst s; clear Hsp.
-        specialize (Hupv0 p) as H1.
-        remember ((u ⊕ P v) (i + p + 1)) as x eqn:Hx; symmetry in Hx.
-        destruct x; [ easy | ].
-        destruct x; [ easy | clear H1; exfalso ].
-        destruct x. 2: {
-          specialize (Hu (p + 1)) as H2.
-          specialize (P_le v (i + p + 1)) as H3.
-          rewrite Nat.add_assoc in H2.
-          rewrite Hr2 in H3.
-          unfold "⊕" in Hx; flia Hx H2 H3.
-        }
-        apply Nat_eq_add_2 in Hx.
-        destruct Hx as [Hx| Hx]. {
-          specialize (Hu (p + 1)) as H2.
-          rewrite Nat.add_assoc in H2.
-          flia Hx H2.
-        }
-        destruct Hx as [Hx| Hx]. 2: {
-          specialize (P_le v (i + p + 1)) as H3.
-          rewrite Hr2 in H3; flia Hx H3.
-        }
-...
-Definition autom_regexp_2s31s0_next st u i p :=
-  match st with
-  | 2 => (* 2* *)
-      match u i with
-      | 2 => 2
-      | 3 => 3
-      | _ => 0 (* failure *)
-      end
-  | 3 => (* 2*31* *)
-      match u i with
-      | 1 => 3
-      | 0 => if Nat.eq_dec i p then 1 (* success *) else 2
-      | _ => 0 (* failure *)
-      end
-  | _ => 0 (* failure *)
-  end.
-...
-    assert (Huv2 : (u ⊕ v) (i + 2) = 2 ∨ (u ⊕ v) (i + 2) = 3). {
-      destruct p. {
-        specialize (Hp 0) as H1.
-        now do 2 rewrite Nat.add_0_r in H1; left.
-      }
-      replace (i + S p + 1) with (i + p + 2) in Huvp1, Hpvp1 by flia.
-      remember ((u ⊕ v) (i + 2)) as uv eqn:Huv; symmetry in Huv.
-      destruct uv. {
-        exfalso.
-        move Hcv1 at bottom.
-        rewrite (carry_succ 2) in Hcv1; cycle 1. {
-          rewrite Hr2.
-          replace 2 with (2 ^ 1) at 1 by easy.
-          apply Nat.pow_lt_mono_r; [ pauto | flia ].
-        } {
-          now intros; rewrite Hr2; rewrite <- Nat.add_assoc.
-        }
-        replace (i + 1 + 1) with (i + 2) in Hcv1 by flia.
-        apply Nat.eq_add_0 in Huv.
-        rewrite (proj2 Huv), Hr2, Nat.add_0_l in Hcv1.
-        specialize (carry_upper_bound_for_add v (i + 2)) as H3.
-        assert (H : ∀ k, v (i + 2 + k + 1) ≤ 2 * (rad - 1)). {
-          now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
-        }
-        specialize (H3 H); clear H.
-        remember (carry v (i + 2)) as c eqn:Hc; symmetry in Hc.
-        destruct c; [ easy | ].
-        destruct c; [ easy | flia H3 ].
-      }
-      destruct uv. {
-        exfalso.
-        move Hcv1 at bottom.
-        rewrite (carry_succ 2) in Hcv1; cycle 1. {
-          rewrite Hr2.
-          replace 2 with (2 ^ 1) at 1 by easy.
-          apply Nat.pow_lt_mono_r; [ pauto | flia ].
-        } {
-          now intros; rewrite Hr2; rewrite <- Nat.add_assoc.
-        }
-        replace (i + 1 + 1) with (i + 2) in Hcv1 by flia.
-        apply Nat.eq_add_1 in Huv.
-        destruct Huv as [Huv| Huv]. {
-          rewrite (proj2 Huv), Hr2, Nat.add_0_l in Hcv1.
-          specialize (carry_upper_bound_for_add v (i + 2)) as H3.
-          assert (H : ∀ k, v (i + 2 + k + 1) ≤ 2 * (rad - 1)). {
-            now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
-          }
-          specialize (H3 H); clear H.
-          remember (carry v (i + 2)) as c eqn:Hc; symmetry in Hc.
-          destruct c; [ easy | ].
-          destruct c; [ easy | flia H3 ].
-        }
-        rewrite (proj2 Huv), Hr2 in Hcv1.
-        remember (carry v (i + 2)) as c eqn:Hc; symmetry in Hc.
-        destruct c; [ easy | ].
-        destruct c. 2: {
-          specialize (carry_upper_bound_for_add v (i + 2)) as H3.
-          assert (H : ∀ k, v (i + 2 + k + 1) ≤ 2 * (rad - 1)). {
-            now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
-          }
-          specialize (H3 H); clear H.
-          flia Hc H3.
-        }
-        clear Hcv1.
-        rename Huv into Huv2; move Huv2 before Huv1.
-        specialize (Hupv0 1) as H1.
-        unfold "⊕", P, d2n, prop_carr, dig in H1.
-        replace (i + 1 + 1) with (i + 2) in H1 by flia.
-        now rewrite (proj1 Huv2), (proj2 Huv2), Hc, Hr2 in H1.
-      }
-      destruct uv; [ now left | ].
-      destruct uv; [ now right | ].
-      specialize (Huvl3 2) as H1.
-      flia Huv H1.
-    }
-    move Huv2 before Huv1.
-    destruct Huv2 as [Huv2| Huv2]. {
-(* state
-       i+1         i+p+2
-     u 0 . . . . 0 . . .
-     v 0 . . . . 0 . . .
-   u+v 0 2 . . . 0 2 2 2 ...
-    Pv 1 . . . . 1 . . .
-  u+Pv 1 . . . . 1 1 1 1 ...
-
-  u+v between i+1 and i+p+2 are supposed to be (2*31*0)*
-*)
-...
-      apply Nat_eq_add_2 in Huv2.
-      destruct Huv2 as [Huv2| Huv2]; [ specialize (Hu 2); flia Hu Huv2 | ].
-      destruct Huv2 as [Huv2| Huv2]. {
-(* state
-       i+1         i+p+2
-     u 0 1 . . . 0 . . .
-     v 0 1 . . . 0 . . .
-   u+v 0 2 . . . 0 2 2 2 ...
-    Pv 1 . . . . 1 . . .
-  u+Pv 1 . . . . 1 1 1 1 ...
-*)
-        assert (Hpv2 : P v (i + 2) = 0). {
-          unfold P, d2n, prop_carr, dig.
-          rewrite (proj2 Huv2), Hr2.
-          replace (carry v (i + 2)) with 1; [ easy | symmetry ].
-          rewrite (carry_succ 2) in Hcv1; cycle 1. {
-            rewrite Hr2.
-            replace 2 with (2 ^ 1) at 1 by easy.
-            apply Nat.pow_lt_mono_r; [ pauto | flia ].
-          } {
-            now intros; rewrite Hr2; rewrite <- Nat.add_assoc.
-          }
-          replace (i + 1 + 1) with (i + 2) in Hcv1 by flia.
-          rewrite (proj2 Huv2), Hr2 in Hcv1.
-          remember (carry v (i + 2)) as c eqn:Hc; symmetry in Hc.
-          destruct c; [ easy | ].
-          destruct c; [ easy | ].
-          specialize (carry_upper_bound_for_add v (i + 2)) as H3.
-          assert (H : ∀ k, v (i + 2 + k + 1) ≤ 2 * (rad - 1)). {
-            now intros; rewrite Hr2; do 2 rewrite <- Nat.add_assoc.
-          }
-          specialize (H3 H); clear H.
-          flia Hc H3.
-        }
-        move Hpv2 before Hpv1.
-(* state
-       i+1         i+p+2
-     u 0 1 . . . 0 . . .
-     v 0 1 . . . 0 . . .
-   u+v 0 2 . . . 0 2 2 2 ...
-    Pv 1 0 . . . 1 . . .
-  u+Pv 1 1 . . . 1 1 1 1 ...
+  u+Pv 1 . . . . . . 1 1 1 1 ...
 *)
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
