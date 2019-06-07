@@ -3959,17 +3959,19 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
     assert (Hn2 : ∃ n1,
       n2 + n1 < p ∧ (∀ s : nat, s < n1 → (u ⊕ v) (i + n2 + s + 3) = 1) ∧
       (u ⊕ v) (i + n2 + n1 + 3) = 0). {
+...
       remember (p - n2 - 1) as q eqn:Hq.
       replace p with (q + n2 + 1) in * by flia Hn2p Hq.
       clear Hn2p Hq.
       replace (i + (q + n2 + 1)) with (i + n2 + q + 1) in * by flia.
       replace (i + q + n2 + 1 + 2) with (i + n2 + q + 3) in * by flia.
-      replace (S (q + n2 + 1)) with (q + n2 + 2) in * by flia.
+      clear Hjp Huv_bef_n2.
 (*
-      revert i Hu Hv Hjj Hj Hjk Hk Hauv Huv1 Hpv1 Huvp2 Hpvp2 Hn Hnj Hnk Huvl3
-        Hjp Huvp2a Hcv1 Hupv0 Hupvps Huv_bef_n2 Huvn2.
+      revert i n2 Hu Hv Hjj Hj Hjk Hk Hauv Huv1 Hpv1 Huvp2 Hpvp2 Hn Hnj Hnk Huvl3
+        Huvp2a Hcv1 Hupv0 Hupvps Huv_bef_n2 Huvn2.
 *)
-      revert n2 Huvp2 Hpvp2 Hjp Huvp2a Hupvps Huv_bef_n2 Huvn2.
+      revert n2 Huvp2 Hpvp2 Huvp2a Hupvps Huvn2.
+(**)
       induction q; intros. {
         exists 0.
         split; [ flia | ].
@@ -3978,7 +3980,6 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       }
       replace (i + n2 + S q + 1) with (i + n2 + q + 2) in * by flia.
       replace (i + n2 + q + 2 +  2) with (i + n2 + q + 4) in * by flia.
-      replace (S q + n2 + 2) with (q + n2 + 3) in * by flia.
 (* state
        i+1   i+n2+2  i+n2+q+4
      u 0 . . . . . . 0 . . .
@@ -3987,11 +3988,12 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
     Pv 1 . . . . . . 1 . . .
   u+Pv 1 . . . . . . 1 1 1 1 ...
 *)
+      destruct n2 as [Hn2| Hn2]. {
       specialize (IHq (n2 + 1)).
       replace (i + (n2 + 1) + q + 1 + 2) with (i + n2 + q + 4) in IHq by flia.
       replace (q + (n2 + 1) + 2) with (q + n2 + 3) in IHq by flia.
       replace (i + (n2 + 1) + q + 1) with (i + n2 + q + 2) in IHq by flia.
-      specialize (IHq Huvp2 Hpvp2 Hjp Huvp2a Hupvps).
+      specialize (IHq Huvp2 Hpvp2 Huvp2a Hupvps).
 (* ah oui mais non ça va pas *)
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
