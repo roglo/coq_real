@@ -3939,11 +3939,11 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
 
   u+v between i+1 and i+p+2 are supposed to be (2*31*0)*
 *)
+    apply Nat.eq_add_0 in Huv1.
+    apply Nat.eq_add_0 in Huvp2.
     assert (Hn2 : ∃ n2,
       n2 < p ∧ (∀ s : nat, s < n2 → (u ⊕ v) (i + s + 2) = 2) ∧
       (u ⊕ v) (i + n2 + 2) = 3). {
-      apply Nat.eq_add_0 in Huv1.
-      apply Nat.eq_add_0 in Huvp2.
       apply rad_2_sum_3_all_9_02_p0_all_2_ex_222_3; try easy.
       now left.
     }
@@ -3959,6 +3959,17 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
     assert (Hn2 : ∃ n1,
       n2 + n1 < p ∧ (∀ s : nat, s < n1 → (u ⊕ v) (i + n2 + s + 3) = 1) ∧
       (u ⊕ v) (i + n2 + n1 + 3) = 0). {
+      remember (p - n2 - 1) as q eqn:Hq.
+      replace p with (q + n2 + 1) in * by flia Hn2p Hq.
+      clear Hn2p Hq.
+      induction q. {
+        exists 0.
+        split; [ flia | ].
+        split; [ now intros | ].
+        rewrite Nat.add_0_l in Huvp2.
+        rewrite Nat.add_0_r.
+        now replace (i + (n2 + 1) + 2) with (i + n2 + 3) in Huvp2 by flia.
+      }
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
     intros p1 Hp1; rewrite Hr2; replace (2 - 1) with 1 by easy.
