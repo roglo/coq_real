@@ -3957,13 +3957,34 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
       }
       specialize (Huv2 H Hauv Huv1); clear H.
       destruct Huv2 as [Huv2| Huv2]. {
-Check rad_2_sum_3_all_9_02_1_333.
-...
+        specialize (rad_2_sum_3_all_9_02_1_333 (u ⊕ v) i Hr2 Huvl3) as H1.
+        specialize (H1 Hauv Huv1 Huv2 (p + 1)).
+        replace (i + (p + 1) + 3) with (i + p + 4) in H1 by flia.
+        unfold "⊕" in H1 at 1.
+        now rewrite (proj1 Huvp2), (proj2 Huvp2) in H1.
       }
       destruct Huv2 as [Huv2| Huv2]. {
-        specialize (IHp (or_intror Huv2)).
-        (* seems feasible *)
-...
+        specialize (IHp (or_intror Huv2) Huvp2 Hpvp2).
+        assert (H : ∀ k, (u ⊕ v) (i + 1 + k) ≤ 3). {
+          now intros; rewrite <- Nat.add_assoc.
+        }
+        specialize (IHp H); clear H.
+        assert (H : ∀ s, (u ⊕ v) (i + 1 + S p + s + 3) = 2). {
+          intros j.
+          replace (i + 1 + S p + j + 3) with (i + S (S p) + j + 3) by flia.
+          easy.
+        }
+        specialize (IHp H); clear H.
+        destruct IHp as (n2 & Hn2p & Hbef & Hn2).
+        exists (n2 + 1).
+        split; [ flia Hn2p | ].
+        split. {
+          intros s Hs.
+          destruct s; [ now rewrite Nat.add_0_r | ].
+          replace (i + S s + 2) with (i + 1 + s + 2) by flia.
+          apply Hbef; flia Hs.
+        }
+        now replace (i + 1 + n2 + 2) with (i + (n2 + 1) + 2) in Hn2 by flia.
       }
       exists 0.
       (* etc. *)
