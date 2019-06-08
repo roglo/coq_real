@@ -4102,9 +4102,9 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
   u+Pv 1 . . . 1 1 1 1 ...
 *)
 (* it can be either
-   u+v 0 3 1 1 0 2 2 2 ... (1 regexp)
+   u+v 0 3 1 1 0 2 2 2 ... (1 matching the regexp: 3110)
  or
-   u+v 0 3 0 3 0 2 2 2 ... (2 regexps)
+   u+v 0 3 0 3 0 2 2 2 ... (2 matching the regexp: 30 and 30)
 *)
 ...
     rewrite A_all_9; [ now apply Q.sub_lt | ].
