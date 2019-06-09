@@ -3577,6 +3577,13 @@ split; [ now intros | ].
 now rewrite Nat.add_0_r.
 Qed.
 
+(* rad=2 automat for u when P(u)=111...
+     0  1  2  3
+  I  a  b  a  c
+  a  -  b  a  c
+  b  -  -  -  b
+  c  a  c  -  -
+*)
 (* rad=2, u=sum of 3 reals, P(u)=111... → possible cases for u:
   1/ 13*
   2/ 31*
