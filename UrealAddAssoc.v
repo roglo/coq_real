@@ -3585,10 +3585,43 @@ Qed.
   c  a  c  -  -
   d  -  -  -  d
 *)
-(* interesting thing: before a 0, the carry is always 0 (should be
-   provable by carry_succ). Therefore, the computation of A could
-   be "truncated" at a place where a is 0, but I must find a way to
-   represent and use this property. *)
+
+(* interesting thing: before a 0, the carry is always 0. Therefore,
+   the computation of A could be "truncated" at a place where a is 0,
+   but I must find a way to use this property. *)
+Theorem rad_2_sum_3_all_1_carry_0 {r : radix} : ∀ u i k,
+  rad = 2
+  → (∀ k, u (i + k) ≤ 3)
+  → (∀ k, fA_ge_1_ε u i k = true)
+  → u (i + k + 1) = 0
+  → carry u (i + k) = 0.
+Proof.
+intros * Hr2 Hu Hau Hu1.
+rewrite (carry_succ 3); cycle 1. {
+  rewrite Hr2.
+  apply (Nat.lt_le_trans _ (2 ^ 2)); [ pauto | ].
+  apply Nat.pow_le_mono_r; [ easy | ].
+  destruct i; cbn; [ | flia ].
+  destruct k; flia.
+} {
+  now intros; rewrite <- Nat.add_assoc; rewrite Hr2.
+}
+rewrite Hu1, Nat.add_0_l, Hr2.
+specialize (carry_upper_bound_for_adds 3 u i (Nat.neq_succ_0 _)) as H1.
+assert (H : ∀ k, u (i + k + 1) ≤ 3 * (rad - 1)). {
+  now intros; rewrite <- Nat.add_assoc, Hr2.
+}
+specialize (H1 H (k + 1)); clear H.
+rewrite Nat.add_assoc in H1.
+specialize (all_fA_ge_1_ε_P_999 u i Hau k) as H2.
+unfold P, d2n, prop_carr, dig in H2.
+rewrite Hu1, Nat.add_0_l, Hr2 in H2.
+remember (carry u (i + k + 1)) as c eqn:Hc.
+destruct c; [ easy | ].
+destruct c; [ easy | ].
+destruct c; [ easy | flia H1 ].
+Qed.
+
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
