@@ -3579,36 +3579,16 @@ Qed.
 
 (* rad=2 automat for u when P(u)=111...
      0  1  2  3
-  I  a  b  a  c
-  a  -  b  a  c
-  b  -  d  -  e
+  I  a  b  a  b
+  a  -  -  a  c
+  b  a  c  -  d
   c  a  c  -  -
-  d  -  d  -  -
-  e  -  -  -  e
+  d  -  -  -  d
 *)
-(* rad=2, u=sum of 3 reals, P(u)=111... → possible cases for u:
-.... to be revised because of possible missing 111... (="1*")
-  1/ 1*
-  2/ 13*
-  3/ 31*
-  4/ [0|2|31*0](2*31*0)*
-  5/ [0|2|31*0](2*31*0)*2*
-  6/ [0|2|31*0](2*31*0)*2*13*
-  7/ [0|2|31*0](2*31*0)*2*31*
-*)
-Theorem rad_2_sum_3_all_1_cases {r : radix} : ∀ u i,
-  rad = 2
-  → (∀ k, u (i + k) ≤ 3)
-  → (∀ k, fA_ge_1_ε u i k = true)
-  → u i = 1 ∧ (∀ k, u (i + k + 1) = 3) ∨
-     u i = 3 ∧ (∀ k, u (i + k + 1) = 1) ∨
-     ∀ n1,
-     (u i = 0 ∧ n1 = 0 ∨
-      u i = 2 ∧ n1 = 0 ∨
-      u i = 3 ∧ n1 = skip_rep_1 + 1 u i ∧ u (i + n1) = 0) ∧
-     (...
-∀ n2, n2 = skip_rep_2s31s0 u (i + n1 + 1) ∧
-     (
+(* interesting thing: before a 0, the carry is always 0 (should be
+   provable by carry_succ). Therefore, the computation of A could
+   be "truncated" at a place where a is 0, but I must find a way to
+   represent and use this property. *)
 ...
 
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
