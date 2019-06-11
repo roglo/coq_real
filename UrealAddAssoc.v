@@ -3654,8 +3654,8 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
 *)
 (* possible algorithm:
      with LPO search for 1st 0
-     - if not found, must be 02* or 02*31*
      - if found, must be 02*31*0 and something
+     - if not found, must be 02* or 02*31*
    but, before, does it help? is it provable? can we prove it is
    exaustive?
 *)
