@@ -3652,6 +3652,12 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   2/ 0(2*31*0)*2*
   3/ 0(2*31*0)*2*31*
 *)
+(* possible algorithm:
+     with LPO search for 1st 0
+     - if not found, must be 02* or 02*31*
+     - if found, must be 02*31*0
+   but, before, does it help?
+*)
 ...
 destruct
   (LPO_fst
