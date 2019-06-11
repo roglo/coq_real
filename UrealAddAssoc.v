@@ -3654,11 +3654,22 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
 *)
 (* possible algorithm:
      with LPO search for 1st 0
-     - if found, must be 02*31*0 and something
-     - if not found, must be 02* or 02*31*
+     1/ if found, must be 02*31*0 and something
+     2/ if not found, must be 02* or 02*31*
    but, before, does it help? is it provable? can we prove it is
    exaustive?
 *)
+(* fst case:
+     i+1
+   u 0 . . . 1 . . 0
+   v 0 . . . 2 . . 0
+ u+v 0 2 2 2 3 1 1 0
+  Pv . . . . . . . 1
+u+Pv . . . . . . . 1
+
+the ending 0 in u+v must be followed by 2 or 3 giving a carry of 1
+(because the case 2 is followed by 1*0 or 222... and the case 3
+by 111...; therefore Pv is 1 *)
 ...
 destruct
   (LPO_fst
