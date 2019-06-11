@@ -3623,8 +3623,6 @@ Qed.
   d  -  -  -  d
 *)
 
-...
-
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -3649,7 +3647,8 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   apply Nat.add_le_mono; [ apply Hu | apply Hv ].
 }
 ...
-(* u+v, 4 possible cases
+(* wrong:
+  u+v, 4 possible cases
   1/ [0|2](2*31*0)*
   2/ [0|2](2*31*0)*2*
   3/ [0|2](2*31*0)*2*13*
