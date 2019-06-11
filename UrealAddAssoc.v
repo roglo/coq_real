@@ -3646,14 +3646,13 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   unfold "⊕"; replace 3 with (1 + 2) by easy.
   apply Nat.add_le_mono; [ apply Hu | apply Hv ].
 }
-...
-(* wrong:
-  u+v, 4 possible cases
-  1/ [0|2](2*31*0)*
-  2/ [0|2](2*31*0)*2*
-  3/ [0|2](2*31*0)*2*13*
-  4/ [0|2](2*31*0)*2*31*
+(*
+  u+v, 3 possible cases from i
+  1/ 0(2*31*0)*
+  2/ 0(2*31*0)*2*
+  3/ 0(2*31*0)*2*31*
 *)
+...
 destruct
   (LPO_fst
    (λ k,
