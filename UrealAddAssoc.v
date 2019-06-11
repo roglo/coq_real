@@ -3577,18 +3577,10 @@ split; [ now intros | ].
 now rewrite Nat.add_0_r.
 Qed.
 
-(* rad=2 automat for u when P(u)=111...
-     0  1  2  3
-  I  a  b  a  b
-  a  -  -  a  c
-  b  a  c  -  d
-  c  a  c  -  -
-  d  -  -  -  d
-*)
-
-(* interesting thing: before a 0, the carry is always 0. Therefore,
-   the computation of A could be "truncated" at a place where a is 0,
-   but I must find a way to use this property. *)
+(* interesting thing: in radix 2, when adding 3 numbers, if the result
+   ends with an infinity of 1s, we have the property: before 0, the carry
+   is always 0. Therefore, the computation of A could be "truncated" at
+   a place where a is 0, but I must find a way to use this property. *)
 Theorem rad_2_sum_3_all_1_carry_0 {r : radix} : ∀ u i k,
   rad = 2
   → (∀ k, u (i + k) ≤ 3)
@@ -3621,6 +3613,15 @@ destruct c; [ easy | ].
 destruct c; [ easy | ].
 destruct c; [ easy | flia H1 ].
 Qed.
+
+(* rad=2 automat for u when P(u)=111...
+     0  1  2  3
+  I  a  b  a  b
+  a  -  -  a  c
+  b  a  c  -  d
+  c  a  c  -  -
+  d  -  -  -  d
+*)
 
 ...
 
