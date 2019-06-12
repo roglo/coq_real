@@ -3646,8 +3646,15 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   unfold "⊕"; replace 3 with (1 + 2) by easy.
   apply Nat.add_le_mono; [ apply Hu | apply Hv ].
 }
-(* below is false; counter-example: 2*13* *)
+(*
+  u+v, 4 possible cases from i (to be proved)
+  1/ 0(2*31*0)*
+  2/ 0(2*31*0)*2*
+  3/ 0(2*31*0)*2*31*
+  4/ 0(2*31*0)*2*13*
+*)
 ...
+(* below is false; counter-example: 2*13* *)
 (*
   u+v, 3 possible cases from i (to be proved)
   1/ 0(2*31*0)*
