@@ -3664,12 +3664,9 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
    u 0 . . . 1 . . 0
    v 0 . . . 2 . . 0
  u+v 0 2 2 2 3 1 1 0
-  Pv . . . . . . . 1
-u+Pv . . . . . . . 1
-
-the ending 0 in u+v must be followed by 2 or 3 giving a carry of 1
-(because the case 2 is followed by 1*0 or 222... and the case 3
-by 111...; therefore Pv is 1 *)
+  Pv . . . . . . . .
+u+Pv . . . . . . . .
+*)
 ...
 destruct
   (LPO_fst
