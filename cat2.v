@@ -10,31 +10,12 @@ Class pre_cat :=
     unit_l : ∀ {A B} (f : morph A B), comp id f = f;
     unit_r : ∀ {A B} (f : morph A B), comp f id = f;
     assoc : ∀ {A B C D} (f : morph A B) (g : morph B C) (h : morph C D),
-      comp f (comp g h) = comp (comp f g) h;
-    homset : ∀ {A B}, is_set (morph A B) }.
+      comp f (comp g h) = comp (comp f g) h(*;
+    homset : ∀ {A B}, is_set (morph A B)*) }.
 
 Arguments morph [_].
 Notation "g '◦' f" := (comp f g) (at level 40, left associativity).
 Coercion obj : pre_cat >-> Sortclass.
-
-Theorem homset_type : ∀ A B, is_set (A → B).
-Proof.
-intros * f g Hp Hq.
-...
-
-Definition cTyp :=
-  {| obj := Type;
-     morph A B := A → B;
-     comp A B C f g := λ x, g (f x);
-     id _ a := a;
-     unit_l _ _ _ := eq_refl;
-     unit_r _ _ _ := eq_refl;
-     assoc _ _ _ _ _ _ _ := eq_refl;
-     homset := eq_refl |}.
-
-Print cTyp.
-
-...
 
 Record is_isomorph {C : pre_cat} {a b : C} (f : morph a b) :=
   { inv : morph b a;
@@ -54,3 +35,36 @@ Record cat :=
     univalent : ∀ a b : pcat, isomorphism a b ≃ (a = b) }.
 
 (* *)
+
+(*
+Theorem homset_typ : ∀ A B, is_set (A → B).
+Proof.
+intros * f g Hp Hq.
+...
+*)
+
+Definition pre_cTyp :=
+  {| obj := Type;
+     morph A B := A → B;
+     comp A B C f g := λ x, g (f x);
+     id _ A := A;
+     unit_l _ _ _ := eq_refl;
+     unit_r _ _ _ := eq_refl;
+     assoc _ _ _ _ _ _ _ := eq_refl(*;
+     homset := eq_refl*) |}.
+
+Print pre_cTyp.
+
+Theorem cTyp_univ : ∀ A B : pre_cTyp, isomorphism A B ≃ (A = B).
+Proof.
+intros.
+unfold isomorphism.
+unfold "≃".
+assert (f : {f : morph A B & is_isomorph f} → A = B). {
+  intros (f & Hf).
+  destruct Hf as (g, Hgf, Hfg).
+...
+
+Definition cTyp := {| pcat := pre_cTyp; univalent := eq_refl |}.
+
+...
