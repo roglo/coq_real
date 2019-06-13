@@ -5,17 +5,36 @@ Definition is_set (A : Type) := ∀ (a b : A) (p q : a = b), p = q.
 Class pre_cat :=
   { obj : Type;
     morph : obj → obj → Type;
-    comp : ∀ {a b c}, morph a b → morph b c → morph a c;
-    id : ∀ {a}, morph a a;
-    unit_l : ∀ {a b} (f : morph a b), comp id f = f;
-    unit_r : ∀ {a b} (f : morph a b), comp f id = f;
-    assoc : ∀ {a b c d} (f : morph a b) (g : morph b c) (h : morph c d),
+    comp : ∀ {A B C}, morph A B → morph B C → morph A C;
+    id : ∀ {A}, morph A A;
+    unit_l : ∀ {A B} (f : morph A B), comp id f = f;
+    unit_r : ∀ {A B} (f : morph A B), comp f id = f;
+    assoc : ∀ {A B C D} (f : morph A B) (g : morph B C) (h : morph C D),
       comp f (comp g h) = comp (comp f g) h;
-    homset : ∀ {a b}, is_set (morph a b) }.
+    homset : ∀ {A B}, is_set (morph A B) }.
 
 Arguments morph [_].
 Notation "g '◦' f" := (comp f g) (at level 40, left associativity).
 Coercion obj : pre_cat >-> Sortclass.
+
+Theorem homset_type : ∀ A B, is_set (A → B).
+Proof.
+intros * f g Hp Hq.
+...
+
+Definition cTyp :=
+  {| obj := Type;
+     morph A B := A → B;
+     comp A B C f g := λ x, g (f x);
+     id _ a := a;
+     unit_l _ _ _ := eq_refl;
+     unit_r _ _ _ := eq_refl;
+     assoc _ _ _ _ _ _ _ := eq_refl;
+     homset := eq_refl |}.
+
+Print cTyp.
+
+...
 
 Record is_isomorph {C : pre_cat} {a b : C} (f : morph a b) :=
   { inv : morph b a;
@@ -35,7 +54,3 @@ Record cat :=
     univalent : ∀ a b : pcat, isomorphism a b ≃ (a = b) }.
 
 (* *)
-
-Definition catTyp A :=
-  {| obj := A;
-     morph a b := ... |}.
