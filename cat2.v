@@ -27,14 +27,15 @@ Definition cTyp :=
      unit_r _ _ _ := eq_refl;
      assoc _ _ _ _ _ _ _ := eq_refl |}.
 
-Require Import List.
+Require List.
+Import List.ListNotations.
+Open Scope list_scope.
 
-Definition mat A nrow ncol :=
-  { rows : list (list A) |
-    List.length rows = nrow & List.Forall (λ col, List.length col = ncol) rows }.
+Definition vect n A := { v : list A | List.length v = n }.
+Record mat nrow ncol A := { mel : vect nrow (vect ncol A) }.
 
-Definition mat_mul A a b c (M : mat A a b) (N : mat A b c) :=
-  List.map
+Definition mat_mul A a b c (M : mat a b A) (N : mat b c A) : mat a c A :=
+  {| mel := [] |}.
 ...
 
 Definition cMat A :=
