@@ -51,7 +51,7 @@ Record functor (C D : cat) :=
 
 Record cone {J C} (D : functor J C) :=
   { c_obj : @obj C;
-    c_arr_fam : c_obj → morph }.
+    c_arr_fam : J → morph c_obj }.
 
 ...
 
