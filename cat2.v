@@ -27,6 +27,8 @@ Definition cTyp :=
      unit_r _ _ _ := eq_refl;
      assoc _ _ _ _ _ _ _ := eq_refl |}.
 
+(* tentative de faire Mat, mais c'est fatigant
+
 Require List.
 Import List.ListNotations.
 Open Scope list_scope.
@@ -46,3 +48,4 @@ Definition cMat A :=
   {| obj := nat;
      morph := mat A;
      comp a b c M N := mat_mul A a b c M N |}.
+*)
