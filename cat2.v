@@ -49,3 +49,8 @@ Definition cMat A :=
      morph := mat A;
      comp a b c M N := mat_mul A a b c M N |}.
 *)
+
+Definition is_initial {C : cat} (_0 : obj) :=
+  ∀ c : obj, ∀ f g : morph _0 c, f = g.
+Definition is_final {C : cat} (_1 : obj) :=
+  ∀ c : obj, ∀ f g : morph c _1, f = g.
