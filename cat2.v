@@ -41,13 +41,17 @@ Record functor (C D : cat) :=
       f_arr (g ◦ f) = f_arr g ◦ f_arr f;
     f_id {a} : @f_arr a _ id = id }.
 
-(* A cone to a functor D(J,C) consists of an object c in C and a family of
-   arrows in C *)
+(* A cone to a functor D(J,C) consists of an object c in C and a
+   family of arrows in C : cj : c → Dj one for each object j ∈ J, such
+   that for each arrow α : i → j in J, the following triangle
+   commutes. *)
+
 (* http://angg.twu.net/tmp/2016-optativa/awodey__category_theory.pdf
    page 100 *)
 
 Record cone {J C} (D : functor J C) :=
-  { c_obj : @obj C }.
+  { c_obj : @obj C;
+    c_arr_fam : c_obj → morph }.
 
 ...
 
