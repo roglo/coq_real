@@ -34,8 +34,12 @@ Open Scope list_scope.
 Definition vect n A := { v : list A | List.length v = n }.
 Record mat nrow ncol A := { mel : vect nrow (vect ncol A) }.
 
-Definition mat_mul A a b c (M : mat a b A) (N : mat b c A) : mat a c A :=
-  {| mel := [] |}.
+Check (let l := [3; 4; 5] in (exist (λ l, List.length l = 3) l eq_refl) : vect _ _).
+
+Definition mat_mul A zero_A a b c (M : mat a b A) (N : mat b c A) (*: mat a c A*) : vect a A :=
+  exist (λ l, @List.length A l = a)
+    (List.repeat zero_A a) (List.repeat_length zero_A a).
+
 ...
 
 Definition cMat A :=
