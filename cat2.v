@@ -41,9 +41,5 @@ Record functor (C D : cat) :=
       f_arr (g ◦ f) = f_arr g ◦ f_arr f;
     f_id {a} : @f_arr a _ id = id }.
 
-...
+Definition diagram (J C : cat) := functor J C.
 
-(*
-Definition 5.17.LetJandCbe categories. AdiagramoftypeJinCis afunctor.D:J→C.
-*)
-Definition diagram (J C : cat) :=
