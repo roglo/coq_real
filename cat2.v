@@ -41,5 +41,13 @@ Record functor (C D : cat) :=
       f_arr (g ◦ f) = f_arr g ◦ f_arr f;
     f_id {a} : @f_arr a _ id = id }.
 
-Definition diagram (J C : cat) := functor J C.
+(* A cone to a functor D consists of an object c in C and a family of arrows in C *)
+(* http://angg.twu.net/tmp/2016-optativa/awodey__category_theory.pdf page 100 *)
+
+Record cone {J C} (D : functor J C) :=
+  { c_obj : @obj C }.
+
+...
+
+(* A limit for a functor D : J → C is a terminal object in Cone(D) *)
 
