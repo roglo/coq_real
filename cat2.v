@@ -52,16 +52,10 @@ Arguments f_map_arr [_] [_] _ [_] [_].
 (* http://angg.twu.net/tmp/2016-optativa/awodey__category_theory.pdf
    page 100 *)
 
-Check f_map_obj.
-Check f_map_arr.
-
 Record cone {J C} (D : functor J C) :=
   { c_obj : @Obj C;
-    c_arr_fam : ∀ j : J, Hom c_obj (f_map_obj D j);
-    c_glop : ∀ (i j : J) (ci : Hom _ i) (cj : Hom _ j) (α : Hom j i),
-      @f_map_arr J C D _ _ ci = α ◦ @f_map_arr J C D _ _ cj }.
-
-...
+    c_arr_fam : ∀ j, Hom c_obj (f_map_obj D j);
+    c_commute : ∀ i j (α : Hom _ _), c_arr_fam j = α ◦ c_arr_fam i }.
 
 Print cone.
 
