@@ -35,11 +35,11 @@ Definition is_final {C : cat} (_1 : obj) :=
   ∀ c : obj, ∀ f g : morph c _1, f = g.
 
 Record functor (C D : cat) :=
-  { f_map : C → D;
-    f_arr {a b} : morph a b → morph (f_map a) (f_map b);
+  { f_map_obj : C → D;
+    f_map_arr {a b} : morph a b → morph (f_map_obj a) (f_map_obj b);
     f_comp {a b c} (f : morph a b) (g : morph b c) :
-      f_arr (g ◦ f) = f_arr g ◦ f_arr f;
-    f_id {a} : @f_arr a _ id = id }.
+      f_map_arr (g ◦ f) = f_map_arr g ◦ f_map_arr f;
+    f_id {a} : @f_map_arr a _ id = id }.
 
 ...
 
