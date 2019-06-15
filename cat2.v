@@ -37,14 +37,14 @@ Definition is_initial {C : cat} (_0 : Obj) :=
 Definition is_final {C : cat} (_1 : Obj) :=
   ∀ c : Obj, ∀ f g : Hom c _1, f = g.
 
-Record functor (C D : cat) :=
+Class functor (C D : cat) :=
   { f_map_obj : C → D;
     f_map_arr {a b} : Hom a b → Hom (f_map_obj a) (f_map_obj b);
     f_comp {a b c} (f : Hom a b) (g : Hom b c) :
       f_map_arr (g ◦ f) = f_map_arr g ◦ f_map_arr f;
     f_id {a} : @f_map_arr a _ id = id }.
 
-Arguments f_map_obj [_] [_].
+Arguments f_map_obj [_] [_] [_].
 Arguments f_map_arr [_] [_] _ [_] [_].
 
 (* A cone to a functor D(J,C) consists of an object c in C and a
@@ -54,7 +54,7 @@ Arguments f_map_arr [_] [_] _ [_] [_].
 
 Record cone {J C} (D : functor J C) :=
   { c_obj : C;
-    c_arr_fam : ∀ j, Hom c_obj (f_map_obj D j);
+    c_arr_fam : ∀ j, Hom c_obj (f_map_obj j);
     c_commute : ∀ i j α, c_arr_fam j = α ◦ c_arr_fam i }.
 
 Print cone.
