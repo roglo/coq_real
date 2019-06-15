@@ -1,3 +1,6 @@
+(* categories *)
+(* http://angg.twu.net/tmp/2016-optativa/awodey__category_theory.pdf *)
+
 Require Import Utf8.
 
 Definition is_set (A : Type) := ∀ (a b : A) (p q : a = b), p = q.
@@ -49,13 +52,10 @@ Arguments f_map_arr [_] [_] _ [_] [_].
    that for each arrow α : i → j in J, the following triangle
    commutes. *)
 
-(* http://angg.twu.net/tmp/2016-optativa/awodey__category_theory.pdf
-   page 100 *)
-
 Record cone {J C} (D : functor J C) :=
-  { c_obj : @Obj C;
+  { c_obj : C;
     c_arr_fam : ∀ j, Hom c_obj (f_map_obj D j);
-    c_commute : ∀ i j (α : Hom _ _), c_arr_fam j = α ◦ c_arr_fam i }.
+    c_commute : ∀ i j α, c_arr_fam j = α ◦ c_arr_fam i }.
 
 Print cone.
 
