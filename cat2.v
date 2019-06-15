@@ -58,7 +58,7 @@ Check f_map_arr.
 Record cone {J C} (D : functor J C) :=
   { c_obj : @Obj C;
     c_arr_fam : ∀ j : J, Hom c_obj (f_map_obj D j);
-    c_glop : ∀ (i j : J) (ci : Hom _ _) (cj : Hom _ _) (α : Hom i j),
+    c_glop : ∀ (i j : J) (ci : Hom _ i) (cj : Hom _ j) (α : Hom j i),
       @f_map_arr J C D _ _ ci = α ◦ @f_map_arr J C D _ _ cj }.
 
 ...
