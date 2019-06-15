@@ -41,6 +41,9 @@ Record functor (C D : cat) :=
       f_map_arr (g ◦ f) = f_map_arr g ◦ f_map_arr f;
     f_id {a} : @f_map_arr a _ id = id }.
 
+Arguments f_map_obj [_] [_].
+Arguments f_map_arr [_] [_] _ [_] [_].
+
 (* A cone to a functor D(J,C) consists of an object c in C and a
    family of arrows in C : cj : c → Dj one for each object j ∈ J, such
    that for each arrow α : i → j in J, the following triangle
@@ -49,9 +52,16 @@ Record functor (C D : cat) :=
 (* http://angg.twu.net/tmp/2016-optativa/awodey__category_theory.pdf
    page 100 *)
 
+Check f_map_obj.
+Check f_map_arr.
+
 Record cone {J C} (D : functor J C) :=
   { c_obj : @Obj C;
-    c_arr_fam : ∀ j : J, Hom c_obj (f_map_obj _ _ D j) }.
+    c_arr_fam : ∀ j : J, Hom c_obj (f_map_obj D j);
+    c_glop : ∀ (i j : J) (ci : Hom _ _) (cj : Hom _ _) (α : Hom i j),
+      @f_map_arr J C D _ _ ci = α ◦ @f_map_arr J C D _ _ cj }.
+
+...
 
 Print cone.
 
