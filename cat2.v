@@ -35,11 +35,13 @@ Definition is_final {C : cat} (_1 : obj) :=
   ∀ c : obj, ∀ f g : morph c _1, f = g.
 
 Record functor (C D : cat) :=
-  { f_obj : C → D;
-    f_arr {a b} : morph a b → morph (f_obj a) (f_obj b);
+  { f_map : C → D;
+    f_arr {a b} : morph a b → morph (f_map a) (f_map b);
     f_comp {a b c} (f : morph a b) (g : morph b c) :
       f_arr (g ◦ f) = f_arr g ◦ f_arr f;
     f_id {a} : @f_arr a _ id = id }.
+
+...
 
 (* A cone to a functor D(J,C) consists of an object c in C and a
    family of arrows in C : cj : c → Dj one for each object j ∈ J, such
