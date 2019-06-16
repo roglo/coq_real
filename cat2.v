@@ -17,9 +17,7 @@ Class cat :=
 
 Arguments Hom [_].
 Notation "g '◦' f" := (comp f g) (at level 40, left associativity).
-(*
 Coercion Obj : cat >-> Sortclass.
-*)
 
 (* *)
 
@@ -32,16 +30,14 @@ Definition cTyp :=
      unit_r _ _ _ := eq_refl;
      assoc _ _ _ _ _ _ _ := eq_refl |}.
 
-Theorem glop (z : bool → bool) : (λ b : bool, b) = z.
-Proof.
 ...
 
 Definition cBool :=
   {| Obj := bool;
-     Hom _ _ := bool → bool;
-     comp _ _ _ f _ := f;
-     id _ b := b;
-     unit_l x y z := z;
+     Hom b1 b2 := bool → bool;
+     comp b1 b2 b3 f g := λ b, b;
+     id _ := λ b, b;
+     unit_l x y z := λ b, b;
      unit_r _ _ _ := eq_refl;
      assoc _ _ _ _ _ _ _ := eq_refl |}.
 
