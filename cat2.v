@@ -30,14 +30,12 @@ Definition cTyp :=
      unit_r _ _ _ := eq_refl;
      assoc _ _ _ _ _ _ _ := eq_refl |}.
 
-...
-
 Definition cBool :=
   {| Obj := bool;
-     Hom b1 b2 := bool → bool;
-     comp b1 b2 b3 f g := λ b, b;
-     id _ := λ b, b;
-     unit_l x y z := λ b, b;
+     Hom _ _ := bool → bool;
+     comp _ _ _ f g := λ x, g (f x);
+     id _ A := A;
+     unit_l _ _ _ := eq_refl;
      unit_r _ _ _ := eq_refl;
      assoc _ _ _ _ _ _ _ := eq_refl |}.
 
