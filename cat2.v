@@ -34,7 +34,7 @@ Definition cTyp :=
 
 Definition is_initial {C : cat} (_0 : Obj) :=
   ∀ c : Obj, ∀ f g : Hom _0 c, f = g.
-Definition is_final {C : cat} (_1 : Obj) :=
+Definition is_terminal {C : cat} (_1 : Obj) :=
   ∀ c : Obj, ∀ f g : Hom c _1, f = g.
 
 Class functor (C D : cat) :=
@@ -57,8 +57,16 @@ Record cone {J C} (D : functor J C) :=
     c_arr_fam : ∀ j, Hom c_obj (f_map_obj j);
     c_commute : ∀ i j α, c_arr_fam j = α ◦ c_arr_fam i }.
 
-Print cone.
-
-...
+Arguments c_obj [_] [_] [_].
 
 (* A limit for a functor D : J → C is a terminal object in Cone(D) *)
+
+Definition is_limit {J C} {D : functor J C} (Cn : cone D) :=
+  is_terminal (c_obj Cn).
+
+Definition limit {J C} {D : functor J C} (Cn : cone D) :=
+  (c_obj Cn, is_terminal (c_obj Cn)).
+
+Print limit.
+
+Print is_limit.
