@@ -65,8 +65,8 @@ Definition is_limit {J C} {D : functor J C} (Cn : cone D) :=
   is_terminal (c_obj Cn).
 
 Definition limit {J C} {D : functor J C} (Cn : cone D) :=
-  (c_obj Cn, is_terminal (c_obj Cn)).
+  { p | p = c_obj Cn & is_terminal p }.
 
 Print limit.
 
-Print is_limit.
+(* ouais chais pas *)
