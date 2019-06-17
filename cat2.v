@@ -30,14 +30,16 @@ Definition cTyp :=
      unit_r _ _ _ := eq_refl;
      assoc _ _ _ _ _ _ _ := eq_refl |}.
 
-Definition cBool :=
-  {| Obj := bool;
-     Hom _ _ := unit;
-     comp _ _ _ f g := f;
-     id _ := tt;
-     unit_l _ _ f := match f with tt => eq_refl end;
+Definition cDiscr T :=
+  {| Obj := T;
+     Hom t1 t2 := t1 = t2;
+     comp _ _ _ f g := match g with eq_refl => f end;
+     id _ := eq_refl;
+     unit_l _ _ f := match f with eq_refl => eq_refl end;
      unit_r _ _ f := eq_refl;
-     assoc _ _ _ _ _ _ _ := eq_refl |}.
+     assoc _ _ _ _ _ _ f := match f with eq_refl => eq_refl end |}.
+
+Definition cTwo := cDiscr (unit + unit).
 
 (* *)
 
@@ -68,26 +70,17 @@ Record cone {J C} (D : functor J C) :=
 
 Arguments c_obj [_] [_] [_].
 
-Require Import Arith.
-
-(*
-Theorem glop (C : cat) (b1 b2 : cBool) (D1 D2 : C) : negb (xorb b1 b2) = true → Hom (if b1 then D1 else D2) (if b2 then D1 else D2).
+Theorem two_functor_map_arr :
+  ∀ (C : cat) (D1 D2 : C) (b1 b2 : cTwo) (f : Hom b1 b2),
+  Hom (if b1 then D1 else D2) (if b2 then D1 else D2).
 Proof.
-intros Hbb.
-apply Bool.negb_true_iff in Hbb.
-Search (xorb _ _ = false).
-apply Bool.xorb_eq in Hbb.
-subst b1.
-apply id.
-Defined.
+intros; destruct b1, b2; [ apply id | easy | easy | apply id ].
+Qed.
 
-Print glop.
-*)
-
-Definition bool_functor {C : cat} (D1 D2 : C) :=
-  {| f_map_obj (b : cBool) := if b then D1 else D2;
-     f_map_arr (b1 b2 : cBool) (f : Hom b1 b2) :=
-       id |}.
+Definition two_functor {C : cat} (D1 D2 : C) :=
+  {| f_map_obj (b : cTwo) := if b then D1 else D2;
+     f_map_arr := two_functor_map_arr C D1 D2;
+     f_comp a b c f g := 42 |}.
 
 ...
 
