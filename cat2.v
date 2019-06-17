@@ -70,7 +70,7 @@ Arguments c_obj [_] [_] [_].
 
 Definition cCone {J C} {D : functor J C} (Cn : cone D) :=
   {| Obj := (J * C);
-     Hom A B := (A * B)%type;
+     Hom A B := C → C;
      comp A B C f g := λ x, g (f x);
      id _ A := A;
      unit_l _ _ _ := eq_refl;
