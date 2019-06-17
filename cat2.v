@@ -75,7 +75,20 @@ Theorem two_functor_map_arr :
   Hom (if b1 then D1 else D2) (if b2 then D1 else D2).
 Proof.
 intros; destruct b1, b2; [ apply id | easy | easy | apply id ].
-Qed.
+Defined.
+
+Theorem two_functor_comp :
+  ∀ (C : cat) (D1 D2 : C) (a b c : cTwo) (f : Hom a b) (g : Hom b c),
+  two_functor_map_arr C D1 D2 a c (g ◦ f) =
+  two_functor_map_arr C D1 D2 b c g ◦ two_functor_map_arr C D1 D2 a b f.
+Proof.
+intros.
+unfold two_functor_map_arr.
+destruct a as [a| a], b as [b| b], c as [c| c].
+-destruct a, b, c.
+cbn in f, g.
+destruct f, g.
+Abort.
 
 Definition two_functor {C : cat} (D1 D2 : C) :=
   {| f_map_obj (b : cTwo) := if b then D1 else D2;
