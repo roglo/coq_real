@@ -32,21 +32,11 @@ Definition cTyp :=
 
 Definition cBool :=
   {| Obj := bool;
-     Hom _ _ := bool;
+     Hom _ _ := unit;
      comp _ _ _ f g := f;
-     id x := x;
-...
-     unit_l _ _ _ := eq_refl;
-     unit_r _ _ _ := eq_refl;
-     assoc _ _ _ _ _ _ _ := eq_refl |}.
-
-Definition cBool :=
-  {| Obj := bool;
-     Hom _ _ := bool → bool;
-     comp _ _ _ f g := λ x, g (f x);
-     id _ A := A;
-     unit_l _ _ _ := eq_refl;
-     unit_r _ _ _ := eq_refl;
+     id _ := tt;
+     unit_l _ _ f := match f with tt => eq_refl end;
+     unit_r _ _ f := eq_refl;
      assoc _ _ _ _ _ _ _ := eq_refl |}.
 
 (* *)
