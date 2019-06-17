@@ -68,6 +68,13 @@ Record cone {J C} (D : functor J C) :=
 
 Arguments c_obj [_] [_] [_].
 
+Definition bool_functor {C : cat} (D1 D2 : C) :=
+  {| f_map_obj (b : cBool) := if b then D1 else D2;
+     f_map_arr (b1 b2 : cBool) (f : Hom b1 b2) := tt |}.
+
+...
+
+(* mouais, chais pas... *)
 Definition cCone {J C} {D : functor J C} (Cn : cone D) :=
   {| Obj := (J * C);
      Hom A B := C → C;
