@@ -68,9 +68,26 @@ Record cone {J C} (D : functor J C) :=
 
 Arguments c_obj [_] [_] [_].
 
+Require Import Arith.
+
+(*
+Theorem glop (C : cat) (b1 b2 : cBool) (D1 D2 : C) : negb (xorb b1 b2) = true → Hom (if b1 then D1 else D2) (if b2 then D1 else D2).
+Proof.
+intros Hbb.
+apply Bool.negb_true_iff in Hbb.
+Search (xorb _ _ = false).
+apply Bool.xorb_eq in Hbb.
+subst b1.
+apply id.
+Defined.
+
+Print glop.
+*)
+
 Definition bool_functor {C : cat} (D1 D2 : C) :=
   {| f_map_obj (b : cBool) := if b then D1 else D2;
-     f_map_arr (b1 b2 : cBool) (f : Hom b1 b2) := tt |}.
+     f_map_arr (b1 b2 : cBool) (f : Hom b1 b2) :=
+       id |}.
 
 ...
 
