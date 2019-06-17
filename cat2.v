@@ -68,6 +68,17 @@ Record cone {J C} (D : functor J C) :=
 
 Arguments c_obj [_] [_] [_].
 
+Definition cCone {J C} {D : functor J C} (Cn : cone D) :=
+  {| Obj := (J * C);
+     Hom A B := A → B;
+     comp A B C f g := λ x, g (f x);
+     id _ A := A;
+     unit_l _ _ _ := eq_refl;
+     unit_r _ _ _ := eq_refl;
+     assoc _ _ _ _ _ _ _ := eq_refl |}.
+
+...
+
 (* A limit for a functor D : J → C is a terminal object in Cone(D) *)
 
 Definition is_limit {J C} {D : functor J C} (Cn : cone D) :=
