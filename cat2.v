@@ -19,6 +19,13 @@ Arguments Hom [_].
 Notation "g '◦' f" := (comp f g) (at level 40, left associativity).
 Coercion Obj : cat >-> Sortclass.
 
+Definition dom {C : cat} {O1 O2 : C} (f : Hom O1 O2) := O1.
+Definition cod {C : cat} {O1 O2 : C} (f : Hom O1 O2) := O2.
+Print dom.
+Print cod.
+
+...
+
 (* *)
 
 Definition cTyp :=
@@ -114,9 +121,11 @@ Check @c_arr_fam.
 Print two_functor.
 Print cDiscr.
 
+...
+
 Definition tfCone {C : cat} {D1 D2 : C} (D := two_functor D1 D2) :=
-  {| c_obj := D1;
-     c_arr_fam := λ (j : Obj), id;
+  {| c_obj := tt;
+     c_arr_fam := λ j, D1 = D2;
      c_commute := 43 |}.
 ...
 
