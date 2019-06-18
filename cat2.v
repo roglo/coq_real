@@ -58,18 +58,6 @@ Class functor (C D : cat) :=
 Arguments f_map_obj [_] [_] [_].
 Arguments f_map_arr [_] [_] _ [_] [_].
 
-(* A cone to a functor D(J,C) consists of an object c in C and a
-   family of arrows in C : cj : c → Dj one for each object j ∈ J, such
-   that for each arrow α : i → j in J, the following triangle
-   commutes. *)
-
-Record cone {J C} (D : functor J C) :=
-  { c_obj : C;
-    c_arr_fam : ∀ j, Hom c_obj (f_map_obj j);
-    c_commute : ∀ i j α, c_arr_fam j = α ◦ c_arr_fam i }.
-
-Arguments c_obj [_] [_] [_].
-
 Theorem two_functor_map_arr (C : cat) D1 D2 :
   ∀ (b1 b2 : cTwo) (f : Hom b1 b2),
   Hom (if b1 then D1 else D2) (if b2 then D1 else D2).
@@ -110,8 +98,22 @@ Definition two_functor {C : cat} (D1 D2 : C) :=
      f_comp := two_functor_comp C D1 D2;
      f_id := two_functor_id C D1 D2 |}.
 
+(* A cone to a functor D(J,C) consists of an object c in C and a
+   family of arrows in C : cj : c → Dj one for each object j ∈ J, such
+   that for each arrow α : i → j in J, the following triangle
+   commutes. *)
+
+Record cone {J C} (D : functor J C) :=
+  { c_obj : C;
+    c_arr_fam : ∀ j, Hom c_obj (f_map_obj j);
+    c_commute : ∀ i j α, c_arr_fam j = α ◦ c_arr_fam i }.
+
+Arguments c_obj [_] [_] [_].
+
 Definition tfCone {C : cat} {D1 D2 : C} (D := two_functor D1 D2) :=
-  {| c_obj := 42 |}.
+  {| c_obj := D1;
+     c_arr_fam j := 42;
+     c_commute := 43 |}.
 ...
 
 (* mouais, chais pas... *)
