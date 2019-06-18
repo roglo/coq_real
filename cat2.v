@@ -99,13 +99,16 @@ Qed.
 
 Theorem two_functor_id C D1 D2 :
   ∀ a : cTwo, two_functor_map_arr C D1 D2 a a id = id.
-...
+Proof.
+intros.
+now destruct a.
+Qed.
 
 Definition two_functor {C : cat} (D1 D2 : C) :=
   {| f_map_obj (b : cTwo) := if b then D1 else D2;
      f_map_arr := two_functor_map_arr C D1 D2;
      f_comp := two_functor_comp C D1 D2;
-     f_id := 42 |}.
+     f_id := two_functor_id C D1 D2 |}.
 
 ...
 
