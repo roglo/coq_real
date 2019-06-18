@@ -110,9 +110,13 @@ Record cone {J C} (D : functor J C) :=
 
 Arguments c_obj [_] [_] [_].
 
+Check @c_arr_fam.
+Print two_functor.
+Print cDiscr.
+
 Definition tfCone {C : cat} {D1 D2 : C} (D := two_functor D1 D2) :=
   {| c_obj := D1;
-     c_arr_fam j := 42;
+     c_arr_fam := λ (j : Obj), id;
      c_commute := 43 |}.
 ...
 
