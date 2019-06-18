@@ -110,6 +110,8 @@ Definition two_functor {C : cat} (D1 D2 : C) :=
      f_comp := two_functor_comp C D1 D2;
      f_id := two_functor_id C D1 D2 |}.
 
+Definition tfCone {C : cat} {D1 D2 : C} (D := two_functor D1 D2) :=
+  {| c_obj := 42 |}.
 ...
 
 (* mouais, chais pas... *)
