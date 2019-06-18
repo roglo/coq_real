@@ -70,8 +70,8 @@ Record cone {J C} (D : functor J C) :=
 
 Arguments c_obj [_] [_] [_].
 
-Theorem two_functor_map_arr :
-  ∀ (C : cat) (D1 D2 : C) (b1 b2 : cTwo) (f : Hom b1 b2),
+Theorem two_functor_map_arr (C : cat) D1 D2 :
+  ∀ (b1 b2 : cTwo) (f : Hom b1 b2),
   Hom (if b1 then D1 else D2) (if b2 then D1 else D2).
 Proof.
 intros.
@@ -79,8 +79,8 @@ intros.
 destruct b1, b2; [ apply id | discriminate f | discriminate f | apply id ].
 Defined.
 
-Theorem two_functor_comp :
-  ∀ (C : cat) (D1 D2 : C) (a b c : cTwo) (f : Hom a b) (g : Hom b c),
+Theorem two_functor_comp C D1 D2 :
+  ∀ (a b c : cTwo) (f : Hom a b) (g : Hom b c),
   two_functor_map_arr C D1 D2 a c (g ◦ f) =
   two_functor_map_arr C D1 D2 b c g ◦ two_functor_map_arr C D1 D2 a b f.
 Proof.
@@ -96,6 +96,10 @@ destruct a as [a| a], b as [b| b], c as [c| c].
 -now rewrite unit_l.
 -now rewrite unit_l.
 Qed.
+
+Theorem two_functor_id C D1 D2 :
+  ∀ a : cTwo, two_functor_map_arr C D1 D2 a a id = id.
+...
 
 Definition two_functor {C : cat} (D1 D2 : C) :=
   {| f_map_obj (b : cTwo) := if b then D1 else D2;
