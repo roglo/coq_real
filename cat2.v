@@ -21,10 +21,6 @@ Coercion Obj : cat >-> Sortclass.
 
 Definition dom {C : cat} {O1 O2 : C} (f : Hom O1 O2) := O1.
 Definition cod {C : cat} {O1 O2 : C} (f : Hom O1 O2) := O2.
-Print dom.
-Print cod.
-
-...
 
 (* *)
 
@@ -64,6 +60,13 @@ Class functor (C D : cat) :=
 
 Arguments f_map_obj [_] [_] [_].
 Arguments f_map_arr [_] [_] _ [_] [_].
+
+Definition is_isomorphism {C : cat} {A B : C} (f : Hom A B) :=
+  ∃ g : Hom B A, g ◦ f = id ∧ f ◦ g = id.
+
+...
+
+(* *)
 
 Theorem two_functor_map_arr (C : cat) D1 D2 :
   ∀ (b1 b2 : cTwo) (f : Hom b1 b2),
