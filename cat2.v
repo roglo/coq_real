@@ -132,7 +132,8 @@ Definition Cone {J C} (D : functor J C) :=
             eq_trans
                (proj2_sig f j cj (c'j ◦ proj1_sig g))
                (assoc (proj1_sig f) (proj1_sig g) c'j))
-           (proj1_sig g)) |}.
+           (proj1_sig g));
+     id c := exist _ (@id _ _) _ |}.
 
 ...
 
