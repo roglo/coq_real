@@ -118,12 +118,17 @@ Record cone {J C} (D : functor J C) :=
 
 Arguments c_obj [_] [_] [_].
 
+Print is_terminal.
+...
+
 Theorem glop {C : cat} (D1 D2 : C) (D := two_functor D1 D2) (c : C) : ∀ (i j : cTwo) (α : Hom (f_map_obj i) (f_map_obj j))
   (ci : Hom c (f_map_obj i))
   (cj : Hom c (f_map_obj j)),
   cj = α ◦ ci.
 Proof.
 intros.
+Print cat.
+Print functor.
 ...
 
 Definition tfCone {C : cat} {D1 D2 : C} (D := two_functor D1 D2) (c : C) :=
