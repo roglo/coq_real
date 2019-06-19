@@ -64,8 +64,6 @@ Arguments f_map_arr [_] [_] _ [_] [_].
 Definition is_isomorphism {C : cat} {A B : C} (f : Hom A B) :=
   ∃ g : Hom B A, g ◦ f = id ∧ f ◦ g = id.
 
-...
-
 (* *)
 
 Theorem two_functor_map_arr (C : cat) D1 D2 :
@@ -120,15 +118,13 @@ Record cone {J C} (D : functor J C) :=
 
 Arguments c_obj [_] [_] [_].
 
-Check @c_arr_fam.
 Print two_functor.
+Check two_functor_map_arr.
 Print cDiscr.
 
-...
-
-Definition tfCone {C : cat} {D1 D2 : C} (D := two_functor D1 D2) :=
-  {| c_obj := tt;
-     c_arr_fam := λ j, D1 = D2;
+Definition tfCone {C : cat} {D1 D2 : C} (D := two_functor D1 D2) (c : C) :=
+  {| c_obj := c;
+     c_arr_fam (j : @Obj cTwo) := f_map_arr D _ j;
      c_commute := 43 |}.
 ...
 
