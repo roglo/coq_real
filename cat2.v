@@ -113,21 +113,22 @@ Definition two_functor {C : cat} (D1 D2 : C) :=
 
 Record cone {J C} (D : functor J C) :=
   { c_obj : C;
-    c_arr_fam : ∀ j, Hom c_obj (f_map_obj j);
-    c_commute : ∀ i j α, c_arr_fam j = α ◦ c_arr_fam i }.
+    c_arr_fam := λ j, Hom c_obj (f_map_obj j);
+    c_commute : ∀ i j α (ci : c_arr_fam i) (cj : c_arr_fam j), cj = α ◦ ci }.
 
 Arguments c_obj [_] [_] [_].
 
-Print two_functor.
-Check two_functor_map_arr.
-Print cDiscr.
-
-Definition glop := cDiscr (unit + unit + unit).
+Theorem glop {C : cat} (D1 D2 : C) (D := two_functor D1 D2) (c : C) : ∀ (i j : cTwo) (α : Hom (f_map_obj i) (f_map_obj j))
+  (ci : Hom c (f_map_obj i))
+  (cj : Hom c (f_map_obj j)),
+  cj = α ◦ ci.
+Proof.
+intros.
+...
 
 Definition tfCone {C : cat} {D1 D2 : C} (D := two_functor D1 D2) (c : C) :=
   {| c_obj := c;
-     c_arr_fam (j : @Obj cTwo) := f_map_arr D _ j;
-     c_commute := 43 |}.
+     c_commute (i j : cTwo) α ci cj := 43 |}.
 ...
 
 (* mouais, chais pas... *)
