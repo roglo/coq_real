@@ -120,19 +120,6 @@ Record cone {J C} (D : functor J C) :=
 
 Arguments c_obj [_] [_] [_].
 
-Theorem glip {J C : cat} {D : functor J C} (c c1 c' : cone D)
-   (P := λ c c1 δ, ∀ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c1) j), cj = c'j ◦ δ)
-   (f : {δ | P c c1 δ }) g :
-  ∀ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c') j),
-  cj = c'j ◦ (g ◦ proj1_sig f).
-Proof.
-intros.
-etransitivity; [ | apply assoc ].
-apply (proj2_sig f).
-Qed.
-
-Print glip.
-
 Definition Cone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom c c' :=
@@ -141,25 +128,12 @@ Definition Cone {J C} (D : functor J C) :=
          cj = c'j ◦ δ };
      comp c c1 c' f g :=
        exist _ (proj1_sig g ◦ proj1_sig f)
-         (
-(
-λ
-  (g' : Hom (c_obj c1) (c_obj c')),
-λ
-  j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c') j),
-  eq_trans (proj2_sig f j cj (c'j ◦ g')) (assoc (proj1_sig f) g' c'j))
-
-
+         ((λ _ j cj c'j,
+            eq_trans
+               (proj2_sig f j cj (c'j ◦ proj1_sig g))
+               (assoc (proj1_sig f) (proj1_sig g) c'j))
            (proj1_sig g)) |}.
 
-Definition Cone {J C} (D : functor J C) :=
-  {| Obj := cone D;
-     Hom c c' :=
-       { δ |
-         ∀ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c') j),
-         cj = c'j ◦ δ };
-     comp c c1 c' f g :=
-       exist _ (proj1_sig g ◦ proj1_sig f) (glip c c1 c' f (proj1_sig g)) |}.
 ...
 
 (* A limit for a functor D : J → C is a terminal object in Cone(D) *)
