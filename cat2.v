@@ -122,6 +122,8 @@ Print two_functor.
 Check two_functor_map_arr.
 Print cDiscr.
 
+Definition glop := cDiscr (unit + unit + unit).
+
 Definition tfCone {C : cat} {D1 D2 : C} (D := two_functor D1 D2) (c : C) :=
   {| c_obj := c;
      c_arr_fam (j : @Obj cTwo) := f_map_arr D _ j;
