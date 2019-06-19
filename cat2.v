@@ -138,10 +138,12 @@ Theorem glop (J C : cat) (D : functor J C) (c : cone D) :
 Proof.
 exists id.
 intros.
-unfold arr_fam in cj, c'j.
-rewrite (c_commute j) with (α := id) (ci := cj).
-rewrite f_id.
-symmetry; apply unit_r.
+symmetry.
+etransitivity. {
+  apply (c_commute j) with (α := id) (ci := cj).
+}
+etransitivity; [ | apply unit_r ].
+apply f_equal, f_id.
 Qed.
 
 Print glop.
