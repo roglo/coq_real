@@ -116,10 +116,13 @@ Definition arr_fam {J C : cat} {D : functor J C} c j := Hom c (f_map_obj j).
 Class cone {J C} (D : functor J C) :=
   { c_obj : C;
     c_commute : ∀ i j α (ci : arr_fam c_obj i) (cj : arr_fam c_obj j),
-      cj = α ◦ ci }.
+      cj = f_map_arr _ α ◦ ci }.
+
+Check @c_commute.
 
 Arguments c_obj [_] [_] [_].
 
+(*
 Definition Cone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom c c' :=
@@ -128,6 +131,7 @@ Definition Cone {J C} (D : functor J C) :=
          cj = c'j ◦ δ };
      comp c c1 c' f g := 42 |}.
 ...
+*)
 
 Theorem glop (J C : cat) (D : functor J C) (c : cone D) :
 {δ : Hom (c_obj c) (c_obj c) | ∀ (j : J) (cj c'j : arr_fam (c_obj c) j), cj = c'j ◦ δ}.
@@ -135,8 +139,12 @@ Proof.
 exists id.
 intros.
 unfold arr_fam in cj, c'j.
-erewrite (c_commute j).
-Abort.
+rewrite (c_commute j) with (α := id) (ci := cj).
+rewrite f_id.
+symmetry; apply unit_r.
+Qed.
+
+Print glop.
 
 Definition Cone {J C} (D : functor J C) :=
   {| Obj := cone D;
@@ -151,7 +159,7 @@ Definition Cone {J C} (D : functor J C) :=
                (proj2_sig f j cj (c'j ◦ proj1_sig g))
                (assoc (proj1_sig f) (proj1_sig g) c'j))
            (proj1_sig g));
-     id c := exist _ id _ |}.
+     id c := glop J C D c |}.
 
 ...
 
