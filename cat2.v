@@ -120,6 +120,15 @@ Class cone {J C} (D : functor J C) :=
 
 Arguments c_obj [_] [_] [_].
 
+Definition Cone {J C} (D : functor J C) :=
+  {| Obj := cone D;
+     Hom c c' :=
+       { δ |
+         ∃ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c') j),
+         cj = c'j ◦ δ };
+     comp c c1 c' f g := 42 |}.
+...
+
 Theorem glop (J C : cat) (D : functor J C) (c : cone D) :
 {δ : Hom (c_obj c) (c_obj c) | ∀ (j : J) (cj c'j : arr_fam (c_obj c) j), cj = c'j ◦ δ}.
 Proof.
@@ -127,14 +136,7 @@ exists id.
 intros.
 unfold arr_fam in cj, c'j.
 erewrite (c_commute j).
-...
-rewrite (c_commute _ _ j (c_obj _)).
-erewrite c_commute.
-...
-unfold arr_fam in cj, c'j.
-unfold f_map_obj in cj, c'j.
-cbn in cj, c'j.
-...
+Abort.
 
 Definition Cone {J C} (D : functor J C) :=
   {| Obj := cone D;
