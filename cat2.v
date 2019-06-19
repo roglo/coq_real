@@ -122,13 +122,13 @@ Arguments c_obj [_] [_] [_].
 
 Theorem glip {J C : cat} {D : functor J C} (c c1 c' : cone D)
    (P := λ c c1 δ, ∀ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c1) j), cj = c'j ◦ δ)
-   (f : {δ | P c c1 δ }) (g : {δ | P c1 c' δ }) :
-  ∀ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c') j), cj = c'j ◦ (proj1_sig g ◦ proj1_sig f).
+   (f : {δ | P c c1 δ }) g :
+  ∀ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c') j),
+  cj = c'j ◦ (g ◦ proj1_sig f).
 Proof.
 intros.
 rewrite <- assoc.
 destruct f as (f & Hf).
-destruct g as (g & Hg).
 cbn.
 unfold arr_fam in *.
 specialize (Hf j cj).
@@ -142,7 +142,7 @@ Definition Cone {J C} (D : functor J C) :=
          ∀ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c') j),
          cj = c'j ◦ δ };
      comp c c1 c' f g :=
-       exist _ (proj1_sig g ◦ proj1_sig f) (glip c c1 c' f g) |}.
+       exist _ (proj1_sig g ◦ proj1_sig f) (glip c c1 c' f (proj1_sig g)) |}.
 ...
 
 (* A limit for a functor D : J → C is a terminal object in Cone(D) *)
