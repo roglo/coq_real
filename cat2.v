@@ -111,46 +111,30 @@ Definition two_functor {C : cat} (D1 D2 : C) :=
    that for each arrow α : i → j in J, the following triangle
    commutes. *)
 
+Definition arr_fam {J C : cat} {D : functor J C} c j := Hom c (f_map_obj j).
+
 Record cone {J C} (D : functor J C) :=
   { c_obj : C;
-    c_arr_fam := λ j, Hom c_obj (f_map_obj j);
-    c_commute : ∀ i j α (ci : c_arr_fam i) (cj : c_arr_fam j), cj = α ◦ ci }.
+    c_commute : ∀ i j α (ci : arr_fam c_obj i) (cj : arr_fam c_obj j),
+      cj = α ◦ ci }.
 
 Arguments c_obj [_] [_] [_].
 
-Print is_terminal.
-...
+Check @comp.
 
-Theorem glop {C : cat} (D1 D2 : C) (D := two_functor D1 D2) (c : C) : ∀ (i j : cTwo) (α : Hom (f_map_obj i) (f_map_obj j))
-  (ci : Hom c (f_map_obj i))
-  (cj : Hom c (f_map_obj j)),
-  cj = α ◦ ci.
-Proof.
-intros.
-Print cat.
-Print functor.
-...
-
-Definition tfCone {C : cat} {D1 D2 : C} (D := two_functor D1 D2) (c : C) :=
-  {| c_obj := c;
-     c_commute (i j : cTwo) α ci cj := 43 |}.
-...
-
-(* mouais, chais pas... *)
-Definition cCone {J C} {D : functor J C} (Cn : cone D) :=
-  {| Obj := (J * C);
-     Hom A B := C → C;
-     comp A B C f g := λ x, g (f x);
-     id _ A := A;
-     unit_l _ _ _ := eq_refl;
-     unit_r _ _ _ := eq_refl;
-     assoc _ _ _ _ _ _ _ := eq_refl |}.
+Definition Cone {J C} (D : functor J C) :=
+  {| Obj := cone D;
+     Hom c c' :=
+       { δ |
+         ∀ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c') j),
+         cj = c'j ◦ δ };
+     comp (c _ _ : cone D) E F := 42 |}.
 
 ...
 
 (* A limit for a functor D : J → C is a terminal object in Cone(D) *)
 
-Definition is_limit {J C} {D : functor J C} (Cn : cone D) :=
+Definition is_limit {J C} {D : functor J C} (Cn : Cone D) :=
   is_terminal (c_obj Cn).
 
 Definition limit {J C} {D : functor J C} (Cn : cone D) :=
