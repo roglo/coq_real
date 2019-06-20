@@ -152,6 +152,9 @@ Proof.
 intros.
 destruct f as (f & Hf).
 unfold Cone_comp, Cone_id; cbn.
+apply eq_exist_uncurried.
+exists (unit_l f).
+unfold eq_rect.
 ...
 
 Definition Cone {J C} (D : functor J C) :=
