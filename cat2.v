@@ -120,6 +120,10 @@ Arguments c_obj [_] [_] [_].
 
 (* category of cones *)
 
+Record Cone_Hom {J C} {D : functor J C} cn cn' :=
+  { ch_root : Hom cn cn';
+    ch_edge : ... }.
+
 Definition Cone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom cn cn' := C → C |}.
