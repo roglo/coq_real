@@ -122,6 +122,14 @@ Check @c_commute.
 
 Arguments c_obj [_] [_] [_].
 
+(* category of cones *)
+
+Definition Cone {J C} (D : functor J C) :=
+  {| Obj := cone D;
+     Hom C C' := 42 |}.
+
+...
+
 Definition Cone_Hom {J C} (D : functor J C) c c' :=
   { δ |
     ∀ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c') j),
