@@ -116,17 +116,18 @@ Class cone {J C} (D : functor J C) :=
     c_fam : ∀ j : J, Hom c_obj (f_map_obj j);
     c_commute : ∀ i j (α : Hom i j), c_fam j = f_map_arr D α ◦ c_fam i }.
 
-Arguments c_obj [_] [_] [_].
-
 (* category of cones *)
 
-Record Cone_Hom {J C} {D : functor J C} cn cn' :=
-  { ch_root : Hom cn cn';
-    ch_edge : ... }.
+Record Cone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
+  { ch_fun : cone D → cone D;
+    ch_root : ch_fun cn = cn';
+    ch_edge : ∀ j, @c_fam J C D cn j = @c_fam J C D cn' j }.
+...
+    ch_edge : ∀ j, @c_fam J C D cn j = @c_fam J C D cn' j }.
 
 Definition Cone {J C} (D : functor J C) :=
   {| Obj := cone D;
-     Hom cn cn' := C → C |}.
+     Hom cn cn' := Cone_Hom D |}.
 
 (* peut-être faudrait-il justement définir un prédicat sur Hom pour
    préciser le sous-type (= sous-ensemble) concerné *)
