@@ -122,46 +122,35 @@ Check @c_commute.
 
 Arguments c_obj [_] [_] [_].
 
-(*
-Definition Cone {J C} (D : functor J C) :=
-  {| Obj := cone D;
-     Hom c c' :=
-       { δ |
-         ∃ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c') j),
-         cj = c'j ◦ δ };
-     comp c c1 c' f g := 42 |}.
-...
-*)
+Definition Cone_Hom {J C} (D : functor J C) c c' :=
+  { δ |
+    ∀ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c') j),
+      cj = c'j ◦ δ }.
 
-Theorem glop (J C : cat) (D : functor J C) (c : cone D) :
-{δ : Hom (c_obj c) (c_obj c) | ∀ (j : J) (cj c'j : arr_fam (c_obj c) j), cj = c'j ◦ δ}.
-Proof.
-exists id.
-intros.
-symmetry.
-etransitivity. {
-  apply (c_commute j) with (α := id) (ci := cj).
-}
-etransitivity; [ | apply unit_r ].
-apply f_equal, f_id.
-Qed.
+Definition Cone_comp {J C} (D : functor J C) (c c1 c' : cone D)
+  (f : Cone_Hom D c c1) (g : Cone_Hom D c1 c') : Cone_Hom D c c' :=
+  exist _ (proj1_sig g ◦ proj1_sig f)
+        ((λ _ j cj c'j,
+          eq_trans
+            (proj2_sig f j cj (c'j ◦ proj1_sig g))
+            (assoc (proj1_sig f) (proj1_sig g) c'j))
+           (proj1_sig g)).
 
-Print glop.
+Definition Cone_id {J C} (D : functor J C) (c : cone D) :=
+  exist
+    (λ δ, ∀ j (cj c'j : arr_fam (c_obj c) j), cj = c'j ◦ δ)
+    id
+    (λ j (cj c'j : arr_fam (c_obj c) j),
+     eq_sym
+       (eq_trans (c_commute j j id cj (c'j ◦ id))
+                 (eq_trans (f_equal (comp cj) f_id) (unit_r cj)))).
 
 Definition Cone {J C} (D : functor J C) :=
   {| Obj := cone D;
-     Hom c c' :=
-       { δ |
-         ∀ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c') j),
-         cj = c'j ◦ δ };
-     comp c c1 c' f g :=
-       exist _ (proj1_sig g ◦ proj1_sig f)
-         ((λ _ j cj c'j,
-            eq_trans
-               (proj2_sig f j cj (c'j ◦ proj1_sig g))
-               (assoc (proj1_sig f) (proj1_sig g) c'j))
-           (proj1_sig g));
-     id c := glop J C D c |}.
+     Hom := Cone_Hom D;
+     comp := Cone_comp D;
+     id := Cone_id D;
+     unit_l := 42 |}.
 
 ...
 
