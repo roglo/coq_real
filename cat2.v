@@ -145,6 +145,15 @@ Definition Cone_id {J C} (D : functor J C) (c : cone D) :=
        (eq_trans (c_commute j j id cj (c'j ◦ id))
                  (eq_trans (f_equal (comp cj) f_id) (unit_r cj)))).
 
+Definition Cone_unit_l {J C} (D : functor J C) :
+  ∀ (A B : cone D) (f : Cone_Hom D A B),
+  Cone_comp D A A B (Cone_id D A) f = f.
+Proof.
+intros.
+destruct f as (f & Hf).
+unfold Cone_comp, Cone_id; cbn.
+...
+
 Definition Cone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := Cone_Hom D;
