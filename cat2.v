@@ -111,14 +111,10 @@ Definition two_functor {C : cat} (D1 D2 : C) :=
    that for each arrow α : i → j in J, the following triangle
    commutes. *)
 
-Definition arr_fam {J C : cat} {D : functor J C} c j := Hom c (f_map_obj j).
-
 Class cone {J C} (D : functor J C) :=
   { c_obj : C;
-    c_commute : ∀ i j α (ci : arr_fam c_obj i) (cj : arr_fam c_obj j),
-      cj = f_map_arr _ α ◦ ci }.
-
-Check @c_commute.
+    c_fam : ∀ j : J, Hom c_obj (f_map_obj j);
+    c_commute : ∀ i j (α : Hom i j), c_fam j = f_map_arr D α ◦ c_fam i }.
 
 Arguments c_obj [_] [_] [_].
 
