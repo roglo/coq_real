@@ -121,7 +121,7 @@ Class cone {J C} (D : functor J C) :=
 Record Cone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
   { ch_fun : cone D → cone D;
     ch_root : ch_fun cn = cn';
-    ch_edge : ∀ j, @c_fam J C D cn j = @c_fam J C D cn' j }.
+    ch_edge : ∀ j (ci : @c_fam J C D cn j), False }.
 ...
     ch_edge : ∀ j, @c_fam J C D cn j = @c_fam J C D cn' j }.
 
