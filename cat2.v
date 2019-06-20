@@ -122,7 +122,10 @@ Arguments c_obj [_] [_] [_].
 
 Definition Cone {J C} (D : functor J C) :=
   {| Obj := cone D;
-     Hom C C' := 42 |}.
+     Hom cn cn' := C → C |}.
+
+(* peut-être faudrait-il justement définir un prédicat sur Hom pour
+   préciser le sous-type (= sous-ensemble) concerné *)
 
 ...
 
