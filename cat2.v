@@ -111,26 +111,24 @@ Definition two_functor {C : cat} (D1 D2 : C) :=
    that for each arrow α : i → j in J, the following triangle
    commutes. *)
 
-Class cone {J C} (D : functor J C) :=
+Definition fam_hom {J C} (D : functor J C) c j := Hom c (f_map_obj j).
+
+Record cone {J C} (D : functor J C) :=
   { c_obj : C;
-    c_fam : ∀ j : J, Hom c_obj (f_map_obj j);
+    c_fam : ∀ j, fam_hom D c_obj j;
     c_commute : ∀ i j (α : Hom i j), c_fam j = f_map_arr D α ◦ c_fam i }.
 
 (* category of cones *)
 
 Record Cone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
-  { ch_fun : cone D → cone D;
-    ch_root : ch_fun cn = cn';
-    ch_edge : ∀ j (ci : @c_fam J C D cn j), False }.
-...
-    ch_edge : ∀ j, @c_fam J C D cn j = @c_fam J C D cn' j }.
+  { ch_map_obj : C → C;
+    ch_map_arr : ∀ j, fam_hom D (c_obj D cn) j → fam_hom D (c_obj D cn') j;
+    ch_root : ch_map_obj (c_obj D cn) = c_obj D cn' }.
 
 Definition Cone {J C} (D : functor J C) :=
   {| Obj := cone D;
-     Hom cn cn' := Cone_Hom D |}.
-
-(* peut-être faudrait-il justement définir un prédicat sur Hom pour
-   préciser le sous-type (= sous-ensemble) concerné *)
+     Hom := Cone_Hom;
+     comp := 42 |}.
 
 ...
 
