@@ -17,10 +17,12 @@ Class cat :=
 
 Arguments Hom [_].
 Notation "g '◦' f" := (comp f g) (at level 40, left associativity).
+(*
 Coercion Obj : cat >-> Sortclass.
+*)
 
-Definition dom {C : cat} {O1 O2 : C} (f : Hom O1 O2) := O1.
-Definition cod {C : cat} {O1 O2 : C} (f : Hom O1 O2) := O2.
+Definition dom {C : cat} {O1 O2 : Obj} (f : Hom O1 O2) := O1.
+Definition cod {C : cat} {O1 O2 : Obj} (f : Hom O1 O2) := O2.
 
 (* *)
 
@@ -52,7 +54,7 @@ Definition is_terminal {C : cat} (_1 : Obj) :=
   ∀ c : Obj, ∀ f g : Hom c _1, f = g.
 
 Class functor (C D : cat) :=
-  { f_map_obj : C → D;
+  { f_map_obj : @Obj C → @Obj D;
     f_map_arr {a b} : Hom a b → Hom (f_map_obj a) (f_map_obj b);
     f_comp {a b c} (f : Hom a b) (g : Hom b c) :
       f_map_arr (g ◦ f) = f_map_arr g ◦ f_map_arr f;
@@ -61,13 +63,13 @@ Class functor (C D : cat) :=
 Arguments f_map_obj [_] [_] [_].
 Arguments f_map_arr [_] [_] _ [_] [_].
 
-Definition is_isomorphism {C : cat} {A B : C} (f : Hom A B) :=
+Definition is_isomorphism {C : cat} {A B : Obj} (f : Hom A B) :=
   ∃ g : Hom B A, g ◦ f = id ∧ f ◦ g = id.
 
 (* *)
 
 Theorem two_functor_map_arr (C : cat) D1 D2 :
-  ∀ (b1 b2 : cTwo) (f : Hom b1 b2),
+  ∀ (b1 b2 : @Obj cTwo) (f : Hom b1 b2),
   Hom (if b1 then D1 else D2) (if b2 then D1 else D2).
 Proof.
 intros.
@@ -76,7 +78,7 @@ destruct b1, b2; [ apply id | discriminate f | discriminate f | apply id ].
 Defined.
 
 Theorem two_functor_comp C D1 D2 :
-  ∀ (a b c : cTwo) (f : Hom a b) (g : Hom b c),
+  ∀ (a b c : @Obj cTwo) (f : Hom a b) (g : Hom b c),
   two_functor_map_arr C D1 D2 a c (g ◦ f) =
   two_functor_map_arr C D1 D2 b c g ◦ two_functor_map_arr C D1 D2 a b f.
 Proof.
@@ -94,14 +96,14 @@ destruct a as [a| a], b as [b| b], c as [c| c].
 Qed.
 
 Theorem two_functor_id C D1 D2 :
-  ∀ a : cTwo, two_functor_map_arr C D1 D2 a a id = id.
+  ∀ a : @Obj cTwo, two_functor_map_arr C D1 D2 a a id = id.
 Proof.
 intros.
 now destruct a.
 Qed.
 
-Definition two_functor {C : cat} (D1 D2 : C) :=
-  {| f_map_obj (b : cTwo) := if b then D1 else D2;
+Definition two_functor {C : cat} (D1 D2 : Obj) :=
+  {| f_map_obj (b : @Obj cTwo) := if b then D1 else D2;
      f_map_arr := two_functor_map_arr C D1 D2;
      f_comp := two_functor_comp C D1 D2;
      f_id := two_functor_id C D1 D2 |}.
@@ -114,21 +116,30 @@ Definition two_functor {C : cat} (D1 D2 : C) :=
 Definition fam_hom {J C} (D : functor J C) c j := Hom c (f_map_obj j).
 
 Record cone {J C} (D : functor J C) :=
-  { c_obj : C;
+  { c_obj : @Obj C;
     c_fam : ∀ j, fam_hom D c_obj j;
     c_commute : ∀ i j (α : Hom i j), c_fam j = f_map_arr D α ◦ c_fam i }.
 
 (* category of cones *)
 
 Record Cone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
-  { ch_map_obj : C → C;
+  { ch_map_obj : @Obj C → @Obj C;
     ch_map_arr : ∀ j, fam_hom D (c_obj D cn) j → fam_hom D (c_obj D cn') j;
     ch_root : ch_map_obj (c_obj D cn) = c_obj D cn' }.
 
-Definition Cone {J C} (D : functor J C) :=
+Check @comp.
+
+Definition Cone_comp {J C} {D : functor J C} cn1 cn2 cn3 :
+  Cone_Hom cn1 cn2 → Cone_Hom cn2 cn3 → Cone_Hom cn1 cn3.
+intros cm1 cm2.
+apply
+  {| ch_map_obj c := ch_map_obj cn1 (ch_map_obj cn2 c) |}.
+...
+
+Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := Cone_Hom;
-     comp := 42 |}.
+     comp cn1 cn2 cn3 := 42 |}.
 
 ...
 
