@@ -113,19 +113,30 @@ Definition two_functor {C : cat} (D1 D2 : Obj) :=
    that for each arrow α : i → j in J, the following triangle
    commutes. *)
 
-Definition fam_hom {J C} (D : functor J C) c j := Hom c (f_map_obj j).
-
 Record cone {J C} (D : functor J C) :=
-  { c_obj : @Obj C;
-    c_fam : ∀ j, fam_hom D c_obj j;
+  { c_root : @Obj C;
+    c_fam : ∀ j, Hom c_root (f_map_obj j);
     c_commute : ∀ i j (α : Hom i j), c_fam j = f_map_arr D α ◦ c_fam i }.
 
 (* category of cones *)
 
+(* which definition is the good one? *)
+
 Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
   { ch_map_obj : @Obj C → @Obj C;
-    ch_map_arr : ∀ j, fam_hom D (c_obj D cn) j → fam_hom D (c_obj D cn') j;
-    ch_root : ch_map_obj (c_obj D cn) = c_obj D cn' }.
+    ch_map_arr : ∀ c, Hom (c_root D cn) c → Hom (c_root D cn') c;
+    ch_root : ch_map_obj (c_root D cn) = c_root D cn';
+    ch_arrow : ∀ j, ch_map_arr (f_map_obj j) (c_fam D cn j) = c_fam D cn' j }.
+
+Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
+  { ch_map_obj : @Obj C → @Obj C;
+    ch_map_arr : ∀ j,
+      Hom (c_root D cn) (f_map_obj j)
+      → Hom (c_root D cn') (f_map_obj j);
+    ch_root : ch_map_obj (c_root D cn) = c_root D cn';
+    ch_arrow : ∀ j, ch_map_arr j (c_fam D cn j) = c_fam D cn' j }.
+
+...
 
 Definition cCone_comp {J C} {D : functor J C} cn1 cn2 cn3 ch12 ch23 :=
   {| ch_map_obj c := ch_map_obj _ _ ch23 (ch_map_obj _ _ ch12 c);
@@ -135,11 +146,17 @@ Definition cCone_comp {J C} {D : functor J C} cn1 cn2 cn3 ch12 ch23 :=
          (f_equal (ch_map_obj cn2 cn3 ch23) (ch_root cn1 cn2 ch12))
          (ch_root cn2 cn3 ch23) |}.
 
+...
+
+(*
+Definition fam_hom {J C} (D : functor J C) c j := Hom c (f_map_obj j).
+*)
+
+(*
 Definition cCone_id {J C} {D : functor J C} (cn : cone D) :=
   {| ch_map_obj c := c;
      ch_map_arr (j : @Obj J) (ma : fam_hom D (c_obj D cn) j) := ma;
      ch_root := eq_refl |}.
-
 ...
 
 Theorem cCone_unit_l {J C} {D : functor J C} :
@@ -150,11 +167,13 @@ unfold cCone_comp; cbn.
 destruct f; cbn.
 f_equal; [ | now destruct ch_root0 ].
 ...
+*)
 
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
-     comp := cCone_comp;
+     comp := cCone_comp |}.
+
      id := cCone_id;
      unit_l := 42 |}.
 
