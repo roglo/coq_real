@@ -133,7 +133,9 @@ Definition Cone_comp {J C} {D : functor J C} cn1 cn2 cn3 :
   Cone_Hom cn1 cn2 → Cone_Hom cn2 cn3 → Cone_Hom cn1 cn3.
 intros cm1 cm2.
 apply
-  {| ch_map_obj c := ch_map_obj cn1 (ch_map_obj cn2 c) |}.
+  {| ch_map_obj c := ch_map_obj _ _ cm2 (ch_map_obj _ _ cm1 c);
+     ch_map_arr := 42;
+     ch_root := 42 |}.
 ...
 
 Definition cCone {J C} (D : functor J C) :=
