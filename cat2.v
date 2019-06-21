@@ -122,35 +122,33 @@ Record cone {J C} (D : functor J C) :=
 
 (* category of cones *)
 
-Record Cone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
+Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
   { ch_map_obj : @Obj C → @Obj C;
     ch_map_arr : ∀ j, fam_hom D (c_obj D cn) j → fam_hom D (c_obj D cn') j;
     ch_root : ch_map_obj (c_obj D cn) = c_obj D cn' }.
 
-Theorem glop {J C} {D : functor J C} :
-  ∀ (cn1 cn2 cn3 : cone D) (ch12 : Cone_Hom cn1 cn2) (ch23 : Cone_Hom cn2 cn3),
- ch_map_obj cn2 cn3 ch23 (ch_map_obj cn1 cn2 ch12 (c_obj D cn1)) = c_obj D cn3.
-Proof.
-intros *.
-etransitivity.
-apply ch_root.
-apply ch_root.
-Show Proof.
-...
+Definition cCone_comp {J C} {D : functor J C} cn1 cn2 cn3 ch12 ch23 :=
+  {| ch_map_obj c := ch_map_obj _ _ ch23 (ch_map_obj _ _ ch12 c);
+     ch_map_arr j _ := c_fam D cn3 j;
+     ch_root :=
+       eq_trans
+         (f_equal (ch_map_obj cn2 cn3 ch23) (ch_root cn1 cn2 ch12))
+         (ch_root cn2 cn3 ch23) |}.
 
-Definition Cone_comp {J C} {D : functor J C} cn1 cn2 cn3 :
-  Cone_Hom cn1 cn2 → Cone_Hom cn2 cn3 → Cone_Hom cn1 cn3.
-intros ch1 ch2.
-apply
-  {| ch_map_obj c := ch_map_obj _ _ ch2 (ch_map_obj _ _ ch1 c);
-     ch_map_arr (j : @Obj J) _ := c_fam D cn3 j;
-     ch_root := 42 |}.
-...
+Definition cCone_id {J C} {D : functor J C} (cn : cone D) :=
+  {| ch_map_obj c := c;
+     ch_map_arr _ ma := ma;
+     ch_root := eq_refl |}.
 
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
-     Hom := Cone_Hom;
-     comp cn1 cn2 cn3 := 42 |}.
+     Hom := cCone_Hom;
+     comp := cCone_comp;
+     id cn :=
+       {| ch_map_obj c := c;
+          ch_map_arr _ ma := ma;
+          ch_root := eq_refl |};
+     unit_l := 42 |}.
 
 ...
 
