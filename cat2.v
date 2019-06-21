@@ -142,6 +142,15 @@ Definition cCone_id {J C} {D : functor J C} (cn : cone D) :=
 
 Theorem cCone_unit_l {J C} {D : functor J C} :
   ∀ cn1 cn2 (f : cCone_Hom cn1 cn2), cCone_comp _ _ _ (cCone_id cn1) f = f.
+Proof.
+intros.
+unfold cCone_comp.
+cbn.
+destruct f.
+cbn.
+f_equal.
+2: now destruct ch_root0.
+...
 
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
