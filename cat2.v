@@ -137,17 +137,14 @@ Definition cCone_comp {J C} {D : functor J C} cn1 cn2 cn3 ch12 ch23 :=
 
 Definition cCone_id {J C} {D : functor J C} (cn : cone D) :=
   {| ch_map_obj c := c;
-     ch_map_arr _ ma := ma;
+     ch_map_arr (j : @Obj J) (ma : fam_hom D (c_obj D cn) j) := ma;
      ch_root := eq_refl |}.
 
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
      comp := cCone_comp;
-     id cn :=
-       {| ch_map_obj c := c;
-          ch_map_arr _ ma := ma;
-          ch_root := eq_refl |};
+     id := cCone_id;
      unit_l := 42 |}.
 
 ...
