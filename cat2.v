@@ -193,6 +193,8 @@ Definition is_limit {J C} {D : functor J C} (cn : cone D) :=
 Check c_fam.
 
 Theorem glop {J C} {D : functor J C} (cc := cCone D) :
+  ∀ (p : cone D), is_limit p → ∀ j, ∃! u : C → ...
+
   ∀ (cn : cone D) (u : Hom cn cn) (j : @Obj J) (i : @Obj J)
       (pi : c_fam D cn i), pi ◦ u = c_fam D cn j.
 
