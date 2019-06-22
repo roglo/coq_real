@@ -122,18 +122,11 @@ Record cone {J C} (D : functor J C) :=
 
 Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
   { ch_map_root : @Obj C → @Obj C;
-    ch_map_arr : ∀ j (Dj := f_map_obj j),
-      Hom (c_root D cn) Dj → Hom (c_root D cn') Dj;
-    ch_root : ch_map_root (c_root D cn) = c_root D cn';
-    ch_arrow : ∀ j, ch_map_arr j (c_fam D cn j) = c_fam D cn' j }.
+    ch_root : ch_map_root (c_root D cn) = c_root D cn' }.
 
 Definition cCone_comp {J C} {D : functor J C} (cn1 cn2 cn3 : cone D)
   (ch12 : cCone_Hom cn1 cn2) (ch23 : cCone_Hom cn2 cn3) : cCone_Hom cn1 cn3 :=
-
   {| ch_map_root c := ch_map_root _ _ ch23 (ch_map_root _ _ ch12 c);
-...
-     ch_map_arr j (f : Hom (c_root D cn1) (f_map_obj j)) := c_fam D cn3 j |}.
-...
      ch_root :=
        eq_trans
          (f_equal (ch_map_root cn2 cn3 ch23) (ch_root cn1 cn2 ch12))
@@ -141,12 +134,11 @@ Definition cCone_comp {J C} {D : functor J C} (cn1 cn2 cn3 : cone D)
 
 Definition fam_hom {J C} (D : functor J C) c j := Hom c (f_map_obj j).
 
-Definition cCone_id {J C} {D : functor J C} (cn : cone D) :=
-  {| ch_map_obj c := c;
-     ch_map_arr (j : @Obj J) (ma : fam_hom D (c_obj D cn) j) := ma;
+Definition cCone_id {J C} {D : functor J C} (cn : cone D) : cCone_Hom cn cn :=
+  {| ch_map_root c := c;
      ch_root := eq_refl |}.
-...
 
+(*
 Theorem cCone_unit_l {J C} {D : functor J C} :
   ∀ cn1 cn2 (f : cCone_Hom cn1 cn2), cCone_comp _ _ _ (cCone_id cn1) f = f.
 Proof.
@@ -160,8 +152,7 @@ f_equal; [ | now destruct ch_root0 ].
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
-     comp := cCone_comp |}.
-
+     comp := cCone_comp;
      id := cCone_id;
      unit_l := 42 |}.
 
