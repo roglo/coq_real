@@ -123,7 +123,15 @@ Record cone {J C} (D : functor J C) :=
 
 Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
   { ch_map_root : @Obj C → @Obj C;
-    ch_root : ch_map_root (c_root D cn) = c_root D cn' }.
+    ch_root : ch_map_root (c_root D cn) = c_root D cn';
+    ch_prop : ∀ j, c_fam D cn j = c_fam D cn' j ◦ ch_map_root }.
+
+... grrrr...
+
+Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
+  { ch_map_root : @Obj C → @Obj C;
+    ch_root : ch_map_root (c_root D cn) = c_root D cn';
+    ch_prop : ∀ j ϑ, c_fam D cn j = c_fam D cn' j ◦ ϑ }.
 
 Definition cCone_comp {J C} {D : functor J C} {cn1 cn2 cn3 : cone D}
   (ch12 : cCone_Hom cn1 cn2) (ch23 : cCone_Hom cn2 cn3) : cCone_Hom cn1 cn3 :=
