@@ -159,62 +159,24 @@ Qed.
 Theorem cCone_assoc {J C} {D : functor J C} {cn1 cn2 cn3 cn4 : cone D} :
   ∀ (f : cCone_Hom cn1 cn2) (g : cCone_Hom cn2 cn3) (h : cCone_Hom cn3 cn4),
     cCone_comp f (cCone_comp g h) = cCone_comp (cCone_comp f g) h.
-...
+Proof.
+intros.
+unfold cCone_comp; cbn.
+apply f_equal.
+destruct f as (f & Hf).
+destruct g as (g & Hg).
+destruct h as (h & Hh); cbn.
+now destruct Hf, Hg, Hh.
+Qed.
 
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
-     comp := cCone_comp;
+     comp _ _ _ := cCone_comp;
      id := cCone_id;
      unit_l := cCone_unit_l;
      unit_r := cCone_unit_r;
-     assoc := 42 |}.
-
-...
-
-Definition fam_hom {J C} (D : functor J C) c j := Hom c (f_map_obj j).
-
-Definition Cone_Hom {J C} (D : functor J C) c c' :=
-  { δ |
-    ∀ j (cj : arr_fam (c_obj c) j) (c'j : arr_fam (c_obj c') j),
-      cj = c'j ◦ δ }.
-
-Definition Cone_comp {J C} (D : functor J C) (c c1 c' : cone D)
-  (f : Cone_Hom D c c1) (g : Cone_Hom D c1 c') : Cone_Hom D c c' :=
-  exist _ (proj1_sig g ◦ proj1_sig f)
-        ((λ _ j cj c'j,
-          eq_trans
-            (proj2_sig f j cj (c'j ◦ proj1_sig g))
-            (assoc (proj1_sig f) (proj1_sig g) c'j))
-           (proj1_sig g)).
-
-Definition Cone_id {J C} (D : functor J C) (c : cone D) :=
-  exist
-    (λ δ, ∀ j (cj c'j : arr_fam (c_obj c) j), cj = c'j ◦ δ)
-    id
-    (λ j (cj c'j : arr_fam (c_obj c) j),
-     eq_sym
-       (eq_trans (c_commute j j id cj (c'j ◦ id))
-                 (eq_trans (f_equal (comp cj) f_id) (unit_r cj)))).
-
-Definition Cone_unit_l {J C} (D : functor J C) :
-  ∀ (A B : cone D) (f : Cone_Hom D A B),
-  Cone_comp D A A B (Cone_id D A) f = f.
-Proof.
-intros.
-destruct f as (f & Hf).
-unfold Cone_comp, Cone_id; cbn.
-apply eq_exist_uncurried.
-exists (unit_l f).
-unfold eq_rect.
-...
-
-Definition Cone {J C} (D : functor J C) :=
-  {| Obj := cone D;
-     Hom := Cone_Hom D;
-     comp := Cone_comp D;
-     id := Cone_id D;
-     unit_l := 42 |}.
+     assoc _ _ _ _ := cCone_assoc |}.
 
 ...
 
