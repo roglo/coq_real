@@ -124,7 +124,7 @@ Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
   { ch_map_root : @Obj C → @Obj C;
     ch_root : ch_map_root (c_root D cn) = c_root D cn' }.
 
-Definition cCone_comp {J C} {D : functor J C} (cn1 cn2 cn3 : cone D)
+Definition cCone_comp {J C} {D : functor J C} {cn1 cn2 cn3 : cone D}
   (ch12 : cCone_Hom cn1 cn2) (ch23 : cCone_Hom cn2 cn3) : cCone_Hom cn1 cn3 :=
   {| ch_map_root c := ch_map_root _ _ ch23 (ch_map_root _ _ ch12 c);
      ch_root :=
@@ -132,14 +132,12 @@ Definition cCone_comp {J C} {D : functor J C} (cn1 cn2 cn3 : cone D)
          (f_equal (ch_map_root cn2 cn3 ch23) (ch_root cn1 cn2 ch12))
          (ch_root cn2 cn3 ch23) |}.
 
-Definition fam_hom {J C} (D : functor J C) c j := Hom c (f_map_obj j).
-
 Definition cCone_id {J C} {D : functor J C} (cn : cone D) : cCone_Hom cn cn :=
   {| ch_map_root c := c;
      ch_root := eq_refl |}.
 
 Theorem cCone_unit_l {J C} {D : functor J C} :
-  ∀ cn1 cn2 (f : cCone_Hom cn1 cn2), cCone_comp _ _ _ (cCone_id cn1) f = f.
+  ∀ cn1 cn2 (f : cCone_Hom cn1 cn2), cCone_comp (cCone_id cn1) f = f.
 Proof.
 intros.
 unfold cCone_comp; cbn.
@@ -149,7 +147,7 @@ now destruct Hf.
 Qed.
 
 Theorem cCone_unit_r {J C} {D : functor J C} :
-  ∀ cn1 cn2 (f : cCone_Hom cn1 cn2), cCone_comp _ _ _ f (cCone_id cn2) = f.
+  ∀ cn1 cn2 (f : cCone_Hom cn1 cn2), cCone_comp f (cCone_id cn2) = f.
 Proof.
 intros.
 unfold cCone_comp; cbn.
@@ -157,6 +155,11 @@ destruct f as (f & Hf); cbn.
 apply f_equal.
 now destruct Hf.
 Qed.
+
+Theorem cCone_assoc {J C} {D : functor J C} {cn1 cn2 cn3 cn4 : cone D} :
+  ∀ (f : cCone_Hom cn1 cn2) (g : cCone_Hom cn2 cn3) (h : cCone_Hom cn3 cn4),
+    cCone_comp f (cCone_comp g h) = cCone_comp (cCone_comp f g) h.
+...
 
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
@@ -168,6 +171,8 @@ Definition cCone {J C} (D : functor J C) :=
      assoc := 42 |}.
 
 ...
+
+Definition fam_hom {J C} (D : functor J C) c j := Hom c (f_map_obj j).
 
 Definition Cone_Hom {J C} (D : functor J C) c c' :=
   { δ |
