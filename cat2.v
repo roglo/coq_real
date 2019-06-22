@@ -118,6 +118,11 @@ Record cone {J C} (D : functor J C) :=
     c_fam : ∀ j, Hom c_root (f_map_obj j);
     c_commute : ∀ i j (α : Hom i j), c_fam j = f_map_arr D α ◦ c_fam i }.
 
+(* A limit for a functor D : J → C is a terminal object in Cone(D) *)
+
+Definition limit {J C} {D : functor J C} (cn : cone D) :=
+  { p | p = c_root D cn & is_terminal p }.
+
 (* category of cones *)
 
 Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
@@ -177,17 +182,3 @@ Definition cCone {J C} (D : functor J C) :=
      unit_l := cCone_unit_l;
      unit_r := cCone_unit_r;
      assoc _ _ _ _ := cCone_assoc |}.
-
-...
-
-(* A limit for a functor D : J → C is a terminal object in Cone(D) *)
-
-Definition is_limit {J C} {D : functor J C} (Cn : Cone D) :=
-  is_terminal (c_obj Cn).
-
-Definition limit {J C} {D : functor J C} (Cn : cone D) :=
-  { p | p = c_obj Cn & is_terminal p }.
-
-Print limit.
-
-(* ouais chais pas *)
