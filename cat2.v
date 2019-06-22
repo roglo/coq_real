@@ -17,6 +17,7 @@ Class cat :=
 
 Arguments Hom [_].
 Notation "g '◦' f" := (comp f g) (at level 40, left associativity).
+
 (*
 Coercion Obj : cat >-> Sortclass.
 *)
@@ -179,6 +180,9 @@ Definition cCone {J C} (D : functor J C) :=
      assoc _ _ _ _ := cCone_assoc |}.
 
 (* A limit for a functor D : J → C is a terminal object in Cone(D) *)
+
+Definition is_limit {J C} {D : functor J C} cn :=
+  @is_terminal (cCone D) cn.
 
 ... euh...
 
