@@ -198,4 +198,10 @@ intros * Hlim.
 unfold unique.
 unfold is_limit in Hlim.
 unfold is_terminal in Hlim.
+Print cCone_Hom.
+(* c'est moi qui la crée, la catégorie des cônes, c'est moi qui en crée,
+   qui en décide les morphismes ; je peux imposer qu'il y en ait un entre
+   chaque racine ; quoique... faut voir... car le morphisme doit respecter
+   la règle cj = c'j ◦ ϑ *)
+Print cCone.
 ...
