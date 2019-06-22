@@ -5,7 +5,7 @@ Require Import Utf8.
 
 Definition is_set (A : Type) := ∀ (a b : A) (p q : a = b), p = q.
 
-Class cat :=
+Class category :=
   { Obj : Type;
     Hom : Obj → Obj → Type;
     comp : ∀ {A B C}, Hom A B → Hom B C → Hom A C;
@@ -22,8 +22,8 @@ Notation "g '◦' f" := (comp f g) (at level 40, left associativity).
 Coercion Obj : cat >-> Sortclass.
 *)
 
-Definition dom {C : cat} {O1 O2 : Obj} (f : Hom O1 O2) := O1.
-Definition cod {C : cat} {O1 O2 : Obj} (f : Hom O1 O2) := O2.
+Definition dom {C : category} {O1 O2 : Obj} (f : Hom O1 O2) := O1.
+Definition cod {C : category} {O1 O2 : Obj} (f : Hom O1 O2) := O2.
 
 (* *)
 
@@ -49,12 +49,12 @@ Definition cTwo := cDiscr (unit + unit).
 
 (* *)
 
-Definition is_initial {C : cat} (_0 : Obj) :=
+Definition is_initial {C : category} (_0 : Obj) :=
   ∀ c : Obj, ∀ f g : Hom _0 c, f = g.
-Definition is_terminal {C : cat} (_1 : Obj) :=
+Definition is_terminal {C : category} (_1 : Obj) :=
   ∀ c : Obj, ∀ f g : Hom c _1, f = g.
 
-Class functor (C D : cat) :=
+Class functor (C D : category) :=
   { f_map_obj : @Obj C → @Obj D;
     f_map_arr {a b} : Hom a b → Hom (f_map_obj a) (f_map_obj b);
     f_comp {a b c} (f : Hom a b) (g : Hom b c) :
@@ -64,12 +64,12 @@ Class functor (C D : cat) :=
 Arguments f_map_obj [_] [_] [_].
 Arguments f_map_arr [_] [_] _ [_] [_].
 
-Definition is_isomorphism {C : cat} {A B : Obj} (f : Hom A B) :=
+Definition is_isomorphism {C : category} {A B : Obj} (f : Hom A B) :=
   ∃ g : Hom B A, g ◦ f = id ∧ f ◦ g = id.
 
 (* *)
 
-Theorem two_functor_map_arr (C : cat) D1 D2 :
+Theorem two_functor_map_arr (C : category) D1 D2 :
   ∀ (b1 b2 : @Obj cTwo) (f : Hom b1 b2),
   Hom (if b1 then D1 else D2) (if b2 then D1 else D2).
 Proof.
@@ -103,7 +103,7 @@ intros.
 now destruct a.
 Qed.
 
-Definition two_functor {C : cat} (D1 D2 : Obj) :=
+Definition two_functor {C : category} (D1 D2 : Obj) :=
   {| f_map_obj (b : @Obj cTwo) := if b then D1 else D2;
      f_map_arr := two_functor_map_arr C D1 D2;
      f_comp := two_functor_comp C D1 D2;
@@ -181,13 +181,14 @@ Definition cCone {J C} (D : functor J C) :=
 
 (* A limit for a functor D : J → C is a terminal object in Cone(D) *)
 
-Definition is_limit {J C} {D : functor J C} cn :=
+Definition is_limit {J C} {D : functor J C} (cn : cone D) :=
   @is_terminal (cCone D) cn.
 
-... euh...
+(* Spelling out the definition, the limit of a diagram D has the
+   following UMP: given any cone (C, cj) to D, there is a unique
+   arrow u : C → lim←−j Dj such that for all j,
+     pj ◦ u = cj .
+*)
 
-Definition limit {J C} {D : functor J C} (cn : cCone D) :=
-  { p | p = c_root D cn & is_terminal p }.
-
-Definition limit {J C} {D : functor J C} (cn : cone D) :=
-  { p | p = c_root D cn & is_terminal p }.
+Theorem glop {J C} {D : functor J C} :
+  ∀ (cn : cone D), ∃ (cnl : cone D) ∃! u : C → cnl
