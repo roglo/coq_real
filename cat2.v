@@ -138,23 +138,34 @@ Definition cCone_id {J C} {D : functor J C} (cn : cone D) : cCone_Hom cn cn :=
   {| ch_map_root c := c;
      ch_root := eq_refl |}.
 
-(*
 Theorem cCone_unit_l {J C} {D : functor J C} :
   ∀ cn1 cn2 (f : cCone_Hom cn1 cn2), cCone_comp _ _ _ (cCone_id cn1) f = f.
 Proof.
 intros.
 unfold cCone_comp; cbn.
-destruct f; cbn.
-f_equal; [ | now destruct ch_root0 ].
-...
-*)
+destruct f as (f & Hf); cbn.
+apply f_equal.
+now destruct Hf.
+Qed.
+
+Theorem cCone_unit_r {J C} {D : functor J C} :
+  ∀ cn1 cn2 (f : cCone_Hom cn1 cn2), cCone_comp _ _ _ f (cCone_id cn2) = f.
+Proof.
+intros.
+unfold cCone_comp; cbn.
+destruct f as (f & Hf); cbn.
+apply f_equal.
+now destruct Hf.
+Qed.
 
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
      comp := cCone_comp;
      id := cCone_id;
-     unit_l := 42 |}.
+     unit_l := cCone_unit_l;
+     unit_r := cCone_unit_r;
+     assoc := 42 |}.
 
 ...
 
