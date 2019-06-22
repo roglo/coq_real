@@ -194,5 +194,8 @@ Theorem limit_UMP {J C} {D : functor J C} (cc := cCone D) :
   ∀ p c : cone D, is_limit p →
   exists! u, ∀ j, c_fam _ p j ◦ u = c_fam _ c j.
 Proof.
-intros.
+intros * Hlim.
+unfold unique.
+unfold is_limit in Hlim.
+unfold is_terminal in Hlim.
 ...
