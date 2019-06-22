@@ -132,7 +132,7 @@ Definition cCone_comp {J C} {D : functor J C} (cn1 cn2 cn3 : cone D)
 
   {| ch_map_root c := ch_map_root _ _ ch23 (ch_map_root _ _ ch12 c);
 ...
-     ch_map_arr j _ := c_fam D cn3 j |}.
+     ch_map_arr j (f : Hom (c_root D cn1) (f_map_obj j)) := c_fam D cn3 j |}.
 ...
      ch_root :=
        eq_trans
