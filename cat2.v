@@ -198,11 +198,15 @@ Definition cCone_comp {J C} {D : functor J C} {cn1 cn2 cn3 : cone D}
          (assoc (ch_Hom cn1 cn2 ch12) (ch_Hom cn2 cn3 ch23)
             (c_fam D cn3 j)) |}.
 
+Definition cCone_id {J C} {D : functor J C} (cn : cone D) : cCone_Hom cn cn :=
+  {| ch_Hom := id;
+     ch_commute j := eq_sym (unit_l (c_fam D cn j)) |}.
+
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
      comp _ _ _ := cCone_comp;
-     id := 42;
+     id := cCone_id;
      unit_l := 42;
      unit_r := 42;
      assoc _ _ _ _ := 42 |}.
