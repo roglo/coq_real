@@ -202,6 +202,14 @@ Definition cCone_id {J C} {D : functor J C} (cn : cone D) : cCone_Hom cn cn :=
   {| ch_Hom := id;
      ch_commute j := eq_sym (unit_l (c_fam D cn j)) |}.
 
+Theorem cCone_unit_l {J C} {D : functor J C} :
+  ∀ cn1 cn2 (f : cCone_Hom cn1 cn2), cCone_comp (cCone_id cn1) f = f.
+Proof.
+intros.
+unfold cCone_comp; cbn.
+destruct f as (f & Hf); cbn.
+...
+
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
