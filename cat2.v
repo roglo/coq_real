@@ -122,12 +122,10 @@ Record cone {J C} (D : functor J C) :=
 (* category of cones *)
 
 Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
-  { ch_map_root : @Obj C → @Obj C;
-    ch_root : ch_map_root (c_root D cn) = c_root D cn';
-    ch_prop : ∀ j, c_fam D cn j = c_fam D cn' j ◦ ch_map_root }.
+  { ch_Hom : Hom (c_root D cn) (c_root D cn');
+    ch_commute : ∀ j, c_fam D cn j = c_fam D cn' j ◦ ch_Hom }.
 
-... grrrr...
-
+(*
 Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
   { ch_map_root : @Obj C → @Obj C;
     ch_root : ch_map_root (c_root D cn) = c_root D cn';
@@ -186,6 +184,28 @@ Definition cCone {J C} (D : functor J C) :=
      unit_l := cCone_unit_l;
      unit_r := cCone_unit_r;
      assoc _ _ _ _ := cCone_assoc |}.
+*)
+
+Definition cCone_comp {J C} {D : functor J C} {cn1 cn2 cn3 : cone D}
+  (ch12 : cCone_Hom cn1 cn2) (ch23 : cCone_Hom cn2 cn3) : cCone_Hom cn1 cn3 :=
+  {| ch_Hom := ch_Hom _ _ ch23 ◦ ch_Hom _ _ ch12;
+     ch_commute j :=
+       eq_trans
+         (eq_trans
+            (ch_commute cn1 cn2 ch12 j)
+            (f_equal (comp (ch_Hom cn1 cn2 ch12))
+               (ch_commute cn2 cn3 ch23 j)))
+         (assoc (ch_Hom cn1 cn2 ch12) (ch_Hom cn2 cn3 ch23)
+            (c_fam D cn3 j)) |}.
+
+Definition cCone {J C} (D : functor J C) :=
+  {| Obj := cone D;
+     Hom := cCone_Hom;
+     comp _ _ _ := cCone_comp;
+     id := 42;
+     unit_l := 42;
+     unit_r := 42;
+     assoc _ _ _ _ := 42 |}.
 
 (* A limit for a functor D : J → C is a terminal object in Cone(D) *)
 
