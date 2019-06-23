@@ -121,6 +121,8 @@ Record cone {J C} (D : functor J C) :=
 
 (* category of cones *)
 
+...
+
 Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
   { ch_Hom : Hom (c_root D cn) (c_root D cn');
     ch_commute : ∀ j, c_fam D cn j = c_fam D cn' j ◦ ch_Hom }.
