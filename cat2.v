@@ -3,6 +3,8 @@
 
 Require Import Utf8.
 
+Axiom extensionality : ∀ A B (f g : ∀ x : A, B x), (∀ x, f x = g x) → f = g.
+
 Definition is_set (A : Type) := ∀ (a b : A) (p q : a = b), p = q.
 
 Class category :=
@@ -145,22 +147,6 @@ Definition cCone_comp {J C} {D : functor J C} (c c' c'' : cone D)
 Definition cCone_id {J C} {D : functor J C} (c : cone D) : cCone_Hom c c :=
    exist (λ ϑ, ∀ j, c_fam D c j = c_fam D c j ◦ ϑ) id
      (λ j, eq_sym (unit_l (c_fam D c j))).
-
-Definition homotopy {A B} (f g : A → B) := ∀ (x : A), (f x = g x).
-Definition composite {A B C} (f : A → B) (g : B → C) x := g (f x).
-
-Definition isequiv {A B : Type} f :=
-  ({ g : B → A & homotopy (composite f g) (λ x, x) } *
-   { h : B → A & homotopy (composite h f) (λ x, x) })%type.
-
-Definition happly {A B} (f g : ∀ (x : A), B x)
-  : f = g → ∀ (x : A), f x = g x
-  := λ p,
-     match p with
-     | eq_refl _ => λ y, eq_refl (f y)
-     end.
-
-Axiom extensionality : ∀ {A B} f g, isequiv (@happly A B f g).
 
 Definition cCone_unit_l {J C} {D : functor J C} (c c' : cone D)
   (f : cCone_Hom c c') : cCone_comp c c c' (cCone_id c) f = f.
