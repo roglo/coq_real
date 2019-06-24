@@ -115,19 +115,28 @@ Definition two_functor {C : category} (D1 D2 : Obj) :=
    commutes. *)
 
 Record cone {J C} (D : functor J C) :=
-  { c_root : @Obj C;
-    c_fam : ∀ j, Hom c_root (f_map_obj j);
+  { c_top : @Obj C;
+    c_fam : ∀ j, Hom c_top (f_map_obj j);
     c_commute : ∀ i j (α : Hom i j), c_fam j = f_map_arr D α ◦ c_fam i }.
 
 (* category of cones *)
 
 Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
-  { ch_Hom : Hom (c_root D cn) (c_root D cn');
-   ch_commute : ∀ j α, c_fam D cn j = c_fam D cn' j ◦ α }.
+  { ch_Hom : Hom (c_top D cn) (c_top D cn');
+    ch_commute : ∀ j α, c_fam D cn j = c_fam D cn' j ◦ α }.
 
 Theorem glop {J C} {D : functor J C} (cn cn' cn'' : cone D)
   (ch : cCone_Hom cn cn') (ch' : cCone_Hom cn' cn'') (j : @Obj J) α :
   c_fam D cn j = c_fam D cn'' j ◦ α.
+Proof.
+destruct ch as (ch, cc).
+destruct ch' as (ch', cc').
+...
+remember (ch' ◦ ch) as ch''.
+etransitivity.
+apply cc with (α := ch).
+apply cc.
+Set Printing Implicit.
 ...
 
 Definition cCone_comp {J C} {D : functor J C} {cn1 cn2 cn3 : cone D}
