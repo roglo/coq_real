@@ -122,28 +122,41 @@ Record cone {J C} (D : functor J C) :=
 (* category of cones *)
 
 Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
-  { ch_Hom : Hom (c_top D cn) (c_top D cn');
-    ch_commute : ∀ j α, c_fam D cn j = c_fam D cn' j ◦ α }.
+  { ch_top : @Obj C → @Obj C;
+    ch_top_f : ch_top (c_top _ cn) = c_top _ cn' }.
 
+(*
 Theorem glop {J C} {D : functor J C} (cn cn' cn'' : cone D)
-  (ch : cCone_Hom cn cn') (ch' : cCone_Hom cn' cn'') (j : @Obj J) α :
-  c_fam D cn j = c_fam D cn'' j ◦ α.
+  (ch : cCone_Hom cn cn') (ch' : cCone_Hom cn' cn'') :
+  ch_top (c_top _ cn) = c_top _ ch'.
 Proof.
 destruct ch as (ch, cc).
 destruct ch' as (ch', cc').
+rewrite cc.
+rewrite cc'.
+rewrite assoc.
+f_equal.
 ...
 remember (ch' ◦ ch) as ch''.
 etransitivity.
-apply cc with (α := ch).
 apply cc.
 Set Printing Implicit.
 ...
+*)
 
-Definition cCone_comp {J C} {D : functor J C} {cn1 cn2 cn3 : cone D}
-  (ch12 : cCone_Hom cn1 cn2) (ch23 : cCone_Hom cn2 cn3) : cCone_Hom cn1 cn3 :=
-  {| ch_Hom := ch_Hom _ _ ch23 ◦ ch_Hom _ _ ch12;
-     ch_commute j := 42 |}.
+Theorem glop {J C} {D : functor J C} (c c' c'' : cone D)
+        (ch : cCone_Hom c c') (ch' : cCone_Hom c' c'') :
+  ch_top c c' ch (ch_top c' c'' ch' (c_top D c)) = c_top D c''.
+Proof.
+etransitivity.
+2: apply ch_top_f.
+(* ouais, enfin bon, c'est la merde *)
+...
 
+Definition cCone_comp {J C} {D : functor J C} {c c' c'' : cone D}
+  (ch : cCone_Hom c c') (ch' : cCone_Hom c' c'') : cCone_Hom c c'' :=
+  {| ch_top t := ch_top _ _ ch (ch_top _ _ ch' t);
+     ch_top_f := glop c c' c'' ch ch' |}.
 ...
 
 Definition cCone {J C} (D : functor J C) :=
