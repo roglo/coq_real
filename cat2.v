@@ -121,6 +121,7 @@ Record cone {J C} (D : functor J C) :=
 
 (* category of cones *)
 
+(*
 Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
   { ch_Hom : Hom (c_top D cn) (c_top D cn');
     ch_commute : ∀ j, c_fam D cn j = c_fam D cn' j ◦ ch_Hom }.
@@ -133,17 +134,33 @@ Definition cCone_comp {J C} {D : functor J C} (c c' c'' : cone D)
          (eq_trans (ch_commute c c' ch j)
             (f_equal (comp (ch_Hom c c' ch)) (ch_commute c' c'' ch' j)))
          (assoc (ch_Hom c c' ch) (ch_Hom c' c'' ch') (c_fam D c'' j)) |}.
+*)
 
-Definition cCone_id {J C} {D : functor J C} (cn : cone D) : cCone_Hom cn cn :=
-  {| ch_Hom := id;
-     ch_commute j := eq_sym (unit_l (c_fam D cn j)) |}.
+Definition cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
+  { ϑ | ∀ j, c_fam D cn j = c_fam D cn' j ◦ ϑ }.
+
+Definition cCone_comp {J C} {D : functor J C} (c c' c'' : cone D)
+  (ch : cCone_Hom c c') (ch' : cCone_Hom c' c'') : cCone_Hom c c'' :=
+  exist
+    (λ ϑ, ∀ j, c_fam D c j = c_fam D c'' j ◦ ϑ)
+    (proj1_sig ch' ◦ proj1_sig ch)
+    (λ j,
+       eq_trans
+         (eq_trans (proj2_sig ch j)
+            (f_equal (comp (proj1_sig ch)) (proj2_sig ch' j)))
+         (assoc (proj1_sig ch) (proj1_sig ch') (c_fam D c'' j))).
+
+Definition cCone_id {J C} {D : functor J C} (c : cone D) : cCone_Hom c c :=
+   exist (λ ϑ, ∀ j, c_fam D c j = c_fam D c j ◦ ϑ) id
+     (λ j, eq_sym (unit_l (c_fam D c j))).
 
 Definition cCone_unit_l {J C} {D : functor J C} (c c' : cone D)
   (f : cCone_Hom c c') : cCone_comp c c c' (cCone_id c) f = f.
-Proof.
 unfold cCone_comp; cbn.
 destruct f as (f & Hf); cbn.
-rewrite <- unit_l.
+apply eq_exist_uncurried.
+exists (unit_l _).
+unfold eq_rect.
 ...
 
 Definition cCone {J C} (D : functor J C) :=
@@ -151,6 +168,7 @@ Definition cCone {J C} (D : functor J C) :=
      Hom := cCone_Hom;
      comp := cCone_comp;
      id := cCone_id;
+     unit_l := 42 |}.
      unit_l := cCone_unit_l |}.
 
 ...
