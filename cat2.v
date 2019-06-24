@@ -195,10 +195,6 @@ Definition cCone_comp {J C} {D : functor J C} {cn1 cn2 cn3 : cone D}
          (assoc (ch_Hom cn1 cn2 ch12) (ch_Hom cn2 cn3 ch23)
             (c_fam D cn3 j)) |}.
 
-Definition cCone_id {J C} {D : functor J C} (cn : cone D) : cCone_Hom cn cn :=
-  {| ch_Hom := id;
-     ch_commute j := eq_sym (unit_l (c_fam D cn j)) |}.
-
 Theorem cCone_unit_l {J C} {D : functor J C} :
   ∀ cn1 cn2 (f : cCone_Hom cn1 cn2), cCone_comp (cCone_id cn1) f = f.
 Proof.
@@ -222,16 +218,45 @@ Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
     ch_commute : ∀ j, c_fam D cn j = c_fam D cn' j ◦ ch_Hom }.
 
 Definition cCone_comp {J C} {D : functor J C} {cn1 cn2 cn3 : cone D}
-  (ch12 : cCone_Hom cn1 cn2) (ch23 : cCone_Hom cn2 cn3) : cCone_Hom cn1 cn3.
+  (ch12 : cCone_Hom cn1 cn2) (ch23 : cCone_Hom cn2 cn3) : cCone_Hom cn1 cn3 :=
+  {| ch_Hom := ch_Hom _ _ ch23 ◦ ch_Hom _ _ ch12;
+     ch_commute j :=
+       eq_trans
+         (eq_trans
+            (ch_commute cn1 cn2 ch12 j)
+            (f_equal (comp (ch_Hom cn1 cn2 ch12))
+               (ch_commute cn2 cn3 ch23 j)))
+         (assoc (ch_Hom cn1 cn2 ch12) (ch_Hom cn2 cn3 ch23)
+            (c_fam D cn3 j)) |}.
+
+Definition cCone_id {J C} {D : functor J C} (cn : cone D) : cCone_Hom cn cn :=
+  {| ch_Hom := id;
+     ch_commute j := eq_sym (unit_l (c_fam D cn j)) |}.
+
+Definition cCone_unit_l {J C} {D : functor J C} :
+  ∀ (cn1 cn2 : cone D) (f : cCone_Hom cn1 cn2),
+  cCone_comp (cCone_id cn1) f = f.
+Proof.
+intros.
+unfold cCone_comp; cbn.
+rename cn1 into c.
+rename cn2 into c'.
+rewrite <- unit_l.
+...
+
+destruct f as (f & Hf); cbn.
+replace (f ◦ @id C (@c_root J C D c)) with f.
+2: symmetry; apply unit_l.
 ...
 
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
-     comp cn1 cn2 cn3 := cCone_comp |}.
-...
+     comp cn1 cn2 cn3 := cCone_comp;
      id := cCone_id;
-     unit_l := cCone_unit_l;
+     unit_l := 42 |}.
+     unit_l := cCone_unit_l |}.
+...
      unit_r := cCone_unit_r;
      assoc := cCone_assoc |}.
 
