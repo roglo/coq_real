@@ -123,7 +123,32 @@ Record cone {J C} (D : functor J C) :=
 
 Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
   { ch_Hom : Hom (c_root D cn) (c_root D cn');
-    ch_commute : ∀ j, c_fam D cn j = c_fam D cn' j ◦ ch_Hom }.
+   ch_commute : ∀ j α, c_fam D cn j = c_fam D cn' j ◦ α }.
+
+Theorem glop {J C} {D : functor J C} (cn cn' cn'' : cone D)
+  (ch : cCone_Hom cn cn') (ch' : cCone_Hom cn' cn'') (j : @Obj J) α :
+  c_fam D cn j = c_fam D cn'' j ◦ α.
+...
+
+Definition cCone_comp {J C} {D : functor J C} {cn1 cn2 cn3 : cone D}
+  (ch12 : cCone_Hom cn1 cn2) (ch23 : cCone_Hom cn2 cn3) : cCone_Hom cn1 cn3 :=
+  {| ch_Hom := ch_Hom _ _ ch23 ◦ ch_Hom _ _ ch12;
+     ch_commute j := 42 |}.
+
+...
+
+Definition cCone {J C} (D : functor J C) :=
+  {| Obj := cone D;
+     Hom := cCone_Hom;
+     comp cn1 cn2 cn3 := 42 |}.
+Proof.
+split.
+intros.
+destruct ch12 as [ch12].
+destruct ch23 as [ch23].
+...
+
+...
 
 Definition cCone_comp {J C} {D : functor J C} {cn1 cn2 cn3 : cone D}
   (ch12 : cCone_Hom cn1 cn2) (ch23 : cCone_Hom cn2 cn3) : cCone_Hom cn1 cn3 :=
