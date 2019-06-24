@@ -122,98 +122,38 @@ Record cone {J C} (D : functor J C) :=
 (* category of cones *)
 
 Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
-  { ch_top : @Obj C → @Obj C;
-    ch_top_f : ch_top (c_top _ cn) = c_top _ cn' }.
+  { ch_Hom : Hom (c_top D cn) (c_top D cn');
+    ch_commute : ∀ j, c_fam D cn j = c_fam D cn' j ◦ ch_Hom }.
 
-(*
-Theorem glop {J C} {D : functor J C} (cn cn' cn'' : cone D)
-  (ch : cCone_Hom cn cn') (ch' : cCone_Hom cn' cn'') :
-  ch_top (c_top _ cn) = c_top _ ch'.
-Proof.
-destruct ch as (ch, cc).
-destruct ch' as (ch', cc').
-rewrite cc.
-rewrite cc'.
-rewrite assoc.
-f_equal.
-...
-remember (ch' ◦ ch) as ch''.
-etransitivity.
-apply cc.
-Set Printing Implicit.
-...
-*)
-
-Theorem glop {J C} {D : functor J C} (c c' c'' : cone D)
-        (ch : cCone_Hom c c') (ch' : cCone_Hom c' c'') :
-  ch_top c c' ch (ch_top c' c'' ch' (c_top D c)) = c_top D c''.
-Proof.
-etransitivity.
-2: apply ch_top_f.
-(* ouais, enfin bon, c'est la merde *)
-...
-
-Definition cCone_comp {J C} {D : functor J C} {c c' c'' : cone D}
+Definition cCone_comp {J C} {D : functor J C} (c c' c'' : cone D)
   (ch : cCone_Hom c c') (ch' : cCone_Hom c' c'') : cCone_Hom c c'' :=
-  {| ch_top t := ch_top _ _ ch (ch_top _ _ ch' t);
-     ch_top_f := glop c c' c'' ch ch' |}.
-...
-
-Definition cCone {J C} (D : functor J C) :=
-  {| Obj := cone D;
-     Hom := cCone_Hom;
-     comp cn1 cn2 cn3 := 42 |}.
-Proof.
-split.
-intros.
-destruct ch12 as [ch12].
-destruct ch23 as [ch23].
-...
-
-...
-
-Definition cCone_comp {J C} {D : functor J C} {cn1 cn2 cn3 : cone D}
-  (ch12 : cCone_Hom cn1 cn2) (ch23 : cCone_Hom cn2 cn3) : cCone_Hom cn1 cn3 :=
-  {| ch_Hom := ch_Hom _ _ ch23 ◦ ch_Hom _ _ ch12;
+  {| ch_Hom := ch_Hom c' c'' ch' ◦ ch_Hom c c' ch;
      ch_commute j :=
        eq_trans
-         (eq_trans
-            (ch_commute cn1 cn2 ch12 j)
-            (f_equal (comp (ch_Hom cn1 cn2 ch12))
-               (ch_commute cn2 cn3 ch23 j)))
-         (assoc (ch_Hom cn1 cn2 ch12) (ch_Hom cn2 cn3 ch23)
-            (c_fam D cn3 j)) |}.
+         (eq_trans (ch_commute c c' ch j)
+            (f_equal (comp (ch_Hom c c' ch)) (ch_commute c' c'' ch' j)))
+         (assoc (ch_Hom c c' ch) (ch_Hom c' c'' ch') (c_fam D c'' j)) |}.
 
 Definition cCone_id {J C} {D : functor J C} (cn : cone D) : cCone_Hom cn cn :=
   {| ch_Hom := id;
      ch_commute j := eq_sym (unit_l (c_fam D cn j)) |}.
 
-Definition cCone_unit_l {J C} {D : functor J C} :
-  ∀ (cn1 cn2 : cone D) (f : cCone_Hom cn1 cn2),
-  cCone_comp (cCone_id cn1) f = f.
+Definition cCone_unit_l {J C} {D : functor J C} (c c' : cone D)
+  (f : cCone_Hom c c') : cCone_comp c c c' (cCone_id c) f = f.
 Proof.
-intros.
 unfold cCone_comp; cbn.
-rename cn1 into c.
-rename cn2 into c'.
 destruct f as (f & Hf); cbn.
 rewrite <- unit_l.
-...
-
-replace (f ◦ @id C (@c_root J C D c)) with f.
-2: symmetry; apply unit_l.
 ...
 
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
-     comp cn1 cn2 cn3 := cCone_comp;
+     comp := cCone_comp;
      id := cCone_id;
-     unit_l := 42 |}.
      unit_l := cCone_unit_l |}.
+
 ...
-     unit_r := cCone_unit_r;
-     assoc := cCone_assoc |}.
 
 (* A limit for a functor D : J → C is a terminal object in Cone(D) *)
 
