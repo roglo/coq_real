@@ -159,12 +159,25 @@ intros j.
 apply Hom_set.
 Defined.
 
+Definition cCone_unit_r {J C} {D : functor J C} (c c' : cone D)
+  (f : cCone_Hom c c') : cCone_comp c c' c' f (cCone_id c') = f.
+unfold cCone_comp; cbn.
+destruct f as (f & Hf); cbn.
+apply eq_exist_uncurried.
+exists (unit_r _).
+apply extensionality.
+intros j.
+apply Hom_set.
+Defined.
+
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
      comp := cCone_comp;
      id := cCone_id;
-     unit_l := cCone_unit_l |}.
+     unit_l := cCone_unit_l;
+     unit_r := cCone_unit_r;
+     assoc := 42 |}.
 
 ...
 
