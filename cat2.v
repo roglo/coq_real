@@ -241,10 +241,10 @@ intros.
 unfold cCone_comp; cbn.
 rename cn1 into c.
 rename cn2 into c'.
+destruct f as (f & Hf); cbn.
 rewrite <- unit_l.
 ...
 
-destruct f as (f & Hf); cbn.
 replace (f ◦ @id C (@c_root J C D c)) with f.
 2: symmetry; apply unit_l.
 ...
