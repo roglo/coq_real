@@ -13,7 +13,8 @@ Class category :=
     unit_l : ∀ {A B} (f : Hom A B), comp id f = f;
     unit_r : ∀ {A B} (f : Hom A B), comp f id = f;
     assoc : ∀ {A B C D} (f : Hom A B) (g : Hom B C) (h : Hom C D),
-      comp f (comp g h) = comp (comp f g) h }.
+      comp f (comp g h) = comp (comp f g) h;
+    Hom_set x y : is_set (Hom x y) }.
 
 Arguments Hom [_].
 Notation "g '◦' f" := (comp f g) (at level 40, left associativity).
@@ -27,6 +28,7 @@ Definition cod {C : category} {O1 O2 : Obj} (f : Hom O1 O2) := O2.
 
 (* *)
 
+(*
 Definition cTyp :=
   {| Obj := Type;
      Hom A B := A → B;
@@ -35,7 +37,9 @@ Definition cTyp :=
      unit_l _ _ _ := eq_refl;
      unit_r _ _ _ := eq_refl;
      assoc _ _ _ _ _ _ _ := eq_refl |}.
+*)
 
+(*
 Definition cDiscr T :=
   {| Obj := T;
      Hom t1 t2 := t1 = t2;
@@ -46,6 +50,7 @@ Definition cDiscr T :=
      assoc _ _ _ _ _ _ f := match f with eq_refl => eq_refl end |}.
 
 Definition cTwo := cDiscr (unit + unit).
+*)
 
 (* *)
 
@@ -69,6 +74,7 @@ Definition is_isomorphism {C : category} {A B : Obj} (f : Hom A B) :=
 
 (* *)
 
+(*
 Theorem two_functor_map_arr (C : category) D1 D2 :
   ∀ (b1 b2 : @Obj cTwo) (f : Hom b1 b2),
   Hom (if b1 then D1 else D2) (if b2 then D1 else D2).
@@ -108,6 +114,7 @@ Definition two_functor {C : category} (D1 D2 : Obj) :=
      f_map_arr := two_functor_map_arr C D1 D2;
      f_comp := two_functor_comp C D1 D2;
      f_id := two_functor_id C D1 D2 |}.
+*)
 
 (* A cone to a functor D(J,C) consists of an object c in C and a
    family of arrows in C : cj : c → Dj one for each object j ∈ J, such
@@ -120,21 +127,6 @@ Record cone {J C} (D : functor J C) :=
     c_commute : ∀ i j (α : Hom i j), c_fam j = f_map_arr D α ◦ c_fam i }.
 
 (* category of cones *)
-
-(*
-Record cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
-  { ch_Hom : Hom (c_top D cn) (c_top D cn');
-    ch_commute : ∀ j, c_fam D cn j = c_fam D cn' j ◦ ch_Hom }.
-
-Definition cCone_comp {J C} {D : functor J C} (c c' c'' : cone D)
-  (ch : cCone_Hom c c') (ch' : cCone_Hom c' c'') : cCone_Hom c c'' :=
-  {| ch_Hom := ch_Hom c' c'' ch' ◦ ch_Hom c c' ch;
-     ch_commute j :=
-       eq_trans
-         (eq_trans (ch_commute c c' ch j)
-            (f_equal (comp (ch_Hom c c' ch)) (ch_commute c' c'' ch' j)))
-         (assoc (ch_Hom c c' ch) (ch_Hom c' c'' ch') (c_fam D c'' j)) |}.
-*)
 
 Definition cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
   { ϑ | ∀ j, c_fam D cn j = c_fam D cn' j ◦ ϑ }.
@@ -154,21 +146,38 @@ Definition cCone_id {J C} {D : functor J C} (c : cone D) : cCone_Hom c c :=
    exist (λ ϑ, ∀ j, c_fam D c j = c_fam D c j ◦ ϑ) id
      (λ j, eq_sym (unit_l (c_fam D c j))).
 
+Definition homotopy {A B} (f g : A → B) := ∀ (x : A), (f x = g x).
+Definition composite {A B C} (f : A → B) (g : B → C) x := g (f x).
+
+Definition isequiv {A B : Type} f :=
+  ({ g : B → A & homotopy (composite f g) (λ x, x) } *
+   { h : B → A & homotopy (composite h f) (λ x, x) })%type.
+
+Definition happly {A B} (f g : ∀ (x : A), B x)
+  : f = g → ∀ (x : A), f x = g x
+  := λ p,
+     match p with
+     | eq_refl _ => λ y, eq_refl (f y)
+     end.
+
+Axiom extensionality : ∀ {A B} f g, isequiv (@happly A B f g).
+
 Definition cCone_unit_l {J C} {D : functor J C} (c c' : cone D)
   (f : cCone_Hom c c') : cCone_comp c c c' (cCone_id c) f = f.
 unfold cCone_comp; cbn.
 destruct f as (f & Hf); cbn.
 apply eq_exist_uncurried.
 exists (unit_l _).
-unfold eq_rect.
-...
+apply extensionality.
+intros j.
+apply Hom_set.
+Defined.
 
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
      comp := cCone_comp;
      id := cCone_id;
-     unit_l := 42 |}.
      unit_l := cCone_unit_l |}.
 
 ...
