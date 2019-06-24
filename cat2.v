@@ -183,7 +183,13 @@ Theorem cCone_assoc {J C} {D : functor J C} :
     cCone_comp c c'' c''' (cCone_comp c c' c'' f g) h.
 Proof.
 intros.
-...
+unfold cCone_comp; cbn.
+apply eq_exist_uncurried.
+exists (assoc _ _ _).
+apply extensionality.
+intros j.
+apply Hom_set.
+Defined.
 
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
@@ -192,7 +198,8 @@ Definition cCone {J C} (D : functor J C) :=
      id := cCone_id;
      unit_l := cCone_unit_l;
      unit_r := cCone_unit_r;
-     assoc := cCone_assoc |}.
+     assoc := cCone_assoc;
+     Hom_set := 42 |}.
 
 ...
 
