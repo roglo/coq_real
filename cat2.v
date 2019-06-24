@@ -148,8 +148,11 @@ Definition cCone_id {J C} {D : functor J C} (c : cone D) : cCone_Hom c c :=
    exist (λ ϑ, ∀ j, c_fam D c j = c_fam D c j ◦ ϑ) id
      (λ j, eq_sym (unit_l (c_fam D c j))).
 
-Definition cCone_unit_l {J C} {D : functor J C} (c c' : cone D)
-  (f : cCone_Hom c c') : cCone_comp c c c' (cCone_id c) f = f.
+Theorem cCone_unit_l {J C} {D : functor J C} :
+  ∀ (c c' : cone D) (f : cCone_Hom c c'),
+  cCone_comp c c c' (cCone_id c) f = f.
+Proof.
+intros.
 unfold cCone_comp; cbn.
 destruct f as (f & Hf); cbn.
 apply eq_exist_uncurried.
@@ -159,8 +162,11 @@ intros j.
 apply Hom_set.
 Defined.
 
-Definition cCone_unit_r {J C} {D : functor J C} (c c' : cone D)
-  (f : cCone_Hom c c') : cCone_comp c c' c' f (cCone_id c') = f.
+Theorem cCone_unit_r {J C} {D : functor J C} :
+  ∀ (c c' : cone D) (f : cCone_Hom c c'),
+  cCone_comp c c' c' f (cCone_id c') = f.
+Proof.
+intros.
 unfold cCone_comp; cbn.
 destruct f as (f & Hf); cbn.
 apply eq_exist_uncurried.
@@ -170,6 +176,15 @@ intros j.
 apply Hom_set.
 Defined.
 
+Theorem cCone_assoc {J C} {D : functor J C} :
+  ∀ (c c' c'' c''' : cone D) (f : cCone_Hom c c') (g : cCone_Hom c' c'')
+    (h : cCone_Hom c'' c'''),
+    cCone_comp c c' c''' f (cCone_comp c' c'' c''' g h) =
+    cCone_comp c c'' c''' (cCone_comp c c' c'' f g) h.
+Proof.
+intros.
+...
+
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
@@ -177,7 +192,7 @@ Definition cCone {J C} (D : functor J C) :=
      id := cCone_id;
      unit_l := cCone_unit_l;
      unit_r := cCone_unit_r;
-     assoc := 42 |}.
+     assoc := cCone_assoc |}.
 
 ...
 
