@@ -314,13 +314,37 @@ Theorem is_ntype_is_ntype_sigT (A : Type) : ∀ n P,
   (∀ x, isProp (P x)) → isnType A n → isnType (@sigT A P) n.
 Proof.
 intros * HP Hn.
-...
-induction n. {
+revert A P HP Hn.
+induction n; intros. {
   cbn in Hn; cbn.
-  unfold isContr in Hn |-*.
-  destruct Hn as (b & Hb).
-  specialize (HP b) as H1.
-  unfold isProp in H1.
+  unfold isProp in Hn |-*.
+  intros H1 H2.
+  destruct H1 as (a & Ha).
+  destruct H2 as (b & Hb).
+  move b before a.
+  apply eq_existT_uncurried.
+  assert (p : a = b) by apply Hn.
+  exists p.
+  apply HP.
+}
+cbn in Hn; cbn.
+intros Ha Hb.
+destruct Ha as (a, Ha).
+destruct Hb as (b, Hb).
+move b before a.
+specialize (IHn (a = a)) as H1.
+assert (Q : (a = a) → Type). {
+...
+specialize (HP a) as H1.
+specialize (HP b) as H2.
+unfold isProp in H1, H2.
+specialize (IHn (a = b)) as H2.
+assert (H : a = b).
+...
+apply isnType_isSnType.
+apply IHn; [ easy | ].
+
+cbn in Hn.
 ...
 
 Theorem is_set_is_set_sigT (A : Type) : ∀ P, is_set A → is_set (@sigT A P).
