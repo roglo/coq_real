@@ -261,9 +261,6 @@ Qed.
 Theorem lu {A} {b c : A} (r : b = c) : r = compose (eq_refl b) r.
 Proof. apply hott_2_1_4_i_2. Qed.
 
-Theorem ru {A} {a b : A} (p : a = b) : p = compose p (eq_refl b).
-Proof. apply hott_2_1_4_i_1. Qed.
-
 Theorem compose_invert_l {A} {x y : A} :
   ∀ (p : x = y), compose (invert p) p = eq_refl y.
 Proof. now intros p; destruct p. Qed.
@@ -284,17 +281,12 @@ eapply compose; [ | eapply invert, lu ].
 apply dotr, compose_invert_l.
 Qed.
 
-Theorem transport {A} P {x y : A} (p : x = y) : P x → P y.
-Proof. now intros; destruct p. Defined.
-
-Theorem apd {A P} f {x y : A} (p : x = y) : transport P p (f x) = f y.
-Proof. now destruct p. Qed.
-
 Theorem compose_insert {A x} (f : ∀ y : A, x = y) {y z} (p : y = z) :
   compose (f y) p = f z.
 Proof.
-eapply compose; [ | apply (apd f p) ].
-eapply invert; destruct p; simpl; apply ru.
+destruct p.
+unfold compose.
+now destruct (f y).
 Qed.
 
 Theorem isnType_isSnType {A} n : isnType A n → isnType A (S n).
