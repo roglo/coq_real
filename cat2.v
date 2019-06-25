@@ -221,65 +221,9 @@ Definition invert {A} {x y : A} (p : x = y) : y = x :=
   | eq_refl _ => eq_refl x
   end.
 
-Theorem hott_2_1_4_i_1 {A} {x y : A} : ∀ (p : x = y),
-    p = compose p (eq_refl y).
-Proof. intros; now destruct p. Qed.
-
-Theorem hott_2_1_4_i_2 {A} {x y : A} : ∀ (p : x = y),
-    p = compose (eq_refl x) p.
-Proof. intros; now destruct p. Qed.
-
-Theorem dotl {A} {a b c : A} {r s : b = c}
-  (q : a = b) (β : r = s) : compose q r = compose q s.
-Proof.
-destruct q.
-specialize (@hott_2_1_4_i_2 A a c r) as H2.
-apply invert in H2.
-eapply compose; [ apply H2 | idtac ].
-specialize (@hott_2_1_4_i_2 A a c s) as H4.
-eapply compose; [ apply β | apply H4 ].
-Qed.
-
-Theorem dotr {A} {a b c : A} {p q : a = b}
-  (r : b = c) (α : p = q) : compose p r = compose q r.
-Proof.
-destruct r.
-specialize (@hott_2_1_4_i_1 A a b p) as H1.
-apply invert in H1.
-eapply compose; [ apply H1 | idtac ].
-pose proof (@hott_2_1_4_i_1 A a b q) as H3.
-eapply compose; [ apply α | apply H3 ].
-Qed.
-
-Theorem compose_assoc {A} {x y z w : A} :
-  ∀ (p : x = y) (q : y = z) (r : z = w),
-  compose p (compose q r) = compose (compose p q) r.
-Proof.
-intros p q r; now destruct p.
-Qed.
-
-Theorem lu {A} {b c : A} (r : b = c) : r = compose (eq_refl b) r.
-Proof. apply hott_2_1_4_i_2. Qed.
-
-Theorem compose_invert_l {A} {x y : A} :
-  ∀ (p : x = y), compose (invert p) p = eq_refl y.
-Proof. now intros p; destruct p. Qed.
-
 Theorem compose_cancel_l {A} {x y z : A} (p : x = y) (q r : y = z) :
   compose p q = compose p r → q = r.
-Proof.
-intros H.
-eapply (dotl (invert p)) in H.
-eapply compose. {
-  eapply compose; [ | apply H ].
-  eapply compose; [ | eapply invert, compose_assoc ].
-  eapply compose; [ apply lu | apply dotr ].
-  apply invert, compose_invert_l.
-}
-eapply compose; [ eapply compose_assoc | ].
-eapply compose; [ | eapply invert, lu ].
-apply dotr, compose_invert_l.
-Qed.
+Proof. intros; now destruct p. Qed.
 
 Theorem compose_insert {A x} (f : ∀ y : A, x = y) {y z} (p : y = z) :
   compose (f y) p = f z.
