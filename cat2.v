@@ -200,6 +200,7 @@ destruct g as (g & Hg).
 move g before f.
 injection p; intros Hp.
 injection q; intros Hq.
+...
 specialize (Hom_set (c_top D c) (c_top D c') f g Hp Hq) as H2.
 ...
 destruct p.
