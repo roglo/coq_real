@@ -131,21 +131,21 @@ Record cone {J C} (D : functor J C) :=
 (* category of cones *)
 
 Definition cCone_Hom {J C} {D : functor J C} (cn cn' : cone D) :=
-  { ϑ | ∀ j, c_fam D cn j = c_fam D cn' j ◦ ϑ }.
+  { ϑ & ∀ j, c_fam D cn j = c_fam D cn' j ◦ ϑ }.
 
 Definition cCone_comp {J C} {D : functor J C} (c c' c'' : cone D)
   (ch : cCone_Hom c c') (ch' : cCone_Hom c' c'') : cCone_Hom c c'' :=
-  exist
+  existT
     (λ ϑ, ∀ j, c_fam D c j = c_fam D c'' j ◦ ϑ)
-    (proj1_sig ch' ◦ proj1_sig ch)
+    (projT1 ch' ◦ projT1 ch)
     (λ j,
        eq_trans
-         (eq_trans (proj2_sig ch j)
-            (f_equal (comp (proj1_sig ch)) (proj2_sig ch' j)))
-         (assoc (proj1_sig ch) (proj1_sig ch') (c_fam D c'' j))).
+         (eq_trans (projT2 ch j)
+            (f_equal (comp (projT1 ch)) (projT2 ch' j)))
+         (assoc (projT1 ch) (projT1 ch') (c_fam D c'' j))).
 
 Definition cCone_id {J C} {D : functor J C} (c : cone D) : cCone_Hom c c :=
-   exist (λ ϑ, ∀ j, c_fam D c j = c_fam D c j ◦ ϑ) id
+   existT (λ ϑ, ∀ j, c_fam D c j = c_fam D c j ◦ ϑ) id
      (λ j, eq_sym (unit_l (c_fam D c j))).
 
 Theorem cCone_unit_l {J C} {D : functor J C} :
@@ -155,7 +155,7 @@ Proof.
 intros.
 unfold cCone_comp; cbn.
 destruct f as (f & Hf); cbn.
-apply eq_exist_uncurried.
+apply eq_existT_uncurried.
 exists (unit_l _).
 apply extensionality.
 intros j.
@@ -169,7 +169,7 @@ Proof.
 intros.
 unfold cCone_comp; cbn.
 destruct f as (f & Hf); cbn.
-apply eq_exist_uncurried.
+apply eq_existT_uncurried.
 exists (unit_r _).
 apply extensionality.
 intros j.
@@ -184,22 +184,169 @@ Theorem cCone_assoc {J C} {D : functor J C} :
 Proof.
 intros.
 unfold cCone_comp; cbn.
-apply eq_exist_uncurried.
+apply eq_existT_uncurried.
 exists (assoc _ _ _).
 apply extensionality.
 intros j.
 apply Hom_set.
 Defined.
 
+Definition isProp (A : Type) := ∀ (x y : A), x = y.
+(*
+
+Fixpoint ispType A p :=
+  match p with
+  | 0 => isProp A
+  | S p' => ∀ x y : A, ispType (x = y) p'
+  end.
+*)
+
+Definition isContr A := {a : A & ∀ x : A, a = x }.
+
+Fixpoint isnType A n :=
+  match n with
+  | 0 => isProp A
+  | S p' => ∀ x y : A, isnType (x = y) p'
+  end.
+
+Definition compose {A} {x y z : A} : x = y → y = z → x = z :=
+  λ p,
+  match p with
+  | eq_refl _ => λ x, x
+  end.
+
+Definition invert {A} {x y : A} (p : x = y) : y = x :=
+  match p with
+  | eq_refl _ => eq_refl x
+  end.
+
+Theorem hott_2_1_4_i_1 {A} {x y : A} : ∀ (p : x = y),
+    p = compose p (eq_refl y).
+Proof. intros; now destruct p. Qed.
+
+Theorem hott_2_1_4_i_2 {A} {x y : A} : ∀ (p : x = y),
+    p = compose (eq_refl x) p.
+Proof. intros; now destruct p. Qed.
+
+Theorem dotl {A} {a b c : A} {r s : b = c}
+  (q : a = b) (β : r = s) : compose q r = compose q s.
+Proof.
+destruct q.
+specialize (@hott_2_1_4_i_2 A a c r) as H2.
+apply invert in H2.
+eapply compose; [ apply H2 | idtac ].
+specialize (@hott_2_1_4_i_2 A a c s) as H4.
+eapply compose; [ apply β | apply H4 ].
+Qed.
+
+Theorem dotr {A} {a b c : A} {p q : a = b}
+  (r : b = c) (α : p = q) : compose p r = compose q r.
+Proof.
+destruct r.
+specialize (@hott_2_1_4_i_1 A a b p) as H1.
+apply invert in H1.
+eapply compose; [ apply H1 | idtac ].
+pose proof (@hott_2_1_4_i_1 A a b q) as H3.
+eapply compose; [ apply α | apply H3 ].
+Qed.
+
+Theorem compose_assoc {A} {x y z w : A} :
+  ∀ (p : x = y) (q : y = z) (r : z = w),
+  compose p (compose q r) = compose (compose p q) r.
+Proof.
+intros p q r; now destruct p.
+Qed.
+
+Theorem lu {A} {b c : A} (r : b = c) : r = compose (eq_refl b) r.
+Proof. apply hott_2_1_4_i_2. Qed.
+
+Theorem ru {A} {a b : A} (p : a = b) : p = compose p (eq_refl b).
+Proof. apply hott_2_1_4_i_1. Qed.
+
+Theorem compose_invert_l {A} {x y : A} :
+  ∀ (p : x = y), compose (invert p) p = eq_refl y.
+Proof. now intros p; destruct p. Qed.
+
+Theorem compose_cancel_l {A} {x y z : A} (p : x = y) (q r : y = z) :
+  compose p q = compose p r → q = r.
+Proof.
+intros H.
+eapply (dotl (invert p)) in H.
+eapply compose. {
+  eapply compose; [ | apply H ].
+  eapply compose; [ | eapply invert, compose_assoc ].
+  eapply compose; [ apply lu | apply dotr ].
+  apply invert, compose_invert_l.
+}
+eapply compose; [ eapply compose_assoc | ].
+eapply compose; [ | eapply invert, lu ].
+apply dotr, compose_invert_l.
+Qed.
+
+Theorem transport {A} P {x y : A} (p : x = y) : P x → P y.
+Proof. now intros; destruct p. Defined.
+
+Theorem apd {A P} f {x y : A} (p : x = y) : transport P p (f x) = f y.
+Proof. now destruct p. Qed.
+
+Theorem compose_insert {A x} (f : ∀ y : A, x = y) {y z} (p : y = z) :
+  compose (f y) p = f z.
+Proof.
+eapply compose; [ | apply (apd f p) ].
+eapply invert; destruct p; simpl; apply ru.
+Qed.
+
+Theorem isnType_isSnType {A} n : isnType A n → isnType A (S n).
+Proof.
+intros * f.
+revert A f.
+induction n; intros. {
+  intros x y p q.
+  apply (compose_cancel_l (f x x)).
+  eapply compose; [ eapply (compose_insert (f x)) | ].
+  apply invert, compose_insert.
+}
+intros p q.
+apply IHn, f.
+Qed.
+
+Theorem is_ntype_is_ntype_sigT (A : Type) : ∀ n P,
+  (∀ x, isProp (P x)) → isnType A n → isnType (@sigT A P) n.
+Proof.
+intros * HP Hn.
+...
+induction n. {
+  cbn in Hn; cbn.
+  unfold isContr in Hn |-*.
+  destruct Hn as (b & Hb).
+  specialize (HP b) as H1.
+  unfold isProp in H1.
+...
+
+Theorem is_set_is_set_sigT (A : Type) : ∀ P, is_set A → is_set (@sigT A P).
+Proof.
+intros * HP.
+now apply (glop A 1 P).
+Qed.
+
 Theorem cCone_Hom_set {J C} {D : functor J C} :
   ∀ c c' : cone D, is_set (cCone_Hom c c').
 Proof.
+intros.
+unfold cCone_Hom.
+apply is_set_is_set_sigT.
+apply Hom_set.
+...
 intros * f g p q.
 destruct f as (f & Hf).
 destruct g as (g & Hg).
 move g before f.
 injection p; intros Hp.
 injection q; intros Hq.
+...
+specialize (Hom_set (c_top D c) (c_top D c') f g Hp Hq) as H1.
+apply Hom_set.
+...
 Require Import Arith.
 apply Eqdep_dec.UIP_dec.
 intros c1 c2.
