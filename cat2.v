@@ -2,6 +2,7 @@
 (* http://angg.twu.net/tmp/2016-optativa/awodey__category_theory.pdf *)
 
 Require Import Utf8.
+Set Nested Proofs Allowed.
 
 Axiom extensionality : ∀ A B (f g : ∀ x : A, B x), (∀ x, f x = g x) → f = g.
 
@@ -313,6 +314,38 @@ Qed.
 Theorem is_ntype_is_ntype_sigT (A : Type) : ∀ n P,
   (∀ x, isProp (P x)) → isnType A n → isnType (@sigT A P) n.
 Proof.
+intros * HP Hn.
+revert A P HP Hn.
+induction n; intros. {
+  cbn in Hn; cbn.
+  unfold isProp in Hn |-*.
+  intros H1 H2.
+  destruct H1 as (a & Ha).
+  destruct H2 as (b & Hb).
+  move b before a.
+  apply eq_existT_uncurried.
+  assert (p : a = b) by apply Hn.
+  exists p.
+  apply HP.
+}
+destruct n. {
+  cbn in Hn; cbn.
+  intros Ha Hb.
+  destruct Ha as (a, Ha).
+  destruct Hb as (b, Hb).
+  move b before a.
+  intros p q.
+  injection p; intros Hp H1.
+  injection q; intros Hq H2.
+  move Hq before Hp.
+  subst b.
+  specialize (HP a Ha Hb) as H1.
+  subst Hb.
+...
+Theorem glop :
+  ∀ A (a : A) n, isnType A n
+  → isnType a n.
+...
 intros * HP Hn.
 revert A P HP Hn.
 induction n; intros. {
