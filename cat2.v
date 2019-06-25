@@ -200,7 +200,38 @@ destruct g as (g & Hg).
 move g before f.
 injection p; intros Hp.
 injection q; intros Hq.
+Require Import Arith.
+Search (exist _ _ _ = exist _ _ _).
 ...
+About UIP.
+apply Eqdep_dec.UIP_dec.
+intros c1 c2.
+destruct c1 as (c1, Hc1).
+destruct c2 as (c2, Hc2).
+move c2 before c1.
+...
+specialize EqdepFacts.eq_sig_eq_dep as H1.
+specialize (EqdepFacts.eq_sig_eq_dep _ _ f g Hf Hg) as H1.
+apply Eqdep_dec.UIP_dec.
+...
+Check Eqdep_dec.eq_dep_eq_dec.
+apply Eqdep_dec.eq_dep_eq_dec.
+...
+Check Eqdep_dec.UIP_dec.
+left.
+destruct c1 as (c1, Hc1).
+destruct c2 as (c2, Hc2).
+move c2 before c1.
+apply eq_exist_uncurried.
+specialize (Hom_set _ _ c1 c2) as H1.
+Search (exist _ _ _ = exist _ _ _ → _).
+(*
+Require Import ssrfun.
+*)
+
+About le_unique.
+...
+EqdepFacts.eq_sig_snd:
 specialize (Hom_set (c_top D c) (c_top D c') f g Hp Hq) as H2.
 ...
 destruct p.
