@@ -216,22 +216,9 @@ Definition compose {A} {x y z : A} : x = y → y = z → x = z :=
   | eq_refl _ => λ x, x
   end.
 
-Definition invert {A} {x y : A} (p : x = y) : y = x :=
-  match p with
-  | eq_refl _ => eq_refl x
-  end.
-
 Theorem compose_cancel_l {A} {x y z : A} (p : x = y) (q r : y = z) :
   compose p q = compose p r → q = r.
 Proof. intros; now destruct p. Qed.
-
-Theorem compose_insert {A x} (f : ∀ y : A, x = y) {y z} (p : y = z) :
-  compose (f y) p = f z.
-Proof.
-destruct p.
-unfold compose.
-now destruct (f y).
-Qed.
 
 Theorem isnType_isSnType {A} n : isnType A n → isnType A (S n).
 Proof.
@@ -240,8 +227,10 @@ revert A f.
 induction n; intros. {
   intros x y p q.
   apply (compose_cancel_l (f x x)).
-  eapply compose; [ eapply (compose_insert (f x)) | ].
-  apply invert, compose_insert.
+  apply @compose with (y := f x y). {
+    now destruct p, (f x x).
+  }
+  now destruct p, q, (f x x).
 }
 intros p q.
 apply IHn, f.
