@@ -191,6 +191,27 @@ intros j.
 apply Hom_set.
 Defined.
 
+Theorem cCone_Hom_set {J C} {D : functor J C} :
+  ∀ c c' : cone D, is_set (cCone_Hom c c').
+Proof.
+intros * f g p q.
+destruct f as (f & Hf).
+destruct g as (g & Hg).
+move g before f.
+...
+injection p; intros Hp.
+injection q; intros Hq.
+specialize (Hom_set (c_top D c) (c_top D c') f g Hp Hq) as H2.
+subst f.
+injection p.
+subst Hp.
+unfold is_set in H2.
+specialize (H2 Hp Hq).
+destruct H2.
+destruct Hp.
+injection p.
+...
+
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
