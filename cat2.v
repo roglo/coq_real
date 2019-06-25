@@ -201,14 +201,19 @@ move g before f.
 injection p; intros Hp.
 injection q; intros Hq.
 Require Import Arith.
-Search (exist _ _ _ = exist _ _ _).
-...
-About UIP.
 apply Eqdep_dec.UIP_dec.
 intros c1 c2.
 destruct c1 as (c1, Hc1).
 destruct c2 as (c2, Hc2).
 move c2 before c1.
+(* bin ouais mais faudrait que c1=c2 soit décidable *)
+specialize (Hom_set _ _ c1 c2) as H1.
+...
+Search (exist _ _ _ = exist _ _ _).
+Check Eqdep_dec.UIP_dec.
+Check Eqdep_dec.UIP_refl.
+...
+About UIP.
 ...
 specialize EqdepFacts.eq_sig_eq_dep as H1.
 specialize (EqdepFacts.eq_sig_eq_dep _ _ f g Hf Hg) as H1.
