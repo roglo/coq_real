@@ -327,11 +327,17 @@ induction n; intros. {
   exists p.
   apply HP.
 }
+apply isnType_isSnType.
+apply IHn; [ easy | ].
+cbn in Hn.
+...
 cbn in Hn; cbn.
 intros Ha Hb.
 destruct Ha as (a, Ha).
 destruct Hb as (b, Hb).
 move b before a.
+Set Printing Implicit.
+...
 specialize (IHn (a = a)) as H1.
 assert (Q : (a = a) → Type). {
 ...
