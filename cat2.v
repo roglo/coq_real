@@ -239,16 +239,48 @@ Definition transport {A} P {x y : A} (p : x = y) : P x → P y :=
   | eq_refl _ => λ x, x
   end.
 
-Definition lift {A P} {x y : A} (u : P x) (p : x = y)
-  : existT _ x u = existT _ y (transport P _ u)
-  := match p with
-     | eq_refl _ => eq_refl (existT P x (transport P (eq_refl x) u))
-     end.
+Definition isequiv {A B : Type} (f : A → B) :=
+  {g : B → A & (∀ a, g (f a) = a) & (∀ b, f (g b) = b)}.
 
-Definition apd {A P} f {x y : A} (p : x = y) : transport P p (f x) = f y :=
-  match p with
-  | eq_refl _ => eq_refl (f x)
-  end.
+Definition equivalence (A B : Type) := { f : A → B & isequiv f}.
+Notation "A ≃ B" := (equivalence A B) (at level 70).
+
+Theorem equiv_eq_2 : ∀ A B (f : A → B) (g : B → A) x y,
+  (∀ b, f (g b) = b) → g x = g y → x = y.
+Proof.
+intros * Hfg H.
+transitivity (f (g y)); [ | apply Hfg ].
+transitivity (f (g x)); [ symmetry; apply Hfg | ].
+now apply f_equal.
+Defined.
+
+Lemma bordel : ∀ A B n, A ≃ B → isnType A n → isnType B n.
+Proof.
+intros * HAB HA.
+revert A B HAB HA.
+induction n; intros. {
+  destruct HAB as (f, Hf).
+  destruct Hf as (g, Hgf, Hfg).
+  cbn in HA |-*.
+  unfold isProp in HA |-*.
+  intros x y.
+  rewrite <- Hfg; symmetry.
+  rewrite <- Hfg; symmetry.
+  f_equal.
+  apply HA.
+}
+destruct HAB as (f, Hf).
+destruct Hf as (g, Hgf, Hfg).
+cbn in HA |-*.
+intros x y.
+apply (IHn (g x = g y) (x = y)); [ | apply HA ].
+...
+exists (equiv_eq_2 A B f g x y Hfg).
+unfold isequiv.
+exists (λ H, match H with eq_refl => eq_refl end). {
+  intros p.
+  unfold equiv_eq_2.
+...
 
 Theorem isnType_isnType_sigT (A : Type) : ∀ n P,
   (∀ x, isProp (P x)) → isnType A n → isnType (@sigT A P) n.
@@ -288,6 +320,8 @@ specialize (H4 H); clear H.
 cbn in Hn.
 specialize (H4 (Hn a b)).
 subst Q.
+...
+
 Check {p : a = b & transport P p Ha = Hb}.
 Check (existT P a Ha = existT P b Hb).
 ...
