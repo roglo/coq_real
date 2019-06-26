@@ -239,6 +239,17 @@ Definition transport {A} P {x y : A} (p : x = y) : P x → P y :=
   | eq_refl _ => λ x, x
   end.
 
+Definition lift {A P} {x y : A} (u : P x) (p : x = y)
+  : existT _ x u = existT _ y (transport P _ u)
+  := match p with
+     | eq_refl _ => eq_refl (existT P x (transport P (eq_refl x) u))
+     end.
+
+Definition apd {A P} f {x y : A} (p : x = y) : transport P p (f x) = f y :=
+  match p with
+  | eq_refl _ => eq_refl (f x)
+  end.
+
 Theorem isnType_isnType_sigT (A : Type) : ∀ n P,
   (∀ x, isProp (P x)) → isnType A n → isnType (@sigT A P) n.
 Proof.
@@ -277,6 +288,8 @@ specialize (H4 H); clear H.
 cbn in Hn.
 specialize (H4 (Hn a b)).
 subst Q.
+Check {p : a = b & transport P p Ha = Hb}.
+Check (existT P a Ha = existT P b Hb).
 ...
 
 Theorem is_set_is_set_sigT (A : Type) : ∀ P, is_set A → is_set (@sigT A P).
