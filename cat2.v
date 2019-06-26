@@ -274,12 +274,35 @@ destruct Hf as (g, Hgf, Hfg).
 cbn in HA |-*.
 intros x y.
 apply (IHn (g x = g y) (x = y)); [ | apply HA ].
+Definition hott_3_3_3_tac P Q :
+  isProp P → isProp Q → (P → Q) → (Q → P) → P ≃ Q.
+Proof.
+intros p q f g.
+Admitted.
+(*
+exists f; apply qinv_isequiv; exists g.
+split; intros x; [ apply q | apply p ].
+Defined.
+*)
+apply hott_3_3_3_tac.
+intros p q.
+specialize (HA (g x) (g y)) as H1.
+destruct n; [ apply H1 | ].
+cbn in H1.
+specialize (H1 p q) as H2.
+destruct n. {
+  cbn in H2.
+(* pas gagné *)
 ...
 exists (equiv_eq_2 A B f g x y Hfg).
 unfold isequiv.
-exists (λ H, match H with eq_refl => eq_refl end). {
+exists (@f_equal _ _ g x y). {
   intros p.
   unfold equiv_eq_2.
+  unfold eq_trans.
+  unfold eq_sym.
+  unfold f_equal.
+  specialize (Hfg y) as H1.
 ...
 
 Theorem isnType_isnType_sigT (A : Type) : ∀ n P,
