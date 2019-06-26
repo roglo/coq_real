@@ -274,6 +274,7 @@ destruct Hf as (g, Hgf, Hfg).
 cbn in HA |-*.
 intros x y.
 apply (IHn (g x = g y) (x = y)); [ | apply HA ].
+(*
 ...
 Definition hott_3_3_3_tac P Q :
   isProp P → isProp Q → (P → Q) → (Q → P) → P ≃ Q.
@@ -295,6 +296,7 @@ destruct n. {
   cbn in H2.
 (* pas gagné *)
 ...
+*)
 exists (equiv_eq_2 A B f g x y Hfg).
 unfold isequiv.
 exists (@f_equal _ _ g x y). {
