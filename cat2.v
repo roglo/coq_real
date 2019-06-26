@@ -220,23 +220,24 @@ Theorem compose_cancel_l {A} {x y z : A} (p : x = y) (q r : y = z) :
   compose p q = compose p r → q = r.
 Proof. intros; now destruct p. Qed.
 
+Theorem isProp_isSet {A} : ∀ (f : isProp A) (x y : A) (p q : x = y), p = q.
+Proof.
+intros f *.
+apply (compose_cancel_l (f x x)).
+apply @compose with (y := f x y); [ now destruct p, (f x x) | ].
+now destruct p, q, (f x x).
+Qed.
+
 Theorem isnType_isSnType {A} n : isnType A n → isnType A (S n).
 Proof.
 intros * f.
 revert A f.
-induction n; intros. {
-  intros x y p q.
-  apply (compose_cancel_l (f x x)).
-  apply @compose with (y := f x y). {
-    now destruct p, (f x x).
-  }
-  now destruct p, q, (f x x).
-}
+induction n; intros; [ intros x y p q; now apply isProp_isSet | ].
 intros p q.
 apply IHn, f.
 Qed.
 
-Theorem is_ntype_is_ntype_sigT (A : Type) : ∀ n P,
+Theorem isnType_isnType_sigT (A : Type) : ∀ n P,
   (∀ x, isProp (P x)) → isnType A n → isnType (@sigT A P) n.
 Proof.
 intros * HP Hn.
@@ -266,6 +267,16 @@ destruct n. {
   subst b.
   specialize (HP a Ha Hb) as H1.
   subst Hb.
+...
+  HP : ∀ x : A, isProp (P x)
+  Hn : ∀ x y : A, isProp (x = y)
+  a : A
+  Ha : P a
+  p, q : existT P a Ha = existT P a Ha
+  Hp, Hq : existT (λ x : A, P x) a Ha = existT (λ x : A, P x) a Ha
+  H2 : a = a
+  ============================
+  p = q
 ...
 Theorem glop :
   ∀ A (a : A) n, isnType A n
