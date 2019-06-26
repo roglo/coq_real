@@ -234,6 +234,11 @@ intros p q.
 apply IHn, f.
 Qed.
 
+Definition transport {A} P {x y : A} (p : x = y) : P x → P y :=
+  match p with
+  | eq_refl _ => λ x, x
+  end.
+
 Theorem isnType_isnType_sigT (A : Type) : ∀ n P,
   (∀ x, isProp (P x)) → isnType A n → isnType (@sigT A P) n.
 Proof.
@@ -251,68 +256,27 @@ induction n; intros. {
   exists p.
   apply HP.
 }
-destruct n. {
-  cbn in Hn; cbn.
-  intros Ha Hb.
-  destruct Ha as (a, Ha).
-  destruct Hb as (b, Hb).
-  move b before a.
-  intros p q.
-  injection p; intros Hp H1.
-  injection q; intros Hq H2.
-  move Hq before Hp.
-  subst b.
-  specialize (HP a Ha Hb) as H1.
-  subst Hb.
-...
-  HP : ∀ x : A, isProp (P x)
-  Hn : ∀ x y : A, isProp (x = y)
-  a : A
-  Ha : P a
-  p, q : existT P a Ha = existT P a Ha
-  Hp, Hq : existT (λ x : A, P x) a Ha = existT (λ x : A, P x) a Ha
-  H2 : a = a
-  ============================
-  p = q
-...
-Theorem glop :
-  ∀ A (a : A) n, isnType A n
-  → isnType a n.
-...
-intros * HP Hn.
-revert A P HP Hn.
-induction n; intros. {
-  cbn in Hn; cbn.
-  unfold isProp in Hn |-*.
-  intros H1 H2.
-  destruct H1 as (a & Ha).
-  destruct H2 as (b & Hb).
-  move b before a.
-  apply eq_existT_uncurried.
-  assert (p : a = b) by apply Hn.
-  exists p.
-  apply HP.
-}
-cbn in Hn; cbn.
 intros Ha Hb.
 destruct Ha as (a, Ha).
 destruct Hb as (b, Hb).
 move b before a.
-Set Printing Implicit.
-...
-specialize (IHn (a = a)) as H1.
-assert (Q : (a = a) → Type). {
-...
-specialize (HP a) as H1.
-specialize (HP b) as H2.
-unfold isProp in H1, H2.
-specialize (IHn (a = b)) as H2.
-assert (H : a = b).
-...
-apply isnType_isSnType.
-apply IHn; [ easy | ].
-
+specialize (IHn (a = b)) as H4.
+remember (λ p : a = b, transport P p Ha = Hb) as Q.
+specialize (H4 Q).
+assert (H : ∀ p : a = b, isProp (Q p)). {
+  intros p.
+  subst Q.
+  destruct p.
+  cbn.
+  specialize (HP a) as H1.
+  specialize (isProp_isSet H1 Ha Hb) as H2.
+  intros r s.
+  apply H2.
+}
+specialize (H4 H); clear H.
 cbn in Hn.
+specialize (H4 (Hn a b)).
+subst Q.
 ...
 
 Theorem is_set_is_set_sigT (A : Type) : ∀ P, is_set A → is_set (@sigT A P).
