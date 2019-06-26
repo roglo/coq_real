@@ -274,8 +274,8 @@ destruct Hf as (g, Hgf, Hfg).
 cbn in HA |-*.
 intros x y.
 apply (IHn (g x = g y) (x = y)); [ | apply HA ].
-(*
 ...
+(*
 Definition hott_3_3_3_tac P Q :
   isProp P → isProp Q → (P → Q) → (Q → P) → P ≃ Q.
 Proof.
