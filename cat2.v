@@ -211,10 +211,7 @@ Fixpoint isnType A n :=
   end.
 
 Definition compose {A} {x y z : A} : x = y → y = z → x = z :=
-  λ p,
-  match p with
-  | eq_refl _ => λ x, x
-  end.
+  λ p, match p with eq_refl _ => λ x, x end.
 
 Theorem compose_cancel_l {A} {x y z : A} (p : x = y) (q r : y = z) :
   compose p q = compose p r → q = r.
