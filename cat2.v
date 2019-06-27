@@ -248,6 +248,74 @@ apply @compose with (y := f (g y)); [ | apply Hfg ].
 destruct H; symmetry; apply Hfg.
 Defined.
 
+Theorem hott_2_11_1 {A B} : ∀ (f : A → B), isequiv f → ∀ (a a' : A),
+  (a = a') ≃ (f a = f a').
+Proof.
+intros f Hf a a'.
+...
+exists (@ap A B a a' f).
+apply isequiv_qinv in Hf.
+destruct Hf as (f₁, (α, β)).
+apply qinv_isequiv.
+unfold qinv.
+set (g := λ r, (β a)⁻¹ • ap f₁ r • β a').
+unfold "◦", id in g; simpl in g.
+exists g; subst g.
+unfold "◦", "∼", id; simpl.
+split; intros q.
+ set (r := @compose _ _ _ a' (@invert _ (f₁ (f a)) a (β a) • ap f₁ q) (β a')).
+ apply (@compose _ _ ((α (f a))⁻¹ • α (f a) • ap f r)).
+  eapply compose; [ apply lu | idtac ].
+  apply dotr, invert, compose_invert_l.
+
+  eapply compose; [ eapply invert, compose_assoc | idtac ].
+  unfold id, composite; simpl.
+  pose proof (hott_2_4_3 ((f ◦ f₁) ◦ f) f (λ a, α (f a)) r) as H.
+  unfold "◦" in H; simpl in H.
+  eapply compose; [ eapply dotl, H | simpl ].
+  apply (@compose _ _ ((α (f a))⁻¹ • (ap f (ap f₁ (ap f r)) • α (f a')))).
+   apply dotl, dotr.
+   apply (@compose _ _ (ap (f ◦ f₁ ◦ f) r)); [ reflexivity | idtac ].
+   eapply invert, compose; [ idtac | eapply ap_composite ].
+   eapply compose; [ apply (ap_composite f₁ f (ap f r)) | reflexivity ].
+
+   eapply compose; [ apply compose_assoc | idtac ].
+   rewrite (ap_composite f f₁ r).
+   apply (@compose _ _ ((α (f a))⁻¹ • ap f (β a • r • (β a')⁻¹) • α (f a'))).
+    apply dotr, dotl, ap.
+    rewrite r; simpl.
+    rewrite <- ru, compose_invert_r.
+    reflexivity.
+
+    apply (@compose _ _ ((α (f a))⁻¹ • ap f (ap f₁ q) • α (f a'))).
+     apply dotr, dotl, ap; subst r.
+     do 2 rewrite compose_assoc.
+     rewrite compose_invert_r; simpl.
+     unfold id; simpl.
+     rewrite <- compose_assoc.
+     rewrite compose_invert_r; simpl.
+     rewrite <- ru; reflexivity.
+
+     assert (H1 : α (f a) • q = ap (f ◦ f₁) q • α (f a')).
+      rewrite <- (hott_2_4_3 (f ◦ f₁) id α q).
+      apply dotl, invert, hott_2_2_2_iv.
+
+      unfold id, composite; simpl.
+      pose proof (@ap_composite B A B (f a) (f a') f₁ f q) as H2.
+      rewrite H2.
+      rewrite <- compose_assoc.
+      unfold id, composite in H1; simpl in H1.
+      unfold composite; simpl.
+      rewrite <- H1.
+      rewrite compose_assoc, compose_invert_l.
+      reflexivity.
+
+ rewrite (ap_composite f f₁ q).
+ destruct q; simpl.
+ unfold "◦", "∼", id in β; simpl in β.
+ unfold "◦"; simpl; rewrite β; reflexivity.
+Defined.
+
 Lemma equiv_equiv_eq A B : ∀ (f : A → B) (g : B → A),
   (∀ a, g (f a) = a) → (∀ b, f (g b) = b) →
   ∀ x y, (f x = f y) ≃ (x = y).
