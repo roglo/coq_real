@@ -248,6 +248,33 @@ apply @compose with (y := f (g y)); [ | apply Hfg ].
 destruct H; symmetry; apply Hfg.
 Defined.
 
+Lemma equiv_equiv_eq A B : ∀ (f : A → B) (g : B → A),
+  (∀ a, g (f a) = a) → (∀ b, f (g b) = b) →
+  ∀ x y, (f x = f y) ≃ (x = y).
+Proof.
+intros * Hgf Hfg *.
+exists (equiv_eq B A g f x y Hgf).
+unfold isequiv.
+exists (@f_equal _ _ f x y). {
+  intros p.
+  assert (H : x = y). {
+    transitivity (g (f x)); [ symmetry; apply Hgf | ].
+    transitivity (g (f y)); [ | apply Hgf ].
+    now f_equal.
+  }
+  remember (equiv_eq B A g f x y Hgf p) as q eqn:Hq.
+  destruct q; cbn.
+  unfold equiv_eq in Hq.
+  destruct (Hgf x); cbn in Hq.
+  rewrite compose_eq_refl in Hq.
+...
+}
+intros p.
+subst y; cbn.
+unfold equiv_eq.
+now destruct (Hgf x).
+...
+
 Lemma isnType_if_equiv : ∀ A B n, A ≃ B → isnType A n → isnType B n.
 Proof.
 intros * HAB HA.
@@ -268,26 +295,7 @@ destruct Hf as (g, Hgf, Hfg).
 cbn in HA |-*.
 intros x y.
 apply (IHn (g x = g y) (x = y)); [ | apply HA ].
-exists (equiv_eq A B f g x y Hfg).
-unfold isequiv.
-exists (@f_equal _ _ g x y). {
-  intros p.
-  assert (H : x = y). {
-    transitivity (f (g x)); [ symmetry; apply Hfg | ].
-    transitivity (f (g y)); [ | apply Hfg ].
-    now f_equal.
-  }
-  remember (equiv_eq A B f g x y Hfg p) as q eqn:Hq.
-  destruct q; cbn.
-  unfold equiv_eq in Hq.
-  destruct (Hfg x); cbn in Hq.
-  rewrite compose_eq_refl in Hq.
-...
-}
-intros p.
-subst y; cbn.
-unfold equiv_eq_2.
-now destruct (Hfg x).
+now apply equiv_equiv_eq with (g := f).
 ...
 
 Theorem isnType_isnType_sigT (A : Type) : ∀ n P,
