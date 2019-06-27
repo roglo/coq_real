@@ -217,6 +217,9 @@ Theorem compose_cancel_l {A} {x y z : A} (p : x = y) (q r : y = z) :
   compose p q = compose p r → q = r.
 Proof. intros; now destruct p. Qed.
 
+Theorem compose_eq_refl : ∀ A (x : A) (p : x = x), compose p eq_refl = p.
+Proof. now intros; destruct p. Qed.
+
 Theorem isProp_isSet {A} : ∀ (f : isProp A) (x y : A) (p q : x = y), p = q.
 Proof.
 intros f *.
@@ -288,16 +291,8 @@ exists (@f_equal _ _ g x y). {
   unfold equiv_eq_2 in Hu.
   destruct (Hfg x).
   unfold eq_sym in Hu.
+  rewrite compose_eq_refl in Hu.
 ...
-  replace eq_refl with (compose (@eq_refl B (f (g x))) (@eq_refl B (f (g x)))) in Hu by easy.
-  apply compose_cancel_l in Hu.
-apply compose_cancel_l with (p := match p in (_ = y) return (x = f y) with
-               | eq_refl => eq_sym (Hfg x)
-               end (Hfg x)).
-eapply compose_cancel_l.
-Check @compose_cancel_l.
-...
-  eapply compose_cancel_l in Hu.
 }
 intros p.
 subst y; cbn.
