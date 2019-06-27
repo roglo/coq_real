@@ -294,16 +294,15 @@ Proof.
 intros f Hf a a'.
 exists (@ap A B a a' f).
 apply isequiv_qinv in Hf.
-destruct Hf as (f₁, (α, β)).
+destruct Hf as (f₁, (β, α)).
 apply qinv_isequiv.
 unfold qinv.
-...
-set (g := λ r, (β a)⁻¹ • ap f₁ r • β a').
+set (g := λ r, compose (compose (invert (β a)) (ap f₁ r)) (β a')).
 unfold "◦", id in g; simpl in g.
 exists g; subst g.
-unfold "◦", "∼", id; simpl.
 split; intros q.
- set (r := @compose _ _ _ a' (@invert _ (f₁ (f a)) a (β a) • ap f₁ q) (β a')).
+...
+ set (r := @compose _ _ _ a' (compose (@invert _ (f₁ (f a)) a (β a)) (ap f₁ q) (β a'))).
  apply (@compose _ _ ((α (f a))⁻¹ • α (f a) • ap f r)).
   eapply compose; [ apply lu | idtac ].
   apply dotr, invert, compose_invert_l.
