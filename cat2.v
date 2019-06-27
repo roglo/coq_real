@@ -249,12 +249,11 @@ Theorem equiv_eq_2 : ∀ A B (f : A → B) (g : B → A) x y,
   (∀ b, f (g b) = b) → g x = g y → x = y.
 Proof.
 intros * Hfg H.
-transitivity (f (g y)); [ | apply Hfg ].
-transitivity (f (g x)); [ symmetry; apply Hfg | ].
-now apply f_equal.
+apply @compose with (y := f (g y)); [ | apply Hfg ].
+destruct H; symmetry; apply Hfg.
 Defined.
 
-Lemma bordel : ∀ A B n, A ≃ B → isnType A n → isnType B n.
+Lemma isnType_if_equiv : ∀ A B n, A ≃ B → isnType A n → isnType B n.
 Proof.
 intros * HAB HA.
 revert A B HAB HA.
@@ -283,9 +282,22 @@ exists (@f_equal _ _ g x y). {
     transitivity (f (g y)); [ | apply Hfg ].
     now f_equal.
   }
-  destruct H.
-  unfold equiv_eq_2.
+  remember (equiv_eq_2 A B f g x y Hfg p) as u eqn:Hu.
+  symmetry in Hu; symmetry.
+  destruct u; cbn.
+  unfold equiv_eq_2 in Hu.
+  destruct (Hfg x).
+  unfold eq_sym in Hu.
 ...
+  replace eq_refl with (compose (@eq_refl B (f (g x))) (@eq_refl B (f (g x)))) in Hu by easy.
+  apply compose_cancel_l in Hu.
+apply compose_cancel_l with (p := match p in (_ = y) return (x = f y) with
+               | eq_refl => eq_sym (Hfg x)
+               end (Hfg x)).
+eapply compose_cancel_l.
+Check @compose_cancel_l.
+...
+  eapply compose_cancel_l in Hu.
 }
 intros p.
 subst y; cbn.
