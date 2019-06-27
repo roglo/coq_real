@@ -240,7 +240,7 @@ Definition isequiv {A B : Type} (f : A → B) :=
 Definition equivalence (A B : Type) := { f : A → B & isequiv f}.
 Notation "A ≃ B" := (equivalence A B) (at level 70).
 
-Theorem equiv_eq_2 : ∀ A B (f : A → B) (g : B → A) x y,
+Theorem equiv_eq : ∀ A B (f : A → B) (g : B → A) x y,
   (∀ b, f (g b) = b) → g x = g y → x = y.
 Proof.
 intros * Hfg H.
@@ -268,7 +268,7 @@ destruct Hf as (g, Hgf, Hfg).
 cbn in HA |-*.
 intros x y.
 apply (IHn (g x = g y) (x = y)); [ | apply HA ].
-exists (equiv_eq_2 A B f g x y Hfg).
+exists (equiv_eq A B f g x y Hfg).
 unfold isequiv.
 exists (@f_equal _ _ g x y). {
   intros p.
@@ -277,9 +277,9 @@ exists (@f_equal _ _ g x y). {
     transitivity (f (g y)); [ | apply Hfg ].
     now f_equal.
   }
-  remember (equiv_eq_2 A B f g x y Hfg p) as q eqn:Hq.
+  remember (equiv_eq A B f g x y Hfg p) as q eqn:Hq.
   destruct q; cbn.
-  unfold equiv_eq_2 in Hq.
+  unfold equiv_eq in Hq.
   destruct (Hfg x); cbn in Hq.
   rewrite compose_eq_refl in Hq.
 ...
