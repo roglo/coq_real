@@ -240,6 +240,12 @@ Definition isequiv {A B : Type} (f : A → B) :=
 Definition equivalence (A B : Type) := { f : A → B & isequiv f}.
 Notation "A ≃ B" := (equivalence A B) (at level 70).
 
+Theorem equiv_sym : ∀ A B, A ≃ B → B ≃ A.
+Proof.
+intros * (f, (g, Hgf, Hfg)).
+now exists g, f.
+Qed.
+
 Theorem equiv_eq : ∀ A B (f : A → B) (g : B → A) x y,
   (∀ b, f (g b) = b) → g x = g y → x = y.
 Proof.
@@ -248,16 +254,50 @@ apply @compose with (y := f (g y)); [ | apply Hfg ].
 destruct H; symmetry; apply Hfg.
 Defined.
 
+Definition ap {A B x y} (f : A → B) (p : x = y) : f x = f y :=
+  match p with
+  | eq_refl _ => eq_refl (f x)
+  end.
+
+Definition homotopy {A B} (f g : A → B) := ∀ x : A, (f x = g x).
+Definition composite {A B C} (f : A → B) (g : B → C) x := g (f x).
+
+Definition qinv {A B} (f : A → B) :=
+  { g : B → A &
+   (homotopy (composite f g) (λ x, x) *
+    homotopy (composite g f) (λ x, x))%type }.
+
+Definition invert {A} {x y : A} (p : x = y) : y = x :=
+  match p with
+  | eq_refl _ => eq_refl x
+  end.
+
+Definition isequiv_qinv {A B} (f : A → B) : isequiv f → qinv f.
+Proof.
+intros p.
+destruct p as (g, Hg, Hh).
+unfold qinv.
+econstructor; split; [ eassumption | ].
+intros x; apply Hh.
+Defined.
+
+Definition qinv_isequiv {A B} (f : A → B) : qinv f → isequiv f.
+Proof.
+intros p.
+destruct p as (g, (α, β)).
+econstructor; eassumption.
+Defined.
+
 Theorem hott_2_11_1 {A B} : ∀ (f : A → B), isequiv f → ∀ (a a' : A),
   (a = a') ≃ (f a = f a').
 Proof.
 intros f Hf a a'.
-...
 exists (@ap A B a a' f).
 apply isequiv_qinv in Hf.
 destruct Hf as (f₁, (α, β)).
 apply qinv_isequiv.
 unfold qinv.
+...
 set (g := λ r, (β a)⁻¹ • ap f₁ r • β a').
 unfold "◦", id in g; simpl in g.
 exists g; subst g.
@@ -315,7 +355,9 @@ split; intros q.
  unfold "◦", "∼", id in β; simpl in β.
  unfold "◦"; simpl; rewrite β; reflexivity.
 Defined.
+*)
 
+(*
 Lemma equiv_equiv_eq A B : ∀ (f : A → B) (g : B → A),
   (∀ a, g (f a) = a) → (∀ b, f (g b) = b) →
   ∀ x y, (f x = f y) ≃ (x = y).
@@ -342,6 +384,7 @@ subst y; cbn.
 unfold equiv_eq.
 now destruct (Hgf x).
 ...
+*)
 
 Lemma isnType_if_equiv : ∀ A B n, A ≃ B → isnType A n → isnType B n.
 Proof.
@@ -363,7 +406,9 @@ destruct Hf as (g, Hgf, Hfg).
 cbn in HA |-*.
 intros x y.
 apply (IHn (g x = g y) (x = y)); [ | apply HA ].
-now apply equiv_equiv_eq with (g := f).
+apply equiv_sym.
+apply hott_2_11_1.
+now exists f.
 ...
 
 Theorem isnType_isnType_sigT (A : Type) : ∀ n P,
