@@ -193,14 +193,6 @@ apply Hom_set.
 Defined.
 
 Definition isProp (A : Type) := ∀ (x y : A), x = y.
-(*
-
-Fixpoint ispType A p :=
-  match p with
-  | 0 => isProp A
-  | S p' => ∀ x y : A, ispType (x = y) p'
-  end.
-*)
 
 Definition isContr A := {a : A & ∀ x : A, a = x }.
 
@@ -285,13 +277,11 @@ exists (@f_equal _ _ g x y). {
     transitivity (f (g y)); [ | apply Hfg ].
     now f_equal.
   }
-  remember (equiv_eq_2 A B f g x y Hfg p) as u eqn:Hu.
-  symmetry in Hu; symmetry.
-  destruct u; cbn.
-  unfold equiv_eq_2 in Hu.
-  destruct (Hfg x).
-  unfold eq_sym in Hu.
-  rewrite compose_eq_refl in Hu.
+  remember (equiv_eq_2 A B f g x y Hfg p) as q eqn:Hq.
+  destruct q; cbn.
+  unfold equiv_eq_2 in Hq.
+  destruct (Hfg x); cbn in Hq.
+  rewrite compose_eq_refl in Hq.
 ...
 }
 intros p.
