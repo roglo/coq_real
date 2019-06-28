@@ -641,6 +641,13 @@ assert (Hh' : ∀ j : J, c_fam D c j = c_fam D l j ◦ h). {
   intros j; specialize (Hh j).
   now symmetry.
 }
+specialize (@Hom_set (@cCone J C D) c l f) as H2.
+...
+destruct f as (f, Hf).
+cbn; cbn in H1.
+
+cbn in H2.
+apply Hom_set.
 ...
 destruct f as (f, Hf).
 cbn in f, Hf, h, Hh.
