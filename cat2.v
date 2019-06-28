@@ -492,13 +492,52 @@ split.
  apply Hfg.
 Qed.
 
-Theorem glop {A : Type} : ∀ (P : A → Type),
+Definition lift {A P} {x y : A} (u : P x) (p : x = y)
+  : existT _ x u = existT _ y (transport P _ u)
+  := match p with
+     | eq_refl _ => eq_refl (existT P x (transport P (eq_refl x) u))
+     end.
+
+Theorem pair_transport_eq_existT {A} {P : A → Type} :
+  ∀ a b (Ha : P a) (Hb : P b),
+  {p : a = b & transport P p Ha = Hb} → existT P a Ha = existT P b Hb.
+Proof.
+intros * (p, Hp).
+now destruct p, Hp.
+Defined.
+
+Theorem eq_existT_pair_transport {A} {P : A → Type} :
+  ∀ a b (Ha : P a) (Hb : P b),
+  existT P a Ha = existT P b Hb → {p : a = b & transport P p Ha = Hb}.
+Proof.
+intros * Hee.
+inversion_sigma.
+destruct Hee0.
+now exists eq_refl.
+Defined.
+
+Theorem pair_transport_equiv_eq_existT {A : Type} : ∀ (P : A → Type),
   (∀ x, isProp (P x))
   → ∀ a b (Ha : P a) (Hb : P b),
   {p : a = b & transport P p Ha = Hb} ≃ (existT P a Ha = existT P b Hb).
 Proof.
 intros.
-...
+unfold "≃".
+exists (pair_transport_eq_existT a b Ha Hb).
+split. {
+  exists (eq_existT_pair_transport a b Ha Hb).
+  unfold "◦◦", "∼", mid.
+  intros p.
+  inversion_sigma.
+  destruct p0.
+  cbn in p1; cbn.
+  now destruct p1.
+}
+exists (eq_existT_pair_transport a b Ha Hb).
+unfold "◦◦", "∼", mid.
+intros (p, Hp).
+now destruct p, Hp.
+Qed.
 
 Theorem isnType_isnType_sigT (A : Type) : ∀ n P,
   (∀ x, isProp (P x)) → isnType A n → isnType (@sigT A P) n.
@@ -539,25 +578,14 @@ cbn in Hn.
 specialize (H4 (Hn a b)).
 subst Q.
 eapply isnType_if_equiv; [ | apply H4 ].
-now apply glop.
-...
-assert (f : {p : a = b & transport P p Ha = Hb} → existT P a Ha = existT P b Hb). {
-  intros H1.
-  apply eq_existT_uncurried.
-  destruct H1 as (p, H1).
-  exists p.
-  unfold transport in H1.
-  unfold eq_rect.
-  now destruct p.
-}
-exists f.
-split. {
-...
+now apply pair_transport_equiv_eq_existT.
+Qed.
 
-Theorem is_set_is_set_sigT (A : Type) : ∀ P, is_set A → is_set (@sigT A P).
+Theorem is_set_is_set_sigT {A} {P : A → Type} :
+  (∀ x, isProp (P x)) → is_set A → is_set (@sigT A P).
 Proof.
-intros * HP.
-now apply (glop A 1 P).
+intros * HP HS.
+now apply (isnType_isnType_sigT A 1 P).
 Qed.
 
 Theorem cCone_Hom_set {J C} {D : functor J C} :
@@ -565,8 +593,8 @@ Theorem cCone_Hom_set {J C} {D : functor J C} :
 Proof.
 intros.
 unfold cCone_Hom.
-apply is_set_is_set_sigT.
-apply Hom_set.
+apply is_set_is_set_sigT; [ | apply Hom_set ].
+intros f.
 ...
 intros * f g p q.
 destruct f as (f & Hf).
