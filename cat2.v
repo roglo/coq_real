@@ -597,69 +597,6 @@ apply is_set_is_set_sigT; [ | apply Hom_set ].
 intros f.
 intros p q.
 ...
-specialize (Hom_set (c_top D c) (c_top D c')) as H1.
-unfold is_set in H1.
-...
-intros * f g p q.
-destruct f as (f & Hf).
-destruct g as (g & Hg).
-move g before f.
-injection p; intros Hp.
-injection q; intros Hq.
-...
-specialize (Hom_set (c_top D c) (c_top D c') f g Hp Hq) as H1.
-apply Hom_set.
-...
-Require Import Arith.
-apply Eqdep_dec.UIP_dec.
-intros c1 c2.
-destruct c1 as (c1, Hc1).
-destruct c2 as (c2, Hc2).
-move c2 before c1.
-(* bin ouais mais faudrait que c1=c2 soit décidable *)
-specialize (Hom_set _ _ c1 c2) as H1.
-...
-Search (exist _ _ _ = exist _ _ _).
-Check Eqdep_dec.UIP_dec.
-Check Eqdep_dec.UIP_refl.
-...
-About UIP.
-...
-specialize EqdepFacts.eq_sig_eq_dep as H1.
-specialize (EqdepFacts.eq_sig_eq_dep _ _ f g Hf Hg) as H1.
-apply Eqdep_dec.UIP_dec.
-...
-Check Eqdep_dec.eq_dep_eq_dec.
-apply Eqdep_dec.eq_dep_eq_dec.
-...
-Check Eqdep_dec.UIP_dec.
-left.
-destruct c1 as (c1, Hc1).
-destruct c2 as (c2, Hc2).
-move c2 before c1.
-apply eq_exist_uncurried.
-specialize (Hom_set _ _ c1 c2) as H1.
-Search (exist _ _ _ = exist _ _ _ → _).
-(*
-Require Import ssrfun.
-*)
-
-About le_unique.
-...
-EqdepFacts.eq_sig_snd:
-specialize (Hom_set (c_top D c) (c_top D c') f g Hp Hq) as H2.
-...
-destruct p.
-destruct H2.
-subst f.
-injection p.
-subst Hp.
-unfold is_set in H2.
-specialize (H2 Hp Hq).
-destruct H2.
-destruct Hp.
-injection p.
-...
 
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
