@@ -637,6 +637,10 @@ split. {
   now symmetry.
 }
 intros h Hh.
+assert (Hh' : ∀ j : J, c_fam D c j = c_fam D l j ◦ h). {
+  intros j; specialize (Hh j).
+  now symmetry.
+}
 ...
 destruct f as (f, Hf).
 cbn in f, Hf, h, Hh.
