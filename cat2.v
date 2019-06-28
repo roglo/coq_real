@@ -596,18 +596,20 @@ unfold cCone_Hom.
 apply is_set_is_set_sigT; [ | apply Hom_set ].
 intros f.
 intros p q.
-Print cone.
-...
+apply extensionality.
+intros x.
+apply Hom_set.
+Qed.
 
 Definition cCone {J C} (D : functor J C) :=
   {| Obj := cone D;
      Hom := cCone_Hom;
      comp := cCone_comp;
-     id := cCone_id;
+     hid := cCone_id;
      unit_l := cCone_unit_l;
      unit_r := cCone_unit_r;
      assoc := cCone_assoc;
-     Hom_set := 42 |}.
+     Hom_set := cCone_Hom_set |}.
 
 ...
 
