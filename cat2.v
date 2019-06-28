@@ -595,6 +595,10 @@ intros.
 unfold cCone_Hom.
 apply is_set_is_set_sigT; [ | apply Hom_set ].
 intros f.
+intros p q.
+...
+specialize (Hom_set (c_top D c) (c_top D c')) as H1.
+unfold is_set in H1.
 ...
 intros * f g p q.
 destruct f as (f & Hf).
