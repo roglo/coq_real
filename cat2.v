@@ -55,10 +55,10 @@ Definition cTwo := cDiscr (unit + unit).
 
 (* *)
 
-Definition is_initial {C : category} (_0 : Obj) :=
-  ∀ c : Obj, ∀ f g : Hom _0 c, f = g.
-Definition is_terminal {C : category} (_1 : Obj) :=
-  ∀ c : Obj, ∀ f g : Hom c _1, f = g.
+Definition is_initial {C : category} (c : C) :=
+  ∀ d, ∃ f : Hom d c, ∀ g, f = g.
+Definition is_terminal {C : category} (c : C) :=
+  ∀ d, ∃ f : Hom c d, ∀ g, f = g.
 
 Class functor (C D : category) :=
   { f_map_obj : @Obj C → @Obj D;
