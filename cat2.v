@@ -6,7 +6,7 @@ Set Nested Proofs Allowed.
 
 Axiom extensionality : ∀ A B (f g : ∀ x : A, B x), (∀ x, f x = g x) → f = g.
 
-Definition is_set (A : Type) := ∀ (a b : A) (p q : a = b), p = q.
+Definition isSet (A : Type) := ∀ (a b : A) (p q : a = b), p = q.
 
 Class category :=
   { Obj : Type;
@@ -17,7 +17,7 @@ Class category :=
     unit_r : ∀ {A B} (f : Hom A B), comp f hid = f;
     assoc : ∀ {A B C D} (f : Hom A B) (g : Hom B C) (h : Hom C D),
       comp f (comp g h) = comp (comp f g) h;
-    Hom_set x y : is_set (Hom x y) }.
+    Hom_set x y : isSet (Hom x y) }.
 
 Arguments Hom [_].
 Notation "g '◦' f" := (comp f g) (at level 40, left associativity).
@@ -582,19 +582,20 @@ now apply pair_transport_equiv_eq_existT.
 Qed.
 
 Theorem is_set_is_set_sigT {A} {P : A → Type} :
-  (∀ x, isProp (P x)) → is_set A → is_set (@sigT A P).
+  (∀ x, isProp (P x)) → isSet A → isSet (@sigT A P).
 Proof.
 intros * HP HS.
 now apply (isnType_isnType_sigT A 1 P).
 Qed.
 
 Theorem cCone_Hom_set {J C} {D : functor J C} :
-  ∀ c c' : cone D, is_set (cCone_Hom c c').
+  ∀ c c' : cone D, isSet (cCone_Hom c c').
 Proof.
 intros.
 unfold cCone_Hom.
 apply is_set_is_set_sigT; [ | apply Hom_set ].
 intros f.
+...
 intros p q.
 ...
 
