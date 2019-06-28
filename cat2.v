@@ -22,9 +22,7 @@ Class category :=
 Arguments Hom [_].
 Notation "g '◦' f" := (comp f g) (at level 40, left associativity).
 
-(*
-Coercion Obj : cat >-> Sortclass.
-*)
+Coercion Obj : category >-> Sortclass.
 
 Definition dom {C : category} {O1 O2 : Obj} (f : Hom O1 O2) := O1.
 Definition cod {C : category} {O1 O2 : Obj} (f : Hom O1 O2) := O2.
@@ -622,7 +620,7 @@ Definition is_limit {J C} {D : functor J C} (cn : cone D) :=
      pj ◦ u = cj .
 *)
 
-Theorem limit_UMP {J C} {D : functor J C} (cc := cCone D) :
+Theorem limit_UMP {J C} {D : functor J C} :
   ∀ p c : cone D, is_limit p →
   exists! u, ∀ j, c_fam _ p j ◦ u = c_fam _ c j.
 Proof.
