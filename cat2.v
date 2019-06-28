@@ -55,10 +55,10 @@ Definition cTwo := cDiscr (unit + unit).
 
 (* *)
 
-Definition is_initial {C : category} (c : C) :=
-  ∀ d, ∃ f : Hom d c, ∀ g, f = g.
-Definition is_terminal {C : category} (c : C) :=
+Definition is_initial {C : category} (c : @Obj C) :=
   ∀ d, ∃ f : Hom c d, ∀ g, f = g.
+Definition is_terminal {C : category} (c : @Obj C) :=
+  ∀ d, ∃ f : Hom d c, ∀ g, f = g.
 
 Class functor (C D : category) :=
   { f_map_obj : @Obj C → @Obj D;
@@ -621,11 +621,31 @@ Definition is_limit {J C} {D : functor J C} (cn : cone D) :=
 *)
 
 Theorem limit_UMP {J C} {D : functor J C} :
-  ∀ p c : cone D, is_limit p →
-  exists! u, ∀ j, c_fam _ p j ◦ u = c_fam _ c j.
+  ∀ p : cone D, is_limit p →
+  ∀ c : cone D, exists! u, ∀ j, c_fam _ p j ◦ u = c_fam _ c j.
 Proof.
-intros * Hlim.
+intros * Hlim c.
 unfold unique.
 unfold is_limit in Hlim.
 unfold is_terminal in Hlim.
+specialize (Hlim c) as H1.
+destruct H1 as (f, H1).
+destruct f as (f, Hf).
+exists f.
+split; [ intros j; now symmetry | ].
+intros g Hg.
+move g before f; move Hg before Hf.
+...
+assert (Hfg : ∀ j : J, f = g). {
+  intros j.
+  specialize (Hf j) as H2.
+  specialize (Hg j) as H3.
+  rewrite H2 in H3.
+...
+  now rewrite <- Hf, Hg.
+}
+assert (Hfg : ∀ j, c_fam D p j ◦ f = c_fam D p j ◦ g). {
+  intros j.
+  now rewrite <- Hf, Hg.
+}
 ...
