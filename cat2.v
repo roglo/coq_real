@@ -492,6 +492,14 @@ split.
  apply Hfg.
 Qed.
 
+Theorem glop {A : Type} : ∀ (P : A → Type),
+  (∀ x, isProp (P x))
+  → ∀ a b (Ha : P a) (Hb : P b),
+  {p : a = b & transport P p Ha = Hb} ≃ (existT P a Ha = existT P b Hb).
+Proof.
+intros.
+...
+
 Theorem isnType_isnType_sigT (A : Type) : ∀ n P,
   (∀ x, isProp (P x)) → isnType A n → isnType (@sigT A P) n.
 Proof.
@@ -531,6 +539,8 @@ cbn in Hn.
 specialize (H4 (Hn a b)).
 subst Q.
 eapply isnType_if_equiv; [ | apply H4 ].
+now apply glop.
+...
 assert (f : {p : a = b & transport P p Ha = Hb} → existT P a Ha = existT P b Hb). {
   intros H1.
   apply eq_existT_uncurried.
