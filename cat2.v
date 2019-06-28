@@ -630,6 +630,25 @@ unfold is_limit in Hlim.
 unfold is_terminal in Hlim.
 specialize (Hlim c) as H1.
 destruct H1 as (f, H1).
+exists (projT1 f).
+split. {
+  intros j.
+  destruct f as (f, Hf).
+  now symmetry.
+}
+intros h Hh.
+...
+destruct f as (f, Hf).
+cbn in f, Hf, h, Hh.
+move h at bottom; move Hh at bottom; move f at bottom.
+...
+
+intros * Hlim c.
+unfold unique.
+unfold is_limit in Hlim.
+unfold is_terminal in Hlim.
+specialize (Hlim c) as H1.
+destruct H1 as (f, H1).
 destruct f as (f, Hf).
 exists f.
 split; [ intros j; now symmetry | ].
@@ -643,6 +662,9 @@ specialize (Hom_set (c_top D c) (c_top D l) f g) as H2.
 specialize (cCone_Hom_set c l) as H3.
 specialize (@Hom_set (cCone D) c l) as H4.
 unfold isSet in H3, H4.
+cbn in H4.
+cbn in H1.
+Print cCone_Hom.
 ...
 assert (Hfg : ∀ j, c_fam D p j ◦ f = c_fam D p j ◦ g). {
   intros j.
