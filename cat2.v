@@ -595,8 +595,8 @@ intros.
 unfold cCone_Hom.
 apply is_set_is_set_sigT; [ | apply Hom_set ].
 intros f.
-...
 intros p q.
+Print cone.
 ...
 
 Definition cCone {J C} (D : functor J C) :=
