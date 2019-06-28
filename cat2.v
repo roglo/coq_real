@@ -621,8 +621,8 @@ Definition is_limit {J C} {D : functor J C} (cn : cone D) :=
 *)
 
 Theorem limit_UMP {J C} {D : functor J C} :
-  ∀ p : cone D, is_limit p →
-  ∀ c : cone D, exists! u, ∀ j, c_fam _ p j ◦ u = c_fam _ c j.
+  ∀ l : cone D, is_limit l →
+  ∀ c : cone D, exists! u, ∀ j, c_fam _ l j ◦ u = c_fam _ c j.
 Proof.
 intros * Hlim c.
 unfold unique.
@@ -635,6 +635,23 @@ exists f.
 split; [ intros j; now symmetry | ].
 intros g Hg.
 move g before f; move Hg before Hf.
+assert (Hfg : ∀ j, c_fam D l j ◦ f = c_fam D l j ◦ g). {
+  intros j.
+  now rewrite <- Hf, Hg.
+}
+specialize (Hom_set (c_top D c) (c_top D l) f g) as H2.
+specialize (cCone_Hom_set c l) as H3.
+specialize (@Hom_set (cCone D) c l) as H4.
+unfold isSet in H3, H4.
+...
+assert (Hfg : ∀ j, c_fam D p j ◦ f = c_fam D p j ◦ g). {
+  intros j.
+  unfold "◦".
+  destruct C.
+  f_equal.
+  now rewrite <- Hf, Hg.
+}
+unfold "◦" in Hfg.
 ...
 assert (Hfg : ∀ j : J, f = g). {
   intros j.
@@ -642,10 +659,6 @@ assert (Hfg : ∀ j : J, f = g). {
   specialize (Hg j) as H3.
   rewrite H2 in H3.
 ...
-  now rewrite <- Hf, Hg.
-}
-assert (Hfg : ∀ j, c_fam D p j ◦ f = c_fam D p j ◦ g). {
-  intros j.
   now rewrite <- Hf, Hg.
 }
 ...
