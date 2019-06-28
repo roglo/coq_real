@@ -531,6 +531,17 @@ cbn in Hn.
 specialize (H4 (Hn a b)).
 subst Q.
 eapply isnType_if_equiv; [ | apply H4 ].
+assert (f : {p : a = b & transport P p Ha = Hb} → existT P a Ha = existT P b Hb). {
+  intros H1.
+  apply eq_existT_uncurried.
+  destruct H1 as (p, H1).
+  exists p.
+  unfold transport in H1.
+  unfold eq_rect.
+  now destruct p.
+}
+exists f.
+split. {
 ...
 
 Theorem is_set_is_set_sigT (A : Type) : ∀ P, is_set A → is_set (@sigT A P).
