@@ -641,52 +641,9 @@ assert (Hh' : ∀ j : J, c_fam D c j = c_fam D l j ◦ h). {
   intros j; specialize (Hh j).
   now symmetry.
 }
-specialize (@Hom_set (@cCone J C D) c l f) as H2.
-destruct f as (f, Hf).
-move h before f.
-move Hh' before Hf.
-cbn.
-cbn in H1, H2.
-...
-
-intros * Hlim c.
-unfold unique.
-unfold is_limit in Hlim.
-unfold is_terminal in Hlim.
-specialize (Hlim c) as H1.
-destruct H1 as (f, H1).
-destruct f as (f, Hf).
-exists f.
-split; [ intros j; now symmetry | ].
-intros g Hg.
-move g before f; move Hg before Hf.
-assert (Hfg : ∀ j, c_fam D l j ◦ f = c_fam D l j ◦ g). {
-  intros j.
-  now rewrite <- Hf, Hg.
-}
-specialize (Hom_set (c_top D c) (c_top D l) f g) as H2.
-specialize (cCone_Hom_set c l) as H3.
-specialize (@Hom_set (cCone D) c l) as H4.
-unfold isSet in H3, H4.
-cbn in H4.
-cbn in H1.
-Print cCone_Hom.
-...
-assert (Hfg : ∀ j, c_fam D p j ◦ f = c_fam D p j ◦ g). {
-  intros j.
-  unfold "◦".
-  destruct C.
-  f_equal.
-  now rewrite <- Hf, Hg.
-}
-unfold "◦" in Hfg.
-...
-assert (Hfg : ∀ j : J, f = g). {
-  intros j.
-  specialize (Hf j) as H2.
-  specialize (Hg j) as H3.
-  rewrite H2 in H3.
-...
-  now rewrite <- Hf, Hg.
-}
-...
+remember
+  (existT
+     (λ ϑ : Hom (c_top D c) (c_top D l),
+      ∀ j : J, c_fam D c j = c_fam D l j ◦ ϑ) h Hh') as hh.
+now rewrite (H1 hh); subst hh.
+Qed.
