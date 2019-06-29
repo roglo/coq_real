@@ -642,16 +642,11 @@ assert (Hh' : ∀ j : J, c_fam D c j = c_fam D l j ◦ h). {
   now symmetry.
 }
 specialize (@Hom_set (@cCone J C D) c l f) as H2.
-...
 destruct f as (f, Hf).
-cbn; cbn in H1.
-
-cbn in H2.
-apply Hom_set.
-...
-destruct f as (f, Hf).
-cbn in f, Hf, h, Hh.
-move h at bottom; move Hh at bottom; move f at bottom.
+move h before f.
+move Hh' before Hf.
+cbn.
+cbn in H1, H2.
 ...
 
 intros * Hlim c.
