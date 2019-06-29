@@ -416,9 +416,9 @@ Proof. intros; now destruct p. Qed.
 Theorem compose_eq_refl : ∀ A (x : A) (p : x = x), compose p eq_refl = p.
 Proof. now intros; destruct p. Qed.
 
-Theorem isProp_isSet {A} : ∀ (f : isProp A) (x y : A) (p q : x = y), p = q.
+Theorem isProp_isSet {A} : isProp A → isSet A.
 Proof.
-intros f *.
+intros f x y p q.
 apply (compose_cancel_l (f x x)).
 apply @compose with (y := f x y); [ now destruct p, (f x x) | ].
 now destruct p, q, (f x x).
