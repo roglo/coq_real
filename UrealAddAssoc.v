@@ -3655,6 +3655,13 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
 *)
 Check all_fA_ge_1_ε_P_999.
 ...
+Theorem glop {r : radix} : ∀ u i n,
+  (∀ k, fA_ge_1_ε u i k = true)
+  → (∀ k, u (i + k) ≤ 3)
+  → carry u (i + n) = 0
+  → u (i + n - 1) = 3 ∧ carry u (i + n - 1) = 1 ∨
+     u (i + n - 1) = 1 ∧ carry u (i + n - 1) = 0.
+...
 (* below is false; counter-example: 2*13* *)
 (*
   u+v, 3 possible cases from i (to be proved)
