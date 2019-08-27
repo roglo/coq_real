@@ -3653,6 +3653,7 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   3/ 0(2*31*0)*2*31*
   4/ 0(2*31*0)*2*13*
 *)
+Check all_fA_ge_1_ε_P_999.
 ...
 (* below is false; counter-example: 2*13* *)
 (*
