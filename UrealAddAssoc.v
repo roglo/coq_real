@@ -3654,6 +3654,15 @@ assert (Huvl3 : ∀ k, (u ⊕ v) (i + k) ≤ 3). {
   4/ 0(2*31*0)*2*13*
 *)
 Check all_fA_ge_1_ε_P_999.
+(*
+       i+1
+   u   0 . . . . . . .
+   v   0 . . . . . . .
+ u+v   0 . . . . . . .
+  Pv   . . . . . . . .
+u+Pv   . . . . . . . .
+P(u+v) 1 1 1 1 1 1 1 1
+*)
 ...
 Theorem glop {r : radix} : ∀ u i n,
   (∀ k, fA_ge_1_ε u i k = true)
