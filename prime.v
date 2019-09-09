@@ -196,6 +196,11 @@ Definition C_to_decimal_int (c : C) : option Decimal.int :=
 Numeral Notation C C_of_decimal_int C_to_decimal_int : complex_scope
   (abstract after 5001).
 
+Check 0%R.
+Check 0%C.
+
+...
+
 Record series A := { ser : nat → A }.
 Record product A := { pro : nat → A }.
 
