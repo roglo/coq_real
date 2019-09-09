@@ -202,6 +202,17 @@ Numeral Notation C C_of_decimal_int C_to_decimal_int : complex_scope
 
 (* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
 
+Inductive expr (A : Type) :=
+  | E_sum : expr A → expr A → expr A
+  | E_prod : expr A → expr A → expr A
+  | E_one : expr A
+  | E_zero : expr A.
+
+...
+
+Definition zeta s :=
+  E_sum (
+
 (* Infinite sum of products
    x : sum_prod ::= Σ (i = 0, m) Π (j = 0, n) supr(i, j) *)
 Record sum_prod A := { supr : nat → nat → A }.
