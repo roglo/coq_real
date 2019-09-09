@@ -150,6 +150,8 @@ Record C := { Re : R; Im : R }.
 Declare Scope complex_scope.
 Delimit Scope complex_scope with C.
 Definition C_opp c := {| Re := - Re c; Im := - Im c |}.
+Definition C_add x y := {| Re := Re x + Re y; Im := Im x + Im y |}.
+Definition C_sub x y := C_add x (C_opp y).
 Definition C_mul x y :=
   {| Re := Re x * Re y - Im x * Im y;
      Im := Re x * Im y + Im x * Re y |}.
@@ -164,6 +166,7 @@ Definition C_exp c :=
      Im := exp (Re c) * sin (Im c) |}.
 Definition C_of_R x := {| Re := x; Im := 0%R |}.
 Definition C_pow_nat_l n c := C_exp (C_mul c (C_of_R (ln (INR n)))).
+Notation "x - y" := (C_sub x y) : complex_scope.
 Notation "- x" := (C_opp x) : complex_scope.
 Notation "x * y" := (C_mul x y) : complex_scope.
 Notation "x / y" := (C_div x y) : complex_scope.
@@ -196,13 +199,12 @@ Definition C_to_decimal_int (c : C) : option Decimal.int :=
 Numeral Notation C C_of_decimal_int C_to_decimal_int : complex_scope
   (abstract after 5001).
 
-Check 0%R.
-Check 0%C.
-
-...
-
 Record series A := { ser : nat → A }.
-Record product A := { pro : nat → A }.
+Record product A := { prod : nat → A }.
 
-Definition zeta s := {| ser n := (1 / C_pow_nat_l n s)%C |}.
-Print zeta.
+Definition zeta s :=
+  {| ser n :=
+       (1 / C_pow_nat_l n s)%C |}.
+Definition zeta' s :=
+  {| prod n :=
+       if is_prime n then (1 / (1 - 1 / C_pow_nat_l n s))%C else 1%C |}.
