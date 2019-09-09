@@ -206,5 +206,4 @@ Record product A := { prod : nat → A }.
 Definition zeta s :=
   {| ser n := (1 / n ^ s)%C |}.
 Definition zeta' s :=
-  {| prod n :=
-       (if is_prime n then 1 / (1 - 1 / n ^ s) else 1)%C |}.
+  {| prod n := (if is_prime n then 1 / (1 - 1 / n ^ s) else 1)%C |}.
