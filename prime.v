@@ -170,6 +170,7 @@ Notation "x - y" := (C_sub x y) : complex_scope.
 Notation "- x" := (C_opp x) : complex_scope.
 Notation "x * y" := (C_mul x y) : complex_scope.
 Notation "x / y" := (C_div x y) : complex_scope.
+Notation "n ^ x" := (C_pow_nat_l n x) : complex_scope.
 Definition C_of_decimal_uint (n : Decimal.uint) : C :=
   {| Re := INR (Nat.of_uint n); Im := 0%R |}.
 Definition C_of_decimal_int (n : Decimal.int) : C :=
@@ -203,8 +204,7 @@ Record series A := { ser : nat → A }.
 Record product A := { prod : nat → A }.
 
 Definition zeta s :=
-  {| ser n :=
-       (1 / C_pow_nat_l n s)%C |}.
+  {| ser n := (1 / n ^ s)%C |}.
 Definition zeta' s :=
   {| prod n :=
-       if is_prime n then (1 / (1 - 1 / C_pow_nat_l n s))%C else 1%C |}.
+       (if is_prime n then 1 / (1 - 1 / n ^ s) else 1)%C |}.
