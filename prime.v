@@ -207,15 +207,36 @@ Inductive expr (A : Set) :=
   | E_prod : A → expr A → expr A
   | E_val : A → expr A.
 
-...
+Arguments E_sum {_}.
+Arguments E_prod {_}.
+Arguments E_val {_}.
 
-Check (E_val 3).
+Fixpoint eval a n :=
+  match n with
+  | 0 => ...
+  match a with
+  | E_sum b e =>
 
-Fixpoint zeta s i n :=
+Definition expr_eq {A} (a b : nat → expr A) :
+  ∀ ε, (ε > 0)%C → ∃ n m, (eval a n - eval b m < ε)%C.
+
+Fixpoint zeta s n :=
   match n with
   | 0 => E_val 0%C
-  | S n' => E_sum (E_val (1 / i ^ s)) (zeta s i n')
+  | S n' => E_sum (1 / n' ^ s)%C (zeta s n')
   end.
+
+Fixpoint zeta' s n :=
+  match n with
+  | 0 => E_val 1%C
+  | S n' =>
+      E_prod (if is_prime n' then 1 / (1 - 1 / n' ^ s) else 1)%C (zeta' s n')
+  end.
+
+
+Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
+Proof.
+...
 
 (* Infinite sum of products
    x : sum_prod ::= Σ (i = 0, m) Π (j = 0, n) supr(i, j) *)
