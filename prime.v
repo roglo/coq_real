@@ -207,3 +207,5 @@ Definition zeta s :=
   {| ser n := (1 / n ^ s)%C |}.
 Definition zeta' s :=
   {| prod n := (if is_prime n then 1 / (1 - 1 / n ^ s) else 1)%C |}.
+
+(* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
