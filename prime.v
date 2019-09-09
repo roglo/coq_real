@@ -166,6 +166,7 @@ Definition C_exp c :=
      Im := exp (Re c) * sin (Im c) |}.
 Definition C_of_R x := {| Re := x; Im := 0%R |}.
 Definition C_pow_nat_l n c := C_exp (C_mul c (C_of_R (ln (INR n)))).
+Notation "x + y" := (C_add x y) : complex_scope.
 Notation "x - y" := (C_sub x y) : complex_scope.
 Notation "- x" := (C_opp x) : complex_scope.
 Notation "x * y" := (C_mul x y) : complex_scope.
@@ -203,8 +204,8 @@ Numeral Notation C C_of_decimal_int C_to_decimal_int : complex_scope
 (* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
 
 Inductive expr (A : Set) :=
-  | E_sum : A → expr A → expr A
-  | E_prod : A → expr A → expr A
+  | E_sum : expr A → expr A → expr A
+  | E_prod : expr A → expr A → expr A
   | E_val : A → expr A.
 
 Arguments E_sum {_}.
@@ -213,26 +214,37 @@ Arguments E_val {_}.
 
 Fixpoint eval a n :=
   match n with
-  | 0 => ...
-  match a with
-  | E_sum b e =>
+  | 0 => 0%C
+  | S n' =>
+      match a with
+      | E_sum b c => (eval b n' + eval c n')%C
+      | E_prod b c => (eval b n' * eval c n')%C
+      | E_val b => b
+      end
+  end.
 
-Definition expr_eq {A} (a b : nat → expr A) :
-  ∀ ε, (ε > 0)%C → ∃ n m, (eval a n - eval b m < ε)%C.
+Definition expr_norm {A} (a : nat → expr A) : nat → expr A.
+...
+
+Definition expr_strong_eq {A} (a b : nat → expr A) :=
+  ∀ n, a n = b n.
+
+Definition expr_eq {A} (a b : nat → expr A) :=
+  expr_strong_eq (expr_norm a) (expr_norm b).
 
 Fixpoint zeta s n :=
   match n with
   | 0 => E_val 0%C
-  | S n' => E_sum (1 / n' ^ s)%C (zeta s n')
+  | S n' => E_sum (E_val (1 / n' ^ s)%C) (zeta s n')
   end.
 
 Fixpoint zeta' s n :=
   match n with
   | 0 => E_val 1%C
   | S n' =>
-      E_prod (if is_prime n' then 1 / (1 - 1 / n' ^ s) else 1)%C (zeta' s n')
+      E_prod (E_val (if is_prime n' then 1 / (1 - 1 / n' ^ s) else 1)%C)
+        (zeta' s n')
   end.
-
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
 Proof.
