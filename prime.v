@@ -200,12 +200,29 @@ Definition C_to_decimal_int (c : C) : option Decimal.int :=
 Numeral Notation C C_of_decimal_int C_to_decimal_int : complex_scope
   (abstract after 5001).
 
-Record series A := { ser : nat → A }.
-Record product A := { prod : nat → A }.
+(* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
+
+(* Infinite sum of products
+   x : sum_prod ::= Σ (i = 0, m) Π (j = 0, n) supr(i, j) *)
+Record sum_prod A := { supr : nat → nat → A }.
+
+Definition sum_prod_eq s1 s2 :=
+...
 
 Definition zeta s :=
-  {| ser n := (1 / n ^ s)%C |}.
-Definition zeta' s :=
-  {| prod n := (if is_prime n then 1 / (1 - 1 / n ^ s) else 1)%C |}.
+  {| supr i j :=
+       match j with
+       | 0 => (1 / i ^ s)%C
+       | _ => 0%C
+       end |}.
 
-(* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
+Definition zeta' s :=
+  {| supr i j :=
+       match i with
+       | 0 => (if is_prime j then 1 / (1 - 1 / j ^ s) else 1)%C
+       | _ => 1%C
+       end |}.
+
+Theorem zeta_Euler_product_eq : ∀ s, sum_prod_eq (zeta s) (zeta' s).
+Proof.
+...
