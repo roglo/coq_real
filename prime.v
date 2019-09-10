@@ -266,16 +266,29 @@ Fixpoint zeta' {F : field} s n :=
           else f_one))%F
   end.
 
+Fixpoint zeta_but_mul_of_2 {F : field} s n :=
+  match n with
+  | 0 => f_zero
+  | S n' =>
+      (zeta_but_mul_of_2 s n' +
+       match n mod 2 with
+       | 0 => f_zero
+       | _ => f_one / n ^ s
+       end)%F
+  end.
+
 Theorem toto {F : field} (s : f_type) (n : nat) : False.
 Proof.
 assert
-  (H1 : (zeta s n - f_one / 2 ^ s * zeta s n =
-         (f_one - f_one / 2 ^ s) * zeta s n)%F). {
+  (H1 : ((f_one - f_one / 2 ^ s) * zeta s n =
+         zeta s n - f_one / 2 ^ s * zeta s n)%F). {
   unfold f_sub.
   rewrite f_mul_add_distr_r.
   rewrite f_mul_1_l.
   now rewrite f_mul_opp_l.
 }
+assert
+  (H2 : (zeta s n - f_one / 2 ^ s * zeta s n = zeta_but_mul_of_2 s n)%F). {
 ...
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
