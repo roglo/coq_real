@@ -157,9 +157,10 @@ Class field :=
     f_add_assoc : ∀ x y z, f_add x (f_add y z) = f_add (f_add x y) z;
     f_add_0_r : ∀ x, f_add x f_zero = x;
     f_add_opp_diag_r : ∀ x, f_add x (f_opp x) = f_zero;
+    f_mul_comm : ∀ x y, f_mul x y = f_mul y x;
     f_mul_1_l : ∀ x, f_mul f_one x = x;
-    f_mul_add_distr_r : ∀ x y z,
-      f_mul (f_add x y) z = f_add (f_mul x z) (f_mul y z) }.
+    f_mul_add_distr_l : ∀ x y z,
+      f_mul x (f_add y z) = f_add (f_mul x y) (f_mul x z) }.
 
 Declare Scope field_scope.
 Delimit Scope field_scope with F.
@@ -226,6 +227,14 @@ split.
  now rewrite f_add_0_l.
 Qed.
 
+Theorem f_mul_add_distr_r {F : field} : ∀ x y z,
+  ((x + y) * z)%F = (x * z + y * z)%F.
+Proof.
+intros.
+rewrite f_mul_comm, f_mul_add_distr_l.
+now do 2 rewrite (f_mul_comm z).
+Qed.
+
 Theorem f_mul_0_l {F : field} : ∀ x, (f_zero * x)%F = f_zero.
 Proof.
 intros.
@@ -238,6 +247,13 @@ assert (H : (f_zero * x + x = x)%F). {
 apply f_add_move_r in H.
 unfold f_sub in H.
 now rewrite f_add_opp_diag_r in H.
+Qed.
+
+Theorem f_mul_0_r {F : field} : ∀ x, (x * f_zero)%F = f_zero.
+Proof.
+intros.
+rewrite f_mul_comm.
+apply f_mul_0_l.
 Qed.
 
 Theorem f_mul_opp_l {F : field} : ∀ x y, (- x * y = - (x * y))%F.
@@ -277,6 +293,10 @@ Fixpoint zeta_but_mul_of_2 {F : field} s n :=
        end)%F
   end.
 
+Theorem zeta_succ {F : field} : ∀ s n,
+  zeta s (S n) = (zeta s n + f_one / S n ^ s)%F.
+Proof. easy. Qed.
+
 Theorem toto {F : field} (s : f_type) (n : nat) : False.
 Proof.
 assert
@@ -289,6 +309,17 @@ assert
 }
 assert
   (H2 : (zeta s n - f_one / 2 ^ s * zeta s n = zeta_but_mul_of_2 s n)%F). {
+  clear H1.
+  induction n. {
+    cbn.
+    rewrite f_mul_0_r.
+    unfold f_sub.
+    now rewrite f_add_opp_diag_r.
+  }
+  rewrite zeta_succ.
+  rewrite f_mul_add_distr_l.
+  unfold f_sub.
+Search (- (_ + _))%F.
 ...
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
