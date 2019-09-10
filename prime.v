@@ -228,6 +228,7 @@ Definition expr_norm {A} (a : nat → expr A) : nat → expr A.
 
 Definition expr_strong_eq {A} (a b : nat → expr A) :=
   ∀ n, a n = b n.
+(* ah bin non, c'est pas ça ; faudrait les comparer à l'infini *)
 
 Definition expr_eq {A} (a b : nat → expr A) :=
   expr_strong_eq (expr_norm a) (expr_norm b).
