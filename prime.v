@@ -235,15 +235,15 @@ Definition expr_eq {A} (a b : nat → expr A) :=
 Fixpoint zeta s n :=
   match n with
   | 0 => E_val 0%C
-  | S n' => E_sum (E_val (1 / n' ^ s)%C) (zeta s n')
+  | S n' => E_sum (zeta s n') (E_val (1 / n' ^ s)%C)
   end.
 
 Fixpoint zeta' s n :=
   match n with
   | 0 => E_val 1%C
   | S n' =>
-      E_prod (E_val (if is_prime n' then 1 / (1 - 1 / n' ^ s) else 1)%C)
-        (zeta' s n')
+      E_prod (zeta' s n')
+        (E_val (if is_prime n' then 1 / (1 - 1 / n' ^ s) else 1)%C)
   end.
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
