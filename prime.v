@@ -319,6 +319,12 @@ Theorem zeta_succ {F : field} : ∀ s n,
   zeta s (S n) = (zeta s n + f_one / S n ^ s)%F.
 Proof. easy. Qed.
 
+Theorem zeta_but_mul_of_2_succ {F : field} : ∀ s n,
+  zeta_but_mul_of_2 s (S n) =
+  (zeta_but_mul_of_2 s n +
+   match S n mod 2 with 0 => f_zero | _ => f_one / S n ^ s end)%F.
+Proof. easy. Qed.
+
 Theorem toto {F : field} (s : f_type) (n : nat) : False.
 Proof.
 assert
@@ -346,6 +352,14 @@ assert
   rewrite (f_add_add_swap _ (f_one / S n ^ s)%F).
   unfold f_sub in IHn.
   rewrite IHn.
+  rewrite zeta_but_mul_of_2_succ.
+  rewrite <- f_add_assoc; f_equal.
+  remember (S n mod 2) as m eqn:Hm.
+  symmetry in Hm.
+  destruct m. {
+(*
+1/(n+1)^s - 1/(2^s*(n+1)^s)
+*)
 ...
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
