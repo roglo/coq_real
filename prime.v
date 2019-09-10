@@ -223,7 +223,14 @@ Fixpoint eval a n :=
       end
   end.
 
-Definition expr_norm {A} (a : nat → expr A) : nat → expr A.
+Fixpoint expr_norm {A} (a : nat → expr A) n :=
+  match n with
+  | 0 => a
+  | S n' =>
+      match a with
+      | E_sum b c =>
+          match b with
+          | E_sum
 ...
 
 Definition expr_strong_eq {A} (a b : nat → expr A) :=
