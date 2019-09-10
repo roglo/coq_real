@@ -265,6 +265,28 @@ rewrite f_add_opp_diag_l.
 apply f_mul_0_l.
 Qed.
 
+Theorem f_opp_add_distr {F : field} : ∀ x y, (- (x + y))%F = (- x + - y)%F.
+Proof.
+intros.
+symmetry.
+apply f_add_move_0_r.
+rewrite (f_add_comm x).
+rewrite f_add_assoc.
+rewrite <- (f_add_assoc _ (- y)%F).
+Search (- _ + _)%F.
+rewrite f_add_opp_diag_l.
+rewrite f_add_0_r.
+apply f_add_opp_diag_l.
+Qed.
+
+Theorem f_add_add_swap {F : field} : ∀ x y z, (x + y + z = x + z + y)%F.
+Proof.
+intros.
+do 2 rewrite <- f_add_assoc.
+f_equal.
+apply f_add_comm.
+Qed.
+
 (* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
 
 Fixpoint zeta {F : field} s n :=
@@ -319,7 +341,11 @@ assert
   rewrite zeta_succ.
   rewrite f_mul_add_distr_l.
   unfold f_sub.
-Search (- (_ + _))%F.
+  rewrite f_opp_add_distr.
+  rewrite f_add_assoc.
+  rewrite (f_add_add_swap _ (f_one / S n ^ s)%F).
+  unfold f_sub in IHn.
+  rewrite IHn.
 ...
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
