@@ -144,103 +144,28 @@ Qed.
 
 (* ζ(s) = Σ (n ∈ ℕ) 1/n^s = Π (p ∈ primes) 1/(1-1/p^s) *)
 
-(*
-Require Import Reals.
-
-Record C := { Re : R; Im : R }.
-Declare Scope complex_scope.
-Delimit Scope complex_scope with C.
-Definition C_opp c := {| Re := - Re c; Im := - Im c |}.
-Definition C_add x y := {| Re := Re x + Re y; Im := Im x + Im y |}.
-Definition C_sub x y := C_add x (C_opp y).
-Definition C_mul x y :=
-  {| Re := Re x * Re y - Im x * Im y;
-     Im := Re x * Im y + Im x * Re y |}.
-(* 1/(a+ib)=(a-ib)/(a²+b²) *)
-Definition C_inv x :=
-  {| Re := Re x / (Re x * Re x + Im x * Im x);
-     Im := - Im x / (Re x * Re x + Im x * Im x) |}.
-Definition C_div x y := C_mul x (C_inv y).
-(* e^(a+ib) = e^a (cos b + i sin b) *)
-Definition C_exp c :=
-  {| Re := exp (Re c) * cos (Im c);
-     Im := exp (Re c) * sin (Im c) |}.
-Definition C_of_R x := {| Re := x; Im := 0%R |}.
-Definition C_pow_nat_l n c := C_exp (C_mul c (C_of_R (ln (INR n)))).
-Notation "x + y" := (C_add x y) : complex_scope.
-Notation "x - y" := (C_sub x y) : complex_scope.
-Notation "- x" := (C_opp x) : complex_scope.
-Notation "x * y" := (C_mul x y) : complex_scope.
-Notation "x / y" := (C_div x y) : complex_scope.
-Notation "n ^ x" := (C_pow_nat_l n x) : complex_scope.
-Definition C_of_decimal_uint (n : Decimal.uint) : C :=
-  {| Re := INR (Nat.of_uint n); Im := 0%R |}.
-Definition C_of_decimal_int (n : Decimal.int) : C :=
-  match n with
-  | Decimal.Pos ui => C_of_decimal_uint ui
-  | Decimal.Neg ui => (- C_of_decimal_uint ui)%C
-  end.
-Definition Req_dec' x y :=
-  if Rle_dec x y then if Rle_dec y x then true else false else false.
-Definition C_to_decimal_uint (c : C) : option Decimal.uint :=
-  if Req_dec' (Im c) 0%R then
-    if Req_dec' (frac_part (Re c)) 0%R then
-      if Rle_dec 0%R (Re c) then
-        Some (Nat.to_uint (Z.to_nat (Int_part (Re c))))
-      else None
-  else None
-  else None.
-Definition C_to_decimal_int (c : C) : option Decimal.int :=
-  match C_to_decimal_uint c with
-  | Some u => Some (Decimal.Pos u)
-  | None =>
-      match C_to_decimal_uint (- c)%C with
-      | Some u => Some (Decimal.Neg u)
-      | None => None
-      end
-  end.
-Numeral Notation C C_of_decimal_int C_to_decimal_int : complex_scope
-  (abstract after 5001).
-*)
-
 Class field :=
-  { f_type : Type;
+  { f_type : Set;
+    f_zero : f_type;
+    f_one : f_type;
+    f_add : f_type → f_type → f_type;
+    f_mul : f_type → f_type → f_type;
     f_opp : f_type → f_type;
-    f_of_nat : nat → f_type }.
+    f_inv : f_type → f_type;
+    f_pow : nat → f_type → f_type }.
 
 Declare Scope field_scope.
 Delimit Scope field_scope with F.
-Notation "- x" := (f_opp x) : field_scope.
 
-Definition F_of_decimal_uint {F : field} (n : Decimal.uint) : f_type :=
-  f_of_nat (Nat.of_uint n).
-Definition F_of_decimal_int {F : field} (n : Decimal.int) : f_type :=
-  match n with
-  | Decimal.Pos ui => F_of_decimal_uint ui
-  | Decimal.Neg ui => (- F_of_decimal_uint ui)%F
-  end.
-...
-Definition Req_dec' x y :=
-  if Rle_dec x y then if Rle_dec y x then true else false else false.
-Definition C_to_decimal_uint (c : C) : option Decimal.uint :=
-  if Req_dec' (Im c) 0%R then
-    if Req_dec' (frac_part (Re c)) 0%R then
-      if Rle_dec 0%R (Re c) then
-        Some (Nat.to_uint (Z.to_nat (Int_part (Re c))))
-      else None
-  else None
-  else None.
-Definition C_to_decimal_int (c : C) : option Decimal.int :=
-  match C_to_decimal_uint c with
-  | Some u => Some (Decimal.Pos u)
-  | None =>
-      match C_to_decimal_uint (- c)%C with
-      | Some u => Some (Decimal.Neg u)
-      | None => None
-      end
-  end.
-Numeral Notation C C_of_decimal_int C_to_decimal_int : complex_scope
-  (abstract after 5001).
+Definition f_sub {F : field} x y := f_add x (f_opp y).
+Definition f_div {F : field} x y := f_mul x (f_inv y).
+
+Notation "- x" := (f_opp x) : field_scope.
+Notation "x + y" := (f_add x y) : field_scope.
+Notation "x - y" := (f_sub x y) : field_scope.
+Notation "x * y" := (f_mul x y) : field_scope.
+Notation "x / y" := (f_div x y) : field_scope.
+Notation "n ^ x" := (f_pow n x) : field_scope.
 
 (* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
 
@@ -255,71 +180,31 @@ Arguments E_val {_}.
 
 Fixpoint eval {F : field} a n :=
   match n with
-  | 0 => 0%F
+  | 0 => f_zero
   | S n' =>
       match a with
-      | E_sum b c => (eval b n' + eval c n')%C
-      | E_prod b c => (eval b n' * eval c n')%C
+      | E_sum b c => (eval b n' + eval c n')%F
+      | E_prod b c => (eval b n' * eval c n')%F
       | E_val b => b
       end
   end.
 
-Fixpoint expr_norm {A} (a : nat → expr A) n :=
+Fixpoint zeta {F : field} s n :=
   match n with
-  | 0 => a
-  | S n' =>
-      match a with
-      | E_sum b c =>
-          match b with
-          | E_sum
-...
-
-Definition expr_strong_eq {A} (a b : nat → expr A) :=
-  ∀ n, a n = b n.
-(* ah bin non, c'est pas ça ; faudrait les comparer à l'infini *)
-
-Definition expr_eq {A} (a b : nat → expr A) :=
-  expr_strong_eq (expr_norm a) (expr_norm b).
-
-Fixpoint zeta s n :=
-  match n with
-  | 0 => E_val 0%C
-  | S n' => E_sum (zeta s n') (E_val (1 / n' ^ s)%C)
+  | 0 => E_val f_zero
+  | S n' => E_sum (zeta s n') (E_val (f_one / n' ^ s)%F)
   end.
 
-Fixpoint zeta' s n :=
+Fixpoint zeta' {F : field} s n :=
   match n with
-  | 0 => E_val 1%C
+  | 0 => E_val f_one
   | S n' =>
       E_prod (zeta' s n')
-        (E_val (if is_prime n' then 1 / (1 - 1 / n' ^ s) else 1)%C)
+        (E_val
+           (if is_prime n' then f_one / (f_one - f_one / n' ^ s)
+            else f_one)%F)
   end.
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
-Proof.
-...
-
-(* Infinite sum of products
-   x : sum_prod ::= Σ (i = 0, m) Π (j = 0, n) supr(i, j) *)
-Record sum_prod A := { supr : nat → nat → A }.
-
-Definition sum_prod_eq s1 s2 :=
-...
-
-Definition zeta s :=
-  {| supr i j :=
-       match j with
-       | 0 => (1 / i ^ s)%C
-       | _ => 0%C
-       end |}.
-
-Definition zeta' s :=
-  {| supr i j :=
-       match i with
-       | 0 => (if is_prime j then 1 / (1 - 1 / j ^ s) else 1)%C
-       | _ => 1%C
-       end |}.
-
-Theorem zeta_Euler_product_eq : ∀ s, sum_prod_eq (zeta s) (zeta' s).
 Proof.
 ...
