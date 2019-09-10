@@ -169,41 +169,22 @@ Notation "n ^ x" := (f_pow n x) : field_scope.
 
 (* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
 
-Inductive expr (A : Set) :=
-  | E_sum : expr A → expr A → expr A
-  | E_prod : expr A → expr A → expr A
-  | E_val : A → expr A.
-
-Arguments E_sum {_}.
-Arguments E_prod {_}.
-Arguments E_val {_}.
-
-Fixpoint eval {F : field} a n :=
-  match n with
-  | 0 => f_zero
-  | S n' =>
-      match a with
-      | E_sum b c => (eval b n' + eval c n')%F
-      | E_prod b c => (eval b n' * eval c n')%F
-      | E_val b => b
-      end
-  end.
-
 Fixpoint zeta {F : field} s n :=
   match n with
-  | 0 => E_val f_zero
-  | S n' => E_sum (zeta s n') (E_val (f_one / n' ^ s)%F)
+  | 0 => f_zero
+  | S n' => (zeta s n' + f_one / n ^ s)%F
   end.
 
 Fixpoint zeta' {F : field} s n :=
   match n with
-  | 0 => E_val f_one
+  | 0 => f_one
   | S n' =>
-      E_prod (zeta' s n')
-        (E_val
-           (if is_prime n' then f_one / (f_one - f_one / n' ^ s)
-            else f_one)%F)
+      (zeta' s n' *
+         (if is_prime n' then f_one / (f_one - f_one / n' ^ s)
+          else f_one))%F
   end.
+
+...
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
 Proof.
