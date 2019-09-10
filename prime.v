@@ -152,7 +152,14 @@ Class field :=
     f_mul : f_type → f_type → f_type;
     f_opp : f_type → f_type;
     f_inv : f_type → f_type;
-    f_pow : nat → f_type → f_type }.
+    f_pow : nat → f_type → f_type;
+    f_add_comm : ∀ x y, f_add x y = f_add y x;
+    f_add_assoc : ∀ x y z, f_add x (f_add y z) = f_add (f_add x y) z;
+    f_add_0_r : ∀ x, f_add x f_zero = x;
+    f_add_opp_diag_r : ∀ x, f_add x (f_opp x) = f_zero;
+    f_mul_1_l : ∀ x, f_mul f_one x = x;
+    f_mul_add_distr_r : ∀ x y z,
+      f_mul (f_add x y) z = f_add (f_mul x z) (f_mul y z) }.
 
 Declare Scope field_scope.
 Delimit Scope field_scope with F.
@@ -166,6 +173,81 @@ Notation "x - y" := (f_sub x y) : field_scope.
 Notation "x * y" := (f_mul x y) : field_scope.
 Notation "x / y" := (f_div x y) : field_scope.
 Notation "n ^ x" := (f_pow n x) : field_scope.
+
+Theorem f_add_0_l {F : field} : ∀ x, (f_zero + x)%F = x.
+Proof.
+intros.
+rewrite f_add_comm.
+apply f_add_0_r.
+Qed.
+
+Theorem f_add_sub {F : field} : ∀ x y, (x + y - y)%F = x.
+Proof.
+intros.
+unfold f_sub.
+rewrite <- f_add_assoc.
+rewrite f_add_opp_diag_r.
+now rewrite f_add_0_r.
+Qed.
+
+Theorem f_add_opp_diag_l {F : field} : ∀ x, (- x + x)%F = f_zero.
+Proof.
+intros.
+rewrite f_add_comm.
+apply f_add_opp_diag_r.
+Qed.
+
+Theorem f_add_move_r {F : field} : ∀ x y z, (x + y)%F = z ↔ x = (z - y)%F.
+Proof.
+intros.
+split.
+-intros H.
+ rewrite <- H.
+ now rewrite f_add_sub.
+-intros H.
+ rewrite H.
+ unfold f_sub.
+ rewrite <- f_add_assoc.
+ rewrite f_add_opp_diag_l.
+ now rewrite f_add_0_r.
+Qed.
+
+Theorem f_add_move_0_r {F : field} : ∀ x y, (x + y)%F = f_zero ↔ x = (- y)%F.
+Proof.
+intros.
+split.
+-intros H.
+ apply f_add_move_r in H.
+ unfold f_sub in H.
+ now rewrite f_add_0_l in H.
+-intros H.
+ apply f_add_move_r.
+ unfold f_sub.
+ now rewrite f_add_0_l.
+Qed.
+
+Theorem f_mul_0_l {F : field} : ∀ x, (f_zero * x)%F = f_zero.
+Proof.
+intros.
+assert (H : (f_zero * x + x = x)%F). {
+  transitivity ((f_zero * x + f_one * x)%F).
+  -now rewrite f_mul_1_l.
+  -rewrite <- f_mul_add_distr_r.
+   now rewrite f_add_0_l, f_mul_1_l.
+}
+apply f_add_move_r in H.
+unfold f_sub in H.
+now rewrite f_add_opp_diag_r in H.
+Qed.
+
+Theorem f_mul_opp_l {F : field} : ∀ x y, (- x * y = - (x * y))%F.
+Proof.
+intros.
+apply f_add_move_0_r.
+rewrite <- f_mul_add_distr_r.
+rewrite f_add_opp_diag_l.
+apply f_mul_0_l.
+Qed.
 
 (* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
 
@@ -187,9 +269,13 @@ Fixpoint zeta' {F : field} s n :=
 Theorem toto {F : field} (s : f_type) (n : nat) : False.
 Proof.
 assert
-  (zeta s n - f_one / 2 ^ s * zeta s n =
-   (f_one - f_one / 2 ^ s) * zeta s n)%F. {
-
+  (H1 : (zeta s n - f_one / 2 ^ s * zeta s n =
+         (f_one - f_one / 2 ^ s) * zeta s n)%F). {
+  unfold f_sub.
+  rewrite f_mul_add_distr_r.
+  rewrite f_mul_1_l.
+  now rewrite f_mul_opp_l.
+}
 ...
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
