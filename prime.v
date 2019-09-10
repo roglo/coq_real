@@ -144,6 +144,7 @@ Qed.
 
 (* ζ(s) = Σ (n ∈ ℕ) 1/n^s = Π (p ∈ primes) 1/(1-1/p^s) *)
 
+(*
 Require Import Reals.
 
 Record C := { Re : R; Im : R }.
@@ -200,6 +201,46 @@ Definition C_to_decimal_int (c : C) : option Decimal.int :=
   end.
 Numeral Notation C C_of_decimal_int C_to_decimal_int : complex_scope
   (abstract after 5001).
+*)
+
+Class field :=
+  { f_type : Type;
+    f_opp : f_type → f_type;
+    f_of_nat : nat → f_type }.
+
+Declare Scope field_scope.
+Delimit Scope field_scope with F.
+Notation "- x" := (f_opp x) : field_scope.
+
+Definition F_of_decimal_uint {F : field} (n : Decimal.uint) : f_type :=
+  f_of_nat (Nat.of_uint n).
+Definition F_of_decimal_int {F : field} (n : Decimal.int) : f_type :=
+  match n with
+  | Decimal.Pos ui => F_of_decimal_uint ui
+  | Decimal.Neg ui => (- F_of_decimal_uint ui)%F
+  end.
+...
+Definition Req_dec' x y :=
+  if Rle_dec x y then if Rle_dec y x then true else false else false.
+Definition C_to_decimal_uint (c : C) : option Decimal.uint :=
+  if Req_dec' (Im c) 0%R then
+    if Req_dec' (frac_part (Re c)) 0%R then
+      if Rle_dec 0%R (Re c) then
+        Some (Nat.to_uint (Z.to_nat (Int_part (Re c))))
+      else None
+  else None
+  else None.
+Definition C_to_decimal_int (c : C) : option Decimal.int :=
+  match C_to_decimal_uint c with
+  | Some u => Some (Decimal.Pos u)
+  | None =>
+      match C_to_decimal_uint (- c)%C with
+      | Some u => Some (Decimal.Neg u)
+      | None => None
+      end
+  end.
+Numeral Notation C C_of_decimal_int C_to_decimal_int : complex_scope
+  (abstract after 5001).
 
 (* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
 
@@ -212,9 +253,9 @@ Arguments E_sum {_}.
 Arguments E_prod {_}.
 Arguments E_val {_}.
 
-Fixpoint eval a n :=
+Fixpoint eval {F : field} a n :=
   match n with
-  | 0 => 0%C
+  | 0 => 0%F
   | S n' =>
       match a with
       | E_sum b c => (eval b n' + eval c n')%C
