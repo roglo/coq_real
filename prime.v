@@ -184,6 +184,12 @@ Fixpoint zeta' {F : field} s n :=
           else f_one))%F
   end.
 
+Theorem toto {F : field} (s : f_type) (n : nat) : False.
+Proof.
+assert
+  (zeta s n - f_one / 2 ^ s * zeta s n =
+   (f_one - f_one / 2 ^ s) * zeta s n)%F. {
+
 ...
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
