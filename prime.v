@@ -461,6 +461,9 @@ assert
   unfold f_div.
   do 4 rewrite f_mul_1_l.
   rewrite f_inv_mul_inv.
+Require Import ZArith.
+Search (_ ^ _ ≠ 0)%Z.
+Search f_pow.
 ...
 Require Import QArith.
   Search (_ # _ * (_ # _))%Q.
