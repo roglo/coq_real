@@ -467,10 +467,13 @@ assert
   replace (2 * S n) with (2 + n * 2) by flia.
   now rewrite f_add_opp_diag_l, f_add_0_l.
 }
-(* ζ_2n(s) - 1/(2^s.ζ_n(s)) = 1 + 1/3^s + 1/5^s + 1/7^s + ... + 1/(2n-1)^s
-   ζ_n(s) - 1/(2^s.ζ_n(s)) + ζ_{n+1,2n}(s) = 1 + 1/3^s + 1/5^s + 1/7^s + ... + 1/(2n-1)^s
-   then
-   (1 - 1/2^s)ζ_n(s) + ζ_{n+1,2n}(s) = 1 + 1/3^s + 1/5^s + 1/7^s + ... + 1/(2n-1)^s *)
+(* ζ_2n(s) - 1/(2^s.ζ_n(s)) =
+      1 + 1/3^s + 1/5^s + 1/7^s + ... + 1/(2n-1)^s
+   ζ_n(s) - 1/(2^s.ζ_n(s)) + ζ_{n+1,2n}(s) =
+      1 + 1/3^s + 1/5^s + 1/7^s + ... + 1/(2n-1)^s
+   therefore
+   (1 - 1/2^s)ζ_n(s) + ζ_{n+1,2n}(s) =
+      1 + 1/3^s + 1/5^s + 1/7^s + ... + 1/(2n-1)^s *)
 (* the term ζ_{n+1,2n)(s) = 1/(n+1)^s + 1/(n+2)^s + ... 1/(2n)^s is
    embarrassing *)
 (* but, in general, how can I compare two expressions? they are supposed
