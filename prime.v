@@ -463,6 +463,9 @@ assert
   rewrite f_inv_mul_inv.
 Require Import ZArith.
 Search (_ ^ _ ≠ 0)%Z.
+Print Z.pow_nonzero.
+Print Z.pow_eq_0.
+Print Z.pow_0_r.
 Search f_pow.
 ...
 Require Import QArith.
