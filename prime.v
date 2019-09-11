@@ -468,32 +468,6 @@ assert
   now rewrite f_add_opp_diag_l, f_add_0_l.
 }
 ...
-assert
-  (H2 : (zeta s n - f_one / 2 ^ s * zeta s n = zeta_but_mul_of_2 s n)%F). {
-  clear H1.
-  induction n. {
-    cbn.
-    rewrite f_mul_0_r.
-    unfold f_sub.
-    now rewrite f_add_opp_diag_r.
-  }
-  rewrite zeta_succ.
-  rewrite f_mul_add_distr_l.
-  unfold f_sub.
-  rewrite f_opp_add_distr.
-  rewrite f_add_assoc.
-  rewrite (f_add_add_swap _ (f_one / S n ^ s)%F).
-  unfold f_sub in IHn.
-  rewrite IHn.
-  rewrite zeta_but_mul_of_2_succ.
-  rewrite <- f_add_assoc; f_equal.
-  remember (S n mod 2) as m eqn:Hm.
-  symmetry in Hm.
-  destruct m. {
-(*
-1/(n+1)^s - 1/(2^s*(n+1)^s)
-*)
-...
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
 Proof.
