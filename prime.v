@@ -156,11 +156,11 @@ Class field :=
     f_add_comm : ∀ x y, f_add x y = f_add y x;
     f_add_assoc : ∀ x y z, f_add x (f_add y z) = f_add (f_add x y) z;
     f_add_0_r : ∀ x, f_add x f_zero = x;
-    f_add_opp_diag_r : ∀ x, f_add x (f_opp x) = f_zero;
+    f_add_opp_diag_l : ∀ x, f_add (f_opp x) x = f_zero;
     f_mul_comm : ∀ x y, f_mul x y = f_mul y x;
     f_mul_assoc : ∀ x y z, f_mul x (f_mul y z) = f_mul (f_mul x y) z;
     f_mul_1_l : ∀ x, f_mul f_one x = x;
-    f_mul_inv_diag_r : ∀ x, x ≠ f_zero → f_mul x (f_inv x) = f_one;
+    f_mul_inv_diag_l : ∀ x, x ≠ f_zero → f_mul (f_inv x) x = f_one;
     f_mul_add_distr_l : ∀ x y z,
       f_mul x (f_add y z) = f_add (f_mul x y) (f_mul x z) }.
 
@@ -184,6 +184,13 @@ rewrite f_add_comm.
 apply f_add_0_r.
 Qed.
 
+Theorem f_add_opp_diag_r {F : field} : ∀ x, f_add x (f_opp x) = f_zero.
+Proof.
+intros.
+rewrite f_add_comm.
+apply f_add_opp_diag_l.
+Qed.
+
 Theorem f_add_sub {F : field} : ∀ x y, (x + y - y)%F = x.
 Proof.
 intros.
@@ -191,13 +198,6 @@ unfold f_sub.
 rewrite <- f_add_assoc.
 rewrite f_add_opp_diag_r.
 now rewrite f_add_0_r.
-Qed.
-
-Theorem f_add_opp_diag_l {F : field} : ∀ x, (- x + x)%F = f_zero.
-Proof.
-intros.
-rewrite f_add_comm.
-apply f_add_opp_diag_r.
 Qed.
 
 Theorem f_add_move_r {F : field} : ∀ x y z, (x + y)%F = z ↔ x = (z - y)%F.
@@ -303,21 +303,39 @@ apply f_add_move_0_r.
 apply f_add_opp_diag_r.
 Qed.
 
-Theorem f_eq_mul_0 {F : field} : ∀ x y,
-  (x * y)%F = f_zero ↔ x = f_zero ∨ y = f_zero.
+Theorem f_mul_inv_diag_r {F : field} : ∀ x,
+  x ≠ f_zero → f_mul x (f_inv x) = f_one.
+Proof.
+intros * Hx.
+rewrite f_mul_comm.
+now apply f_mul_inv_diag_l.
+Qed.
+
+Theorem f_mul_1_r {F : field} : ∀ x, (x * f_one)%F = x.
 Proof.
 intros.
-split.
--intros H.
- assert (H1 : (x * y / y = f_zero / y)%F) by now f_equal.
- unfold f_div in H1.
- rewrite <- f_mul_assoc in H1.
- rewrite f_mul_inv_diag_r in H1.
-(* decidability of equality required? *)
-...
-Require Import ZArith.
-Print Z.eq_mul_0.
-...
+rewrite f_mul_comm.
+apply f_mul_1_l.
+Qed.
+
+Theorem f_mul_eq_0_l {F : field} : ∀ x y,
+  (x * y)%F = f_zero → y ≠ f_zero → x = f_zero.
+Proof.
+intros * Hxy Hx.
+assert (H1 : (x * y * f_inv y = f_zero * f_inv y)%F) by now f_equal.
+rewrite <- f_mul_assoc in H1.
+rewrite f_mul_inv_diag_r in H1; [ | easy ].
+rewrite f_mul_1_r in H1.
+now rewrite f_mul_0_l in H1.
+Qed.
+
+Theorem f_mul_eq_0_r {F : field} : ∀ x y,
+  (x * y)%F = f_zero → x ≠ f_zero → y = f_zero.
+Proof.
+intros * Hxy Hx.
+rewrite f_mul_comm in Hxy.
+now apply f_mul_eq_0_l in Hxy.
+Qed.
 
 Theorem f_mul_cancel_l {F : field} : ∀ x y z,
   z ≠ f_zero → (z * x = z * y)%F ↔ x = y.
@@ -329,17 +347,32 @@ replace (z * y)%F with (- - (z * y))%F in H by apply f_opp_involutive.
 apply f_add_move_0_r in H.
 rewrite <- f_mul_opp_r in H.
 rewrite <- f_mul_add_distr_l in H.
-Require Import ZArith.
-Search (_ * _ = 0)%Z.
-...
+apply f_mul_eq_0_r in H; [ | easy ].
+apply f_add_move_0_r in H.
+now rewrite f_opp_involutive in H.
+Qed.
 
 Theorem f_inv_mul_inv {F : field} : ∀ x y,
+  x ≠ f_zero → y ≠ f_zero →
   (f_inv x * f_inv y = f_inv (x * y))%F.
 Proof.
-intros.
-Search f_inv.
-Search (_ * _ = _ * _)%nat.
-...
+intros * Hx Hy.
+apply (f_mul_cancel_l _ _ (x * y)%F). {
+  intros H.
+  apply Hy.
+  now apply f_mul_eq_0_r in H.
+}
+rewrite f_mul_assoc.
+rewrite (f_mul_comm x).
+rewrite <- (f_mul_assoc y).
+rewrite f_mul_inv_diag_r; [ | easy ].
+rewrite f_mul_1_r.
+rewrite f_mul_inv_diag_r; [ | easy ].
+rewrite f_mul_inv_diag_r; [ easy | ].
+intros H.
+apply Hy.
+now apply f_mul_eq_0_l in H.
+Qed.
 
 (* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
 
@@ -427,6 +460,7 @@ assert
   rewrite f_add_assoc, f_add_add_swap.
   unfold f_div.
   do 4 rewrite f_mul_1_l.
+  rewrite f_inv_mul_inv.
 ...
 Require Import QArith.
   Search (_ # _ * (_ # _))%Q.
