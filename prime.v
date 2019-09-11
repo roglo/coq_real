@@ -158,6 +158,7 @@ Class field :=
     f_add_0_r : ∀ x, f_add x f_zero = x;
     f_add_opp_diag_r : ∀ x, f_add x (f_opp x) = f_zero;
     f_mul_comm : ∀ x y, f_mul x y = f_mul y x;
+    f_mul_assoc : ∀ x y z, f_mul x (f_mul y z) = f_mul (f_mul x y) z;
     f_mul_1_l : ∀ x, f_mul f_one x = x;
     f_mul_add_distr_l : ∀ x y z,
       f_mul x (f_add y z) = f_add (f_mul x y) (f_mul x z) }.
@@ -265,6 +266,12 @@ rewrite f_add_opp_diag_l.
 apply f_mul_0_l.
 Qed.
 
+Theorem f_mul_opp_r {F : field} : ∀ x y, (x * - y = - (x * y))%F.
+Proof.
+intros.
+now rewrite f_mul_comm, f_mul_opp_l, f_mul_comm.
+Qed.
+
 Theorem f_opp_add_distr {F : field} : ∀ x y, (- (x + y))%F = (- x + - y)%F.
 Proof.
 intros.
@@ -286,6 +293,47 @@ do 2 rewrite <- f_add_assoc.
 f_equal.
 apply f_add_comm.
 Qed.
+
+Theorem f_opp_involutive {F : field} : ∀ x, (- - x)%F = x.
+Proof.
+intros.
+symmetry.
+apply f_add_move_0_r.
+apply f_add_opp_diag_r.
+Qed.
+
+Theorem f_eq_mul_0 {F : field} : ∀ x y,
+  (x * y)%F = f_zero ↔ x = f_zero ∨ y = f_zero.
+Proof.
+intros.
+split.
+-intros H.
+...
+Require Import ZArith.
+Print Z.eq_mul_0.
+...
+
+Theorem f_mul_cancel_l {F : field} : ∀ x y z,
+  z ≠ f_zero → (z * x = z * y)%F ↔ x = y.
+Proof.
+intros * Hz.
+split; [ | now intros; subst x ].
+intros H.
+replace (z * y)%F with (- - (z * y))%F in H by apply f_opp_involutive.
+apply f_add_move_0_r in H.
+rewrite <- f_mul_opp_r in H.
+rewrite <- f_mul_add_distr_l in H.
+Require Import ZArith.
+Search (_ * _ = 0)%Z.
+...
+
+Theorem f_inv_mul_inv {F : field} : ∀ x y,
+  (f_inv x * f_inv y = f_inv (x * y))%F.
+Proof.
+intros.
+Search f_inv.
+Search (_ * _ = _ * _)%nat.
+...
 
 (* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
 
@@ -370,6 +418,12 @@ assert
   rewrite Nat.mod_add; [ | easy ].
   replace (2 mod 2) with 0 by easy.
   rewrite f_add_0_r.
+  rewrite f_add_assoc, f_add_add_swap.
+  unfold f_div.
+  do 4 rewrite f_mul_1_l.
+...
+Require Import QArith.
+  Search (_ # _ * (_ # _))%Q.
 ...
 assert
   (H2 : (zeta s n - f_one / 2 ^ s * zeta s n = zeta_but_mul_of_2 s n)%F). {
