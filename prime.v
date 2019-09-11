@@ -162,7 +162,9 @@ Class field :=
     f_mul_1_l : ∀ x, f_mul f_one x = x;
     f_mul_inv_diag_l : ∀ x, x ≠ f_zero → f_mul (f_inv x) x = f_one;
     f_mul_add_distr_l : ∀ x y z,
-      f_mul x (f_add y z) = f_add (f_mul x y) (f_mul x z) }.
+      f_mul x (f_add y z) = f_add (f_mul x y) (f_mul x z);
+    f_pow_mul_l : ∀ a b x, f_pow (a * b) x = f_mul (f_pow a x) (f_pow b x);
+    f_pow_nonzero : ∀ n x, n ≠ 0 → f_pow n x ≠ f_zero }.
 
 Declare Scope field_scope.
 Delimit Scope field_scope with F.
@@ -460,31 +462,11 @@ assert
   rewrite f_add_assoc, f_add_add_swap.
   unfold f_div.
   do 4 rewrite f_mul_1_l.
-  rewrite f_inv_mul_inv.
-Theorem f_pow_add_r {F : field} : ∀ a b c, (a ^ (b + c))%F = (a ^ b * a ^ c)%F.
-Admitted.
-Theorem f_pow_0_r {F : field} : ∀ n, (n ^ f_zero)%F = f_one.
-Admitted.
-Theorem f_pow_nonzero {F : field} : ∀ n x, (n ^ x)%F ≠ f_zero.
-Proof.
-intros * H.
-specialize (f_pow_add_r n x f_zero) as H1.
-Require Import ZArith.
-...
-Check Z.pow_0_r.
-Search (_ ^ _ ≠ 0)%Z.
-Search (_ ^ (_ + _))%Z.
-Search ((_ * _) ^ _)%Z.
-...
-...
-Z.pow_mul_l: ∀ a b c : Z, ((a * b) ^ c)%Z = (a ^ c * b ^ c)%Z
-Print Z.pow_nonzero.
-Print Z.pow_eq_0.
-Print Z.pow_0_r.
-Search f_pow.
-...
-Require Import QArith.
-  Search (_ # _ * (_ # _))%Q.
+  rewrite f_inv_mul_inv; try now apply f_pow_nonzero.
+  rewrite <- f_pow_mul_l.
+  replace (2 * S n) with (2 + n * 2) by flia.
+  now rewrite f_add_opp_diag_l, f_add_0_l.
+}
 ...
 assert
   (H2 : (zeta s n - f_one / 2 ^ s * zeta s n = zeta_but_mul_of_2 s n)%F). {
