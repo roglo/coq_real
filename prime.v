@@ -336,6 +336,42 @@ assert
   now rewrite f_mul_opp_l.
 }
 assert
+  (H2 :
+     (zeta s (2 * n) - f_one / 2 ^ s * zeta s n =
+      zeta_but_mul_of_2 s (2 * n))%F). {
+  clear H1.
+  induction n. {
+    cbn.
+    rewrite f_mul_0_r.
+    unfold f_sub.
+    now rewrite f_add_opp_diag_r.
+  }
+  replace (2 * S n) with (S (S (2 * n))) by flia.
+  rewrite zeta_succ.
+  rewrite zeta_succ.
+  rewrite zeta_succ.
+  rewrite f_mul_add_distr_l.
+  unfold f_sub.
+  rewrite f_opp_add_distr.
+  rewrite <- (f_add_assoc _ (f_one / S (2 * n) ^ s)%F).
+  rewrite f_add_add_swap.
+  do 2 rewrite f_add_assoc.
+  unfold f_sub in IHn.
+  rewrite IHn.
+  rewrite zeta_but_mul_of_2_succ.
+  rewrite zeta_but_mul_of_2_succ.
+  rewrite <- f_add_assoc.
+  rewrite <- f_add_assoc.
+  rewrite <- f_add_assoc; f_equal.
+  replace (S (2 * n)) with (1 + n * 2) at 3 by flia.
+  rewrite Nat.mod_add; [ | easy ].
+  replace (1 mod 2) with 1 by easy.
+  replace (S (S (2 * n))) with (2 + n * 2) by flia.
+  rewrite Nat.mod_add; [ | easy ].
+  replace (2 mod 2) with 0 by easy.
+  rewrite f_add_0_r.
+...
+assert
   (H2 : (zeta s n - f_one / 2 ^ s * zeta s n = zeta_but_mul_of_2 s n)%F). {
   clear H1.
   induction n. {
