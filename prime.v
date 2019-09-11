@@ -160,6 +160,7 @@ Class field :=
     f_mul_comm : ∀ x y, f_mul x y = f_mul y x;
     f_mul_assoc : ∀ x y z, f_mul x (f_mul y z) = f_mul (f_mul x y) z;
     f_mul_1_l : ∀ x, f_mul f_one x = x;
+    f_mul_inv_diag_r : ∀ x, x ≠ f_zero → f_mul x (f_inv x) = f_one;
     f_mul_add_distr_l : ∀ x y z,
       f_mul x (f_add y z) = f_add (f_mul x y) (f_mul x z) }.
 
@@ -308,6 +309,11 @@ Proof.
 intros.
 split.
 -intros H.
+ assert (H1 : (x * y / y = f_zero / y)%F) by now f_equal.
+ unfold f_div in H1.
+ rewrite <- f_mul_assoc in H1.
+ rewrite f_mul_inv_diag_r in H1.
+(* decidability of equality required? *)
 ...
 Require Import ZArith.
 Print Z.eq_mul_0.
