@@ -461,8 +461,23 @@ assert
   unfold f_div.
   do 4 rewrite f_mul_1_l.
   rewrite f_inv_mul_inv.
+Theorem f_pow_add_r {F : field} : ∀ a b c, (a ^ (b + c))%F = (a ^ b * a ^ c)%F.
+Admitted.
+Theorem f_pow_0_r {F : field} : ∀ n, (n ^ f_zero)%F = f_one.
+Admitted.
+Theorem f_pow_nonzero {F : field} : ∀ n x, (n ^ x)%F ≠ f_zero.
+Proof.
+intros * H.
+specialize (f_pow_add_r n x f_zero) as H1.
 Require Import ZArith.
+...
+Check Z.pow_0_r.
 Search (_ ^ _ ≠ 0)%Z.
+Search (_ ^ (_ + _))%Z.
+Search ((_ * _) ^ _)%Z.
+...
+...
+Z.pow_mul_l: ∀ a b c : Z, ((a * b) ^ c)%Z = (a ^ c * b ^ c)%Z
 Print Z.pow_nonzero.
 Print Z.pow_eq_0.
 Print Z.pow_0_r.
