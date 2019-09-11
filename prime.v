@@ -393,12 +393,12 @@ Fixpoint zeta' {F : field} s n :=
           else f_one))%F
   end.
 
-Fixpoint zeta_but_mul_of_2 {F : field} s n :=
+Fixpoint zeta_but_mul_of {F : field} s d n :=
   match n with
   | 0 => f_zero
   | S n' =>
-      (zeta_but_mul_of_2 s n' +
-       match n mod 2 with
+      (zeta_but_mul_of s d n' +
+       match n mod d with
        | 0 => f_zero
        | _ => f_one / n ^ s
        end)%F
@@ -409,8 +409,8 @@ Theorem zeta_succ {F : field} : ∀ s n,
 Proof. easy. Qed.
 
 Theorem zeta_but_mul_of_2_succ {F : field} : ∀ s n,
-  zeta_but_mul_of_2 s (S n) =
-  (zeta_but_mul_of_2 s n +
+  zeta_but_mul_of s 2 (S n) =
+  (zeta_but_mul_of s 2 n +
    match S n mod 2 with 0 => f_zero | _ => f_one / S n ^ s end)%F.
 Proof. easy. Qed.
 
@@ -427,7 +427,7 @@ assert
 assert
   (H2 :
      (zeta s (2 * n) - f_one / 2 ^ s * zeta s n =
-      zeta_but_mul_of_2 s (2 * n))%F). {
+      zeta_but_mul_of s 2 (2 * n))%F). {
   clear H1.
   induction n. {
     cbn.
