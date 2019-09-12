@@ -435,7 +435,7 @@ Definition ls_pol_mul_l {F : field} p s :=
    (1-1/2^s) = {| lp := [f_one; (- f_one)%F] |}
    ζ(s) = zeta *)
 
-Theorem glop {F : field} :
+Theorem step_1 {F : field} :
   ls_eq (zeta_but_mul_of 2)
     (ls_pol_mul_l {| lp := [f_one; (- f_one)%F] |} zeta).
 Proof.
@@ -457,18 +457,36 @@ destruct b. {
   destruct c; [ easy | ].
   assert (H : n = c + c) by flia Hc.
   clear Hc; subst n.
-  destruct c; [ easy | cbn ].
+  remember 2 as i.
+  assert (Hi : 2 ≤ i) by flia Heqi; clear Heqi.
+  revert i Hi.
+  induction c; intros; [ easy | cbn ].
+  destruct i; [ easy | ].
+  destruct i; [ flia Hi | clear Hi ].
+  destruct i. {
+    replace (c + S c) with (S (c + c)) by flia; cbn.
+    rewrite f_mul_0_l, f_add_0_l, f_add_0_l.
+    apply IHc; flia.
+  }
   rewrite f_mul_0_l, f_add_0_l.
   replace (c + S c) with (S (c + c)) by flia; cbn.
   rewrite f_mul_0_l, f_add_0_l.
-  destruct c; [ easy | cbn ].
-  rewrite f_mul_0_l, f_add_0_l.
-  replace (c + S c) with (S (c + c)) by flia; cbn.
-  rewrite f_mul_0_l, f_add_0_l.
-  destruct c; [ easy | cbn ].
-  rewrite f_mul_0_l, f_add_0_l.
-  replace (c + S c) with (S (c + c)) by flia; cbn.
-  rewrite f_mul_0_l, f_add_0_l.
+  apply IHc; flia.
+}
+destruct b. 2: {
+  specialize (Nat.mod_upper_bound (S n) 2) as H.
+  assert (H1 : 2 ≠ 0) by easy.
+  specialize (H H1); clear H1.
+  flia Hb H.
+}
+rewrite f_mul_1_r.
+destruct n; [ now cbn; rewrite f_add_0_r | cbn ].
+rewrite f_mul_1_r, f_add_assoc, f_add_opp_diag_r, f_add_0_l.
+destruct n; [ easy | cbn ].
+rewrite f_mul_0_l, f_add_0_l.
+destruct n. {
+  cbn.
+(* arghhh..... *)
 ...
 
 Fixpoint zeta {F : field} s n :=
