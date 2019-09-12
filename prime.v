@@ -376,6 +376,15 @@ apply Hy.
 now apply f_mul_eq_0_l in H.
 Qed.
 
+(* representation of zeta function as series in x where x=1/e^s giving:
+     Σ 1/n^s = Σ x^ln(n)
+ *)
+
+Class ln_series :=
+  { ...
+
+...
+
 (* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
 
 Fixpoint zeta {F : field} s n :=
