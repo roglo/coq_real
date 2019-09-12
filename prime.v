@@ -395,6 +395,13 @@ Definition zeta {F : field} := {| ls _ := f_one |}.
       {| lp := [1; 0; 0; ... 0; -1] |}
    where -1 is at the p-th position *)
 
+(* I can represent (1-1/p²)ζ(s) as a simple product
+   and (1-1/3^s)(1-1/2^s)ζ(s) etc. also
+   so I can make my proof, converging to a product of infinite values
+   and whose right hand side converges to 1
+   but how to I deduce that ζ(s)=(1/(1-1/2^s))(1/(1-1/3^s))(1/(1-1/5^s))... ?
+ *)
+
 ...
 
 Fixpoint zeta {F : field} s n :=
