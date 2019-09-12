@@ -388,6 +388,9 @@ Class ln_series {F : field} :=
 Class ln_polyn {F : field} :=
   { lp : list f_type }.
 
+Arguments ls {_}.
+Arguments lp {_}.
+
 Definition zeta {F : field} := {| ls _ := f_one |}.
 
 (* ok, by how do I represent Π (p : prime) 1/(1-1/p^s) ? *)
@@ -401,6 +404,21 @@ Definition zeta {F : field} := {| ls _ := f_one |}.
    and whose right hand side converges to 1
    but how to I deduce that ζ(s)=(1/(1-1/2^s))(1/(1-1/3^s))(1/(1-1/5^s))... ?
  *)
+
+Fixpoint conv_prod {F : field} u v i j :=
+  match j with
+  | 0 => f_zero
+  | S j' => (u i * v j' + conv_prod u v (S i) j')%F
+  end.
+
+Definition ln_ser_mul {F : field} s1 s2 :=
+  {| ls n := conv_prod (ls s1) (ls s2) 0 (S n) |}.
+
+Definition ln_ser_of_pol {F : field} p :=
+  {| ls n := List.nth n (lp p) f_zero |}.
+
+Definition ln_pol_ser_mul {F : field} p s :=
+  ln_ser_mul (ln_ser_of_pol p) s.
 
 ...
 
