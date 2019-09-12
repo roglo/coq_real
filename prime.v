@@ -376,12 +376,19 @@ apply Hy.
 now apply f_mul_eq_0_l in H.
 Qed.
 
-(* representation of zeta function as series in x where x=1/e^s giving:
+(* representation of zeta function as series in x where x=1/e^s; we have
      Σ 1/n^s = Σ x^ln(n)
  *)
 
-Class ln_series :=
-  { ...
+Class ln_series {F : field} :=
+  { ls : nat → f_type }.
+
+Class ln_polyn {F : field} :=
+  { lp : list f_type }.
+
+Definition zeta {F : field} := {| ls _ := f_one |}.
+
+(* ok, by how do I represent Π (p : prime) 1/(1-1/p^s) ? *)
 
 ...
 
