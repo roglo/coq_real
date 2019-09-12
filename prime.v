@@ -376,6 +376,8 @@ apply Hy.
 now apply f_mul_eq_0_l in H.
 Qed.
 
+(* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
+
 (* representation of zeta function as series in x where x=1/e^s; we have
      Σ 1/n^s = Σ x^ln(n)
  *)
@@ -389,10 +391,11 @@ Class ln_polyn {F : field} :=
 Definition zeta {F : field} := {| ls _ := f_one |}.
 
 (* ok, by how do I represent Π (p : prime) 1/(1-1/p^s) ? *)
+(* but I can represent, for the proof, the polynomial 1-1/p^s (= 1-x^ln(p)) as
+      {| lp := [1; 0; 0; ... 0; -1] |}
+   where -1 is at the p-th position *)
 
 ...
-
-(* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
 
 Fixpoint zeta {F : field} s n :=
   match n with
