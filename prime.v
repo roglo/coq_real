@@ -1,7 +1,8 @@
 (* playing with prime numbers, as a break *)
 
 Set Nested Proofs Allowed.
-Require Import Utf8 Arith Psatz.
+Require Import Utf8 Arith Psatz List.
+Import List.ListNotations.
 
 (* "fast" lia, to improve compilation speed *)
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
@@ -393,6 +394,13 @@ Arguments lp {_}.
 
 Definition zeta {F : field} := {| ls _ := f_one |}.
 
+Definition zeta_but_mul_of {F : field} d :=
+  {| ls n :=
+       match S n mod d with
+       | 0 => f_zero
+       | _ => f_one
+       end |}.
+
 (* ok, by how do I represent Π (p : prime) 1/(1-1/p^s) ? *)
 (* but I can represent, for the proof, the polynomial 1-1/p^s (= 1-x^ln(p)) as
       {| lp := [1; 0; 0; ... 0; -1] |}
@@ -411,14 +419,26 @@ Fixpoint conv_prod {F : field} u v i j :=
   | S j' => (u i * v j' + conv_prod u v (S i) j')%F
   end.
 
-Definition ln_ser_mul {F : field} s1 s2 :=
+Definition ls_eq {F : field} s1 s2 := ∀ n, ls s1 n = ls s2 n.
+
+Definition ls_mul {F : field} s1 s2 :=
   {| ls n := conv_prod (ls s1) (ls s2) 0 (S n) |}.
 
-Definition ln_ser_of_pol {F : field} p :=
+Definition ls_of_pol {F : field} p :=
   {| ls n := List.nth n (lp p) f_zero |}.
 
-Definition ln_pol_ser_mul {F : field} p s :=
-  ln_ser_mul (ln_ser_of_pol p) s.
+Definition ls_pol_mul_l {F : field} p s :=
+  ls_mul (ls_of_pol p) s.
+
+(* 1+1/3^s+1/5^s+1/7^s+... = (1-1/2^s)ζ(s) *)
+(* 1+1/3^s+1/5^s+1/7^s+... = zeta_but_mul_of 2
+   (1-1/2^s) = {| lp := [f_one; (- f_one)%F] |}
+   ζ(s) = zeta *)
+
+Theorem glop {F : field} :
+  ls_eq (zeta_but_mul_of 2)
+    (ls_pol_mul_l {| lp := [f_one; (- f_one)%F] |} zeta).
+Proof.
 
 ...
 
