@@ -439,7 +439,36 @@ Theorem glop {F : field} :
   ls_eq (zeta_but_mul_of 2)
     (ls_pol_mul_l {| lp := [f_one; (- f_one)%F] |} zeta).
 Proof.
-
+intros n.
+remember 2 as two; cbn; subst.
+remember (S n mod 2) as b eqn:Hb; symmetry in Hb.
+destruct b. {
+  rewrite f_mul_1_r.
+  apply Nat.mod_divide in Hb; [ | easy ].
+  destruct Hb as (c, Hc).
+  rewrite Nat.mul_comm in Hc; cbn in Hc.
+  rewrite Nat.add_0_r in Hc.
+  destruct n. {
+    destruct c; [ easy | flia Hc ].
+  }
+  cbn.
+  rewrite f_mul_1_r, f_add_assoc.
+  rewrite f_add_opp_diag_r, f_add_0_l.
+  destruct c; [ easy | ].
+  assert (H : n = c + c) by flia Hc.
+  clear Hc; subst n.
+  destruct c; [ easy | cbn ].
+  rewrite f_mul_0_l, f_add_0_l.
+  replace (c + S c) with (S (c + c)) by flia; cbn.
+  rewrite f_mul_0_l, f_add_0_l.
+  destruct c; [ easy | cbn ].
+  rewrite f_mul_0_l, f_add_0_l.
+  replace (c + S c) with (S (c + c)) by flia; cbn.
+  rewrite f_mul_0_l, f_add_0_l.
+  destruct c; [ easy | cbn ].
+  rewrite f_mul_0_l, f_add_0_l.
+  replace (c + S c) with (S (c + c)) by flia; cbn.
+  rewrite f_mul_0_l, f_add_0_l.
 ...
 
 Fixpoint zeta {F : field} s n :=
