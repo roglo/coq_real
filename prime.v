@@ -395,6 +395,8 @@ Class ln_polyn {F : field} :=
 Arguments ls {_}.
 Arguments lp {_}.
 
+Definition ls_eq {F : field} s1 s2 := ∀ n, ls s1 n = ls s2 n.
+
 Definition zeta {F : field} := {| ls _ := f_one |}.
 
 Definition zeta_but_mul_of {F : field} d :=
@@ -404,25 +406,11 @@ Definition zeta_but_mul_of {F : field} d :=
        | _ => f_one
        end |}.
 
-(* ok, by how do I represent Π (p : prime) 1/(1-1/p^s) ? *)
-(* but I can represent, for the proof, the polynomial 1-1/p^s (= 1-x^ln(p)) as
-      {| lp := [1; 0; 0; ... 0; -1] |}
-   where -1 is at the p-th position *)
-
-(* I can represent (1-1/p²)ζ(s) as a simple product
-   and (1-1/3^s)(1-1/2^s)ζ(s) etc. also
-   so I can make my proof, converging to a product of infinite values
-   and whose right hand side converges to 1
-   but how to I deduce that ζ(s)=(1/(1-1/2^s))(1/(1-1/3^s))(1/(1-1/5^s))... ?
- *)
-
 Fixpoint conv_prod {F : field} u v i j :=
   match j with
   | 0 => f_zero
   | S j' => (u i * v j' + conv_prod u v (S i) j')%F
   end.
-
-Definition ls_eq {F : field} s1 s2 := ∀ n, ls s1 n = ls s2 n.
 
 Definition ls_mul {F : field} s1 s2 :=
   {| ls n := conv_prod (ls s1) (ls s2) 0 (S n) |}.
