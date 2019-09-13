@@ -383,6 +383,9 @@ Qed.
      Σ 1/n^s = Σ x^ln(n)
  *)
 
+(* {| ls := u |} represents Σ (n=0,∞) u(n)/(n+1)^s = Σ (n=0,∞) u(n)x^ln(n+1) =
+   Σ (n=0,∞) u(n)(x⊗(n+1)) where a⊗b=a^ln(b)=b^ln(a)=e^(ln(a)ln(b)) *)
+
 Class ln_series {F : field} :=
   { ls : nat → f_type }.
 
