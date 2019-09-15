@@ -22,7 +22,7 @@ value rec log_prod u v n i =
   | _ →
       let i' = i - 1 in
       match (n + 1) mod i with
-      | 0 → u i' *. u (n - i')
+      | 0 → u i' *. v (n - i')
       | _ → f_zero
       end +. log_prod u v n i'
   end.
