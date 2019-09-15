@@ -406,14 +406,18 @@ Definition zeta_but_mul_of {F : field} d :=
        | _ => f_one
        end |}.
 
-Fixpoint conv_prod {F : field} u v i j :=
-  match j with
+Fixpoint log_prod {F : field} u v n i :=
+  match i with
   | 0 => f_zero
-  | S j' => (u i * v j' + conv_prod u v (S i) j')%F
+  | S i' =>
+      (match S n mod i with
+       | 0 => u i' * v (n - i')%nat
+       | _ => f_zero
+       end + log_prod u v n i')%F
   end.
 
 Definition ls_mul {F : field} s1 s2 :=
-  {| ls n := conv_prod (ls s1) (ls s2) 0 (S n) |}.
+  {| ls n := log_prod (ls s1) (ls s2) n (S n) |}.
 
 Definition ls_of_pol {F : field} p :=
   {| ls n := List.nth n (lp p) f_zero |}.
@@ -431,10 +435,13 @@ Theorem step_1 {F : field} :
     (ls_pol_mul_l {| lp := [f_one; (- f_one)%F] |} zeta).
 Proof.
 intros n.
-remember 2 as two; cbn; subst.
+Opaque Nat.modulo.
+cbn.
+Transparent Nat.modulo.
+rewrite Nat.mod_same; [ | easy ].
+rewrite f_mul_1_r.
 remember (S n mod 2) as b eqn:Hb; symmetry in Hb.
 destruct b. {
-  rewrite f_mul_1_r.
   apply Nat.mod_divide in Hb; [ | easy ].
   destruct Hb as (c, Hc).
   rewrite Nat.mul_comm in Hc; cbn in Hc.
@@ -442,8 +449,9 @@ destruct b. {
   destruct n. {
     destruct c; [ easy | flia Hc ].
   }
-  cbn.
+  Opaque Nat.modulo. cbn. Transparent Nat.modulo.
   rewrite f_mul_1_r, f_add_assoc.
+...
   rewrite f_add_opp_diag_r, f_add_0_l.
   destruct c; [ easy | ].
   assert (H : n = c + c) by flia Hc.
