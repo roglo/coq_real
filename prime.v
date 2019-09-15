@@ -460,6 +460,16 @@ symmetry.
 destruct b. {
   apply Nat.mod_divide in Hb; [ | easy ].
   destruct Hb as (c, Hc).
+  destruct n; [ flia Hc | ].
+  destruct n. {
+    subst p; cbn.
+    rewrite f_mul_1_r, f_add_0_r.
+    apply f_add_opp_diag_l.
+  }
+  replace (ls p (S (S n))) with f_zero. 2: {
+    subst p; cbn; now destruct n.
+  }
+  rewrite f_add_0_l.
 ...
 intros n.
 unfold ls_pol_mul_l.
