@@ -481,6 +481,8 @@ destruct b. {
   }
   replace (ls p (S (S m * 2))) with f_zero in IHm by now rewrite Hp.
   rewrite f_add_0_l in IHm.
+  replace (S (S m * 2)) with (2 * m + 3) in IHm by flia.
+  replace (S (S (S m) * 2)) with (2 * m + 5) by flia.
 ...
   destruct n. {
     subst p; cbn.
