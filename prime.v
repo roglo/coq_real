@@ -430,11 +430,25 @@ Definition ls_pol_mul_l {F : field} p s :=
    (1-1/2^s) = {| lp := [f_one; (- f_one)%F] |}
    ζ(s) = zeta *)
 
+Theorem Nat_succ_mod : ∀ n, 2 ≤ n → S n mod n = 1.
+Proof.
+intros * Hn.
+replace (S n) with (1 + 1 * n) by flia.
+rewrite Nat.mod_add; [ | flia Hn ].
+specialize (Nat.div_mod 1 n) as H1.
+assert (H : n ≠ 0) by flia Hn.
+specialize (H1 H); clear H.
+rewrite Nat.div_small in H1; [ | flia Hn ].
+now rewrite Nat.mul_0_r in H1.
+Qed.
+
 Theorem step_1 {F : field} :
   ls_eq (zeta_but_mul_of 2)
     (ls_pol_mul_l {| lp := [f_one; (- f_one)%F] |} zeta).
 Proof.
 intros n.
+unfold ls_pol_mul_l.
+remember ls_of_pol as f eqn:Hf.
 Opaque Nat.modulo.
 cbn.
 Transparent Nat.modulo.
@@ -451,7 +465,23 @@ destruct b. {
   }
   Opaque Nat.modulo. cbn. Transparent Nat.modulo.
   rewrite f_mul_1_r, f_add_assoc.
+  destruct n. {
+    subst f; cbn.
+    now rewrite f_add_opp_diag_l, f_add_0_l.
+  }
+(*
+  replace (match n with | 0 | _ => f_zero end) with f_zero by now destruct n.
+  rewrite f_add_0_l.
+*)
+  rewrite Nat_succ_mod; [ | flia ].
+  rewrite f_add_0_r; symmetry.
+  Opaque Nat.modulo.
+  remember (S (S n)) as m; cbn; subst m.
+  cbn. Transparent Nat.modulo.
+  replace (S (S (S n))) with (2 + 1 * S n) by flia.
+  rewrite Nat.mod_add; [ | easy ].
 ...
+  replace (S (S n) mod S n ...
   rewrite f_add_opp_diag_r, f_add_0_l.
   destruct c; [ easy | ].
   assert (H : n = c + c) by flia Hc.
