@@ -448,6 +448,16 @@ Theorem step_1 {F : field} :
 Proof.
 intros n.
 unfold ls_pol_mul_l.
+remember (ls_of_pol {| lp := [f_one; (- f_one)%F] |}) as p eqn:Hp.
+remember zeta as ζ eqn:Hζ.
+Opaque Nat.modulo. cbn. Transparent Nat.modulo.
+subst ζ.
+replace (ls zeta (n - n)) with f_one by easy.
+rewrite f_mul_1_r.
+rewrite Nat.mod_same; [ | easy ].
+...
+intros n.
+unfold ls_pol_mul_l.
 remember ls_of_pol as f eqn:Hf.
 Opaque Nat.modulo.
 cbn.
