@@ -473,6 +473,14 @@ destruct b. {
   }
   replace (ls p (S (S m * 2))) with f_zero by now subst p.
   rewrite f_add_0_l.
+  destruct m. {
+    subst p; cbn.
+    do 2 rewrite f_mul_1_r.
+    rewrite f_add_0_l, f_add_0_r.
+    apply f_add_opp_diag_l.
+  }
+  replace (ls p (S (S m * 2))) with f_zero in IHm by now rewrite Hp.
+  rewrite f_add_0_l in IHm.
 ...
   destruct n. {
     subst p; cbn.
