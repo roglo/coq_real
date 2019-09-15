@@ -471,6 +471,32 @@ destruct b. {
   }
   rewrite f_add_0_l.
 ...
+Theorem glop {F : field} : ∀ n m,
+  Nat.Odd n
+  → m ≤ n
+  → log_prod (ls (ls_of_pol {| lp := [f_one; (- f_one)%F] |}))
+       (ls zeta) (S (S n)) m = f_zero.
+Proof.
+intros * Hn Hm.
+remember (ls_of_pol {| lp := [f_one; (- f_one)%F] |}) as p eqn:Hp.
+revert n Hn Hm.
+induction m; intros; [ easy | ].
+remember zeta as z.
+Opaque Nat.modulo. cbn; subst z. Transparent Nat.modulo.
+remember (S (S (S n)) mod S m) as b eqn:Hb; symmetry in Hb.
+destruct b. {
+  destruct m. {
+    subst p; cbn.
+cbn in Hb.
+...
+  Opaque Nat.modulo.
+  remember zeta as z.
+  remember (S n) as m; cbn; subst z.
+  Transparent Nat.modulo.
+  rewrite Nat_succ_mod; [ | subst m; flia ].
+  rewrite f_add_0_l.
+  subst m.
+...
 intros n.
 unfold ls_pol_mul_l.
 remember ls_of_pol as f eqn:Hf.
