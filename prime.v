@@ -470,6 +470,14 @@ destruct b. {
     subst p; cbn; now destruct n.
   }
   rewrite f_add_0_l.
+  remember (S n) as m.
+  remember zeta as z.
+  Opaque Nat.modulo. cbn; subst m z.
+  rewrite Nat_succ_mod; [ | flia ].
+  rewrite f_add_0_l.
+  destruct c; [ easy | ].
+  cbn in Hc.
+  do 2 apply Nat.succ_inj in Hc.
 ...
 Theorem glop {F : field} : ∀ n m,
   Nat.Odd n
