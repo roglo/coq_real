@@ -1,4 +1,5 @@
 value list_nth_def i l d =
+if i < 0 then failwith ("glop" ^ string_of_int i) else
   match List.nth_opt l i with
   | Some v → v
   | None → d
@@ -21,7 +22,7 @@ value rec log_prod u v n i =
   | _ →
       let i' = i - 1 in
       match (n + 1) mod i with
-      | 0 → u i *. u (n + 1 - i)
+      | 0 → u i' *. u (n - i')
       | _ → f_zero
       end +. log_prod u v n i'
   end.
