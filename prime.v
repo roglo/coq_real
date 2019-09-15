@@ -459,8 +459,21 @@ remember (S n mod 2) as b eqn:Hb; symmetry in Hb.
 symmetry.
 destruct b. {
   apply Nat.mod_divide in Hb; [ | easy ].
-  destruct Hb as (c, Hc).
-  destruct n; [ flia Hc | ].
+  destruct Hb as (m, Hm).
+  destruct n; [ flia Hm | ].
+  destruct m; [ easy | ].
+  cbn in Hm.
+(**)
+  do 2 apply Nat.succ_inj in Hm.
+  subst n.
+  induction m. {
+    subst p; cbn.
+    rewrite f_mul_1_r, f_add_0_r.
+    apply f_add_opp_diag_l.
+  }
+  replace (ls p (S (S m * 2))) with f_zero by now subst p.
+  rewrite f_add_0_l.
+...
   destruct n. {
     subst p; cbn.
     rewrite f_mul_1_r, f_add_0_r.
