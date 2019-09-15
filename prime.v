@@ -455,6 +455,11 @@ subst ζ.
 replace (ls zeta (n - n)) with f_one by easy.
 rewrite f_mul_1_r.
 rewrite Nat.mod_same; [ | easy ].
+remember (S n mod 2) as b eqn:Hb; symmetry in Hb.
+symmetry.
+destruct b. {
+  apply Nat.mod_divide in Hb; [ | easy ].
+  destruct Hb as (c, Hc).
 ...
 intros n.
 unfold ls_pol_mul_l.
