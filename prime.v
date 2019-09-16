@@ -422,18 +422,6 @@ Fixpoint log_prod {F : field} u v n i :=
          end + log_prod u v n i')%F
   end.
 
-(*
-Fixpoint log_prod {F : field} u v n i :=
-  match i with
-  | 0 => f_zero
-  | S i' =>
-      (match S n mod i with
-       | 0 => u i' * v (S n / i - 1)%nat
-       | _ => f_zero
-       end + log_prod u v n i')%F
-  end.
-*)
-
 Definition ls_mul {F : field} s1 s2 :=
   {| ls n := log_prod (ls s1) (ls s2) n (S n) |}.
 
