@@ -502,9 +502,11 @@ destruct (Nat.eq_dec n 0) as [Hn| Hn]. {
   now rewrite f_mul_1_r, f_add_0_r.
 }
 remember (S n mod 2) as m eqn:Hm; symmetry in Hm.
+symmetry.
 destruct m. {
   apply Nat.mod_divides in Hm; [ | easy ].
   destruct Hm as (m, Hm).
+...
   destruct n; [ flia Hm | clear Hn ].
   replace (ls p 0) with f_one by now subst p.
   rewrite f_mul_1_l.
