@@ -409,13 +409,20 @@ Definition zeta_but_mul_of {F : field} d :=
 Fixpoint log_prod {F : field} u v n i :=
   match i with
   | 0 => f_zero
-  | _ =>
-      let j := S (S n) - i in
-      let q := S n / j in
+  | S i' =>
+      let j := S n - i in
+      let q := S n / S j - 1 in
       if lt_dec q j then f_zero
-      else if ...
-...
+      else
+        (match S n mod S j with
+         | 0 =>
+             if Nat.eq_dec q j then u j * v j
+             else u j * v q + u q * v j
+         | _ => f_zero
+         end + log_prod u v n i')%F
+  end.
 
+(*
 Fixpoint log_prod {F : field} u v n i :=
   match i with
   | 0 => f_zero
@@ -425,6 +432,7 @@ Fixpoint log_prod {F : field} u v n i :=
        | _ => f_zero
        end + log_prod u v n i')%F
   end.
+*)
 
 Definition ls_mul {F : field} s1 s2 :=
   {| ls n := log_prod (ls s1) (ls s2) n (S n) |}.
@@ -454,10 +462,16 @@ Qed.
 
 Theorem log_prod_succ {F : field} : ∀ u v n i,
   log_prod u v n (S i) =
-    (match S n mod S i with
-     | 0 => u i * v (S n / S i - 1)%nat
-     | S _ => f_zero
-     end + log_prod u v n i)%F.
+    let j := n - i in
+    let q := S n / S j - 1 in
+    if lt_dec q j then f_zero
+    else
+      (match S n mod S j with
+       | 0 =>
+           if Nat.eq_dec q (n - i) then u j * v j
+           else u j * v q + u q * v j
+       | S _ => f_zero
+       end + log_prod u v n i)%F.
 Proof. easy. Qed.
 
 Theorem log_prod_comm {F : field} : ∀ s1 s2 n i,
