@@ -454,9 +454,13 @@ Theorem log_prod_comm {F : field} : ∀ s1 s2 n i,
   log_prod s1 s2 n i = log_prod s2 s1 n i.
 Proof.
 intros.
+...
 revert n.
 induction i; intros; [ easy | ].
-rewrite log_prod_succ.
+do 2 rewrite log_prod_succ.
+f_equal; [ | apply IHi ].
+remember (S n mod S i) as m eqn:Hm; symmetry in Hm.
+destruct m; [ | easy ].
 ...
 
 Theorem step_1 {F : field} :
