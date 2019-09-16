@@ -491,58 +491,16 @@ remember (ls_of_pol {| lp := [f_one; (- f_one)%F] |}) as p eqn:Hp.
 remember zeta as ζ eqn:Hζ.
 Opaque Nat.modulo. Opaque Nat.div. cbn.
 Transparent Nat.modulo. Transparent Nat.div.
-...
-subst ζ.
-rewrite Nat.div_same; [ | easy ].
 rewrite Nat.sub_diag.
-replace (ls zeta 0) with f_one by easy.
-rewrite f_mul_1_r.
-rewrite Nat.mod_same; [ | easy ].
-remember (S n mod 2) as b eqn:Hb; symmetry in Hb.
-symmetry.
-destruct b. {
-  apply Nat.mod_divide in Hb; [ | easy ].
-  destruct Hb as (m, Hm).
-  destruct n; [ flia Hm | ].
-  destruct m; [ easy | ].
-  cbn in Hm.
-  do 2 apply Nat.succ_inj in Hm.
-  subst n.
-  induction m. {
-    subst p; cbn.
-    rewrite f_mul_1_r, f_add_0_r.
-    apply f_add_opp_diag_l.
-  }
-  replace (ls p (S (S m * 2))) with f_zero by now subst p.
-  rewrite f_add_0_l.
-  destruct m. {
-    subst p; cbn.
-    do 2 rewrite f_mul_1_r.
-    rewrite f_add_0_l, f_add_0_r.
-    apply f_add_opp_diag_l.
-  }
-  replace (ls p (S (S m * 2))) with f_zero in IHm by now rewrite Hp.
-  rewrite f_add_0_l in IHm.
-  replace (S (S m * 2)) with (2 * m + 3) in IHm by flia.
-(**)
-  replace (S (S (S m) * 2)) with (2 * m + 5) by flia.
-Print log_prod.
-rewrite log_prod_comm.
-...
-  rewrite log_prod_succ.
-  replace (S (S (S m) * 2)) with (2 * m + 5) by flia.
-  rewrite Nat_succ_mod; [ | flia ].
-  rewrite f_add_0_l.
-...
-  replace (S (S m) * 2) with (S (2 * m + 3)) by flia.
-  rewrite log_prod_succ.
-  replace (S (2 * m + 5)) with (2 * m + 6) by flia.
-  replace (S (2 * m + 3)) with (2 * m + 4) by flia.
-  replace ((2 * m + 6) mod (2 * m + 4)) with 2. 2: {
-    clear; symmetry.
-...
-  }
-  rewrite f_add_0_l.
+rewrite Nat.div_1_r.
+rewrite Nat.sub_succ, Nat.sub_0_r.
+rewrite Nat.mod_1_r.
+Opaque Nat.modulo. Opaque Nat.div. cbn.
+Transparent Nat.modulo. Transparent Nat.div.
+destruct (Nat.eq_dec n 0) as [Hn| Hn]. {
+  subst n; cbn; subst ζ p; cbn.
+  now rewrite f_mul_1_r, f_add_0_r.
+}
 ...
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
