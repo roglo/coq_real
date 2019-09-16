@@ -450,6 +450,15 @@ Theorem log_prod_succ {F : field} : ∀ u v n i,
      end + log_prod u v n i)%F.
 Proof. easy. Qed.
 
+Theorem log_prod_comm {F : field} : ∀ s1 s2 n i,
+  log_prod s1 s2 n i = log_prod s2 s1 n i.
+Proof.
+intros.
+revert n.
+induction i; intros; [ easy | ].
+rewrite log_prod_succ.
+...
+
 Theorem step_1 {F : field} :
   ls_eq (zeta_but_mul_of 2)
     (ls_pol_mul_l {| lp := [f_one; (- f_one)%F] |} zeta).
@@ -494,11 +503,14 @@ destruct b. {
   replace (S (S m * 2)) with (2 * m + 3) in IHm by flia.
 (**)
   replace (S (S (S m) * 2)) with (2 * m + 5) by flia.
+Print log_prod.
+rewrite log_prod_comm.
 ...
   rewrite log_prod_succ.
   replace (S (S (S m) * 2)) with (2 * m + 5) by flia.
   rewrite Nat_succ_mod; [ | flia ].
   rewrite f_add_0_l.
+...
   replace (S (S m) * 2) with (S (2 * m + 3)) by flia.
   rewrite log_prod_succ.
   replace (S (2 * m + 5)) with (2 * m + 6) by flia.
