@@ -442,6 +442,14 @@ rewrite Nat.div_small in H1; [ | flia Hn ].
 now rewrite Nat.mul_0_r in H1.
 Qed.
 
+Theorem log_prod_succ {F : field} : ∀ u v n i,
+  log_prod u v n (S i) =
+    (match S n mod S i with
+     | 0 => u i * v (S n / S i - 1)%nat
+     | S _ => f_zero
+     end + log_prod u v n i)%F.
+Proof. easy. Qed.
+
 Theorem step_1 {F : field} :
   ls_eq (zeta_but_mul_of 2)
     (ls_pol_mul_l {| lp := [f_one; (- f_one)%F] |} zeta).
@@ -484,7 +492,22 @@ destruct b. {
   replace (ls p (S (S m * 2))) with f_zero in IHm by now rewrite Hp.
   rewrite f_add_0_l in IHm.
   replace (S (S m * 2)) with (2 * m + 3) in IHm by flia.
+(**)
   replace (S (S (S m) * 2)) with (2 * m + 5) by flia.
+...
+  rewrite log_prod_succ.
+  replace (S (S (S m) * 2)) with (2 * m + 5) by flia.
+  rewrite Nat_succ_mod; [ | flia ].
+  rewrite f_add_0_l.
+  replace (S (S m) * 2) with (S (2 * m + 3)) by flia.
+  rewrite log_prod_succ.
+  replace (S (2 * m + 5)) with (2 * m + 6) by flia.
+  replace (S (2 * m + 3)) with (2 * m + 4) by flia.
+  replace ((2 * m + 6) mod (2 * m + 4)) with 2. 2: {
+    clear; symmetry.
+...
+  }
+  rewrite f_add_0_l.
 ...
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
