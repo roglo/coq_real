@@ -24,7 +24,7 @@ value log_prod_tail_rec u v n =
         let i' = i - 1 in
         let accu = accu +.
 	  match (n + 1) mod i with
-	  | 0 → u i' *. v (n - i')
+	  | 0 → u i' *. v ((n + 1) / i - 1)
 	  | _ → f_zero
          end
          in
@@ -37,7 +37,7 @@ value rec log_prod u v n i =
   | _ →
       let i' = i - 1 in
       match (n + 1) mod i with
-      | 0 → u i' *. v (n - i')
+      | 0 → u i' *. v ((n + 1) / i - 1)
       | _ → f_zero
       end +. log_prod u v n i'
   end.

@@ -411,7 +411,7 @@ Fixpoint log_prod {F : field} u v n i :=
   | 0 => f_zero
   | S i' =>
       (match S n mod i with
-       | 0 => u i' * v (n - i')%nat
+       | 0 => u i' * v (S n / i - 1)%nat
        | _ => f_zero
        end + log_prod u v n i')%F
   end.
@@ -450,9 +450,12 @@ intros n.
 unfold ls_pol_mul_l.
 remember (ls_of_pol {| lp := [f_one; (- f_one)%F] |}) as p eqn:Hp.
 remember zeta as ζ eqn:Hζ.
-Opaque Nat.modulo. cbn. Transparent Nat.modulo.
+Opaque Nat.modulo. Opaque Nat.div. cbn.
+Transparent Nat.modulo.
 subst ζ.
-replace (ls zeta (n - n)) with f_one by easy.
+rewrite Nat.div_same; [ | easy ].
+rewrite Nat.sub_diag.
+replace (ls zeta 0) with f_one by easy.
 rewrite f_mul_1_r.
 rewrite Nat.mod_same; [ | easy ].
 remember (S n mod 2) as b eqn:Hb; symmetry in Hb.
@@ -463,7 +466,6 @@ destruct b. {
   destruct n; [ flia Hm | ].
   destruct m; [ easy | ].
   cbn in Hm.
-(**)
   do 2 apply Nat.succ_inj in Hm.
   subst n.
   induction m. {
