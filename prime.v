@@ -501,6 +501,39 @@ destruct (Nat.eq_dec n 0) as [Hn| Hn]. {
   subst n; cbn; subst ζ p; cbn.
   now rewrite f_mul_1_r, f_add_0_r.
 }
+remember (S n mod 2) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  apply Nat.mod_divides in Hm; [ | easy ].
+  destruct Hm as (m, Hm).
+  destruct n; [ flia Hm | clear Hn ].
+  replace (ls p 0) with f_one by now subst p.
+  rewrite f_mul_1_l.
+  replace (ls ζ 0) with f_one by now subst ζ.
+  replace (ls ζ (S n)) with f_one by now subst ζ.
+  rewrite f_mul_1_r.
+  destruct n. {
+    subst p; cbn.
+    now rewrite f_add_opp_diag_r, f_add_0_l.
+  }
+  replace (ls p (S (S n))) with f_zero by now subst p; destruct n.
+  rewrite f_add_0_r; symmetry.
+  destruct m; [ easy | ].
+  destruct m; [ easy | ].
+  rewrite Nat.mul_comm in Hm.
+  cbn in Hm.
+  do 3 apply Nat.succ_inj in Hm.
+  revert m Hm.
+  induction n; intros; [ easy | ].
+  apply Nat.succ_inj in Hm.
+  destruct m. {
+    cbn in Hm; subst n ζ p; cbn.
+    now rewrite f_mul_1_r, f_add_0_r, f_add_opp_diag_r.
+  }
+...
+  subst n ζ p.
+  Opaque Nat.modulo. Opaque Nat.div. cbn.
+  Transparent Nat.modulo. Transparent Nat.div.
+
 ...
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
