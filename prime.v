@@ -409,6 +409,16 @@ Definition zeta_but_mul_of {F : field} d :=
 Fixpoint log_prod {F : field} u v n i :=
   match i with
   | 0 => f_zero
+  | _ =>
+      let j := S (S n) - i in
+      let q := S n / j in
+      if lt_dec q j then f_zero
+      else if ...
+...
+
+Fixpoint log_prod {F : field} u v n i :=
+  match i with
+  | 0 => f_zero
   | S i' =>
       (match S n mod i with
        | 0 => u i' * v (S n / i - 1)%nat

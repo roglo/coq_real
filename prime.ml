@@ -40,15 +40,20 @@ value rec log_prod u v n i =
   match i with
   | 0 → f_zero
   | _ →
-      let i' = i - 1 in
-      match (n + 1) mod i with
-      | 0 → u i' *. v ((n + 1) / i - 1)
-      | _ → f_zero
-      end +. log_prod u v n i'
+      let j = n + 2 - i in
+      let q = (n + 1) / j in
+      if q < j then f_zero
+      else
+        match (n + 1) mod j with
+        | 0 →
+	    if q = j then u (j - 1) *. v (j - 1)
+	    else u (j - 1) *. v (q - 1) +. u (q - 1) *. v (j - 1)
+        | _ → f_zero
+        end +. log_prod u v n (i - 1)
   end.
 
 value ls_mul s1 s2 =
-  { ls n = log_prod_tail_rec s1.ls s2.ls n (n + 1) }.
+  { ls n = log_prod(*_tail_rec*) s1.ls s2.ls n (n + 1) }.
 
 value ls_of_pol p =
   { ls n = list_nth_def n p.lp f_zero }.
