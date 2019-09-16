@@ -16,6 +16,21 @@ value f_one = 1.;
 
 value zeta = { ls _ = f_one }.
 
+value log_prod_tail_rec u v n =
+  log_prod_loop 0. where rec log_prod_loop accu i =
+    match i with
+    | 0 → accu
+    | _ →
+        let i' = i - 1 in
+        let accu = accu +.
+	  match (n + 1) mod i with
+	  | 0 → u i' *. v (n - i')
+	  | _ → f_zero
+         end
+         in
+         log_prod_loop accu i'
+    end.
+
 value rec log_prod u v n i =
   match i with
   | 0 → f_zero
@@ -28,7 +43,7 @@ value rec log_prod u v n i =
   end.
 
 value ls_mul s1 s2 =
-  { ls n = log_prod s1.ls s2.ls n (n + 1) }.
+  { ls n = log_prod_tail_rec s1.ls s2.ls n (n + 1) }.
 
 value ls_of_pol p =
   { ls n = list_nth_def n p.lp f_zero }.
