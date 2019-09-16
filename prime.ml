@@ -26,9 +26,9 @@ value log_prod_tail_rec u v n =
 	  match (n + 1) mod i with
 	  | 0 → u i' *. v ((n + 1) / i - 1)
 	  | _ → f_zero
-         end
-         in
-         log_prod_loop accu i'
+          end
+        in
+        log_prod_loop accu i'
     end.
 
 value rec log_prod u v n i =
