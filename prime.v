@@ -466,14 +466,20 @@ Theorem log_prod_comm {F : field} : ∀ s1 s2 n i,
   log_prod s1 s2 n i = log_prod s2 s1 n i.
 Proof.
 intros.
-...
 revert n.
 induction i; intros; [ easy | ].
 do 2 rewrite log_prod_succ.
+Opaque Nat.div. Opaque Nat.modulo. cbn.
+Transparent Nat.div. Transparent Nat.modulo.
+set (j := n - i).
+set (q := S n / S j - 1).
+destruct (lt_dec q j) as [Hqj| Hqj]; [ easy | ].
 f_equal; [ | apply IHi ].
-remember (S n mod S i) as m eqn:Hm; symmetry in Hm.
+remember (S n mod S j) as m eqn:Hm; symmetry in Hm.
 destruct m; [ | easy ].
-...
+destruct (Nat.eq_dec q j) as [| Hqje]; [ apply f_mul_comm | ].
+rewrite f_add_comm; f_equal; apply f_mul_comm.
+Qed.
 
 Theorem step_1 {F : field} :
   ls_eq (zeta_but_mul_of 2)
@@ -484,7 +490,8 @@ unfold ls_pol_mul_l.
 remember (ls_of_pol {| lp := [f_one; (- f_one)%F] |}) as p eqn:Hp.
 remember zeta as ζ eqn:Hζ.
 Opaque Nat.modulo. Opaque Nat.div. cbn.
-Transparent Nat.modulo.
+Transparent Nat.modulo. Transparent Nat.div.
+...
 subst ζ.
 rewrite Nat.div_same; [ | easy ].
 rewrite Nat.sub_diag.
