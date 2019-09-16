@@ -27,8 +27,8 @@ value log_prod_tail_rec u v n _ =
           let accu =
 	    match (n + 1) mod i with
 	    | 0 →
-	        let accu = accu +. u (i - 1) *. v (q - 1) in
-		if i = q then accu else accu +. u (q - 1) *. v (i - 1)
+		if q = i then accu +. u (i - 1) *. v (i - 1)
+		else accu +. u (i - 1) *. v (q - 1) +. u (q - 1) *. v (i - 1)
 	    | _ → accu
             end
           in
@@ -64,4 +64,3 @@ value ζ_but_mul_of d =
 
 value f1 = ζ_but_mul_of 2;
 value f2 = ls_pol_mul_l { lp = [f_one; -. f_one] } ζ;
-
