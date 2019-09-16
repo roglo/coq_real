@@ -506,6 +506,11 @@ symmetry.
 destruct m. {
   apply Nat.mod_divides in Hm; [ | easy ].
   destruct Hm as (m, Hm).
+  replace (ls p 0) with f_one by now subst p.
+  rewrite f_mul_1_l.
+  replace (ls ζ 0) with f_one by now subst ζ.
+  rewrite f_mul_1_r.
+  replace (ls ζ n) with f_one by now subst ζ.
 ...
   destruct n; [ flia Hm | clear Hn ].
   replace (ls p 0) with f_one by now subst p.
