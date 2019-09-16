@@ -16,20 +16,23 @@ value f_one = 1.;
 
 value ζ = { ls _ = f_one }.
 
-value log_prod_tail_rec u v n =
-  log_prod_loop 0. where rec log_prod_loop accu i =
+value log_prod_tail_rec u v n _ =
+  log_prod_loop 0. 1 where rec log_prod_loop accu i =
     match i with
     | 0 → accu
     | _ →
-        let i' = i - 1 in
 	let q = (n + 1) / i in
-        let accu = accu +.
-	  match (n + 1) mod i with
-	  | 0 → u i' *. v ((n + 1) / i - 1)
-	  | _ → f_zero
-          end
-        in
-        log_prod_loop accu i'
+	if q < i then accu
+	else
+          let accu =
+	    match (n + 1) mod i with
+	    | 0 →
+	        let accu = accu +. u (i - 1) *. v (q - 1) in
+		if i = q then accu else accu +. u (q - 1) *. v (i - 1)
+	    | _ → accu
+            end
+          in
+          log_prod_loop accu (i + 1)
     end.
 
 value rec log_prod u v n i =
