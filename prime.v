@@ -422,6 +422,10 @@ Fixpoint log_prod {F : field} u v n i :=
          end + log_prod u v n i')%F
   end.
 
+(* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
+Definition ls_add {F : field} s1 s2 :=
+  {| ls n := (ls s1 n + ls s2 n)%F |}.
+
 (* Σ (i = 1, ∞) s1_(i-1) x^ln(i) * Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
 Definition ls_mul {F : field} s1 s2 :=
   {| ls n := log_prod (ls s1) (ls s2) n (S n) |}.
@@ -483,13 +487,27 @@ destruct (Nat.eq_dec q j) as [| Hqje]; [ apply f_mul_comm | ].
 rewrite f_add_comm; f_equal; apply f_mul_comm.
 Qed.
 
-(* x^ln(n) * Σ (i = 1, ∞) s_(i-1) x^ln(i) = Σ (i = 1, ∞) a_(i-1) x^ln(n*i) *)
-Definition ls_mul_elem {F : field} s n :=
+...
+
+(* c*x^ln(n) * Σ (i = 1, ∞) s_(i-1)*x^ln(i) =
+   Σ (i = 1, ∞) c*s_(i-1) x^ln(n*i) *)
+Definition ls_mul_elem {F : field} s c n :=
   {| ls i :=
        match i mod n with
-       | 0 => ls s (i / n)
+       | 0 => (c * ls s (i / n))%F
        | _ => f_zero
        end |}.
+
+(* multiplication of a series by the first k elements of another series
+   (i.e. a polynomial formed by its first k elements)
+    Σ (i = 1, ∞) s1_(i-1) x^ln(i) * Σ (i = 1, k) s2_(i-1) x^ln(i) *)
+Fixpoint ls_mul_r_upto {F : field} s1 s2 k :=
+  match k with
+  | 0 => {| ls _ := f_zero |}
+  | S k' =>
+      ls_add (ls_mul_r_upto s1 s2 k')
+        (ls_mul_elem s1 (ls s2 k') k)
+  end.
 
 ...
 

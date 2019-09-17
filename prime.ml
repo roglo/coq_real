@@ -53,17 +53,34 @@ value rec log_prod u v n i =
         end +. log_prod u v n (i - 1)
   end.
 
+(* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
+value ls_add s1 s2 =
+  { ls n = s1.ls n +. s2.ls n }.
+
+(* Σ (i = 1, ∞) s1_(i-1) x^ln(i) * Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
+value ls_mul s1 s2 =
+  { ls n = log_prod(*_tail_rec*) s1.ls s2.ls n (n + 1) }.
+
 (* Σ (i = 1, ∞) s1_i x^ln(i) * Σ (i = 1, ∞) s2_i x^ln(i) *)
 value ls_mul s1 s2 =
   { ls n = log_prod(*_tail_rec*) s1.ls s2.ls n (n + 1) }.
 
-(* x^ln(n) * Σ (i = 1, ∞) a_i x^ln(i) = Σ (i = 1, ∞) a_i x^ln(n*i) *)
-value ls_mul_elem s n =
+(* c*x^ln(n+1) * Σ (i = 1, ∞) s_(i-1) x^ln(i) =
+   Σ (i = 1, ∞) c*s_(i-1) x^ln((n+1)*i) *)
+value ls_mul_elem s c n =
   { ls i =
-      match i mod n with
-      | 0 -> s.ls (i / n)
+      match (i + 1) mod (n + 1) with
+      | 0 -> c *. s.ls i
       | _ -> f_zero
       end }.
+
+value rec ls_mul_r_upto s1 s2 k =
+  match k with
+  | 0 -> { ls _ = f_zero }
+  | _ ->
+      ls_add (ls_mul_r_upto s1 s2 (k - 1))
+        (ls_mul_elem s1 (s2.ls (k - 1)) (k - 1))
+  end.
 
 value ls_of_pol p =
   { ls n = list_nth_def n p.lp f_zero }.
