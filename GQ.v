@@ -218,9 +218,8 @@ Proof.
 intros.
 apply GQeq_eq.
 unfold GQ_of_PQ.
-remember GQadd as f; simpl; subst f.
+cbn.
 unfold "+"%GQ.
-remember PQadd as f; simpl; subst f.
 now rewrite PQred_add.
 Qed.
 
@@ -230,9 +229,7 @@ Proof.
 intros * Hyx.
 apply GQeq_eq.
 unfold GQ_of_PQ.
-remember GQsub as f; simpl; subst f.
 unfold "-"%GQ.
-remember GQsub as f; simpl; subst f.
 now apply PQred_sub.
 Qed.
 
@@ -242,9 +239,7 @@ Proof.
 intros.
 apply GQeq_eq.
 unfold GQ_of_PQ.
-remember GQmul as f; simpl; subst f.
-unfold "*"%GQ.
-remember PQmul as f; simpl; subst f.
+unfold "*"%GQ; cbn.
 now rewrite PQred_mul.
 Qed.
 
