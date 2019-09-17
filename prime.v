@@ -489,40 +489,30 @@ Qed.
 
 (* c*x^ln(n+1) * Σ (i = 1, ∞) s_(i-1) x^ln(i) =
    Σ (i = 1, ∞) c*s_(i-1) x^ln((n+1)*i) *)
-Definition ls_mul_elem {F : field} s c n :=
+Definition ls_mul_elem {F : field} c n s :=
   {| ls i :=
        match (i + 1) mod (n + 1) with
        | 0 => (c * ls s i)%F
        | _ => f_zero
        end |}.
 
-(* multiplication of a series by the first k elements of another series
+(* multiplication of the first k elements of a series
    (i.e. a polynomial formed by its first k elements)
-    Σ (i = 1, ∞) s1_(i-1) x^ln(i) * Σ (i = 1, k) s2_(i-1) x^ln(i) *)
-Fixpoint ls_mul_r_upto {F : field} s1 s2 k :=
+   to a series
+    Σ (i = 1, k) s1_(i-1) x^ln(i) * Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
+Fixpoint ls_mul_l_upto {F : field} k s1 s2 :=
   match k with
   | 0 => {| ls _ := f_zero |}
-  | S k' => ls_add (ls_mul_r_upto s1 s2 k') (ls_mul_elem s1 (ls s2 k') k')
+  | S k' => ls_add (ls_mul_l_upto k' s1 s2) (ls_mul_elem (ls s2 k') k' s1)
   end.
 
+Theorem ls_pol_mul_l_eq_ls_mul_r_upto {F : field} :
+  ∀ p s,
+  ls_eq (ls_pol_mul_l p s)
+    (ls_mul_l_upto (List.length (lp p)) (ls_of_pol p) s).
+Proof.
+intros.
 ...
-
-Fixpoint rev_pol_of_ls {F : field} k s :=
-  match k with
-  | 0 => []
-  | S k' => ls s k' :: rev_pol_of_ls k' s
-  end.
-
-Theorem glop {F : field} : ∀ s1 s2 k,
-  (∀ i, ls s2 (i + k) = f_zero)
-  → ls_eq (ls_mul s1 s2)
-       (List.fold_right
-           (λ e
-           (pol_of_ls k s2) f_zero).
-...
-       (List.fold_right (ls_mul_term s1) (pol_of_ls k s2) f_zero).
-...
-
 
 Theorem step_1 {F : field} :
   ls_eq (zeta_but_mul_of 2)
