@@ -422,12 +422,14 @@ Fixpoint log_prod {F : field} u v n i :=
          end + log_prod u v n i')%F
   end.
 
+(* Σ (i = 1, ∞) s1_(i-1) x^ln(i) * Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
 Definition ls_mul {F : field} s1 s2 :=
   {| ls n := log_prod (ls s1) (ls s2) n (S n) |}.
 
 Definition ls_of_pol {F : field} p :=
   {| ls n := List.nth n (lp p) f_zero |}.
 
+(* Σ (i = 1, k), p_(i-1) x^ln(i) * Σ (i = 1, ∞) s_(i-1) x^ln(i) *)
 Definition ls_pol_mul_l {F : field} p s :=
   ls_mul (ls_of_pol p) s.
 
@@ -481,6 +483,33 @@ destruct (Nat.eq_dec q j) as [| Hqje]; [ apply f_mul_comm | ].
 rewrite f_add_comm; f_equal; apply f_mul_comm.
 Qed.
 
+(* x^ln(n) * Σ (i = 1, ∞) a_i x^ln(i) = Σ (i = 1, ∞) a_i x^ln(n*i) *)
+Definition ls_mul_elem {F : field} s n :=
+  {| ls i :=
+       match i mod n with
+       | 0 => ls s (i / n)
+       | _ => f_zero
+       end |}.
+
+...
+
+Fixpoint rev_pol_of_ls {F : field} k s :=
+  match k with
+  | 0 => []
+  | S k' => ls s k' :: rev_pol_of_ls k' s
+  end.
+
+Theorem glop {F : field} : ∀ s1 s2 k,
+  (∀ i, ls s2 (i + k) = f_zero)
+  → ls_eq (ls_mul s1 s2)
+       (List.fold_right
+           (λ e
+           (pol_of_ls k s2) f_zero).
+...
+       (List.fold_right (ls_mul_term s1) (pol_of_ls k s2) f_zero).
+...
+
+
 Theorem step_1 {F : field} :
   ls_eq (zeta_but_mul_of 2)
     (ls_pol_mul_l {| lp := [f_one; (- f_one)%F] |} zeta).
@@ -489,6 +518,8 @@ intros n.
 unfold ls_pol_mul_l.
 remember (ls_of_pol {| lp := [f_one; (- f_one)%F] |}) as p eqn:Hp.
 remember zeta as ζ eqn:Hζ.
+
+Check List.fold_right.
 ...
 Opaque Nat.modulo. Opaque Nat.div. cbn.
 Transparent Nat.modulo. Transparent Nat.div.

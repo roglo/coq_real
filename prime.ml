@@ -53,8 +53,17 @@ value rec log_prod u v n i =
         end +. log_prod u v n (i - 1)
   end.
 
+(* Σ (i = 1, ∞) s1_i x^ln(i) * Σ (i = 1, ∞) s2_i x^ln(i) *)
 value ls_mul s1 s2 =
   { ls n = log_prod(*_tail_rec*) s1.ls s2.ls n (n + 1) }.
+
+(* x^ln(n) * Σ (i = 1, ∞) a_i x^ln(i) = Σ (i = 1, ∞) a_i x^ln(n*i) *)
+value ls_mul_elem s n =
+  { ls i =
+      match i mod n with
+      | 0 -> s.ls (i / n)
+      | _ -> f_zero
+      end }.
 
 value ls_of_pol p =
   { ls n = list_nth_def n p.lp f_zero }.
