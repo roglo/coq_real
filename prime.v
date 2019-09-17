@@ -568,6 +568,55 @@ destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
   rewrite Nat.mod_1_l; [ | flia ].
   now rewrite f_add_0_r.
 }
+(**)
+remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
+unfold ls_of_pol.
+rewrite Hcl; clear p Hcl.
+cbn.
+induction cl as [| c cl]. {
+  cbn.
+  rewrite f_mul_0_l, f_add_0_l.
+  replace (match i with | 0 | _ => _ end) with f_zero by now destruct i.
+  rewrite f_mul_0_l, f_add_0_l.
+  apply log_prod_0_l.
+  now intros n; destruct n.
+}
+...
+remember (length (lp p)) as len eqn:Hlen; symmetry in Hlen.
+destruct len. {
+  apply length_zero_iff_nil in Hlen.
+  cbn; rewrite Hlen; cbn.
+  rewrite f_mul_0_l, f_add_0_l.
+  replace (match i with | 0 | _ => _ end) with f_zero by now destruct i.
+  rewrite f_mul_0_l, f_add_0_l.
+  apply log_prod_0_l.
+  now intros; destruct n.
+}
+destruct len. {
+  cbn - [ ls_of_pol ].
+  rewrite f_add_0_l.
+  replace (ls (ls_of_pol p) i) with f_zero. 2: {
+    symmetry; cbn.
+    destruct i; [ easy | cbn ].
+    remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
+    destruct cl as [| c cl]; [ easy | cbn ].
+    cbn in Hlen.
+    apply Nat.succ_inj in Hlen.
+    apply length_zero_iff_nil in Hlen; subst cl.
+    now destruct i.
+  }
+  rewrite f_mul_0_l, f_add_0_r.
+  rewrite <- f_add_0_r; f_equal.
+  remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
+  destruct cl as [| c cl]; [ easy | ].
+  cbn in Hlen.
+  apply Nat.succ_inj in Hlen.
+  apply length_zero_iff_nil in Hlen; subst cl.
+...
+  cbn; rewrite Hcl; cbn.
+  destruct i; [ easy | ].
+  cbn - [ Nat.div Nat.modulo ].
+  destruct i; [ easy | ].
 ...
 
 Theorem step_1 {F : field} :
