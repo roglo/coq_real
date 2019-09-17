@@ -565,6 +565,10 @@ destruct m. {
   rewrite Nat.div_add; [ | easy ].
   rewrite Nat.add_sub.
   clear Hn.
+  subst n.
+  rewrite Nat.add_comm, Nat.mul_comm, Nat.div_add; [ | easy ].
+  rewrite Nat.div_same; [ | easy ].
+  rewrite Nat.add_1_l.
 ...
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
 Proof.
