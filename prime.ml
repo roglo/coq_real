@@ -67,7 +67,7 @@ value ls_mul s1 s2 =
 
 (* c*x^ln(n+1) * Σ (i = 1, ∞) s_(i-1) x^ln(i) =
    Σ (i = 1, ∞) c*s_(i-1) x^ln((n+1)*i) *)
-value ls_mul_elem s c n =
+value ls_mul_elem c n s =
   { ls i =
       match (i + 1) mod (n + 1) with
       | 0 -> c *. s.ls i
@@ -76,13 +76,13 @@ value ls_mul_elem s c n =
 
 (* multiplication of a series by the first k elements of another series
    (i.e. a polynomial formed by its first k elements)
-    Σ (i = 1, ∞) s1_(i-1) x^ln(i) * Σ (i = 1, k) s2_(i-1) x^ln(i) *)
-value rec ls_mul_r_upto s1 s2 k =
+    Σ (i = 1, k) s1_(i-1) x^ln(i) * Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
+value rec ls_mul_l_upto k s1 s2 =
   match k with
   | 0 -> { ls _ = f_zero }
   | _ ->
-      ls_add (ls_mul_r_upto s1 s2 (k - 1))
-        (ls_mul_elem s1 (s2.ls (k - 1)) (k - 1))
+      ls_add (ls_mul_l_upto (k - 1) s1 s2)
+        (ls_mul_elem (s2.ls (k - 1)) (k - 1) s1)
   end.
 
 value ls_of_pol p =
@@ -90,6 +90,11 @@ value ls_of_pol p =
 
 value ls_pol_mul_l p s =
   ls_mul (ls_of_pol p) s.
+
+(*
+let p = {lp=[1.;-1.]} in (ls_pol_mul_l p ζ).ls 1;
+let p = {lp=[1.;-1.]} in (ls_mul_l_upto (List.length p.lp) (ls_of_pol p) ζ).ls 1;
+*)
 
 value ζ_but_mul_of d =
   { ls n =

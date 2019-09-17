@@ -505,6 +505,8 @@ Fixpoint ls_mul_l_upto {F : field} k s1 s2 :=
   | S k' => ls_add (ls_mul_l_upto k' s1 s2) (ls_mul_elem (ls s2 k') k' s1)
   end.
 
+...
+
 Theorem log_prod_0_l {F : field} : ∀ u v n i,
   (∀ n, u n = f_zero) → log_prod u v n i = f_zero.
 Proof.
