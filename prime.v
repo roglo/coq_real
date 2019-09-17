@@ -502,10 +502,8 @@ Definition ls_mul_elem {F : field} c n s :=
 Fixpoint ls_mul_l_upto {F : field} k s1 s2 :=
   match k with
   | 0 => {| ls _ := f_zero |}
-  | S k' => ls_add (ls_mul_l_upto k' s1 s2) (ls_mul_elem (ls s2 k') k' s1)
+  | S k' => ls_add (ls_mul_l_upto k' s1 s2) (ls_mul_elem (ls s1 k') k' s2)
   end.
-
-...
 
 Theorem log_prod_0_l {F : field} : ∀ u v n i,
   (∀ n, u n = f_zero) → log_prod u v n i = f_zero.
@@ -565,8 +563,7 @@ destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
   }
   revert p Hlen.
   induction len; intros. {
-    cbn; rewrite f_add_0_l.
-    apply f_mul_comm.
+    now cbn; symmetry; apply f_add_0_l.
   }
   remember (S len) as x; cbn; subst x.
   rewrite Nat.mod_1_l; [ | flia ].
@@ -578,30 +575,6 @@ destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
   remember {| lp := cl |} as p' eqn:Hp'.
   assert (H : length (lp p') = S len) by now rewrite Hp'; cbn.
   specialize (IHlen _ H) as H1; clear H.
-...
-intros.
-remember (length (lp p)) as len eqn:Hlen; symmetry in Hlen.
-revert p Hlen.
-induction len; intros. {
-  apply length_zero_iff_nil in Hlen.
-  unfold ls_pol_mul_l.
-  unfold ls_of_pol.
-  rewrite Hlen; cbn.
-  intros n.
-  remember ls_mul as f; cbn; subst f.
-  unfold ls_mul.
-  remember log_prod as f; cbn; subst f.
-  apply log_prod_0_l.
-  intros i; now destruct i.
-}
-cbn.
-remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
-destruct cl as [| c cl]; [ easy | ].
-cbn in Hlen.
-apply Nat.succ_inj in Hlen.
-remember {| lp := cl |} as p' eqn:Hp'.
-assert (H : length (lp p') = len) by now rewrite Hp'; cbn.
-specialize (IHlen _ H) as H1; clear H.
 ...
 
 Theorem step_1 {F : field} :

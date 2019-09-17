@@ -82,7 +82,7 @@ value rec ls_mul_l_upto k s1 s2 =
   | 0 -> { ls _ = f_zero }
   | _ ->
       ls_add (ls_mul_l_upto (k - 1) s1 s2)
-        (ls_mul_elem (s2.ls (k - 1)) (k - 1) s1)
+        (ls_mul_elem (s1.ls (k - 1)) (k - 1) s2)
   end.
 
 value ls_of_pol p =
@@ -92,6 +92,8 @@ value ls_pol_mul_l p s =
   ls_mul (ls_of_pol p) s.
 
 (*
+let p = {lp=[1.]} in (ls_pol_mul_l p ζ).ls 1;
+let p = {lp=[1.]} in (ls_mul_l_upto (List.length p.lp) (ls_of_pol p) ζ).ls 1;
 let p = {lp=[1.;-1.]} in (ls_pol_mul_l p ζ).ls 1;
 let p = {lp=[1.;-1.]} in (ls_mul_l_upto (List.length p.lp) (ls_of_pol p) ζ).ls 1;
 *)
