@@ -483,7 +483,7 @@ destruct (Nat.eq_dec q j) as [| Hqje]; [ apply f_mul_comm | ].
 rewrite f_add_comm; f_equal; apply f_mul_comm.
 Qed.
 
-(* x^ln(n) * Σ (i = 1, ∞) a_i x^ln(i) = Σ (i = 1, ∞) a_i x^ln(n*i) *)
+(* x^ln(n) * Σ (i = 1, ∞) s_(i-1) x^ln(i) = Σ (i = 1, ∞) a_(i-1) x^ln(n*i) *)
 Definition ls_mul_elem {F : field} s n :=
   {| ls i :=
        match i mod n with
