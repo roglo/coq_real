@@ -564,6 +564,7 @@ destruct m. {
   replace (S (S n)) with (n + 1 * 2) by flia.
   rewrite Nat.div_add; [ | easy ].
   rewrite Nat.add_sub.
+  clear Hn.
 ...
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
 Proof.
