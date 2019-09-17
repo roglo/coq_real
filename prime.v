@@ -581,6 +581,10 @@ induction cl as [| c cl]. {
   apply log_prod_0_l.
   now intros n; destruct n.
 }
+replace (nth 0 _ _) with c by easy.
+cbn.
+destruct i; [ easy | ].
+cbn.
 ...
 remember (length (lp p)) as len eqn:Hlen; symmetry in Hlen.
 destruct len. {
