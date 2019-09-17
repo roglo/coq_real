@@ -487,14 +487,12 @@ destruct (Nat.eq_dec q j) as [| Hqje]; [ apply f_mul_comm | ].
 rewrite f_add_comm; f_equal; apply f_mul_comm.
 Qed.
 
-...
-
-(* c*x^ln(n) * Σ (i = 1, ∞) s_(i-1)*x^ln(i) =
-   Σ (i = 1, ∞) c*s_(i-1) x^ln(n*i) *)
+(* c*x^ln(n+1) * Σ (i = 1, ∞) s_(i-1) x^ln(i) =
+   Σ (i = 1, ∞) c*s_(i-1) x^ln((n+1)*i) *)
 Definition ls_mul_elem {F : field} s c n :=
   {| ls i :=
-       match i mod n with
-       | 0 => (c * ls s (i / n))%F
+       match (i + 1) mod (n + 1) with
+       | 0 => (c * ls s i)%F
        | _ => f_zero
        end |}.
 
@@ -504,9 +502,7 @@ Definition ls_mul_elem {F : field} s c n :=
 Fixpoint ls_mul_r_upto {F : field} s1 s2 k :=
   match k with
   | 0 => {| ls _ := f_zero |}
-  | S k' =>
-      ls_add (ls_mul_r_upto s1 s2 k')
-        (ls_mul_elem s1 (ls s2 k') k)
+  | S k' => ls_add (ls_mul_r_upto s1 s2 k') (ls_mul_elem s1 (ls s2 k') k')
   end.
 
 ...

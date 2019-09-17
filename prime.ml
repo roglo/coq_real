@@ -74,6 +74,9 @@ value ls_mul_elem s c n =
       | _ -> f_zero
       end }.
 
+(* multiplication of a series by the first k elements of another series
+   (i.e. a polynomial formed by its first k elements)
+    Σ (i = 1, ∞) s1_(i-1) x^ln(i) * Σ (i = 1, k) s2_(i-1) x^ln(i) *)
 value rec ls_mul_r_upto s1 s2 k =
   match k with
   | 0 -> { ls _ = f_zero }
