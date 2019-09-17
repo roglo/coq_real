@@ -547,6 +547,36 @@ Theorem ls_pol_mul_l_eq_ls_mul_r_upto {F : field} :
   ls_eq (ls_pol_mul_l p s)
     (ls_mul_l_upto (List.length (lp p)) (ls_of_pol p) s).
 Proof.
+intros * i.
+cbn - [Nat.div Nat.modulo].
+rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
+destruct (lt_dec i 0) as [H| H]; [ flia H | clear H ].
+rewrite Nat.mod_1_r.
+destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
+  subst i; cbn.
+  rewrite f_add_0_r.
+  remember (length (lp p)) as len eqn:Hlen; symmetry in Hlen.
+  destruct len. {
+    apply length_zero_iff_nil in Hlen.
+    rewrite Hlen; cbn.
+    apply f_mul_0_l.
+  }
+  revert p Hlen.
+  induction len; intros. {
+    cbn; rewrite f_add_0_l.
+    apply f_mul_comm.
+  }
+  remember (S len) as x; cbn; subst x.
+  rewrite Nat.mod_1_l; [ | flia ].
+  rewrite f_add_0_r.
+  remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
+  destruct cl as [| c cl]; [ cbn in Hlen; flia Hlen | ].
+  cbn in Hlen.
+  apply Nat.succ_inj in Hlen.
+  remember {| lp := cl |} as p' eqn:Hp'.
+  assert (H : length (lp p') = S len) by now rewrite Hp'; cbn.
+  specialize (IHlen _ H) as H1; clear H.
+...
 intros.
 remember (length (lp p)) as len eqn:Hlen; symmetry in Hlen.
 revert p Hlen.
