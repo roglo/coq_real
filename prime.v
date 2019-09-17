@@ -475,8 +475,7 @@ intros.
 revert n.
 induction i; intros; [ easy | ].
 do 2 rewrite log_prod_succ.
-Opaque Nat.div. Opaque Nat.modulo. cbn.
-Transparent Nat.div. Transparent Nat.modulo.
+cbn - [ Nat.div Nat.modulo ].
 set (j := n - i).
 set (q := S n / S j - 1).
 destruct (lt_dec q j) as [Hqj| Hqj]; [ easy | ].
@@ -513,8 +512,7 @@ intros * Hu.
 revert n.
 induction i; intros; [ easy | ].
 rewrite log_prod_succ.
-Opaque Nat.modulo. Opaque Nat.div. cbn.
-Transparent Nat.modulo. Transparent Nat.div.
+cbn - [ Nat.div Nat.modulo ].
 rewrite IHi, f_add_0_r.
 destruct (lt_dec (S n / S (n - i) - 1) (n - i)) as [Hni| Hni]; [ easy | ].
 apply Nat.nlt_ge in Hni.
@@ -530,8 +528,7 @@ Theorem ls_mul_0_l {F : field} : ∀ s1 s2,
   (∀ n, ls s1 n = f_zero) → ls_eq (ls_mul s1 s2) {| ls _ := f_zero |}.
 Proof.
 intros * Hs1 i.
-Opaque Nat.modulo. Opaque Nat.div. cbn.
-Transparent Nat.modulo. Transparent Nat.div.
+cbn - [ Nat.div Nat.modulo ].
 rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
 rewrite Nat.mod_1_r.
 destruct (lt_dec i 0) as [H| H]; [ flia H | clear H ].
@@ -586,14 +583,12 @@ remember zeta as ζ eqn:Hζ.
 
 Check List.fold_right.
 ...
-Opaque Nat.modulo. Opaque Nat.div. cbn.
-Transparent Nat.modulo. Transparent Nat.div.
+cbn - [ Nat.div Nat.modulo ].
 rewrite Nat.sub_diag.
 rewrite Nat.div_1_r.
 rewrite Nat.sub_succ, Nat.sub_0_r.
 rewrite Nat.mod_1_r.
-Opaque Nat.modulo. Opaque Nat.div. cbn.
-Transparent Nat.modulo. Transparent Nat.div.
+cbn - [ Nat.div Nat.modulo ].
 destruct (Nat.eq_dec n 0) as [Hn| Hn]. {
   subst n; cbn; subst ζ p; cbn.
   now rewrite f_mul_1_r, f_add_0_r.
@@ -627,8 +622,7 @@ destruct m. {
   replace (S n - n) with 1 by flia.
   remember (S n) as sn.
   remember (S sn) as ssn.
-  Opaque Nat.modulo. Opaque Nat.div. cbn.
-  Transparent Nat.modulo. Transparent Nat.div.
+  cbn - [ Nat.div Nat.modulo ].
   subst sn ssn.
   destruct (lt_dec (S (S n) / 2 - 1) 1) as [Hn| Hn]. {
     destruct n; [ flia Hm | ].
