@@ -506,12 +506,73 @@ Fixpoint ls_mul_l_upto {F : field} k s1 s2 :=
   | S k' => ls_add (ls_mul_l_upto k' s1 s2) (ls_mul_elem (ls s2 k') k' s1)
   end.
 
+Theorem log_prod_0_l {F : field} : ∀ u v n i,
+  (∀ n, u n = f_zero) → log_prod u v n i = f_zero.
+Proof.
+intros * Hu.
+revert n.
+induction i; intros; [ easy | ].
+rewrite log_prod_succ.
+Opaque Nat.modulo. Opaque Nat.div. cbn.
+Transparent Nat.modulo. Transparent Nat.div.
+rewrite IHi, f_add_0_r.
+destruct (lt_dec (S n / S (n - i) - 1) (n - i)) as [Hni| Hni]; [ easy | ].
+apply Nat.nlt_ge in Hni.
+remember (S n mod S (n - i)) as r eqn:Hr; symmetry in Hr.
+destruct r; [ | easy ].
+do 2 rewrite Hu.
+do 2 rewrite f_mul_0_l.
+rewrite f_add_0_l.
+now destruct (Nat.eq_dec _ _).
+Qed.
+
+Theorem ls_mul_0_l {F : field} : ∀ s1 s2,
+  (∀ n, ls s1 n = f_zero) → ls_eq (ls_mul s1 s2) {| ls _ := f_zero |}.
+Proof.
+intros * Hs1 i.
+Opaque Nat.modulo. Opaque Nat.div. cbn.
+Transparent Nat.modulo. Transparent Nat.div.
+rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
+rewrite Nat.mod_1_r.
+destruct (lt_dec i 0) as [H| H]; [ flia H | clear H ].
+replace (ls s1 0) with f_zero by now rewrite Hs1.
+replace (ls s1 i) with f_zero by now rewrite Hs1.
+do 2 rewrite f_mul_0_l.
+rewrite f_add_0_l.
+replace (if Nat.eq_dec _ _ then _ else _) with f_zero by
+  now destruct (Nat.eq_dec i 0).
+rewrite f_add_0_l.
+now apply log_prod_0_l.
+Qed.
+
 Theorem ls_pol_mul_l_eq_ls_mul_r_upto {F : field} :
   ∀ p s,
   ls_eq (ls_pol_mul_l p s)
     (ls_mul_l_upto (List.length (lp p)) (ls_of_pol p) s).
 Proof.
 intros.
+remember (length (lp p)) as len eqn:Hlen; symmetry in Hlen.
+revert p Hlen.
+induction len; intros. {
+  apply length_zero_iff_nil in Hlen.
+  unfold ls_pol_mul_l.
+  unfold ls_of_pol.
+  rewrite Hlen; cbn.
+  intros n.
+  remember ls_mul as f; cbn; subst f.
+  unfold ls_mul.
+  remember log_prod as f; cbn; subst f.
+  apply log_prod_0_l.
+  intros i; now destruct i.
+}
+cbn.
+remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
+destruct cl as [| c cl]; [ easy | ].
+cbn in Hlen.
+apply Nat.succ_inj in Hlen.
+remember {| lp := cl |} as p' eqn:Hp'.
+assert (H : length (lp p') = len) by now rewrite Hp'; cbn.
+specialize (IHlen _ H) as H1; clear H.
 ...
 
 Theorem step_1 {F : field} :
