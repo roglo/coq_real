@@ -522,6 +522,7 @@ destruct m. {
   cbn in Hm.
   replace (ls p n) with f_zero by now subst n p.
   rewrite f_add_0_r.
+  replace (S (S (S (m * 2)))) with (2 * m + 3) in Hm by flia.
 ...
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
