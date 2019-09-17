@@ -523,8 +523,48 @@ destruct m. {
   replace (ls p n) with f_zero by now subst n p.
   rewrite f_add_0_r.
   replace (S (S (S (m * 2)))) with (2 * m + 3) in Hm by flia.
+  destruct n; [ flia Hm | clear Hn ].
+  assert (H : n = 2 * m + 2) by flia Hm.
+  clear Hm; rename H into Hm.
+  rewrite log_prod_succ.
+  replace (S n - n) with 1 by flia.
+  remember (S n) as sn.
+  remember (S sn) as ssn.
+  Opaque Nat.modulo. Opaque Nat.div. cbn.
+  Transparent Nat.modulo. Transparent Nat.div.
+  subst sn ssn.
+  destruct (lt_dec (S (S n) / 2 - 1) 1) as [Hn| Hn]. {
+    destruct n; [ flia Hm | ].
+    destruct n; [ flia Hm | ].
+    replace (S (S (S (S n)))) with (n + 2 * 2) in Hn by flia.
+    rewrite Nat.div_add in Hn; [ | easy ].
+    flia Hn.
+  }
+  clear Hn.
+  replace (S (S n)) with ((2 * m + 2 * 2)) at 1 by flia Hm.
+  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.mul_comm, Nat.mod_mul; [ | easy ].
+  replace (ls p 1) with (- f_one)%F by now subst p.
+  replace (ls ζ 1) with f_one by now subst ζ.
+  replace (ls ζ (S (S n) / 2 - 1)) with f_one by now subst ζ.
+  do 2 rewrite f_mul_1_r.
+  destruct (Nat.eq_dec (S (S n) / 2 - 1) 1) as [Hn| Hn]. {
+    rewrite f_add_assoc, f_add_opp_diag_r, f_add_0_l.
+    destruct n; [ flia Hm | ].
+    destruct n; [ flia Hm | ].
+    replace (S (S (S (S n)))) with (n + 2 * 2) in Hn by flia.
+    rewrite Nat.div_add in Hn; [ | easy ].
+    destruct n; [ easy | ].
+    destruct n; [ flia Hm | ].
+    replace (S (S n)) with (n + 1 * 2) in Hn by flia.
+    rewrite Nat.div_add in Hn; [ | easy ].
+    flia Hn.
+  }
+  rewrite f_add_assoc, f_add_assoc, f_add_opp_diag_r, f_add_0_l.
+  replace (S (S n)) with (n + 1 * 2) by flia.
+  rewrite Nat.div_add; [ | easy ].
+  rewrite Nat.add_sub.
 ...
-
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
 Proof.
 ...
