@@ -573,6 +573,8 @@ remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
 unfold ls_of_pol.
 rewrite Hcl; clear p Hcl.
 cbn.
+Print ls_mul_l_upto.
+...
 induction cl as [| c cl]. {
   cbn.
   rewrite f_mul_0_l, f_add_0_l.
@@ -582,9 +584,7 @@ induction cl as [| c cl]. {
   now intros n; destruct n.
 }
 replace (nth 0 _ _) with c by easy.
-cbn.
-destruct i; [ easy | ].
-cbn.
+cbn - [ nth ].
 ...
 remember (length (lp p)) as len eqn:Hlen; symmetry in Hlen.
 destruct len. {
