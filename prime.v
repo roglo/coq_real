@@ -572,6 +572,20 @@ destruct i. {
   replace (S (length cl) - length cl) with 1 by flia.
   rewrite f_add_0_r.
   clear IHcl.
+(**)
+remember (length cl) as len eqn:Hlen; symmetry in Hlen.
+revert c c1 cl Hlen.
+induction len as (len, IHlen) using lt_wf_rec; intros.
+destruct len; [ easy | ].
+destruct cl as [| c2 cl ]; [ easy | ].
+remember (S len) as x; cbn; subst x.
+unfold snd.
+replace (S len - len) with 1 by flia.
+do 2 rewrite f_add_0_r.
+cbn in Hlen.
+apply Nat.succ_inj in Hlen.
+rewrite <- IHlen; [ | flia | easy ].
+...
   revert c c1.
   induction cl as [ | c2 cl ]; intros; [ easy | ].
   remember (length (c2 :: cl)) as x; cbn in Heqx; cbn; subst x.
@@ -579,6 +593,7 @@ destruct i. {
   replace (S (length cl) - length cl) with 1 by flia.
   do 2 rewrite f_add_0_r.
   rewrite <- IHcl.
+About lt_wf_rec.
 ...
   destruct cl as [ | c2 cl ]; [ easy | ].
   destruct cl as [ | c3 cl ]; [ easy | ].
