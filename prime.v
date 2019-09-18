@@ -562,12 +562,22 @@ Theorem ls_ls_add {F : field} : ∀ s1 s2 i,
   ls (ls_add s1 s2) i = (ls s1 i + ls s2 i)%F.
 Proof. easy. Qed.
 
-Theorem ls_pol_mul_l_eq_ls_mul_r_upto {F : field} :
+Theorem ls_pol_mul_l_eq_ls_mul_l_upto_of {F : field} :
+  ∀ p s i,
+  ls (ls_pol_mul_l p s) i =
+  ls (ls_mul_l_upto (length (lp p)) (ls_of_pol p) s) i.
+Proof.
+intros.
+...
+
+Theorem ls_pol_mul_l_eq_ls_mul_l_upto {F : field} :
   ∀ p s,
   ls_eq (ls_pol_mul_l p s)
     (ls_mul_l_upto (List.length (lp p)) (ls_of_pol p) s).
 Proof.
 intros * i.
+...
+
 destruct i. {
   cbn; rewrite f_add_0_r.
   unfold ls_of_pol.
@@ -608,11 +618,15 @@ replace (S (S i) / 2 - 1) with (i / 2). 2: {
   rewrite Nat.div_add; [ | easy ].
   now rewrite Nat.add_sub.
 }
+symmetry.
 destruct (lt_dec (i / 2) 1) as [Hi| Hi]. {
   rewrite f_add_0_r.
   destruct i. {
     cbn.
 ...
+(*
+Check ls_mul_l_upto_succ.
+Search (ls_mul_l_upto (S _)).
 Theorem glop {F : field} : ∀ k s1 s2 i,
   ls (ls_mul_l_upto (S k) s1 s2) i =
     (ls (ls_mul_l_upto k s1 s2) i +
@@ -621,6 +635,7 @@ Theorem glop {F : field} : ∀ k s1 s2 i,
      | S _ => f_zero
      end)%F.
 Proof. easy. Qed.
+*)
 remember (length (lp p)) as len eqn:Hlen; symmetry in Hlen.
 clear Hi.
 revert p Hlen.
