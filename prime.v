@@ -547,10 +547,15 @@ Theorem ls_mul_l_upto_succ {F : field} : ∀ k s1 s2,
     ls_add (ls_mul_l_upto k s1 s2) (ls_mul_elem (ls s1 k) k s2).
 Proof. easy. Qed.
 
-Theorem ls_mul_l_upto_0 {F : field} : ∀ k s1 s2,
-  ls (ls_mul_l_upto (S k) s1 s2) 0 = (ls s1 0 * ls s2 0)%F.
+Theorem ls_mul_l_upto_of_0 {F : field} : ∀ k s1 s2,
+  ls (ls_mul_l_upto k s1 s2) 0 =
+    match k with
+    | 0 => f_zero
+    | S k => (ls s1 0 * ls s2 0)%F
+    end.
 Proof.
 intros.
+destruct k; [ easy | ].
 induction k; [ cbn; now rewrite f_add_0_l | ].
 remember (S k) as x; cbn; subst x.
 unfold snd.
@@ -558,9 +563,60 @@ replace (S k - k) with 1 by flia.
 now rewrite f_add_0_r.
 Qed.
 
+Theorem ls_mul_l_upto_of_succ {F : field} : ∀ k s1 s2 i,
+  ls (ls_mul_l_upto k s1 s2) (S i) =
+  match k with
+  | 0 => f_zero
+  | S k' =>
+      (ls (ls_mul_l_upto k' s1 s2) (S i) +
+       match S (S i) mod k with
+       | 0 => ls s1 k' * ls s2 (S (S i) / k - 1)
+       | S _ => f_zero
+       end)%F
+  end.
+Proof. intros; now destruct k. Qed.
+
 Theorem ls_ls_add {F : field} : ∀ s1 s2 i,
   ls (ls_add s1 s2) i = (ls s1 i + ls s2 i)%F.
 Proof. easy. Qed.
+
+Theorem ls_mul_ls_mul_upto {F : field} : ∀ s1 s2 len i,
+  i < len
+  → ls (ls_mul s1 s2) i = ls (ls_mul_l_upto len s1 s2) i.
+Proof.
+intros * Hlen.
+(* chais pas si c'est vrai *)
+...
+destruct i. {
+  rewrite ls_mul_l_upto_of_0.
+  cbn - [ "mod" "/" ].
+  rewrite Nat.mod_1_r, Nat.div_1_r, Nat.sub_diag.
+  rewrite f_add_0_r.
+  destruct (Nat.eq_dec 0 0) as [H| H]; [ clear H | flia H ].
+  destruct len; [ flia Hlen | easy ].
+}
+rewrite ls_mul_l_upto_of_succ.
+destruct len; [ flia Hlen | ].
+apply Nat.succ_lt_mono in Hlen.
+rewrite ls_mul_l_upto_of_succ.
+destruct len; [ flia Hlen | ].
+...
+intros * Hlen.
+revert i Hlen.
+induction len; intros; [ flia Hlen | ].
+destruct i. {
+  clear Hlen.
+  rewrite ls_mul_l_upto_of_0.
+  cbn - [ "mod" "/" ].
+  rewrite Nat.mod_1_r, Nat.div_1_r, Nat.sub_diag.
+  now rewrite f_add_0_r.
+}
+apply Nat.succ_lt_mono in Hlen.
+cbn - [ "mod" "/" log_prod ls_add ].
+rewrite ls_ls_add.
+specialize (IHlen _ Hlen).
+rewrite ls_mul_l_upto_of_succ.
+...
 
 Theorem ls_pol_mul_l_eq_ls_mul_l_upto_of {F : field} :
   ∀ p s i,
@@ -568,6 +624,7 @@ Theorem ls_pol_mul_l_eq_ls_mul_l_upto_of {F : field} :
   ls (ls_mul_l_upto (length (lp p)) (ls_of_pol p) s) i.
 Proof.
 intros.
+unfold ls_pol_mul_l.
 ...
 intros.
 unfold ls_pol_mul_l.
