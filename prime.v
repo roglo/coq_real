@@ -553,6 +553,30 @@ Theorem ls_pol_mul_l_eq_ls_mul_r_upto {F : field} :
     (ls_mul_l_upto (List.length (lp p)) (ls_of_pol p) s).
 Proof.
 intros * i.
+destruct i. {
+  cbn; rewrite f_add_0_r.
+  remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
+...
+  destruct cl as [| c cl]; [ cbn; apply f_mul_0_l | ].
+  cbn.
+  destruct cl as [| c1 cl]. {
+    now cbn; rewrite f_add_0_l, Hcl; cbn.
+  }
+  rewrite Nat.mod_1_l; [ | cbn; flia ].
+  rewrite f_add_0_r.
+  destruct cl as [| c2 cl]. {
+    now cbn; rewrite f_add_0_l, Hcl; cbn.
+  }
+  destruct cl as [| c3 cl]. {
+    cbn; rewrite f_add_0_l, Hcl; cbn.
+    now rewrite f_add_0_r.
+  }
+  destruct cl as [| c4 cl]. {
+    cbn; rewrite f_add_0_l, Hcl; cbn.
+    now do 2 rewrite f_add_0_r.
+  }
+...
+intros * i.
 cbn - [Nat.div Nat.modulo ls_of_pol].
 rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
 destruct (lt_dec i 0) as [H| H]; [ flia H | clear H ].
