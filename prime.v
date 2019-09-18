@@ -571,6 +571,38 @@ destruct i. {
   unfold snd.
   replace (S (length cl) - length cl) with 1 by flia.
   rewrite f_add_0_r.
+Theorem glop {F : field} : ∀ s1 s2 i,
+  ls (ls_add s1 s2) i = (ls s1 i + ls s2 i)%F.
+Proof. easy. Qed.
+(*
+Print ls_mul_l_upto.
+cbn - [ ls_add ].
+Print ls_mul_elem.
+About ls_add.
+do 2 rewrite glop.
+f_equal. 2: {
+  remember (length cl) as len eqn:Hlen; symmetry in Hlen.
+  revert c c1 cl Hlen.
+  induction len; intros; [ easy | ].
+  destruct cl as [| c2 cl]; [ easy | ].
+  cbn in Hlen.
+  apply Nat.succ_inj in Hlen.
+  specialize (IHlen c1 c2 _ Hlen) as H1.
+  remember (S len) as x; cbn; subst x.
+  unfold snd.
+  now replace (S len - len) with 1 by flia.
+}
+remember (length cl) as len eqn:Hlen; symmetry in Hlen.
+revert c c1 cl Hlen.
+induction len as (len, IHlen) using lt_wf_rec; intros.
+destruct len; [ easy | ].
+destruct cl as [| c2 cl ]; [ easy | ].
+remember (S len) as x; cbn; subst x.
+cbn in Hlen.
+apply Nat.succ_inj in Hlen.
+specialize (IHlen len (Nat.lt_succ_diag_r _) c c2 cl Hlen).
+...
+rewrite <- IHlen; [ | flia | easy ].
 ...
 remember (length cl) as len eqn:Hlen; symmetry in Hlen.
 revert c c1 cl Hlen.
@@ -585,6 +617,15 @@ cbn in Hlen.
 apply Nat.succ_inj in Hlen.
 rewrite <- IHlen; [ | flia | easy ].
 ...
+*)
+cbn - [ ls_add ].
+do 2 rewrite glop.
+f_equal. 2: {
+  destruct cl as [| c2 cl]; [ easy | ].
+  cbn - [ "-" ].
+  now replace (S _ - _) with 1 by flia.
+}
+...
   revert c c1.
   induction cl as [ | c2 cl ]; intros; [ easy | ].
   remember (length (c2 :: cl)) as x; cbn in Heqx; cbn; subst x.
@@ -592,7 +633,6 @@ rewrite <- IHlen; [ | flia | easy ].
   replace (S (length cl) - length cl) with 1 by flia.
   do 2 rewrite f_add_0_r.
   rewrite <- IHcl.
-About lt_wf_rec.
 ...
   destruct cl as [ | c2 cl ]; [ easy | ].
   destruct cl as [ | c3 cl ]; [ easy | ].
