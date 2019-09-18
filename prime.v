@@ -610,14 +610,76 @@ replace (S (S i) / 2 - 1) with (i / 2). 2: {
 }
 destruct (lt_dec (i / 2) 1) as [Hi| Hi]. {
   rewrite f_add_0_r.
+  destruct i. {
+    cbn.
+...
+Theorem glop {F : field} : ∀ k s1 s2 i,
+  ls (ls_mul_l_upto (S k) s1 s2) i =
+    (ls (ls_mul_l_upto k s1 s2) i +
+     match S i mod S k with
+     | 0 => ls s1 k * ls s2 (S i / S k - 1)
+     | S _ => f_zero
+     end)%F.
+Proof. easy. Qed.
+remember (length (lp p)) as len eqn:Hlen; symmetry in Hlen.
+clear Hi.
+revert p Hlen.
+induction len; intros. {
+  apply length_zero_iff_nil in Hlen.
+  rewrite Hlen; cbn.
+  do 2 rewrite f_mul_0_l.
+  apply f_add_0_l.
+}
+rewrite glop.
+...
+
+destruct len. {
+  cbn.
+  rewrite f_add_0_l.
+  rewrite (@nth_overflow _ _ 1); [ | flia Hlen ].
+  now rewrite f_mul_0_l, f_add_0_r.
+}
+destruct len. {
+  rewrite Nat.mod_same; [ | easy ].
+  rewrite Nat.div_same; [ | easy ].
+  rewrite Nat.sub_diag.
+  now cbn; rewrite f_add_0_l.
+}
+replace (2 mod (S (S (S len)))) with 2. 2: {
+  now rewrite Nat.mod_small; [ | flia ].
+}
+rewrite f_add_0_r.
+rewrite glop.
+...
+
+destruct k; cbn.
+...
+  }
+  destruct i. 2: {
+    replace (S (S i)) with (i + 1 * 2) in Hi by flia.
+    rewrite Nat.div_add in Hi; [ flia Hi | easy ].
+  }
+  clear Hi.
+...
 Print ls_mul_l_upto.
 
 Theorem ls_mul_l_upto_of_succ {F : field} : ∀ k s1 s2 i,
-  ls (ls_mul_l_upto (S k) s1 s2) (S i) = (ls s1 0 * ls s2 (S i))%F.
+  ls (ls_mul_l_upto (S k) s1 s2) (S i) =
+    match S i mod S k with
+    | 0 => f_one
+    | _ => f_zero
+    end.
 Proof.
 intros.
-(* faux *)
-Print ls_mul_l_upto.
+destruct k. {
+  cbn - [ "mod" "/" ].
+  do 2 rewrite Nat.mod_1_r.
+  rewrite Nat.div_1_r, f_add_0_l.
+  now replace (S (S i) - 1) with (S i) by flia.
+}
+destruct k. {
+  cbn - [ "mod" "/" ].
+  rewrite Nat.mod_1_r, f_add_0_l.
 ...
 induction k. {
   cbn - [ Nat.div ].
