@@ -555,26 +555,25 @@ Proof.
 intros * i.
 destruct i. {
   cbn; rewrite f_add_0_r.
+(**)
+  unfold ls_of_pol.
   remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
-...
+  clear p Hcl.
   destruct cl as [| c cl]; [ cbn; apply f_mul_0_l | ].
-  cbn.
-  destruct cl as [| c1 cl]. {
-    now cbn; rewrite f_add_0_l, Hcl; cbn.
+  unfold nth at 1.
+  remember (length (c :: cl)) as x; cbn in Heqx; subst x.
+  induction cl as [| c1 cl]. {
+    now cbn; rewrite f_add_0_l; cbn.
   }
+  remember (length (c1 :: cl)) as x; cbn in Heqx; subst x.
+  rewrite IHcl.
+  remember (S (length cl)) as x; cbn; subst x.
   rewrite Nat.mod_1_l; [ | cbn; flia ].
   rewrite f_add_0_r.
-  destruct cl as [| c2 cl]. {
-    now cbn; rewrite f_add_0_l, Hcl; cbn.
-  }
-  destruct cl as [| c3 cl]. {
-    cbn; rewrite f_add_0_l, Hcl; cbn.
-    now rewrite f_add_0_r.
-  }
-  destruct cl as [| c4 cl]. {
-    cbn; rewrite f_add_0_l, Hcl; cbn.
-    now do 2 rewrite f_add_0_r.
-  }
+  clear IHcl.
+  destruct cl as [ | c2 cl ]; [ easy | ].
+  destruct cl as [ | c3 cl ]; [ easy | ].
+  destruct cl as [ | c4 cl ]; [ easy | ].
 ...
 intros * i.
 cbn - [Nat.div Nat.modulo ls_of_pol].
