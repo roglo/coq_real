@@ -490,12 +490,10 @@ Qed.
    Σ (i = 1, ∞) c*s_(i-1) x^ln((n+1)*i) *)
 Definition ls_mul_elem {F : field} c n s :=
   {| ls i :=
-       match (i + 1) mod (n + 1) with
-       | 0 => (c * ls s i)%F
+       match S i mod S n with
+       | 0 => (c * ls s (S i / S n - 1))%F
        | _ => f_zero
        end |}.
-
-...
 
 (* multiplication of the first k elements of a series
    (i.e. a polynomial formed by its first k elements)

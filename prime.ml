@@ -69,15 +69,10 @@ value ls_mul s1 s2 =
    Σ (i = 1, ∞) c*s_(i-1) x^ln((n+1)*i) *)
 value ls_mul_elem c n s =
   { ls i =
-      if i ≤ n then f_zero
-      else
-	let j = n + 1 - i in
-        match (j + 1) mod (n + 1) with
-        | 0 -> c *. s.ls j
-        | _ -> f_zero
-        end }.
-
-...
+      match (i + 1) mod (n + 1) with
+      | 0 → c *. s.ls ((i + 1) / (n + 1) - 1)
+      | _ → f_zero
+      end }.
 
 (* multiplication of a series by the first k elements of another series
    (i.e. a polynomial formed by its first k elements)
