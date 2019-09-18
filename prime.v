@@ -569,6 +569,54 @@ Theorem ls_pol_mul_l_eq_ls_mul_l_upto_of {F : field} :
 Proof.
 intros.
 ...
+intros.
+unfold ls_pol_mul_l.
+unfold ls_of_pol.
+remember (lp p) as cl eqn:Hcl.
+clear p Hcl.
+induction cl as [| c cl]. {
+  cbn - [ "mod" "/" ].
+  rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
+  rewrite Nat.mod_1_r.
+  do 2 rewrite f_mul_0_l.
+  rewrite f_add_0_l.
+  replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct i.
+  rewrite f_mul_0_l.
+  replace (if Nat.eq_dec i 0 then f_zero else f_zero) with f_zero. 2: {
+    now destruct (Nat.eq_dec _ _).
+  }
+  rewrite f_add_0_l.
+  destruct (lt_dec i 0) as [H| H]; [ easy | clear H ].
+  apply log_prod_0_l.
+  now intros; destruct n.
+}
+cbn - [ "mod" "/" ls_add ].
+rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
+rewrite Nat.mod_1_r.
+destruct (lt_dec i 0) as [H| H]; [ flia H | clear H ].
+destruct (Nat.eq_dec i 0) as [Hi | Hi]. {
+  subst i.
+  cbn - [ "mod" "/" ls_add ].
+  rewrite f_add_0_r.
+  cbn in IHcl.
+  rewrite f_add_0_r in IHcl.
+...
+  destruct cl as [| c1 cl]. {
+    now cbn; rewrite f_add_0_l.
+  }
+  cbn - [ "mod" "/" ls_add ].
+  cbn.
+...
+ rewrite f_mul_0_l.
+  rewrite f_add_0_l.
+  replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct i.
+  rewrite f_mul_0_l.
+  replace (if Nat.eq_dec i 0 then f_zero else f_zero) with f_zero. 2: {
+    now destruct (Nat.eq_dec _ _).
+  }
+  rewrite f_add_0_l.
+
+...
 
 Theorem ls_pol_mul_l_eq_ls_mul_l_upto {F : field} :
   ∀ p s,
