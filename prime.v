@@ -639,6 +639,12 @@ Theorem ls_pol_mul_l_eq_ls_mul_l_upto_of {F : field} :
   ls (ls_mul_l_upto (length (lp p)) (ls_of_pol p) s) i.
 Proof.
 intros.
+Print ls_mul.
+Print log_prod.
+Print ls_mul_l_upto.
+Print ls_mul_elem.
+...
+intros.
 unfold ls_pol_mul_l.
 unfold ls_of_pol.
 remember (lp p) as cl eqn:Hcl.
