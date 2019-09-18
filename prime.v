@@ -542,6 +542,11 @@ rewrite f_add_0_l.
 now apply log_prod_0_l.
 Qed.
 
+Theorem ls_mul_l_upto_succ {F : field} : ∀ k s1 s2,
+  ls_mul_l_upto (S k) s1 s2 =
+    ls_add (ls_mul_l_upto k s1 s2) (ls_mul_elem (ls s1 k) k s2).
+Proof. easy. Qed.
+
 Theorem ls_pol_mul_l_eq_ls_mul_r_upto {F : field} :
   ∀ p s,
   ls_eq (ls_pol_mul_l p s)
@@ -574,10 +579,11 @@ unfold ls_of_pol.
 rewrite Hcl; clear p Hcl.
 cbn.
 remember (length cl) as len eqn:Hlen; symmetry in Hlen.
-revert cl Hlen.
+destruct i; [ easy | clear Hi ].
+revert s i cl Hlen.
 induction len; intros. {
   apply length_zero_iff_nil in Hlen.
-  subst cl; cbn.
+  subst cl; remember (S i) as si; cbn; subst si.
   rewrite f_mul_0_l, f_add_0_l.
   replace (match i with | 0 | _ => _ end) with f_zero by now destruct i.
   rewrite f_mul_0_l, f_add_0_l.
@@ -587,11 +593,13 @@ induction len; intros. {
 destruct cl as [| c cl]; [ easy | ].
 cbn in Hlen.
 apply Nat.succ_inj in Hlen.
+...
 specialize (IHlen _ Hlen) as H1.
 destruct i; [ easy | ].
 replace (nth 0 (c :: cl) f_zero) with c by easy.
 replace (nth (S i) (c :: cl) f_zero) with (nth i cl f_zero) by easy.
-Print ls_mul_l_upto.
+rewrite ls_mul_l_upto_succ.
+Print ls_mul_elem.
 ...
 Search ls_mul_l_upto.
 ...
