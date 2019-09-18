@@ -574,8 +574,7 @@ destruct i. {
   clear IHcl.
   revert c c1.
   induction cl as [ | c2 cl ]; intros; [ easy | ].
-  remember (length (c2 :: cl)) as x; cbn; subst x.
-  replace (length (c2 :: cl)) with (S (length cl)) by easy.
+  remember (length (c2 :: cl)) as x; cbn in Heqx; cbn; subst x.
   unfold snd.
   replace (S (length cl) - length cl) with 1 by flia.
   do 2 rewrite f_add_0_r.
