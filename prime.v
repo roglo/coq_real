@@ -585,8 +585,6 @@ Theorem ls_mul_ls_mul_upto {F : field} : ∀ s1 s2 len i,
   → ls (ls_mul s1 s2) i = ls (ls_mul_l_upto len s1 s2) i.
 Proof.
 intros * Hlen.
-(* chais pas si c'est vrai *)
-...
 destruct i. {
   rewrite ls_mul_l_upto_of_0.
   cbn - [ "mod" "/" ].
@@ -595,6 +593,22 @@ destruct i. {
   destruct (Nat.eq_dec 0 0) as [H| H]; [ clear H | flia H ].
   destruct len; [ flia Hlen | easy ].
 }
+destruct i. {
+  rewrite ls_mul_l_upto_of_succ.
+  cbn; rewrite f_add_0_r.
+  destruct len; [ flia Hlen | ].
+  remember (2 mod S len) as b eqn:Hb; symmetry in Hb.
+  destruct b. {
+    apply Nat.mod_divides in Hb; [ | easy ].
+    destruct Hb as (c, Hc).
+    rewrite ls_mul_l_upto_of_succ.
+    destruct len; [ flia Hlen | clear Hlen ].
+...
+  rewrite ls_mul_l_upto_of_succ.
+  destruct len; [ flia Hlen | clear Hlen ].
+  rewrite ls_mul_l_upto_of_succ.
+...
+
 rewrite ls_mul_l_upto_of_succ.
 destruct len; [ flia Hlen | ].
 apply Nat.succ_lt_mono in Hlen.
