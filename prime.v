@@ -643,6 +643,33 @@ unfold ls_pol_mul_l.
 unfold ls_of_pol.
 remember (lp p) as cl eqn:Hcl.
 clear p Hcl.
+(**)
+unfold ls_mul.
+cbn - [ "/" "mod" log_prod ].
+remember (List.length cl) as len eqn:Hlen; symmetry in Hlen.
+revert s i cl Hlen.
+induction len; intros. {
+  apply length_zero_iff_nil in Hlen.
+  subst cl; cbn - [ "/" "mod" ].
+  rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
+  rewrite Nat.mod_1_r.
+  do 2 rewrite f_mul_0_l.
+  rewrite f_add_0_l.
+  replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct i.
+  rewrite f_mul_0_l.
+  replace (if Nat.eq_dec i 0 then f_zero else f_zero) with f_zero. 2: {
+    now destruct (Nat.eq_dec _ _).
+  }
+  destruct (lt_dec i 0) as [H| H]; [ easy | clear H ].
+  rewrite f_add_0_l.
+  apply log_prod_0_l.
+  now intros n; destruct n.
+}
+rewrite ls_mul_l_upto_succ.
+rewrite ls_ls_add.
+cbn - [ "/" "mod" log_prod ls_mul_elem ].
+unfold ls_mul_elem.
+cbn - [ "/" "mod" log_prod ls_mul_elem ].
 ...
 induction cl as [| c cl]. {
   cbn - [ "mod" "/" ].
