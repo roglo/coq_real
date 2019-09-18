@@ -640,12 +640,10 @@ Theorem ls_pol_mul_l_eq_ls_mul_l_upto_of {F : field} :
 Proof.
 intros.
 unfold ls_pol_mul_l.
-...
-intros.
-unfold ls_pol_mul_l.
 unfold ls_of_pol.
 remember (lp p) as cl eqn:Hcl.
 clear p Hcl.
+...
 induction cl as [| c cl]. {
   cbn - [ "mod" "/" ].
   rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
