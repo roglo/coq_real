@@ -580,6 +580,7 @@ Theorem ls_ls_add {F : field} : ∀ s1 s2 i,
   ls (ls_add s1 s2) i = (ls s1 i + ls s2 i)%F.
 Proof. easy. Qed.
 
+(*
 Theorem ls_mul_ls_mul_upto {F : field} : ∀ s1 s2 len i,
   i < len
   → ls (ls_mul s1 s2) i = ls (ls_mul_l_upto len s1 s2) i.
@@ -608,7 +609,6 @@ destruct i. {
   destruct len; [ flia Hlen | clear Hlen ].
   rewrite ls_mul_l_upto_of_succ.
 ...
-
 rewrite ls_mul_l_upto_of_succ.
 destruct len; [ flia Hlen | ].
 apply Nat.succ_lt_mono in Hlen.
@@ -631,6 +631,7 @@ rewrite ls_ls_add.
 specialize (IHlen _ Hlen).
 rewrite ls_mul_l_upto_of_succ.
 ...
+*)
 
 Theorem ls_pol_mul_l_eq_ls_mul_l_upto_of {F : field} :
   ∀ p s i,
