@@ -547,6 +547,21 @@ Theorem ls_mul_l_upto_succ {F : field} : ∀ k s1 s2,
     ls_add (ls_mul_l_upto k s1 s2) (ls_mul_elem (ls s1 k) k s2).
 Proof. easy. Qed.
 
+Theorem ls_mul_l_upto_0 {F : field} : ∀ k s1 s2,
+  ls (ls_mul_l_upto (S k) s1 s2) 0 = (ls s1 0 * ls s2 0)%F.
+Proof.
+intros.
+induction k; [ cbn; now rewrite f_add_0_l | ].
+remember (S k) as x; cbn; subst x.
+unfold snd.
+replace (S k - k) with 1 by flia.
+now rewrite f_add_0_r.
+Qed.
+
+Theorem ls_ls_add {F : field} : ∀ s1 s2 i,
+  ls (ls_add s1 s2) i = (ls s1 i + ls s2 i)%F.
+Proof. easy. Qed.
+
 Theorem ls_pol_mul_l_eq_ls_mul_r_upto {F : field} :
   ∀ p s,
   ls_eq (ls_pol_mul_l p s)
@@ -555,7 +570,6 @@ Proof.
 intros * i.
 destruct i. {
   cbn; rewrite f_add_0_r.
-(**)
   unfold ls_of_pol.
   remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
   clear p Hcl.
@@ -571,153 +585,59 @@ destruct i. {
   unfold snd.
   replace (S (length cl) - length cl) with 1 by flia.
   rewrite f_add_0_r.
-Theorem glop {F : field} : ∀ s1 s2 i,
-  ls (ls_add s1 s2) i = (ls s1 i + ls s2 i)%F.
-Proof. easy. Qed.
-(*
-Print ls_mul_l_upto.
-cbn - [ ls_add ].
-Print ls_mul_elem.
-About ls_add.
-do 2 rewrite glop.
-f_equal. 2: {
-  remember (length cl) as len eqn:Hlen; symmetry in Hlen.
-  revert c c1 cl Hlen.
-  induction len; intros; [ easy | ].
+  cbn - [ ls_add ].
+  do 2 rewrite ls_ls_add.
+  f_equal. 2: {
+    destruct cl as [| c2 cl]; [ easy | ].
+    cbn - [ "-" ].
+    now replace (S _ - _) with 1 by flia.
+  }
   destruct cl as [| c2 cl]; [ easy | ].
-  cbn in Hlen.
-  apply Nat.succ_inj in Hlen.
-  specialize (IHlen c1 c2 _ Hlen) as H1.
-  remember (S len) as x; cbn; subst x.
-  unfold snd.
-  now replace (S len - len) with 1 by flia.
+  cbn - [ ls_mul_l_upto ].
+  now do 2 rewrite ls_mul_l_upto_0.
 }
-remember (length cl) as len eqn:Hlen; symmetry in Hlen.
-revert c c1 cl Hlen.
-induction len as (len, IHlen) using lt_wf_rec; intros.
-destruct len; [ easy | ].
-destruct cl as [| c2 cl ]; [ easy | ].
-remember (S len) as x; cbn; subst x.
-cbn in Hlen.
-apply Nat.succ_inj in Hlen.
-specialize (IHlen len (Nat.lt_succ_diag_r _) c c2 cl Hlen).
-...
-rewrite <- IHlen; [ | flia | easy ].
-...
-remember (length cl) as len eqn:Hlen; symmetry in Hlen.
-revert c c1 cl Hlen.
-induction len as (len, IHlen) using lt_wf_rec; intros.
-destruct len; [ easy | ].
-destruct cl as [| c2 cl ]; [ easy | ].
-remember (S len) as x; cbn; subst x.
-unfold snd.
-replace (S len - len) with 1 by flia.
-do 2 rewrite f_add_0_r.
-cbn in Hlen.
-apply Nat.succ_inj in Hlen.
-rewrite <- IHlen; [ | flia | easy ].
-...
-*)
-cbn - [ ls_add ].
-do 2 rewrite glop.
-f_equal. 2: {
-  destruct cl as [| c2 cl]; [ easy | ].
-  cbn - [ "-" ].
-  now replace (S _ - _) with 1 by flia.
-}
-Print ls_mul_l_upto.
-Print ls_mul_elem.
-...
-  revert c c1.
-  induction cl as [ | c2 cl ]; intros; [ easy | ].
-  remember (length (c2 :: cl)) as x; cbn in Heqx; cbn; subst x.
-  unfold snd.
-  replace (S (length cl) - length cl) with 1 by flia.
-  do 2 rewrite f_add_0_r.
-  rewrite <- IHcl.
-...
-  destruct cl as [ | c2 cl ]; [ easy | ].
-  destruct cl as [ | c3 cl ]; [ easy | ].
-  destruct cl as [ | c4 cl ]; [ easy | ].
-...
-intros * i.
-cbn - [Nat.div Nat.modulo ls_of_pol].
-rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
-destruct (lt_dec i 0) as [H| H]; [ flia H | clear H ].
+cbn - [ "/" "mod" "-" ].
+rewrite Nat.sub_diag, Nat.div_1_r.
+rewrite Nat.sub_succ, Nat.sub_0_r.
+destruct (lt_dec (S i) 0) as [H| H]; [ flia H | clear H ].
 rewrite Nat.mod_1_r.
-destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
-  subst i; cbn.
+destruct (Nat.eq_dec (S i) 0) as [H| H]; [ flia H | clear H ].
+replace (S _ - _) with 1 by flia.
+replace (S (S i) / 2 - 1) with (i / 2). 2: {
+  replace (S (S i)) with (i + 1 * 2) by flia.
+  rewrite Nat.div_add; [ | easy ].
+  now rewrite Nat.add_sub.
+}
+destruct (lt_dec (i / 2) 1) as [Hi| Hi]. {
   rewrite f_add_0_r.
-  remember (length (lp p)) as len eqn:Hlen; symmetry in Hlen.
-  destruct len. {
-    apply length_zero_iff_nil in Hlen.
-    rewrite Hlen; cbn.
-    apply f_mul_0_l.
-  }
-  clear Hlen.
-  revert p.
-  induction len; intros; [ now cbn; symmetry; apply f_add_0_l | ].
-  remember (S len) as x; cbn; subst x.
-  rewrite Nat.mod_1_l; [ | flia ].
-  now rewrite f_add_0_r.
-}
-(**)
-remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
-unfold ls_of_pol.
-rewrite Hcl; clear p Hcl.
-cbn.
-remember (length cl) as len eqn:Hlen; symmetry in Hlen.
-destruct i; [ easy | clear Hi ].
-revert s i cl Hlen.
-induction len; intros. {
-  apply length_zero_iff_nil in Hlen.
-  subst cl; remember (S i) as si; cbn; subst si.
-  rewrite f_mul_0_l, f_add_0_l.
-  replace (match i with | 0 | _ => _ end) with f_zero by now destruct i.
-  rewrite f_mul_0_l, f_add_0_l.
-  apply log_prod_0_l.
-  now intros; destruct n.
-}
-destruct cl as [| c cl]; [ easy | ].
-cbn in Hlen.
-apply Nat.succ_inj in Hlen.
+Print ls_mul_l_upto.
+
+Theorem ls_mul_l_upto_of_succ {F : field} : ∀ k s1 s2 i,
+  ls (ls_mul_l_upto (S k) s1 s2) (S i) = (ls s1 0 * ls s2 (S i))%F.
+Proof.
+intros.
+(* faux *)
+Print ls_mul_l_upto.
 ...
-specialize (IHlen _ Hlen) as H1.
-destruct i; [ easy | ].
-replace (nth 0 (c :: cl) f_zero) with c by easy.
-replace (nth (S i) (c :: cl) f_zero) with (nth i cl f_zero) by easy.
-rewrite ls_mul_l_upto_succ.
-Print ls_mul_elem.
-...
-Search ls_mul_l_upto.
-...
-cbn - [ Nat.div Nat.modulo log_prod ] in H1.
-...
-destruct len. {
-  cbn - [ ls_of_pol ].
+induction k. {
+  cbn - [ Nat.div ].
   rewrite f_add_0_l.
-  replace (ls (ls_of_pol p) i) with f_zero. 2: {
-    symmetry; cbn.
-    destruct i; [ easy | cbn ].
-    remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
-    destruct cl as [| c cl]; [ easy | cbn ].
-    cbn in Hlen.
-    apply Nat.succ_inj in Hlen.
-    apply length_zero_iff_nil in Hlen; subst cl.
-    now destruct i.
-  }
-  rewrite f_mul_0_l, f_add_0_r.
-  rewrite <- f_add_0_r; f_equal.
-  remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
-  destruct cl as [| c cl]; [ easy | ].
-  cbn in Hlen.
-  apply Nat.succ_inj in Hlen.
-  apply length_zero_iff_nil in Hlen; subst cl.
+  rewrite Nat.div_1_r.
+  now rewrite Nat.sub_succ, Nat.sub_0_r.
+}
+remember (S k) as x; cbn - [ "/" "mod" ]; subst x.
+rewrite IHk.
+remember (S (S i) mod S (S k)) as b eqn:Hb.
+symmetry in Hb.
+destruct b; [ | now rewrite f_add_0_r ].
 ...
-  cbn; rewrite Hcl; cbn.
-  destruct i; [ easy | ].
-  cbn - [ Nat.div Nat.modulo ].
-  destruct i; [ easy | ].
+
+induction k; [ cbn; now rewrite f_add_0_l | ].
+remember (S k) as x; cbn; subst x.
+unfold snd.
+replace (S k - k) with 1 by flia.
+now rewrite f_add_0_r.
+Qed.
 ...
 
 Theorem step_1 {F : field} :
