@@ -625,6 +625,7 @@ f_equal. 2: {
   cbn - [ "-" ].
   now replace (S _ - _) with 1 by flia.
 }
+Print ls_mul_l_upto.
 ...
   revert c c1.
   induction cl as [ | c2 cl ]; intros; [ easy | ].
