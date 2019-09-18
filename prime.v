@@ -568,9 +568,18 @@ destruct i. {
   remember (length (c1 :: cl)) as x; cbn in Heqx; subst x.
   rewrite IHcl.
   remember (S (length cl)) as x; cbn; subst x.
-  rewrite Nat.mod_1_l; [ | cbn; flia ].
+  unfold snd.
+  replace (S (length cl) - length cl) with 1 by flia.
   rewrite f_add_0_r.
   clear IHcl.
+  revert c c1.
+  induction cl as [ | c2 cl ]; intros; [ easy | ].
+  remember (length (c2 :: cl)) as x; cbn; subst x.
+  replace (length (c2 :: cl)) with (S (length cl)) by easy.
+  unfold snd.
+  replace (S (length cl) - length cl) with 1 by flia.
+  do 2 rewrite f_add_0_r.
+  rewrite <- IHcl.
 ...
   destruct cl as [ | c2 cl ]; [ easy | ].
   destruct cl as [ | c3 cl ]; [ easy | ].
