@@ -566,13 +566,12 @@ destruct i. {
     now cbn; rewrite f_add_0_l; cbn.
   }
   remember (length (c1 :: cl)) as x; cbn in Heqx; subst x.
-  rewrite IHcl.
+  rewrite IHcl; clear IHcl.
   remember (S (length cl)) as x; cbn; subst x.
   unfold snd.
   replace (S (length cl) - length cl) with 1 by flia.
   rewrite f_add_0_r.
-  clear IHcl.
-(**)
+...
 remember (length cl) as len eqn:Hlen; symmetry in Hlen.
 revert c c1 cl Hlen.
 induction len as (len, IHlen) using lt_wf_rec; intros.
