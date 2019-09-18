@@ -573,29 +573,30 @@ remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
 unfold ls_of_pol.
 rewrite Hcl; clear p Hcl.
 cbn.
-Print ls_mul_l_upto.
-...
-induction cl as [| c cl]. {
-  cbn.
-  rewrite f_mul_0_l, f_add_0_l.
-  replace (match i with | 0 | _ => _ end) with f_zero by now destruct i.
-  rewrite f_mul_0_l, f_add_0_l.
-  apply log_prod_0_l.
-  now intros n; destruct n.
-}
-replace (nth 0 _ _) with c by easy.
-cbn - [ nth ].
-...
-remember (length (lp p)) as len eqn:Hlen; symmetry in Hlen.
-destruct len. {
+remember (length cl) as len eqn:Hlen; symmetry in Hlen.
+revert cl Hlen.
+induction len; intros. {
   apply length_zero_iff_nil in Hlen.
-  cbn; rewrite Hlen; cbn.
+  subst cl; cbn.
   rewrite f_mul_0_l, f_add_0_l.
   replace (match i with | 0 | _ => _ end) with f_zero by now destruct i.
   rewrite f_mul_0_l, f_add_0_l.
   apply log_prod_0_l.
   now intros; destruct n.
 }
+destruct cl as [| c cl]; [ easy | ].
+cbn in Hlen.
+apply Nat.succ_inj in Hlen.
+specialize (IHlen _ Hlen) as H1.
+destruct i; [ easy | ].
+replace (nth 0 (c :: cl) f_zero) with c by easy.
+replace (nth (S i) (c :: cl) f_zero) with (nth i cl f_zero) by easy.
+Print ls_mul_l_upto.
+...
+Search ls_mul_l_upto.
+...
+cbn - [ Nat.div Nat.modulo log_prod ] in H1.
+...
 destruct len. {
   cbn - [ ls_of_pol ].
   rewrite f_add_0_l.
