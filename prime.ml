@@ -69,10 +69,15 @@ value ls_mul s1 s2 =
    Σ (i = 1, ∞) c*s_(i-1) x^ln((n+1)*i) *)
 value ls_mul_elem c n s =
   { ls i =
-      match (i + 1) mod (n + 1) with
-      | 0 -> c *. s.ls i
-      | _ -> f_zero
-      end }.
+      if i ≤ n then f_zero
+      else
+	let j = n + 1 - i in
+        match (j + 1) mod (n + 1) with
+        | 0 -> c *. s.ls j
+        | _ -> f_zero
+        end }.
+
+...
 
 (* multiplication of a series by the first k elements of another series
    (i.e. a polynomial formed by its first k elements)
@@ -96,6 +101,10 @@ let p = {lp=[1.]} in (ls_pol_mul_l p ζ).ls 1;
 let p = {lp=[1.]} in (ls_mul_l_upto (List.length p.lp) (ls_of_pol p) ζ).ls 1;
 let p = {lp=[1.;-1.]} in (ls_pol_mul_l p ζ).ls 1;
 let p = {lp=[1.;-1.]} in (ls_mul_l_upto (List.length p.lp) (ls_of_pol p) ζ).ls 1;
+value p = {lp=[3.; -4.; 2.]}.
+value s = {ls i = float i+.4.}.
+value e1 = (ls_pol_mul_l p s).ls;
+value e2 = (ls_mul_l_upto (List.length p.lp) (ls_of_pol p) s).ls;
 *)
 
 value ζ_but_mul_of d =

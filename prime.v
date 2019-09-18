@@ -495,6 +495,8 @@ Definition ls_mul_elem {F : field} c n s :=
        | _ => f_zero
        end |}.
 
+...
+
 (* multiplication of the first k elements of a series
    (i.e. a polynomial formed by its first k elements)
    to a series
@@ -571,6 +573,7 @@ destruct i. {
   rewrite Nat.mod_1_l; [ | cbn; flia ].
   rewrite f_add_0_r.
   clear IHcl.
+...
   destruct cl as [ | c2 cl ]; [ easy | ].
   destruct cl as [ | c3 cl ]; [ easy | ].
   destruct cl as [ | c4 cl ]; [ easy | ].
