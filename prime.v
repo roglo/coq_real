@@ -626,6 +626,7 @@ f_equal. 2: {
   now replace (S _ - _) with 1 by flia.
 }
 Print ls_mul_l_upto.
+Print ls_mul_elem.
 ...
   revert c c1.
   induction cl as [ | c2 cl ]; intros; [ easy | ].
