@@ -884,23 +884,79 @@ destruct n; [ flia Hc | ].
 destruct n; [ flia Hc | ].
 assert (H : n = 2 * c) by flia Hc.
 clear Hc; rename H into Hc.
-assert (H : 2 * S c ≤ m). {
+assert (H1 : 2 * S c ≤ m). {
   eapply le_trans; [ | apply Hnm ].
   flia.
 }
-specialize (IHc _ _ Hc H).
+specialize (IHc _ _ Hc H1).
 remember (S (S n)) as sn; cbn - [ "/" "mod" zeta ]; subst sn.
 rewrite IHc, f_add_0_r.
 do 4 rewrite zeta_is_one.
 do 4 rewrite f_mul_1_r.
 replace (m - S (S (S n))) with (m - n - 3) by flia.
 replace (S (m - n - 3)) with (m - n - 2) by flia Hnm Hc.
-destruct (lt_dec (S m / (m - n - 2) - 1) (m - n - 3)) as [| H1]; [ easy | ].
-apply Nat.nlt_ge in H1.
+destruct (lt_dec (S m / (m - n - 2) - 1) (m - n - 3)) as [| H2]; [ easy | ].
+apply Nat.nlt_ge in H2.
 replace (m - S (S n)) with (m - n - 2) by flia.
 remember (S m mod (m - n - 2)) as q eqn:Hq; symmetry in Hq.
 destruct q. {
-  destruct (Nat.eq_dec (S m / (m - n - 2) - 1) (m - n - 3)) as [H2| H2]. {
+  assert (H3 : m - n - 2 ≥ 2) by flia Hnm Hc.
+  assert (H4 : m - n - 3 ≥ 1) by flia Hnm Hc.
+  apply Nat.mod_divides in Hq; [ | flia H3 ].
+  destruct Hq as (r, Hr).
+  rewrite Hr, Nat.mul_comm, Nat.div_mul in H2; [ | flia H3 ].
+  rewrite Hr, Nat.mul_comm, Nat.div_mul; [ | flia H3 ].
+  destruct (Nat.eq_dec (r - 1) (m - n - 3)) as [H5| H5]. {
+    destruct (lt_dec (r * (m - n - 2) / S (m - n - 2) - 1) (m - n - 2))
+      as [H6| H6]. {
+      rewrite f_add_0_r.
+      remember (m - n - 3) as t eqn:Ht; symmetry in Ht.
+      destruct t; [ flia H4 | clear H4 ].
+      destruct t; [ | rewrite Hp; cbn; now destruct t ].
+      exfalso.
+      assert (H : r = 2) by flia H5; clear H5 H2.
+      subst r.
+      flia Ht Hr.
+    }
+    apply Nat.nlt_ge in H6.
+    assert (H7 : r ≥ 2) by flia H4 H5.
+    replace (ls p (m - n - 2)) with f_zero. 2: {
+      subst p; cbn.
+      destruct (m - n - 2) as [| x]; [ flia H3 | ].
+      destruct x; [ flia H3 | ].
+      now destruct x.
+    }
+    assert (H8 : r = m - n - 2) by lia.
+    rewrite f_add_0_l.
+    rewrite <- H5.
+    rewrite <- H8 in *.
+    remember ((r * r) mod S r) as t eqn:Ht.
+    symmetry in Ht.
+    destruct t. {
+      apply Nat.mod_divides in Ht; [ | flia ].
+      destruct Ht as (t, Ht).
+      rewrite Ht, Nat.mul_comm, Nat.div_mul; [ | easy ].
+      destruct t; [ flia Hr Ht | ].
+      replace (S t - 1) with t by flia.
+      destruct (Nat.eq_dec t r) as [H9| H9]; [ subst t; flia Ht | ].
+      destruct t; [ flia Hr H8 Ht H9 | ].
+      destruct r; [ flia H3 | ].
+      destruct r; [ flia H3 | clear H3 H7 ].
+      cbn in Ht.
+      do 2 apply Nat.succ_inj in Ht.
+      setoid_rewrite Nat.add_comm in Ht; cbn in Ht.
+      do 2 apply Nat.succ_inj in Ht.
+      rewrite Nat.mul_comm in Ht; cbn in Ht.
+      destruct r; [ flia Ht | ].
+      rewrite Hp at 1; cbn.
+      replace (match r with 0 | _ => _ end) with f_zero by now destruct r.
+      rewrite f_add_0_l.
+      destruct t; [ | now rewrite Hp; cbn; destruct t ].
+      exfalso; clear H9.
+      cbn in Ht.
+      ring_simplify in Ht.
+      assert (H : r * r + 4 * r + 1 = 0) by flia Ht.
+      clear - H.
 ...
 
 (* seems to be true by testing it in ocaml *)
