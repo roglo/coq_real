@@ -879,12 +879,13 @@ destruct n; [ flia Hc | ].
 destruct n; [ flia Hc | ].
 assert (H : n = 2 * c) by flia Hc.
 clear Hc; rename H into Hc.
-destruct m; [ flia Hnm | ].
-destruct m; [ flia Hnm | ].
-assert (H : 2 * S c ≤ m) by flia Hnm.
-clear Hnm; rename H into Hnm.
-specialize (IHc _ _ Hc Hnm).
+assert (H : 2 * S c ≤ m). {
+  eapply le_trans; [ | apply Hnm ].
+  flia.
+}
+specialize (IHc _ _ Hc H).
 remember (S (S n)) as sn; cbn - [ "/" "mod" zeta ]; subst sn.
+rewrite IHc, f_add_0_r.
 ...
 
 (* seems to be true by testing it in ocaml *)
