@@ -855,11 +855,7 @@ destruct p. {
   unfold ls_of_pol at 1 2.
   cbn - [ ls_of_pol log_prod ].
   destruct n; [ flia Hn | ].
-  destruct n. {
-    rewrite f_add_opp_diag_r, f_add_0_l.
-    apply log_prod_0_l; intros n.
-    destruct n; cbn.
-    (* faux *)
+  destruct n; [ now rewrite f_add_opp_diag_r, f_add_0_l | ].
 ...
 
 intros n.
