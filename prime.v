@@ -841,9 +841,6 @@ intros n.
 unfold ls_pol_mul_l.
 remember (ls_of_pol {| lp := [f_one; (- f_one)%F] |}) as p eqn:Hp.
 remember zeta as ζ eqn:Hζ.
-
-Check List.fold_right.
-...
 cbn - [ Nat.div Nat.modulo ].
 rewrite Nat.sub_diag.
 rewrite Nat.div_1_r.
@@ -921,7 +918,12 @@ destruct m. {
   rewrite Nat.add_comm, Nat.mul_comm, Nat.div_add; [ | easy ].
   rewrite Nat.div_same; [ | easy ].
   rewrite Nat.add_1_l.
+  destruct m. {
+    cbn.
+    subst p; cbn.
+    (* faux *)
 ...
+
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
 Proof.
 ...
