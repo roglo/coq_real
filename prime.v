@@ -834,22 +834,31 @@ Print ls_mul_l_upto.
 *)
 
 (* seems to be true by testing it in ocaml *)
+Theorem log_prod_pol_zeta' {F : field} : ∀ n m,
+  2 ≤ n → n mod 2 = 0 → n ≤ m →
+  (log_prod (ls (ls_of_pol {| lp := [f_one; - f_one] |})) (ls zeta) m n =
+   f_zero)%F.
+Proof.
+intros * H3n Hn2 Hnm.
+Print log_prod.
+...
+
+(* seems to be true by testing it in ocaml *)
 Theorem log_prod_pol_zeta {F : field} : ∀ n,
   3 ≤ n → n mod 2 = 1 →
   (log_prod (ls (ls_of_pol {| lp := [f_one; - f_one] |})) (ls zeta) n n =
    - f_one)%F.
 Proof.
 intros * H3n Hn2.
-...
-intros * H3n Hn2.
 destruct n; [ easy | ].
-cbn - [ "/" "mod" "-" zeta ].
+cbn - [ "/" "mod" "-" zeta ls_of_pol ].
 replace (S (S n) - S n) with 1 by flia.
 replace (S (S n)) with (n + 1 * 2) by flia.
 rewrite Nat.div_add; [ | easy ].
 rewrite Nat.mod_add; [ | easy ].
 rewrite Nat.add_sub.
 (**)
+replace (ls (ls_of_pol _) 1) with (- f_one)%F by easy.
 rewrite f_mul_opp_l, f_mul_1_l.
 replace (ls zeta 1) with f_one by easy.
 rewrite f_mul_opp_l, f_mul_1_l, f_mul_1_r.
@@ -861,7 +870,40 @@ destruct (lt_dec (n / 2) 1) as [Hn| Hn]. {
   replace (S (S n)) with (n + 1 * 2) in Hn by flia.
   rewrite Nat.div_add in Hn; [ flia Hn | easy ].
 }
-apply Nat.nlt_ge in Hn.
+clear Hn.
+remember (n mod 2) as m eqn:Hm; symmetry in Hm.
+destruct m. 2: {
+  destruct m. 2: {
+    specialize (Nat.mod_upper_bound n 2 (Nat.neq_succ_0 _)) as H1.
+    rewrite Hm in H1; flia H1.
+  }
+  specialize (Nat.div_mod n 2 (Nat.neq_succ_0 _)) as H1.
+  rewrite H1, Hm in Hn2.
+  replace (S (2 * (n / 2) + 1)) with (0 + (n / 2 + 1) * 2) in Hn2 by flia.
+  now rewrite Nat.mod_add in Hn2.
+}
+clear Hn2.
+apply Nat.mod_divides in Hm; [ | easy ].
+destruct Hm as (m, Hm).
+rewrite Hm, Nat.mul_comm, Nat.div_mul; [ | easy ].
+destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
+  subst m; cbn in Hm; subst n; cbn.
+  apply f_add_0_r.
+}
+destruct m; [ cbn in Hm; flia H3n Hm | ].
+destruct m; [ easy | clear Hm1 ].
+replace (ls (ls_of_pol _) (S (S m))) with f_zero. 2: {
+  cbn; now destruct m.
+}
+rewrite f_add_0_r.
+replace (S (S m) * 2) with n by flia Hm.
+assert (H : n mod 2 = 0). {
+  replace n with (0 + S (S m) * 2) by flia Hm.
+  now rewrite Nat.mod_add.
+}
+rewrite log_prod_pol_zeta'; [ | flia H3n | easy | flia ].
+apply f_add_0_r.
+Qed.
 ...
 destruct n; [ flia H3n | ].
 destruct n; [ flia H3n | clear H3n ].
