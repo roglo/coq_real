@@ -913,15 +913,52 @@ destruct m. {
   replace (S (S n)) with (n + 1 * 2) by flia.
   rewrite Nat.div_add; [ | easy ].
   rewrite Nat.add_sub.
-  clear Hn.
+  replace (S (S n)) with (n + 1 * 2) in Hn by flia.
+  rewrite Nat.div_add in Hn; [ | easy ].
+  rewrite Nat.add_sub in Hn.
   subst n.
+  rewrite Nat.add_comm, Nat.mul_comm, Nat.div_add in Hn; [ | easy ].
+  rewrite Nat.div_same in Hn; [ | easy ].
   rewrite Nat.add_comm, Nat.mul_comm, Nat.div_add; [ | easy ].
   rewrite Nat.div_same; [ | easy ].
   rewrite Nat.add_1_l.
-  destruct m. {
-    cbn.
-    subst p; cbn.
-    (* faux *)
+  destruct m; [ flia Hn | ].
+  replace (ls p (S (S m))) with f_zero. 2: {
+    subst p; cbn; now destruct m.
+  }
+  rewrite f_add_0_l.
+  clear Hn.
+  replace (2 + S m * 2) with (S (2 * m + 3)) by flia.
+  remember (2 * m + 3) as x.
+  remember (S (S x)) as y.
+  cbn - [ "/" "mod" ]; subst y.
+  replace (S (S x) - x) with 2 by flia.
+  replace (S (S (S x))) with (x + 1 * 3) by flia.
+  rewrite Nat.div_add; [ | easy ].
+  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.add_sub.
+  replace (2 * m + 3) with (2 * m + 1 * 3) in Heqx by flia; subst x.
+  rewrite Nat.div_add; [ | easy ].
+  rewrite Nat.mod_add; [ | easy ].
+  destruct (lt_dec (2 * m / 3 + 1) 2) as [Hm| Hm]; [ easy | ].
+  apply Nat.nlt_ge in Hm.
+  destruct m; [ cbn in Hm; flia Hm | ].
+  destruct m; [ cbn in Hm; flia Hm | clear Hm ].
+  replace (2 * S (S m)) with (2 * m + 1 + 1 * 3) by flia.
+  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.div_add; [ | easy ].
+  remember ((2 * m + 1) mod 3) as b eqn:Hb; symmetry in Hb.
+  destruct b. {
+    apply Nat.mod_divides in Hb; [ | easy ].
+    destruct Hb as (c, Hc).
+    rewrite Hc.
+    rewrite Nat.mul_comm, Nat.div_mul; [ | easy ].
+    destruct c; [ flia Hc | ].
+    destruct (Nat.eq_dec (S c + 1 + 1) 2) as [H| H]; [ flia H | clear H ].
+    replace (S c + 1 + 1) with (c + 3) by flia.
+    replace (S c * 3 + 1 * 3 + 1 * 3) with (3 * c + 9) by flia.
+    replace (S (S (3 * c + 9))) with (3 * c + 11) by flia.
+    (* pfff... interminable *)
 ...
 
 Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
