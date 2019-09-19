@@ -833,12 +833,75 @@ destruct k; cbn.
 Print ls_mul_l_upto.
 *)
 
+(* seems to be true by testing it in ocaml *)
 Theorem log_prod_pol_zeta {F : field} : ∀ n,
-  3 ≤ n →
+  3 ≤ n → n mod 2 = 1 →
   (log_prod (ls (ls_of_pol {| lp := [f_one; - f_one] |})) (ls zeta) n n =
    - f_one)%F.
 Proof.
-(* works in ocaml version *)
+intros * H3n Hn2.
+destruct n; [ easy | ].
+cbn - [ "/" "mod" "-" zeta ].
+replace (S (S n) - S n) with 1 by flia.
+replace (S (S n)) with (n + 1 * 2) by flia.
+rewrite Nat.div_add; [ | easy ].
+rewrite Nat.mod_add; [ | easy ].
+rewrite Nat.add_sub.
+destruct n; [ flia H3n | ].
+destruct n; [ flia H3n | clear H3n ].
+replace (S (S n)) with (n + 1 * 2) by flia.
+rewrite Nat.div_add; [ | easy ].
+rewrite Nat.mod_add; [ | easy ].
+destruct (lt_dec (n / 2 + 1) 1) as [H| H]; [ flia H | clear H ].
+replace (S (S (S n))) with (S n + 1 * 2) in Hn2 by flia.
+rewrite Nat.mod_add in Hn2; [ | easy ].
+remember (n mod 2) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  do 2 rewrite f_mul_opp_l.
+  do 2 rewrite f_mul_1_l.
+  destruct (Nat.eq_dec (n / 2 + 1) 1) as [Hn| Hn]. {
+    destruct n; [ now cbn; rewrite f_add_0_r | ].
+    apply Nat.mod_divides in Hm; [ | easy ].
+    destruct Hm as (m, Hm).
+    rewrite Hm, Nat.mul_comm, Nat.div_mul in Hn; [ | easy ].
+    destruct m; [ flia Hm | flia Hn ].
+  }
+  cbn - [ "/" ].
+  rewrite f_mul_1_r.
+  apply Nat.mod_divides in Hm; [ | easy ].
+  destruct Hm as (m, Hm).
+  rewrite Hm, Nat.mul_comm, Nat.div_mul; [ | easy ].
+  destruct m; [ now rewrite Hm in Hn; cbn in Hn | ].
+  rewrite Nat.add_1_r.
+  replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct m.
+  rewrite f_add_0_r.
+  replace (S m * 2 + 2) with (S (m * 2 + 3)) by flia.
+  remember (m * 2 + 3) as p eqn:Hp.
+  cbn - [ "/" "mod" ].
+  destruct p; [ flia Hp | ].
+  replace (S p - 1) with p by flia.
+  destruct p; [ flia Hp | ].
+  replace (S (S p) - p) with 2 by flia.
+  replace (S (S (S (S (S p))))) with (p + 2 + 1 * 3) by flia.
+  rewrite Nat.div_add; [ | easy ].
+  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.add_sub.
+  rewrite f_mul_0_l, f_add_0_l.
+  destruct p; [ flia Hp | ].
+  replace (S p + 2) with (p + 1 * 3) by flia.
+  rewrite Nat.div_add; [ | easy ].
+  rewrite Nat.mod_add; [ | easy ].
+  destruct (lt_dec (p / 3 + 1) 2) as [Hp2| Hp2]; [ now rewrite f_add_0_r | ].
+  apply Nat.nlt_ge in Hp2.
+  assert (H : p = m * 2) by flia Hp; clear Hp.
+  rename H into Hp.
+  remember (p mod 3) as q eqn:Hq; symmetry in Hq.
+  destruct q. {
+    apply Nat.mod_divides in Hq; [ | easy ].
+    destruct Hq as (q, Hq).
+    rewrite Hq, Nat.mul_comm, Nat.div_mul; [ | easy ].
+    destruct (Nat.eq_dec (q + 1) 2) as [Hq2| Hq2]. {
+      rewrite f_add_0_l.
 ...
 
 Theorem step_1 {F : field} :
