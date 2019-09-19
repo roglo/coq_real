@@ -833,6 +833,14 @@ destruct k; cbn.
 Print ls_mul_l_upto.
 *)
 
+Theorem log_prod_pol_zeta {F : field} : ∀ n,
+  3 ≤ n →
+  (log_prod (ls (ls_of_pol {| lp := [f_one; - f_one] |})) (ls zeta) n n =
+   - f_one)%F.
+Proof.
+(* works in ocaml version *)
+...
+
 Theorem step_1 {F : field} :
   ls_eq (zeta_but_mul_of 2)
     (ls_pol_mul_l {| lp := [f_one; (- f_one)%F] |} zeta).
@@ -847,17 +855,32 @@ destruct p. {
   destruct m; [ flia Hm | ].
   assert (Hn : n = 2 * m + 1) by flia Hm; clear Hm.
   unfold ls_pol_mul_l.
-  cbn - [ "/" "mod" ls_of_pol ].
+  cbn - [ "/" "mod" ls_of_pol zeta ].
   rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
   destruct (lt_dec n 0) as [H| H]; [ easy | clear H ].
+(*
   rewrite Nat.mod_1_r, f_mul_1_r, f_mul_1_r.
+*)
   destruct (Nat.eq_dec n 0) as [H| H]; [ flia Hn H | clear H ].
   unfold ls_of_pol at 1 2.
-  cbn - [ ls_of_pol log_prod ].
+  cbn - [ ls_of_pol log_prod zeta ].
   destruct n; [ flia Hn | ].
-  destruct n; [ now rewrite f_add_opp_diag_r, f_add_0_l | ].
+  destruct n. {
+    cbn; rewrite f_mul_1_r.
+    now rewrite f_mul_1_r, f_add_opp_diag_r, f_add_0_l.
+  }
   replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct n.
-  rewrite f_add_0_r.
+  rewrite f_mul_0_l, f_add_0_r, f_mul_1_l.
+  replace (ls zeta (S (S n))) with f_one by easy.
+  assert (Hnn : 3 ≤ S (S n)). {
+    destruct n. {
+      destruct m; [ easy | ].
+      destruct m; [ easy | flia Hn ].
+    }
+    flia.
+  }
+  rewrite log_prod_pol_zeta; [ | easy ].
+...
   remember (S n) as p; cbn - [ "/" "mod" ]; subst p.
   replace (S n - n) with 1 by flia.
   replace (S (S (S n))) with (2 * m + 1 * 2) by flia Hn.
