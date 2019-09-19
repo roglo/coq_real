@@ -953,10 +953,10 @@ destruct q. {
       rewrite f_add_0_l.
       destruct t; [ | now rewrite Hp; cbn; destruct t ].
       exfalso; clear H9.
-      cbn in Ht.
       ring_simplify in Ht.
-      assert (H : r * r + 4 * r + 1 = 0) by flia Ht.
-      clear - H.
+      flia Ht.
+    }
+    rewrite f_add_0_r.
 ...
 
 (* seems to be true by testing it in ocaml *)
