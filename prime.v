@@ -846,9 +846,11 @@ replace (S (S n)) with (n + 1 * 2) in Hn2 by flia.
 rewrite Nat.mod_add in Hn2; [ | easy ].
 apply Nat.mod_divides in Hn2; [ | easy ].
 destruct Hn2 as (c, Hc).
-revert m c Hnm Hc.
 remember (ls_of_pol _) as p eqn:Hp.
-induction n; intros. {
+replace (S (S n)) with (2 * S c) in Hnm by flia Hc.
+revert m n Hc Hnm.
+induction c; intros. {
+  cbn in Hc; subst n.
   cbn - [ "/" "mod" ].
   rewrite Nat.sub_0_r, f_add_0_r.
   do 4 rewrite f_mul_1_r.
@@ -873,6 +875,16 @@ induction n; intros. {
   destruct (lt_dec 0 (m - 1)) as [Hm| Hm]; [ easy | ].
   flia Hm Hnm.
 }
+destruct n; [ flia Hc | ].
+destruct n; [ flia Hc | ].
+assert (H : n = 2 * c) by flia Hc.
+clear Hc; rename H into Hc.
+destruct m; [ flia Hnm | ].
+destruct m; [ flia Hnm | ].
+assert (H : 2 * S c ≤ m) by flia Hnm.
+clear Hnm; rename H into Hnm.
+specialize (IHc _ _ Hc Hnm).
+remember (S (S n)) as sn; cbn - [ "/" "mod" zeta ]; subst sn.
 ...
 
 (* seems to be true by testing it in ocaml *)
