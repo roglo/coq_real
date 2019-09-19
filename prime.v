@@ -838,6 +838,9 @@ Theorem step_1 {F : field} :
     (ls_pol_mul_l {| lp := [f_one; (- f_one)%F] |} zeta).
 Proof.
 intros n.
+...
+
+intros n.
 unfold ls_pol_mul_l.
 remember (ls_of_pol {| lp := [f_one; (- f_one)%F] |}) as p eqn:Hp.
 remember zeta as ζ eqn:Hζ.
