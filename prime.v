@@ -886,6 +886,10 @@ assert (H : 2 * S c ≤ m). {
 specialize (IHc _ _ Hc H).
 remember (S (S n)) as sn; cbn - [ "/" "mod" zeta ]; subst sn.
 rewrite IHc, f_add_0_r.
+replace (ls zeta _) with f_one by now unfold zeta.
+replace (ls zeta (m - S (S n))) with f_one by now unfold zeta.
+replace (ls zeta (S m / S (m - S (S n)))) with f_one by now unfold zeta.
+do 4 rewrite f_mul_1_r.
 ...
 
 (* seems to be true by testing it in ocaml *)
