@@ -856,6 +856,86 @@ destruct p. {
   cbn - [ ls_of_pol log_prod ].
   destruct n; [ flia Hn | ].
   destruct n; [ now rewrite f_add_opp_diag_r, f_add_0_l | ].
+  replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct n.
+  rewrite f_add_0_r.
+  remember (S n) as p; cbn - [ "/" "mod" ]; subst p.
+  replace (S n - n) with 1 by flia.
+  replace (S (S (S n))) with (2 * m + 1 * 2) by flia Hn.
+  rewrite Nat.div_add; [ | easy ].
+  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.mul_comm, Nat.div_mul; [ | easy ].
+  rewrite Nat.add_sub.
+  destruct (lt_dec m 1) as [Hm| Hm]; [ flia Hn Hm | ].
+  apply Nat.nlt_ge in Hm.
+  rewrite <- (Nat.add_0_l (m * 2)).
+  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.mod_0_l; [ | easy ].
+  do 2 rewrite f_mul_1_r.
+  destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
+    rewrite f_add_assoc, f_add_opp_diag_r, f_add_0_l.
+    subst m.
+    now replace n with 1 by flia Hn.
+  }
+  do 2 rewrite f_add_assoc.
+  rewrite f_add_opp_diag_r, f_add_0_l.
+  destruct m; [ easy | ].
+  destruct m; [ easy | ].
+  replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct m.
+  rewrite f_add_0_l.
+  remember (S (S n)) as p; cbn - [ "/" "mod" ]; subst p.
+  do 2 rewrite f_mul_1_r.
+  replace (S (S n) - n) with 2 by flia.
+  replace (S (S (S n))) with (n + 1 * 3) by flia.
+  rewrite f_add_0_l.
+  rewrite Nat.div_add; [ | easy ].
+  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.add_sub.
+  clear Hm Hm1.
+  destruct (lt_dec (n / 3) 2) as [H3| H3]; [ easy | ].
+  apply Nat.nlt_ge in H3.
+  remember (n mod 3) as b eqn:Hb; symmetry in Hb.
+  destruct b. {
+    destruct (Nat.eq_dec (n / 3) 2) as [H4| H4]. {
+      apply Nat.mod_divides in Hb; [ | easy ].
+      destruct Hb as (c, Hc).
+      rewrite Hc, Nat.mul_comm, Nat.div_mul in H4; [ | easy ].
+      subst c; rewrite Hc in Hn.
+      rewrite Nat.add_1_r in Hn.
+      apply Nat.succ_inj in Hn.
+      cbn in Hn; flia Hn.
+    }
+    remember (n / 3) as p eqn:Hp; symmetry in Hp.
+    destruct p; [ easy | ].
+    destruct p; [ flia H3 | ].
+    replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct p.
+    rewrite f_add_0_l.
+Search log_prod.
+...
+destruct n; [ cbn in Hp; flia Hp | ].
+remember (S (S (S n))) as q; cbn - [ "/" "mod" ].
+...
+    clear H3.
+    apply Nat.mod_divides in Hb; [ | easy ].
+    destruct Hb as (c, Hc).
+    rewrite Hc, Nat.mul_comm, Nat.div_mul in Hp; [ | easy ].
+    destruct c; [ easy | ].
+    destruct c; [ easy | ].
+    remember (S (S n)) as q; rewrite Hc.
+    replace (3 * (S (S c))) with (S (3 * c + 5)) by flia.
+    remember (3 * c + 5) as r eqn:Hr.
+    cbn - [ "/" "mod" ].
+    do 2 apply Nat.succ_inj in Hp.
+    subst p.
+    replace (q - r) with 3 by lia.
+    replace (S q) with (2 * m + 2 + 1 * 4) by flia Hn.
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.add_sub.
+    remember ((2 * m + 2) / 4) as p eqn:Hp; symmetry in Hp.
+    destruct (lt_dec p 3) as [Hp3| Hp3]; [ easy | ].
+    apply Nat.nlt_ge in Hp3.
+    do 2 rewrite f_mul_1_r.
+    rewrite f_add_0_l.
 ...
 
 intros n.
