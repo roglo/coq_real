@@ -840,6 +840,8 @@ Theorem log_prod_pol_zeta {F : field} : ∀ n,
    - f_one)%F.
 Proof.
 intros * H3n Hn2.
+...
+intros * H3n Hn2.
 destruct n; [ easy | ].
 cbn - [ "/" "mod" "-" zeta ].
 replace (S (S n) - S n) with 1 by flia.
