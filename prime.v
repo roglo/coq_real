@@ -635,6 +635,7 @@ rewrite ls_mul_l_upto_of_succ.
 ...
 *)
 
+(*
 Theorem ls_pol_mul_l_eq_ls_mul_l_upto_of {F : field} :
   ∀ p s i,
   ls (ls_pol_mul_l p s) i =
@@ -720,9 +721,10 @@ destruct (Nat.eq_dec i 0) as [Hi | Hi]. {
     now destruct (Nat.eq_dec _ _).
   }
   rewrite f_add_0_l.
-
 ...
+*)
 
+(*
 Theorem ls_pol_mul_l_eq_ls_mul_l_upto {F : field} :
   ∀ p s,
   ls_eq (ls_pol_mul_l p s)
@@ -730,7 +732,6 @@ Theorem ls_pol_mul_l_eq_ls_mul_l_upto {F : field} :
 Proof.
 intros * i.
 ...
-
 destruct i. {
   cbn; rewrite f_add_0_r.
   unfold ls_of_pol.
@@ -830,45 +831,7 @@ destruct k; cbn.
   clear Hi.
 ...
 Print ls_mul_l_upto.
-
-Theorem ls_mul_l_upto_of_succ {F : field} : ∀ k s1 s2 i,
-  ls (ls_mul_l_upto (S k) s1 s2) (S i) =
-    match S i mod S k with
-    | 0 => f_one
-    | _ => f_zero
-    end.
-Proof.
-intros.
-destruct k. {
-  cbn - [ "mod" "/" ].
-  do 2 rewrite Nat.mod_1_r.
-  rewrite Nat.div_1_r, f_add_0_l.
-  now replace (S (S i) - 1) with (S i) by flia.
-}
-destruct k. {
-  cbn - [ "mod" "/" ].
-  rewrite Nat.mod_1_r, f_add_0_l.
-...
-induction k. {
-  cbn - [ Nat.div ].
-  rewrite f_add_0_l.
-  rewrite Nat.div_1_r.
-  now rewrite Nat.sub_succ, Nat.sub_0_r.
-}
-remember (S k) as x; cbn - [ "/" "mod" ]; subst x.
-rewrite IHk.
-remember (S (S i) mod S (S k)) as b eqn:Hb.
-symmetry in Hb.
-destruct b; [ | now rewrite f_add_0_r ].
-...
-
-induction k; [ cbn; now rewrite f_add_0_l | ].
-remember (S k) as x; cbn; subst x.
-unfold snd.
-replace (S k - k) with 1 by flia.
-now rewrite f_add_0_r.
-Qed.
-...
+*)
 
 Theorem step_1 {F : field} :
   ls_eq (zeta_but_mul_of 2)
