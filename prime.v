@@ -840,7 +840,39 @@ Theorem log_prod_pol_zeta' {F : field} : ∀ n m,
    f_zero)%F.
 Proof.
 intros * H3n Hn2 Hnm.
-Print log_prod.
+destruct n; [ flia H3n | ].
+destruct n; [ flia H3n | clear H3n ].
+replace (S (S n)) with (n + 1 * 2) in Hn2 by flia.
+rewrite Nat.mod_add in Hn2; [ | easy ].
+apply Nat.mod_divides in Hn2; [ | easy ].
+destruct Hn2 as (c, Hc).
+revert m c Hnm Hc.
+remember (ls_of_pol _) as p eqn:Hp.
+induction n; intros. {
+  cbn - [ "/" "mod" ].
+  rewrite Nat.sub_0_r, f_add_0_r.
+  do 4 rewrite f_mul_1_r.
+  rewrite Nat.div_same; [ | easy ].
+  rewrite Nat.mod_same; [ | easy ].
+  rewrite Nat.sub_diag.
+  replace (S (m - 1)) with m by flia Hnm.
+  replace (S m) with (1 + 1 * m) by flia.
+  rewrite Nat.div_add; [ | flia Hnm ].
+  rewrite Nat.mod_add; [ | flia Hnm ].
+  rewrite Nat.add_sub.
+  rewrite Nat.div_small; [ | easy ].
+  rewrite Nat.mod_small; [ | easy ].
+  replace (ls p m) with f_zero. 2: {
+    subst p.
+    destruct m; [ easy | ].
+    destruct m; [ flia Hnm | ].
+    now destruct m.
+  }
+  do 2 rewrite f_add_0_l.
+  replace (ls p 0) with f_one by now subst p.
+  destruct (lt_dec 0 (m - 1)) as [Hm| Hm]; [ easy | ].
+  flia Hm Hnm.
+}
 ...
 
 (* seems to be true by testing it in ocaml *)
