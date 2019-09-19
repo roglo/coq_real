@@ -833,6 +833,11 @@ destruct k; cbn.
 Print ls_mul_l_upto.
 *)
 
+Theorem zeta_is_one {F : field} : ∀ n, ls zeta n = f_one.
+Proof.
+intros; now unfold zeta.
+Qed.
+
 (* seems to be true by testing it in ocaml *)
 Theorem log_prod_pol_zeta' {F : field} : ∀ n m,
   2 ≤ n → n mod 2 = 0 → n ≤ m →
@@ -886,10 +891,16 @@ assert (H : 2 * S c ≤ m). {
 specialize (IHc _ _ Hc H).
 remember (S (S n)) as sn; cbn - [ "/" "mod" zeta ]; subst sn.
 rewrite IHc, f_add_0_r.
-replace (ls zeta _) with f_one by now unfold zeta.
-replace (ls zeta (m - S (S n))) with f_one by now unfold zeta.
-replace (ls zeta (S m / S (m - S (S n)))) with f_one by now unfold zeta.
+do 4 rewrite zeta_is_one.
 do 4 rewrite f_mul_1_r.
+replace (m - S (S (S n))) with (m - n - 3) by flia.
+replace (S (m - n - 3)) with (m - n - 2) by flia Hnm Hc.
+destruct (lt_dec (S m / (m - n - 2) - 1) (m - n - 3)) as [| H1]; [ easy | ].
+apply Nat.nlt_ge in H1.
+replace (m - S (S n)) with (m - n - 2) by flia.
+remember (S m mod (m - n - 2)) as q eqn:Hq; symmetry in Hq.
+destruct q. {
+  destruct (Nat.eq_dec (S m / (m - n - 2) - 1) (m - n - 3)) as [H2| H2]. {
 ...
 
 (* seems to be true by testing it in ocaml *)
