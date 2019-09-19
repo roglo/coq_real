@@ -849,6 +849,20 @@ replace (S (S n)) with (n + 1 * 2) by flia.
 rewrite Nat.div_add; [ | easy ].
 rewrite Nat.mod_add; [ | easy ].
 rewrite Nat.add_sub.
+(**)
+rewrite f_mul_opp_l, f_mul_1_l.
+replace (ls zeta 1) with f_one by easy.
+rewrite f_mul_opp_l, f_mul_1_l, f_mul_1_r.
+replace (ls zeta (n / 2)) with f_one by easy.
+destruct (lt_dec (n / 2) 1) as [Hn| Hn]. {
+  exfalso.
+  destruct n; [ flia H3n | ].
+  destruct n; [ flia H3n | ].
+  replace (S (S n)) with (n + 1 * 2) in Hn by flia.
+  rewrite Nat.div_add in Hn; [ flia Hn | easy ].
+}
+apply Nat.nlt_ge in Hn.
+...
 destruct n; [ flia H3n | ].
 destruct n; [ flia H3n | clear H3n ].
 replace (S (S n)) with (n + 1 * 2) by flia.
