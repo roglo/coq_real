@@ -838,6 +838,28 @@ Theorem step_1 {F : field} :
     (ls_pol_mul_l {| lp := [f_one; (- f_one)%F] |} zeta).
 Proof.
 intros n.
+cbn - [ "mod" ls_pol_mul_l ].
+remember (S n mod 2) as p eqn:Hp; symmetry in Hp.
+symmetry.
+destruct p. {
+  apply Nat.mod_divides in Hp; [ | easy ].
+  destruct Hp as (m & Hm).
+  destruct m; [ flia Hm | ].
+  assert (Hn : n = 2 * m + 1) by flia Hm; clear Hm.
+  unfold ls_pol_mul_l.
+  cbn - [ "/" "mod" ls_of_pol ].
+  rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
+  destruct (lt_dec n 0) as [H| H]; [ easy | clear H ].
+  rewrite Nat.mod_1_r, f_mul_1_r, f_mul_1_r.
+  destruct (Nat.eq_dec n 0) as [H| H]; [ flia Hn H | clear H ].
+  unfold ls_of_pol at 1 2.
+  cbn - [ ls_of_pol log_prod ].
+  destruct n; [ flia Hn | ].
+  destruct n. {
+    rewrite f_add_opp_diag_r, f_add_0_l.
+    apply log_prod_0_l; intros n.
+    destruct n; cbn.
+    (* faux *)
 ...
 
 intros n.
