@@ -9,6 +9,11 @@ Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 
 Notation "x ≤ y ≤ z" := (x <= y ∧ y <= z)%nat (at level 70, y at next level).
 
+Theorem Nat_sub_succ_1 : ∀ n, S n - 1 = n.
+Proof. now intros; rewrite Nat.sub_succ, Nat.sub_0_r. Qed.
+
+(* *)
+
 Fixpoint prime_test n d :=
   match d with
   | 0 | 1 => true
@@ -826,6 +831,51 @@ Theorem step_1 {F : field} : ∀ s n,
   (but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
 Proof.
 intros * i.
+cbn - [ "/" "mod" ls_of_pol ].
+rewrite Nat.sub_diag.
+rewrite Nat.div_1_r, Nat.mod_1_r.
+rewrite Nat_sub_succ_1.
+destruct (lt_dec i 0) as [H| H]; [ easy | clear H ].
+destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
+  subst i; cbn; rewrite f_add_0_r.
+  destruct n; [ now cbn; rewrite f_add_opp_diag_r, f_mul_0_l | ].
+  rewrite Nat_sub_succ_1.
+  destruct n; [ now cbn; rewrite f_add_opp_diag_r, f_mul_0_l | ].
+  rewrite Nat.mod_1_l; [ cbn | flia ].
+  destruct n; now cbn; rewrite f_opp_0, f_add_0_r, f_mul_1_l.
+}
+remember (ls_of_pol (pol_pow 1 - pol_pow n)%LP) as p eqn:Hp.
+destruct n. {
+  unfold pol_pow, lp_sub, lp_add, lp_opp in Hp.
+  cbn in Hp.
+  rewrite f_add_opp_diag_r in Hp.
+  subst p; cbn.
+  rewrite f_mul_0_l, f_add_0_l.
+  destruct i; [ easy | ].
+  replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
+  rewrite f_mul_0_l, f_add_0_l; symmetry.
+  apply log_prod_0_l.
+  intros n; destruct n; [ easy | now destruct n ].
+}
+remember (S i mod S n) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  symmetry.
+  apply Nat.mod_divides in Hm; [ | easy ].
+  destruct Hm as (m, Hm).
+  destruct n. {
+    subst p; cbn.
+    rewrite f_add_opp_diag_r, f_mul_0_l, f_add_0_l.
+    destruct i; [ easy | ].
+    replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
+    rewrite f_mul_0_l, f_add_0_l.
+    apply log_prod_0_l.
+    intros n; destruct n; [ easy | now destruct n ].
+  }
+  replace (ls p 0) with f_one. 2: {
+    subst p; cbn; symmetry.
+    destruct n; now cbn; rewrite f_opp_0, f_add_0_r.
+  }
+  rewrite f_mul_1_l.
 ...
 
 Theorem step_1 {F : field} :
