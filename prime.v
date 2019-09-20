@@ -471,6 +471,8 @@ Definition ls_of_pol {F : field} p :=
 Definition ls_pol_mul_l {F : field} p s :=
   ls_mul (ls_of_pol p) s.
 
+Arguments ls_pol_mul_l _ p%LP s%LS.
+
 (* 1+1/3^s+1/5^s+1/7^s+... = (1-1/2^s)ζ(s) *)
 (* 1+1/3^s+1/5^s+1/7^s+... = ζ_but_mul_of 2
    (1-1/2^s) = {| lp := [f_one; (- f_one)%F] |} *)
@@ -813,21 +815,15 @@ Qed.
 Definition pol_pow {F : field} n :=
   {| lp := List.repeat f_zero (n - 1) ++ [f_one] |}.
 
-Theorem glop {F : field} : (pol_pow 1 - pol_pow 2)%LP = {| lp := [f_one; (- f_one)%F] |}.
-Proof.
-unfold pol_pow; cbn.
-unfold lp_sub, lp_opp, "+"%LP.
-cbn.
-rewrite f_add_0_l.
-now rewrite f_opp_0, f_add_0_r.
-Qed.
-
-...
-
 Theorem step_1 {F : field} :
-  (ζ_but_mul_of 2 = {| lp := [f_one; (- f_one)%F] |} .* ζ)%LS.
+  (ζ_but_mul_of 2 = (pol_pow 1 - pol_pow 2) .* ζ)%LS.
 Proof.
 intros n.
+unfold pol_pow.
+cbn - [ ζ_but_mul_of ζ ".*" ].
+unfold lp_sub, lp_opp, "+"%LP.
+cbn - [ ζ_but_mul_of ζ ".*" ].
+rewrite f_add_0_l, f_opp_0, f_add_0_r.
 cbn - [ "mod" ls_pol_mul_l ].
 remember (S n mod 2) as p eqn:Hp; symmetry in Hp.
 symmetry.
