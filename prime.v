@@ -433,6 +433,13 @@ Notation "x - y" := (lp_sub x y) : lp_scope.
 
 Definition ζ {F : field} := {| ls _ := f_one |}.
 
+Definition but_mul_of {F : field} s d :=
+  {| ls n :=
+       match S n mod d with
+       | 0 => f_zero
+       | _ => ls s n
+       end |}.
+
 Definition ζ_but_mul_of {F : field} d :=
   {| ls n :=
        match S n mod d with
@@ -814,6 +821,12 @@ Qed.
 
 Definition pol_pow {F : field} n :=
   {| lp := List.repeat f_zero (n - 1) ++ [f_one] |}.
+
+Theorem step_1 {F : field} : ∀ s n,
+  (but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
+Proof.
+intros * i.
+...
 
 Theorem step_1 {F : field} :
   (ζ_but_mul_of 2 = (pol_pow 1 - pol_pow 2) .* ζ)%LS.
