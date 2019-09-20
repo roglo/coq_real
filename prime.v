@@ -1022,6 +1022,26 @@ replace (ls p t) with f_zero. 2: {
     specialize (Nat.mod_upper_bound (S m) 2 (Nat.neq_succ_0 _)) as H4.
     flia Hq H4.
   }
+  assert (Hm : m = n + 4) by flia Hc Ht.
+  clear Hnm H1 Ht H2 Hq.
+  cbn - [ "/" "mod" zeta ] in IHc.
+  do 4 rewrite zeta_is_one in IHc.
+  do 4 rewrite f_mul_1_r in IHc.
+  rewrite Hm in IHc.
+  replace (n + 4 - S n) with 3 in IHc by flia.
+  replace (n + 4 - n) with 4 in IHc by flia.
+  replace (S (n + 4)) with (n + 1 + 1 * 4) in IHc by flia.
+  rewrite Nat.div_add in IHc; [ | easy ].
+  rewrite Nat.mod_add in IHc; [ | easy ].
+  rewrite Nat.add_sub in IHc.
+  replace (n + 1 + 1 * 4) with (n + 1 * 5) in IHc by flia.
+  rewrite Nat.div_add in IHc; [ | easy ].
+  rewrite Nat.mod_add in IHc; [ | easy ].
+  rewrite Nat.add_sub in IHc.
+  replace (ls p 3) with f_zero in IHc by now subst p.
+  rewrite f_add_0_l in IHc.
+  replace (ls p 4) with f_zero in IHc by now subst p.
+  rewrite f_add_0_l in IHc.
 ...
 
 (* seems to be true by testing it in ocaml *)
