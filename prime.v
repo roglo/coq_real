@@ -1005,6 +1005,19 @@ destruct q. {
   now rewrite Hp; cbn; destruct u.
 }
 rewrite f_add_0_l.
+remember (m - n - 2) as t eqn:Ht; symmetry in Ht.
+destruct (lt_dec (S m / S t - 1) t) as [| H3]; [ easy | ].
+apply Nat.nlt_ge in H3.
+remember (S m mod S t) as u eqn:Hu; symmetry in Hu.
+destruct u; [ | easy ].
+apply Nat.mod_divides in Hu; [ | easy ].
+destruct Hu as (u, Hu).
+rewrite Hu, Nat.mul_comm, Nat.div_mul; [ | easy ].
+rewrite Hu, Nat.mul_comm, Nat.div_mul in H3; [ | easy ].
+replace (ls p t) with f_zero. 2: {
+  destruct t; [ flia Hnm Hc Ht | ].
+  destruct t; [ flia Hnm Hc Ht | ].
+  destruct t; [ exfalso | now rewrite Hp; cbn ].
 ...
 
 (* seems to be true by testing it in ocaml *)
