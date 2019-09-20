@@ -1014,6 +1014,19 @@ apply Nat.mod_divides in Hu; [ | easy ].
 destruct Hu as (u, Hu).
 rewrite Hu, Nat.mul_comm, Nat.div_mul; [ | easy ].
 rewrite Hu, Nat.mul_comm, Nat.div_mul in H3; [ | easy ].
+destruct (Nat.eq_dec (u - 1) t) as [H4| H4]. {
+  clear H3.
+  destruct u; [ flia Hu | ].
+  replace (S u - 1) with u in H4 by flia.
+  subst u.
+  assert (H3 : m = t + n + 2) by flia Ht Hnm Hc.
+  rewrite H3 in Hu.
+  cbn in Hu.
+  apply Nat.succ_inj in Hu.
+  assert (H4 : t * (t + 1) = n + 2) by flia Hu.
+  rewrite Hc in H4.
+  (* mouais, faut voir... *)
+...
 replace (ls p t) with f_zero. 2: {
   destruct t; [ flia Hnm Hc Ht | ].
   destruct t; [ flia Hnm Hc Ht | ].
@@ -1042,6 +1055,18 @@ replace (ls p t) with f_zero. 2: {
   rewrite f_add_0_l in IHc.
   replace (ls p 4) with f_zero in IHc by now subst p.
   rewrite f_add_0_l in IHc.
+  destruct (lt_dec ((n + 1) / 4) 3) as [H1| H1]. {
+    clear IHc.
+    rewrite Hm in Hu.
+    ring_simplify in Hu.
+    clear m Hm.
+    subst n.
+    destruct c; [ flia Hu | ].
+    destruct c; [ flia Hu | ].
+    destruct c. {
+      remember (3 * u) as x; cbn in Hu; subst x.
+      cbn in H1.
+      (* merdalor *)
 ...
 
 (* seems to be true by testing it in ocaml *)
