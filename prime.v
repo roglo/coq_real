@@ -582,263 +582,11 @@ Theorem ls_ls_add {F : field} : ∀ s1 s2 i,
   ls (ls_add s1 s2) i = (ls s1 i + ls s2 i)%F.
 Proof. easy. Qed.
 
-(*
-Theorem ls_mul_ls_mul_upto {F : field} : ∀ s1 s2 len i,
-  i < len
-  → ls (ls_mul s1 s2) i = ls (ls_mul_l_upto len s1 s2) i.
-Proof.
-intros * Hlen.
-destruct i. {
-  rewrite ls_mul_l_upto_of_0.
-  cbn - [ "mod" "/" ].
-  rewrite Nat.mod_1_r, Nat.div_1_r, Nat.sub_diag.
-  rewrite f_add_0_r.
-  destruct (Nat.eq_dec 0 0) as [H| H]; [ clear H | flia H ].
-  destruct len; [ flia Hlen | easy ].
-}
-destruct i. {
-  rewrite ls_mul_l_upto_of_succ.
-  cbn; rewrite f_add_0_r.
-  destruct len; [ flia Hlen | ].
-  remember (2 mod S len) as b eqn:Hb; symmetry in Hb.
-  destruct b. {
-    apply Nat.mod_divides in Hb; [ | easy ].
-    destruct Hb as (c, Hc).
-    rewrite ls_mul_l_upto_of_succ.
-    destruct len; [ flia Hlen | clear Hlen ].
-...
-  rewrite ls_mul_l_upto_of_succ.
-  destruct len; [ flia Hlen | clear Hlen ].
-  rewrite ls_mul_l_upto_of_succ.
-...
-rewrite ls_mul_l_upto_of_succ.
-destruct len; [ flia Hlen | ].
-apply Nat.succ_lt_mono in Hlen.
-rewrite ls_mul_l_upto_of_succ.
-destruct len; [ flia Hlen | ].
-...
-intros * Hlen.
-revert i Hlen.
-induction len; intros; [ flia Hlen | ].
-destruct i. {
-  clear Hlen.
-  rewrite ls_mul_l_upto_of_0.
-  cbn - [ "mod" "/" ].
-  rewrite Nat.mod_1_r, Nat.div_1_r, Nat.sub_diag.
-  now rewrite f_add_0_r.
-}
-apply Nat.succ_lt_mono in Hlen.
-cbn - [ "mod" "/" log_prod ls_add ].
-rewrite ls_ls_add.
-specialize (IHlen _ Hlen).
-rewrite ls_mul_l_upto_of_succ.
-...
-*)
-
-(*
-Theorem ls_pol_mul_l_eq_ls_mul_l_upto_of {F : field} :
-  ∀ p s i,
-  ls (ls_pol_mul_l p s) i =
-  ls (ls_mul_l_upto (length (lp p)) (ls_of_pol p) s) i.
-Proof.
-intros.
-Print ls_mul.
-Print log_prod.
-Print ls_mul_l_upto.
-Print ls_mul_elem.
-...
-intros.
-unfold ls_pol_mul_l.
-unfold ls_of_pol.
-remember (lp p) as cl eqn:Hcl.
-clear p Hcl.
-(**)
-unfold ls_mul.
-cbn - [ "/" "mod" log_prod ].
-remember (List.length cl) as len eqn:Hlen; symmetry in Hlen.
-revert s i cl Hlen.
-induction len; intros. {
-  apply length_zero_iff_nil in Hlen.
-  subst cl; cbn - [ "/" "mod" ].
-  rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
-  rewrite Nat.mod_1_r.
-  do 2 rewrite f_mul_0_l.
-  rewrite f_add_0_l.
-  replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct i.
-  rewrite f_mul_0_l.
-  replace (if Nat.eq_dec i 0 then f_zero else f_zero) with f_zero. 2: {
-    now destruct (Nat.eq_dec _ _).
-  }
-  destruct (lt_dec i 0) as [H| H]; [ easy | clear H ].
-  rewrite f_add_0_l.
-  apply log_prod_0_l.
-  now intros n; destruct n.
-}
-rewrite ls_mul_l_upto_succ.
-rewrite ls_ls_add.
-cbn - [ "/" "mod" log_prod ls_mul_elem ].
-unfold ls_mul_elem.
-cbn - [ "/" "mod" log_prod ls_mul_elem ].
-...
-induction cl as [| c cl]. {
-  cbn - [ "mod" "/" ].
-  rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
-  rewrite Nat.mod_1_r.
-  do 2 rewrite f_mul_0_l.
-  rewrite f_add_0_l.
-  replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct i.
-  rewrite f_mul_0_l.
-  replace (if Nat.eq_dec i 0 then f_zero else f_zero) with f_zero. 2: {
-    now destruct (Nat.eq_dec _ _).
-  }
-  rewrite f_add_0_l.
-  destruct (lt_dec i 0) as [H| H]; [ easy | clear H ].
-  apply log_prod_0_l.
-  now intros; destruct n.
-}
-cbn - [ "mod" "/" ls_add ].
-rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
-rewrite Nat.mod_1_r.
-destruct (lt_dec i 0) as [H| H]; [ flia H | clear H ].
-destruct (Nat.eq_dec i 0) as [Hi | Hi]. {
-  subst i.
-  cbn - [ "mod" "/" ls_add ].
-  rewrite f_add_0_r.
-  cbn in IHcl.
-  rewrite f_add_0_r in IHcl.
-...
-  destruct cl as [| c1 cl]. {
-    now cbn; rewrite f_add_0_l.
-  }
-  cbn - [ "mod" "/" ls_add ].
-  cbn.
-...
- rewrite f_mul_0_l.
-  rewrite f_add_0_l.
-  replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct i.
-  rewrite f_mul_0_l.
-  replace (if Nat.eq_dec i 0 then f_zero else f_zero) with f_zero. 2: {
-    now destruct (Nat.eq_dec _ _).
-  }
-  rewrite f_add_0_l.
-...
-*)
-
-(*
-Theorem ls_pol_mul_l_eq_ls_mul_l_upto {F : field} :
-  ∀ p s,
-  ls_eq (ls_pol_mul_l p s)
-    (ls_mul_l_upto (List.length (lp p)) (ls_of_pol p) s).
-Proof.
-intros * i.
-...
-destruct i. {
-  cbn; rewrite f_add_0_r.
-  unfold ls_of_pol.
-  remember (lp p) as cl eqn:Hcl; symmetry in Hcl.
-  clear p Hcl.
-  destruct cl as [| c cl]; [ cbn; apply f_mul_0_l | ].
-  unfold nth at 1.
-  remember (length (c :: cl)) as x; cbn in Heqx; subst x.
-  induction cl as [| c1 cl]. {
-    now cbn; rewrite f_add_0_l; cbn.
-  }
-  remember (length (c1 :: cl)) as x; cbn in Heqx; subst x.
-  rewrite IHcl; clear IHcl.
-  remember (S (length cl)) as x; cbn; subst x.
-  unfold snd.
-  replace (S (length cl) - length cl) with 1 by flia.
-  rewrite f_add_0_r.
-  cbn - [ ls_add ].
-  do 2 rewrite ls_ls_add.
-  f_equal. 2: {
-    destruct cl as [| c2 cl]; [ easy | ].
-    cbn - [ "-" ].
-    now replace (S _ - _) with 1 by flia.
-  }
-  destruct cl as [| c2 cl]; [ easy | ].
-  cbn - [ ls_mul_l_upto ].
-  now do 2 rewrite ls_mul_l_upto_0.
-}
-cbn - [ "/" "mod" "-" ].
-rewrite Nat.sub_diag, Nat.div_1_r.
-rewrite Nat.sub_succ, Nat.sub_0_r.
-destruct (lt_dec (S i) 0) as [H| H]; [ flia H | clear H ].
-rewrite Nat.mod_1_r.
-destruct (Nat.eq_dec (S i) 0) as [H| H]; [ flia H | clear H ].
-replace (S _ - _) with 1 by flia.
-replace (S (S i) / 2 - 1) with (i / 2). 2: {
-  replace (S (S i)) with (i + 1 * 2) by flia.
-  rewrite Nat.div_add; [ | easy ].
-  now rewrite Nat.add_sub.
-}
-symmetry.
-destruct (lt_dec (i / 2) 1) as [Hi| Hi]. {
-  rewrite f_add_0_r.
-  destruct i. {
-    cbn.
-...
-(*
-Check ls_mul_l_upto_succ.
-Search (ls_mul_l_upto (S _)).
-Theorem glop {F : field} : ∀ k s1 s2 i,
-  ls (ls_mul_l_upto (S k) s1 s2) i =
-    (ls (ls_mul_l_upto k s1 s2) i +
-     match S i mod S k with
-     | 0 => ls s1 k * ls s2 (S i / S k - 1)
-     | S _ => f_zero
-     end)%F.
-Proof. easy. Qed.
-*)
-remember (length (lp p)) as len eqn:Hlen; symmetry in Hlen.
-clear Hi.
-revert p Hlen.
-induction len; intros. {
-  apply length_zero_iff_nil in Hlen.
-  rewrite Hlen; cbn.
-  do 2 rewrite f_mul_0_l.
-  apply f_add_0_l.
-}
-rewrite glop.
-...
-
-destruct len. {
-  cbn.
-  rewrite f_add_0_l.
-  rewrite (@nth_overflow _ _ 1); [ | flia Hlen ].
-  now rewrite f_mul_0_l, f_add_0_r.
-}
-destruct len. {
-  rewrite Nat.mod_same; [ | easy ].
-  rewrite Nat.div_same; [ | easy ].
-  rewrite Nat.sub_diag.
-  now cbn; rewrite f_add_0_l.
-}
-replace (2 mod (S (S (S len)))) with 2. 2: {
-  now rewrite Nat.mod_small; [ | flia ].
-}
-rewrite f_add_0_r.
-rewrite glop.
-...
-
-destruct k; cbn.
-...
-  }
-  destruct i. 2: {
-    replace (S (S i)) with (i + 1 * 2) in Hi by flia.
-    rewrite Nat.div_add in Hi; [ flia Hi | easy ].
-  }
-  clear Hi.
-...
-Print ls_mul_l_upto.
-*)
-
 Theorem zeta_is_one {F : field} : ∀ n, ls zeta n = f_one.
 Proof.
 intros; now unfold zeta.
 Qed.
 
-(* seems to be true by testing it in ocaml *)
 Theorem log_prod_pol_zeta' {F : field} : ∀ n m,
   n mod 2 = 0 → n ≤ m →
   (log_prod (ls (ls_of_pol {| lp := [f_one; - f_one] |})) (ls zeta) m n =
@@ -951,73 +699,23 @@ destruct q. {
   flia Hc Hq.
 }
 rewrite f_add_0_l.
-...
-remember (m - n - 2) as t eqn:Ht; symmetry in Ht.
-destruct (lt_dec (S m / S t - 1) t) as [| H3]; [ easy | ].
-apply Nat.nlt_ge in H3.
-remember (S m mod S t) as u eqn:Hu; symmetry in Hu.
-destruct u; [ | easy ].
-apply Nat.mod_divides in Hu; [ | easy ].
-destruct Hu as (u, Hu).
-rewrite Hu, Nat.mul_comm, Nat.div_mul; [ | easy ].
-rewrite Hu, Nat.mul_comm, Nat.div_mul in H3; [ | easy ].
-destruct (Nat.eq_dec (u - 1) t) as [H4| H4]. {
-  clear H3.
-  destruct u; [ flia Hu | ].
-  replace (S u - 1) with u in H4 by flia.
-  subst u.
-  assert (H3 : m = t + n + 2) by flia Ht Hnm Hc.
-  rewrite H3 in Hu.
-  cbn in Hu.
-  apply Nat.succ_inj in Hu.
-  assert (H4 : t * (t + 1) = n + 2) by flia Hu.
-  rewrite Hc in H4.
-  cbn - [ "/" "mod" zeta ] in IHc.
-...
-replace (ls p t) with f_zero. 2: {
-  destruct t; [ flia Hnm Hc Ht | ].
-  destruct t; [ flia Hnm Hc Ht | ].
-  destruct t; [ exfalso | now rewrite Hp; cbn ].
-  destruct q. 2: {
-    specialize (Nat.mod_upper_bound (S m) 2 (Nat.neq_succ_0 _)) as H4.
-    flia Hq H4.
-  }
-  assert (Hm : m = n + 4) by flia Hc Ht.
-  clear Hnm H1 Ht H2 Hq.
-  cbn - [ "/" "mod" zeta ] in IHc.
-  do 4 rewrite zeta_is_one in IHc.
-  do 4 rewrite f_mul_1_r in IHc.
-  rewrite Hm in IHc.
-  replace (n + 4 - S n) with 3 in IHc by flia.
-  replace (n + 4 - n) with 4 in IHc by flia.
-  replace (S (n + 4)) with (n + 1 + 1 * 4) in IHc by flia.
-  rewrite Nat.div_add in IHc; [ | easy ].
-  rewrite Nat.mod_add in IHc; [ | easy ].
-  rewrite Nat.add_sub in IHc.
-  replace (n + 1 + 1 * 4) with (n + 1 * 5) in IHc by flia.
-  rewrite Nat.div_add in IHc; [ | easy ].
-  rewrite Nat.mod_add in IHc; [ | easy ].
-  rewrite Nat.add_sub in IHc.
-  replace (ls p 3) with f_zero in IHc by now subst p.
-  rewrite f_add_0_l in IHc.
-  replace (ls p 4) with f_zero in IHc by now subst p.
-  rewrite f_add_0_l in IHc.
-  destruct (lt_dec ((n + 1) / 4) 3) as [H1| H1]. {
-    clear IHc.
-    rewrite Hm in Hu.
-    ring_simplify in Hu.
-    clear m Hm.
-    subst n.
-    destruct c; [ flia Hu | ].
-    destruct c; [ flia Hu | ].
-    destruct c. {
-      remember (3 * u) as x; cbn in Hu; subst x.
-      cbn in H1.
-      (* merdalor *)
-...
-*)
+destruct (lt_dec (S m / S (m - n) - 1) (m - n)) as [| H2]; [ easy | ].
+apply Nat.nlt_ge in H2.
+remember (S m mod S (m - n)) as t eqn:Ht; symmetry in Ht.
+destruct t; [ | easy ].
+apply Nat.mod_divides in Ht; [ | easy ].
+destruct Ht as (t, Ht).
+rewrite Ht, Nat.mul_comm, Nat.div_mul; [ | easy ].
+rewrite Ht, Nat.mul_comm, Nat.div_mul in H2; [ | easy ].
+destruct (Nat.eq_dec (t - 1) (m - n)) as [| H3]; [ easy | ].
+assert (H : t ≥ 3) by lia.
+rewrite Hp; cbn.
+destruct t; [ easy | ].
+replace (S t - 1) with t by flia.
+destruct t; [ flia H | ].
+destruct t; [ flia H | now destruct t ].
+Qed.
 
-(* seems to be true by testing it in ocaml *)
 Theorem log_prod_pol_zeta {F : field} : ∀ n,
   3 ≤ n → n mod 2 = 1 →
   (log_prod (ls (ls_of_pol {| lp := [f_one; - f_one] |})) (ls zeta) n n =
@@ -1095,9 +793,6 @@ destruct p. {
   cbn - [ "/" "mod" ls_of_pol zeta ].
   rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
   destruct (lt_dec n 0) as [H| H]; [ easy | clear H ].
-(*
-  rewrite Nat.mod_1_r, f_mul_1_r, f_mul_1_r.
-*)
   destruct (Nat.eq_dec n 0) as [H| H]; [ flia Hn H | clear H ].
   unfold ls_of_pol at 1 2.
   cbn - [ ls_of_pol log_prod zeta ].
