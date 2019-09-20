@@ -957,6 +957,20 @@ destruct q. {
       flia Ht.
     }
     rewrite f_add_0_r.
+    destruct r; [ flia H3 | ].
+    destruct r; [ flia H3 | clear H3 H7 ].
+    destruct r; [ flia Hr H8 | ].
+    subst p; cbn; now destruct r.
+  }
+  replace (ls p (m - n - 3)) with f_zero. 2: {
+    subst p; cbn.
+    remember (m - n - 3) as t eqn:Ht; symmetry in Ht.
+    destruct t; [ flia H4 | ].
+    destruct t; [ exfalso | now destruct t ].
+    replace (m - n - 2) with 2 in Hr by flia Ht.
+    flia Hc Ht Hr.
+  }
+  rewrite f_add_0_l.
 ...
 
 (* seems to be true by testing it in ocaml *)
