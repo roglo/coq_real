@@ -997,33 +997,14 @@ destruct q. {
   destruct t; [ flia Hc H2 Ht Hr | ].
   rewrite Hp at 1; cbn; rewrite f_add_0_l.
   clear H3.
-  destruct u; [ flia Hr Hu | ].
-  destruct u; [ flia Ht Hr Hu | ].
-  clear H4.
-  replace (m - n - 3) with (m - n - 2 - 1) in H2, H5 by flia.
-  rewrite Ht in H2, H5.
-  destruct u; [ exfalso | now rewrite Hp; cbn; destruct u ].
-  clear H7.
-  cbn - [ "/" "mod" zeta ] in IHc.
-  do 4 rewrite zeta_is_one in IHc.
-  do 4 rewrite f_mul_1_r in IHc.
-  replace (S (m - S n)) with (m - n) in IHc by flia Hc H1.
-  destruct (lt_dec (S m / (m - n) - 1) (m - S n)) as [H7| H7]. {
-    clear IHc.
-    assert (Hmn : m - n ≥ 5) by lia.
-    destruct n; [ flia Ht Hr Hu | ].
-    destruct n; [ flia Ht Hr Hu | ].
-...
-  destruct r; [ flia Hr | ].
-  destruct r; [ lia | ].
-  destruct r; [ lia | ].
-  assert (H : t < r) by lia.
-  destruct r; [ lia | ].
-  destruct r; [ lia | ].
-  destruct r; [ lia | ].
-  destruct r; [ lia | ].
-  destruct r; [ lia | ].
-
+  rewrite Hu, Nat.mul_comm in H6.
+  rewrite Nat.div_mul in H6; [ | easy ].
+  destruct u; [ flia H6 | ].
+  destruct u; [ flia H6 | ].
+  destruct u; [ flia H6 | ].
+  now rewrite Hp; cbn; destruct u.
+}
+rewrite f_add_0_l.
 ...
 
 (* seems to be true by testing it in ocaml *)
