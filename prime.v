@@ -1018,6 +1018,10 @@ replace (ls p t) with f_zero. 2: {
   destruct t; [ flia Hnm Hc Ht | ].
   destruct t; [ flia Hnm Hc Ht | ].
   destruct t; [ exfalso | now rewrite Hp; cbn ].
+  destruct q. 2: {
+    specialize (Nat.mod_upper_bound (S m) 2 (Nat.neq_succ_0 _)) as H4.
+    flia Hq H4.
+  }
 ...
 
 (* seems to be true by testing it in ocaml *)
