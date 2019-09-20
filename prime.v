@@ -803,7 +803,7 @@ destruct p. {
   }
   replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct n.
   rewrite f_mul_0_l, f_add_0_r, f_mul_1_l.
-  replace (ls zeta (S (S n))) with f_one by easy.
+  rewrite zeta_is_one.
   assert (Hnn : 3 ≤ S (S n)). {
     destruct n. {
       destruct m; [ easy | ].
@@ -819,8 +819,40 @@ destruct p. 2: {
   specialize (Nat.mod_upper_bound (S n) 2 (Nat.neq_succ_0 _)) as H1.
   flia Hp H1.
 }
-...
+unfold ls_pol_mul_l.
+cbn - [ "/" "mod" ls_of_pol zeta ].
+rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
+destruct (lt_dec n 0) as [H| H]; [ easy | clear H ].
+rewrite Nat.mod_1_r.
+do 2 rewrite zeta_is_one.
+do 2 rewrite f_mul_1_r.
+unfold ls_of_pol at 1 2.
+cbn - [ ls_of_pol log_prod zeta ].
+destruct (Nat.eq_dec n 0) as [Hn| Hn]. {
+  subst n; cbn; apply f_add_0_r.
+}
+assert (H : n mod 2 = 0). {
+  specialize (Nat.div_mod (S n) 2 (Nat.neq_succ_0 _)) as H1.
+  rewrite Hp in H1.
+  replace n with (0 + (S n / 2) * 2) by flia H1.
+  now rewrite Nat.mod_add.
+}
+clear Hp; rename H into Hp.
+apply Nat.mod_divides in Hp; [ | easy ].
+destruct Hp as (p, Hp).
+remember (ls_of_pol _) as q eqn:Hq.
+replace (ls q n) with f_zero. 2: {
+  destruct n; [ easy | ].
+  destruct n; [ flia Hp | ].
+  subst q; cbn; now destruct n.
+}
+rewrite f_add_0_r.
+rewrite Hq, log_prod_pol_zeta'; [ apply f_add_0_r | | easy ].
+replace n with (0 + p * 2) by flia Hp.
+now rewrite Nat.mod_add.
+Qed.
 
-Theorem zeta_Euler_product_eq : ∀ s, expr_eq (zeta s) (zeta' s).
+Theorem zeta_Euler_product_eq : False.
 Proof.
+Inspect 1.
 ...
