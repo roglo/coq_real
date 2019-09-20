@@ -185,6 +185,9 @@ Notation "x * y" := (f_mul x y) : field_scope.
 Notation "x / y" := (f_div x y) : field_scope.
 Notation "n ^ x" := (f_pow n x) : field_scope.
 
+Theorem fold_f_sub {F : field} : ∀ x y, (x + - y = x - y)%F.
+Proof. easy. Qed.
+
 Theorem f_add_0_l {F : field} : ∀ x, (f_zero + x)%F = x.
 Proof.
 intros.
@@ -876,6 +879,17 @@ destruct m. {
     destruct n; now cbn; rewrite f_opp_0, f_add_0_r.
   }
   rewrite f_mul_1_l.
+  destruct m; [ flia Hm | ].
+  destruct m. {
+    rewrite Nat.mul_1_r in Hm.
+    apply Nat.succ_inj in Hm.
+    replace (ls p i) with (- f_one)%F. 2: {
+      symmetry.
+      subst p i; cbn; clear Hi.
+      destruct n; [ now cbn; rewrite f_add_0_l | cbn ].
+      induction n; [ now cbn; rewrite f_add_0_l | easy ].
+    }
+    rewrite f_mul_opp_l, f_mul_1_l, fold_f_sub.
 ...
 
 Theorem step_1 {F : field} :
