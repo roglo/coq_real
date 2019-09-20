@@ -818,37 +818,37 @@ Definition pol_pow {F : field} n :=
 Theorem step_1 {F : field} :
   (ζ_but_mul_of 2 = (pol_pow 1 - pol_pow 2) .* ζ)%LS.
 Proof.
-intros n.
+intros i.
 unfold pol_pow.
 cbn - [ ζ_but_mul_of ζ ".*" ].
 unfold lp_sub, lp_opp, "+"%LP.
 cbn - [ ζ_but_mul_of ζ ".*" ].
 rewrite f_add_0_l, f_opp_0, f_add_0_r.
 cbn - [ "mod" ls_pol_mul_l ].
-remember (S n mod 2) as p eqn:Hp; symmetry in Hp.
+remember (S i mod 2) as p eqn:Hp; symmetry in Hp.
 symmetry.
 destruct p. {
   apply Nat.mod_divides in Hp; [ | easy ].
   destruct Hp as (m & Hm).
   destruct m; [ flia Hm | ].
-  assert (Hn : n = 2 * m + 1) by flia Hm; clear Hm.
+  assert (Hn : i = 2 * m + 1) by flia Hm; clear Hm.
   unfold ls_pol_mul_l.
   cbn - [ "/" "mod" ls_of_pol ζ ].
   rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
-  destruct (lt_dec n 0) as [H| H]; [ easy | clear H ].
-  destruct (Nat.eq_dec n 0) as [H| H]; [ flia Hn H | clear H ].
+  destruct (lt_dec i 0) as [H| H]; [ easy | clear H ].
+  destruct (Nat.eq_dec i 0) as [H| H]; [ flia Hn H | clear H ].
   unfold ls_of_pol at 1 2.
   cbn - [ ls_of_pol log_prod ζ ].
-  destruct n; [ flia Hn | ].
-  destruct n. {
+  destruct i; [ flia Hn | ].
+  destruct i. {
     cbn; rewrite f_mul_1_r.
     now rewrite f_mul_1_r, f_add_opp_diag_r, f_add_0_l.
   }
-  replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct n.
+  replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct i.
   rewrite f_mul_0_l, f_add_0_r, f_mul_1_l.
   rewrite ζ_is_one.
-  assert (Hnn : 3 ≤ S (S n)). {
-    destruct n. {
+  assert (Hnn : 3 ≤ S (S i)). {
+    destruct i. {
       destruct m; [ easy | ].
       destruct m; [ easy | flia Hn ].
     }
@@ -859,39 +859,39 @@ destruct p. {
   now rewrite Nat.mod_add.
 }
 destruct p. 2: {
-  specialize (Nat.mod_upper_bound (S n) 2 (Nat.neq_succ_0 _)) as H1.
+  specialize (Nat.mod_upper_bound (S i) 2 (Nat.neq_succ_0 _)) as H1.
   flia Hp H1.
 }
 unfold ls_pol_mul_l.
 cbn - [ "/" "mod" ls_of_pol ζ ].
 rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
-destruct (lt_dec n 0) as [H| H]; [ easy | clear H ].
+destruct (lt_dec i 0) as [H| H]; [ easy | clear H ].
 rewrite Nat.mod_1_r.
 do 2 rewrite ζ_is_one.
 do 2 rewrite f_mul_1_r.
 unfold ls_of_pol at 1 2.
 cbn - [ ls_of_pol log_prod ζ ].
-destruct (Nat.eq_dec n 0) as [Hn| Hn]. {
-  subst n; cbn; apply f_add_0_r.
+destruct (Nat.eq_dec i 0) as [Hn| Hn]. {
+  subst i; cbn; apply f_add_0_r.
 }
-assert (H : n mod 2 = 0). {
-  specialize (Nat.div_mod (S n) 2 (Nat.neq_succ_0 _)) as H1.
+assert (H : i mod 2 = 0). {
+  specialize (Nat.div_mod (S i) 2 (Nat.neq_succ_0 _)) as H1.
   rewrite Hp in H1.
-  replace n with (0 + (S n / 2) * 2) by flia H1.
+  replace i with (0 + (S i / 2) * 2) by flia H1.
   now rewrite Nat.mod_add.
 }
 clear Hp; rename H into Hp.
 apply Nat.mod_divides in Hp; [ | easy ].
 destruct Hp as (p, Hp).
 remember (ls_of_pol _) as q eqn:Hq.
-replace (ls q n) with f_zero. 2: {
-  destruct n; [ easy | ].
-  destruct n; [ flia Hp | ].
-  subst q; cbn; now destruct n.
+replace (ls q i) with f_zero. 2: {
+  destruct i; [ easy | ].
+  destruct i; [ flia Hp | ].
+  subst q; cbn; now destruct i.
 }
 rewrite f_add_0_r.
 rewrite Hq, log_prod_pol_ζ'; [ apply f_add_0_r | | easy ].
-replace n with (0 + p * 2) by flia Hp.
+replace i with (0 + p * 2) by flia Hp.
 now rewrite Nat.mod_add.
 Qed.
 
