@@ -381,7 +381,7 @@ Qed.
 
 (* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
 
-(* representation of zeta function as series in x where x=1/e^s; we have
+(* representation of ζ function as series in x where x=1/e^s; we have
      Σ 1/n^s = Σ x^ln(n)
  *)
 
@@ -399,9 +399,12 @@ Arguments lp {_}.
 
 Definition ls_eq {F : field} s1 s2 := ∀ n, ls s1 n = ls s2 n.
 
-Definition zeta {F : field} := {| ls _ := f_one |}.
+Declare Scope ls_scope.
+Delimit Scope ls_scope with LS.
 
-Definition zeta_but_mul_of {F : field} d :=
+Definition ζ {F : field} := {| ls _ := f_one |}.
+
+Definition ζ_but_mul_of {F : field} d :=
   {| ls n :=
        match S n mod d with
        | 0 => f_zero
@@ -440,9 +443,11 @@ Definition ls_pol_mul_l {F : field} p s :=
   ls_mul (ls_of_pol p) s.
 
 (* 1+1/3^s+1/5^s+1/7^s+... = (1-1/2^s)ζ(s) *)
-(* 1+1/3^s+1/5^s+1/7^s+... = zeta_but_mul_of 2
-   (1-1/2^s) = {| lp := [f_one; (- f_one)%F] |}
-   ζ(s) = zeta *)
+(* 1+1/3^s+1/5^s+1/7^s+... = ζ_but_mul_of 2
+   (1-1/2^s) = {| lp := [f_one; (- f_one)%F] |} *)
+
+Notation "x = y" := (ls_eq x y) : ls_scope.
+Notation "p .* s" := (ls_pol_mul_l p s) (at level 40) : ls_scope.
 
 Theorem Nat_succ_mod : ∀ n, 2 ≤ n → S n mod n = 1.
 Proof.
@@ -582,14 +587,14 @@ Theorem ls_ls_add {F : field} : ∀ s1 s2 i,
   ls (ls_add s1 s2) i = (ls s1 i + ls s2 i)%F.
 Proof. easy. Qed.
 
-Theorem zeta_is_one {F : field} : ∀ n, ls zeta n = f_one.
+Theorem ζ_is_one {F : field} : ∀ n, ls ζ n = f_one.
 Proof.
-intros; now unfold zeta.
+intros; now unfold ζ.
 Qed.
 
-Theorem log_prod_pol_zeta' {F : field} : ∀ n m,
+Theorem log_prod_pol_ζ' {F : field} : ∀ n m,
   n mod 2 = 0 → n ≤ m →
-  (log_prod (ls (ls_of_pol {| lp := [f_one; - f_one] |})) (ls zeta) m n =
+  (log_prod (ls (ls_of_pol {| lp := [f_one; - f_one] |})) (ls ζ) m n =
    f_zero)%F.
 Proof.
 intros * Hn2 Hnm.
@@ -605,9 +610,9 @@ clear Hc; rename H into Hc.
 assert (H1 : n ≤ m) by flia Hnm.
 specialize (IHc _ _ Hc H1).
 clear H1.
-cbn - [ "/" "mod" zeta ].
+cbn - [ "/" "mod" ζ ].
 rewrite IHc, f_add_0_r.
-do 4 rewrite zeta_is_one.
+do 4 rewrite ζ_is_one.
 do 4 rewrite f_mul_1_r.
 replace (S (m - S n)) with (m - n) by flia Hnm.
 destruct (lt_dec (S m / (m - n) - 1) (m - S n)) as [| H1]; [ easy | ].
@@ -716,14 +721,14 @@ destruct t; [ flia H | ].
 destruct t; [ flia H | now destruct t ].
 Qed.
 
-Theorem log_prod_pol_zeta {F : field} : ∀ n,
+Theorem log_prod_pol_ζ {F : field} : ∀ n,
   3 ≤ n → n mod 2 = 1 →
-  (log_prod (ls (ls_of_pol {| lp := [f_one; - f_one] |})) (ls zeta) n n =
+  (log_prod (ls (ls_of_pol {| lp := [f_one; - f_one] |})) (ls ζ) n n =
    - f_one)%F.
 Proof.
 intros * H3n Hn2.
 destruct n; [ easy | ].
-cbn - [ "/" "mod" "-" zeta ls_of_pol ].
+cbn - [ "/" "mod" "-" ζ ls_of_pol ].
 replace (S (S n) - S n) with 1 by flia.
 replace (S (S n)) with (n + 1 * 2) by flia.
 rewrite Nat.div_add; [ | easy ].
@@ -732,9 +737,9 @@ rewrite Nat.add_sub.
 (**)
 replace (ls (ls_of_pol _) 1) with (- f_one)%F by easy.
 rewrite f_mul_opp_l, f_mul_1_l.
-replace (ls zeta 1) with f_one by easy.
+replace (ls ζ 1) with f_one by easy.
 rewrite f_mul_opp_l, f_mul_1_l, f_mul_1_r.
-replace (ls zeta (n / 2)) with f_one by easy.
+replace (ls ζ (n / 2)) with f_one by easy.
 destruct (lt_dec (n / 2) 1) as [Hn| Hn]. {
   exfalso.
   destruct n; [ flia H3n | ].
@@ -773,12 +778,11 @@ assert (H : n mod 2 = 0). {
   replace n with (0 + S (S m) * 2) by flia Hm.
   now rewrite Nat.mod_add.
 }
-rewrite log_prod_pol_zeta'; [ apply f_add_0_r | easy | flia ].
+rewrite log_prod_pol_ζ'; [ apply f_add_0_r | easy | flia ].
 Qed.
 
 Theorem step_1 {F : field} :
-  ls_eq (zeta_but_mul_of 2)
-    (ls_pol_mul_l {| lp := [f_one; (- f_one)%F] |} zeta).
+  (ζ_but_mul_of 2 = {| lp := [f_one; (- f_one)%F] |} .* ζ)%LS.
 Proof.
 intros n.
 cbn - [ "mod" ls_pol_mul_l ].
@@ -790,12 +794,12 @@ destruct p. {
   destruct m; [ flia Hm | ].
   assert (Hn : n = 2 * m + 1) by flia Hm; clear Hm.
   unfold ls_pol_mul_l.
-  cbn - [ "/" "mod" ls_of_pol zeta ].
+  cbn - [ "/" "mod" ls_of_pol ζ ].
   rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
   destruct (lt_dec n 0) as [H| H]; [ easy | clear H ].
   destruct (Nat.eq_dec n 0) as [H| H]; [ flia Hn H | clear H ].
   unfold ls_of_pol at 1 2.
-  cbn - [ ls_of_pol log_prod zeta ].
+  cbn - [ ls_of_pol log_prod ζ ].
   destruct n; [ flia Hn | ].
   destruct n. {
     cbn; rewrite f_mul_1_r.
@@ -803,7 +807,7 @@ destruct p. {
   }
   replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct n.
   rewrite f_mul_0_l, f_add_0_r, f_mul_1_l.
-  rewrite zeta_is_one.
+  rewrite ζ_is_one.
   assert (Hnn : 3 ≤ S (S n)). {
     destruct n. {
       destruct m; [ easy | ].
@@ -811,7 +815,7 @@ destruct p. {
     }
     flia.
   }
-  rewrite log_prod_pol_zeta; [ apply f_add_opp_diag_r | easy | ].
+  rewrite log_prod_pol_ζ; [ apply f_add_opp_diag_r | easy | ].
   rewrite Hn, Nat.add_comm, Nat.mul_comm.
   now rewrite Nat.mod_add.
 }
@@ -820,14 +824,14 @@ destruct p. 2: {
   flia Hp H1.
 }
 unfold ls_pol_mul_l.
-cbn - [ "/" "mod" ls_of_pol zeta ].
+cbn - [ "/" "mod" ls_of_pol ζ ].
 rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
 destruct (lt_dec n 0) as [H| H]; [ easy | clear H ].
 rewrite Nat.mod_1_r.
-do 2 rewrite zeta_is_one.
+do 2 rewrite ζ_is_one.
 do 2 rewrite f_mul_1_r.
 unfold ls_of_pol at 1 2.
-cbn - [ ls_of_pol log_prod zeta ].
+cbn - [ ls_of_pol log_prod ζ ].
 destruct (Nat.eq_dec n 0) as [Hn| Hn]. {
   subst n; cbn; apply f_add_0_r.
 }
@@ -847,12 +851,12 @@ replace (ls q n) with f_zero. 2: {
   subst q; cbn; now destruct n.
 }
 rewrite f_add_0_r.
-rewrite Hq, log_prod_pol_zeta'; [ apply f_add_0_r | | easy ].
+rewrite Hq, log_prod_pol_ζ'; [ apply f_add_0_r | | easy ].
 replace n with (0 + p * 2) by flia Hp.
 now rewrite Nat.mod_add.
 Qed.
 
-Theorem zeta_Euler_product_eq : False.
+Theorem ζ_Euler_product_eq : False.
 Proof.
 Inspect 1.
 ...
