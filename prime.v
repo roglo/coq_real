@@ -1005,7 +1005,7 @@ destruct q. {
   now rewrite Hp; cbn; destruct u.
 }
 rewrite f_add_0_l.
-Admitted.
+...
 
 (* seems to be true by testing it in ocaml *)
 Theorem log_prod_pol_zeta {F : field} : ∀ n,
