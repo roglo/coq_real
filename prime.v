@@ -927,6 +927,21 @@ destruct q. {
     flia Hq.
   }
   apply Nat.nlt_ge in H3.
+  remember (m - S n) as t eqn:Ht; symmetry in Ht.
+  destruct t; [ flia Hnm Ht | ].
+  destruct t. 2: {
+    replace (ls p (S (S t))) with f_zero. 2: {
+      rewrite Hp; cbn; now destruct t.
+    }
+    rewrite f_add_0_l.
+    remember (S m mod S (m - n)) as u eqn:Hu; symmetry in Hu.
+    destruct u; [ | easy ].
+    apply Nat.mod_divides in Hu; [ | easy ].
+    destruct Hu as (u, Hu).
+    rewrite Hu, Nat.mul_comm, Nat.div_mul; [ | easy ].
+    destruct (Nat.eq_dec (u - 1) (m - n)) as [| H4]; [ easy | ].
+...
+assert (m - S n ≥ 2) by lia.
 ...
 assert (H1 : 2 * S c ≤ m). {
   eapply le_trans; [ | apply Hnm ].
