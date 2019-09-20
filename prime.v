@@ -916,10 +916,17 @@ destruct q. {
   rewrite f_add_0_r.
   rewrite Nat.mul_comm in Hq; rewrite <- Hq.
   destruct (lt_dec (S m / S (m - n) - 1) (m - n)) as [H3| H3]. {
-...
-    destruct q; [ flia Hq | ].
-    destruct q; [ flia Hnm H1 H2 | ].
-assert (m - S n ≥ 2) by lia.
+    rewrite f_add_0_r.
+    remember (m - S n) as t eqn:Ht; symmetry in Ht.
+    destruct t; [ flia Hnm Ht | ].
+    destruct t; [ | rewrite Hp; cbn; now destruct t ].
+    exfalso.
+    replace (m - n) with 2 in Hq, H3 by flia Ht.
+    replace (S m) with (S n + 2) in Hq by flia Ht.
+    rewrite Hc in Hq.
+    flia Hq.
+  }
+  apply Nat.nlt_ge in H3.
 ...
 assert (H1 : 2 * S c ≤ m). {
   eapply le_trans; [ | apply Hnm ].
