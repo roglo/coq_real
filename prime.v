@@ -187,6 +187,12 @@ rewrite f_add_comm.
 apply f_add_0_r.
 Qed.
 
+Theorem f_opp_0 {F : field} : (- f_zero)%F = f_zero.
+Proof.
+rewrite <- (f_add_0_r (- f_zero)%F).
+apply f_add_opp_diag_l.
+Qed.
+
 Theorem f_add_opp_diag_r {F : field} : ∀ x, f_add x (f_opp x) = f_zero.
 Proof.
 intros.
@@ -401,6 +407,29 @@ Definition ls_eq {F : field} s1 s2 := ∀ n, ls s1 n = ls s2 n.
 
 Declare Scope ls_scope.
 Delimit Scope ls_scope with LS.
+
+Declare Scope lp_scope.
+Delimit Scope lp_scope with LP.
+
+Definition List_combine_all {A} (l1 l2 : list A) (d : A) :=
+  let '(l'1, l'2) :=
+    match List.length l1 ?= List.length l2 with
+    | Eq => (l1, l2)
+    | Lt => (l1 ++ List.repeat d (List.length l2 - List.length l1), l2)
+    | Gt => (l1, l2 ++ List.repeat d (List.length l1 - List.length l2))
+    end
+  in
+  List.combine l'1 l'2.
+
+Definition lp_add {F : field} p q :=
+  {| lp :=
+       List.map (prod_curry f_add) (List_combine_all (lp p) (lp q) f_zero) |}.
+Definition lp_opp {F : field} p := {| lp := List.map f_opp (lp p) |}.
+Definition lp_sub {F : field} p q := lp_add p (lp_opp q).
+
+Notation "- x" := (lp_opp x) : lp_scope.
+Notation "x + y" := (lp_add x y) : lp_scope.
+Notation "x - y" := (lp_sub x y) : lp_scope.
 
 Definition ζ {F : field} := {| ls _ := f_one |}.
 
@@ -780,6 +809,20 @@ assert (H : n mod 2 = 0). {
 }
 rewrite log_prod_pol_ζ'; [ apply f_add_0_r | easy | flia ].
 Qed.
+
+Definition pol_pow {F : field} n :=
+  {| lp := List.repeat f_zero (n - 1) ++ [f_one] |}.
+
+Theorem glop {F : field} : (pol_pow 1 - pol_pow 2)%LP = {| lp := [f_one; (- f_one)%F] |}.
+Proof.
+unfold pol_pow; cbn.
+unfold lp_sub, lp_opp, "+"%LP.
+cbn.
+rewrite f_add_0_l.
+now rewrite f_opp_0, f_add_0_r.
+Qed.
+
+...
 
 Theorem step_1 {F : field} :
   (ζ_but_mul_of 2 = {| lp := [f_one; (- f_one)%F] |} .* ζ)%LS.
