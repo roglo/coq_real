@@ -971,6 +971,31 @@ destruct q. {
     flia Hc Ht Hr.
   }
   rewrite f_add_0_l.
+  replace (ls p (r - 1)) with f_zero. 2: {
+    destruct r; [ flia H2 H4 | ].
+    destruct r; [ flia H2 H4 | ].
+    destruct r; [ flia H2 H4 H5 | ].
+    now rewrite Hp; cbn; destruct r.
+  }
+  rewrite f_add_0_l.
+  remember (m - n - 2) as t eqn:Ht; symmetry in Ht.
+  destruct (lt_dec (r * t / S t - 1) t) as [H6| H6]; [ easy | ].
+  apply Nat.nlt_ge in H6.
+  remember ((r * t) mod S t) as u eqn:Hu; symmetry in Hu.
+  destruct u; [ | easy ].
+  apply Nat.mod_divides in Hu; [ | easy ].
+  destruct Hu as (u, Hu).
+  rewrite Hu, Nat.mul_comm, Nat.div_mul; [ | easy ].
+  destruct (Nat.eq_dec (u - 1) t) as [H7| H7]. {
+    destruct t; [ flia H3 | ].
+    destruct t; [ flia H3 | ].
+    destruct t; [ flia Hu H7 | ].
+    now rewrite Hp.
+  }
+  destruct t; [ flia H3 | ].
+  destruct t; [ flia H3 | ].
+  destruct t; [ flia Hc H2 Ht Hr | ].
+  rewrite Hp at 1; cbn; rewrite f_add_0_l.
 ...
 
 (* seems to be true by testing it in ocaml *)
