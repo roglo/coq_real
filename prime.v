@@ -959,6 +959,12 @@ destruct (lt_dec (i / 2) 1) as [H| H]; [ | clear H ]. {
   replace (S (S i)) with (i + 1 * 2) in H by flia.
   rewrite Nat.div_add in H; [ flia H | easy ].
 }
+destruct i; [ flia Hi | ].
+destruct i; [ flia Hi | clear Hi ].
+replace (S (S i)) with (i + 1 * 2) by flia.
+rewrite Nat.mod_add; [ | easy ].
+rewrite Nat.div_add; [ | easy ].
+replace (i + 1 * 2) with (S (S i)) by flia.
 ...
 intros * Hs i.
 unfold ".*".
