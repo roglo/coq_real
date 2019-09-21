@@ -831,12 +831,10 @@ Definition pol_pow {F : field} n :=
   {| lp := List.repeat f_zero (n - 1) ++ [f_one] |}.
 
 Theorem step_1 {F : field} : ∀ s n,
-  (∀ i, ls s i = ls s (n * i))
+  (∀ i, ls s i = ls s (n * S i - 1))
   → (but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
 Proof.
 intros * Hs i.
-(**)
-Print but_mul_of.
 unfold ".*".
 remember (ls_of_pol (pol_pow 1 - pol_pow n)%LP) as p eqn:Hp.
 unfold ls_mul.
@@ -878,14 +876,6 @@ destruct m. {
     cbn in Hm.
     destruct m; cbn in Hm; flia Hm.
   }
-(*
-  Hp : p = ls_of_pol (pol_pow 1 - pol_pow (S n))%LP
-  m : nat
-  Hm : S i = S n * m
-  Hi : i ≠ 0
-  ============================
-  (ls p 0 * ls s i + ls p i * ls s 0 + log_prod (ls p) (ls s) i i)%F = f_zero
-*)
   destruct n. {
     destruct m; [ flia Hm | ].
     subst p; cbn.
@@ -912,11 +902,13 @@ destruct m. {
       induction n; [ now cbn; rewrite f_add_0_l | easy ].
     }
     rewrite f_mul_opp_l, f_mul_1_l, fold_f_sub.
+    rewrite (Hs 0), Nat.mul_1_r, Nat_sub_succ_1, <- Hm.
+    unfold f_sub; rewrite f_add_opp_diag_r, f_add_0_l.
 (*
   Hp : p = ls_of_pol (pol_pow 1 - pol_pow (S (S n)))%LP
   Hm : i = S n
   ============================
-  (ls s i - ls s 0 + log_prod (ls p) (ls s) i i)%F = f_zero
+  (log_prod (ls p) (ls s) i i)%F = f_zero
 *)
 ...
 
