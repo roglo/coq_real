@@ -952,18 +952,7 @@ destruct m. {
       assert (Hrn : 2 * r < n). {
         specialize (Nat.div_mod (S n) 2 (Nat.neq_succ_0 _)) as H1.
         rewrite Hr in H1.
-        remember (S n mod 2) as s eqn:Hs; symmetry in Hs.
-        destruct s. {
-          rewrite Nat.add_0_r in H1.
-          assert (n = 2 * r + 3) by flia H1.
-          rewrite H; flia.
-        }
-        destruct s. 2: {
-          specialize (Nat.mod_upper_bound (S n) 2 (Nat.neq_succ_0 _)) as H2.
-          rewrite Hs in H2; flia H2.
-        }
-        assert (n = 2 * r + 4) by flia H1.
-        rewrite H; flia.
+        flia H1.
       }
       clear Hr.
       revert r Hrn.
@@ -979,6 +968,70 @@ destruct m. {
     replace (match n mod 2 with | 0 | _ => _ end) with f_zero by
         now destruct (n mod 2).
     rewrite f_add_0_l.
+    clear i Hm.
+(*
+  Hp : p = ls_of_pol (pol_pow 1 - pol_pow (S (S n)))%LP
+  Hn : 2 ≤ n
+  ============================
+  log_prod (ls p) (ls s) (S n) n = f_zero
+*)
+    destruct n; [ flia Hn | ].
+    apply Nat.succ_le_mono in Hn.
+    remember (S (S n)) as ssn eqn:Hssn.
+    cbn - [ "/" "mod" ]; subst ssn.
+    replace (S (S n) - n) with 2 by flia.
+    replace (S (S (S n))) with (n + 1 * 3) by flia.
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.add_sub.
+    replace (ls p 2) with f_zero. 2: {
+      subst p; cbn.
+      destruct n; [ cbn in Hn; flia Hn | ].
+      now cbn; rewrite f_add_opp_diag_r.
+    }
+    do 2 rewrite f_mul_0_l.
+    rewrite f_add_0_l.
+    destruct (Nat.eq_dec (n / 3) 2) as [Hn3| Hn3]. 2: {
+      destruct (lt_dec (n / 3) 2) as [Hn2| Hn2]; [ easy | ].
+      apply Nat.nlt_ge in Hn2.
+      replace (ls p (n / 3)) with f_zero. 2: {
+        subst p; cbn - [ "/" ].
+        destruct n; [ cbn in Hn; flia Hn | ].
+        cbn - [ "/" ].
+        rewrite f_opp_0.
+        do 2 rewrite f_add_0_r.
+        remember (S n / 3) as r eqn:Hr; symmetry in Hr.
+        destruct r; [ flia Hn2 | ].
+        destruct r; [ easy | ].
+        clear - Hr.
+        assert (Hrn : 3 * r < n). {
+          specialize (Nat.div_mod (S n) 3 (Nat.neq_succ_0 _)) as H1.
+          rewrite Hr in H1.
+          flia H1.
+        }
+        destruct r; [ easy | ].
+        clear Hr.
+        revert r Hrn.
+        induction n; intros; [ cbn in Hrn; flia Hrn | cbn ].
+        rewrite f_add_opp_diag_r.
+        destruct r; [ easy | ].
+        apply IHn; flia Hrn.
+      }
+      rewrite f_mul_0_l.
+      replace (match _ with 0 | _ => f_zero end) with f_zero by
+          now destruct (n mod 3).
+      rewrite f_add_0_l.
+      assert (H : 9 ≤ n). {
+        specialize (Nat.div_mod n 3 (Nat.neq_succ_0 _)) as H.
+        flia Hn3 Hn2 H.
+      }
+      clear Hn Hn3 Hn2; rename H into Hn.
+(*
+  Hp : p = ls_of_pol (pol_pow 1 - pol_pow (S (S (S n))))%LP
+  Hn : 9 ≤ n
+  ============================
+  log_prod (ls p) (ls s) (S (S n)) n = f_zero
+*)
 ...
 
 Theorem step_1 {F : field} :
