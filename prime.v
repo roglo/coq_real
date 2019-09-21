@@ -965,7 +965,95 @@ replace (S (S i)) with (i + 1 * 2) by flia.
 rewrite Nat.mod_add; [ | easy ].
 rewrite Nat.div_add; [ | easy ].
 replace (i + 1 * 2) with (S (S i)) by flia.
-...
+replace (S (S (S (S i)))) with (i + 4) by flia.
+replace (S (S (S i))) with (i + 3) by flia.
+replace (S (S i)) with (i + 2) by flia.
+destruct (Nat.eq_dec (i / 2 + 1) 1) as [Hi| Hi]. {
+  destruct i. {
+    clear Hi; cbn; rewrite f_add_0_r.
+    remember (4 mod n) as m eqn:Hm; symmetry in Hm.
+    destruct m. {
+      destruct n. {
+        unfold pol_pow in Hp; cbn in Hp.
+        unfold lp_sub, lp_add, lp_opp in Hp.
+        cbn in Hp; rewrite f_add_opp_diag_r in Hp.
+        subst p; cbn.
+        do 3 rewrite f_mul_0_l.
+        now do 2 rewrite f_add_0_l.
+      }
+      destruct n. {
+        unfold pol_pow in Hp; cbn in Hp.
+        unfold lp_sub, lp_add, lp_opp in Hp.
+        cbn in Hp; rewrite f_add_opp_diag_r in Hp.
+        subst p; cbn.
+        do 3 rewrite f_mul_0_l.
+        now do 2 rewrite f_add_0_l.
+      }
+      destruct n. {
+        replace (ls p 3) with f_zero by now subst p.
+        rewrite f_mul_0_l, f_add_0_r.
+        rewrite (Hs 1); cbn.
+        rewrite <- f_mul_add_distr_r.
+        replace (ls p 0) with f_one. 2: {
+          subst p; cbn.
+          now rewrite f_opp_0, f_add_0_r.
+        }
+        replace (ls p 1) with (- f_one)%F. 2: {
+          subst p; cbn.
+          now rewrite f_add_0_l.
+        }
+        now rewrite f_add_opp_diag_r, f_mul_0_l.
+      }
+      destruct n; [ cbn in Hm; flia Hm | ].
+      destruct n; [ clear Hm | ]. 2: {
+        cbn in Hm.
+        destruct n; [ easy | ].
+        destruct n; [ easy | ].
+        destruct n; [ easy | ].
+        destruct n; [ easy | flia Hm ].
+      }
+      rewrite (Hs 0); cbn.
+      rewrite <- f_mul_add_distr_r.
+      replace (ls p 1) with f_zero. 2: {
+        now subst p; cbn; rewrite f_add_opp_diag_r.
+      }
+      rewrite f_mul_0_l, f_add_0_r.
+      replace (ls p 0) with f_one. 2: {
+        subst p; cbn.
+        now rewrite f_opp_0, f_add_0_r.
+      }
+      replace (ls p 3) with (- f_one)%F. 2: {
+        subst p; cbn.
+        now rewrite f_add_0_l.
+      }
+      now rewrite f_add_opp_diag_r, f_mul_0_l.
+    }
+    destruct n; [ cbn in Hm; flia Hm | ].
+    destruct n; [ cbn in Hm; flia Hm | ].
+    destruct n; [ cbn in Hm; flia Hm | ].
+    replace (ls p 0) with f_one. 2: {
+      subst p; cbn.
+      now rewrite f_opp_0, f_add_0_r.
+    }
+    rewrite f_mul_1_l.
+    replace (ls p 3) with f_zero. 2: {
+      subst p; cbn.
+      destruct n; [ easy | ].
+      destruct n; [ cbn in Hm; flia Hm | ].
+      now cbn; rewrite f_opp_0, f_add_0_r.
+    }
+    rewrite f_mul_0_l, f_add_0_r.
+    replace (ls p 1) with f_zero. 2: {
+      now subst p; cbn; rewrite f_opp_0, f_add_0_r.
+    }
+    now rewrite f_mul_0_l, f_add_0_r.
+  }
+  destruct i; [ clear Hi | ]. 2: {
+    replace (S (S i)) with (i + 1 * 2) in Hi by flia.
+    rewrite Nat.div_add in Hi; [ flia Hi | easy ].
+  }
+  cbn; do 2 rewrite f_add_0_r.
+....
 intros * Hs i.
 unfold ".*".
 remember (ls_of_pol (pol_pow 1 - pol_pow n)%LP) as p eqn:Hp.
