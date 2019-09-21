@@ -1111,7 +1111,38 @@ assert (H : 2 ≤ i). {
   destruct i; [ cbn in Hi; flia Hi | flia ].
 }
 clear Hi; rename H into Hi.
-....
+remember (i mod 2) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  destruct n. {
+    cbn - [ "/" ].
+    unfold pol_pow in Hp; cbn in Hp.
+    unfold lp_sub, lp_add, lp_opp in Hp; cbn in Hp.
+    rewrite f_add_opp_diag_r in Hp.
+    rewrite Hp at 1 2 3 4; cbn - [ "/" ].
+    do 2 rewrite f_mul_0_l, f_add_0_l.
+    replace
+      (match i + 3 with
+       | O => f_zero
+       | S m => match m with O => f_zero | S _ => f_zero end
+       end) with f_zero. 2: {
+      destruct (i + 3) as [| n]; [ easy | ].
+      now destruct n.
+    }
+    rewrite f_mul_0_l, f_add_0_l.
+    replace
+      (match i / 2 + 1 with
+       | O => f_zero
+       | S m => match m with O => f_zero | S _ => f_zero end
+       end) with f_zero. 2: {
+      destruct (i / 2 + 1) as [| n]; [ easy | ].
+      now destruct n.
+    }
+    rewrite f_mul_0_l, f_add_0_l.
+    apply log_prod_0_l.
+    intros n; subst p; cbn.
+    destruct n; [ easy | now destruct n ].
+  }
+...
 intros * Hs i.
 unfold ".*".
 remember (ls_of_pol (pol_pow 1 - pol_pow n)%LP) as p eqn:Hp.
