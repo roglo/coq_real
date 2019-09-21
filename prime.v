@@ -1094,6 +1094,18 @@ destruct (Nat.eq_dec (i / 2 + 1) 1) as [Hi| Hi]. {
     }
     now rewrite f_add_opp_diag_r, f_mul_0_l.
   }
+  subst p; cbn.
+  destruct n; [ cbn in Hm; flia Hm | ].
+  destruct n; [ cbn in Hm; flia Hm | ].
+  destruct n. {
+    now cbn; rewrite f_opp_0, f_add_0_r, f_mul_0_l, f_add_0_r, f_mul_1_l.
+  }
+  cbn; rewrite f_opp_0, f_add_0_r, f_mul_1_l.
+  destruct n; [ now cbn; rewrite f_mul_0_l, f_add_0_r | ].
+  destruct n; [ now cbn; rewrite f_mul_0_l, f_add_0_r | ].
+  destruct n; [ easy | ].
+  now cbn; rewrite f_add_opp_diag_r, f_mul_0_l, f_add_0_r.
+}
 ....
 intros * Hs i.
 unfold ".*".
