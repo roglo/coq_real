@@ -1053,6 +1053,53 @@ destruct (Nat.eq_dec (i / 2 + 1) 1) as [Hi| Hi]. {
     rewrite Nat.div_add in Hi; [ flia Hi | easy ].
   }
   cbn; do 2 rewrite f_add_0_r.
+  remember (5 mod n) as m eqn:Hm; symmetry in Hm.
+  destruct m. {
+    destruct n. {
+      unfold pol_pow in Hp; cbn in Hp.
+      unfold lp_sub, lp_add, lp_opp in Hp.
+      cbn in Hp; rewrite f_add_opp_diag_r in Hp.
+      subst p; cbn.
+      do 2 rewrite f_mul_0_l.
+      now rewrite f_add_0_l.
+    }
+    destruct n. {
+      unfold pol_pow in Hp; cbn in Hp.
+      unfold lp_sub, lp_add, lp_opp in Hp.
+      cbn in Hp; rewrite f_add_opp_diag_r in Hp.
+      subst p; cbn.
+      do 2 rewrite f_mul_0_l.
+      now rewrite f_add_0_l.
+    }
+    destruct n; [ easy | ].
+    destruct n; [ easy | ].
+    destruct n; [ easy | ].
+    destruct n; [ clear Hm | ]. 2: {
+      cbn in Hm.
+      destruct n; [ easy | ].
+      destruct n; [ easy | ].
+      destruct n; [ easy | ].
+      destruct n; [ easy | ].
+      destruct n; [ easy | flia Hm ].
+    }
+...
+      rewrite (Hs 0); cbn.
+      rewrite <- f_mul_add_distr_r.
+      replace (ls p 1) with f_zero. 2: {
+        now subst p; cbn; rewrite f_add_opp_diag_r.
+      }
+      rewrite f_mul_0_l, f_add_0_r.
+      replace (ls p 0) with f_one. 2: {
+        subst p; cbn.
+        now rewrite f_opp_0, f_add_0_r.
+      }
+      replace (ls p 3) with (- f_one)%F. 2: {
+        subst p; cbn.
+        now rewrite f_add_0_l.
+      }
+      now rewrite f_add_opp_diag_r, f_mul_0_l.
+    }
+    destruct n; [ cbn in Hm; flia Hm | ].
 ....
 intros * Hs i.
 unfold ".*".
