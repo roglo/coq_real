@@ -831,13 +831,12 @@ Definition pol_pow {F : field} n :=
   {| lp := List.repeat f_zero (n - 1) ++ [f_one] |}.
 
 Theorem step_1 {F : field} : ∀ s n,
-  (but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
+  (∀ i, ls s i = ls s (n * i))
+  → (but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
 Proof.
-intros * i.
+intros * Hs i.
 (**)
 Print but_mul_of.
-(* mmm... not sure it is the good lemma *)
-...
 unfold ".*".
 remember (ls_of_pol (pol_pow 1 - pol_pow n)%LP) as p eqn:Hp.
 unfold ls_mul.
@@ -907,9 +906,9 @@ destruct m. {
     rewrite Nat.mul_1_r in Hm.
     apply Nat.succ_inj in Hm.
     replace (ls p i) with (- f_one)%F. 2: {
-      symmetry.
       subst p i; cbn.
       destruct n; [ now cbn; rewrite f_add_0_l | cbn ].
+      clear Hs.
       induction n; [ now cbn; rewrite f_add_0_l | easy ].
     }
     rewrite f_mul_opp_l, f_mul_1_l, fold_f_sub.
