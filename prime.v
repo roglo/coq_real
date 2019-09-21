@@ -835,6 +835,9 @@ Theorem step_1 {F : field} : ∀ s n,
 Proof.
 intros * i.
 (**)
+Print but_mul_of.
+(* mmm... not sure it is the good lemma *)
+...
 unfold ".*".
 remember (ls_of_pol (pol_pow 1 - pol_pow n)%LP) as p eqn:Hp.
 unfold ls_mul.
