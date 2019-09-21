@@ -1106,6 +1106,11 @@ destruct (Nat.eq_dec (i / 2 + 1) 1) as [Hi| Hi]. {
   destruct n; [ easy | ].
   now cbn; rewrite f_add_opp_diag_r, f_mul_0_l, f_add_0_r.
 }
+assert (H : 2 ≤ i). {
+  destruct i; [ cbn in Hi; flia Hi | ].
+  destruct i; [ cbn in Hi; flia Hi | flia ].
+}
+clear Hi; rename H into Hi.
 ....
 intros * Hs i.
 unfold ".*".
