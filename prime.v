@@ -441,7 +441,7 @@ Notation "x - y" := (lp_sub x y) : lp_scope.
 
 Definition ζ {F : field} := {| ls _ := f_one |}.
 
-Definition but_mul_of {F : field} s d :=
+Definition series_but_mul_of {F : field} s d :=
   {| ls n :=
        match S n mod d with
        | 0 => f_zero
@@ -832,13 +832,13 @@ Definition pol_pow {F : field} n :=
 
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, ls s i = ls s (n * S i - 1))
-  → (but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
+  → (series_but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
 Proof.
 intros * Hs i.
 unfold ".*".
 remember (ls_of_pol (pol_pow 1 - pol_pow n)%LP) as p eqn:Hp.
 unfold ls_mul.
-cbn - [ log_prod but_mul_of ].
+cbn - [ log_prod series_but_mul_of ].
 symmetry.
 (*
   Hp : p = ls_of_pol (pol_pow 1 - pol_pow n)%LP
