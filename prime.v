@@ -12,6 +12,14 @@ Notation "x ≤ y ≤ z" := (x <= y ∧ y <= z)%nat (at level 70, y at next leve
 Theorem Nat_sub_succ_1 : ∀ n, S n - 1 = n.
 Proof. now intros; rewrite Nat.sub_succ, Nat.sub_0_r. Qed.
 
+Theorem Nat_sub_succ_diag_l : ∀ n, S n - n = 1.
+Proof.
+intros; induction n; [ easy | now rewrite Nat.sub_succ ].
+Qed.
+
+Theorem fold_mod_succ : ∀ n d, d - snd (Nat.divmod n d 0 d) = n mod (S d).
+Proof. easy. Qed.
+
 (* *)
 
 Fixpoint prime_test n d :=
@@ -29,9 +37,6 @@ Definition is_prime n :=
   | 0 | 1 => false
   | S n' => prime_test n n'
   end.
-
-Theorem fold_mod_succ : ∀ n d, d - snd (Nat.divmod n d 0 d) = n mod (S d).
-Proof. easy. Qed.
 
 Theorem not_prime_div : ∀ n d, 2 ≤ n → d < n →
   prime_test n d = false
@@ -910,6 +915,52 @@ destruct m. {
   ============================
   (log_prod (ls p) (ls s) i i)%F = f_zero
 *)
+    rewrite Hm at 2.
+    cbn - [ "/" "mod" ].
+    rewrite Hm, Nat_sub_succ_diag_l.
+    replace (S (S n)) with (n + 1 * 2) by flia.
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.add_sub.
+    destruct (lt_dec (n / 2) 1) as [| Hn]; [ easy | ].
+    apply Nat.nlt_ge in Hn.
+    remember (n mod 2) as q eqn:Hq; symmetry in Hq.
+    replace (ls p 1) with f_zero. 2: {
+      subst p; cbn.
+      destruct n; [ cbn in Hn; flia Hn | ].
+      now cbn; rewrite f_add_opp_diag_r.
+    }
+    do 2 rewrite f_mul_0_l.
+    rewrite f_add_0_l.
+    replace (ls p (n / 2)) with f_zero. 2: {
+      subst p; cbn - [ "/" ].
+      destruct n; [ cbn in Hn; flia Hn | ].
+      cbn - [ "/" ].
+      rewrite f_opp_0.
+      do 2 rewrite f_add_0_r.
+      remember (S n / 2) as r eqn:Hr; symmetry in Hr.
+      destruct r; [ flia Hn | clear Hn ].
+clear - Hr.
+      destruct r; [ easy | ].
+      destruct n; [ cbn in Hr; flia Hr | cbn ].
+      rewrite f_add_opp_diag_r.
+      destruct r; [ easy | ].
+      destruct n; [ cbn in Hr; flia Hr | cbn ].
+      rewrite f_add_opp_diag_r.
+      destruct r; [ easy | ].
+      destruct n; [ cbn in Hr; flia Hr | cbn ].
+...
+    destruct q. {
+      apply Nat.mod_divides in Hq; [ | easy ].
+      destruct Hq as (q, Hq).
+      rewrite Hq, Nat.mul_comm, Nat.div_mul; [ | easy ].
+      destruct (Nat.eq_dec q 1) as [Hq1| Hq1]. {
+        subst q; cbn in Hq; rewrite Nat.mul_1_l; subst n i; clear Hn.
+        replace (ls p 1) with f_zero. 2: {
+          now subst p; cbn; rewrite f_add_opp_diag_r.
+        }
+        now rewrite f_mul_0_l, f_add_0_l.
+      }
 ...
 
 Theorem step_1 {F : field} :
