@@ -876,6 +876,89 @@ destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
   }
   apply f_mul_1_l.
 }
+destruct i; [ easy | clear Hi ].
+rewrite log_prod_succ.
+rewrite Nat_sub_succ_diag_l.
+cbn - [ "/" "mod" ].
+remember (S (S i) mod n) as x.
+replace (S (S i)) with (i + 1 * 2) by flia.
+rewrite Nat.div_add; [ | easy ].
+rewrite Nat.mod_add; [ | easy ].
+rewrite Nat.add_sub; subst x.
+destruct (lt_dec i 2) as [Hi | Hi]. {
+  destruct (lt_dec (i / 2) 1) as [H| H]; [ clear H | ]. 2: {
+    destruct i; [ cbn in H; flia H | ].
+    destruct i; [ cbn in H; flia H | flia Hi ].
+  }
+  rewrite f_add_0_r.
+  remember (S (S i) mod n) as m eqn:Hm; symmetry in Hm.
+  destruct m. {
+    destruct n. {
+      subst p; cbn.
+      rewrite f_add_opp_diag_r, f_mul_0_l, f_add_0_l.
+      now destruct i; rewrite f_mul_0_l.
+    }
+    apply Nat.mod_divides in Hm; [ | easy ].
+    destruct Hm as (m, Hm).
+    subst p; cbn.
+    rewrite Nat.sub_0_r.
+    destruct i. {
+      destruct n. {
+        now cbn; rewrite f_add_opp_diag_r, f_mul_0_l, f_add_0_l, f_mul_0_l.
+      }
+      cbn.
+      destruct n. {
+        cbn; rewrite f_opp_0, f_add_0_r, f_add_0_l.
+        rewrite (Hs 0); cbn.
+        now rewrite f_mul_opp_l, f_add_opp_diag_r.
+      }
+      destruct m; [ flia Hm | ].
+      cbn in Hm; flia Hm.
+    }
+    destruct i; [ clear Hi | flia Hi ].
+    destruct n. {
+      cbn; rewrite f_add_opp_diag_r.
+      do 2 rewrite f_mul_0_l.
+      apply f_add_0_r.
+    }
+    destruct n; [ flia Hm | ].
+    cbn; rewrite f_opp_0, f_add_0_r, f_mul_1_l.
+    destruct m; [ flia Hm | ].
+    destruct m; [ | cbn in Hm; flia Hm ].
+    rewrite Nat.mul_1_r in Hm.
+    do 3 apply Nat.succ_inj in Hm.
+    subst n; cbn.
+    rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l.
+    rewrite (Hs 0); cbn.
+    apply f_add_opp_diag_r.
+  }
+  destruct n; [ cbn in Hm; flia Hm | ].
+  destruct n; [ cbn in Hm; flia Hm | ].
+  replace (ls p 0) with f_one. 2: {
+    now subst p; cbn; destruct n; cbn; rewrite f_opp_0, f_add_0_r.
+  }
+  rewrite f_mul_1_l.
+  replace (ls p (S i)) with f_zero. 2: {
+    destruct i. {
+      destruct n; [ cbn in Hm; flia Hm | ].
+      subst p; cbn.
+      now rewrite f_opp_0, f_add_0_r.
+    }
+    destruct i; [ | flia Hi ].
+    subst p; cbn.
+    destruct n; [ easy | ].
+    destruct n; [ cbn in Hm; flia Hm | ].
+    now cbn; rewrite f_opp_0, f_add_0_r.
+  }
+  now rewrite f_mul_0_l, f_add_0_r.
+}
+apply Nat.nlt_ge in Hi.
+destruct (lt_dec (i / 2) 1) as [H| H]; [ | clear H ]. {
+  destruct i; [ flia Hi | ].
+  destruct i; [ flia Hi | ].
+  replace (S (S i)) with (i + 1 * 2) in H by flia.
+  rewrite Nat.div_add in H; [ flia H | easy ].
+}
 ...
 intros * Hs i.
 unfold ".*".
