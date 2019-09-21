@@ -923,8 +923,11 @@ destruct m. {
     rewrite Nat.mod_add; [ | easy ].
     rewrite Nat.add_sub.
     destruct (lt_dec (n / 2) 1) as [| Hn]; [ easy | ].
-    apply Nat.nlt_ge in Hn.
-    remember (n mod 2) as q eqn:Hq; symmetry in Hq.
+    assert (H : 2 ≤ n). {
+      destruct n; [ cbn in Hn; flia Hn | ].
+      destruct n; [ cbn in Hn; flia Hn | flia ].
+    }
+    clear Hn; rename H into Hn.
     replace (ls p 1) with f_zero. 2: {
       subst p; cbn.
       destruct n; [ cbn in Hn; flia Hn | ].
@@ -939,28 +942,43 @@ destruct m. {
       rewrite f_opp_0.
       do 2 rewrite f_add_0_r.
       remember (S n / 2) as r eqn:Hr; symmetry in Hr.
-      destruct r; [ flia Hn | clear Hn ].
-clear - Hr.
-      destruct r; [ easy | ].
-      destruct n; [ cbn in Hr; flia Hr | cbn ].
-      rewrite f_add_opp_diag_r.
-      destruct r; [ easy | ].
-      destruct n; [ cbn in Hr; flia Hr | cbn ].
-      rewrite f_add_opp_diag_r.
-      destruct r; [ easy | ].
-      destruct n; [ cbn in Hr; flia Hr | cbn ].
-...
-    destruct q. {
-      apply Nat.mod_divides in Hq; [ | easy ].
-      destruct Hq as (q, Hq).
-      rewrite Hq, Nat.mul_comm, Nat.div_mul; [ | easy ].
-      destruct (Nat.eq_dec q 1) as [Hq1| Hq1]. {
-        subst q; cbn in Hq; rewrite Nat.mul_1_l; subst n i; clear Hn.
-        replace (ls p 1) with f_zero. 2: {
-          now subst p; cbn; rewrite f_add_opp_diag_r.
-        }
-        now rewrite f_mul_0_l, f_add_0_l.
+      destruct r. {
+        destruct n; [ flia Hn | ].
+        replace (S (S n)) with (n + 1 * 2) in Hr by flia.
+        rewrite Nat.div_add in Hr; [ flia Hr | easy ].
       }
+      clear - Hr.
+      destruct r; [ easy | ].
+      assert (Hrn : 2 * r < n). {
+        specialize (Nat.div_mod (S n) 2 (Nat.neq_succ_0 _)) as H1.
+        rewrite Hr in H1.
+        remember (S n mod 2) as s eqn:Hs; symmetry in Hs.
+        destruct s. {
+          rewrite Nat.add_0_r in H1.
+          assert (n = 2 * r + 3) by flia H1.
+          rewrite H; flia.
+        }
+        destruct s. 2: {
+          specialize (Nat.mod_upper_bound (S n) 2 (Nat.neq_succ_0 _)) as H2.
+          rewrite Hs in H2; flia H2.
+        }
+        assert (n = 2 * r + 4) by flia H1.
+        rewrite H; flia.
+      }
+      clear Hr.
+      revert r Hrn.
+      induction n; intros; [ cbn in Hrn; flia Hrn | cbn ].
+      rewrite f_add_opp_diag_r.
+      destruct r; [ easy | ].
+      apply IHn; flia Hrn.
+    }
+    rewrite f_mul_0_l.
+    replace (if Nat.eq_dec _ 1 then f_zero else f_zero) with f_zero. 2: {
+      now destruct (Nat.eq_dec _ 1).
+    }
+    replace (match n mod 2 with | 0 | _ => _ end) with f_zero by
+        now destruct (n mod 2).
+    rewrite f_add_0_l.
 ...
 
 Theorem step_1 {F : field} :
