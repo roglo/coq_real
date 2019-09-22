@@ -941,6 +941,34 @@ destruct m. {
     destruct i; [ cbn in Hi; flia Hi | flia ].
   }
   clear Hi; rename H into Hi; move Hi before Hn.
+  remember (i mod 2) as q eqn:Hq; symmetry in Hq.
+  destruct q. {
+    apply Nat.mod_divides in Hq; [ | easy ].
+    destruct Hq as (q, Hq).
+    replace (i / 2) with (q * 2 / 2) by now rewrite Hq, Nat.mul_comm.
+    rewrite Nat.div_mul; [ | easy ].
+    destruct (Nat.eq_dec q 1) as [H| H]. {
+      subst q; cbn in Hq; subst i; clear Hi.
+      cbn; rewrite f_add_0_r.
+      destruct n; [ flia Hn | ].
+      destruct n; [ flia Hn | clear Hn ].
+      destruct n. {
+        subst p; cbn.
+        rewrite (Hs 1); cbn.
+        rewrite f_mul_0_l, f_add_0_r.
+        rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l.
+        apply f_add_opp_diag_r.
+      }
+      destruct n; [ easy | ].
+      destruct n. {
+        rewrite (Hs 0); cbn.
+        subst p; cbn.
+        rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l, f_add_opp_diag_r.
+        now rewrite f_add_0_l, f_add_opp_diag_r, f_mul_0_l.
+      }
+      rewrite Nat.mod_small in Hm; [ easy | flia ].
+    }
+    replace (S (S i)) with (2 * q + 2) in Hm by flia Hq.
 ...
 intros * Hs i.
 unfold ".*".
