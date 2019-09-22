@@ -1165,6 +1165,20 @@ destruct m. {
       apply log_prod_0_l; rewrite Hp; cbn.
       intros n; destruct n; [ easy | now destruct n ].
     }
+    replace (ls p 0) with f_one. 2: {
+      subst p; cbn.
+      now destruct n; cbn; rewrite f_opp_0, f_add_0_r.
+    }
+    rewrite f_mul_1_l.
+    replace (S (S n)) with (n + 2) in Hq, Hp by flia.
+    replace (S q) with (q + 1) in Hq by flia.
+    replace (i + 2) with (S (i + 1)) by flia.
+    cbn - [ "/" "mod" ].
+    replace (i + 3 - (i + 1)) with 2 by flia.
+    replace (S (i + 3)) with (i + 1 + 1 * 3) by flia.
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.add_sub.
 ...
 intros * Hs i.
 unfold ".*".
