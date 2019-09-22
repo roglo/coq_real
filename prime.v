@@ -8,6 +8,7 @@ Import List.ListNotations.
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 
 Notation "x ≤ y ≤ z" := (x <= y ∧ y <= z)%nat (at level 70, y at next level).
+Notation "x < y ≤ z" := (x < y ∧ y <= z)%nat (at level 70, y at next level).
 
 Theorem Nat_sub_succ_1 : ∀ n, S n - 1 = n.
 Proof. now intros; rewrite Nat.sub_succ, Nat.sub_0_r. Qed.
@@ -491,6 +492,7 @@ Definition ls_of_pol {F : field} p :=
 Definition ls_pol_mul_l {F : field} p s :=
   ls_mul (ls_of_pol p) s.
 
+Arguments ls_of_pol _ p%LP.
 Arguments ls_pol_mul_l _ p%LP s%LS.
 
 (* 1+1/3^s+1/5^s+1/7^s+... = (1-1/2^s)ζ(s) *)
@@ -525,6 +527,19 @@ Theorem log_prod_succ {F : field} : ∀ u v n i,
        | S _ => f_zero
        end + log_prod u v n i)%F.
 Proof. easy. Qed.
+
+Theorem log_prod_le_succ {F : field} : ∀ u v i j,
+  0 < i ≤ j
+  → log_prod (ls u) (ls v) i (S j) =
+     (ls u 0 * ls v i + ls u i * ls v 0 + log_prod (ls u) (ls v) i j)%F.
+Proof.
+intros * Hij.
+rewrite log_prod_succ.
+replace (i - j) with 0 by flia Hij.
+cbn - [ "/" "mod" log_prod ].
+rewrite Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
+destruct (Nat.eq_dec i 0) as [Hi| Hi]; [ flia Hi Hij | easy ].
+Qed.
 
 Theorem log_prod_comm {F : field} : ∀ s1 s2 n i,
   log_prod s1 s2 n i = log_prod s2 s1 n i.
@@ -969,6 +984,15 @@ destruct m. {
       rewrite Nat.mod_small in Hm; [ easy | flia ].
     }
     replace (S (S i)) with (2 * q + 2) in Hm by flia Hq.
+    assert (H1 : 4 ≤ i). {
+      destruct q; [ flia Hq Hi | ].
+      destruct q; [ easy | flia Hq ].
+    }
+    move H1 before Hi; clear Hi; rename H1 into Hi.
+    destruct i; [ flia Hi | ].
+    rewrite log_prod_succ.
+    replace (S (S i) - i) with 2 by flia.
+    cbn - [ "/" "mod" log_prod ].
 ...
 replace (ls p (S i)) with f_zero. 2: {
   subst p; cbn.
