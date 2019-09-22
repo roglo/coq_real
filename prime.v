@@ -910,6 +910,84 @@ destruct m. {
   ============================
   (ls p 0 * ls s (S i) + ls p (S i) * ls s 0 + log_prod (ls p) (ls s) (S i) (S i))%F = f_zero
 *)
+  rewrite log_prod_succ.
+  rewrite Nat_sub_succ_diag_l.
+  cbn - [ "/" "mod" ].
+  replace (S (S i)) with (i + 1 * 2) by flia.
+  rewrite Nat.div_add; [ | easy ].
+  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.add_sub.
+  destruct (lt_dec (i / 2) 1) as [Hi| Hi]. {
+    rewrite f_add_0_r.
+    destruct n; [ flia Hn | ].
+    destruct n; [ flia Hn | ].
+    destruct i. {
+      destruct n. {
+        rewrite (Hs 0); cbn.
+        rewrite Hp; cbn.
+        rewrite f_opp_0, f_add_0_r, f_mul_1_l, f_add_0_l.
+        now rewrite f_mul_opp_l, f_mul_1_l, f_add_opp_diag_r.
+      }
+      rewrite Nat.mod_small in Hm; [ easy | flia ].
+    }
+    destruct i. {
+      destruct n; [ easy | ].
+      rewrite Hp; cbn.
+      rewrite f_opp_0, f_add_0_r, f_mul_1_l.
+      destruct n. {
+        rewrite (Hs 0); cbn.
+        now rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l, f_add_opp_diag_r.
+      }
+      rewrite Nat.mod_small in Hm; [ easy | flia ].
+    }
+    replace (S (S i)) with (i + 1 * 2) in Hi by flia.
+    rewrite Nat.div_add in Hi; [ flia Hi | easy ].
+  }
+  assert (H : 2 ≤ i). {
+    destruct i; [ cbn in Hi; flia Hi | ].
+    destruct i; [ cbn in Hi; flia Hi | flia ].
+  }
+  clear Hi; rename H into Hi; move Hi before Hn.
+  remember (i mod 2) as q eqn:Hq; symmetry in Hq.
+  destruct q. {
+    apply Nat.mod_divides in Hq; [ | easy ].
+    destruct Hq as (q, Hq).
+    rewrite Hq, Nat.mul_comm, Nat.div_mul; [ | easy ].
+    rewrite Nat.mul_comm, <- Hq.
+    destruct (Nat.eq_dec q 1) as [Hq1| Hq1]. {
+      subst q; cbn in Hq; subst i; clear Hi.
+      cbn; rewrite f_add_0_r.
+      subst p; cbn.
+      destruct n; [ flia Hn | ].
+      destruct n; [ flia Hn | clear Hn; cbn ].
+      destruct n. {
+        rewrite (Hs 1); cbn.
+        cbn; rewrite f_opp_0, f_add_0_r, f_mul_1_l.
+        rewrite f_mul_0_l, f_add_0_r, f_add_0_l.
+        rewrite f_mul_opp_l, f_mul_1_l.
+        apply f_add_opp_diag_r.
+      }
+      cbn; rewrite f_opp_0, f_add_0_r, f_mul_1_l.
+      destruct n; [ easy | ].
+      destruct n. {
+        rewrite (Hs 0); cbn.
+        rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l.
+        rewrite f_add_0_l, f_mul_0_l, f_add_0_r.
+        apply f_add_opp_diag_r.
+      }
+      rewrite Nat.mod_small in Hm; [ easy | flia ].
+    }
+    destruct i; [ flia Hi | ].
+    rewrite log_prod_succ.
+    replace (S (S i) - i) with 2 by flia.
+    cbn - [ "/" "mod" ].
+    replace (S (S (S i))) with (i + 1 * 3) by flia.
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.add_sub.
+    destruct (lt_dec (i / 3) 2) as [Hi3| Hi3]. {
+      rewrite f_add_0_r.
+      destruct i; [ flia Hi | clear Hi ].
 ...
 unfold ls_mul; symmetry.
 cbn - [ log_prod ].
