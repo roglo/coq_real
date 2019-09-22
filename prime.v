@@ -891,7 +891,26 @@ destruct (lt_dec n 2) as [Hn| Hn]. {
   }
   flia Hn.
 }
-apply Nat.nlt_ge in Hn.
+apply Nat.nlt_ge in Hn; symmetry.
+cbn - [ log_prod ].
+remember (S i mod n) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  rewrite log_prod_succ.
+  rewrite Nat.sub_diag.
+  cbn - [ "/" "mod" ].
+  rewrite Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
+  destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
+    destruct n; [ flia Hn | ].
+    destruct n; [ flia Hn | ].
+    rewrite Nat.mod_small in Hm; [ easy | subst i; flia ].
+  }
+  destruct i; [ easy | clear Hi ].
+(*
+  Hm : S (S i) mod n = 0
+  ============================
+  (ls p 0 * ls s (S i) + ls p (S i) * ls s 0 + log_prod (ls p) (ls s) (S i) (S i))%F = f_zero
+*)
+...
 unfold ls_mul; symmetry.
 cbn - [ log_prod ].
 rewrite log_prod_succ.
@@ -989,6 +1008,12 @@ destruct m. {
       destruct q; [ easy | flia Hq ].
     }
     move H1 before Hi; clear Hi; rename H1 into Hi.
+(*
+  ============================
+  (ls s (S i) + ls p (S i) * ls s 0 + (ls p 1 * ls s q + ls p q * ls s 1 + log_prod (ls p) (ls s) (S i) i))%F =
+  f_zero
+*)
+...
     destruct i; [ flia Hi | ].
     rewrite log_prod_succ.
     replace (S (S i) - i) with 2 by flia.
