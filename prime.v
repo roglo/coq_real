@@ -1029,13 +1029,55 @@ destruct m. {
       destruct i. {
         assert (H : q = 1) by flia Hq.
         subst q; clear Hq Hi3.
-...
+        destruct n; [ flia Hn | ].
+        destruct n; [ flia Hn | clear Hn ].
+        destruct n. {
+          subst p; cbn.
+          rewrite f_opp_0, f_add_0_r, f_mul_1_l.
+          rewrite f_mul_0_l, f_add_0_r.
+          rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l.
+          rewrite f_mul_0_l, f_add_0_r.
+          rewrite (Hs 3); cbn.
+          apply f_add_opp_diag_r.
+        }
+        destruct n; [ easy | ].
+        destruct n. {
+          subst p; cbn.
+          rewrite f_opp_0, f_add_0_r, f_mul_1_l.
+          rewrite f_mul_0_l, f_add_0_r.
+          rewrite f_add_0_l, f_mul_0_l, f_add_0_l.
+          rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l.
+          rewrite (Hs 1); cbn.
+          apply f_add_opp_diag_r.
+        }
+        destruct n; [ easy | ].
+        destruct n; [ easy | ].
+        destruct n; [ easy | ].
+        destruct n. {
+          subst p; cbn.
+          rewrite f_opp_0, f_add_0_r, f_mul_1_l.
+          rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l.
+          rewrite f_add_0_l, f_mul_0_l, f_add_0_l.
+          rewrite f_mul_0_l, f_add_0_r.
+          rewrite (Hs 0); cbn.
+          apply f_add_opp_diag_r.
+        }
+        rewrite Nat.mod_small in Hm; [ easy | flia ].
       }
       ring_simplify in Hi3.
       replace (6 + i) with (i + 2 * 3) in Hi3 by flia.
       rewrite Nat.div_add in Hi3; [ flia Hi3 | easy ].
     }
     apply Nat.nlt_ge in Hi3.
+    assert (H : 6 ≤ i). {
+      destruct i; [ flia Hi | ].
+      destruct i; [ cbn in Hi3; flia Hi3 | ].
+      destruct i; [ cbn in Hi3; flia Hi3 | ].
+      destruct i; [ cbn in Hi3; flia Hi3 | ].
+      destruct i; [ cbn in Hi3; flia Hi3 | ].
+      destruct i; [ cbn in Hi3; flia Hi3 | flia ].
+    }
+    move H before Hi; clear Hi; rename H into Hi; clear Hi3.
 ...
 unfold ls_mul; symmetry.
 cbn - [ log_prod ].
