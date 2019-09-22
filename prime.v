@@ -1142,6 +1142,29 @@ destruct m. {
     intros n; subst p; cbn.
     destruct n; [ easy | now destruct n ].
   }
+  remember ((i + 4) mod S n) as q eqn:Hq; symmetry in Hq.
+  destruct q. {
+    apply Nat.mod_divides in Hq; [ | easy ].
+    destruct Hq as (q, Hq).
+    destruct q; [ flia Hq | ].
+    destruct n. {
+      unfold pol_pow in Hp; cbn in Hp.
+      unfold lp_sub, lp_add, lp_opp in Hp; cbn in Hp.
+      rewrite f_add_opp_diag_r in Hp.
+      replace (ls p 0) with f_zero by now rewrite Hp.
+      rewrite f_mul_0_l, f_add_0_l.
+      replace (ls p (i + 3)) with f_zero by now rewrite Hp, Nat.add_comm.
+      rewrite f_mul_0_l, f_add_0_l.
+      replace (ls p 1) with f_zero by now rewrite Hp.
+      rewrite f_mul_0_l, f_add_0_l.
+      replace (ls p (i / 2 + 1)) with f_zero. 2: {
+        rewrite Hp, Nat.add_comm; cbn - [ "/" ].
+        now destruct (i / 2).
+      }
+      rewrite f_mul_0_l, f_add_0_l.
+      apply log_prod_0_l; rewrite Hp; cbn.
+      intros n; destruct n; [ easy | now destruct n ].
+    }
 ...
 intros * Hs i.
 unfold ".*".
