@@ -1179,6 +1179,90 @@ destruct m. {
     rewrite Nat.div_add; [ | easy ].
     rewrite Nat.mod_add; [ | easy ].
     rewrite Nat.add_sub.
+    destruct (lt_dec ((i + 1) / 3) 2) as [Hi3| Hi3]. {
+      rewrite f_add_0_r.
+      destruct i; [ flia Hi | ].
+      destruct i; [ flia Hi | ].
+      replace (S (S i) + 1) with (i + 1 * 3) in Hi3 by flia.
+      rewrite Nat.div_add in Hi3; [ | easy ].
+      clear Hi.
+      destruct i. {
+        rewrite Hp; cbn.
+        replace (n + 2 - 1) with (S n) by flia; cbn.
+        destruct n. {
+          cbn; do 2 rewrite f_mul_0_l, f_add_0_r.
+          rewrite f_add_0_l.
+          rewrite (Hs 2); cbn.
+          rewrite f_mul_opp_l, f_mul_1_l.
+          apply f_add_opp_diag_r.
+        }
+        cbn; rewrite f_add_opp_diag_r, f_mul_0_l, f_add_0_l.
+        destruct n. {
+          cbn; rewrite f_mul_0_l, f_add_0_r, f_add_0_l.
+          rewrite f_mul_opp_l, f_mul_1_l.
+          rewrite (Hs 1); cbn.
+          apply f_add_opp_diag_r.
+        }
+        cbn; rewrite f_add_opp_diag_r, f_mul_0_l, f_add_0_r.
+        assert (H : n = 2). {
+          replace (S (S n) + 2) with (n + 4) in Hq by flia.
+          destruct n; [ flia Hq | ].
+          destruct n; [ flia Hq | ].
+          destruct n; [ easy | exfalso ].
+          destruct q; [ flia Hq | ].
+          cbn in Hq; rewrite Nat.mul_comm in Hq; cbn in Hq.
+          flia Hq.
+        }
+        subst n; cbn.
+        rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l.
+        rewrite (Hs 0); cbn.
+        apply f_add_opp_diag_r.
+      }
+      destruct i; [ easy | ].
+      destruct i. {
+        cbn; subst p; cbn.
+        replace (n + 2 - 1) with (S n) by flia.
+        destruct n. {
+          cbn; rewrite f_mul_0_l, f_add_0_r, f_add_0_l.
+          rewrite f_mul_0_l, f_add_0_r, f_mul_opp_l, f_mul_1_l.
+          rewrite (Hs 3); cbn.
+          apply f_add_opp_diag_r.
+        }
+        destruct n; [ flia Hq | ].
+        cbn; rewrite f_add_opp_diag_r, f_mul_0_l, f_add_0_l.
+        destruct n. {
+          cbn.
+          rewrite f_mul_0_l, f_add_0_r, f_add_0_l.
+          rewrite f_mul_opp_l, f_mul_1_l.
+          rewrite (Hs 1); cbn.
+          apply f_add_opp_diag_r.
+        }
+        replace (S (S (S n)) + 2) with (n + 5) in Hq by flia.
+        destruct n; [ flia Hq | ].
+        destruct n; [ flia Hq | ].
+        destruct n; [ flia Hq | ].
+        destruct n. {
+          cbn; rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l.
+          rewrite f_add_opp_diag_r, f_mul_0_l, f_add_0_r.
+          rewrite (Hs 0); cbn.
+          apply f_add_opp_diag_r.
+        }
+        ring_simplify in Hq; flia Hq.
+      }
+      ring_simplify in Hi3.
+      replace (3 + i) with (i + 1 * 3) in Hi3 by flia.
+      rewrite Nat.div_add in Hi3; [ flia Hi3 | easy ].
+    }
+    apply Nat.nlt_ge in Hi3.
+    assert (Hi' : 5 ≤ i). {
+      destruct i; [ cbn in Hi3; flia Hi3 | ].
+      destruct i; [ cbn in Hi3; flia Hi3 | ].
+      destruct i; [ cbn in Hi3; flia Hi3 | ].
+      destruct i; [ cbn in Hi3; flia Hi3 | ].
+      destruct i; [ cbn in Hi3; flia Hi3 | flia ].
+    }
+    clear Hi Hi3; rename Hi' into Hi.
+    (* ouais, on s'enfonce, quoi *)
 ...
 intros * Hs i.
 unfold ".*".
