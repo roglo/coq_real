@@ -842,6 +842,45 @@ Proof.
 intros * Hs i.
 unfold ".*".
 remember (ls_of_pol (pol_pow 1 - pol_pow n)%LP) as p eqn:Hp.
+destruct (lt_dec n 2) as [Hn| Hn]. {
+  cbn - [ "/" "mod" ].
+  rewrite Nat.sub_diag, Nat.div_1_r, Nat_sub_succ_1, Nat.mod_1_r.
+  cbn; symmetry; cbn in Hs.
+  rewrite (Hs i).
+  unfold pol_pow in Hp; cbn in Hp.
+  replace (n - 1) with 0 in Hp by flia Hn.
+  unfold lp_sub, lp_add, lp_opp in Hp; cbn in Hp.
+  rewrite f_add_opp_diag_r in Hp.
+  remember (log_prod (ls p)) as x.
+  rewrite Hp; cbn - [ "/" "mod" ]; subst x.
+  do 2 rewrite f_mul_0_l.
+  rewrite f_add_0_l.
+  destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
+    rewrite f_add_0_l; subst i; cbn.
+    destruct n; [ easy | ].
+    destruct n; [ easy | ].
+    rewrite Nat.mod_1_l; [ flia Hn | flia ].
+  }
+  destruct i; [ flia Hi | ].
+  replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
+  rewrite f_mul_0_l, f_add_0_l.
+  destruct n. {
+    cbn - [ log_prod ].
+    apply log_prod_0_l; intros m; subst p; cbn.
+    destruct m; [ easy | now destruct m ].
+  }
+  destruct n. {
+    rewrite Nat.mod_1_r.
+    apply log_prod_0_l; intros m; subst p; cbn.
+    destruct m; [ easy | now destruct m ].
+  }
+  flia Hn.
+}
+apply Nat.nlt_ge in Hn.
+...
+intros * Hs i.
+unfold ".*".
+remember (ls_of_pol (pol_pow 1 - pol_pow n)%LP) as p eqn:Hp.
 unfold ls_mul.
 symmetry.
 cbn - [ log_prod series_but_mul_of ].
