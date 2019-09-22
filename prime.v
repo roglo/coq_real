@@ -877,6 +877,70 @@ destruct (lt_dec n 2) as [Hn| Hn]. {
   flia Hn.
 }
 apply Nat.nlt_ge in Hn.
+unfold ls_mul; symmetry.
+cbn - [ log_prod ].
+rewrite log_prod_succ.
+rewrite Nat.sub_diag.
+cbn - [ "/" "mod" ].
+rewrite Nat.div_1_r, Nat.mod_1_r, Nat_sub_succ_1.
+destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
+  subst i.
+  rewrite Nat.mod_1_l; [ cbn | easy ].
+  rewrite f_add_0_r.
+  replace (ls p 0) with f_one. 2: {
+    subst p; cbn.
+    destruct n; [ easy | ].
+    destruct n; [ flia Hn | cbn ].
+    destruct n; now cbn; rewrite f_opp_0, f_add_0_r.
+  }
+  apply f_mul_1_l.
+}
+destruct i; [ easy | clear Hi ].
+replace (ls p 0) with f_one. 2: {
+  subst p; cbn.
+  destruct n; [ flia Hn | ].
+  destruct n; [ flia Hn | cbn ].
+  now destruct n; cbn; rewrite f_opp_0, f_add_0_r.
+}
+rewrite f_mul_1_l.
+remember (S (S i) mod n) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  rewrite log_prod_succ.
+  rewrite Nat_sub_succ_diag_l.
+  cbn - [ "/" "mod" ].
+  replace (S (S i)) with (i + 1 * 2) by flia.
+  rewrite Nat.div_add; [ | easy ].
+  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.add_sub.
+  destruct (lt_dec (i / 2) 1) as [Hi| Hi]. {
+    rewrite f_add_0_r.
+    destruct n; [ flia Hn | ].
+    destruct n; [ flia Hn | ].
+    destruct i. {
+      destruct n. {
+        rewrite (Hs 0); cbn.
+        rewrite Hp; cbn.
+        now rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l, f_add_opp_diag_r.
+      }
+      rewrite Nat.mod_small in Hm; [ easy | flia ].
+    }
+    destruct i. {
+      destruct n; [ easy | ].
+      rewrite Hp; cbn.
+      destruct n. {
+        rewrite (Hs 0); cbn.
+        now rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l, f_add_opp_diag_r.
+      }
+      rewrite Nat.mod_small in Hm; [ easy | flia ].
+    }
+    replace (S (S i)) with (i + 1 * 2) in Hi by flia.
+    rewrite Nat.div_add in Hi; [ flia Hi | easy ].
+  }
+  assert (H : 2 ≤ i). {
+    destruct i; [ cbn in Hi; flia Hi | ].
+    destruct i; [ cbn in Hi; flia Hi | flia ].
+  }
+  clear Hi; rename H into Hi; move Hi before Hn.
 ...
 intros * Hs i.
 unfold ".*".
