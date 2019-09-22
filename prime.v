@@ -969,6 +969,23 @@ destruct m. {
       rewrite Nat.mod_small in Hm; [ easy | flia ].
     }
     replace (S (S i)) with (2 * q + 2) in Hm by flia Hq.
+replace (ls p (S i)) with f_zero. 2: {
+  subst p; cbn.
+  destruct n; [ flia Hn | ].
+  destruct n; [ flia Hn | ].
+  cbn.
+clear Hn.
+  destruct n.
+cbn.
+destruct i; [ flia Hi | ].
+now destruct i.
+cbn.
+rewrite List.map_app; cbn.
+rewrite List.app_length; cbn.
+rewrite Nat.add_1_r.
+cbn.
+rewrite f_add_opp_diag_r.
+destruct i; [ easy | ].
 ...
 intros * Hs i.
 unfold ".*".
