@@ -969,6 +969,7 @@ destruct m. {
       rewrite Nat.mod_small in Hm; [ easy | flia ].
     }
     replace (S (S i)) with (2 * q + 2) in Hm by flia Hq.
+...
 replace (ls p (S i)) with f_zero. 2: {
   subst p; cbn.
   destruct n; [ flia Hn | ].
