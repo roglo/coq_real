@@ -802,6 +802,29 @@ rewrite ls_mul_pol_1_l.
 rewrite ls_mul_pol_opp_l.
 cbn - [ series_but_mul_of log_prod ls_of_pol ".*" ].
 rewrite fold_f_sub.
+(**)
+unfold series_but_mul_of.
+cbn - [ pol_pow ".*" ].
+symmetry.
+remember (S i mod n) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  destruct n. {
+    unfold ".*", "*"%LS.
+    cbn - [ "/" "mod" ls_of_pol pol_pow ].
+    rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
+    unfold ls_of_pol at 1, pol_pow at 1.
+    cbn - [ "/" "mod" ls_of_pol pol_pow ].
+    rewrite f_mul_1_l.
+    unfold f_sub.
+    rewrite f_opp_add_distr, f_add_assoc.
+    rewrite f_add_opp_diag_r, f_add_0_l.
+    rewrite <- f_opp_involutive; f_equal; rewrite f_opp_0.
+...
+  ============================
+  log_prod (ls (ls_of_pol (pol_pow 0))) (ls s) i i = f_zero
+...
+    clear; induction i; [ easy | ].
+    rewrite log_prod_succ.
 ...
 cbn - [ series_but_mul_of log_prod ls_of_pol ].
 (*
