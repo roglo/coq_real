@@ -807,6 +807,12 @@ rewrite ls_mul_pol_1_l.
 rewrite ls_mul_pol_opp_l.
 cbn - [ series_but_mul_of log_prod ls_of_pol ".*" ].
 rewrite fold_f_sub.
+cbn - [ series_but_mul_of log_prod ls_of_pol ].
+rewrite log_prod_succ.
+rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
+unfold f_sub.
+rewrite f_opp_add_distr, f_add_assoc.
+do 2 rewrite fold_f_sub.
 ...
 unfold ".*".
 unfold "*"%LS.
