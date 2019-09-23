@@ -904,12 +904,11 @@ destruct m. {
     destruct n; [ flia Hn | ].
     rewrite Nat.mod_small in Hm; [ easy | subst i; flia ].
   }
-  destruct i; [ easy | clear Hi ].
 (*
-  Hm : S (S i) mod n = 0
   ============================
-  (ls p 0 * ls s (S i) + ls p (S i) * ls s 0 + log_prod (ls p) (ls s) (S i) (S i))%F = f_zero
+  (ls p 0 * ls s i + ls p i * ls s 0 + log_prod (ls p) (ls s) i i)%F = f_zero
 *)
+  destruct i; [ easy | clear Hi ].
   rewrite log_prod_succ.
   rewrite Nat_sub_succ_diag_l.
   cbn - [ "/" "mod" ].
@@ -977,6 +976,12 @@ destruct m. {
       }
       rewrite Nat.mod_small in Hm; [ easy | flia ].
     }
+(*
+  ============================
+  (ls p 0 * ls s (S i) + ls p (S i) * ls s 0 +
+   (ls p 1 * ls s q + ls p q * ls s 1 + log_prod (ls p) (ls s) (S i) i))%F =
+  f_zero
+*)
     destruct i; [ flia Hi | ].
     rewrite log_prod_succ.
     replace (S (S i) - i) with 2 by flia.
@@ -1078,6 +1083,22 @@ destruct m. {
       destruct i; [ cbn in Hi3; flia Hi3 | flia ].
     }
     move H before Hi; clear Hi; rename H into Hi; clear Hi3.
+    remember (i mod 3) as r eqn:Hr; symmetry in Hr.
+    destruct r. {
+      apply Nat.mod_divides in Hr; [ | easy ].
+      destruct Hr as (r, Hr).
+      rewrite Hr, Nat.mul_comm, Nat.div_mul; [ | easy ].
+      rewrite Nat.mul_comm, <- Hr.
+      destruct (Nat.eq_dec r 2) as [Hr2| Hr2]. {
+        subst r; cbn in Hr; subst i; flia Hq.
+      }
+(*
+  ============================
+  (ls p 0 * ls s (S (S i)) + ls p (S (S i)) * ls s 0 +
+   (ls p 1 * ls s q + ls p q * ls s 1 +
+    (ls p 2 * ls s r + ls p r * ls s 2 + log_prod (ls p) (ls s) (S (S i)) i)))%F =
+  f_zero
+*)
 ...
 unfold ls_mul; symmetry.
 cbn - [ log_prod ].
