@@ -767,7 +767,17 @@ Theorem log_prod_pol_opp_l {F : field} : ∀ p s n i,
   log_prod (ls (ls_of_pol (- p))) (ls s) n i =
   (- log_prod (ls (ls_of_pol p)) (ls s) n i)%F.
 Proof.
-...
+intros.
+induction i; [ now cbn; rewrite f_opp_0 | ].
+do 2 rewrite log_prod_succ.
+rewrite ls_of_pol_opp.
+cbn - [ "/" "mod" ls_of_pol ].
+destruct (S n mod S (n - i)) as [Hn| Hn]. {
+  now rewrite f_opp_add_distr, f_mul_opp_l, IHi.
+}
+do 2 rewrite f_add_0_l.
+apply IHi.
+Qed.
 
 Theorem ls_mul_pol_opp_l {F : field} : ∀ p s,
   (- p .* s = - (p .* s))%LS.
@@ -778,10 +788,9 @@ rewrite Nat.sub_diag, Nat.mod_1_r.
 rewrite ls_of_pol_opp.
 cbn - [ "/" "mod" ls_of_pol ].
 rewrite log_prod_pol_opp_l.
-...
-unfold ".*".
-unfold "*"%LS.
-...
+rewrite f_opp_add_distr.
+now rewrite f_mul_opp_l.
+Qed.
 
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, ls s i = ls s (n * S i - 1))
@@ -795,9 +804,11 @@ rewrite Nat.sub_diag.
 cbn - [ series_but_mul_of ".*" "*"%LS ls_of_pol ].
 unfold ".*" at 1.
 rewrite ls_mul_pol_1_l.
-...
 rewrite ls_mul_pol_opp_l.
 cbn - [ series_but_mul_of log_prod ls_of_pol ".*" ].
+...
+rewrite fold_ls_sub.
+rewrite f_mul_opp_l.
 ...
 unfold ".*".
 unfold "*"%LS.
