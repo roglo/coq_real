@@ -1099,6 +1099,33 @@ destruct m. {
     (ls p 2 * ls s r + ls p r * ls s 2 + log_prod (ls p) (ls s) (S (S i)) i)))%F =
   f_zero
 *)
+(* is next step with 4 (next natural) or with 5 (next prime)?
+   I guess it is 5 but not sure;
+   anyway it is complicated *)
+...
+(*
+  (ls p 0 * ls s (i + k) + ls p (i + k) * ls s 0 + ...
+   log_prod (ls p) (ls s) (i + k) i)%F = f_zero
+
+*)
+
+(*
+  ============================
+  (ls p 0 * ls s i + ls p i * ls s 0 + log_prod (ls p) (ls s) i i)%F = f_zero
+*)
+(*
+  ============================
+  (ls p 0 * ls s (S i) + ls p (S i) * ls s 0 +
+   (ls p 1 * ls s q + ls p q * ls s 1 + log_prod (ls p) (ls s) (S i) i))%F =
+  f_zero
+*)
+(*
+  ============================
+  (ls p 0 * ls s (S (S i)) + ls p (S (S i)) * ls s 0 +
+   (ls p 1 * ls s q + ls p q * ls s 1 +
+    (ls p 2 * ls s r + ls p r * ls s 2 + log_prod (ls p) (ls s) (S (S i)) i)))%F =
+  f_zero
+*)
 ...
 unfold ls_mul; symmetry.
 cbn - [ log_prod ].
