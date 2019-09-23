@@ -801,7 +801,7 @@ unfold lp_sub.
 rewrite ls_mul_pol_add_distr_r, ls_ls_add.
 unfold pol_pow at 1.
 rewrite Nat.sub_diag.
-cbn - [ series_but_mul_of ".*" "*"%LS ls_of_pol ].
+cbn - [ series_but_mul_of ".*" ].
 unfold ".*" at 1.
 rewrite ls_mul_pol_1_l.
 rewrite ls_mul_pol_opp_l.
