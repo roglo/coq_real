@@ -414,17 +414,16 @@ Class ln_series {F : field} :=
 Class ln_polyn {F : field} :=
   { lp : list f_type }.
 
-Arguments ls {_}.
-Arguments lp {_}.
-
-Definition ls_eq {F : field} s1 s2 := ∀ n, ls s1 n = ls s2 n.
-
 Declare Scope ls_scope.
 Delimit Scope ls_scope with LS.
 
 Declare Scope lp_scope.
 Delimit Scope lp_scope with LP.
 
+Arguments ls {_} _%LS _%nat.
+Arguments lp {_}.
+
+Definition ls_eq {F : field} s1 s2 := ∀ n, ls s1 n = ls s2 n.
 Arguments ls_eq _ s1%LS s2%LS.
 
 Definition List_combine_all {A} (l1 l2 : list A) (d : A) :=
@@ -510,6 +509,9 @@ Notation "x * y" := (ls_mul x y) : ls_scope.
 Notation "x - y" := (ls_sub x y) : ls_scope.
 Notation "- x" := (ls_opp x) : ls_scope.
 Notation "p .* s" := (ls_pol_mul_l p s) (at level 40) : ls_scope.
+
+Theorem fold_ls_sub {F : field} : ∀ x y, (x + - y = x - y)%LS.
+Proof. easy. Qed.
 
 Theorem Nat_succ_mod : ∀ n, 2 ≤ n → S n mod n = 1.
 Proof.
@@ -943,16 +945,19 @@ destruct m. {
     apply f_add_assoc.
   }
   rewrite f_add_assoc; f_equal.
-...
-  do 6 rewrite <- f_add_assoc.
-  rewrite f_add_comm.
-  do 3 rewrite <- f_add_assoc; f_equal.
+  do 5 rewrite <- f_add_assoc.
   rewrite f_add_comm.
   do 2 rewrite <- f_add_assoc; f_equal.
   rewrite f_add_comm; symmetry.
   rewrite f_add_comm.
   do 3 rewrite <- f_add_assoc; f_equal; f_equal.
-...
+  rewrite ls_of_pol_add.
+  cbn - [ ls_of_pol ].
+  symmetry; apply f_mul_add_distr_r.
+}
+do 3 rewrite f_add_0_l.
+apply IHi.
+Qed.
 
 Theorem ls_mul_pol_add_distr_r {F : field} : ∀ x y s,
   ((x + y) .* s = x .* s + y .* s)%LS.
@@ -980,7 +985,39 @@ do 2 rewrite <- f_add_assoc.
 rewrite f_add_comm, <- f_add_assoc, f_add_comm.
 rewrite <- f_add_assoc.
 f_equal; symmetry.
-clear Hi.
+apply log_prod_pol_add.
+Qed.
+
+Theorem ls_mul_pol_1_l {F : field} : ∀ s,
+  (ls_of_pol {| lp := [f_one] |} * s = s)%LS.
+Proof.
+intros * i.
+cbn - [ "/" "mod" ls_of_pol ].
+rewrite Nat.sub_diag, Nat.div_1_r, Nat.mod_1_r, Nat_sub_succ_1.
+cbn - [ "/" "mod" ls_of_pol ].
+destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
+  subst i; cbn.
+  now rewrite f_mul_1_l, f_add_0_r.
+}
+cbn.
+rewrite f_mul_1_l.
+destruct i; [ easy | clear Hi ].
+replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
+rewrite f_mul_0_l, f_add_0_r.
+rewrite <- f_add_0_r; f_equal.
+...
+rewrite log_prod_succ.
+rewrite Nat_sub_succ_diag_l.
+cbn - [ "/" "mod" log_prod ].
+replace (S (S i)) with (i + 1 * 2) by flia.
+rewrite Nat.div_add; [ | easy ].
+rewrite Nat.mod_add; [ | easy ].
+rewrite Nat.add_sub.
+do 2 rewrite f_mul_0_l.
+rewrite f_add_0_l.
+rewrite log_prod_0_l; [ now rewrite f_add_0_r | ].
+intros.
+cbn - [ "/" "mod" ].
 ...
 
 Theorem step_1 {F : field} : ∀ s n,
@@ -989,7 +1026,13 @@ Theorem step_1 {F : field} : ∀ s n,
 Proof.
 intros * Hs i.
 unfold lp_sub.
-rewrite ls_mul_pol_add_distr_r.
+rewrite ls_mul_pol_add_distr_r, ls_ls_add.
+unfold pol_pow at 1.
+unfold ".*" at 1.
+rewrite Nat.sub_diag.
+cbn - [ series_but_mul_of ".*" "*"%LS ].
+...
+rewrite ls_mul_pol_1_l.
 ...
 intros * Hs i.
 unfold ".*".
