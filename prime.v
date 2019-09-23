@@ -999,6 +999,12 @@ destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
   subst i; cbn.
   now rewrite f_mul_1_l, f_add_0_r.
 }
+(**)
+unfold ls_of_pol at 1.
+cbn - [ ls_of_pol ].
+unfold ls_of_pol at 1.
+cbn - [ ls_of_pol ].
+...
 cbn.
 rewrite f_mul_1_l.
 destruct i; [ easy | clear Hi ].
