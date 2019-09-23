@@ -806,9 +806,7 @@ unfold ".*" at 1.
 rewrite ls_mul_pol_1_l.
 rewrite ls_mul_pol_opp_l.
 cbn - [ series_but_mul_of log_prod ls_of_pol ".*" ].
-...
-rewrite fold_ls_sub.
-rewrite f_mul_opp_l.
+rewrite fold_f_sub.
 ...
 unfold ".*".
 unfold "*"%LS.
