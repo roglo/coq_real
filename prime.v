@@ -466,16 +466,10 @@ Fixpoint log_prod {F : field} u v n i :=
   match i with
   | 0 => f_zero
   | S i' =>
-      let j := S n - i in
-      let q := S n / S j - 1 in
-      if lt_dec q j then f_zero
-      else
-        (match S n mod S j with
-         | 0 =>
-             if Nat.eq_dec q j then u j * v j
-             else u j * v q + u q * v j
-         | _ => f_zero
-         end + log_prod u v n i')%F
+      (match S n mod S (n - i') with
+       | 0 => u (n - i')%nat * v (S n / S (n - i') - 1)%nat
+       | _ => f_zero
+       end + log_prod u v n i')%F
   end.
 
 (* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
@@ -527,48 +521,11 @@ Qed.
 
 Theorem log_prod_succ {F : field} : ∀ u v n i,
   log_prod u v n (S i) =
-    let j := n - i in
-    let q := S n / S j - 1 in
-    if lt_dec q j then f_zero
-    else
-      (match S n mod S j with
-       | 0 =>
-           if Nat.eq_dec q (n - i) then u j * v j
-           else u j * v q + u q * v j
-       | S _ => f_zero
-       end + log_prod u v n i)%F.
+    (match S n mod S (n - i) with
+     | 0 => u (n - i)%nat * v (S n / S (n - i) - 1)%nat
+     | S _ => f_zero
+     end + log_prod u v n i)%F.
 Proof. easy. Qed.
-
-Theorem log_prod_le_succ {F : field} : ∀ u v i j,
-  0 < i ≤ j
-  → log_prod (ls u) (ls v) i (S j) =
-     (ls u 0 * ls v i + ls u i * ls v 0 + log_prod (ls u) (ls v) i j)%F.
-Proof.
-intros * Hij.
-rewrite log_prod_succ.
-replace (i - j) with 0 by flia Hij.
-cbn - [ "/" "mod" log_prod ].
-rewrite Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
-destruct (Nat.eq_dec i 0) as [Hi| Hi]; [ flia Hi Hij | easy ].
-Qed.
-
-Theorem log_prod_comm {F : field} : ∀ s1 s2 n i,
-  log_prod s1 s2 n i = log_prod s2 s1 n i.
-Proof.
-intros.
-revert n.
-induction i; intros; [ easy | ].
-do 2 rewrite log_prod_succ.
-cbn - [ Nat.div Nat.modulo ].
-set (j := n - i).
-set (q := S n / S j - 1).
-destruct (lt_dec q j) as [Hqj| Hqj]; [ easy | ].
-f_equal; [ | apply IHi ].
-remember (S n mod S j) as m eqn:Hm; symmetry in Hm.
-destruct m; [ | easy ].
-destruct (Nat.eq_dec q j) as [| Hqje]; [ apply f_mul_comm | ].
-rewrite f_add_comm; f_equal; apply f_mul_comm.
-Qed.
 
 (* c*x^ln(n+1) * Σ (i = 1, ∞) s_(i-1) x^ln(i) =
    Σ (i = 1, ∞) c*s_(i-1) x^ln((n+1)*i) *)
@@ -598,14 +555,9 @@ induction i; intros; [ easy | ].
 rewrite log_prod_succ.
 cbn - [ Nat.div Nat.modulo ].
 rewrite IHi, f_add_0_r.
-destruct (lt_dec (S n / S (n - i) - 1) (n - i)) as [Hni| Hni]; [ easy | ].
-apply Nat.nlt_ge in Hni.
 remember (S n mod S (n - i)) as r eqn:Hr; symmetry in Hr.
 destruct r; [ | easy ].
-do 2 rewrite Hu.
-do 2 rewrite f_mul_0_l.
-rewrite f_add_0_l.
-now destruct (Nat.eq_dec _ _).
+now rewrite Hu, f_mul_0_l.
 Qed.
 
 Theorem ls_mul_0_l {F : field} : ∀ s1 s2,
@@ -615,14 +567,7 @@ intros * Hs1 i.
 cbn - [ Nat.div Nat.modulo ].
 rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
 rewrite Nat.mod_1_r.
-destruct (lt_dec i 0) as [H| H]; [ flia H | clear H ].
-replace (ls s1 0) with f_zero by now rewrite Hs1.
-replace (ls s1 i) with f_zero by now rewrite Hs1.
-do 2 rewrite f_mul_0_l.
-rewrite f_add_0_l.
-replace (if Nat.eq_dec _ _ then _ else _) with f_zero by
-  now destruct (Nat.eq_dec i 0).
-rewrite f_add_0_l.
+rewrite Hs1, f_mul_0_l, f_add_0_l.
 now apply log_prod_0_l.
 Qed.
 
@@ -667,195 +612,6 @@ Proof. easy. Qed.
 Theorem ζ_is_one {F : field} : ∀ n, ls ζ n = f_one.
 Proof.
 intros; now unfold ζ.
-Qed.
-
-Theorem log_prod_pol_ζ' {F : field} : ∀ n m,
-  n mod 2 = 0 → n ≤ m →
-  (log_prod (ls (ls_of_pol {| lp := [f_one; - f_one] |})) (ls ζ) m n =
-   f_zero)%F.
-Proof.
-intros * Hn2 Hnm.
-apply Nat.mod_divides in Hn2; [ | easy ].
-destruct Hn2 as (c, Hc).
-remember (ls_of_pol _) as p eqn:Hp.
-revert m n Hc Hnm.
-induction c; intros; [ now subst n | ].
-destruct n; [ flia Hc | ].
-destruct n; [ flia Hc | ].
-assert (H : n = 2 * c) by flia Hc.
-clear Hc; rename H into Hc.
-assert (H1 : n ≤ m) by flia Hnm.
-specialize (IHc _ _ Hc H1).
-clear H1.
-cbn - [ "/" "mod" ζ ].
-rewrite IHc, f_add_0_r.
-do 4 rewrite ζ_is_one.
-do 4 rewrite f_mul_1_r.
-replace (S (m - S n)) with (m - n) by flia Hnm.
-destruct (lt_dec (S m / (m - n) - 1) (m - S n)) as [| H1]; [ easy | ].
-apply Nat.nlt_ge in H1.
-remember (S m mod (m - n)) as q eqn:Hq; symmetry in Hq.
-replace (ls p (m - n)) with f_zero. 2: {
-  rewrite Hp; cbn.
-  assert (H : m - n ≥ 2) by lia.
-  destruct (m - n) as [| x]; [ flia H | ].
-  destruct x; [ flia H | now destruct x ].
-}
-rewrite f_add_0_l.
-destruct q. {
-  apply Nat.mod_divides in Hq; [ | flia Hnm ].
-  destruct Hq as (q, Hq).
-  rewrite Hq, Nat.mul_comm, Nat.div_mul in H1; [ | flia Hnm ].
-  rewrite Hq, Nat.mul_comm, Nat.div_mul; [ | flia Hnm ].
-  destruct q; [ flia Hq | ].
-  replace (S q - 1) with q in H1 |-* by flia.
-  destruct (Nat.eq_dec q (m - S n)) as [H2| H2]. {
-    clear H1.
-    replace (m - n) with (S q) by flia H2 Hnm.
-    rewrite <- H2.
-    destruct (lt_dec (S q * S q / S (S q) - 1) (S q)) as [H1| H1]. {
-      rewrite f_add_0_r.
-      destruct q; [ flia Hq | ].
-      destruct q; [ flia Hc Hq H2 | ].
-      rewrite Hp; cbn; now destruct q.
-    }
-    apply Nat.nlt_ge in H1.
-    replace (ls p q) with f_zero. 2: {
-      destruct q; [ flia Hq | ].
-      destruct q; [ flia Hc Hq H2 | ].
-      rewrite Hp; cbn; now destruct q.
-    }
-    rewrite f_add_0_l.
-    remember ((S q * S q) mod S (S q)) as r eqn:Hr; symmetry in Hr.
-    destruct r; [ | easy ].
-    apply Nat.mod_divides in Hr; [ | easy ].
-    destruct Hr as (r, Hr).
-    rewrite Hr, Nat.mul_comm, Nat.div_mul in H1; [ | easy ].
-    rewrite Hr, Nat.mul_comm, Nat.div_mul; [ | easy ].
-    destruct (Nat.eq_dec (r - 1) (S q)) as [| H3]; [ easy | ].
-    destruct r; [ flia H1 | ].
-    destruct r; [ flia H1 | ].
-    destruct r; [ flia H1 H3 | ].
-    rewrite Hp; cbn; now destruct r.
-  }
-  replace (ls p q) with f_zero. 2: {
-    destruct q; [ flia Hq | ].
-    destruct q; [ flia Hnm H1 H2 | ].
-    rewrite Hp; cbn; now destruct q.
-  }
-  rewrite f_add_0_r.
-  rewrite Nat.mul_comm in Hq; rewrite <- Hq.
-  destruct (lt_dec (S m / S (m - n) - 1) (m - n)) as [H3| H3]. {
-    rewrite f_add_0_r.
-    remember (m - S n) as t eqn:Ht; symmetry in Ht.
-    destruct t; [ flia Hnm Ht | ].
-    destruct t; [ | rewrite Hp; cbn; now destruct t ].
-    exfalso.
-    replace (m - n) with 2 in Hq, H3 by flia Ht.
-    replace (S m) with (S n + 2) in Hq by flia Ht.
-    rewrite Hc in Hq.
-    flia Hq.
-  }
-  apply Nat.nlt_ge in H3.
-  remember (m - S n) as t eqn:Ht; symmetry in Ht.
-  destruct t; [ flia Hnm Ht | ].
-  destruct t. 2: {
-    replace (ls p (S (S t))) with f_zero. 2: {
-      rewrite Hp; cbn; now destruct t.
-    }
-    rewrite f_add_0_l.
-    remember (S m mod S (m - n)) as u eqn:Hu; symmetry in Hu.
-    destruct u; [ | easy ].
-    apply Nat.mod_divides in Hu; [ | easy ].
-    destruct Hu as (u, Hu).
-    rewrite Hu, Nat.mul_comm, Nat.div_mul; [ | easy ].
-    destruct (Nat.eq_dec (u - 1) (m - n)) as [| H4]; [ easy | ].
-    rewrite Hu, Nat.mul_comm, Nat.div_mul in H3; [ | easy ].
-    assert (H : u - 1 ≥ 3) by flia Hnm H3 H4.
-    rewrite Hp; cbn.
-    destruct (u - 1) as [| x]; [ flia H | ].
-    destruct x; [ flia H | now destruct x ].
-  }
-  replace (m - n) with 2 in Hq by flia Ht.
-  replace (S m) with (n + 3) in Hq by flia Ht.
-  flia Hc Hq.
-}
-rewrite f_add_0_l.
-destruct (lt_dec (S m / S (m - n) - 1) (m - n)) as [| H2]; [ easy | ].
-apply Nat.nlt_ge in H2.
-remember (S m mod S (m - n)) as t eqn:Ht; symmetry in Ht.
-destruct t; [ | easy ].
-apply Nat.mod_divides in Ht; [ | easy ].
-destruct Ht as (t, Ht).
-rewrite Ht, Nat.mul_comm, Nat.div_mul; [ | easy ].
-rewrite Ht, Nat.mul_comm, Nat.div_mul in H2; [ | easy ].
-destruct (Nat.eq_dec (t - 1) (m - n)) as [| H3]; [ easy | ].
-assert (H : t ≥ 3) by lia.
-rewrite Hp; cbn.
-destruct t; [ easy | ].
-replace (S t - 1) with t by flia.
-destruct t; [ flia H | ].
-destruct t; [ flia H | now destruct t ].
-Qed.
-
-Theorem log_prod_pol_ζ {F : field} : ∀ n,
-  3 ≤ n → n mod 2 = 1 →
-  (log_prod (ls (ls_of_pol {| lp := [f_one; - f_one] |})) (ls ζ) n n =
-   - f_one)%F.
-Proof.
-intros * H3n Hn2.
-destruct n; [ easy | ].
-cbn - [ "/" "mod" "-" ζ ls_of_pol ].
-replace (S (S n) - S n) with 1 by flia.
-replace (S (S n)) with (n + 1 * 2) by flia.
-rewrite Nat.div_add; [ | easy ].
-rewrite Nat.mod_add; [ | easy ].
-rewrite Nat.add_sub.
-(**)
-replace (ls (ls_of_pol _) 1) with (- f_one)%F by easy.
-rewrite f_mul_opp_l, f_mul_1_l.
-replace (ls ζ 1) with f_one by easy.
-rewrite f_mul_opp_l, f_mul_1_l, f_mul_1_r.
-replace (ls ζ (n / 2)) with f_one by easy.
-destruct (lt_dec (n / 2) 1) as [Hn| Hn]. {
-  exfalso.
-  destruct n; [ flia H3n | ].
-  destruct n; [ flia H3n | ].
-  replace (S (S n)) with (n + 1 * 2) in Hn by flia.
-  rewrite Nat.div_add in Hn; [ flia Hn | easy ].
-}
-clear Hn.
-remember (n mod 2) as m eqn:Hm; symmetry in Hm.
-destruct m. 2: {
-  destruct m. 2: {
-    specialize (Nat.mod_upper_bound n 2 (Nat.neq_succ_0 _)) as H1.
-    rewrite Hm in H1; flia H1.
-  }
-  specialize (Nat.div_mod n 2 (Nat.neq_succ_0 _)) as H1.
-  rewrite H1, Hm in Hn2.
-  replace (S (2 * (n / 2) + 1)) with (0 + (n / 2 + 1) * 2) in Hn2 by flia.
-  now rewrite Nat.mod_add in Hn2.
-}
-clear Hn2.
-apply Nat.mod_divides in Hm; [ | easy ].
-destruct Hm as (m, Hm).
-rewrite Hm, Nat.mul_comm, Nat.div_mul; [ | easy ].
-destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
-  subst m; cbn in Hm; subst n; cbn.
-  apply f_add_0_r.
-}
-destruct m; [ cbn in Hm; flia H3n Hm | ].
-destruct m; [ easy | clear Hm1 ].
-replace (ls (ls_of_pol _) (S (S m))) with f_zero. 2: {
-  cbn; now destruct m.
-}
-rewrite f_add_0_r.
-replace (S (S m) * 2) with n by flia Hm.
-assert (H : n mod 2 = 0). {
-  replace n with (0 + S (S m) * 2) by flia Hm.
-  now rewrite Nat.mod_add.
-}
-rewrite log_prod_pol_ζ'; [ apply f_add_0_r | easy | flia ].
 Qed.
 
 Definition pol_pow {F : field} n :=
@@ -918,18 +674,15 @@ Qed.
 
 Theorem log_prod_pol_add {F : field} : ∀ x y s n i,
   log_prod (ls (ls_of_pol (x + y))) (ls s) n i =
-  (log_prod (ls (ls_of_pol y)) (ls s) n i + log_prod (ls (ls_of_pol x)) (ls s) n i)%F.
+  (log_prod (ls (ls_of_pol y)) (ls s) n i +
+   log_prod (ls (ls_of_pol x)) (ls s) n i)%F.
 Proof.
 intros.
 revert n.
 induction i; intros; [ now cbn; rewrite f_add_0_r | ].
 do 3 rewrite log_prod_succ.
 cbn - [ "/" "mod" ls_of_pol ].
-destruct (lt_dec (S n / S (n - i) - 1) (n - i)) as [Hi| Hi]. {
-  now rewrite f_add_0_l.
-}
-apply Nat.nlt_ge in Hi.
-remember (S n mod (S (n - i))) as m eqn:Hm; symmetry in Hm.
+remember (S n mod S (n - i)) as m eqn:Hm; symmetry in Hm.
 destruct m. {
   apply Nat.mod_divides in Hm; [ | easy ].
   destruct Hm as (m, Hm).
@@ -937,23 +690,10 @@ destruct m. {
   rewrite IHi, ls_of_pol_add.
   cbn - [ ls_of_pol ].
   rewrite f_mul_add_distr_r.
-  do 2 rewrite f_add_assoc.
-  rewrite f_mul_add_distr_r.
-  destruct (Nat.eq_dec (m - 1) (n - i)) as [Hm1| Hm1]. {
-    f_equal.
-    symmetry; rewrite f_add_comm.
-    apply f_add_assoc.
-  }
-  rewrite f_add_assoc; f_equal.
-  do 5 rewrite <- f_add_assoc.
+  do 2 rewrite <- f_add_assoc.
   rewrite f_add_comm.
-  do 2 rewrite <- f_add_assoc; f_equal.
-  rewrite f_add_comm; symmetry.
-  rewrite f_add_comm.
-  do 3 rewrite <- f_add_assoc; f_equal; f_equal.
-  rewrite ls_of_pol_add.
-  cbn - [ ls_of_pol ].
-  symmetry; apply f_mul_add_distr_r.
+  do 2 rewrite <- f_add_assoc; f_equal; f_equal.
+  apply f_add_comm.
 }
 do 3 rewrite f_add_0_l.
 apply IHi.
@@ -964,27 +704,15 @@ Theorem ls_mul_pol_add_distr_r {F : field} : ∀ x y s,
 Proof.
 intros * i.
 cbn - [ "/" "mod" ls_of_pol ].
-do 2 rewrite ls_of_pol_add.
-cbn - [ "/" "mod" ls_of_pol ].
 rewrite Nat.sub_diag, Nat.div_1_r, Nat.mod_1_r.
 rewrite Nat_sub_succ_1.
-destruct (lt_dec i 0) as [| H]; [ now rewrite f_add_0_l | clear H ].
-destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
-  subst i; cbn.
-  do 3 rewrite f_add_0_r.
-  apply f_mul_add_distr_r.
-}
-do 2 rewrite f_mul_add_distr_r.
-do 6 rewrite <- f_add_assoc; f_equal.
-rewrite f_add_comm.
+rewrite ls_of_pol_add.
+cbn - [ ls_of_pol ].
+rewrite f_mul_add_distr_r.
 do 2 rewrite <- f_add_assoc; f_equal.
-rewrite f_add_comm, <- f_add_assoc.
 symmetry.
-rewrite f_add_comm.
-do 2 rewrite <- f_add_assoc.
-rewrite f_add_comm, <- f_add_assoc, f_add_comm.
-rewrite <- f_add_assoc.
-f_equal; symmetry.
+rewrite f_add_comm, <- f_add_assoc; f_equal.
+symmetry.
 apply log_prod_pol_add.
 Qed.
 
@@ -994,24 +722,17 @@ Proof.
 intros * i.
 cbn - [ "/" "mod" ls_of_pol ].
 rewrite Nat.sub_diag, Nat.div_1_r, Nat.mod_1_r, Nat_sub_succ_1.
-cbn - [ "/" "mod" ls_of_pol ].
-destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
-  subst i; cbn.
-  now rewrite f_mul_1_l, f_add_0_r.
-}
-(**)
 unfold ls_of_pol at 1.
 cbn - [ ls_of_pol ].
-unfold ls_of_pol at 1.
-cbn - [ ls_of_pol ].
-...
-cbn.
-rewrite f_mul_1_l.
-destruct i; [ easy | clear Hi ].
 replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
-rewrite f_mul_0_l, f_add_0_r.
-rewrite <- f_add_0_r; f_equal.
-(**)
+rewrite f_mul_1_l, <- f_add_0_r; f_equal.
+destruct i; [ easy | ].
+rewrite log_prod_succ.
+rewrite Nat_sub_succ_diag_l.
+replace (S (S i)) with (i + 1 * 2) by flia.
+rewrite Nat.mod_add; [ | easy ].
+rewrite Nat.div_add; [ | easy ].
+rewrite Nat.add_sub.
 ...
 rewrite log_prod_succ.
 rewrite Nat_sub_succ_diag_l.
