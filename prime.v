@@ -716,6 +716,27 @@ symmetry.
 apply log_prod_pol_add.
 Qed.
 
+Theorem log_prod_pol_1_l {F : field} : ∀ s n i,
+  i ≤ n
+  → log_prod (ls (ls_of_pol {| lp := [f_one] |})) (ls s) n i = f_zero.
+Proof.
+intros * Hin.
+revert n Hin.
+induction i; intros; [ easy | ].
+rewrite log_prod_succ.
+unfold ls_of_pol at 1.
+remember (S n mod S (n - i)) as m eqn:Hm.
+cbn - [ "/" ls_of_pol ].
+replace (n - i) with (S (n - S i)) by flia Hin.
+replace (match _ with 0 | _ => f_zero end) with f_zero. 2: {
+  now destruct (n - S i).
+}
+rewrite f_mul_0_l.
+replace (match m with 0 | _ => f_zero end) with f_zero by now destruct m.
+rewrite f_add_0_l.
+apply IHi; flia Hin.
+Qed.
+
 Theorem ls_mul_pol_1_l {F : field} : ∀ s,
   (ls_of_pol {| lp := [f_one] |} * s = s)%LS.
 Proof.
@@ -726,89 +747,8 @@ unfold ls_of_pol at 1.
 cbn - [ ls_of_pol ].
 replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
 rewrite f_mul_1_l, <- f_add_0_r; f_equal.
-destruct i; [ easy | ].
-rewrite log_prod_succ.
-rewrite Nat_sub_succ_diag_l.
-replace (S (S i)) with (i + 1 * 2) by flia.
-rewrite Nat.mod_add; [ | easy ].
-rewrite Nat.div_add; [ | easy ].
-rewrite Nat.add_sub.
-remember (i mod 2) as m eqn:Hm; symmetry in Hm.
-unfold ls_of_pol at 1.
-cbn - [ ls_of_pol ].
-rewrite f_mul_0_l.
-replace (match m with 0 | _ => f_zero end) with f_zero by now destruct m.
-rewrite f_add_0_l.
-destruct i; [ easy | ].
-rewrite log_prod_succ.
-replace (S (S i) - i) with 2 by flia.
-replace (S (S (S i))) with (i + 1 * 3) by flia.
-rewrite Nat.mod_add; [ | easy ].
-rewrite Nat.div_add; [ | easy ].
-rewrite Nat.add_sub.
-remember (i mod 3) as m3 eqn:Hm3; symmetry in Hm3.
-unfold ls_of_pol at 1.
-cbn - [ ls_of_pol ].
-rewrite f_mul_0_l.
-replace (match m3 with 0 | _ => f_zero end) with f_zero by now destruct m3.
-rewrite f_add_0_l.
-destruct i; [ easy | ].
-rewrite log_prod_succ.
-replace (S (S (S i)) - i) with 3 by flia.
-replace (S (S (S (S i)))) with (i + 1 * 4) by flia.
-rewrite Nat.mod_add; [ | easy ].
-rewrite Nat.div_add; [ | easy ].
-rewrite Nat.add_sub.
-remember (i mod 4) as m4 eqn:Hm4; symmetry in Hm4.
-move m4 before m3.
-unfold ls_of_pol at 1.
-cbn - [ ls_of_pol ].
-rewrite f_mul_0_l.
-replace (match m4 with 0 | _ => f_zero end) with f_zero by now destruct m4.
-rewrite f_add_0_l.
-destruct i; [ easy | ].
-rewrite log_prod_succ.
-replace (S (S (S (S i))) - i) with 4 by flia.
-replace (S (S (S (S (S i))))) with (i + 1 * 5) by flia.
-rewrite Nat.mod_add; [ | easy ].
-rewrite Nat.div_add; [ | easy ].
-rewrite Nat.add_sub.
-remember (i mod 5) as m5 eqn:Hm5; symmetry in Hm5.
-move m5 before m4.
-unfold ls_of_pol at 1.
-cbn - [ ls_of_pol ].
-rewrite f_mul_0_l.
-replace (match m5 with 0 | _ => f_zero end) with f_zero by now destruct m5.
-rewrite f_add_0_l.
-...
-rewrite log_prod_succ.
-rewrite Nat_sub_succ_diag_l.
-cbn - [ "/" "mod" log_prod ].
-replace (S (S i)) with (i + 1 * 2) by flia.
-rewrite Nat.div_add; [ | easy ].
-rewrite Nat.mod_add; [ | easy ].
-rewrite Nat.add_sub.
-do 2 rewrite f_mul_0_l.
-rewrite f_add_0_l.
-destruct (lt_dec (i / 2) 1) as [Hi| Hi]; [ easy | ].
-apply Nat.nlt_ge in Hi.
-remember (i mod 2) as m eqn:Hm; symmetry in Hm.
-destruct m. {
-  apply Nat.mod_divides in Hm; [ | easy ].
-  destruct Hm as (m, Hm).
-  rewrite Hm, Nat.mul_comm, Nat.div_mul; [ | easy ].
-  rewrite Nat.mul_comm, <- Hm.
-  destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
-    rewrite f_add_0_l.
-    now subst m; cbn in Hm; subst i.
-  }
-  destruct m; [ subst i; cbn in Hi; flia Hi | ].
-  destruct m; [ easy | clear Hm1 ].
-  rewrite f_mul_0_l, f_add_0_l.
-  destruct i; [ easy | ].
-  remember (S (S i)) as si.
-  cbn - [ "/" "mod" ]; subst si.
-...
+now apply log_prod_pol_1_l.
+Qed.
 
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, ls s i = ls s (n * S i - 1))
@@ -821,7 +761,6 @@ unfold pol_pow at 1.
 unfold ".*" at 1.
 rewrite Nat.sub_diag.
 cbn - [ series_but_mul_of ".*" "*"%LS ].
-...
 rewrite ls_mul_pol_1_l.
 ...
 intros * Hs i.
