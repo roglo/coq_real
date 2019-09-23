@@ -738,14 +738,13 @@ apply IHi; flia Hin.
 Qed.
 
 Theorem ls_mul_pol_1_l {F : field} : ∀ s,
-  (ls_of_pol {| lp := [f_one] |} * s = s)%LS.
+  (pol_pow 1 .* s = s)%LS.
 Proof.
 intros * i.
 cbn - [ "/" "mod" ls_of_pol ].
 rewrite Nat.sub_diag, Nat.div_1_r, Nat.mod_1_r, Nat_sub_succ_1.
 unfold ls_of_pol at 1.
 cbn - [ ls_of_pol ].
-replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
 rewrite f_mul_1_l, <- f_add_0_r; f_equal.
 now apply log_prod_pol_1_l.
 Qed.
@@ -799,14 +798,11 @@ Proof.
 intros * Hs i.
 unfold lp_sub.
 rewrite ls_mul_pol_add_distr_r, ls_ls_add.
-unfold pol_pow at 1.
-rewrite Nat.sub_diag.
-cbn - [ series_but_mul_of ".*" ].
-unfold ".*" at 1.
 rewrite ls_mul_pol_1_l.
 rewrite ls_mul_pol_opp_l.
 cbn - [ series_but_mul_of log_prod ls_of_pol ".*" ].
 rewrite fold_f_sub.
+...
 cbn - [ series_but_mul_of log_prod ls_of_pol ].
 (*
   Hs : ∀ i : nat, ls s i = ls s (n * S i - 1)
