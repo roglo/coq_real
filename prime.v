@@ -716,19 +716,22 @@ symmetry.
 apply log_prod_pol_add.
 Qed.
 
-Theorem log_prod_pol_1_l {F : field} : ∀ s n i,
-  i ≤ n
-  → log_prod (ls (ls_of_pol {| lp := [f_one] |})) (ls s) n i = f_zero.
+Theorem log_prod_pol_1_l {F : field} : ∀ s k n i,
+  k < 2
+  → i ≤ n
+  → log_prod (ls (ls_of_pol (pol_pow k))) (ls s) n i = f_zero.
 Proof.
-intros * Hin.
+intros * Hk Hin.
 revert n Hin.
 induction i; intros; [ easy | ].
 rewrite log_prod_succ.
 unfold ls_of_pol at 1.
 remember (S n mod S (n - i)) as m eqn:Hm.
 cbn - [ "/" ls_of_pol ].
+replace (k - 1) with 0 by flia Hk.
+cbn - [ "/" ls_of_pol ].
 replace (n - i) with (S (n - S i)) by flia Hin.
-replace (match _ with 0 | _ => f_zero end) with f_zero. 2: {
+replace (match n - S i with 0 | _ => f_zero end) with f_zero. 2: {
   now destruct (n - S i).
 }
 rewrite f_mul_0_l.
@@ -746,7 +749,7 @@ rewrite Nat.sub_diag, Nat.div_1_r, Nat.mod_1_r, Nat_sub_succ_1.
 unfold ls_of_pol at 1.
 cbn - [ ls_of_pol ].
 rewrite f_mul_1_l, <- f_add_0_r; f_equal.
-now apply log_prod_pol_1_l.
+apply log_prod_pol_1_l; [ flia | easy ].
 Qed.
 
 Theorem ls_of_pol_opp {F : field} : ∀ p,
@@ -808,52 +811,25 @@ cbn - [ pol_pow ".*" ].
 symmetry.
 remember (S i mod n) as m eqn:Hm; symmetry in Hm.
 destruct m. {
-  destruct n. {
+  destruct (lt_dec n 2) as [Hn| Hn]. {
     unfold ".*", "*"%LS.
     cbn - [ "/" "mod" ls_of_pol pol_pow ].
     rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
     unfold ls_of_pol at 1, pol_pow at 1.
     cbn - [ "/" "mod" ls_of_pol pol_pow ].
-    rewrite f_mul_1_l.
     unfold f_sub.
     rewrite f_opp_add_distr, f_add_assoc.
-    rewrite f_add_opp_diag_r, f_add_0_l.
-    rewrite <- f_opp_involutive; f_equal; rewrite f_opp_0.
-...
-  ============================
-  log_prod (ls (ls_of_pol (pol_pow 0))) (ls s) i i = f_zero
-...
-    clear; induction i; [ easy | ].
-    rewrite log_prod_succ.
-...
-cbn - [ series_but_mul_of log_prod ls_of_pol ].
-(*
-  Hs : ∀ i : nat, ls s i = ls s (n * S i - 1)
-  ============================
-  ls (series_but_mul_of s n) i =
-  (ls s i - log_prod (ls (ls_of_pol (pol_pow n))) (ls s) i (S i))%F
-*)
-rewrite log_prod_succ.
-rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
-unfold f_sub.
-rewrite f_opp_add_distr, f_add_assoc.
-do 2 rewrite fold_f_sub.
-(*
-  Hs : ∀ i : nat, ls s i = ls s (n * S i - 1)
-  ============================
-  ls (series_but_mul_of s n) i =
-  (ls s i - ls (ls_of_pol (pol_pow n)) 0 * ls s i -
-   log_prod (ls (ls_of_pol (pol_pow n))) (ls s) i i)%F
-*)
-...
-unfold ".*".
-unfold "*"%LS.
-cbn - [ series_but_mul_of log_prod ls_of_pol ].
-...
-rewrite log_prod_succ.
-rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
-rewrite ls_of_pol_opp.
-cbn - [ series_but_mul_of log_prod ls_of_pol ].
+    replace (n - 1) with 0 by flia Hn.
+    rewrite log_prod_pol_1_l; [ cbn | easy | easy ].
+    now rewrite f_mul_1_l, f_add_opp_diag_r, f_add_opp_diag_r.
+  }
+  apply Nat.nlt_ge in Hn.
+  cbn - [ series_but_mul_of log_prod ls_of_pol ].
+  rewrite log_prod_succ.
+  rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
+  unfold f_sub.
+  rewrite f_opp_add_distr, f_add_assoc.
+  do 2 rewrite fold_f_sub.
 ...
 intros * Hs i.
 unfold ".*".
