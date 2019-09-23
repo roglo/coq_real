@@ -733,6 +733,53 @@ replace (S (S i)) with (i + 1 * 2) by flia.
 rewrite Nat.mod_add; [ | easy ].
 rewrite Nat.div_add; [ | easy ].
 rewrite Nat.add_sub.
+remember (i mod 2) as m eqn:Hm; symmetry in Hm.
+unfold ls_of_pol at 1.
+cbn - [ ls_of_pol ].
+rewrite f_mul_0_l.
+replace (match m with 0 | _ => f_zero end) with f_zero by now destruct m.
+rewrite f_add_0_l.
+destruct i; [ easy | ].
+rewrite log_prod_succ.
+replace (S (S i) - i) with 2 by flia.
+replace (S (S (S i))) with (i + 1 * 3) by flia.
+rewrite Nat.mod_add; [ | easy ].
+rewrite Nat.div_add; [ | easy ].
+rewrite Nat.add_sub.
+remember (i mod 3) as m3 eqn:Hm3; symmetry in Hm3.
+unfold ls_of_pol at 1.
+cbn - [ ls_of_pol ].
+rewrite f_mul_0_l.
+replace (match m3 with 0 | _ => f_zero end) with f_zero by now destruct m3.
+rewrite f_add_0_l.
+destruct i; [ easy | ].
+rewrite log_prod_succ.
+replace (S (S (S i)) - i) with 3 by flia.
+replace (S (S (S (S i)))) with (i + 1 * 4) by flia.
+rewrite Nat.mod_add; [ | easy ].
+rewrite Nat.div_add; [ | easy ].
+rewrite Nat.add_sub.
+remember (i mod 4) as m4 eqn:Hm4; symmetry in Hm4.
+move m4 before m3.
+unfold ls_of_pol at 1.
+cbn - [ ls_of_pol ].
+rewrite f_mul_0_l.
+replace (match m4 with 0 | _ => f_zero end) with f_zero by now destruct m4.
+rewrite f_add_0_l.
+destruct i; [ easy | ].
+rewrite log_prod_succ.
+replace (S (S (S (S i))) - i) with 4 by flia.
+replace (S (S (S (S (S i))))) with (i + 1 * 5) by flia.
+rewrite Nat.mod_add; [ | easy ].
+rewrite Nat.div_add; [ | easy ].
+rewrite Nat.add_sub.
+remember (i mod 5) as m5 eqn:Hm5; symmetry in Hm5.
+move m5 before m4.
+unfold ls_of_pol at 1.
+cbn - [ ls_of_pol ].
+rewrite f_mul_0_l.
+replace (match m5 with 0 | _ => f_zero end) with f_zero by now destruct m5.
+rewrite f_add_0_l.
 ...
 rewrite log_prod_succ.
 rewrite Nat_sub_succ_diag_l.
