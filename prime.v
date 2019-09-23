@@ -808,11 +808,24 @@ rewrite ls_mul_pol_opp_l.
 cbn - [ series_but_mul_of log_prod ls_of_pol ".*" ].
 rewrite fold_f_sub.
 cbn - [ series_but_mul_of log_prod ls_of_pol ].
+(*
+  Hs : ∀ i : nat, ls s i = ls s (n * S i - 1)
+  ============================
+  ls (series_but_mul_of s n) i =
+  (ls s i - log_prod (ls (ls_of_pol (pol_pow n))) (ls s) i (S i))%F
+*)
 rewrite log_prod_succ.
 rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
 unfold f_sub.
 rewrite f_opp_add_distr, f_add_assoc.
 do 2 rewrite fold_f_sub.
+(*
+  Hs : ∀ i : nat, ls s i = ls s (n * S i - 1)
+  ============================
+  ls (series_but_mul_of s n) i =
+  (ls s i - ls (ls_of_pol (pol_pow n)) 0 * ls s i -
+   log_prod (ls (ls_of_pol (pol_pow n))) (ls s) i i)%F
+*)
 ...
 unfold ".*".
 unfold "*"%LS.
