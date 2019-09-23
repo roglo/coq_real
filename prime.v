@@ -425,6 +425,8 @@ Delimit Scope ls_scope with LS.
 Declare Scope lp_scope.
 Delimit Scope lp_scope with LP.
 
+Arguments ls_eq _ s1%LS s2%LS.
+
 Definition List_combine_all {A} (l1 l2 : list A) (d : A) :=
   let '(l'1, l'2) :=
     match List.length l1 ?= List.length l2 with
@@ -492,6 +494,9 @@ Definition ls_of_pol {F : field} p :=
 Definition ls_pol_mul_l {F : field} p s :=
   ls_mul (ls_of_pol p) s.
 
+Definition ls_opp {F : field} s := {| ls n := (- ls s n)%F |}.
+Definition ls_sub {F : field} s1 s2 := ls_add s1 (ls_opp s2).
+
 Arguments ls_of_pol _ p%LP.
 Arguments ls_pol_mul_l _ p%LP s%LS.
 
@@ -500,6 +505,10 @@ Arguments ls_pol_mul_l _ p%LP s%LS.
    (1-1/2^s) = {| lp := [f_one; (- f_one)%F] |} *)
 
 Notation "x = y" := (ls_eq x y) : ls_scope.
+Notation "x + y" := (ls_add x y) : ls_scope.
+Notation "x * y" := (ls_mul x y) : ls_scope.
+Notation "x - y" := (ls_sub x y) : ls_scope.
+Notation "- x" := (ls_opp x) : ls_scope.
 Notation "p .* s" := (ls_pol_mul_l p s) (at level 40) : ls_scope.
 
 Theorem Nat_succ_mod : ∀ n, 2 ≤ n → S n mod n = 1.
@@ -850,10 +859,27 @@ Qed.
 Definition pol_pow {F : field} n :=
   {| lp := List.repeat f_zero (n - 1) ++ [f_one] |}.
 
+Theorem ls_mul_pol_add_distr_r {F : field} : ∀ x y s,
+  ((x + y) .* s = x .* s + y .* s)%LS.
+Proof.
+intros * i.
+cbn - [ "/" "mod" ls_of_pol ].
+rewrite Nat.sub_diag, Nat.div_1_r, Nat.mod_1_r.
+rewrite Nat_sub_succ_1.
+destruct (lt_dec i 0) as [| H]; [ now rewrite f_add_0_l | clear H ].
+destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
+  subst i; cbn.
+  do 3 rewrite f_add_0_r.
+...
+
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, ls s i = ls s (n * S i - 1))
   → (series_but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
 Proof.
+intros * Hs i.
+unfold lp_sub.
+rewrite ls_mul_pol_add_distr_r.
+...
 intros * Hs i.
 unfold ".*".
 remember (ls_of_pol (pol_pow 1 - pol_pow n)%LP) as p eqn:Hp.
