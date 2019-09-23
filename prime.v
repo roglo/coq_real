@@ -870,52 +870,56 @@ clear x y Hlx Hly.
 unfold List_combine_all.
 remember (length lx ?= length ly) as c eqn:Hc; symmetry in Hc.
 destruct c.
--idtac.
-...
--apply f_mul_add_distr_r.
-  -rewrite List.app_comm_cons; cbn.
-   apply f_mul_add_distr_r.
-  -rewrite List.app_comm_cons; cbn.
-   apply f_mul_add_distr_r.
-
-
-destruct lx as [| cx lx]. {
-  cbn.
-  replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
-  rewrite f_add_0_l.
-  clear y Hly.
-  revert i.
-  induction ly as [| cy ly]; intros; [ easy | cbn ].
-  destruct i; [ now cbn; rewrite f_add_0_l | ].
-  cbn in IHly.
-  unfold List_combine_all in IHly.
-  cbn in IHly.
-
-
-  destruct ly as [| cy ly]. {
-    now cbn; rewrite f_add_0_r, f_mul_0_l, f_add_0_r.
-  }
-  cbn.
-  unfold List_combine_all; cbn.
-  remember (length lx ?= length ly) as c eqn:Hc; symmetry in Hc.
-  destruct c.
-  -apply f_mul_add_distr_r.
-  -rewrite List.app_comm_cons; cbn.
-   apply f_mul_add_distr_r.
-  -rewrite List.app_comm_cons; cbn.
-   apply f_mul_add_distr_r.
-...
-remember (lp x) as lx eqn:Hlx.
-remember (lp y) as ly eqn:Hly.
-unfold List_combine_all.
-remember (length lx ?= length ly) as c eqn:Hc; symmetry in Hc.
-destruct c.
-...
+-apply Nat.compare_eq in Hc.
+ revert i ly Hc.
+ induction lx as [| x lx]; intros. {
+   destruct ly as [| y ly]; [ cbn | easy ].
+   now destruct i; rewrite f_add_0_r.
+ }
+ destruct ly as [| y ly]; [ easy | cbn ].
+ destruct i; [ easy | ].
+ cbn in Hc; apply Nat.succ_inj in Hc; clear x y.
+ now apply IHlx.
+-apply Nat.compare_lt_iff in Hc.
+ revert i ly Hc.
+ induction lx as [| x lx]; intros. {
+   cbn in Hc |-*; rewrite Nat.sub_0_r.
+   replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
+   rewrite f_add_0_l.
+   clear Hc; revert i.
+   induction ly as [| y ly]; intros; [ easy | cbn ].
+   destruct i; [ now rewrite f_add_0_l | ].
+   apply IHly.
+ }
+ destruct ly as [| y ly]; [ cbn in Hc; flia Hc | cbn ].
+ destruct i; [ easy | ].
+ cbn in Hc.
+ apply Nat.succ_lt_mono in Hc.
+ now apply IHlx.
+-apply Nat.compare_gt_iff in Hc.
+ revert i lx Hc.
+ induction ly as [| y ly]; intros. {
+   cbn in Hc |-*; rewrite Nat.sub_0_r.
+   replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
+   rewrite f_add_0_r.
+   clear Hc; revert i.
+   induction lx as [| x lx]; intros; [ easy | cbn ].
+   destruct i; [ now rewrite f_add_0_r | ].
+   apply IHlx.
+ }
+ destruct lx as [| x lx]; [ cbn in Hc; flia Hc | cbn ].
+ destruct i; [ easy | ].
+ cbn in Hc.
+ apply Nat.succ_lt_mono in Hc.
+ now apply IHly.
+Qed.
 
 Theorem ls_mul_pol_add_distr_r {F : field} : ∀ x y s,
   ((x + y) .* s = x .* s + y .* s)%LS.
 Proof.
 intros * i.
+cbn - [ "/" "mod" ls_of_pol ].
+do 2 rewrite ls_of_pol_add.
 cbn - [ "/" "mod" ls_of_pol ].
 rewrite Nat.sub_diag, Nat.div_1_r, Nat.mod_1_r.
 rewrite Nat_sub_succ_1.
@@ -923,26 +927,43 @@ destruct (lt_dec i 0) as [| H]; [ now rewrite f_add_0_l | clear H ].
 destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
   subst i; cbn.
   do 3 rewrite f_add_0_r.
-  remember (lp x) as lx eqn:Hlx.
-  remember (lp y) as ly eqn:Hly.
-  destruct lx as [| cx lx]. {
-    cbn; rewrite f_mul_0_l, f_add_0_l.
-    destruct ly as [| cy ly]; [ easy | ].
-    now cbn; rewrite f_add_0_l.
-  }
-  destruct ly as [| cy ly]. {
-    now cbn; rewrite f_add_0_r, f_mul_0_l, f_add_0_r.
-  }
-  cbn.
-  unfold List_combine_all; cbn.
-  remember (length lx ?= length ly) as c eqn:Hc; symmetry in Hc.
-  destruct c.
-  -apply f_mul_add_distr_r.
-  -rewrite List.app_comm_cons; cbn.
-   apply f_mul_add_distr_r.
-  -rewrite List.app_comm_cons; cbn.
-   apply f_mul_add_distr_r.
+  apply f_mul_add_distr_r.
 }
+do 2 rewrite f_mul_add_distr_r.
+do 6 rewrite <- f_add_assoc; f_equal.
+rewrite f_add_comm.
+do 2 rewrite <- f_add_assoc; f_equal.
+rewrite f_add_comm, <- f_add_assoc.
+symmetry.
+rewrite f_add_comm.
+do 2 rewrite <- f_add_assoc.
+rewrite f_add_comm, <- f_add_assoc, f_add_comm.
+rewrite <- f_add_assoc.
+f_equal; symmetry.
+clear Hi.
+induction i; [ now cbn; rewrite f_add_0_r | ].
+do 3 rewrite log_prod_succ.
+rewrite Nat_sub_succ_diag_l.
+cbn - [ "/" "mod" ls_of_pol ].
+replace (S (S i)) with (i + 1 * 2) by flia.
+rewrite Nat.div_add; [ | easy ].
+rewrite Nat.mod_add; [ | easy ].
+rewrite Nat.add_sub.
+do 2 rewrite ls_of_pol_add.
+cbn - [ "/" "mod" ls_of_pol ].
+do 3 rewrite f_mul_add_distr_r.
+destruct (lt_dec (i / 2) 1) as [Hi| Hi]; [ now rewrite f_add_0_l | ].
+apply Nat.nlt_ge in Hi.
+remember (i mod 2) as n eqn:Hn; symmetry in Hn.
+destruct n. {
+  apply Nat.mod_divides in Hn; [ | easy ].
+  destruct Hn as (n, Hn).
+  rewrite Hn, Nat.mul_comm, Nat.div_mul; [ | easy ].
+  destruct (Nat.eq_dec n 1) as [Hn1| Hn1]. {
+    subst n; cbn.
+    do 3 rewrite f_add_0_r.
+    apply f_add_comm.
+  }
 ...
 
 Theorem step_1 {F : field} : ∀ s n,
