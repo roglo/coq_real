@@ -859,6 +859,59 @@ Qed.
 Definition pol_pow {F : field} n :=
   {| lp := List.repeat f_zero (n - 1) ++ [f_one] |}.
 
+Theorem ls_of_pol_add {F : field} : ∀ x y,
+  (ls_of_pol (x + y) = ls_of_pol x + ls_of_pol y)%LS.
+Proof.
+intros * i.
+unfold ls_of_pol, "+"%LS; cbn.
+remember (lp x) as lx eqn:Hlx.
+remember (lp y) as ly eqn:Hly.
+clear x y Hlx Hly.
+unfold List_combine_all.
+remember (length lx ?= length ly) as c eqn:Hc; symmetry in Hc.
+destruct c.
+-idtac.
+...
+-apply f_mul_add_distr_r.
+  -rewrite List.app_comm_cons; cbn.
+   apply f_mul_add_distr_r.
+  -rewrite List.app_comm_cons; cbn.
+   apply f_mul_add_distr_r.
+
+
+destruct lx as [| cx lx]. {
+  cbn.
+  replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
+  rewrite f_add_0_l.
+  clear y Hly.
+  revert i.
+  induction ly as [| cy ly]; intros; [ easy | cbn ].
+  destruct i; [ now cbn; rewrite f_add_0_l | ].
+  cbn in IHly.
+  unfold List_combine_all in IHly.
+  cbn in IHly.
+
+
+  destruct ly as [| cy ly]. {
+    now cbn; rewrite f_add_0_r, f_mul_0_l, f_add_0_r.
+  }
+  cbn.
+  unfold List_combine_all; cbn.
+  remember (length lx ?= length ly) as c eqn:Hc; symmetry in Hc.
+  destruct c.
+  -apply f_mul_add_distr_r.
+  -rewrite List.app_comm_cons; cbn.
+   apply f_mul_add_distr_r.
+  -rewrite List.app_comm_cons; cbn.
+   apply f_mul_add_distr_r.
+...
+remember (lp x) as lx eqn:Hlx.
+remember (lp y) as ly eqn:Hly.
+unfold List_combine_all.
+remember (length lx ?= length ly) as c eqn:Hc; symmetry in Hc.
+destruct c.
+...
+
 Theorem ls_mul_pol_add_distr_r {F : field} : ∀ x y s,
   ((x + y) .* s = x .* s + y .* s)%LS.
 Proof.
