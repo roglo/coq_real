@@ -914,6 +914,46 @@ destruct c.
  now apply IHly.
 Qed.
 
+Theorem log_prod_pol_add {F : field} : ∀ x y s n i,
+  log_prod (ls (ls_of_pol (x + y))) (ls s) n i =
+  (log_prod (ls (ls_of_pol y)) (ls s) n i + log_prod (ls (ls_of_pol x)) (ls s) n i)%F.
+Proof.
+intros.
+revert n.
+induction i; intros; [ now cbn; rewrite f_add_0_r | ].
+do 3 rewrite log_prod_succ.
+cbn - [ "/" "mod" ls_of_pol ].
+destruct (lt_dec (S n / S (n - i) - 1) (n - i)) as [Hi| Hi]. {
+  now rewrite f_add_0_l.
+}
+apply Nat.nlt_ge in Hi.
+remember (S n mod (S (n - i))) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  apply Nat.mod_divides in Hm; [ | easy ].
+  destruct Hm as (m, Hm).
+  rewrite Hm, Nat.mul_comm, Nat.div_mul; [ | easy ].
+  rewrite IHi, ls_of_pol_add.
+  cbn - [ ls_of_pol ].
+  rewrite f_mul_add_distr_r.
+  do 2 rewrite f_add_assoc.
+  rewrite f_mul_add_distr_r.
+  destruct (Nat.eq_dec (m - 1) (n - i)) as [Hm1| Hm1]. {
+    f_equal.
+    symmetry; rewrite f_add_comm.
+    apply f_add_assoc.
+  }
+  rewrite f_add_assoc; f_equal.
+...
+  do 6 rewrite <- f_add_assoc.
+  rewrite f_add_comm.
+  do 3 rewrite <- f_add_assoc; f_equal.
+  rewrite f_add_comm.
+  do 2 rewrite <- f_add_assoc; f_equal.
+  rewrite f_add_comm; symmetry.
+  rewrite f_add_comm.
+  do 3 rewrite <- f_add_assoc; f_equal; f_equal.
+...
+
 Theorem ls_mul_pol_add_distr_r {F : field} : ∀ x y s,
   ((x + y) .* s = x .* s + y .* s)%LS.
 Proof.
@@ -941,29 +981,6 @@ rewrite f_add_comm, <- f_add_assoc, f_add_comm.
 rewrite <- f_add_assoc.
 f_equal; symmetry.
 clear Hi.
-induction i; [ now cbn; rewrite f_add_0_r | ].
-do 3 rewrite log_prod_succ.
-rewrite Nat_sub_succ_diag_l.
-cbn - [ "/" "mod" ls_of_pol ].
-replace (S (S i)) with (i + 1 * 2) by flia.
-rewrite Nat.div_add; [ | easy ].
-rewrite Nat.mod_add; [ | easy ].
-rewrite Nat.add_sub.
-do 2 rewrite ls_of_pol_add.
-cbn - [ "/" "mod" ls_of_pol ].
-do 3 rewrite f_mul_add_distr_r.
-destruct (lt_dec (i / 2) 1) as [Hi| Hi]; [ now rewrite f_add_0_l | ].
-apply Nat.nlt_ge in Hi.
-remember (i mod 2) as n eqn:Hn; symmetry in Hn.
-destruct n. {
-  apply Nat.mod_divides in Hn; [ | easy ].
-  destruct Hn as (n, Hn).
-  rewrite Hn, Nat.mul_comm, Nat.div_mul; [ | easy ].
-  destruct (Nat.eq_dec n 1) as [Hn1| Hn1]. {
-    subst n; cbn.
-    do 3 rewrite f_add_0_r.
-    apply f_add_comm.
-  }
 ...
 
 Theorem step_1 {F : field} : ∀ s n,
