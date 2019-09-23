@@ -763,6 +763,11 @@ destruct i; [ easy | ].
 apply IHcl.
 Qed.
 
+Theorem ls_mul_pol_opp_l {F : field} : ∀ p s,
+  (- p .* s = - (p .* s))%LS.
+Proof.
+...
+
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, ls s i = ls s (n * S i - 1))
   → (series_but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
@@ -771,13 +776,18 @@ intros * Hs i.
 unfold lp_sub.
 rewrite ls_mul_pol_add_distr_r, ls_ls_add.
 unfold pol_pow at 1.
-unfold ".*" at 1.
 rewrite Nat.sub_diag.
-cbn - [ series_but_mul_of ".*" "*"%LS ].
+cbn - [ series_but_mul_of ".*" "*"%LS ls_of_pol ].
+unfold ".*" at 1.
 rewrite ls_mul_pol_1_l.
+...
+rewrite ls_mul_pol_opp_l.
+cbn - [ series_but_mul_of log_prod ls_of_pol ".*" ].
+...
 unfold ".*".
 unfold "*"%LS.
 cbn - [ series_but_mul_of log_prod ls_of_pol ].
+...
 rewrite log_prod_succ.
 rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
 rewrite ls_of_pol_opp.
