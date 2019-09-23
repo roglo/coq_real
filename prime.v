@@ -870,6 +870,26 @@ destruct (lt_dec i 0) as [| H]; [ now rewrite f_add_0_l | clear H ].
 destruct (Nat.eq_dec i 0) as [Hi| Hi]. {
   subst i; cbn.
   do 3 rewrite f_add_0_r.
+  remember (lp x) as lx eqn:Hlx.
+  remember (lp y) as ly eqn:Hly.
+  destruct lx as [| cx lx]. {
+    cbn; rewrite f_mul_0_l, f_add_0_l.
+    destruct ly as [| cy ly]; [ easy | ].
+    now cbn; rewrite f_add_0_l.
+  }
+  destruct ly as [| cy ly]. {
+    now cbn; rewrite f_add_0_r, f_mul_0_l, f_add_0_r.
+  }
+  cbn.
+  unfold List_combine_all; cbn.
+  remember (length lx ?= length ly) as c eqn:Hc; symmetry in Hc.
+  destruct c.
+  -apply f_mul_add_distr_r.
+  -rewrite List.app_comm_cons; cbn.
+   apply f_mul_add_distr_r.
+  -rewrite List.app_comm_cons; cbn.
+   apply f_mul_add_distr_r.
+}
 ...
 
 Theorem step_1 {F : field} : ∀ s n,
