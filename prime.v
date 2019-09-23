@@ -750,6 +750,19 @@ rewrite f_mul_1_l, <- f_add_0_r; f_equal.
 now apply log_prod_pol_1_l.
 Qed.
 
+Theorem ls_of_pol_opp {F : field} : ∀ p,
+  (ls_of_pol (- p) = - ls_of_pol p)%LS.
+Proof.
+intros * i; cbn.
+revert i.
+induction (lp p) as [| c cl]; intros. {
+  now cbn; destruct i; rewrite f_opp_0.
+}
+cbn.
+destruct i; [ easy | ].
+apply IHcl.
+Qed.
+
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, ls s i = ls s (n * S i - 1))
   → (series_but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
@@ -762,6 +775,13 @@ unfold ".*" at 1.
 rewrite Nat.sub_diag.
 cbn - [ series_but_mul_of ".*" "*"%LS ].
 rewrite ls_mul_pol_1_l.
+unfold ".*".
+unfold "*"%LS.
+cbn - [ series_but_mul_of log_prod ls_of_pol ].
+rewrite log_prod_succ.
+rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
+rewrite ls_of_pol_opp.
+cbn - [ series_but_mul_of log_prod ls_of_pol ].
 ...
 intros * Hs i.
 unfold ".*".
