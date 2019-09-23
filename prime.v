@@ -763,9 +763,24 @@ destruct i; [ easy | ].
 apply IHcl.
 Qed.
 
+Theorem log_prod_pol_opp_l {F : field} : ∀ p s n i,
+  log_prod (ls (ls_of_pol (- p))) (ls s) n i =
+  (- log_prod (ls (ls_of_pol p)) (ls s) n i)%F.
+Proof.
+...
+
 Theorem ls_mul_pol_opp_l {F : field} : ∀ p s,
   (- p .* s = - (p .* s))%LS.
 Proof.
+intros * i.
+cbn - [ "/" "mod" ls_of_pol ].
+rewrite Nat.sub_diag, Nat.mod_1_r.
+rewrite ls_of_pol_opp.
+cbn - [ "/" "mod" ls_of_pol ].
+rewrite log_prod_pol_opp_l.
+...
+unfold ".*".
+unfold "*"%LS.
 ...
 
 Theorem step_1 {F : field} : ∀ s n,
