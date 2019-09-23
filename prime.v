@@ -1005,6 +1005,7 @@ destruct i; [ easy | clear Hi ].
 replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
 rewrite f_mul_0_l, f_add_0_r.
 rewrite <- f_add_0_r; f_equal.
+(**)
 ...
 rewrite log_prod_succ.
 rewrite Nat_sub_succ_diag_l.
@@ -1015,9 +1016,24 @@ rewrite Nat.mod_add; [ | easy ].
 rewrite Nat.add_sub.
 do 2 rewrite f_mul_0_l.
 rewrite f_add_0_l.
-rewrite log_prod_0_l; [ now rewrite f_add_0_r | ].
-intros.
-cbn - [ "/" "mod" ].
+destruct (lt_dec (i / 2) 1) as [Hi| Hi]; [ easy | ].
+apply Nat.nlt_ge in Hi.
+remember (i mod 2) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  apply Nat.mod_divides in Hm; [ | easy ].
+  destruct Hm as (m, Hm).
+  rewrite Hm, Nat.mul_comm, Nat.div_mul; [ | easy ].
+  rewrite Nat.mul_comm, <- Hm.
+  destruct (Nat.eq_dec m 1) as [Hm1| Hm1]. {
+    rewrite f_add_0_l.
+    now subst m; cbn in Hm; subst i.
+  }
+  destruct m; [ subst i; cbn in Hi; flia Hi | ].
+  destruct m; [ easy | clear Hm1 ].
+  rewrite f_mul_0_l, f_add_0_l.
+  destruct i; [ easy | ].
+  remember (S (S i)) as si.
+  cbn - [ "/" "mod" ]; subst si.
 ...
 
 Theorem step_1 {F : field} : ∀ s n,
