@@ -880,12 +880,11 @@ destruct m. {
   rewrite Nat.mul_comm, <- Hm in H1.
   rewrite Nat.add_sub in H1.
   rewrite <- H1; clear H1.
-  clear Hs.
   destruct i; [ destruct m; cbn in Hm; flia Hm | ].
   replace (S i) with (m * (n + 2) - 1) by flia Hm.
   destruct m; [ flia Hm | ].
   rewrite Nat_sub_succ_1.
-  clear i Hm.
+  clear i Hm Hs.
   replace (S m) with (m + 1) by flia.
 (**)
   destruct n. {
