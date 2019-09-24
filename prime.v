@@ -830,6 +830,12 @@ destruct m. {
   unfold f_sub.
   rewrite f_opp_add_distr, f_add_assoc.
   do 2 rewrite fold_f_sub.
+  replace (ls (ls_of_pol (pol_pow n)) 0) with f_zero. 2: {
+    destruct n; [ flia Hn | ].
+    destruct n; [ flia Hn | easy ].
+  }
+  rewrite f_mul_0_l; unfold f_sub at 2.
+  rewrite f_opp_0, f_add_0_r.
 ...
 intros * Hs i.
 unfold ".*".
