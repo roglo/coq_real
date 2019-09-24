@@ -872,17 +872,15 @@ destruct m. {
   destruct Hm as (m, Hm).
   assert (H : i + 1 = m * (n + 2)) by flia Hm.
   clear Hm; rename H into Hm.
-  revert i m Hm.
-  induction n; intros. {
+  replace (S (S n)) with (n + 2) in Hs |-* by flia.
+  destruct n. {
     cbn in Hm.
     destruct i; [ flia Hm | ].
     unfold ".*", "*"%LS.
     cbn - [ log_prod ls_of_pol pol_pow ].
     rewrite log_prod_succ.
     rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r.
-    rewrite Nat_sub_succ_1.
-    rewrite log_prod_succ.
-    rewrite Nat_sub_succ_diag_l.
+    rewrite Nat_sub_succ_1, log_prod_succ, Nat_sub_succ_diag_l.
     rewrite log_prod_pol_pow; [ | flia | flia ].
     rewrite f_add_0_r.
     cbn - [ "/" "mod" ].
@@ -895,6 +893,40 @@ destruct m. {
     rewrite (Hs m).
     f_equal; flia Hm.
   }
+  replace (S n + 2) with (n + 3) in Hs, Hm |-* by flia.
+  destruct n. {
+    cbn in Hm.
+    destruct i; [ flia Hm | ].
+    unfold ".*", "*"%LS.
+    cbn - [ log_prod ls_of_pol pol_pow ].
+    rewrite log_prod_succ.
+    rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r.
+    rewrite Nat_sub_succ_1, log_prod_succ, Nat_sub_succ_diag_l.
+    replace (S (S i)) with (i + 1 * 2) by flia.
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.add_sub.
+    replace (ls (ls_of_pol (pol_pow 3)) 0) with f_zero by easy.
+    replace (ls (ls_of_pol (pol_pow 3)) 1) with f_zero by easy.
+    do 2 rewrite f_mul_0_l; rewrite f_add_0_l.
+    replace (match _ with 0 | _ => f_zero end) with f_zero. 2: {
+      now destruct (i mod 2).
+    }
+    rewrite f_add_0_l.
+    destruct i; [ flia Hm | ].
+    rewrite log_prod_succ.
+    rewrite log_prod_pol_pow; [ | flia | flia ].
+    rewrite f_add_0_r.
+    replace (S (S i) - i) with 2 by flia.
+    replace (S (S (S i))) with (m * 3) by flia Hm.
+    rewrite Nat.mod_mul; [ | easy ].
+    rewrite Nat.div_mul; [ | easy ].
+    replace (ls (ls_of_pol (pol_pow 3)) 2) with f_one by easy.
+    rewrite f_mul_1_l.
+    rewrite (Hs (m - 1)).
+    f_equal; flia Hm.
+  }
+  replace (S n + 3) with (n + 4) in Hs, Hm |-* by flia.
 ...
   cbn - [ series_but_mul_of log_prod ls_of_pol ].
   rewrite log_prod_succ.
