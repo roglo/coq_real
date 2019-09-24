@@ -218,7 +218,10 @@ Theorem f_sub_diag {F : field} : ∀ x, (x - x = f_zero)%F.
 Proof. apply f_add_opp_diag_r. Qed.
 
 Theorem f_sub_0_l {F : field} : ∀ x, (f_zero - x = -x)%F.
-Proof. intros; unfold f_sub. apply f_add_0_l. Qed.
+Proof. intros; unfold f_sub; apply f_add_0_l. Qed.
+
+Theorem f_sub_0_r {F : field} : ∀ x, (x - f_zero = x)%F.
+Proof. intros; unfold f_sub; rewrite f_opp_0; apply f_add_0_r. Qed.
 
 Theorem f_add_sub {F : field} : ∀ x y, (x + y - y)%F = x.
 Proof.
@@ -885,17 +888,45 @@ destruct m. {
     unfold f_sub.
     rewrite f_opp_add_distr, f_add_assoc.
     do 2 rewrite fold_f_sub.
+...
     destruct n; [ flia Hn | ].
     destruct n; [ flia Hn | ].
+    unfold ls_of_pol at 1.
+    cbn - [ "/" ls_of_pol ].
     destruct n. {
-      rewrite (Hs m1).
-      replace (2 * S m1 - 1) with (S i) by flia Hm1.
-      unfold ls_of_pol at 1.
       cbn - [ "/" ls_of_pol ].
-      rewrite f_mul_1_l, f_sub_diag, f_sub_0_l.
+      rewrite f_mul_1_l, (Hs m1).
+      replace (2 * S m1 - 1) with (S i) by flia Hm1.
+      rewrite f_sub_diag, f_sub_0_l.
       rewrite <- f_opp_involutive; f_equal; rewrite f_opp_0.
       apply log_prod_pol_2_l; flia.
     }
+    cbn - [ "/" ls_of_pol ].
+    rewrite f_mul_0_l, f_sub_0_r.
+    destruct i; intros. {
+      rewrite Nat.mod_small in Hm; [ easy | flia ].
+    }
+    rewrite log_prod_succ.
+    replace (S (S i) - i) with 2 by flia.
+    replace (S (S (S i))) with (i + 1 * 3) by flia.
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.add_sub.
+    remember (i mod 3) as m2 eqn:Hm2; symmetry in Hm2.
+    destruct m2. {
+...
+Theorem log_prod_pol_ge_2 {F : field} : ∀ s k i n,
+  (∀ i, ls s i = ls s (k * S i - 1))
+  → 2 < k
+  → i < n
+  → log_prod (ls (ls_of_pol (pol_pow k))) (ls s) n i = ls s n.
+Proof.
+intros * Hs Hk Hin.
+revert n Hin.
+induction i; intros; cbn.
+rewrite (Hs n).
+...
+rewrite glop; [ | flia | flia ].
 ...
 intros * Hs i.
 unfold ".*".
