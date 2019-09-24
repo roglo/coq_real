@@ -888,9 +888,9 @@ destruct m. {
     unfold f_sub.
     rewrite f_opp_add_distr, f_add_assoc.
     do 2 rewrite fold_f_sub.
-...
     destruct n; [ flia Hn | ].
     destruct n; [ flia Hn | ].
+    clear Hn.
     unfold ls_of_pol at 1.
     cbn - [ "/" ls_of_pol ].
     destruct n. {
@@ -903,6 +903,10 @@ destruct m. {
     }
     cbn - [ "/" ls_of_pol ].
     rewrite f_mul_0_l, f_sub_0_r.
+    assert (H : 3 ≤ S (S (S n))) by flia.
+    remember (S (S (S n))) as n'.
+    clear n Heqn'; rename n' into n.
+...
     destruct i; intros. {
       rewrite Nat.mod_small in Hm; [ easy | flia ].
     }
