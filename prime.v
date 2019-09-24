@@ -746,6 +746,26 @@ rewrite f_add_0_l.
 apply IHi; flia Hin.
 Qed.
 
+Theorem log_prod_pol_2_l {F : field} : ∀ s n i,
+  i < n
+  → log_prod (ls (ls_of_pol (pol_pow 2))) (ls s) n i = f_zero.
+Proof.
+intros * Hin.
+revert n Hin.
+induction i; intros; [ easy | ].
+rewrite log_prod_succ.
+remember (S n mod S (n - i)) as m eqn:Hm; symmetry in Hm.
+rewrite IHi; [ | flia Hin ].
+rewrite f_add_0_r.
+destruct m; [ | easy ].
+cbn - [ "/" "mod" ].
+replace (n - i) with (S (S (n - i - 2))) by flia Hin.
+replace (match _ with 0 | _ => f_zero end) with f_zero. 2: {
+  now destruct (n - i - 2).
+}
+apply f_mul_0_l.
+Qed.
+
 Theorem ls_mul_pol_1_l {F : field} : ∀ s,
   (pol_pow 1 .* s = s)%LS.
 Proof.
@@ -874,9 +894,8 @@ destruct m. {
       cbn - [ "/" ls_of_pol ].
       rewrite f_mul_1_l, f_sub_diag, f_sub_0_l.
       rewrite <- f_opp_involutive; f_equal; rewrite f_opp_0.
-...
-  ============================
-  log_prod (ls (ls_of_pol (pol_pow 2))) (ls s) (S i) i = f_zero
+      apply log_prod_pol_2_l; flia.
+    }
 ...
 intros * Hs i.
 unfold ".*".
