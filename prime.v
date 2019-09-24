@@ -873,6 +873,14 @@ destruct m. {
   assert (H : i + 1 = m * (n + 2)) by flia Hm.
   clear Hm; rename H into Hm.
   replace (S (S n)) with (n + 2) in Hs |-* by flia.
+  specialize (Hs (m - 1)) as H1.
+  replace (S (m - 1)) with m in H1. 2: {
+    destruct m; [ flia Hm | flia ].
+  }
+  rewrite Nat.mul_comm, <- Hm in H1.
+  rewrite Nat.add_sub in H1.
+  rewrite <- H1; clear H1.
+  clear Hs.
   destruct n. {
     cbn in Hm.
     destruct i; [ flia Hm | ].
@@ -887,13 +895,9 @@ destruct m. {
     rewrite f_mul_0_l, f_add_0_l, f_mul_1_l.
     replace (S (S i)) with (m * 2) by flia Hm.
     rewrite Nat.div_mul; [ | easy ].
-    rewrite Nat.mod_mul; [ | easy ].
-    destruct m; [ flia Hm | ].
-    rewrite Nat_sub_succ_1.
-    rewrite (Hs m).
-    f_equal; flia Hm.
+    now rewrite Nat.mod_mul.
   }
-  replace (S n + 2) with (n + 3) in Hs, Hm |-* by flia.
+  replace (S n + 2) with (n + 3) in Hm |-* by flia.
   destruct n. {
     cbn in Hm.
     destruct i; [ flia Hm | ].
@@ -922,11 +926,9 @@ destruct m. {
     rewrite Nat.mod_mul; [ | easy ].
     rewrite Nat.div_mul; [ | easy ].
     replace (ls (ls_of_pol (pol_pow 3)) 2) with f_one by easy.
-    rewrite f_mul_1_l.
-    rewrite (Hs (m - 1)).
-    f_equal; flia Hm.
+    now rewrite f_mul_1_l.
   }
-  replace (S n + 3) with (n + 4) in Hs, Hm |-* by flia.
+  replace (S n + 3) with (n + 4) in Hm |-* by flia.
 ...
   cbn - [ series_but_mul_of log_prod ls_of_pol ].
   rewrite log_prod_succ.
