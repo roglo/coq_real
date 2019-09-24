@@ -888,37 +888,6 @@ destruct m. {
   clear i Hm.
   replace (S m) with (m + 1) by flia.
 (**)
-  revert m.
-  induction n; intros. {
-    unfold ".*", "*"%LS.
-    cbn - [ log_prod ls_of_pol pol_pow ].
-    rewrite log_prod_succ.
-    rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r.
-    replace ((m + 1) * 2 - 1) with (S (2 * m)) by flia.
-    rewrite log_prod_succ, Nat_sub_succ_diag_l.
-    rewrite log_prod_pol_pow; [ | flia | flia ].
-    rewrite f_add_0_r.
-    cbn - [ "/" "mod" "+" "*" ].
-    rewrite f_mul_0_l, f_add_0_l, f_mul_1_l.
-    replace (S (S (2 * m))) with ((m + 1) * 2) by flia.
-    rewrite Nat.mod_mul; [ | easy ].
-    rewrite Nat.div_mul; [ | easy ].
-    now rewrite Nat.add_sub.
-  }
-  replace (S n + 2) with (n + 3) by flia.
-  unfold ".*", "*"%LS.
-  cbn - [ log_prod ls_of_pol pol_pow ].
-  rewrite log_prod_succ, Nat.sub_diag.
-  rewrite Nat.mod_1_r, Nat.div_1_r.
-  rewrite Nat_sub_succ_1.
-  replace (ls (ls_of_pol _) 0) with f_zero by now rewrite Nat.add_comm.
-  rewrite f_mul_0_l, f_add_0_l.
-  replace ((m + 1) * (n + 3) - 1) with (S ((m + 1) * n + 3 * m + 1)) by flia.
-  rewrite log_prod_succ.
-  rewrite Nat_sub_succ_diag_l.
-  replace (ls (ls_of_pol _) 1) with f_zero by now rewrite Nat.add_comm.
-  rewrite f_mul_0_l.
-...
   destruct n. {
     unfold ".*", "*"%LS.
     cbn - [ log_prod ls_of_pol pol_pow ].
