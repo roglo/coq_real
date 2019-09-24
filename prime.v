@@ -862,6 +862,39 @@ destruct m. {
     now rewrite f_mul_1_l, f_add_opp_diag_r, f_add_opp_diag_r.
   }
   apply Nat.nlt_ge in Hn.
+  enough (H : ls (pol_pow n .* s) i = ls s i). {
+    rewrite H; apply f_sub_diag.
+  }
+(**)
+  destruct n; [ flia Hn | ].
+  destruct n; [ flia Hn | clear Hn ].
+  apply Nat.mod_divides in Hm; [ | easy ].
+  destruct Hm as (m, Hm).
+  assert (H : i + 1 = m * (n + 2)) by flia Hm.
+  clear Hm; rename H into Hm.
+  revert i m Hm.
+  induction n; intros. {
+    cbn in Hm.
+    destruct i; [ flia Hm | ].
+    unfold ".*", "*"%LS.
+    cbn - [ log_prod ls_of_pol pol_pow ].
+    rewrite log_prod_succ.
+    rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r.
+    rewrite Nat_sub_succ_1.
+    rewrite log_prod_succ.
+    rewrite Nat_sub_succ_diag_l.
+    rewrite log_prod_pol_pow; [ | flia | flia ].
+    rewrite f_add_0_r.
+    cbn - [ "/" "mod" ].
+    rewrite f_mul_0_l, f_add_0_l, f_mul_1_l.
+    replace (S (S i)) with (m * 2) by flia Hm.
+    rewrite Nat.div_mul; [ | easy ].
+    rewrite Nat.mod_mul; [ | easy ].
+    destruct m; [ flia Hm | ].
+    rewrite Nat_sub_succ_1.
+    rewrite (Hs m).
+    f_equal; flia Hm.
+  }
 ...
   cbn - [ series_but_mul_of log_prod ls_of_pol ].
   rewrite log_prod_succ.
