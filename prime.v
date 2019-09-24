@@ -862,6 +862,7 @@ destruct m. {
     now rewrite f_mul_1_l, f_add_opp_diag_r, f_add_opp_diag_r.
   }
   apply Nat.nlt_ge in Hn.
+...
   cbn - [ series_but_mul_of log_prod ls_of_pol ].
   rewrite log_prod_succ.
   rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
