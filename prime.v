@@ -915,21 +915,30 @@ destruct m. {
     assert (Hn : 3 ≤ S (S (S n))) by flia.
     remember (S (S (S n))) as n'.
     clear n Heqn'; rename n' into n.
+(*
+  ============================
+  (ls s (S i) - log_prod (ls (ls_of_pol (pol_pow n))) (ls s) (S i) i)%F = f_zero
+*)
+clear - Hs Hm Hn.
     destruct i; intros. {
       rewrite Nat.mod_small in Hm; [ easy | flia Hn ].
     }
+clear Hm.
+...
+(*
+  ============================
+  (ls s (S (S i)) - log_prod (ls (ls_of_pol (pol_pow n))) (ls s) (S (S i)) (S i))%F = f_zero
+*)
     rewrite log_prod_succ.
     replace (S (S i) - i) with 2 by flia.
     replace (S (S (S i))) with (i + 1 * 3) by flia.
     rewrite Nat.mod_add; [ | easy ].
     rewrite Nat.div_add; [ | easy ].
     rewrite Nat.add_sub.
-    replace (S (S (S i))) with (i + 3) in Hm by flia.
     remember (i mod 3) as m2 eqn:Hm2; symmetry in Hm2.
     destruct m2. {
       apply Nat.mod_divides in Hm2; [ | easy ].
       destruct Hm2 as (m2, Hm2).
-      move m2 before m1; move Hm2 before Hm1.
       rewrite Hm2, Nat.mul_comm, Nat.div_mul; [ | easy ].
       rewrite Nat.mul_comm, <- Hm2.
       destruct (Nat.eq_dec n 3) as [Hn3| Hn3]. {
@@ -944,6 +953,13 @@ destruct m. {
         rewrite <- f_opp_involutive; f_equal; rewrite f_opp_0.
         apply log_prod_pol_pow; flia.
       }
+destruct (Nat.eq_dec n 4) as [Hn4| Hn4]. {
+subst n; clear Hn Hn3.
+replace (ls (ls_of_pol _) _) with f_zero by easy.
+rewrite f_mul_0_l, f_add_0_l.
+...
+  ============================
+  (ls s (S (S i)) - log_prod (ls (ls_of_pol (pol_pow 4))) (ls s) (S (S i)) i)%F = f_zero
 ...
 intros * Hs i.
 unfold ".*".
