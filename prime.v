@@ -915,6 +915,46 @@ destruct m. {
     rewrite Nat.mod_add; [ | easy ].
     rewrite Nat.div_add; [ | easy ].
     rewrite Nat.add_sub.
+    replace (S (S (S i))) with (i + 3) in Hm by flia.
+    remember (i mod 3) as m2 eqn:Hm2; symmetry in Hm2.
+    destruct m2. {
+      apply Nat.mod_divides in Hm2; [ | easy ].
+      destruct Hm2 as (m2, Hm2).
+      rewrite Hm2, Nat.mul_comm, Nat.div_mul; [ | easy ].
+      rewrite Nat.mul_comm, <- Hm2.
+      destruct (Nat.eq_dec n 3) as [Hn3| Hn3]. {
+        subst n.
+        replace (ls (ls_of_pol (pol_pow 3)) 2) with f_one by easy.
+        rewrite f_mul_1_l.
+        unfold f_sub; rewrite f_opp_add_distr, f_add_assoc.
+        do 2 rewrite fold_f_sub.
+        rewrite (Hs m2).
+        replace (3 * S m2 - 1) with (S (S i)) by flia Hm2.
+        rewrite f_sub_diag, f_sub_0_l.
+        rewrite <- f_opp_involutive; f_equal; rewrite f_opp_0.
+...
+(* à généraliser avec log_prod_pol_2_l *)
+Theorem log_prod_pol_3_l {F : field} : ∀ s n i,
+  i + 1 < n
+  → log_prod (ls (ls_of_pol (pol_pow 3))) (ls s) n i = f_zero.
+Proof.
+intros * Hin.
+revert n Hin.
+induction i; intros; [ easy | ].
+rewrite log_prod_succ.
+remember (S n mod S (n - i)) as m eqn:Hm; symmetry in Hm.
+rewrite IHi; [ | flia Hin ].
+rewrite f_add_0_r.
+destruct m; [ | easy ].
+cbn - [ "/" "mod" ].
+replace (n - i) with (S (S (S (n - i - 3)))) by flia Hin.
+replace (match _ with 0 | _ => f_zero end) with f_zero. 2: {
+  now destruct (n - i - 3).
+}
+apply f_mul_0_l.
+Qed.
+...
+        apply log_prod_pol_3_l; flia.
 ...
 intros * Hs i.
 unfold ".*".
