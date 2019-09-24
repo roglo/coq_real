@@ -881,9 +881,12 @@ destruct m. {
   rewrite Nat.add_sub in H1.
   rewrite <- H1; clear H1.
   clear Hs.
+  destruct i; [ destruct m; cbn in Hm; flia Hm | ].
+  replace (S i) with (m * (n + 2) - 1) by flia Hm.
+  destruct m; [ flia Hm | ].
+  rewrite Nat_sub_succ_1.
+  clear i Hm.
   destruct n. {
-    cbn in Hm.
-    destruct i; [ flia Hm | ].
     unfold ".*", "*"%LS.
     cbn - [ log_prod ls_of_pol pol_pow ].
     rewrite log_prod_succ.
@@ -893,42 +896,36 @@ destruct m. {
     rewrite f_add_0_r.
     cbn - [ "/" "mod" ].
     rewrite f_mul_0_l, f_add_0_l, f_mul_1_l.
-    replace (S (S i)) with (m * 2) by flia Hm.
+    replace (S (S (m * 2))) with ((m + 1) * 2) by flia.
+    rewrite Nat.mod_mul; [ | easy ].
     rewrite Nat.div_mul; [ | easy ].
-    now rewrite Nat.mod_mul.
+    now rewrite Nat.add_sub.
   }
-  replace (S n + 2) with (n + 3) in Hm |-* by flia.
   destruct n. {
-    cbn in Hm.
-    destruct i; [ flia Hm | ].
     unfold ".*", "*"%LS.
     cbn - [ log_prod ls_of_pol pol_pow ].
     rewrite log_prod_succ.
     rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r.
     rewrite Nat_sub_succ_1, log_prod_succ, Nat_sub_succ_diag_l.
-    replace (S (S i)) with (i + 1 * 2) by flia.
-    rewrite Nat.mod_add; [ | easy ].
-    rewrite Nat.div_add; [ | easy ].
-    rewrite Nat.add_sub.
     replace (ls (ls_of_pol (pol_pow 3)) 0) with f_zero by easy.
     replace (ls (ls_of_pol (pol_pow 3)) 1) with f_zero by easy.
     do 2 rewrite f_mul_0_l; rewrite f_add_0_l.
     replace (match _ with 0 | _ => f_zero end) with f_zero. 2: {
-      now destruct (i mod 2).
+      now destruct (S (S (S (m * 3))) mod 2).
     }
     rewrite f_add_0_l.
-    destruct i; [ flia Hm | ].
     rewrite log_prod_succ.
     rewrite log_prod_pol_pow; [ | flia | flia ].
     rewrite f_add_0_r.
-    replace (S (S i) - i) with 2 by flia.
-    replace (S (S (S i))) with (m * 3) by flia Hm.
+    replace (S (S (S (m * 3)) - m * 3)) with 3 by flia.
+    replace (S (S (S (m * 3)))) with ((m + 1) * 3) by flia.
     rewrite Nat.mod_mul; [ | easy ].
     rewrite Nat.div_mul; [ | easy ].
+    rewrite Nat.add_sub.
+    replace (S (S (m * 3)) - m * 3) with 2 by flia.
     replace (ls (ls_of_pol (pol_pow 3)) 2) with f_one by easy.
     now rewrite f_mul_1_l.
   }
-  replace (S n + 3) with (n + 4) in Hm |-* by flia.
 ...
   cbn - [ series_but_mul_of log_prod ls_of_pol ].
   rewrite log_prod_succ.
@@ -940,110 +937,6 @@ destruct m. {
     destruct n; [ flia Hn | ].
     destruct n; [ flia Hn | easy ].
   }
-  rewrite f_mul_0_l; unfold f_sub at 2.
-  rewrite f_opp_0, f_add_0_r.
-  destruct i. {
-    apply Nat.mod_divides in Hm; [ | flia Hn ].
-    destruct Hm as (m, Hm).
-    destruct m; [ flia Hm | ].
-    destruct n; [ flia Hn | ].
-    destruct n; [ flia Hn | ].
-    cbn in Hm; flia Hm.
-  }
-  rewrite log_prod_succ.
-  rewrite Nat_sub_succ_diag_l.
-  replace (S (S i)) with (i + 1 * 2) by flia.
-  rewrite Nat.mod_add; [ | easy ].
-  rewrite Nat.div_add; [ | easy ].
-  rewrite Nat.add_sub.
-  remember (i mod 2) as m1 eqn:Hm1; symmetry in Hm1.
-  destruct m1. {
-    apply Nat.mod_divides in Hm1; [ | easy ].
-    destruct Hm1 as (m1, Hm1).
-    rewrite Hm1, Nat.mul_comm, Nat.div_mul; [ | easy ].
-    rewrite Nat.mul_comm, <- Hm1.
-    unfold f_sub.
-    rewrite f_opp_add_distr, f_add_assoc.
-    do 2 rewrite fold_f_sub.
-    destruct n; [ flia Hn | ].
-    destruct n; [ flia Hn | ].
-    clear Hn.
-    unfold ls_of_pol at 1.
-    cbn - [ "/" ls_of_pol ].
-    destruct n. {
-      cbn - [ "/" ls_of_pol ].
-      rewrite f_mul_1_l, (Hs m1).
-      replace (2 * S m1 - 1) with (S i) by flia Hm1.
-      rewrite f_sub_diag, f_sub_0_l.
-      rewrite <- f_opp_involutive; f_equal; rewrite f_opp_0.
-      apply log_prod_pol_pow; flia.
-    }
-    cbn - [ "/" ls_of_pol ].
-    rewrite f_mul_0_l, f_sub_0_r.
-    assert (Hn : 3 ≤ S (S (S n))) by flia.
-    remember (S (S (S n))) as n'.
-    clear n Heqn'; rename n' into n.
-(*
-  ============================
-  (ls s (S i) - log_prod (ls (ls_of_pol (pol_pow n))) (ls s) (S i) i)%F = f_zero
-*)
-clear - Hs Hm Hn.
-    destruct i; intros. {
-      rewrite Nat.mod_small in Hm; [ easy | flia Hn ].
-    }
-(*
-clear Hm.
-*)
-(*
-  ============================
-  (ls s (S (S i)) - log_prod (ls (ls_of_pol (pol_pow n))) (ls s) (S (S i)) (S i))%F = f_zero
-*)
-    rewrite log_prod_succ.
-    replace (S (S i) - i) with 2 by flia.
-    replace (S (S (S i))) with (i + 1 * 3) by flia.
-    rewrite Nat.mod_add; [ | easy ].
-    rewrite Nat.div_add; [ | easy ].
-    rewrite Nat.add_sub.
-    remember (i mod 3) as m2 eqn:Hm2; symmetry in Hm2.
-    destruct m2. {
-      apply Nat.mod_divides in Hm2; [ | easy ].
-      destruct Hm2 as (m2, Hm2).
-      rewrite Hm2, Nat.mul_comm, Nat.div_mul; [ | easy ].
-      rewrite Nat.mul_comm, <- Hm2.
-      destruct (Nat.eq_dec n 3) as [Hn3| Hn3]. {
-        subst n; clear Hn.
-        replace (ls (ls_of_pol (pol_pow 3)) 2) with f_one by easy.
-        rewrite f_mul_1_l.
-        unfold f_sub; rewrite f_opp_add_distr, f_add_assoc.
-        do 2 rewrite fold_f_sub.
-        rewrite (Hs m2).
-        replace (3 * S m2 - 1) with (S (S i)) by flia Hm2.
-        rewrite f_sub_diag, f_sub_0_l.
-        rewrite <- f_opp_involutive; f_equal; rewrite f_opp_0.
-        apply log_prod_pol_pow; flia.
-      }
-destruct (Nat.eq_dec n 4) as [Hn4| Hn4]. {
-subst n; clear Hn Hn3.
-replace (ls (ls_of_pol _) _) with f_zero by easy.
-rewrite f_mul_0_l, f_add_0_l.
-rewrite Hm2 in Hm; ring_simplify in Hm.
-apply Nat.mod_divides in Hm; [ | easy ].
-destruct Hm as (m, Hm).
-...
-destruct m2; [ now subst i | ].
-destruct m2; [ now subst i | ].
-destruct m2; [ now subst i | ].
-subst i; cbn - [ "mod" ] in Hm.
-destruct m2; [ cbn in Hm | ].
-cbn.
-rewrite (Hs 2); cbn.
-...
-cbn - [ "mod" ] in Hm.
-destruct m2.
-now cbn in Hm.
-...
-  ============================
-  (ls s (S (S i)) - log_prod (ls (ls_of_pol (pol_pow 4))) (ls s) (S (S i)) i)%F = f_zero
 ...
 intros * Hs i.
 unfold ".*".
