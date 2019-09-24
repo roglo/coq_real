@@ -836,6 +836,39 @@ destruct m. {
   }
   rewrite f_mul_0_l; unfold f_sub at 2.
   rewrite f_opp_0, f_add_0_r.
+  destruct i. {
+    apply Nat.mod_divides in Hm; [ | flia Hn ].
+    destruct Hm as (m, Hm).
+    destruct m; [ flia Hm | ].
+    destruct n; [ flia Hn | ].
+    destruct n; [ flia Hn | ].
+    cbn in Hm; flia Hm.
+  }
+  rewrite log_prod_succ.
+  rewrite Nat_sub_succ_diag_l.
+  replace (S (S i)) with (i + 1 * 2) by flia.
+  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.div_add; [ | easy ].
+  rewrite Nat.add_sub.
+  remember (i mod 2) as m1 eqn:Hm1; symmetry in Hm1.
+  destruct m1. {
+    cbn - [ "/" ].
+    destruct n; [ flia Hn | ].
+    destruct n; [ flia Hn | ].
+    cbn - [ "/" ].
+    destruct n. {
+      cbn - [ "/" ].
+      rewrite f_mul_1_l.
+      apply Nat.mod_divides in Hm1; [ | easy ].
+      destruct Hm1 as (m1, Hm1).
+      rewrite Hm1, Nat.mul_comm, Nat.div_mul; [ | easy ].
+      rewrite Nat.mul_comm, <- Hm1.
+      rewrite (Hs m1).
+      replace (2 * S m1 - 1) with (S i) by flia Hm1.
+      unfold f_sub.
+      rewrite f_opp_add_distr, f_add_assoc.
+      rewrite f_add_opp_diag_r, f_add_0_l.
+      rewrite <- f_opp_involutive; f_equal; rewrite f_opp_0.
 ...
 intros * Hs i.
 unfold ".*".
