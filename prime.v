@@ -923,8 +923,9 @@ clear - Hs Hm Hn.
     destruct i; intros. {
       rewrite Nat.mod_small in Hm; [ easy | flia Hn ].
     }
+(*
 clear Hm.
-...
+*)
 (*
   ============================
   (ls s (S (S i)) - log_prod (ls (ls_of_pol (pol_pow n))) (ls s) (S (S i)) (S i))%F = f_zero
@@ -957,6 +958,21 @@ destruct (Nat.eq_dec n 4) as [Hn4| Hn4]. {
 subst n; clear Hn Hn3.
 replace (ls (ls_of_pol _) _) with f_zero by easy.
 rewrite f_mul_0_l, f_add_0_l.
+rewrite Hm2 in Hm; ring_simplify in Hm.
+apply Nat.mod_divides in Hm; [ | easy ].
+destruct Hm as (m, Hm).
+...
+destruct m2; [ now subst i | ].
+destruct m2; [ now subst i | ].
+destruct m2; [ now subst i | ].
+subst i; cbn - [ "mod" ] in Hm.
+destruct m2; [ cbn in Hm | ].
+cbn.
+rewrite (Hs 2); cbn.
+...
+cbn - [ "mod" ] in Hm.
+destruct m2.
+now cbn in Hm.
 ...
   ============================
   (ls s (S (S i)) - log_prod (ls (ls_of_pol (pol_pow 4))) (ls s) (S (S i)) i)%F = f_zero
