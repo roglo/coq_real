@@ -903,12 +903,11 @@ destruct m. {
     }
     cbn - [ "/" ls_of_pol ].
     rewrite f_mul_0_l, f_sub_0_r.
-    assert (H : 3 ≤ S (S (S n))) by flia.
+    assert (Hn : 3 ≤ S (S (S n))) by flia.
     remember (S (S (S n))) as n'.
     clear n Heqn'; rename n' into n.
-...
     destruct i; intros. {
-      rewrite Nat.mod_small in Hm; [ easy | flia ].
+      rewrite Nat.mod_small in Hm; [ easy | flia Hn ].
     }
     rewrite log_prod_succ.
     replace (S (S i) - i) with 2 by flia.
@@ -916,21 +915,6 @@ destruct m. {
     rewrite Nat.mod_add; [ | easy ].
     rewrite Nat.div_add; [ | easy ].
     rewrite Nat.add_sub.
-    remember (i mod 3) as m2 eqn:Hm2; symmetry in Hm2.
-    destruct m2. {
-...
-Theorem log_prod_pol_ge_2 {F : field} : ∀ s k i n,
-  (∀ i, ls s i = ls s (k * S i - 1))
-  → 2 < k
-  → i < n
-  → log_prod (ls (ls_of_pol (pol_pow k))) (ls s) n i = ls s n.
-Proof.
-intros * Hs Hk Hin.
-revert n Hin.
-induction i; intros; cbn.
-rewrite (Hs n).
-...
-rewrite glop; [ | flia | flia ].
 ...
 intros * Hs i.
 unfold ".*".
