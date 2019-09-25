@@ -896,6 +896,21 @@ destruct m. {
   clear i Hm Hs.
   replace (S m) with (m + 1) by flia.
 (**)
+remember (n + 1) as a.
+replace (n + 2) with (a + 1) by flia Heqa.
+clear n Heqa.
+rename a into n; rename m into i.
+...
+destruct n. {
+  cbn - [ ls_of_pol ].
+  rewrite Nat.mul_1_r, Nat.add_sub, Nat.sub_diag.
+  cbn - [ "/" ls_of_pol ].
+  replace (ls (ls_of_pol _) 0) with f_one by easy.
+  rewrite f_mul_1_l, Nat.div_1_r, Nat_sub_succ_1.
+  rewrite <- f_add_0_r; f_equal.
+  apply log_prod_pol_pow; flia.
+}
+...
 unfold ".*", "*"%LS.
 cbn - [ log_prod ls_of_pol ].
 rewrite log_prod_succ, Nat.sub_diag.
