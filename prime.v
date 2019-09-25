@@ -941,6 +941,13 @@ induction n; intros. {
       now destruct ((S k * (i + 1)) mod 4).
     }
     rewrite f_add_0_l.
+    rewrite Heqx at 2.
+    replace (S (S k) * i + S k + 3 * i) with (S (S (S k) * i + k + 3 * i))
+      by flia.
+    rewrite log_prod_succ.
+    replace (S (S (S x)) - (S (S k) * i + k + 3 * i)) with 4 by flia Heqx.
+    replace (S k + 4) with (k + 5) by flia.
+    unfold log_prod_term.
 ...
 
 Theorem step_1 {F : field} : ∀ s n,
