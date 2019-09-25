@@ -859,6 +859,8 @@ destruct k; [ flia Hk | ].
 clear Hk.
 revert i k.
 induction n; intros. {
+  rewrite Nat.add_0_l.
+...
   unfold ".*", "*"%LS.
   cbn - [ log_prod ls_of_pol pol_pow ].
   rewrite log_prod_succ.
