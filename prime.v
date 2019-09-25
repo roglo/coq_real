@@ -948,6 +948,22 @@ induction n; intros. {
     replace (S (S (S x)) - (S (S k) * i + k + 3 * i)) with 4 by flia Heqx.
     replace (S k + 4) with (k + 5) by flia.
     unfold log_prod_term.
+    ring_simplify in Heqx.
+    replace (S (S (S (S x)))) with (k * (i + 1) + (i + 1) * 5) by flia Heqx.
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.add_assoc, Nat.add_sub.
+    destruct k. {
+      replace (ls (ls_of_pol (pol_pow (0 + 5))) 4) with f_one. 2: {
+        now rewrite Nat.add_comm; cbn.
+      }
+      rewrite f_mul_1_l, Nat.mul_0_l.
+      rewrite Nat.mod_0_l; [ | easy ].
+      rewrite Nat.div_0_l; [ | easy ].
+      do 2 rewrite Nat.add_0_l.
+      rewrite Nat.add_0_r.
+      replace (2 * i + 3 * i) with (5 * i) by flia.
+      ring_simplify in Heqx.
 ...
 
 Theorem step_1 {F : field} : ∀ s n,
