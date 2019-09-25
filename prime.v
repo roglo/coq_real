@@ -962,6 +962,7 @@ induction n; intros. {
       rewrite Nat.div_0_l; [ | easy ].
       do 2 rewrite Nat.add_0_l.
       rewrite Nat.add_0_r.
+      rewrite <- f_add_0_r; f_equal.
       replace (2 * i + 3 * i) with (5 * i) by flia.
       ring_simplify in Heqx.
 ...
