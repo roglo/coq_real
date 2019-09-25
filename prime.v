@@ -888,10 +888,13 @@ destruct m. {
   replace (S m) with (m + 1) by flia.
 (**)
 unfold ".*", "*"%LS.
-cbn - [ log_prod ls_of_pol pol_pow ].
-...
+cbn - [ log_prod ].
+replace (n + 2 - 1) with (n + 1) by flia.
 rewrite log_prod_succ.
 rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r.
+replace (nth 0 _ _) with f_zero by now rewrite Nat.add_comm.
+rewrite f_mul_0_l, f_add_0_l.
+...
 replace ((ls (ls_of_pol (pol_pow (n + 2))) 0)) with f_zero. 2: {
   now rewrite Nat.add_comm.
 }
