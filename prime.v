@@ -849,6 +849,7 @@ rewrite f_opp_add_distr.
 now rewrite f_mul_opp_l.
 Qed.
 
+(*
 Theorem pol_pow_mul {F : field} : ∀ s i n k,
   2 ≤ k
   → ls (pol_pow (n + k) .* s) ((i + 1) * (n + k) - 1) = ls s i.
@@ -968,6 +969,7 @@ induction n; intros. {
       replace (2 * i + 3 * i) with (5 * i) by flia.
       ring_simplify in Heqx.
 ...
+*)
 
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, ls s i = ls s (n * S i - 1))
@@ -1190,7 +1192,6 @@ destruct m. {
     apply log_prod_pol_pow; flia.
   }
   replace (S n + 5) with (n + 6) by flia.
-apply glop.
 ...
 intros * Hs i.
 unfold ".*".
