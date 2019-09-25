@@ -849,6 +849,100 @@ rewrite f_opp_add_distr.
 now rewrite f_mul_opp_l.
 Qed.
 
+Theorem pol_pow_mul {F : field} : ∀ s i n k,
+  2 ≤ k
+  → ls (pol_pow (n + k) .* s) ((i + 1) * (n + k) - 1) = ls s i.
+Proof.
+intros * Hk.
+destruct k; [ flia Hk | ].
+destruct k; [ flia Hk | ].
+clear Hk.
+revert i k.
+induction n; intros. {
+  unfold ".*", "*"%LS.
+  cbn - [ log_prod ls_of_pol pol_pow ].
+  rewrite log_prod_succ.
+  unfold log_prod_term.
+  rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r.
+  replace ((i + 1) * S (S k) - 1) with (S (2 * i + k * (i + 1))) by flia.
+  rewrite Nat_sub_succ_1.
+  rewrite log_prod_succ, Nat_sub_succ_diag_l.
+  unfold log_prod_term.
+  replace (ls (ls_of_pol (pol_pow (S (S k)))) 0) with f_zero by easy.
+  rewrite f_mul_0_l, f_add_0_l.
+  replace (S (S (2 * i + k * (i + 1)))) with (k * (i + 1) + (i + 1) * 2) by flia.
+  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.div_add; [ | easy ].
+  rewrite Nat.add_assoc, Nat.add_sub.
+  remember (k * (i + 1) mod 2) as m eqn:Hm; symmetry in Hm.
+  destruct m. {
+    apply Nat.mod_divides in Hm; [ | easy ].
+    destruct Hm as (m, Hm).
+    rewrite Hm, Nat.mul_comm, Nat.div_mul; [ | easy ].
+    destruct k. {
+      replace (ls (ls_of_pol (pol_pow 2)) 1) with f_one by easy.
+      rewrite f_mul_1_l.
+      cbn in Hm.
+      replace m with 0 by flia Hm.
+      rewrite Nat.mul_0_l, Nat.add_0_l, Nat.add_0_r.
+      rewrite <- f_add_0_r; f_equal.
+      rewrite log_prod_pol_pow; [ easy | flia | flia ].
+    }
+    replace (ls (ls_of_pol (pol_pow (S (S (S k))))) 1) with f_zero by easy.
+    rewrite f_mul_0_l, f_add_0_l.
+    replace (2 * i + m * 2) with (S (k * S i + 3 * i)) by flia Hm.
+    remember (k * S i + 3 * i) as x.
+    rewrite log_prod_succ.
+    replace (S (S x) - x) with 2 by flia.
+    unfold log_prod_term; subst x.
+    replace (S (S (S (k * S i + 3 * i)))) with (k * (i + 1) + (i + 1) * 3)
+      by flia.
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.add_assoc, Nat.add_sub.
+    destruct k. {
+      do 2 rewrite Nat.mul_0_l.
+      do 2 rewrite Nat.add_0_l.
+      rewrite Nat.mod_0_l; [ | easy ].
+      replace (ls (ls_of_pol (pol_pow 3)) 2) with f_one by easy.
+      rewrite f_mul_1_l.
+      rewrite <- f_add_0_r; f_equal.
+      rewrite log_prod_pol_pow; [ easy | flia | flia ].
+    }
+    replace (ls (ls_of_pol (pol_pow (S (S (S (S k)))))) 2) with f_zero
+      by easy.
+    rewrite f_mul_0_l.
+    replace (match _ with 0 | _ => f_zero end) with f_zero. 2: {
+      now destruct ((S k * (i + 1)) mod 3).
+    }
+    rewrite f_add_0_l.
+    replace (S (S (S (S k)))) with (k + 4) by flia.
+    replace (S k * S i + 3 * i) with (S (S k * i + k + 3 * i)) by flia.
+    remember (S k * i + k + 3 * i) as x.
+    rewrite log_prod_succ.
+    replace (S (S (S x)) - x) with 3 by flia.
+    unfold log_prod_term.
+    replace (S (S (S (S x)))) with (k * (i + 1) + (i + 1) * 4) by flia Heqx.
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.add_assoc, Nat.add_sub.
+    destruct k. {
+      cbn - [ ls_of_pol ].
+      replace (ls (ls_of_pol (pol_pow 4)) 3) with f_one by easy.
+      rewrite f_mul_1_l.
+      rewrite <- f_add_0_r; f_equal.
+      rewrite log_prod_pol_pow; [ easy | flia | flia ].
+    }
+    replace (ls (ls_of_pol (pol_pow (S k + 4))) 3) with f_zero. 2: {
+      now rewrite Nat.add_comm; cbn.
+    }
+    rewrite f_mul_0_l.
+    replace (match _ with 0 | _ => f_zero end) with f_zero. 2: {
+      now destruct ((S k * (i + 1)) mod 4).
+    }
+    rewrite f_add_0_l.
+...
+
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, ls s i = ls s (n * S i - 1))
   → (series_but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
@@ -1049,6 +1143,28 @@ destruct m. {
     rewrite Nat.mod_add; [ | easy ].
     rewrite Nat.div_add; [ | easy ].
     rewrite Nat.add_assoc, Nat.add_sub.
+    replace (ls (ls_of_pol (pol_pow 5)) 3) with f_zero by easy.
+    rewrite f_mul_0_l.
+    replace (match _ with 0 | _ => f_zero end) with f_zero. 2: {
+      now destruct (_ mod _).
+    }
+    rewrite f_add_0_l.
+    replace (5 * i + 1) with (S (5 * i)) by flia.
+    rewrite log_prod_succ.
+    rewrite Nat.add_sub_swap; [ | easy ].
+    rewrite Nat.sub_diag, Nat.add_0_l.
+    unfold log_prod_term.
+    replace (S (5 * i + 4)) with ((i + 1) * 5) by flia.
+    rewrite Nat.mod_mul; [ | easy ].
+    rewrite Nat.div_mul; [ | easy ].
+    rewrite Nat.add_sub.
+    replace (ls (ls_of_pol (pol_pow 5)) 4) with f_one by easy.
+    rewrite f_mul_1_l.
+    rewrite <- f_add_0_r; f_equal.
+    apply log_prod_pol_pow; flia.
+  }
+  replace (S n + 5) with (n + 6) by flia.
+apply glop.
 ...
 intros * Hs i.
 unfold ".*".
