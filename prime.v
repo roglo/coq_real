@@ -827,6 +827,14 @@ do 2 rewrite f_add_0_l.
 apply IHi.
 Qed.
 
+Theorem log_prod_term_0 {F : field} : ∀ u v n,
+  log_prod_term u v n 0 = (u 0 * v n)%F.
+Proof.
+intros.
+cbn - [ "/" ].
+now rewrite Nat.div_1_r, Nat_sub_succ_1.
+Qed.
+
 Theorem ls_mul_pol_opp_l {F : field} : ∀ p s,
   (- p .* s = - (p .* s))%LS.
 Proof.
@@ -901,26 +909,24 @@ replace (n + 2) with (a + 1) by flia Heqa.
 clear n Heqa.
 rename a into n; rename m into i.
 unfold ".*".
-Theorem ls_pol_pow_succ {F : field} : ∀ n,
-  (ls_of_pol (pol_pow (S n)) = pol_pow 1 .* ls_of_pol (pol_pow n))%LS.
+Theorem ls_pol_pow_succ {F : field} : ∀ n i,
+  ls (ls_of_pol (pol_pow (S n))) i = nth i (repeat f_zero n ++ [f_one]) f_zero.
 Proof.
-intros * i.
-unfold ".*", "*"%LS.
+intros.
+now cbn; rewrite Nat.sub_0_r.
+Qed.
+...
 cbn - [ ls_of_pol log_prod ].
-Theorem glop {F : field} : ∀ n i k,
-  i + 1 ≤ k
-  → ls (ls_of_pol (pol_pow (S n))) i = log_prod (ls (ls_of_pol (pol_pow 1))) (ls (ls_of_pol (pol_pow n))) i k.
-Proof.
-intros * Hik.
-revert n k Hik.
-induction i; intros. {
-  destruct k; [ cbn in Hik; flia Hik | ].
-  clear Hik.
-  revert n; induction k; intros. {
-    cbn.
-    induction n; [ now cbn; rewrite f_mul_1_l, f_add_0_r | ].
-    destruct n; cbn.
-(* merde, c'est faux *)
+rewrite log_prod_succ.
+rewrite Nat.sub_diag.
+rewrite log_prod_term_0.
+replace (ls (ls_of_pol (pol_pow 1)) 0) with f_one by easy.
+rewrite f_mul_1_l.
+destruct i. {
+  cbn.
+  destruct n; [ now cbn; rewrite f_add_0_r | ].
+  destruct n; cbn.
+
 ...
   destruct n. {
     unfold ".*", "*"%LS.
