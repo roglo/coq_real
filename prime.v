@@ -471,14 +471,16 @@ Definition ζ_but_mul_of {F : field} d :=
        | _ => f_one
        end |}.
 
+Definition log_prod_term {F : field} u v n i :=
+  match S n mod S i with
+  | 0 => (u i * v (S n / S i - 1)%nat)%F
+  | _ => f_zero
+  end.
+
 Fixpoint log_prod {F : field} u v n i :=
   match i with
   | 0 => f_zero
-  | S i' =>
-      (match S n mod S (n - i') with
-       | 0 => u (n - i')%nat * v (S n / S (n - i') - 1)%nat
-       | _ => f_zero
-       end + log_prod u v n i')%F
+  | S i' => (log_prod_term u v n (n - i') + log_prod u v n i')%F
   end.
 
 (* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
@@ -530,10 +532,7 @@ Qed.
 
 Theorem log_prod_succ {F : field} : ∀ u v n i,
   log_prod u v n (S i) =
-    (match S n mod S (n - i) with
-     | 0 => u (n - i)%nat * v (S n / S (n - i) - 1)%nat
-     | S _ => f_zero
-     end + log_prod u v n i)%F.
+    (log_prod_term u v n (n - i) + log_prod u v n i)%F.
 Proof. easy. Qed.
 
 (* c*x^ln(n+1) * Σ (i = 1, ∞) s_(i-1) x^ln(i) =
@@ -564,6 +563,7 @@ induction i; intros; [ easy | ].
 rewrite log_prod_succ.
 cbn - [ Nat.div Nat.modulo ].
 rewrite IHi, f_add_0_r.
+unfold log_prod_term.
 remember (S n mod S (n - i)) as r eqn:Hr; symmetry in Hr.
 destruct r; [ | easy ].
 now rewrite Hu, f_mul_0_l.
@@ -573,7 +573,8 @@ Theorem ls_mul_0_l {F : field} : ∀ s1 s2,
   (∀ n, ls s1 n = f_zero) → ls_eq (ls_mul s1 s2) {| ls _ := f_zero |}.
 Proof.
 intros * Hs1 i.
-cbn - [ Nat.div Nat.modulo ].
+cbn - [ "/" "mod" ].
+unfold log_prod_term.
 rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
 rewrite Nat.mod_1_r.
 rewrite Hs1, f_mul_0_l, f_add_0_l.
@@ -691,6 +692,7 @@ revert n.
 induction i; intros; [ now cbn; rewrite f_add_0_r | ].
 do 3 rewrite log_prod_succ.
 cbn - [ "/" "mod" ls_of_pol ].
+unfold log_prod_term.
 remember (S n mod S (n - i)) as m eqn:Hm; symmetry in Hm.
 destruct m. {
   apply Nat.mod_divides in Hm; [ | easy ].
@@ -713,6 +715,7 @@ Theorem ls_mul_pol_add_distr_r {F : field} : ∀ x y s,
 Proof.
 intros * i.
 cbn - [ "/" "mod" ls_of_pol ].
+unfold log_prod_term.
 rewrite Nat.sub_diag, Nat.div_1_r, Nat.mod_1_r.
 rewrite Nat_sub_succ_1.
 rewrite ls_of_pol_add.
@@ -735,6 +738,7 @@ revert n Hin.
 induction i; intros; [ easy | ].
 rewrite log_prod_succ.
 unfold ls_of_pol at 1.
+unfold log_prod_term.
 remember (S n mod S (n - i)) as m eqn:Hm.
 cbn - [ "/" ls_of_pol ].
 replace (k - 1) with 0 by flia Hk.
@@ -758,6 +762,7 @@ intros * Hk Hin.
 revert n Hin.
 induction i; intros; [ easy | ].
 rewrite log_prod_succ.
+unfold log_prod_term.
 remember (S n mod S (n - i)) as m eqn:Hm; symmetry in Hm.
 rewrite IHi; [ | flia Hin ].
 rewrite f_add_0_r.
@@ -784,6 +789,7 @@ Theorem ls_mul_pol_1_l {F : field} : ∀ s,
 Proof.
 intros * i.
 cbn - [ "/" "mod" ls_of_pol ].
+unfold log_prod_term.
 rewrite Nat.sub_diag, Nat.div_1_r, Nat.mod_1_r, Nat_sub_succ_1.
 unfold ls_of_pol at 1.
 cbn - [ ls_of_pol ].
@@ -811,6 +817,7 @@ Proof.
 intros.
 induction i; [ now cbn; rewrite f_opp_0 | ].
 do 2 rewrite log_prod_succ.
+unfold log_prod_term.
 rewrite ls_of_pol_opp.
 cbn - [ "/" "mod" ls_of_pol ].
 destruct (S n mod S (n - i)) as [Hn| Hn]. {
@@ -825,6 +832,7 @@ Theorem ls_mul_pol_opp_l {F : field} : ∀ p s,
 Proof.
 intros * i.
 cbn - [ "/" "mod" ls_of_pol ].
+unfold log_prod_term.
 rewrite Nat.sub_diag, Nat.mod_1_r.
 rewrite ls_of_pol_opp.
 cbn - [ "/" "mod" ls_of_pol ].
@@ -852,6 +860,7 @@ destruct m. {
   destruct (lt_dec n 2) as [Hn| Hn]. {
     unfold ".*", "*"%LS.
     cbn - [ "/" "mod" ls_of_pol pol_pow ].
+    unfold log_prod_term.
     rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
     unfold ls_of_pol at 1, pol_pow at 1.
     cbn - [ "/" "mod" ls_of_pol pol_pow ].
@@ -888,9 +897,11 @@ destruct m. {
   replace (S m) with (m + 1) by flia.
 (**)
 unfold ".*", "*"%LS.
-cbn - [ log_prod ].
+cbn - [ log_prod ls_of_pol ].
+rewrite log_prod_succ, Nat.sub_diag.
+remember (ls_of_pol (pol_pow (n + 2))) as p eqn:Hp.
+...
 replace (n + 2 - 1) with (n + 1) by flia.
-rewrite log_prod_succ.
 rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r.
 replace (nth 0 _ _) with f_zero by now rewrite Nat.add_comm.
 rewrite f_mul_0_l, f_add_0_l.
