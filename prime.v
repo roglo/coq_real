@@ -953,6 +953,52 @@ destruct m. {
     replace (ls (ls_of_pol (pol_pow 3)) 2) with f_one by easy.
     now rewrite f_mul_1_l.
   }
+  replace (S n + 3) with (n + 4) by flia.
+  destruct n. {
+    unfold ".*", "*"%LS.
+    cbn - [ log_prod ls_of_pol pol_pow ].
+    rewrite log_prod_succ.
+    unfold log_prod_term.
+    rewrite Nat.sub_diag, Nat.mod_1_r, Nat.div_1_r.
+    replace ((i + 1) * 4 - 1) with (S (4 * i + 2)) by flia.
+    rewrite Nat_sub_succ_1, log_prod_succ, Nat_sub_succ_diag_l.
+    unfold log_prod_term.
+    replace (ls (ls_of_pol (pol_pow 4)) 0) with f_zero by easy.
+    replace (ls (ls_of_pol (pol_pow 4)) 1) with f_zero by easy.
+    do 2 rewrite f_mul_0_l; rewrite f_add_0_l.
+    replace (match _ with 0 | _ => f_zero end) with f_zero. 2: {
+      now destruct (S (S (4 * i + 2)) mod 2).
+    }
+    rewrite f_add_0_l.
+    replace (4 * i + 2) with (S (4 * i + 1)) by flia.
+    rewrite log_prod_succ.
+    unfold log_prod_term.
+    remember (4 * i + 1) as x.
+    replace (S (S x) - x) with 2 by flia.
+    replace (S (S (S x))) with (i + 1 + (i + 1) * 3) by flia Heqx.
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.add_assoc, Nat.add_sub.
+    replace (S (S x)) with (4 * i + 3) by flia Heqx.
+    subst x.
+    replace (ls (ls_of_pol (pol_pow 4)) 2) with f_zero by easy.
+    rewrite f_mul_0_l.
+    replace (match _ with 0 | _ => f_zero end) with f_zero. 2: {
+      now destruct ((i + 1) mod 3).
+    }
+    rewrite f_add_0_l.
+...
+    rewrite log_prod_pol_pow; [ | flia | flia ].
+    rewrite f_add_0_r.
+    replace (S (S (S (3 * i)) - 3 * i)) with 3 by flia.
+    replace (S (S (S (3 * i)))) with ((i + 1) * 3) by flia.
+    rewrite Nat.mod_mul; [ | easy ].
+    rewrite Nat.div_mul; [ | easy ].
+    rewrite Nat.add_sub.
+    replace (S (S (3 * i)) - 3 * i) with 2 by flia.
+    replace (ls (ls_of_pol (pol_pow 3)) 2) with f_one by easy.
+    now rewrite f_mul_1_l.
+  }
 ...
   cbn - [ series_but_mul_of log_prod ls_of_pol ].
   rewrite log_prod_succ.
