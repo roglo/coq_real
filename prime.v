@@ -897,6 +897,31 @@ destruct m. {
   }
   replace (ls _ 0) with f_zero by easy.
   rewrite f_mul_0_l, f_add_0_l.
+(**)
+apply Nat.mod_divides in Hm; [ | easy ].
+destruct Hm as (m, Hm).
+rewrite <- Nat.add_1_r in Hm.
+replace (S (S n)) with (n + 2) in Hm by flia.
+revert i m Hm.
+induction n; intros. {
+    destruct i; [ flia Hm | ].
+    rewrite log_prod_succ, Nat_sub_succ_diag_l.
+    unfold log_prod_term.
+    replace (S (S i)) with (m * 2) by flia Hm.
+    rewrite Nat.mod_mul; [ | easy ].
+    rewrite Nat.div_mul; [ | easy ].
+    replace (ls _ 1) with f_one by easy.
+    rewrite f_mul_1_l, <- f_add_0_r; f_equal.
+    apply log_prod_pol_pow; flia.
+  }
+replace ((S n + 2) * m) with ((n + 2) * m + m) in Hm by flia.
+remember ((n + 2) * m) as j eqn:Hj.
+destruct j. {
+  destruct m; [ flia Hm | now rewrite Nat.add_comm in Hj ].
+}
+rewrite <- Nat.add_1_r in Hj.
+specialize (IHn _ _ Hj) as H1.
+...
   destruct n. {
     destruct i. {
       rewrite Nat.mod_1_l in Hm; [ easy | flia ].
@@ -905,6 +930,24 @@ destruct m. {
     unfold log_prod_term.
     rewrite Hm.
     replace (ls _ 1) with f_one by easy.
+    rewrite f_mul_1_l, <- f_add_0_r; f_equal.
+    apply log_prod_pol_pow; flia.
+  }
+  destruct n. {
+    destruct i; [ easy | ].
+    rewrite log_prod_succ, Nat_sub_succ_diag_l.
+    unfold log_prod_term.
+    replace (ls _ 1) with f_zero by easy.
+    rewrite f_mul_0_l.
+    replace (match _ with 0 | _ => f_zero end) with f_zero
+      by now destruct (S (S i) mod 2).
+    rewrite f_add_0_l.
+    destruct i; [ easy | ].
+    rewrite log_prod_succ.
+    unfold log_prod_term.
+    replace (S (S i) - i) with 2 by flia.
+    rewrite Hm.
+    replace (ls _ 2) with f_one by easy.
     rewrite f_mul_1_l, <- f_add_0_r; f_equal.
     apply log_prod_pol_pow; flia.
   }
