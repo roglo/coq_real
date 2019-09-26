@@ -897,6 +897,15 @@ destruct m. {
   }
   replace (ls _ 0) with f_zero by easy.
   rewrite f_mul_0_l, f_add_0_l.
+  destruct n. {
+    destruct i. {
+      rewrite Nat.mod_1_l in Hm; [ easy | flia ].
+    }
+    rewrite log_prod_succ, Nat_sub_succ_diag_l.
+    unfold log_prod_term.
+    rewrite Hm.
+    replace (ls _ 1) with f_one by easy.
+    rewrite f_mul_1_l, <- f_add_0_r; f_equal.
 ...
 
 (*
