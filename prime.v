@@ -544,6 +544,14 @@ unfold log_prod_term.
 now rewrite Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
 Qed.
 
+Theorem log_prod_succ_r' {F : field} : ∀ s1 s2 n,
+  log_prod s1 s2 n n = (log_prod s1 s2 n (S n) - s1 0 * s2 n)%F.
+Proof.
+intros.
+rewrite log_prod_succ_r, f_add_comm.
+now rewrite f_add_sub.
+Qed.
+
 (* c*x^ln(n+1) * Σ (i = 1, ∞) s_(i-1) x^ln(i) =
    Σ (i = 1, ∞) c*s_(i-1) x^ln((n+1)*i) *)
 Definition ls_mul_elem {F : field} c n s :=
@@ -930,7 +938,6 @@ destruct m. {
     destruct m; [ flia Hm | cbn in Hj; flia Hj ].
   }
   rewrite <- Nat.add_1_r in Hj.
-...
   specialize (IHn _ _ Hj) as H1.
   replace i with (j + m) by flia Hm.
   clear i Hm.
@@ -939,7 +946,16 @@ destruct m. {
   replace j with (S (S n) * m - 1) in H1 by flia Hj.
   replace (S (S n) + 1) with (n + 3) by flia.
   replace (S (S n)) with (n + 2) in IHn, Hj, H1 by flia.
-Check log_prod_succ_r.
+  replace ((n + 3) * m - 1) with ((n + 2) * m - 1 + m) by flia Hj.
+  remember ((n + 2) * m - 1) as i eqn:Hi.
+  rewrite log_prod_succ_r' in H1.
+  rewrite log_prod_succ_r'.
+  replace (ls (ls_of_pol (pol_pow (n + 2))) 0) with f_zero in H1 by
+      now rewrite Nat.add_comm.
+  replace (ls (ls_of_pol (pol_pow (n + 3))) 0) with f_zero by
+      now rewrite Nat.add_comm.
+  rewrite f_mul_0_l, f_sub_0_r in H1 |-*.
+Print ls_mul.
 ...
 Theorem glop {F : field} : ∀ n i s,
   log_prod (ls (ls_of_pol (pol_pow (n + 1)))) (ls s) ((n + 1) * i - 1) ((n + 1) * i - 1) =
