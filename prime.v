@@ -923,9 +923,12 @@ destruct m. {
   rewrite <- Nat.add_1_r in Hj.
   specialize (IHn _ _ Hj) as H1.
   replace i with (j + m) by flia Hm.
+  clear i Hm.
   replace (S (S (S n))) with (S (S n) + 1) by flia.
   replace (j + m) with ((S (S n) + 1) * m - 1) by flia Hj.
   replace j with (S (S n) * m - 1) in H1 by flia Hj.
+  replace (S (S n) + 1) with (n + 3) by flia.
+  replace (S (S n)) with (n + 2) in IHn, Hj, H1 by flia.
 ...
 Theorem glop {F : field} : ∀ n i s,
   log_prod (ls (ls_of_pol (pol_pow (n + 1)))) (ls s) ((n + 1) * i - 1) ((n + 1) * i - 1) =
