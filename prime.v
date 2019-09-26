@@ -898,13 +898,13 @@ destruct m. {
   replace (ls _ 0) with f_zero by easy.
   rewrite f_mul_0_l, f_add_0_l.
 (**)
-apply Nat.mod_divides in Hm; [ | easy ].
-destruct Hm as (m, Hm).
-rewrite <- Nat.add_1_r in Hm.
-replace (S i) with (m * S (S n)) by flia Hm.
-rewrite Nat.div_mul; [ | easy ].
-revert i m Hm.
-induction n; intros. {
+  apply Nat.mod_divides in Hm; [ | easy ].
+  destruct Hm as (m, Hm).
+  rewrite <- Nat.add_1_r in Hm.
+  replace (S i) with (m * S (S n)) by flia Hm.
+  rewrite Nat.div_mul; [ | easy ].
+  revert i m Hm.
+  induction n; intros. {
     destruct i; [ flia Hm | ].
     rewrite log_prod_succ, Nat_sub_succ_diag_l.
     unfold log_prod_term.
@@ -915,14 +915,14 @@ induction n; intros. {
     rewrite f_mul_1_l, <- f_add_0_r; f_equal.
     apply log_prod_pol_pow; flia.
   }
-replace (S (S (S n)) * m) with (S (S n) * m + m) in Hm by flia.
-remember (S (S n) * m) as j eqn:Hj.
-destruct j. {
-  destruct m; [ flia Hm | cbn in Hj; flia Hj ].
-}
-rewrite <- Nat.add_1_r in Hj.
-specialize (IHn _ _ Hj) as H1.
-replace i with (j + m) by flia Hm.
+  replace (S (S (S n)) * m) with (S (S n) * m + m) in Hm by flia.
+  remember (S (S n) * m) as j eqn:Hj.
+  destruct j. {
+    destruct m; [ flia Hm | cbn in Hj; flia Hj ].
+  }
+  rewrite <- Nat.add_1_r in Hj.
+  specialize (IHn _ _ Hj) as H1.
+  replace i with (j + m) by flia Hm.
 ...
   destruct n. {
     destruct i. {
