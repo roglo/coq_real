@@ -535,6 +535,15 @@ Theorem log_prod_succ {F : field} : ∀ u v n i,
     (log_prod_term u v n (n - i) + log_prod u v n i)%F.
 Proof. easy. Qed.
 
+Theorem log_prod_succ_r {F : field} : ∀ s1 s2 n,
+  log_prod s1 s2 n (S n) = (s1 0 * s2 n + log_prod s1 s2 n n)%F.
+Proof.
+intros.
+rewrite log_prod_succ, Nat.sub_diag.
+unfold log_prod_term.
+now rewrite Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
+Qed.
+
 (* c*x^ln(n+1) * Σ (i = 1, ∞) s_(i-1) x^ln(i) =
    Σ (i = 1, ∞) c*s_(i-1) x^ln((n+1)*i) *)
 Definition ls_mul_elem {F : field} c n s :=
@@ -921,6 +930,7 @@ destruct m. {
     destruct m; [ flia Hm | cbn in Hj; flia Hj ].
   }
   rewrite <- Nat.add_1_r in Hj.
+...
   specialize (IHn _ _ Hj) as H1.
   replace i with (j + m) by flia Hm.
   clear i Hm.
@@ -929,6 +939,7 @@ destruct m. {
   replace j with (S (S n) * m - 1) in H1 by flia Hj.
   replace (S (S n) + 1) with (n + 3) by flia.
   replace (S (S n)) with (n + 2) in IHn, Hj, H1 by flia.
+Check log_prod_succ_r.
 ...
 Theorem glop {F : field} : ∀ n i s,
   log_prod (ls (ls_of_pol (pol_pow (n + 1)))) (ls s) ((n + 1) * i - 1) ((n + 1) * i - 1) =
