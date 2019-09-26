@@ -906,6 +906,8 @@ destruct m. {
     rewrite Hm.
     replace (ls _ 1) with f_one by easy.
     rewrite f_mul_1_l, <- f_add_0_r; f_equal.
+    apply log_prod_pol_pow; flia.
+  }
 ...
 
 (*
