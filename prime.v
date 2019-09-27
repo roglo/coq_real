@@ -971,6 +971,31 @@ destruct n. {
   rewrite <- f_add_0_r; f_equal.
   apply log_prod_pol_pow; flia.
 }
+replace (S (S (S (S (S (S n)))))) with (n + 6) by flia.
+replace (S (S (S (S (S n))))) with (n + 5) by flia.
+remember 5 as k.
+Theorem glop {F : field} : ∀ s n i k,
+  log_prod (ls (ls_of_pol (pol_pow (n + S k)))) (ls s) i i =
+  (ls s (S i / (n + k + 2) - 1) * ε i (n + k + 1))%F.
+Proof.
+intros.
+revert i k.
+induction n; intros. {
+  do 2 rewrite Nat.add_0_l.
+  destruct i. {
+    unfold ε.
+    rewrite Nat.mod_small; [ | flia ].
+    now rewrite f_mul_0_r.
+  }
+  rewrite log_prod_succ.
+  unfold log_prod_term.
+  rewrite Nat_sub_succ_diag_l.
+  destruct i. {
+    replace (ε 1 1) with f_one by easy.
+    rewrite f_mul_1_r.
+    destruct k. {
+      cbn.
+(* faux *)
 ...
 
 Theorem pol_pow_mul {F : field} : ∀ s i n,
