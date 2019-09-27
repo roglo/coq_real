@@ -876,10 +876,19 @@ rewrite f_mul_0_l, f_mul_0_l, f_add_0_l.
 apply IHi; flia Hin.
 Qed.
 
-Theorem pol_pow_mul {F : field} : ∀ s i n,
-  ls (pol_pow (S n) .* s) i = (ε i n * ls s (S i / S n - 1))%F.
+Theorem pol_pow_mul {F : field} : ∀ s n i,
+  ls (pol_pow (S n) .* s) i = (ls s (S i / S n - 1) * ε i n)%F.
 Proof.
 intros.
+unfold ".*", "*"%LS.
+cbn - [ "/" "mod" ls_of_pol ].
+rewrite Nat.sub_diag.
+unfold log_prod_term.
+rewrite Nat.div_1_r, Nat_sub_succ_1.
+destruct n. {
+  rewrite Nat.div_1_r, Nat_sub_succ_1.
+  replace (ls _ 0) with f_one by easy.
+  rewrite f_mul_1_l, <- f_add_0_r; f_equal.
 ...
 
 Theorem pol_pow_mul {F : field} : ∀ s i n,
