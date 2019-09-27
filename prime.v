@@ -993,8 +993,26 @@ induction n; intros. {
   destruct i. {
     replace (ε 1 1) with f_one by easy.
     rewrite f_mul_1_r.
-    destruct k. {
-      cbn.
+    rewrite Nat.div_same; [ | easy ].
+    rewrite Nat.sub_diag.
+    destruct k; [ now cbn; rewrite f_mul_1_l, f_add_0_r, f_mul_1_r | ].
+    replace (ls _ 1) with f_zero by now rewrite Nat.add_comm.
+    rewrite f_mul_0_l, f_add_0_l.
+    unfold ε.
+    rewrite Nat.mod_small; [ | flia ].
+    now rewrite f_mul_0_r.
+  }
+  rewrite log_prod_succ.
+  unfold log_prod_term.
+  replace (S (S i) - i) with 2 by flia.
+  remember (i mod 3) as m eqn:Hm; symmetry in Hm.
+  destruct m. {
+    unfold ε at 2.
+    replace (S (S (S i))) with (i + 1 * 3) by flia.
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.add_sub.
+    rewrite Hm, f_mul_1_r.
 ...
 
 Theorem pol_pow_mul {F : field} : ∀ s i n,
