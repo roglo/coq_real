@@ -973,15 +973,15 @@ destruct n. {
 }
 replace (S (S (S (S (S (S n)))))) with (n + 6) by flia.
 replace (S (S (S (S (S n))))) with (n + 5) by flia.
-remember 5 as k.
+remember 4 as k.
 Theorem glop {F : field} : ∀ s n i k,
-  log_prod (ls (ls_of_pol (pol_pow (n + S k)))) (ls s) i i =
+  log_prod (ls (ls_of_pol (pol_pow (n + k + 2)))) (ls s) i i =
   (ls s (S i / (n + k + 2) - 1) * ε i (n + k + 1))%F.
 Proof.
 intros.
 revert i k.
 induction n; intros. {
-  do 2 rewrite Nat.add_0_l.
+  rewrite Nat.add_0_l.
   destruct i. {
     unfold ε.
     rewrite Nat.mod_small; [ | flia ].
@@ -995,7 +995,6 @@ induction n; intros. {
     rewrite f_mul_1_r.
     destruct k. {
       cbn.
-(* faux *)
 ...
 
 Theorem pol_pow_mul {F : field} : ∀ s i n,
