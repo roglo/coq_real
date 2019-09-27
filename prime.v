@@ -889,6 +889,50 @@ destruct n. {
   rewrite Nat.div_1_r, Nat_sub_succ_1.
   replace (ls _ 0) with f_one by easy.
   rewrite f_mul_1_l, <- f_add_0_r; f_equal.
+  now apply pol_pow_1_mul_l.
+}
+replace (ls _ 0) with f_zero by easy.
+rewrite <- f_mul_assoc, f_mul_0_l, f_add_0_l.
+destruct n. {
+  destruct i; [ now cbn; rewrite f_mul_0_r | ].
+  rewrite log_prod_succ.
+  unfold log_prod_term.
+  rewrite Nat_sub_succ_diag_l.
+  replace (ls _ 1) with f_one by easy.
+  rewrite f_mul_1_l, <- f_add_0_r; f_equal.
+  apply log_prod_pol_pow; flia.
+}
+destruct n. {
+  destruct i; [ now cbn; rewrite f_mul_0_r | ].
+  rewrite log_prod_succ.
+  unfold log_prod_term.
+  rewrite Nat_sub_succ_diag_l.
+  replace (ls _ 1) with f_zero by easy.
+  rewrite <- f_mul_assoc, f_mul_0_l, f_add_0_l.
+  destruct i; [ now cbn; rewrite f_mul_0_r | ].
+  rewrite log_prod_succ.
+  replace (S (S i) - i) with 2 by flia.
+  unfold log_prod_term.
+  replace (ls _ 2) with f_one by easy.
+  rewrite <- f_mul_assoc, f_mul_1_l.
+  rewrite <- f_add_0_r; f_equal.
+  remember (S (S i)) as n eqn:Hn.
+  assert (H : i + 1 < n) by flia Hn.
+  clear Hn.
+  revert n H.
+  induction i; intros; [ easy | ].
+  rewrite log_prod_succ.
+  replace (S (S (S i)) - i) with 3 by flia.
+  unfold log_prod_term.
+  replace (ls _ (n - i)) with f_zero. 2: {
+    remember (n - i) as m.
+    destruct m; [ easy | cbn ].
+    destruct m; [ easy |  ].
+    destruct m; [ flia H Heqm | now destruct m ].
+  }
+  rewrite <- f_mul_assoc, f_mul_0_l, f_add_0_l.
+  apply IHi; flia H.
+}
 ...
 
 Theorem pol_pow_mul {F : field} : ∀ s i n,
