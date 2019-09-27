@@ -977,14 +977,14 @@ destruct m2. {
       rewrite Nat.add_sub.
       remember (i mod 5) as m5 eqn:Hm5; symmetry in Hm5.
       move m5 before n.
+      replace (S i + 1) with (i + 2) by flia.
+      replace (S i) with (i + 1) by flia.
+      replace ((i + 1) / 2 + 1) with ((i + 3) / 2). 2: {
+        replace (i + 3) with (i + 1 + 1 * 2) by flia.
+        now rewrite Nat.div_add; [ | easy ].
+      }
       destruct m5. {
-        replace (S i + 1) with (i + 2) by flia.
-        replace (S i) with (i + 1) by flia.
-        replace ((i + 1) / 2 + 1) with ((i + 3) / 2). 2: {
-          replace (i + 3) with (i + 1 + 1 * 2) by flia.
-          now rewrite Nat.div_add; [ | easy ].
-        }
-        Set Printing Width 70.
+Set Printing Width 70.
 ...
   destruct n; [ flia Hn | clear Hn ].
   destruct n. {
