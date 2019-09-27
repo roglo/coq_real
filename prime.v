@@ -958,6 +958,33 @@ destruct m2. {
     replace (S i) with (i + 1) by flia.
     ring_simplify in Hm; rewrite Nat.add_comm in Hm.
     ring_simplify in Hm3; rewrite Nat.add_comm in Hm3.
+    unfold log_prod_term.
+    replace (S (i + 3)) with (i + 1 * 4) by flia.
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.add_sub.
+    remember (i mod 4) as m4 eqn:Hm4; symmetry in Hm4.
+    move m4 before n.
+    destruct m4. {
+      destruct i; [ easy | ].
+      rewrite log_prod_succ, f_add_assoc.
+      replace (S i + 3 - i) with 4 by flia.
+      replace (S i + 3) with (i + 4) by flia.
+      unfold log_prod_term.
+      replace (S (i + 4)) with (i + 1 * 5) by flia.
+      rewrite Nat.mod_add; [ | easy ].
+      rewrite Nat.div_add; [ | easy ].
+      rewrite Nat.add_sub.
+      remember (i mod 5) as m5 eqn:Hm5; symmetry in Hm5.
+      move m5 before n.
+      destruct m5. {
+        replace (S i + 1) with (i + 2) by flia.
+        replace (S i) with (i + 1) by flia.
+        replace ((i + 1) / 2 + 1) with ((i + 3) / 2). 2: {
+          replace (i + 3) with (i + 1 + 1 * 2) by flia.
+          now rewrite Nat.div_add; [ | easy ].
+        }
+        Set Printing Width 70.
 ...
   destruct n; [ flia Hn | clear Hn ].
   destruct n. {
