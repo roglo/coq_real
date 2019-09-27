@@ -901,6 +901,7 @@ remember (S i mod n) as m eqn:Hm; symmetry in Hm.
 destruct m. {
   unfold ".*", "*"%LS.
   cbn - [ log_prod ls_of_pol pol_pow "/" ].
+...
   rewrite log_prod_succ, Nat.sub_diag.
   unfold log_prod_term.
   rewrite Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
