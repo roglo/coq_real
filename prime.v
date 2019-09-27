@@ -1013,6 +1013,24 @@ induction n; intros. {
     rewrite Nat.div_add; [ | easy ].
     rewrite Nat.add_sub.
     rewrite Hm, f_mul_1_r.
+    rewrite f_add_assoc.
+    replace (i + 1 * 3) with (i + 1 + 1 * 2) by flia.
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.add_sub.
+    replace (i + 1 + 1 * 2) with (i + 3) by flia.
+    destruct i. {
+      cbn; rewrite f_mul_0_r, f_add_0_l.
+      replace (k + 2 - 1) with (S k) by flia; cbn.
+      rewrite f_add_0_r.
+      destruct k; [ cbn; apply f_mul_comm | ].
+      destruct k; [ cbn; apply f_mul_comm | ].
+      cbn - [ "/" ].
+      unfold ε.
+      rewrite Nat.mod_small; [ | flia ].
+      now rewrite f_mul_0_l, f_mul_0_r.
+    }
+    destruct i. {
+      cbn.
 ...
 
 Theorem pol_pow_mul {F : field} : ∀ s i n,
