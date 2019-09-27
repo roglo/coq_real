@@ -773,11 +773,8 @@ revert n Hin.
 induction i; intros; [ easy | ].
 rewrite log_prod_succ.
 unfold log_prod_term.
-...
-remember (S n mod S (n - i)) as m eqn:Hm; symmetry in Hm.
 rewrite IHi; [ | flia Hin ].
 rewrite f_add_0_r.
-destruct m; [ | easy ].
 cbn - [ "/" "mod" ].
 replace (nth _ _ _) with f_zero. 2: {
   assert (Hkn : k - 1 < n - i) by flia Hk Hin.
@@ -792,6 +789,7 @@ replace (nth _ _ _) with f_zero. 2: {
   destruct t; [ now destruct u | ].
   apply IHu; flia Hkn.
 }
+rewrite <- f_mul_assoc.
 apply f_mul_0_l.
 Qed.
 
@@ -801,10 +799,10 @@ Proof.
 intros * i.
 cbn - [ "/" "mod" ls_of_pol ].
 unfold log_prod_term.
-rewrite Nat.sub_diag, Nat.div_1_r, Nat.mod_1_r, Nat_sub_succ_1.
+rewrite Nat.sub_diag, Nat.div_1_r, Nat_sub_succ_1.
 unfold ls_of_pol at 1.
 cbn - [ ls_of_pol ].
-rewrite f_mul_1_l, <- f_add_0_r; f_equal.
+rewrite f_mul_1_l, f_mul_1_r, <- f_add_0_r; f_equal.
 apply log_prod_pol_1_l; [ flia | easy ].
 Qed.
 
@@ -831,10 +829,8 @@ do 2 rewrite log_prod_succ.
 unfold log_prod_term.
 rewrite ls_of_pol_opp.
 cbn - [ "/" "mod" ls_of_pol ].
-destruct (S n mod S (n - i)) as [Hn| Hn]. {
-  now rewrite f_opp_add_distr, f_mul_opp_l, IHi.
-}
-do 2 rewrite f_add_0_l.
+rewrite f_opp_add_distr.
+do 2 rewrite f_mul_opp_l; f_equal.
 apply IHi.
 Qed.
 
@@ -842,8 +838,9 @@ Theorem log_prod_term_0 {F : field} : ∀ u v n,
   log_prod_term u v n 0 = (u 0 * v n)%F.
 Proof.
 intros.
+unfold log_prod_term, ε.
 cbn - [ "/" ].
-now rewrite Nat.div_1_r, Nat_sub_succ_1.
+now rewrite Nat.div_1_r, Nat_sub_succ_1, f_mul_1_r.
 Qed.
 
 Theorem ls_mul_pol_opp_l {F : field} : ∀ p s,
@@ -852,12 +849,12 @@ Proof.
 intros * i.
 cbn - [ "/" "mod" ls_of_pol ].
 unfold log_prod_term.
-rewrite Nat.sub_diag, Nat.mod_1_r.
+rewrite Nat.sub_diag.
 rewrite ls_of_pol_opp.
-cbn - [ "/" "mod" ls_of_pol ].
 rewrite log_prod_pol_opp_l.
 rewrite f_opp_add_distr.
-now rewrite f_mul_opp_l.
+f_equal; cbn.
+now do 2 rewrite f_mul_opp_l.
 Qed.
 
 Theorem pol_pow_1_mul_l {F : field} : ∀ s n i,
@@ -875,12 +872,15 @@ replace (ls (ls_of_pol (pol_pow 1)) (n - i)) with f_zero. 2: {
   destruct m; [ | now destruct m ].
   flia Hin Hm.
 }
-rewrite f_mul_0_l.
-replace (match _ with 0 | _ => _ end) with f_zero by
-  now destruct (S n mod S (n - i)).
-rewrite f_add_0_l.
+rewrite f_mul_0_l, f_mul_0_l, f_add_0_l.
 apply IHi; flia Hin.
 Qed.
+
+Theorem pol_pow_mul {F : field} : ∀ s i n,
+  ls (pol_pow (S n) .* s) i = (ε i n * ls s (S i / S n - 1))%F.
+Proof.
+intros.
+...
 
 Theorem pol_pow_mul {F : field} : ∀ s i n,
   n ≠ 0
@@ -892,11 +892,14 @@ Theorem pol_pow_mul {F : field} : ∀ s i n,
 Proof.
 intros * Hn.
 remember (S i mod n) as m eqn:Hm; symmetry in Hm.
+Print ε.
 destruct m. {
   unfold ".*", "*"%LS.
   cbn - [ log_prod ls_of_pol pol_pow "/" ].
   rewrite log_prod_succ, Nat.sub_diag.
   unfold log_prod_term.
+  rewrite Nat.div_1_r, Nat_sub_succ_1.
+...
   rewrite Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
 (**)
 destruct i. {
