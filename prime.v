@@ -1029,8 +1029,8 @@ induction n; intros. {
       rewrite Nat.mod_small; [ | flia ].
       now rewrite f_mul_0_l, f_mul_0_r.
     }
-    destruct i. {
-      cbn.
+    rewrite log_prod_succ.
+    rewrite f_add_assoc.
 ...
 
 Theorem pol_pow_mul {F : field} : ∀ s i n,
