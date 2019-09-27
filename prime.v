@@ -901,10 +901,64 @@ remember (S i mod n) as m eqn:Hm; symmetry in Hm.
 destruct m. {
   unfold ".*", "*"%LS.
   cbn - [ log_prod ls_of_pol pol_pow "/" ].
-...
   rewrite log_prod_succ, Nat.sub_diag.
   unfold log_prod_term.
   rewrite Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1.
+(**)
+destruct i. {
+  destruct n; [ flia Hn | ].
+  destruct n. {
+    now cbn; rewrite f_mul_1_l, <- f_add_0_r.
+  }
+  rewrite Nat.mod_1_l in Hm; [ easy | flia ].
+}
+rewrite log_prod_succ, f_add_assoc.
+rewrite Nat_sub_succ_diag_l.
+unfold log_prod_term.
+replace (S (S i)) with (i + 1 * 2) by flia.
+rewrite Nat.mod_add; [ | easy ].
+rewrite Nat.div_add; [ | easy ].
+rewrite Nat.add_sub.
+rewrite Nat.mul_1_l.
+remember (i mod 2) as m2 eqn:Hm2; symmetry in Hm2.
+move m2 before n.
+destruct m2. {
+  destruct i. {
+    clear Hm2.
+    destruct n; [ flia Hn | clear Hn ].
+    destruct n. {
+      now cbn; rewrite f_mul_1_l, f_mul_0_l, f_add_0_r, f_add_0_r.
+    }
+    destruct n. {
+      now cbn; rewrite f_mul_1_l, f_mul_0_l, f_add_0_l, f_add_0_r.
+    }
+    rewrite Nat.mod_small in Hm; [ easy | flia ].
+  }
+  rewrite log_prod_succ, f_add_assoc.
+  unfold log_prod_term.
+  replace (S (S (S i) - i)) with 3 by flia.
+  replace (S (S i) - i) with 2 by flia.
+  replace (S (S (S i))) with (i + 1 * 3) by flia.
+  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.div_add; [ | easy ].
+  rewrite Nat.add_sub.
+  remember (i mod 3) as m3 eqn:Hm3; symmetry in Hm3.
+  move m3 before n.
+  replace (S (S i)) with (i + 2) by flia.
+  replace (S i + 2) with (i + 3) by flia.
+  destruct m3. {
+    destruct i; [ easy | ].
+    rewrite log_prod_succ, f_add_assoc.
+    replace (S (S i)) with (i + 1 * 2) in Hm2 |-* by flia.
+    rewrite Nat.mod_add in Hm2; [ | easy ].
+    rewrite Nat.div_add; [ | easy ].
+    replace (S i + 2 - i) with 3 by flia.
+    replace (S i + 2) with (i + 3) by flia.
+    replace (S i + 3) with (i + 4) by flia.
+    replace (S i) with (i + 1) by flia.
+    ring_simplify in Hm; rewrite Nat.add_comm in Hm.
+    ring_simplify in Hm3; rewrite Nat.add_comm in Hm3.
+...
   destruct n; [ flia Hn | clear Hn ].
   destruct n. {
     replace (ls _ 0) with f_one by easy.
