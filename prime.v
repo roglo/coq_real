@@ -941,6 +941,36 @@ destruct n. {
   rewrite <- f_add_0_r; f_equal.
   apply log_prod_pol_pow; flia.
 }
+destruct n. {
+  destruct i; [ now cbn; rewrite f_mul_0_r | ].
+  rewrite log_prod_succ.
+  unfold log_prod_term.
+  rewrite Nat_sub_succ_diag_l.
+  replace (ls _ 1) with f_zero by easy.
+  rewrite <- f_mul_assoc, f_mul_0_l, f_add_0_l.
+  destruct i; [ now cbn; rewrite f_mul_0_r | ].
+  rewrite log_prod_succ.
+  replace (S (S i) - i) with 2 by flia.
+  unfold log_prod_term.
+  replace (ls _ 2) with f_zero by easy.
+  rewrite <- f_mul_assoc, f_mul_0_l.
+  rewrite f_add_0_l.
+  destruct i; [ now cbn; rewrite f_mul_0_r | ].
+  rewrite log_prod_succ.
+  replace (S (S (S i)) - i) with 3 by flia.
+  unfold log_prod_term.
+  replace (ls _ 3) with f_zero by easy.
+  rewrite <- f_mul_assoc, f_mul_0_l.
+  rewrite f_add_0_l.
+  destruct i; [ now cbn; rewrite f_mul_0_r | ].
+  rewrite log_prod_succ.
+  replace (S (S (S (S i))) - i) with 4 by flia.
+  unfold log_prod_term.
+  replace (ls _ 4) with f_one by easy.
+  rewrite <- f_mul_assoc, f_mul_1_l.
+  rewrite <- f_add_0_r; f_equal.
+  apply log_prod_pol_pow; flia.
+}
 ...
 
 Theorem pol_pow_mul {F : field} : ∀ s i n,
