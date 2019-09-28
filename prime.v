@@ -917,7 +917,51 @@ destruct n. {
 }
 replace (ls _ 0) with f_zero by easy.
 rewrite <- f_mul_assoc, f_mul_0_l, f_add_0_l.
-destruct n. {
+(**)
+Theorem glop {F : field} : ∀ s n i k,
+  log_prod (ls (ls_of_pol (pol_pow (S (S n))))) (ls s) (i + k) i =
+    (ls s ((i + k + 1) / S (S n) - 1) * ε (i + k) (n + 1))%F.
+Proof.
+intros.
+revert k i.
+induction n; intros. {
+  rewrite Nat.add_0_l.
+  revert i.
+  induction k; intros. {
+    rewrite Nat.add_0_r.
+    specialize (log_prod_pow_ge_2 s i 0) as H1.
+    now rewrite Nat.add_0_r in H1.
+  }
+  specialize (IHk (S i)) as H1.
+  rewrite log_prod_succ in H1.
+  replace (S i + k - i) with (k + 1) in H1 by flia.
+  unfold log_prod_term in H1.
+  unfold ε in H1 at 1.
+  replace (S (k + 1)) with (k + 2) in H1 by flia.
+  replace (S (S i + k)) with (i + 1 * (k + 2)) in H1 by flia.
+  rewrite Nat.div_add in H1; [ | flia ].
+  rewrite Nat.mod_add in H1; [ | flia ].
+  rewrite Nat.add_sub in H1.
+  replace (S i + k) with (i + S k) in H1 by flia.
+  remember (i mod (k + 2)) as m eqn:Hm; symmetry in Hm.
+  destruct m. 2: {
+    now rewrite f_mul_0_r, f_add_0_l in H1.
+  }
+  rewrite f_mul_1_r in H1.
+  destruct k. {
+    replace (ls _ (0 + 1)) with f_one in H1 by easy.
+    rewrite f_mul_1_l in H1.
+
+      cbn.
+    destruct k.
+cbn - [ "/" "mod" ] in H1.
+
+...
+specialize (glop s n i 0) as H1.
+rewrite Nat.add_0_r in H1.
+now do 2 rewrite Nat.add_1_r in H1.
+...
+destruct n; intros. {
   specialize (log_prod_pow_ge_2 s i 0) as H1.
   rewrite Nat.add_0_r in H1.
   replace (i + 1) with (S i) in H1 by flia.
