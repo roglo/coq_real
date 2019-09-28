@@ -951,11 +951,14 @@ induction n; intros. {
   destruct k. {
     replace (ls _ (0 + 1)) with f_one in H1 by easy.
     rewrite f_mul_1_l in H1.
-
-      cbn.
-    destruct k.
-cbn - [ "/" "mod" ] in H1.
-
+    rewrite Nat.add_0_l in Hm, H1.
+    replace (i + 1 + 1) with (i + 1 * 2) in H1 by flia.
+    rewrite Nat.div_add in H1; [ | easy ].
+    rewrite Nat.add_sub in H1.
+    replace (i + 1 + 1) with (i + 1 * 2) by flia.
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.add_sub.
+    unfold ε in H1.
 ...
 specialize (glop s n i 0) as H1.
 rewrite Nat.add_0_r in H1.
