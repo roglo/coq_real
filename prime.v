@@ -876,6 +876,30 @@ rewrite f_mul_0_l, f_mul_0_l, f_add_0_l.
 apply IHi; flia Hin.
 Qed.
 
+Theorem log_prod_pow_ge_2 {F : field} : ∀ s i k,
+  log_prod (ls (ls_of_pol (pol_pow (k + 2)))) (ls s) (i + k) i =
+    (ls s ((i + k + 1) / (k + 2) - 1) * ε (i + k) (k + 1))%F.
+Proof.
+intros.
+destruct i. {
+  cbn; unfold ε.
+  rewrite Nat.mod_small; [ | flia ].
+  now rewrite f_mul_0_r.
+}
+rewrite log_prod_succ.
+replace (S i + k - i) with (k + 1) by flia.
+unfold log_prod_term.
+replace (ls _ (k + 1)) with f_one. 2: {
+  setoid_rewrite Nat.add_comm; cbn.
+  induction k; [ easy | apply IHk ].
+}
+rewrite <- f_mul_assoc, f_mul_1_l.
+replace (S (S i + k)) with (S i + k + 1) by flia.
+replace (S (k + 1)) with (k + 2) by flia.
+rewrite <- f_add_0_r; f_equal.
+apply log_prod_pol_pow; flia.
+Qed.
+
 Theorem pol_pow_mul {F : field} : ∀ s n i,
   ls (pol_pow (S n) .* s) i = (ls s (S i / S n - 1) * ε i n)%F.
 Proof.
@@ -893,25 +917,11 @@ destruct n. {
 }
 replace (ls _ 0) with f_zero by easy.
 rewrite <- f_mul_assoc, f_mul_0_l, f_add_0_l.
-(*
-Theorem glop {F : field} : ∀ s i k,
-  log_prod (ls (ls_of_pol (pol_pow (k + 2)))) (ls s) (i + k) i =
-    (ls s ((i + k + 1) / (k + 2) - 1) * ε (i + k) (k + 1))%F.
-*)
 destruct n. {
-(*
-specialize (glop s i 0) as H1.
-rewrite Nat.add_0_r in H1.
-replace (i + 1) with (S i) in H1 by flia.
-now do 2 replace (i + 1) with (S i) in H1 by flia.
-*)
-  destruct i; [ now cbn; rewrite f_mul_0_r | ].
-  rewrite log_prod_succ.
-  unfold log_prod_term.
-  rewrite Nat_sub_succ_diag_l.
-  replace (ls _ 1) with f_one by easy.
-  rewrite f_mul_1_l, <- f_add_0_r; f_equal.
-  apply log_prod_pol_pow; flia.
+  specialize (log_prod_pow_ge_2 s i 0) as H1.
+  rewrite Nat.add_0_r in H1.
+  replace (i + 1) with (S i) in H1 by flia.
+  now do 2 replace (i + 1) with (S i) in H1 by flia.
 }
 destruct n. {
   destruct i; [ now cbn; rewrite f_mul_0_r | ].
@@ -920,19 +930,9 @@ destruct n. {
   rewrite Nat_sub_succ_diag_l.
   replace (ls _ 1) with f_zero by easy.
   rewrite <- f_mul_assoc, f_mul_0_l, f_add_0_l.
-(*
-specialize (glop s i 1) as H1.
-replace (i + 1 + 1) with (S (S i)) in H1 by flia.
-now do 2 replace (i + 1) with (S i) in H1 by flia.
-*)
-  destruct i; [ now cbn; rewrite f_mul_0_r | ].
-  rewrite log_prod_succ.
-  replace (S (S i) - i) with 2 by flia.
-  unfold log_prod_term.
-  replace (ls _ 2) with f_one by easy.
-  rewrite <- f_mul_assoc, f_mul_1_l.
-  rewrite <- f_add_0_r; f_equal.
-  apply log_prod_pol_pow; flia.
+  specialize (log_prod_pow_ge_2 s i 1) as H1.
+  replace (i + 1 + 1) with (S (S i)) in H1 by flia.
+  now do 2 replace (i + 1) with (S i) in H1 by flia.
 }
 destruct n. {
   destruct i; [ now cbn; rewrite f_mul_0_r | ].
@@ -948,19 +948,9 @@ destruct n. {
   replace (ls _ 2) with f_zero by easy.
   rewrite <- f_mul_assoc, f_mul_0_l.
   rewrite f_add_0_l.
-(*
-specialize (glop s i 2) as H1.
-replace (i + 2 + 1) with (S (S (S i))) in H1 by flia.
-now do 2 replace (i + 2) with (S (S i)) in H1 by flia.
-*)
-  destruct i; [ now cbn; rewrite f_mul_0_r | ].
-  rewrite log_prod_succ.
-  replace (S (S (S i)) - i) with 3 by flia.
-  unfold log_prod_term.
-  replace (ls _ 3) with f_one by easy.
-  rewrite <- f_mul_assoc, f_mul_1_l.
-  rewrite <- f_add_0_r; f_equal.
-  apply log_prod_pol_pow; flia.
+  specialize (log_prod_pow_ge_2 s i 2) as H1.
+  replace (i + 2 + 1) with (S (S (S i))) in H1 by flia.
+  now do 2 replace (i + 2) with (S (S i)) in H1 by flia.
 }
 destruct n. {
   destruct i; [ now cbn; rewrite f_mul_0_r | ].
@@ -983,19 +973,9 @@ destruct n. {
   replace (ls _ 3) with f_zero by easy.
   rewrite <- f_mul_assoc, f_mul_0_l.
   rewrite f_add_0_l.
-(*
-specialize (glop s i 3) as H1.
-replace (i + 3 + 1) with (S (S (S (S i)))) in H1 by flia.
-now do 2 replace (i + 3) with (S (S (S i))) in H1 by flia.
-*)
-  destruct i; [ now cbn; rewrite f_mul_0_r | ].
-  rewrite log_prod_succ.
-  replace (S (S (S (S i))) - i) with 4 by flia.
-  unfold log_prod_term.
-  replace (ls _ 4) with f_one by easy.
-  rewrite <- f_mul_assoc, f_mul_1_l.
-  rewrite <- f_add_0_r; f_equal.
-  apply log_prod_pol_pow; flia.
+  specialize (log_prod_pow_ge_2 s i 3) as H1.
+  replace (i + 3 + 1) with (S (S (S (S i)))) in H1 by flia.
+  now do 2 replace (i + 3) with (S (S (S i))) in H1 by flia.
 }
 ...
 
