@@ -959,6 +959,13 @@ induction n; intros. {
     rewrite Nat.div_add; [ | easy ].
     rewrite Nat.add_sub.
     unfold ε in H1.
+    replace (S (i + 1)) with (i + 1 * 2) in H1 by flia.
+    rewrite Nat.mod_add in H1; [ | easy ].
+    rewrite Hm, f_mul_1_r in H1.
+    unfold ε.
+    replace (S (i + 1)) with (i + 1 * 2) by flia.
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Hm, f_mul_1_r.
 ...
 specialize (glop s n i 0) as H1.
 rewrite Nat.add_0_r in H1.
