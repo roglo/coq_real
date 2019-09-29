@@ -683,24 +683,25 @@ Theorem log_prod_pol_1_l {F : field} : ∀ s k n i,
   → log_prod (ls (ls_of_pol (pol_pow k))) (ls s) n i = f_zero.
 Proof.
 intros * Hk Hin.
+destruct n; [ now apply Nat.le_0_r in Hin; subst i | ].
 ...
 revert n Hin.
 induction i; intros; [ easy | ].
 rewrite log_prod_succ.
-unfold ls_of_pol at 1.
+rewrite IHi, f_add_0_r; [ | flia Hin ].
 unfold log_prod_term.
-remember (S n mod S (n - i)) as m eqn:Hm.
-cbn - [ "/" ls_of_pol ].
-replace (k - 1) with 0 by flia Hk.
-cbn - [ "/" ls_of_pol ].
-replace (n - i) with (S (n - S i)) by flia Hin.
-replace (match n - S i with 0 | _ => f_zero end) with f_zero. 2: {
-  now destruct (n - S i).
-}
-do 2 rewrite f_mul_0_l.
-rewrite f_add_0_l.
-apply IHi; flia Hin.
-Qed.
+unfold ε.
+remember (S n mod (S n - i)) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  apply Nat.mod_divides in Hm; [ | flia Hin ].
+  destruct Hm as (m, Hm).
+  destruct m; [ flia Hm | ].
+  destruct m. {
+    rewrite Nat.mul_1_r in Hm.
+    destruct i; [ | flia Hm ].
+    rewrite Nat.sub_0_r.
+    destruct k; cbn.
+...
 
 Theorem log_prod_pol_pow {F : field} : ∀ s n i k,
   0 < k
