@@ -904,6 +904,47 @@ Theorem pol_pow_mul {F : field} : ∀ s n i,
   ls (pol_pow (S n) .* s) i = (ls s (S i / S n - 1) * ε i n)%F.
 Proof.
 intros.
+revert n.
+induction i; intros. {
+  destruct n. {
+    unfold ".*", "*"%LS.
+    cbn - [ "/" "mod" ls_of_pol ].
+    unfold log_prod_term.
+    replace (1 / 1 - 1) with 0 by easy.
+    unfold ε; replace (1 mod 1) with 0 by easy.
+    rewrite f_add_0_r, f_mul_1_r, f_mul_1_r.
+    now cbn; rewrite f_mul_1_l.
+  }
+  unfold ".*", "*"%LS.
+  cbn - [ "/" "mod" ls_of_pol ].
+  unfold log_prod_term; cbn.
+  unfold ε.
+  rewrite Nat.mod_1_l; [ | flia ].
+  do 2 rewrite f_mul_0_l.
+  now rewrite f_mul_0_r, f_add_0_l.
+}
+destruct n. {
+  unfold ".*", "*"%LS.
+  cbn - [ "/" "mod" log_prod ls_of_pol ].
+  rewrite log_prod_succ, Nat.sub_diag.
+  unfold log_prod_term.
+  unfold ε.
+  replace (ls _ 0) with f_one by easy.
+  rewrite Nat.mod_1_r, f_mul_1_l, f_mul_1_r.
+  rewrite Nat.div_1_r, Nat_sub_succ_1, <- f_add_0_r; f_equal.
+  rewrite log_prod_succ.
+  rewrite Nat_sub_succ_diag_l.
+  unfold log_prod_term.
+  replace (ls _  1) with f_zero by easy.
+  rewrite <- f_mul_assoc, f_mul_0_l, f_add_0_l.
+  destruct i; [ easy | ].
+  rewrite log_prod_succ.
+  replace (S (S i) - i) with 2 by flia.
+  unfold log_prod_term.
+  replace (ls _  2) with f_zero by easy.
+  rewrite <- f_mul_assoc, f_mul_0_l, f_add_0_l.
+...
+intros.
 unfold ".*", "*"%LS.
 cbn - [ "/" "mod" ls_of_pol ].
 rewrite Nat.sub_diag.
