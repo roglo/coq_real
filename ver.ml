@@ -18,7 +18,8 @@
     Another way to number the cube is to ensure that the sum of the
   four vertices of each face is 14. In this example, opposite vertices
   have another special property; they are: (0, 1), (2, 3), (4, 5) and
-  (6, 7):
+  (6, 7). And some diagonal slice rectangles have 14 as sum too: the
+  5342 and 0617. But the other four have not.
       5-----6
      /|    /|
     0-----3 |
