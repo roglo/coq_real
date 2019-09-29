@@ -414,8 +414,8 @@ Qed.
      Σ 1/n^s = Σ x^ln(n)
  *)
 
-(* {| ls := u |} represents Σ (n=0,∞) u(n)/(n+1)^s = Σ (n=0,∞) u(n)x^ln(n+1) =
-   Σ (n=0,∞) u(n)(x⊗(n+1)) where a⊗b=a^ln(b)=b^ln(a)=e^(ln(a)ln(b)) *)
+(* {| ls := u |} represents Σ (n=1,∞) u(n)/n^s = Σ (n=1,∞) u(n)x^ln(n) =
+   Σ (n=1,∞) u(n)(x⊗n) where a⊗b=a^ln(b)=b^ln(a)=e^(ln(a)ln(b)) *)
 
 Class ln_series {F : field} :=
   { ls : nat → f_type }.
@@ -432,7 +432,7 @@ Delimit Scope lp_scope with LP.
 Arguments ls {_} _%LS _%nat.
 Arguments lp {_}.
 
-Definition ls_eq {F : field} s1 s2 := ∀ n, ls s1 n = ls s2 n.
+Definition ls_eq {F : field} s1 s2 := ∀ n, ls s1 (n + 1) = ls s2 (n + 1).
 Arguments ls_eq _ s1%LS s2%LS.
 
 Definition List_combine_all {A} (l1 l2 : list A) (d : A) :=
@@ -459,31 +459,33 @@ Definition ζ {F : field} := {| ls _ := f_one |}.
 
 Definition series_but_mul_of {F : field} s d :=
   {| ls n :=
-       match S n mod d with
+       match n mod d with
        | 0 => f_zero
        | _ => ls s n
        end |}.
 
 Definition ζ_but_mul_of {F : field} d :=
   {| ls n :=
-       match S n mod d with
+       match n mod d with
        | 0 => f_zero
        | _ => f_one
        end |}.
 
+Compute (0 mod 1).
+
 Definition ε {F: field} n i :=
-  match S n mod S i with
+  match n mod i with
   | 0 => f_one
   | _ => f_zero
   end.
 
 Definition log_prod_term {F : field} u v n i :=
-  (u i * v (S n / S i - 1)%nat * ε n i)%F.
+  (u i * v (n / i - 1)%nat * ε n i)%F.
 
 Fixpoint log_prod {F : field} u v n i :=
   match i with
   | 0 => f_zero
-  | S i' => (log_prod_term u v n (n - i') + log_prod u v n i')%F
+  | S i' => (log_prod_term u v n (n + 1 - i) + log_prod u v n i')%F
   end.
 
 (* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
@@ -492,10 +494,10 @@ Definition ls_add {F : field} s1 s2 :=
 
 (* Σ (i = 1, ∞) s1_(i-1) x^ln(i) * Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
 Definition ls_mul {F : field} s1 s2 :=
-  {| ls n := log_prod (ls s1) (ls s2) n (S n) |}.
+  {| ls n := log_prod (ls s1) (ls s2) n n |}.
 
 Definition ls_of_pol {F : field} p :=
-  {| ls n := List.nth n (lp p) f_zero |}.
+  {| ls n := List.nth (n - 1) (lp p) f_zero |}.
 
 (* Σ (i = 1, k), p_(i-1) x^ln(i) * Σ (i = 1, ∞) s_(i-1) x^ln(i) *)
 Definition ls_pol_mul_l {F : field} p s :=
@@ -536,43 +538,10 @@ Qed.
 Theorem log_prod_succ {F : field} : ∀ u v n i,
   log_prod u v n (S i) =
     (log_prod_term u v n (n - i) + log_prod u v n i)%F.
-Proof. easy. Qed.
-
-Theorem log_prod_succ_r {F : field} : ∀ s1 s2 n,
-  log_prod s1 s2 n (S n) = (s1 0 * s2 n + log_prod s1 s2 n n)%F.
 Proof.
-intros.
-rewrite log_prod_succ, Nat.sub_diag.
-unfold log_prod_term, ε.
-now rewrite Nat.mod_1_r, Nat.div_1_r, Nat_sub_succ_1, f_mul_1_r.
+intros; cbn.
+replace (n + 1 - S i) with (n - i); [ easy | flia ].
 Qed.
-
-Theorem log_prod_succ_r' {F : field} : ∀ s1 s2 n,
-  log_prod s1 s2 n n = (log_prod s1 s2 n (S n) - s1 0 * s2 n)%F.
-Proof.
-intros.
-rewrite log_prod_succ_r, f_add_comm.
-now rewrite f_add_sub.
-Qed.
-
-(* c*x^ln(n+1) * Σ (i = 1, ∞) s_(i-1) x^ln(i) =
-   Σ (i = 1, ∞) c*s_(i-1) x^ln((n+1)*i) *)
-Definition ls_mul_elem {F : field} c n s :=
-  {| ls i :=
-       match S i mod S n with
-       | 0 => (c * ls s (S i / S n - 1))%F
-       | _ => f_zero
-       end |}.
-
-(* multiplication of the first k elements of a series
-   (i.e. a polynomial formed by its first k elements)
-   to a series
-    Σ (i = 1, k) s1_(i-1) x^ln(i) * Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
-Fixpoint ls_mul_l_upto {F : field} k s1 s2 :=
-  match k with
-  | 0 => {| ls _ := f_zero |}
-  | S k' => ls_add (ls_mul_l_upto k' s1 s2) (ls_mul_elem (ls s1 k') k' s2)
-  end.
 
 Theorem log_prod_0_l {F : field} : ∀ u v n i,
   (∀ n, u n = f_zero) → log_prod u v n i = f_zero.
@@ -584,7 +553,7 @@ rewrite log_prod_succ.
 cbn - [ Nat.div Nat.modulo ].
 rewrite IHi, f_add_0_r.
 unfold log_prod_term, ε.
-remember (S n mod S (n - i)) as r eqn:Hr; symmetry in Hr.
+remember (n mod (n - i)) as r eqn:Hr; symmetry in Hr.
 destruct r; [ | now rewrite f_mul_0_r ].
 now rewrite Hu, f_mul_0_l, f_mul_1_r.
 Qed.
@@ -595,45 +564,8 @@ Proof.
 intros * Hs1 i.
 cbn - [ "/" "mod" ].
 unfold log_prod_term, ε.
-rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
-rewrite Nat.mod_1_r, f_mul_1_r.
-rewrite Hs1, f_mul_0_l, f_add_0_l.
 now apply log_prod_0_l.
 Qed.
-
-Theorem ls_mul_l_upto_succ {F : field} : ∀ k s1 s2,
-  ls_mul_l_upto (S k) s1 s2 =
-    ls_add (ls_mul_l_upto k s1 s2) (ls_mul_elem (ls s1 k) k s2).
-Proof. easy. Qed.
-
-Theorem ls_mul_l_upto_of_0 {F : field} : ∀ k s1 s2,
-  ls (ls_mul_l_upto k s1 s2) 0 =
-    match k with
-    | 0 => f_zero
-    | S k => (ls s1 0 * ls s2 0)%F
-    end.
-Proof.
-intros.
-destruct k; [ easy | ].
-induction k; [ cbn; now rewrite f_add_0_l | ].
-remember (S k) as x; cbn; subst x.
-unfold snd.
-replace (S k - k) with 1 by flia.
-now rewrite f_add_0_r.
-Qed.
-
-Theorem ls_mul_l_upto_of_succ {F : field} : ∀ k s1 s2 i,
-  ls (ls_mul_l_upto k s1 s2) (S i) =
-  match k with
-  | 0 => f_zero
-  | S k' =>
-      (ls (ls_mul_l_upto k' s1 s2) (S i) +
-       match S (S i) mod k with
-       | 0 => ls s1 k' * ls s2 (S (S i) / k - 1)
-       | S _ => f_zero
-       end)%F
-  end.
-Proof. intros; now destruct k. Qed.
 
 Theorem ls_ls_add {F : field} : ∀ s1 s2 i,
   ls (ls_add s1 s2) i = (ls s1 i + ls s2 i)%F.
@@ -652,6 +584,7 @@ Theorem ls_of_pol_add {F : field} : ∀ x y,
 Proof.
 intros * i.
 unfold ls_of_pol, "+"%LS; cbn.
+rewrite Nat.add_sub.
 remember (lp x) as lx eqn:Hlx.
 remember (lp y) as ly eqn:Hly.
 clear x y Hlx Hly.
@@ -703,15 +636,23 @@ destruct c.
 Qed.
 
 Theorem log_prod_pol_add {F : field} : ∀ x y s n i,
-  log_prod (ls (ls_of_pol (x + y))) (ls s) n i =
-  (log_prod (ls (ls_of_pol y)) (ls s) n i +
-   log_prod (ls (ls_of_pol x)) (ls s) n i)%F.
+  n ≠ 0
+  → i ≠ 0
+  → log_prod (ls (ls_of_pol (x + y))) (ls s) n i =
+     (log_prod (ls (ls_of_pol y)) (ls s) n i +
+      log_prod (ls (ls_of_pol x)) (ls s) n i)%F.
 Proof.
-intros.
-revert n.
+intros * Hn Hi.
+destruct i; [ easy | clear Hi ].
+rewrite log_prod_succ.
+destruct n; [ easy | clear Hn ].
+specialize (ls_of_pol_add x y (n - i)) as H1.
+...
+replace (n i + 1) with (S n - i) by flia.
+revert n Hn.
 induction i; intros; [ now cbn; rewrite f_add_0_r | ].
 do 3 rewrite log_prod_succ.
-unfold log_prod_term.
+
 rewrite IHi, ls_of_pol_add.
 rewrite ls_ls_add.
 rewrite f_mul_add_distr_r.
