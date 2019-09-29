@@ -96,4 +96,5 @@ value p = {lp=[3.; -4.; 2.]}.
 value s = {ls i = float i+.4.}.
 value e1 = (ls_pol_mul_l p s).ls;
 value e2 = (ls_mul_l_upto (List.length p.lp) (ls_of_pol p) s).ls;
+let n = 1 in (e1 n, e2 n);
 *)
