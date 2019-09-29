@@ -636,48 +636,45 @@ destruct c.
 Qed.
 
 Theorem log_prod_pol_add {F : field} : ∀ x y s n i,
-  n ≠ 0
-  → i ≠ 0
+  i ≤ n
   → log_prod (ls (ls_of_pol (x + y))) (ls s) n i =
-     (log_prod (ls (ls_of_pol y)) (ls s) n i +
-      log_prod (ls (ls_of_pol x)) (ls s) n i)%F.
+       (log_prod (ls (ls_of_pol y)) (ls s) n i +
+        log_prod (ls (ls_of_pol x)) (ls s) n i)%F.
 Proof.
-intros * Hn Hi.
-destruct i; [ easy | clear Hi ].
+intros * Hin.
+revert n Hin.
+induction i; intros; [ now cbn; rewrite f_add_0_l | ].
 rewrite log_prod_succ.
-destruct n; [ easy | clear Hn ].
-specialize (ls_of_pol_add x y (n - i)) as H1.
-...
-replace (n i + 1) with (S n - i) by flia.
-revert n Hn.
-induction i; intros; [ now cbn; rewrite f_add_0_r | ].
-do 3 rewrite log_prod_succ.
-
-rewrite IHi, ls_of_pol_add.
-rewrite ls_ls_add.
-rewrite f_mul_add_distr_r.
-rewrite f_mul_add_distr_r.
-rewrite (f_add_comm (ls (ls_of_pol x) _ * _ * _)%F).
-do 2 rewrite <- f_add_assoc; f_equal.
+unfold log_prod_term.
+specialize (ls_of_pol_add x y (n - i - 1)) as H1.
+rewrite Nat.sub_add in H1; [ | flia Hin ].
+rewrite H1, ls_ls_add.
+rewrite IHi; [ | flia Hin ].
+do 2 rewrite log_prod_succ.
 do 2 rewrite f_add_assoc; f_equal.
-apply f_add_comm.
+rewrite (f_add_comm (_ + _)%F), f_add_assoc; f_equal.
+unfold log_prod_term.
+now do 2 rewrite f_mul_add_distr_r.
 Qed.
 
 Theorem ls_mul_pol_add_distr_r {F : field} : ∀ x y s,
   ((x + y) .* s = x .* s + y .* s)%LS.
 Proof.
 intros * i.
+rewrite Nat.add_1_r.
 cbn - [ "/" "mod" ls_of_pol ].
+replace (i + 1 - i) with 1 by flia.
 unfold log_prod_term.
-rewrite Nat.sub_diag, Nat.div_1_r.
-rewrite Nat_sub_succ_1.
-rewrite ls_of_pol_add.
-cbn - [ ls_of_pol ].
-do 2 rewrite f_mul_add_distr_r.
+replace (ε (S i) 1) with f_one by easy.
+do 3 rewrite f_mul_1_r.
+rewrite Nat.div_1_r, Nat_sub_succ_1.
+specialize (ls_of_pol_add x y 0) as H1.
+rewrite Nat.add_0_l in H1; rewrite H1; clear H1.
+rewrite ls_ls_add, f_mul_add_distr_r.
 do 2 rewrite <- f_add_assoc; f_equal.
 rewrite (f_add_comm (log_prod _ _ _ _)).
 rewrite <- f_add_assoc; f_equal.
-apply log_prod_pol_add.
+apply log_prod_pol_add; flia.
 Qed.
 
 Theorem log_prod_pol_1_l {F : field} : ∀ s k n i,
@@ -686,6 +683,7 @@ Theorem log_prod_pol_1_l {F : field} : ∀ s k n i,
   → log_prod (ls (ls_of_pol (pol_pow k))) (ls s) n i = f_zero.
 Proof.
 intros * Hk Hin.
+...
 revert n Hin.
 induction i; intros; [ easy | ].
 rewrite log_prod_succ.
