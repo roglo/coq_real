@@ -480,7 +480,9 @@ Definition ε {F: field} n i :=
   end.
 
 Definition log_prod_term {F : field} u v n i :=
-  (u i * v (n / i - 1)%nat * ε n i)%F.
+  (u i * v (n / i)%nat * ε n i)%F.
+
+... prime.ml semble ne pas marcher : le faire marcher d'abord
 
 Fixpoint log_prod {F : field} u v n i :=
   match i with
@@ -677,13 +679,21 @@ rewrite <- f_add_assoc; f_equal.
 apply log_prod_pol_add; flia.
 Qed.
 
-Theorem log_prod_pol_1_l {F : field} : ∀ s k n i,
-  k < 2
-  → i ≤ n
-  → log_prod (ls (ls_of_pol (pol_pow k))) (ls s) n i = f_zero.
+Theorem log_prod_pol_1_l {F : field} : ∀ s n i,
+  i ≤ n
+  → log_prod (ls (ls_of_pol (pol_pow 1))) (ls s) n i = f_zero.
 Proof.
-intros * Hk Hin.
+intros * Hin.
 destruct n; [ now apply Nat.le_0_r in Hin; subst i | ].
+destruct i; intros; [ easy | ].
+Print log_prod.
+Print List.repeat.
+...
+rewrite log_prod_succ.
+destruct i. {
+  rewrite Nat.sub_0_r.
+  unfold log_prod_term.
+  unfold pol_pow at 1.
 ...
 revert n Hin.
 induction i; intros; [ easy | ].

@@ -23,12 +23,12 @@ value ε n i =
   end.
 
 value log_prod_term u v n i =
-  u i *. v (n / i - 1) *. ε n i.
+  u i *. v (n / i) *. ε n i.
 
 value rec log_prod u v n i =
   match i with
   | 0 → f_zero
-  | _ → log_prod_term u v n (n - i + 1) +. log_prod u v n (i - 1)
+  | _ → log_prod_term u v n (n + 1 - i) +. log_prod u v n (i - 1)
   end.
 
 (* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
@@ -66,6 +66,15 @@ value ls_of_pol p =
 
 value ls_pol_mul_l p s =
   ls_mul (ls_of_pol p) s.
+
+value rec list_repeat x n =
+  match n with
+  | 0 → []
+  | _ → [x :: list_repeat x (n - 1)]
+  end.
+
+value pol_pow n =
+  { lp = list_repeat f_zero (n - 1) @ [f_one] }.
 
 value ζ_but_mul_of d =
   { ls n =
