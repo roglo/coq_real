@@ -480,8 +480,6 @@ Definition ζ_but_mul_of {F : field} d :=
        | _ => f_one
        end |}.
 
-Compute (0 mod 1).
-
 Definition ε {F: field} n i :=
   match n mod i with
   | 0 => f_one
@@ -1342,7 +1340,7 @@ induction n; intros. {
 
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, 0 < i → ls s i = ls s (n * i))
-  → 0 < n
+  → 1 < n
   → (series_but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
 Proof.
 intros * Hs Hn i.
@@ -1357,7 +1355,7 @@ cbn - [ pol_pow ".*" ].
 symmetry.
 remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
 destruct m. {
-  destruct n; [ flia Hn | clear Hn ].
+  destruct n; [ flia Hn | ].
   replace (S n) with (n + 1) in Hm by flia.
   unfold ".*", "*"%LS.
   cbn - [ "/" "mod" ls_of_pol pol_pow ].
@@ -1368,14 +1366,7 @@ destruct m. {
   rewrite Nat.div_1_r.
   replace (ε (S i) 1) with f_one by easy.
   rewrite f_mul_1_r.
-  destruct n. {
-    replace (ls _ 1) with f_one by easy.
-    rewrite f_mul_1_l.
-    rewrite f_sub_add_distr, f_sub_diag, f_sub_0_l.
-    rewrite <- f_opp_involutive; f_equal.
-    rewrite f_opp_0.
-    apply log_prod_pol_1_l_trunc; flia.
-  }
+  destruct n; [ flia Hn | clear Hn ].
   replace (ls _ 1) with f_zero by easy.
   rewrite f_mul_0_l, f_add_0_l.
   apply Nat.mod_divides in Hm; [ | easy ].
