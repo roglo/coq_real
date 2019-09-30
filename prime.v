@@ -1393,6 +1393,10 @@ destruct m. {
     rewrite f_add_0_r.
     apply f_sub_diag.
   }
+  replace (S (S n)) with (n + 2) in Hs, Hm |-* by flia.
+  replace (S (S (S i))) with (i + 3) in Hm |-* by flia.
+  replace (S i) with (i + 1) by flia.
+  rewrite f_sub_add_distr.
 ...
 
 Theorem step_1 {F : field} :
