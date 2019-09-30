@@ -117,3 +117,6 @@ value test dim n =
   let beg_state = 0 in
   let end_state = pow 2 dim - 1 in
   float (sum dim a beg_state end_state 0 n) /. float n;
+
+Random.self_init ();
+Printf.eprintf "%g\n%!" (test 5 10000000);
