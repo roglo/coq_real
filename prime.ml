@@ -39,14 +39,14 @@ value ls_add s1 s2 =
 value ls_mul s1 s2 =
   { ls n = log_prod s1.ls s2.ls n n }.
 
-(* c*x^ln(n+1) * Σ (i = 1, ∞) s_(i-1) x^ln(i) =
-   Σ (i = 1, ∞) c*s_(i-1) x^ln((n+1)*i) *)
+(* c*x^ln(n) * Σ (i = 1, ∞) s_(i-1) x^ln(i) =
+   Σ (i = 1, ∞) c*s_(i-1) x^ln(n*i) *)
 value ls_mul_elem c n s =
   { ls i =
       if i = 0 then f_zero
       else
         match i mod n with
-        | 0 → c *. s.ls (i / n - 1)
+        | 0 → c *. s.ls (i / n)
         | _ → f_zero
         end }.
 
