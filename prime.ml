@@ -28,7 +28,7 @@ value log_prod_term u v n i =
 value rec log_prod u v n i =
   match i with
   | 0 → f_zero
-  | _ → log_prod_term u v n (n + 1 - i) +. log_prod u v n (i - 1)
+  | _ → log_prod_term u v n (n - (i - 1)) +. log_prod u v n (i - 1)
   end.
 
 (* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)

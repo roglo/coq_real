@@ -482,8 +482,6 @@ Definition ε {F: field} n i :=
 Definition log_prod_term {F : field} u v n i :=
   (u i * v (n / i)%nat * ε n i)%F.
 
-... prime.ml semble ne pas marcher : le faire marcher d'abord
-
 Fixpoint log_prod {F : field} u v n i :=
   match i with
   | 0 => f_zero
