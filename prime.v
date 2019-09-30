@@ -1374,13 +1374,16 @@ destruct m. {
     rewrite f_sub_add_distr, f_sub_diag, f_sub_0_l.
     rewrite <- f_opp_involutive; f_equal.
     rewrite f_opp_0.
-    clear Hm.
-    apply log_prod_0_l.
-    intros n.
-    induction n; [ easy | ].
-    destruct n; [ | now destruct n ].
+    apply log_prod_pol_1_l_trunc; flia.
+  }
+  replace (ls _ 1) with f_zero by easy.
+  rewrite f_mul_0_l, f_add_0_l.
+  apply Nat.mod_divides in Hm; [ | easy ].
+  destruct Hm as (m, Hm).
+  do 2 rewrite Nat.add_1_r in Hm.
+  destruct i. {
     cbn.
-    cbn in IHn.
+    cbn in Hm.
 (* oops *)
 ...
     destruct n; [ apply log_prod_pol_1_l_trunc; flia | ].
