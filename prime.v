@@ -747,6 +747,7 @@ Theorem ls_of_pol_opp {F : field} : ∀ p,
   (ls_of_pol (- p) = - ls_of_pol p)%LS.
 Proof.
 intros * i; cbn.
+rewrite Nat.add_sub.
 revert i.
 induction (lp p) as [| c cl]; intros. {
   now cbn; destruct i; rewrite f_opp_0.
@@ -764,6 +765,7 @@ intros.
 induction i; [ now cbn; rewrite f_opp_0 | ].
 do 2 rewrite log_prod_succ.
 unfold log_prod_term.
+...
 rewrite ls_of_pol_opp.
 cbn - [ "/" "mod" ls_of_pol ].
 rewrite f_opp_add_distr.
