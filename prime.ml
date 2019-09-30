@@ -62,7 +62,11 @@ value rec ls_mul_l_upto k s1 s2 =
   end.
 
 value ls_of_pol p =
-  { ls n = if n = 0 then f_zero else list_nth_def (n - 1) p.lp f_zero }.
+  { ls n =
+      match n with
+      | 0 → f_zero
+      | _ → list_nth_def (n - 1) p.lp f_zero
+      end }.
 
 value ls_pol_mul_l p s =
   ls_mul (ls_of_pol p) s.

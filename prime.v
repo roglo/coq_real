@@ -497,7 +497,10 @@ Definition ls_mul {F : field} s1 s2 :=
   {| ls n := log_prod (ls s1) (ls s2) n n |}.
 
 Definition ls_of_pol {F : field} p :=
-  {| ls n := List.nth (n - 1) (lp p) f_zero |}.
+  {| ls n :=
+       match n with
+       | 0 => f_zero
+       | S n' => List.nth n' (lp p) f_zero end |}.
 
 (* Σ (i = 1, k), p_(i-1) x^ln(i) * Σ (i = 1, ∞) s_(i-1) x^ln(i) *)
 Definition ls_pol_mul_l {F : field} p s :=
@@ -584,7 +587,7 @@ Theorem ls_of_pol_add {F : field} : ∀ x y,
 Proof.
 intros * i.
 unfold ls_of_pol, "+"%LS; cbn.
-rewrite Nat.add_sub.
+rewrite Nat.add_1_r.
 remember (lp x) as lx eqn:Hlx.
 remember (lp y) as ly eqn:Hly.
 clear x y Hlx Hly.
@@ -688,7 +691,8 @@ rewrite log_prod_succ.
 unfold ls_of_pol at 1.
 unfold log_prod_term.
 cbn - [ "/" ls_of_pol ].
-remember (n - i - 1) as m eqn:Hm.
+remember (n - i) as m eqn:Hm.
+destruct m; [ flia Hin Hm | ].
 destruct m; [ flia Hin Hm | ].
 replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct m.
 do 2 rewrite f_mul_0_l.
@@ -747,7 +751,7 @@ Theorem ls_of_pol_opp {F : field} : ∀ p,
   (ls_of_pol (- p) = - ls_of_pol p)%LS.
 Proof.
 intros * i; cbn.
-rewrite Nat.add_sub.
+rewrite Nat.add_1_r.
 revert i.
 induction (lp p) as [| c cl]; intros. {
   now cbn; destruct i; rewrite f_opp_0.
@@ -770,23 +774,16 @@ rewrite <- f_mul_opp_l; f_equal.
 rewrite <- f_mul_opp_l; f_equal.
 destruct (Nat.eq_dec n i) as [Hni| Hni]. {
   subst n; rewrite Nat.sub_diag; cbn.
-...
-cbn.
-cbn in IHi.
-rewrite IHi.
-specialize (ls_of_pol_opp p (n - i - 1)) as H1.
-rewrite Nat.sub_add in H1.
-...
-Search (ls (ls_of_pol _)).
-do 2 rewrite f_mul_opp_l; f_equal.
-apply IHi.
-Check ls_of_pol_opp.
-...
-rewrite ls_of_pol_opp.
-cbn - [ "/" "mod" ls_of_pol ].
-rewrite f_opp_add_distr.
-do 2 rewrite f_mul_opp_l; f_equal.
-apply IHi.
+  symmetry; apply f_opp_0.
+}
+destruct (lt_dec n i) as [Hnlti| Hngei]. {
+  replace (n - i) with 0 by flia Hnlti.
+  symmetry; apply f_opp_0.
+}
+remember (n - i) as m eqn:Hm; symmetry in Hm.
+destruct m; [ flia Hni Hngei Hm | ].
+specialize (ls_of_pol_opp p m) as H1.
+now rewrite Nat.add_1_r in H1.
 Qed.
 
 Theorem log_prod_term_0 {F : field} : ∀ u v n,
@@ -795,6 +792,7 @@ Proof.
 intros.
 unfold log_prod_term, ε.
 cbn - [ "/" ].
+...
 now rewrite Nat.div_1_r, Nat_sub_succ_1, f_mul_1_r.
 Qed.
 
