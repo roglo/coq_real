@@ -786,6 +786,7 @@ specialize (ls_of_pol_opp p m) as H1.
 now rewrite Nat.add_1_r in H1.
 Qed.
 
+(*
 Theorem log_prod_term_0 {F : field} : ∀ u v n,
   log_prod_term u v n 0 = (u 0 * v n)%F.
 Proof.
@@ -795,26 +796,24 @@ cbn - [ "/" ].
 ...
 now rewrite Nat.div_1_r, Nat_sub_succ_1, f_mul_1_r.
 Qed.
+*)
 
 Theorem ls_mul_pol_opp_l {F : field} : ∀ p s,
   (- p .* s = - (p .* s))%LS.
 Proof.
 intros * i.
 cbn - [ "/" "mod" ls_of_pol ].
-unfold log_prod_term.
-rewrite Nat.sub_diag.
-rewrite ls_of_pol_opp.
-rewrite log_prod_pol_opp_l.
-rewrite f_opp_add_distr.
-f_equal; cbn.
-now do 2 rewrite f_mul_opp_l.
+apply log_prod_pol_opp_l.
 Qed.
 
+(*
 Theorem pol_pow_1_mul_l {F : field} : ∀ s n i,
   i ≤ n
   → log_prod (ls (ls_of_pol (pol_pow 1))) (ls s) n i = f_zero.
 Proof.
 intros * Hin.
+Search log_prod.
+Check log_prod_pol_1_l_trunc.
 revert n Hin.
 induction i; intros; [ easy | ].
 rewrite log_prod_succ.
@@ -828,6 +827,7 @@ replace (ls (ls_of_pol (pol_pow 1)) (n - i)) with f_zero. 2: {
 rewrite f_mul_0_l, f_mul_0_l, f_add_0_l.
 apply IHi; flia Hin.
 Qed.
+*)
 
 Theorem log_prod_pow_ge_2 {F : field} : ∀ s i k,
   log_prod (ls (ls_of_pol (pol_pow (k + 2)))) (ls s) (i + k) i =
@@ -837,6 +837,7 @@ intros.
 destruct i. {
   cbn; unfold ε.
   rewrite Nat.mod_small; [ | flia ].
+...
   now rewrite f_mul_0_r.
 }
 rewrite log_prod_succ.
