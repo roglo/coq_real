@@ -485,7 +485,7 @@ Definition log_prod_term {F : field} u v n i :=
 Fixpoint log_prod {F : field} u v n i :=
   match i with
   | 0 => f_zero
-  | S i' => (log_prod_term u v n (n + 1 - i) + log_prod u v n i')%F
+  | S i' => (log_prod_term u v n (n - i') + log_prod u v n i')%F
   end.
 
 (* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
@@ -662,12 +662,12 @@ Theorem ls_mul_pol_add_distr_r {F : field} : ∀ x y s,
 Proof.
 intros * i.
 rewrite Nat.add_1_r.
-cbn - [ "/" "mod" ls_of_pol ].
-replace (i + 1 - i) with 1 by flia.
+cbn - [ "/" "mod" ls_of_pol "-" ].
+rewrite Nat_sub_succ_diag_l.
 unfold log_prod_term.
 replace (ε (S i) 1) with f_one by easy.
 do 3 rewrite f_mul_1_r.
-rewrite Nat.div_1_r, Nat_sub_succ_1.
+rewrite Nat.div_1_r.
 specialize (ls_of_pol_add x y 0) as H1.
 rewrite Nat.add_0_l in H1; rewrite H1; clear H1.
 rewrite ls_ls_add, f_mul_add_distr_r.
@@ -684,8 +684,6 @@ Proof.
 intros * Hin.
 destruct n; [ now apply Nat.le_0_r in Hin; subst i | ].
 destruct i; intros; [ easy | ].
-Print log_prod.
-Print List.repeat.
 ...
 rewrite log_prod_succ.
 destruct i. {
