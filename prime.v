@@ -830,14 +830,31 @@ Qed.
 *)
 
 Theorem log_prod_pow_ge_2 {F : field} : ∀ s i k,
-  log_prod (ls (ls_of_pol (pol_pow (k + 2)))) (ls s) (i + k) i =
-    (ls s ((i + k + 1) / (k + 2) - 1) * ε (i + k) (k + 1))%F.
+  0 < i
+  → log_prod (ls (ls_of_pol (pol_pow (k + 2)))) (ls s) (i + k) i =
+      (ls s ((i + k) / (k + 1)) * ε (i + k) (k + 1))%F.
 Proof.
-intros.
+intros * Hi.
+destruct i; [ flia Hi | clear Hi ].
+rewrite log_prod_succ.
+replace (S i + k - i) with (k + 1) by flia.
+unfold log_prod_term.
+replace (ls _ (k + 1)) with f_one. 2: {
+  setoid_rewrite Nat.add_comm; cbn.
+...
+  induction k; [ easy | apply IHk ].
+}
+rewrite <- f_mul_assoc, f_mul_1_l.
+replace (S (S i + k)) with (S i + k + 1) by flia.
+replace (S (k + 1)) with (k + 2) by flia.
+rewrite <- f_add_0_r; f_equal.
+apply log_prod_pol_pow; flia.
+...
+
+intros * Hi.
 destruct i. {
   cbn; unfold ε.
   rewrite Nat.mod_small; [ | flia ].
-...
   now rewrite f_mul_0_r.
 }
 rewrite log_prod_succ.
