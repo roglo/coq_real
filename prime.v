@@ -1342,9 +1342,10 @@ induction n; intros. {
 
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, 0 < i → ls s i = ls s (n * i))
+  → 0 < n
   → (series_but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
 Proof.
-intros * Hs i.
+intros * Hs Hn i.
 unfold lp_sub.
 rewrite ls_mul_pol_add_distr_r, ls_ls_add.
 rewrite ls_mul_pol_1_l.
@@ -1356,24 +1357,32 @@ cbn - [ pol_pow ".*" ].
 symmetry.
 remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
 destruct m. {
-  destruct (lt_dec n 2) as [Hn| Hn]. {
-    unfold ".*", "*"%LS.
-    cbn - [ "/" "mod" ls_of_pol pol_pow ].
-    rewrite Nat.add_1_r.
-    rewrite log_prod_succ.
-    rewrite Nat_sub_succ_diag_l.
-    unfold log_prod_term.
-    rewrite Nat.div_1_r.
-    replace (ε (S i) 1) with f_one by easy.
-    rewrite f_mul_1_r.
-    replace (ls _ 1) with f_one. 2: {
-      destruct n; [ easy | ].
-      destruct n; [ easy | flia Hn ].
-    }
+  destruct n; [ flia Hn | clear Hn ].
+  replace (S n) with (n + 1) in Hm by flia.
+  unfold ".*", "*"%LS.
+  cbn - [ "/" "mod" ls_of_pol pol_pow ].
+  rewrite Nat.add_1_r.
+  rewrite log_prod_succ.
+  rewrite Nat_sub_succ_diag_l.
+  unfold log_prod_term.
+  rewrite Nat.div_1_r.
+  replace (ε (S i) 1) with f_one by easy.
+  rewrite f_mul_1_r.
+  destruct n. {
+    replace (ls _ 1) with f_one by easy.
     rewrite f_mul_1_l.
     rewrite f_sub_add_distr, f_sub_diag, f_sub_0_l.
     rewrite <- f_opp_involutive; f_equal.
     rewrite f_opp_0.
+    clear Hm.
+    apply log_prod_0_l.
+    intros n.
+    induction n; [ easy | ].
+    destruct n; [ | now destruct n ].
+    cbn.
+    cbn in IHn.
+(* oops *)
+...
     destruct n; [ apply log_prod_pol_1_l_trunc; flia | ].
     destruct n; [ apply log_prod_pol_1_l_trunc; flia | flia Hn ].
   }
@@ -1390,6 +1399,11 @@ destruct m. {
   clear Hm; rename H into Hm.
   replace (S (S n)) with (n + 2) in Hs |-* by flia.
   specialize (Hs (m - 1)) as H1.
+  assert (H : 0 < m - 1). {
+    destruct m; [ flia Hm | ].
+    destruct m. {
+      cbn in Hm.
+
 ...
   replace (S (m - 1)) with m in H1. 2: {
     destruct m; [ flia Hm | flia ].
