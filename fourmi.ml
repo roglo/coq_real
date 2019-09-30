@@ -119,4 +119,4 @@ value test dim n =
   float (sum dim a beg_state end_state 0 n) /. float n;
 
 Random.self_init ();
-Printf.eprintf "%g\n%!" (test 5 10000000);
+Printf.eprintf "%g\n%!" (test 6 10000000);
