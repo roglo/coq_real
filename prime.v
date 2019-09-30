@@ -765,6 +765,22 @@ intros.
 induction i; [ now cbn; rewrite f_opp_0 | ].
 do 2 rewrite log_prod_succ.
 unfold log_prod_term.
+rewrite IHi, f_opp_add_distr; f_equal.
+rewrite <- f_mul_opp_l; f_equal.
+rewrite <- f_mul_opp_l; f_equal.
+destruct (Nat.eq_dec n i) as [Hni| Hni]. {
+  subst n; rewrite Nat.sub_diag; cbn.
+...
+cbn.
+cbn in IHi.
+rewrite IHi.
+specialize (ls_of_pol_opp p (n - i - 1)) as H1.
+rewrite Nat.sub_add in H1.
+...
+Search (ls (ls_of_pol _)).
+do 2 rewrite f_mul_opp_l; f_equal.
+apply IHi.
+Check ls_of_pol_opp.
 ...
 rewrite ls_of_pol_opp.
 cbn - [ "/" "mod" ls_of_pol ].
