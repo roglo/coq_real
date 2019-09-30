@@ -1397,6 +1397,12 @@ destruct m. {
   replace (S (S (S i))) with (i + 3) in Hm |-* by flia.
   replace (S i) with (i + 1) by flia.
   rewrite f_sub_add_distr.
+  replace (i + 1) with (S i) by flia.
+  rewrite log_prod_succ.
+  replace (S i) with (i + 1) by flia.
+  replace (i + 3 - i) with 3 by flia.
+  rewrite f_sub_add_distr.
+  unfold log_prod_term.
 ...
 
 Theorem step_1 {F : field} :
