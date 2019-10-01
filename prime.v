@@ -1363,6 +1363,41 @@ Theorem step_1 {F : field} : ∀ s n,
   → (series_but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
 Proof.
 intros * Hs Hn i.
+remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  replace (ls _ (i + 1)) with f_zero by now cbn; rewrite Hm.
+  unfold ".*", "*"%LS.
+  cbn - [ ls_of_pol ].
+  replace (i + 1) with (S i) at 2 3 by flia.
+  rewrite log_prod_succ.
+  replace (i + 1 - i) with 1 by flia.
+  unfold log_prod_term.
+  rewrite Nat.div_1_r.
+  replace (ε _ _) with f_one by easy.
+  rewrite f_mul_1_r.
+  replace (ls _ 1) with f_one. 2: {
+    cbn.
+    destruct n; [ flia Hn | ].
+    destruct n; [ flia Hn | ].
+    cbn.
+    destruct n; [ now cbn; rewrite f_opp_0, f_add_0_r | ].
+    now cbn; rewrite f_opp_0, f_add_0_r.
+  }
+  rewrite f_mul_1_l.
+...
+rewrite Nat.div_1_r.
+unfold lp_sub at 1.
+specialize (ls_of_pol_add (pol_pow 1) (- pol_pow n)%LP 0) as H.
+rewrite Nat.add_0_l in H; rewrite H; clear H.
+rewrite ls_ls_add.
+specialize (ls_of_pol_opp (pol_pow n) 0) as H.
+rewrite Nat.add_0_l in H; rewrite H; clear H.
+rewrite ls_of_opp, fold_f_sub.
+replace (ls _ 1) with f_one by easy.
+replace (ls _ 1) with f_zero. 2: {
+  destruct n; [ flia Hn | ].
+...
+intros * Hs Hn i.
 unfold ".*".
 unfold "*"%LS.
 cbn - [ series_but_mul_of ls_of_pol ].
