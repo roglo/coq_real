@@ -570,7 +570,8 @@ Theorem log_prod'_eq_log_prod {F : field} : ∀ u v n,
 Proof.
 intros.
 induction n; [ easy | ].
-cbn.
+cbn - [ "-" ].
+rewrite Nat_sub_succ_diag_l.
 ...
 
 Theorem fold_ls_sub {F : field} : ∀ x y, (x + - y = x - y)%LS.
