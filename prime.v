@@ -305,6 +305,22 @@ intros.
 now rewrite f_mul_comm, f_mul_opp_l, f_mul_comm.
 Qed.
 
+Theorem f_mul_sub_distr_l {F : field} : ∀ x y z,
+  (x * (y - z))%F = (x * y - x * z)%F.
+Proof.
+intros.
+unfold f_sub; rewrite f_mul_add_distr_l.
+now rewrite f_mul_opp_r.
+Qed.
+
+Theorem f_mul_sub_distr_r {F : field} : ∀ x y z,
+  ((x - y) * z)%F = (x * z - y * z)%F.
+Proof.
+intros.
+rewrite f_mul_comm, f_mul_sub_distr_l.
+now do 2 rewrite (f_mul_comm z).
+Qed.
+
 Theorem f_opp_add_distr {F : field} : ∀ x y, (- (x + y))%F = (- x + - y)%F.
 Proof.
 intros.
@@ -531,6 +547,9 @@ Notation "- x" := (ls_opp x) : ls_scope.
 Notation "p .* s" := (ls_pol_mul_l p s) (at level 40) : ls_scope.
 
 Theorem fold_ls_sub {F : field} : ∀ x y, (x + - y = x - y)%LS.
+Proof. easy. Qed.
+
+Theorem ls_of_opp {F : field} : ∀ x n, ls (- x) n = (- ls x n)%F.
 Proof. easy. Qed.
 
 Theorem Nat_succ_mod : ∀ n, 2 ≤ n → S n mod n = 1.
@@ -1345,11 +1364,30 @@ Theorem step_1 {F : field} : ∀ s n,
 Proof.
 intros * Hs Hn i.
 unfold ".*".
-unfold lp_sub.
 unfold "*"%LS.
 cbn - [ series_but_mul_of ls_of_pol ].
+replace (i + 1) with (S i) at 2 3 by flia.
+rewrite log_prod_succ.
+rewrite Nat_sub_succ_diag_l.
+replace (S i) with (i + 1) by flia.
+unfold log_prod_term.
+rewrite Nat.div_1_r.
+unfold lp_sub at 1.
+specialize (ls_of_pol_add (pol_pow 1) (- pol_pow n)%LP 0) as H.
+rewrite Nat.add_0_l in H; rewrite H; clear H.
+rewrite ls_ls_add.
+specialize (ls_of_pol_opp (pol_pow n) 0) as H.
+rewrite Nat.add_0_l in H; rewrite H; clear H.
+rewrite ls_of_opp, fold_f_sub.
+replace (ls _ 1) with f_one by easy.
+replace (ls _ 1) with f_zero. 2: {
+  destruct n; [ flia Hn | ].
+  destruct n; [ flia Hn | easy ].
+}
+rewrite f_sub_0_r, f_mul_1_l.
+replace (ε _ 1) with f_one by now unfold ε; rewrite Nat.add_comm.
+rewrite f_mul_1_r.
 ...
-
 intros * Hs Hn i.
 unfold lp_sub.
 rewrite ls_mul_pol_add_distr_r, ls_ls_add.
