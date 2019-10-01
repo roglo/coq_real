@@ -31,13 +31,30 @@ value rec log_prod u v n i =
   | _ → log_prod_term u v n (n - (i - 1)) +. log_prod u v n (i - 1)
   end.
 
+value log_prod_term' u v n i =
+  let q = n / i in
+  if q < i then f_zero
+  else
+    match n mod i with
+    | 0 →
+        if q = i then u i *. v i
+        else u i *. v q +. u q *. v i
+    | _ → f_zero
+    end.
+
+value rec log_prod' u v n i =
+   match i with
+   | 0 → f_zero
+   | _ → log_prod_term' u v n (n - (i - 1)) +. log_prod' u v n (i - 1)
+   end.
+
 (* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
 value ls_add s1 s2 =
   { ls n = s1.ls n +. s2.ls n }.
 
 (* Σ (i = 1, ∞) s1_i x^ln(i) * Σ (i = 1, ∞) s2_i x^ln(i) *)
 value ls_mul s1 s2 =
-  { ls n = log_prod s1.ls s2.ls n n }.
+  { ls n = log_prod' s1.ls s2.ls n n }.
 
 (* c*x^ln(n) * Σ (i = 1, ∞) s_(i-1) x^ln(i) =
    Σ (i = 1, ∞) c*s_(i-1) x^ln(n*i) *)
