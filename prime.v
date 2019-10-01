@@ -1387,6 +1387,25 @@ replace (ls _ 1) with f_zero. 2: {
 rewrite f_sub_0_r, f_mul_1_l.
 replace (ε _ 1) with f_one by now unfold ε; rewrite Nat.add_comm.
 rewrite f_mul_1_r.
+unfold series_but_mul_of.
+cbn - [ "mod" ls_of_pol ].
+remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  apply Nat.mod_divides in Hm; [ | flia Hn ].
+  destruct Hm as (m, Hm).
+  destruct i. {
+    symmetry in Hm.
+    apply Nat.eq_mul_1 in Hm.
+    flia Hn Hm.
+  }
+  rewrite log_prod_succ.
+  replace (S i + 1) with (i + 2) by flia.
+  replace (i + 2 - i) with 2 by flia.
+  unfold log_prod_term, ε.
+  replace (i + 2) with (i + 1 * 2) by flia.
+  rewrite Nat.div_add; [ | easy ].
+  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.mul_1_l.
 ...
 intros * Hs Hn i.
 unfold lp_sub.
