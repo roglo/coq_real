@@ -511,6 +511,14 @@ Fixpoint log_prod {F : field} u v n i :=
   | S i' => (log_prod_term u v n (n - i') + log_prod u v n i')%F
   end.
 
+Fixpoint log_prod_rev {F : field} u v n i :=
+  match i with
+  | 0 => f_zero
+  | S i' => (log_prod_term u v n i + log_prod_rev u v n i')%F
+  end.
+
+...
+
 (* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
 Definition ls_add {F : field} s1 s2 :=
   {| ls n := (ls s1 n + ls s2 n)%F |}.
