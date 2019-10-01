@@ -1338,11 +1338,48 @@ induction n; intros. {
 ...
 *)
 
+Require Import Morphisms.
+Theorem ls_eq_refl {F : field} : ∀ x, (x = x)%LS.
+Proof. easy. Qed.
+
+Theorem ls_eq_symm {F : field} : ∀ x y, (x = y)%LS → (y = x)%LS.
+Proof. easy. Qed.
+
+Theorem ls_eq_trans {F : field} : ∀ x y z,
+  (x = y)%LS → (y = z)%LS → (x = z)%LS.
+Proof.
+Admitted.
+
+Add Parametric Relation {F : field} : _ ls_eq
+ reflexivity proved by ls_eq_refl
+ symmetry proved by ls_eq_symm
+ transitivity proved by ls_eq_trans
+ as ls_eq_equiv_rel.
+
+Instance ls_morph {F : field} :
+  Proper (ls_eq ==> eq ==> eq) ls.
+Proof.
+intros x y Hxy a b Hab.
+unfold ls_eq in Hxy.
+...
+
+Instance ls_mul_morph {F : field} :
+  Proper (ls_eq ==> ls_eq ==> ls_eq) ls_mul.
+Admitted.
+
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, 0 < i → ls s i = ls s (n * i))
   → 1 < n
   → (series_but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
 Proof.
+intros * Hs Hn i.
+unfold ".*".
+unfold lp_sub.
+rewrite ls_of_pol_add.
+...
+apply ls_of_pol_add.
+...
+
 intros * Hs Hn i.
 unfold lp_sub.
 rewrite ls_mul_pol_add_distr_r, ls_ls_add.
