@@ -511,25 +511,6 @@ Fixpoint log_prod {F : field} u v n i :=
   | S i' => (log_prod_term u v n (n - i') + log_prod u v n i')%F
   end.
 
-(* alternative definition, making symmetry between u an v appear *)
-
-Definition log_prod_term' {F : field} u v n i :=
-  let q := n / i in
-  if lt_dec q i then f_zero
-  else
-    match n mod i with
-    | 0 =>
-        if Nat.eq_dec q i then (u i * v i)%F
-        else (u i * v q + u q * v i)%F
-    | _ => f_zero
-    end.
-
-Fixpoint log_prod' {F : field} u v n i :=
-   match i with
-   | 0 => f_zero
-   | S i' => (log_prod_term' u v n (n - i') + log_prod' u v n i')%F
-   end.
-
 (* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
 Definition ls_add {F : field} s1 s2 :=
   {| ls n := (ls s1 n + ls s2 n)%F |}.
@@ -564,15 +545,6 @@ Notation "x * y" := (ls_mul x y) : ls_scope.
 Notation "x - y" := (ls_sub x y) : ls_scope.
 Notation "- x" := (ls_opp x) : ls_scope.
 Notation "p .* s" := (ls_pol_mul_l p s) (at level 40) : ls_scope.
-
-Theorem log_prod'_eq_log_prod {F : field} : ∀ u v n,
-  log_prod' u v n n = log_prod u v n n.
-Proof.
-intros.
-induction n; [ easy | ].
-cbn - [ "-" ].
-rewrite Nat_sub_succ_diag_l.
-...
 
 Theorem fold_ls_sub {F : field} : ∀ x y, (x + - y = x - y)%LS.
 Proof. easy. Qed.
