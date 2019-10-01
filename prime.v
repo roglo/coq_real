@@ -1384,6 +1384,12 @@ destruct m. {
     now cbn; rewrite f_opp_0, f_add_0_r.
   }
   rewrite f_mul_1_l.
+  apply Nat.mod_divides in Hm; [ | flia Hn ].
+  destruct Hm as (m, Hm).
+  destruct m; [ flia Hm | ].
+  rewrite Hm at 1.
+  rewrite <- Hs; [ | flia ].
+(* il faut montrer que log_prod <...> vaut "- ls s (S m)" *)
 ...
 rewrite Nat.div_1_r.
 unfold lp_sub at 1.
