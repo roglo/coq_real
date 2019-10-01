@@ -482,22 +482,22 @@ Notation "x - y" := (lp_sub x y) : lp_scope.
 
 Definition ζ {F : field} := {| ls _ := f_one |}.
 
-Definition series_but_mul_of {F : field} s d :=
-  {| ls n :=
-       match n mod d with
+Definition series_but_mul_of {F : field} s n :=
+  {| ls i :=
+       match i mod n with
        | 0 => f_zero
-       | _ => ls s n
+       | _ => ls s i
        end |}.
 
-Definition ζ_but_mul_of {F : field} d :=
-  {| ls n :=
-       match n mod d with
+Definition ζ_but_mul_of {F : field} n :=
+  {| ls i :=
+       match i mod n with
        | 0 => f_zero
        | _ => f_one
        end |}.
 
-Definition ε {F: field} n i :=
-  match n mod i with
+Definition ε {F: field} i n :=
+  match i mod n with
   | 0 => f_one
   | _ => f_zero
   end.
