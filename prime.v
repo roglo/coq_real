@@ -1393,6 +1393,7 @@ destruct m. {
   rewrite Hm at 1.
   rewrite <- Hs; [ | flia ].
 (* il faut montrer que log_prod <...> vaut "- ls s (S m)" *)
+  unfold log_prod.
 ...
 rewrite Nat.div_1_r.
 unfold lp_sub at 1.
