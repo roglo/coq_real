@@ -1405,23 +1405,43 @@ destruct m. {
   apply Nat.mod_divides in Hm; [ | flia Hn ].
   destruct Hm as (m, Hm).
   destruct m; [ flia Hm | ].
-...
-  rewrite Hm at 1.
-  rewrite <- Hs; [ | flia ].
   (* we must prove that log_prod <...> equals "- ls s (S m)" *)
   unfold log_prod.
   remember (log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) (i + 1) i) as l eqn:Hl.
-  specialize (@app_removelast_last _ l f_zero) as H1.
-  assert (H : l ≠ []). {
+...
+(* non, c'est pas List.nth (S m) l, c'est le coefficient (S m), d'accord,
+   mais il ne se trouve pas forcément en (S m)-ième position dans l *)
+...
+  assert (List.nth m l f_zero = (- ls s (i + 1))%F). {
     rewrite Hl.
-    destruct i; [ | easy ].
-    destruct n; [ flia Hn | ].
-    destruct n; [ flia Hn | cbn in Hm; flia Hm ].
-  }
-  specialize (H1 H); clear H.
-  rewrite H1.
-  rewrite List.fold_right_app.
-  cbn; rewrite f_add_0_r.
+    destruct i. {
+      destruct n; [ flia Hn | ].
+      destruct n; [ flia Hn | cbn in Hm; flia Hm ].
+    }
+    destruct i. {
+      cbn.
+      destruct m. {
+        destruct n; [ flia Hn | ].
+        destruct n; [ flia Hn | ].
+        cbn in Hm.
+        replace n with 0 in * by flia Hm.
+        unfold log_prod_term; cbn.
+        rewrite f_add_0_l, f_mul_1_r.
+        rewrite f_mul_opp_l, f_mul_1_l.
+        rewrite Hs; [ easy | flia ].
+      }
+      destruct n; [ flia Hn | ].
+      destruct n; [ flia Hn | cbn in Hm; flia Hm ].
+    }
+    destruct i. {
+      cbn.
+      destruct m. {
+        destruct n; [ flia Hn | ].
+        destruct n; [ flia Hn | ].
+        cbn in Hm.
+        replace n with 1 in * by flia Hm.
+        unfold log_prod_term; cbn.
+(* shit: it works not *)
 ...
 intros * Hs Hn i.
 unfold ".*".
