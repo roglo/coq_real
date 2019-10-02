@@ -1416,15 +1416,21 @@ destruct m. {
     }
 (**)
     assert (Hlast : List.nth (length l - 1) l f_zero = (- ls s 1)%F). {
-      destruct l as [| a l]. {
-        cbn in Hfirst; cbn.
-        rewrite (Hs 1); [ | flia ].
-        rewrite Nat.mul_1_r, <- Hfirst.
-        symmetry; apply f_opp_0.
-      }
-      cbn - [ nth "-" ].
+clear Hfirst Hs.
+rewrite <- Hnl.
+      destruct n; [ flia Hn | ].
       rewrite Nat_sub_succ_1.
-      cbn in Hfirst.
+      destruct n; [ flia Hn | ].
+      clear Hn.
+      revert n Hl Hnl.
+      induction l as [| a l]; intros; [ easy | ].
+      cbn.
+      rewrite log_prod_list_succ in Hl.
+      rewrite Nat_sub_succ_diag_l in Hl.
+      remember ls_of_pol as f.
+      remember (S n) as sn.
+      injection Hl; clear Hl; intros Hl Ha; subst f sn.
+      cbn in Hnl; apply Nat.succ_inj in Hnl.
 ...
     assert (Hlast : List.nth (n - 1) l f_zero = (- ls s 1)%F). {
       subst l.
