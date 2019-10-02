@@ -1384,6 +1384,20 @@ intros * Hs Hn i.
 remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
 destruct m. {
   replace (ls _ (i + 1)) with f_zero by now cbn; rewrite Hm.
+(**)
+  apply Nat.mod_divides in Hm; [ | flia Hn ].
+  destruct Hm as (m, Hm).
+  destruct m; [ flia Hm | ].
+  destruct m. {
+    rewrite Nat.mul_1_r in Hm.
+    rewrite Hm.
+    unfold ".*", "*"%LS.
+    cbn - [ ls_of_pol ].
+    clear i Hm.
+    unfold log_prod.
+    (* log_prod_list ... =
+       [1*s_n*ε; 0*s_{n-1}*ε; 0*s_{n-2}*ε; ... 0*s_2*ε; (-1)*s_1)*ε] *)
+...
   unfold ".*", "*"%LS.
   cbn - [ ls_of_pol ].
   replace (i + 1) with (S i) at 2 3 by flia.
@@ -1406,6 +1420,7 @@ destruct m. {
   destruct Hm as (m, Hm).
   destruct m; [ flia Hm | ].
   (* we must prove that log_prod <...> equals "- ls s (S m)" *)
+...
   unfold log_prod.
   remember (log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) (i + 1) i) as l eqn:Hl.
   destruct l as [| a l]. {
