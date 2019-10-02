@@ -505,11 +505,14 @@ Definition ε {F: field} i n :=
 Definition log_prod_term {F : field} u v n i :=
   (u i * v (n / i)%nat * ε n i)%F.
 
-Fixpoint log_prod {F : field} u v n i :=
+Fixpoint log_prod_list {F : field} u v n i :=
   match i with
-  | 0 => f_zero
-  | S i' => (log_prod_term u v n (n - i') + log_prod u v n i')%F
+  | 0 => []
+  | S i' => log_prod_term u v n (n - i') :: log_prod_list u v n i'
   end.
+
+Definition log_prod {F : field} u v n i :=
+  List.fold_right f_add f_zero (log_prod_list u v n i).
 
 (* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
 Definition ls_add {F : field} s1 s2 :=
@@ -701,7 +704,7 @@ specialize (ls_of_pol_add x y 0) as H1.
 rewrite Nat.add_0_l in H1; rewrite H1; clear H1.
 rewrite ls_ls_add, f_mul_add_distr_r.
 do 2 rewrite <- f_add_assoc; f_equal.
-rewrite (f_add_comm (log_prod _ _ _ _)).
+rewrite (f_add_comm (fold_right _ _ _)).
 rewrite <- f_add_assoc; f_equal.
 apply log_prod_pol_add; flia.
 Qed.
