@@ -1415,9 +1415,9 @@ destruct m. {
       symmetry; apply length_log_prod_list.
     }
 (**)
-    assert (Hlast : List.nth (length l - 1) l f_zero = (- ls s 1)%F). {
+    assert (Hlast : List.nth (n - 1) l f_zero = (- ls s 1)%F). {
+...
 clear Hfirst Hs.
-rewrite <- Hnl.
       destruct n; [ flia Hn | ].
       rewrite Nat_sub_succ_1.
       destruct n; [ flia Hn | ].
