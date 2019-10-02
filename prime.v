@@ -567,28 +567,15 @@ rewrite Nat.div_small in H1; [ | flia Hn ].
 now rewrite Nat.mul_0_r in H1.
 Qed.
 
+Theorem log_prod_list_succ {F : field} : ∀ u v n i,
+  log_prod_list u v n (S i) =
+    log_prod_term u v n (n - i) :: log_prod_list u v n i.
+Proof. easy. Qed.
+
 Theorem log_prod_succ {F : field} : ∀ u v n i,
   log_prod u v n (S i) =
     (log_prod_term u v n (n - i) + log_prod u v n i)%F.
 Proof. easy. Qed.
-
-(*
-Theorem log_prod_app {F : field} : ∀ u v n i (l : list f_type),
-  l = log_prod_list u v n (S i)
-  → log_prod u v n (S i) = fold_right f_add (last l f_zero) (removelast l).
-Proof.
-intros * Hl.
-unfold log_prod.
-specialize (@exists_last _ (log_prod_list u v n (S i))) as H1.
-assert (H : log_prod_list u v n (S i) ≠ []) by easy.
-specialize (H1 H); clear H.
-destruct H1 as (l & a & Hl).
-rewrite Hl.
-rewrite List.fold_right_app; cbn.
-rewrite f_add_0_r.
-now exists a, l.
-Qed.
-*)
 
 Theorem log_prod_0_l {F : field} : ∀ u v n i,
   (∀ n, u n = f_zero) → log_prod u v n i = f_zero.
@@ -1384,7 +1371,6 @@ intros * Hs Hn i.
 remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
 destruct m. {
   replace (ls _ (i + 1)) with f_zero by now cbn; rewrite Hm.
-(**)
   apply Nat.mod_divides in Hm; [ | flia Hn ].
   destruct Hm as (m, Hm).
   destruct m; [ flia Hm | ].
@@ -1397,70 +1383,40 @@ destruct m. {
     unfold log_prod.
     (* log_prod_list ... =
        [1*s_n*ε; 0*s_{n-1}*ε; 0*s_{n-2}*ε; ... 0*s_2*ε; (-1)*s_1)*ε] *)
-...
-  unfold ".*", "*"%LS.
-  cbn - [ ls_of_pol ].
-  replace (i + 1) with (S i) at 2 3 by flia.
-  rewrite log_prod_succ.
-  replace (i + 1 - i) with 1 by flia.
-  unfold log_prod_term.
-  rewrite Nat.div_1_r.
-  replace (ε _ _) with f_one by easy.
-  rewrite f_mul_1_r.
-  replace (ls _ 1) with f_one. 2: {
-    cbn.
-    destruct n; [ flia Hn | ].
-    destruct n; [ flia Hn | ].
-    cbn.
-    destruct n; [ now cbn; rewrite f_opp_0, f_add_0_r | ].
-    now cbn; rewrite f_opp_0, f_add_0_r.
-  }
-  rewrite f_mul_1_l.
-  apply Nat.mod_divides in Hm; [ | flia Hn ].
-  destruct Hm as (m, Hm).
-  destruct m; [ flia Hm | ].
-  (* we must prove that log_prod <...> equals "- ls s (S m)" *)
-...
-  unfold log_prod.
-  remember (log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) (i + 1) i) as l eqn:Hl.
-  destruct l as [| a l]. {
-    cbn in Hl.
-    replace (i + 1) with (S i) in Hl by flia.
-    destruct i; [ | easy ].
-    destruct n; [ flia Hn | ].
-    destruct n; [ flia Hn | ].
-    cbn in Hm; flia Hm.
-  }
-  cbn.
-    destruct i. {
+    remember
+      (log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) n n)
+      as l eqn:Hl.
+    assert (Hfirst : List.nth 0 l f_zero = ls s n). {
+      subst l.
       destruct n; [ flia Hn | ].
+      rewrite log_prod_list_succ.
+      unfold nth.
+      rewrite Nat_sub_succ_diag_l.
+      unfold log_prod_term.
+      rewrite Nat.div_1_r.
+      replace (ε _ _) with f_one by easy.
+      rewrite f_mul_1_r.
       destruct n; [ flia Hn | ].
-      cbn in Hm; flia Hm.
+      replace (ls _ 1) with f_one. 2: {
+        now destruct n; cbn; rewrite f_opp_0, f_add_0_r.
+      }
+      apply f_mul_1_l.
     }
-    cbn in Hl.
-    injection Hl; clear Hl; intros H1 H2.
-    unfold log_prod_term in H2.
-    destruct i. {
-      cbn in H2.
+    assert (Hlast : List.nth (n - 1) l f_zero = (- ls s 1)%F). {
+      subst l.
       destruct n; [ flia Hn | ].
+      rewrite Nat_sub_succ_1.
+      rewrite log_prod_list_succ.
+      rewrite Nat_sub_succ_diag_l.
+      cbn - [ ls_of_pol ].
       destruct n; [ flia Hn | ].
-      cbn in Hm.
-      destruct n; [ | cbn in Hm; flia Hm ].
-      cbn in H2; cbn.
-      rewrite f_add_0_l, f_mul_1_r in H2.
-      rewrite f_mul_opp_l, f_mul_1_l in H2.
-      subst a.
-      rewrite f_add_assoc.
-      rewrite (Hs 1); [ | flia ].
-      rewrite Nat.mul_1_r, f_add_opp_diag_r, f_add_0_l.
-      cbn in H1; now subst l.
-    }
-    replace (S i + 1 - i) with 2 in H2 by flia.
-...
-(* non, c'est pas List.nth (S m) l, c'est le coefficient (S m), d'accord,
-   mais il ne se trouve pas forcément en (S m)-ième position dans l *)
-...
-  assert (List.nth (S m) l f_zero = (- ls s (i + 1))%F). {
+      clear.
+      induction n. {
+        cbn - [ ls_of_pol ].
+        unfold log_prod_term; cbn.
+        now rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l, f_mul_1_r.
+      }
+      rewrite log_prod_list_succ.
 ...
 intros * Hs Hn i.
 unfold ".*".
