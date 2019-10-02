@@ -1405,54 +1405,23 @@ destruct m. {
   apply Nat.mod_divides in Hm; [ | flia Hn ].
   destruct Hm as (m, Hm).
   destruct m; [ flia Hm | ].
+...
   rewrite Hm at 1.
   rewrite <- Hs; [ | flia ].
   (* we must prove that log_prod <...> equals "- ls s (S m)" *)
-...
-  destruct i. {
+  unfold log_prod.
+  remember (log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) (i + 1) i) as l eqn:Hl.
+  specialize (@app_removelast_last _ l f_zero) as H1.
+  assert (H : l ≠ []). {
+    rewrite Hl.
+    destruct i; [ | easy ].
     destruct n; [ flia Hn | ].
     destruct n; [ flia Hn | cbn in Hm; flia Hm ].
   }
-  unfold log_prod.
-  remember (log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) (S i + 1) (S i)) as l eqn:Hl.
-  specialize (@app_removelast_last _ l f_zero) as H1.
-  assert (H : l ≠ []) by now subst l.
   specialize (H1 H); clear H.
-Theorem glop {F : field} : ∀ u v n i,
-  List.last (log_prod_list u v n (S i)) f_zero = log_prod_term u v n n.
-...
   rewrite H1.
-  rewrite List.fold_right_app; cbn.
-  rewrite f_add_0_r.
-rewrite Hl at 1.
-rewrite glop.
-unfold log_prod_term.
-rewrite Nat.div_same; [ | flia ].
-cbn - [ "/" ].
-replace (ε _ _) with f_one. 2: {
-  unfold ε.
-  now rewrite Nat.mod_same.
-}
-rewrite f_mul_1_r.
-...
-replace (nth _ _ _) with (- f_one)%F. 2: {
-  destruct n; [ easy | ].
-  destruct n; [ flia Hn | cbn ].
-  destruct n. {
-    cbn.
-    rewrite Nat.add_comm; cbn.
-...
-rewrite Nat.div_1_r.
-unfold lp_sub at 1.
-specialize (ls_of_pol_add (pol_pow 1) (- pol_pow n)%LP 0) as H.
-rewrite Nat.add_0_l in H; rewrite H; clear H.
-rewrite ls_ls_add.
-specialize (ls_of_pol_opp (pol_pow n) 0) as H.
-rewrite Nat.add_0_l in H; rewrite H; clear H.
-rewrite ls_of_opp, fold_f_sub.
-replace (ls _ 1) with f_one by easy.
-replace (ls _ 1) with f_zero. 2: {
-  destruct n; [ flia Hn | ].
+  rewrite List.fold_right_app.
+  cbn; rewrite f_add_0_r.
 ...
 intros * Hs Hn i.
 unfold ".*".
