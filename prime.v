@@ -1415,6 +1415,17 @@ destruct m. {
       symmetry; apply length_log_prod_list.
     }
 (**)
+    assert (Hbetw : ∀ i, 0 < i < n - 1 → List.nth i l f_zero = f_zero). {
+      intros i (Hi, Hin).
+      clear - Hi Hl Hin.
+      destruct i; [ flia Hi | clear Hi ].
+      destruct l as [| a l]; [ easy | cbn ].
+      destruct n; [ easy | ].
+      rewrite log_prod_list_succ in Hl.
+      remember ls_of_pol; remember (S n).
+      injection Hl; clear Hl; intros Hl Ha; subst l0 n0.
+      rewrite Nat_sub_succ_diag_l in Ha.
+...
     assert (Hlast : List.nth (n - 1) l f_zero = (- ls s 1)%F). {
 ...
 clear Hfirst Hs.
