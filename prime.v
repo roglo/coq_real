@@ -572,14 +572,23 @@ Theorem log_prod_succ {F : field} : ∀ u v n i,
     (log_prod_term u v n (n - i) + log_prod u v n i)%F.
 Proof. easy. Qed.
 
-Theorem log_prod_app {F : field} : ∀ u v n i,
-  log_prod u v n (S i) =
-  f_zero.
+(*
+Theorem log_prod_app {F : field} : ∀ u v n i (l : list f_type),
+  l = log_prod_list u v n (S i)
+  → log_prod u v n (S i) = fold_right f_add (last l f_zero) (removelast l).
 Proof.
-intros.
+intros * Hl.
 unfold log_prod.
-Print log_prod_list.
-...
+specialize (@exists_last _ (log_prod_list u v n (S i))) as H1.
+assert (H : log_prod_list u v n (S i) ≠ []) by easy.
+specialize (H1 H); clear H.
+destruct H1 as (l & a & Hl).
+rewrite Hl.
+rewrite List.fold_right_app; cbn.
+rewrite f_add_0_r.
+now exists a, l.
+Qed.
+*)
 
 Theorem log_prod_0_l {F : field} : ∀ u v n i,
   (∀ n, u n = f_zero) → log_prod u v n i = f_zero.
@@ -1398,14 +1407,20 @@ destruct m. {
   destruct m; [ flia Hm | ].
   rewrite Hm at 1.
   rewrite <- Hs; [ | flia ].
-(* il faut montrer que log_prod <...> vaut "- ls s (S m)" *)
+  (* we must prove that log_prod <...> equals "- ls s (S m)" *)
   destruct i. {
     destruct n; [ flia Hn | ].
     destruct n; [ flia Hn | cbn in Hm; flia Hm ].
   }
-...
-  rewrite log_prod_app.
-  rewrite log_prod_succ.
+  unfold log_prod.
+  remember (log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) (S i + 1) (S i)) as l eqn:Hl.
+  specialize (@app_removelast_last _ l f_zero) as H1.
+  assert (H : l ≠ []) by now subst l.
+  specialize (H1 H); clear H.
+  rewrite H1.
+  rewrite List.fold_right_app; cbn.
+  rewrite f_add_0_r.
+  rewrite H1.
 ...
 rewrite Nat.div_1_r.
 unfold lp_sub at 1.
