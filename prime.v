@@ -570,10 +570,16 @@ Qed.
 Theorem log_prod_succ {F : field} : ∀ u v n i,
   log_prod u v n (S i) =
     (log_prod_term u v n (n - i) + log_prod u v n i)%F.
+Proof. easy. Qed.
+
+Theorem log_prod_app {F : field} : ∀ u v n i,
+  log_prod u v n (S i) =
+  f_zero.
 Proof.
-intros; cbn.
-replace (n + 1 - S i) with (n - i); [ easy | flia ].
-Qed.
+intros.
+unfold log_prod.
+Print log_prod_list.
+...
 
 Theorem log_prod_0_l {F : field} : ∀ u v n i,
   (∀ n, u n = f_zero) → log_prod u v n i = f_zero.
@@ -1393,7 +1399,13 @@ destruct m. {
   rewrite Hm at 1.
   rewrite <- Hs; [ | flia ].
 (* il faut montrer que log_prod <...> vaut "- ls s (S m)" *)
-  unfold log_prod.
+  destruct i. {
+    destruct n; [ flia Hn | ].
+    destruct n; [ flia Hn | cbn in Hm; flia Hm ].
+  }
+...
+  rewrite log_prod_app.
+  rewrite log_prod_succ.
 ...
 rewrite Nat.div_1_r.
 unfold lp_sub at 1.
