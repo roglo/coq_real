@@ -567,6 +567,14 @@ rewrite Nat.div_small in H1; [ | flia Hn ].
 now rewrite Nat.mul_0_r in H1.
 Qed.
 
+Theorem length_log_prod_list {F : field} : ∀ u v n i,
+  length (log_prod_list u v n i) = i.
+Proof.
+intros.
+revert n.
+induction i; intros; [ easy | now cbn; rewrite IHi ].
+Qed.
+
 Theorem log_prod_list_succ {F : field} : ∀ u v n i,
   log_prod_list u v n (S i) =
     log_prod_term u v n (n - i) :: log_prod_list u v n i.
@@ -1402,6 +1410,22 @@ destruct m. {
       }
       apply f_mul_1_l.
     }
+    assert (Hnl : n = length l). {
+      subst l.
+      symmetry; apply length_log_prod_list.
+    }
+(**)
+    assert (Hlast : List.nth (length l - 1) l f_zero = (- ls s 1)%F). {
+      destruct l as [| a l]. {
+        cbn in Hfirst; cbn.
+        rewrite (Hs 1); [ | flia ].
+        rewrite Nat.mul_1_r, <- Hfirst.
+        symmetry; apply f_opp_0.
+      }
+      cbn - [ nth "-" ].
+      rewrite Nat_sub_succ_1.
+      cbn in Hfirst.
+...
     assert (Hlast : List.nth (n - 1) l f_zero = (- ls s 1)%F). {
       subst l.
       destruct n; [ flia Hn | ].
@@ -1417,6 +1441,8 @@ destruct m. {
         now rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l, f_mul_1_r.
       }
       rewrite log_prod_list_succ.
+      cbn - [ ls_of_pol "-" ].
+      replace (S (S (S n)) - n) with 3 by flia.
 ...
 intros * Hs Hn i.
 unfold ".*".
