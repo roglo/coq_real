@@ -1444,15 +1444,19 @@ Theorem glop {F : field} : ∀ n i k u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u n k
   → n = S (length l)
   → k < n
-  → 1 < i < n - 2
+  → i < n - 2
   → nth i l f_zero = f_zero.
-Admitted.
-destruct i. {
+Proof.
+intros * Hl Hn Hkn Hin.
+revert n i l Hl Hn Hkn Hin.
+induction k; intros; [ now rewrite Hl; destruct i | ].
+rewrite log_prod_list_succ in Hl.
+destruct l as [| a l]; [ easy | ].
+remember ls_of_pol as f; remember (S n) as sn.
+injection Hl; clear Hl; intros Hl Ha; subst f sn.
+cbn in Hn; cbn.
+specialize (IHk _ (i - 1) _ Hl) as H1.
 ...
-}
-destruct i. {
-...
-}
 apply (glop (S n) _ n (ls s)); [ easy | flia Hnl | flia | flia Hin ].
 ...
       destruct n; [ flia Hin | ].
