@@ -1435,7 +1435,13 @@ clear Hfirst.
       destruct n; [ flia Hin | clear Hn ].
       apply Nat.succ_lt_mono in Hin.
 clear a Ha Hs.
+remember (S n) as m.
+replace n with (m - 1) in Hin by flia Hin Heqm.
+clear n Heqm.
+rename m into n.
 ...
+      destruct n; [ flia Hin | ].
+      rewrite Nat_sub_succ_1 in Hin.
       destruct l as [| a1 l]; [ now destruct i | ].
       rewrite log_prod_list_succ in Hl.
       remember Nat.sub as m.
