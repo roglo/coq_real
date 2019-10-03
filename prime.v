@@ -1418,6 +1418,7 @@ destruct m. {
     assert (Hbetw : ∀ i, 0 < i < n - 1 → List.nth i l f_zero = f_zero). {
       intros i (Hi, Hin).
       move i before n.
+clear Hfirst.
       destruct i; [ flia Hi | clear Hi ].
       destruct l as [| a l]; [ easy | cbn ].
       destruct n; [ easy | ].
