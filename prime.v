@@ -1425,12 +1425,17 @@ clear Hfirst.
       rewrite log_prod_list_succ in Hl.
       remember ls_of_pol as f; remember (S n) as sn.
       injection Hl; clear Hl; intros Hl Ha; subst f sn.
-      rewrite Nat_sub_succ_diag_l in Ha.
-      rewrite Nat_sub_succ_1 in Hin.
       cbn in Hnl.
       apply Nat.succ_inj in Hnl.
+      rewrite Nat_sub_succ_1 in Hin.
+(*
+      rewrite Nat_sub_succ_diag_l in Ha.
       cbn in Hfirst.
+*)
       destruct n; [ flia Hin | clear Hn ].
+      apply Nat.succ_lt_mono in Hin.
+clear a Ha Hs.
+...
       destruct l as [| a1 l]; [ now destruct i | ].
       rewrite log_prod_list_succ in Hl.
       remember Nat.sub as m.
@@ -1441,7 +1446,6 @@ clear Hfirst.
         subst a1.
         unfold log_prod_term.
         replace (S (S n) - n) with 2 by flia.
-        apply Nat.succ_lt_mono in Hin.
         destruct n; [ easy | cbn ].
         now rewrite f_add_opp_diag_r, <- f_mul_assoc, f_mul_0_l.
       }
