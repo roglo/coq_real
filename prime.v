@@ -1439,6 +1439,21 @@ remember (S n) as m.
 replace n with (m - 1) in Hin by flia Hin Heqm.
 clear n Heqm.
 rename m into n.
+Print log_prod_term.
+Theorem glop {F : field} : ∀ n i k u l,
+  l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u n k
+  → n = S (length l)
+  → k < n
+  → 1 < i < n - 2
+  → nth i l f_zero = f_zero.
+Admitted.
+destruct i. {
+...
+}
+destruct i. {
+...
+}
+apply (glop (S n) _ n (ls s)); [ easy | flia Hnl | flia | flia Hin ].
 ...
       destruct n; [ flia Hin | ].
       rewrite Nat_sub_succ_1 in Hin.
