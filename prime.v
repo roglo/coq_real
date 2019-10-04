@@ -1421,6 +1421,36 @@ replace (ls _ (n - k)) with f_zero. 2: {
 now do 2 rewrite f_mul_0_l.
 Qed.
 
+Theorem nth_log_prod_list_last {F : field} : ∀ k l n s,
+  l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow (n + k + 3)))) (ls s) (n + k + 3) (n + 1)
+  → nth n l f_zero = (- ls s 1)%F.
+Proof.
+intros * Hl.
+replace (n + 1) with (S n) in Hl by flia.
+revert n k Hl.
+induction l as [| a l]; intros; [ easy | cbn ].
+rewrite log_prod_list_succ in Hl.
+remember ls_of_pol as f; remember (S n) as sn; remember Nat.sub as m.
+injection Hl; clear Hl; intros Hl Ha; subst f sn m.
+destruct n. {
+  rewrite Ha; cbn.
+  rewrite Nat.sub_0_r.
+  replace (k + 3 - 1) with (k + 2) by flia.
+  unfold log_prod_term.
+  replace (k + 3) with (S (k + 2)) by flia.
+  replace (k + 2) with (S (S k)) by flia; cbn - [ "/" ].
+  unfold ε.
+  rewrite Nat.div_same; [ | easy ].
+  rewrite Nat.mod_same; [ | easy ].
+  rewrite f_mul_1_r.
+  clear.
+  induction k; [ now cbn; rewrite f_add_0_l, f_mul_opp_l, f_mul_1_l | ].
+  cbn; apply IHk.
+}
+apply (IHl _ (k + 1)).
+now replace (n + (k + 1) + 3) with (S n + k + 3) by flia.
+Qed.
+
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, 0 < i → ls s i = ls s (n * i))
   → 1 < n
@@ -1506,55 +1536,10 @@ destruct m. {
         unfold ε; cbn.
         now rewrite f_mul_1_r, f_mul_opp_l, f_mul_1_l.
       }
-(**)
-clear - Hl.
-      destruct l as [| a l]; [ easy | cbn ].
-      rewrite log_prod_list_succ in Hl.
-      remember ls_of_pol as f; remember (S n) as sn; remember Nat.sub as m.
-      injection Hl; clear Hl; intros Hl Ha; subst f sn m.
-      destruct n. {
-        rewrite Ha; cbn.
-        unfold log_prod_term.
-        rewrite f_add_0_l, Nat.div_same; [ | easy ].
-        unfold ε; cbn.
-        now rewrite f_mul_1_r, f_mul_opp_l, f_mul_1_l.
-      }
-      clear a Ha.
-      destruct l as [| a l]; [ easy | cbn ].
-      rewrite log_prod_list_succ in Hl.
-      remember ls_of_pol as f; remember (S n) as sn; remember Nat.sub as m.
-      injection Hl; clear Hl; intros Hl Ha; subst f sn m.
-      destruct n. {
-        rewrite Ha; cbn.
-        unfold log_prod_term.
-        rewrite f_add_0_l, Nat.div_same; [ | easy ].
-        unfold ε; cbn.
-        now rewrite f_mul_1_r, f_mul_opp_l, f_mul_1_l.
-      }
-      clear a Ha.
-      destruct l as [| a l]; [ easy | cbn ].
-      rewrite log_prod_list_succ in Hl.
-      remember ls_of_pol as f; remember (S n) as sn; remember Nat.sub as m.
-      injection Hl; clear Hl; intros Hl Ha; subst f sn m.
-      destruct n. {
-        rewrite Ha; cbn.
-        unfold log_prod_term.
-        rewrite f_add_0_l, Nat.div_same; [ | easy ].
-        unfold ε; cbn.
-        now rewrite f_mul_1_r, f_mul_opp_l, f_mul_1_l.
-      }
-      clear a Ha.
-      destruct l as [| a l]; [ easy | cbn ].
-      rewrite log_prod_list_succ in Hl.
-      remember ls_of_pol as f; remember (S n) as sn; remember Nat.sub as m.
-      injection Hl; clear Hl; intros Hl Ha; subst f sn m.
-      destruct n. {
-        rewrite Ha; cbn.
-        unfold log_prod_term.
-        rewrite f_add_0_l, Nat.div_same; [ | easy ].
-        unfold ε; cbn.
-        now rewrite f_mul_1_r, f_mul_opp_l, f_mul_1_l.
-      }
+      apply (nth_log_prod_list_last 0).
+      replace (n + 0 + 3) with (S (S (S n))) by flia.
+      now replace (n + 1) with (S n) by flia.
+    }
 ...
 intros * Hs Hn i.
 unfold ".*".
