@@ -1554,6 +1554,24 @@ destruct m. {
     cbn in Hlast.
     rewrite H1, List.fold_right_app; cbn.
     rewrite f_add_0_r.
+    replace (last l f_zero) with (nth len l f_zero). 2: {
+      clear - Hlen.
+      revert l Hlen.
+      induction len; intros. {
+        destruct l as [| a1 l]; [ easy | ].
+        cbn in Hlen; cbn.
+        now destruct l.
+      }
+      destruct l as [| a1 l]; [ easy | ].
+      cbn in Hlen.
+      apply Nat.succ_inj in Hlen.
+      specialize (IHlen _ Hlen) as H1.
+      cbn; rewrite H1.
+      now destruct l.
+    }
+    rewrite Hlast.
+    rewrite (Hs 1); [ | flia ].
+    rewrite Nat.mul_1_r.
 ...
 intros * Hs Hn i.
 unfold ".*".
