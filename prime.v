@@ -1444,11 +1444,11 @@ Theorem glop {F : field} : ∀ n i k u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u n k
   → k < n
   → k = length l
-  → i < n - 2
+  → i < k - 1
   → nth i l f_zero = f_zero.
 Proof.
-intros * Hl Hkn Hn Hin.
-revert n i l Hl Hn Hkn Hin.
+intros * Hl Hkn Hn Hik.
+revert n i l Hl Hn Hkn Hik.
 induction k; intros; [ now rewrite Hl; destruct i | ].
 rewrite log_prod_list_succ in Hl.
 destruct l as [| a l]; [ easy | ].
@@ -1456,20 +1456,20 @@ cbn in Hn; apply Nat.succ_inj in Hn.
 remember ls_of_pol as f; remember (S n) as sn.
 injection Hl; clear Hl; intros Hl Ha; subst f sn.
 cbn in Hn; cbn.
-specialize (IHk _ (i - 1) _ Hl Hn) as H1.
-assert (H : k < n) by flia Hkn.
-specialize (H1 H); clear H.
-assert (H : i - 1 < n - 2) by flia Hin.
-specialize (H1 H); clear H.
-destruct i; [ | now rewrite Nat_sub_succ_1 in H1 ].
-cbn in H1.
+destruct i. 2: {
+  specialize (IHk _ i _ Hl Hn) as H1.
+  assert (H : k < n) by flia Hkn.
+  specialize (H1 H); clear H.
+  assert (H : i < k - 1) by flia Hik.
+  now specialize (H1 H); clear H.
+}
 rewrite Ha.
 unfold log_prod_term.
 replace (ls _ (n - k)) with f_zero. 2: {
   remember (n - k) as m eqn:Hm; symmetry in Hm.
   destruct m; [ easy | ].
   cbn.
-  destruct n; [ flia Hin | ].
+  destruct n; [ flia Hkn | ].
   rewrite Nat_sub_succ_1.
   destruct n. {
     cbn.
@@ -1478,19 +1478,11 @@ replace (ls _ (n - k)) with f_zero. 2: {
   }
   cbn.
   destruct m; [ flia Hm Hkn | ].
-  destruct n; [ flia Hin | ].
-  cbn.
+  destruct n; [ flia Hkn Hik | cbn ].
   rewrite f_add_opp_diag_r.
   destruct m; [ easy | ].
-  destruct n. {
-    cbn.
-    destruct m.
-    replace k with 0 in * by flia Hm.
-cbn in Hl.
-subst l.
-clear Hn Hkn Hin Hm.
-cbn in Ha.
-(* marche pô ; chiasse de pute *)
+  destruct n; [ flia Hik Hm | ].
+  destruct m; cbn.
 ...
 apply (glop (S n) _ n (ls s)); [ easy | flia | easy | flia Hin ].
 ...
