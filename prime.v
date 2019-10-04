@@ -1487,15 +1487,74 @@ destruct m. {
       rewrite Nat_sub_succ_1.
       destruct n; [ flia Hn | ].
       clear Hn.
-      revert n Hl Hnl Hbetw.
-      induction l as [| a l]; intros; [ easy | ].
-      cbn.
+      destruct l as [| a l]; [ easy | cbn ].
       rewrite log_prod_list_succ in Hl.
       rewrite Nat_sub_succ_diag_l in Hl.
-      remember ls_of_pol as f.
-      remember (S n) as sn.
+      remember ls_of_pol as f; remember (S n) as sn.
       injection Hl; clear Hl; intros Hl Ha; subst f sn.
       cbn in Hnl; apply Nat.succ_inj in Hnl.
+      rewrite log_prod_list_succ in Hl.
+      clear a Ha Hbetw.
+      destruct l as [| a l]; [ easy | cbn ].
+      remember ls_of_pol as f; remember (S n) as sn; remember Nat.sub as m.
+      injection Hl; clear Hl; intros Hl Ha; subst f sn m.
+      cbn in Hnl; apply Nat.succ_inj in Hnl.
+      destruct n. {
+        rewrite Ha; cbn.
+        unfold log_prod_term.
+        rewrite f_add_0_l, Nat.div_same; [ | easy ].
+        unfold ε; cbn.
+        now rewrite f_mul_1_r, f_mul_opp_l, f_mul_1_l.
+      }
+(**)
+clear - Hl.
+      destruct l as [| a l]; [ easy | cbn ].
+      rewrite log_prod_list_succ in Hl.
+      remember ls_of_pol as f; remember (S n) as sn; remember Nat.sub as m.
+      injection Hl; clear Hl; intros Hl Ha; subst f sn m.
+      destruct n. {
+        rewrite Ha; cbn.
+        unfold log_prod_term.
+        rewrite f_add_0_l, Nat.div_same; [ | easy ].
+        unfold ε; cbn.
+        now rewrite f_mul_1_r, f_mul_opp_l, f_mul_1_l.
+      }
+      clear a Ha.
+      destruct l as [| a l]; [ easy | cbn ].
+      rewrite log_prod_list_succ in Hl.
+      remember ls_of_pol as f; remember (S n) as sn; remember Nat.sub as m.
+      injection Hl; clear Hl; intros Hl Ha; subst f sn m.
+      destruct n. {
+        rewrite Ha; cbn.
+        unfold log_prod_term.
+        rewrite f_add_0_l, Nat.div_same; [ | easy ].
+        unfold ε; cbn.
+        now rewrite f_mul_1_r, f_mul_opp_l, f_mul_1_l.
+      }
+      clear a Ha.
+      destruct l as [| a l]; [ easy | cbn ].
+      rewrite log_prod_list_succ in Hl.
+      remember ls_of_pol as f; remember (S n) as sn; remember Nat.sub as m.
+      injection Hl; clear Hl; intros Hl Ha; subst f sn m.
+      destruct n. {
+        rewrite Ha; cbn.
+        unfold log_prod_term.
+        rewrite f_add_0_l, Nat.div_same; [ | easy ].
+        unfold ε; cbn.
+        now rewrite f_mul_1_r, f_mul_opp_l, f_mul_1_l.
+      }
+      clear a Ha.
+      destruct l as [| a l]; [ easy | cbn ].
+      rewrite log_prod_list_succ in Hl.
+      remember ls_of_pol as f; remember (S n) as sn; remember Nat.sub as m.
+      injection Hl; clear Hl; intros Hl Ha; subst f sn m.
+      destruct n. {
+        rewrite Ha; cbn.
+        unfold log_prod_term.
+        rewrite f_add_0_l, Nat.div_same; [ | easy ].
+        unfold ε; cbn.
+        now rewrite f_mul_1_r, f_mul_opp_l, f_mul_1_l.
+      }
 ...
 intros * Hs Hn i.
 unfold ".*".
