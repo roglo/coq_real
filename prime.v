@@ -1540,6 +1540,20 @@ destruct m. {
       replace (n + 0 + 3) with (S (S (S n))) by flia.
       now replace (n + 1) with (S n) by flia.
     }
+    destruct l as [| a l]; [ easy | ].
+    cbn in Hfirst, Hnl; cbn.
+    rewrite Hnl, Nat_sub_succ_1 in Hlast.
+    rewrite Hfirst.
+    remember (length l) as len eqn:Hlen; symmetry in Hlen.
+    destruct len; [ flia Hnl Hn | ].
+    specialize (@app_removelast_last _ l f_zero) as H1.
+    assert (H : l ≠ []). {
+      now intros H; rewrite H in Hlen.
+    }
+    specialize (H1 H); clear H.
+    cbn in Hlast.
+    rewrite H1, List.fold_right_app; cbn.
+    rewrite f_add_0_r.
 ...
 intros * Hs Hn i.
 unfold ".*".
