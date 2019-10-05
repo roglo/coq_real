@@ -1581,8 +1581,13 @@ destruct m. {
     }
     assert (H : 2 < n) by flia Hn Hn2.
     clear Hn; rename H into Hn.
+    rewrite <- Hlen in Hnl.
+    rewrite Hnl in Hn.
+    apply Nat.succ_lt_mono in Hn.
+    rewrite Hnl in Hbetw.
+    rewrite Nat_sub_succ_1 in Hbetw.
     clear - Hn Hbetw.
-    revert a n Hn Hbetw.
+    revert a Hbetw.
     induction l as [| a1 l]; intros. {
       cbn; symmetry; apply f_add_opp_diag_r.
     }
@@ -1593,16 +1598,25 @@ destruct m. {
     cbn - [ removelast ].
     replace a1 with f_zero. 2: {
       specialize (Hbetw 1) as H2.
-      cbn in H2; rewrite H2; [ easy | ].
-      flia Hn.
+      cbn in H2; rewrite H2; [ easy | flia ].
     }
     rewrite f_add_0_l.
-...
-    destruct (Nat.eq_dec (i + 1) (n - 1)) as [Hin| Hin]. {
-...
-    apply (IHl a1); [ easy | ].
+    destruct l as [| a3 l]. {
+      cbn; symmetry; apply f_add_opp_diag_r.
+    }
+    assert (H : 1 < length (a2 :: a3 :: l)) by (cbn; flia).
+    specialize (IHl H); clear H.
+    apply (IHl a1).
     intros i Hi.
     specialize (Hbetw (i + 1)) as H1.
+    assert (H : 0 < i + 1 ∧ i + 1 < length (a1 :: a2 :: a3 :: l)). {
+      split; [ flia | cbn in Hi; cbn; flia Hi ].
+    }
+    specialize (H1 H); clear H.
+    replace (i + 1) with (S i) in H1 by flia.
+    remember (a1 :: a2 :: a3 :: l) as l'.
+    now cbn in H1.
+  }
 ...
 intros * Hs Hn i.
 unfold ".*".
