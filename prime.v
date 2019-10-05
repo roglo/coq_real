@@ -1572,6 +1572,37 @@ destruct m. {
     rewrite Hlast.
     rewrite (Hs 1); [ | flia ].
     rewrite Nat.mul_1_r.
+    destruct (Nat.eq_dec n 2) as [Hn2| Hn2]. {
+      move Hn2 at top; subst n.
+      clear Hn; do 2 apply Nat.succ_inj in Hnl; subst len.
+      destruct l as [| a1 l]; [ easy | ].
+      destruct l as [| a2 l]; [ | easy ].
+      cbn; symmetry; apply f_add_opp_diag_r.
+    }
+    assert (H : 2 < n) by flia Hn Hn2.
+    clear Hn; rename H into Hn.
+    clear - Hn Hbetw.
+    revert a n Hn Hbetw.
+    induction l as [| a1 l]; intros. {
+      cbn; symmetry; apply f_add_opp_diag_r.
+    }
+    cbn.
+    destruct l as [ | a2 l]. {
+      cbn; symmetry; apply f_add_opp_diag_r.
+    }
+    cbn - [ removelast ].
+    replace a1 with f_zero. 2: {
+      specialize (Hbetw 1) as H2.
+      cbn in H2; rewrite H2; [ easy | ].
+      flia Hn.
+    }
+    rewrite f_add_0_l.
+...
+    destruct (Nat.eq_dec (i + 1) (n - 1)) as [Hin| Hin]. {
+...
+    apply (IHl a1); [ easy | ].
+    intros i Hi.
+    specialize (Hbetw (i + 1)) as H1.
 ...
 intros * Hs Hn i.
 unfold ".*".
