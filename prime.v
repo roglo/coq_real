@@ -1608,6 +1608,22 @@ remember (a1 :: a2 :: a3 :: l) as l'.
 now cbn in H1.
 Qed.
 
+Theorem mul_pol_1_sub_pow_ser_at_nth_pow {F : field} : ∀ n m s,
+  1 < n
+  → (∀ i : nat, 0 < i → ls s i = ls s (n * i))
+  → ls ((pol_pow 1 - pol_pow n) .* s) (n * (m + 1)) = f_zero.
+Proof.
+intros * Hn Hs.
+unfold ".*", "*"%LS.
+cbn - [ ls_of_pol ].
+unfold log_prod.
+(* log_prod_list ... =
+       [1*s[n*(m+1)]*ε; 0*s[n*(m+1)-1]*ε; ... ; 0*s[n*m+1]*ε;
+        0*s[n*m]*ε; 0*s[n*m-1]*ε; ... ; 0*s[(n-1)*m+1]*ε;
+
+(-1)*s_1)*ε] *)
+...
+
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, 0 < i → ls s i = ls s (n * i))
   → 1 < n
@@ -1621,10 +1637,15 @@ destruct m. {
   apply Nat.mod_divides in Hm; [ | flia Hn ].
   destruct Hm as (m, Hm).
   destruct m; [ flia Hm | ].
-  destruct m. {
-    rewrite Nat.mul_1_r in Hm; rewrite Hm.
+  rewrite Hm.
+  clear i Hm.
+  replace (S m) with (m + 1) by flia.
+  revert m.
+  induction m; intros. {
+    rewrite Nat.mul_1_r.
     now apply mul_pol_1_sub_pow_ser_at_pow.
   }
+  replace (S m + 1) with (m + 2) by flia.
 ...
 
 Theorem step_1 {F : field} :
