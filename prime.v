@@ -1451,6 +1451,163 @@ apply (IHl _ (k + 1)).
 now replace (n + (k + 1) + 3) with (S n + k + 3) by flia.
 Qed.
 
+Theorem mul_pol_1_sub_pow_ser_at_pow {F : field} : ∀ n s,
+  1 < n
+  → (∀ i : nat, 0 < i → ls s i = ls s (n * i))
+  → ls ((pol_pow 1 - pol_pow n) .* s) n = f_zero.
+Proof.
+intros * Hn Hs.
+unfold ".*", "*"%LS.
+cbn - [ ls_of_pol ].
+unfold log_prod.
+(* log_prod_list ... =
+       [1*s_n*ε; 0*s_{n-1}*ε; 0*s_{n-2}*ε; ... 0*s_2*ε; (-1)*s_1)*ε] *)
+remember
+  (log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) n n)
+  as l eqn:Hl.
+assert (Hfirst : List.nth 0 l f_zero = ls s n). {
+  subst l.
+  destruct n; [ flia Hn | ].
+  rewrite log_prod_list_succ.
+  unfold nth.
+  rewrite Nat_sub_succ_diag_l.
+  unfold log_prod_term.
+  rewrite Nat.div_1_r.
+  replace (ε _ _) with f_one by easy.
+  rewrite f_mul_1_r.
+  destruct n; [ flia Hn | ].
+  replace (ls _ 1) with f_one. 2: {
+    now destruct n; cbn; rewrite f_opp_0, f_add_0_r.
+  }
+  apply f_mul_1_l.
+}
+assert (Hnl : n = length l). {
+  subst l.
+  symmetry; apply length_log_prod_list.
+}
+assert (Hbetw : ∀ i, 0 < i < n - 1 → List.nth i l f_zero = f_zero). {
+  intros i (Hi, Hin).
+  move i before n.
+  destruct i; [ flia Hi | clear Hi ].
+  destruct l as [| a l]; [ easy | cbn ].
+  destruct n; [ easy | ].
+  rewrite log_prod_list_succ in Hl.
+  remember ls_of_pol as f; remember (S n) as sn.
+  injection Hl; clear Hl; intros Hl Ha; subst f sn.
+  cbn in Hnl.
+  apply Nat.succ_inj in Hnl.
+  rewrite Nat_sub_succ_1 in Hin.
+  destruct n; [ flia Hin | clear Hn ].
+  apply Nat.succ_lt_mono in Hin.
+  eapply nth_log_prod_list; [ apply Hl | flia | easy | flia Hin ].
+}
+assert (Hlast : List.nth (n - 1) l f_zero = (- ls s 1)%F). {
+  clear Hfirst Hs.
+  destruct n; [ flia Hn | ].
+  rewrite Nat_sub_succ_1.
+  destruct n; [ flia Hn | ].
+  clear Hn.
+  destruct l as [| a l]; [ easy | cbn ].
+  rewrite log_prod_list_succ in Hl.
+  rewrite Nat_sub_succ_diag_l in Hl.
+  remember ls_of_pol as f; remember (S n) as sn.
+  injection Hl; clear Hl; intros Hl Ha; subst f sn.
+  cbn in Hnl; apply Nat.succ_inj in Hnl.
+  rewrite log_prod_list_succ in Hl.
+  clear a Ha Hbetw.
+  destruct l as [| a l]; [ easy | cbn ].
+  remember ls_of_pol as f; remember (S n) as sn; remember Nat.sub as m.
+  injection Hl; clear Hl; intros Hl Ha; subst f sn m.
+  cbn in Hnl; apply Nat.succ_inj in Hnl.
+  destruct n. {
+    rewrite Ha; cbn.
+    unfold log_prod_term.
+    rewrite f_add_0_l, Nat.div_same; [ | easy ].
+    unfold ε; cbn.
+    now rewrite f_mul_1_r, f_mul_opp_l, f_mul_1_l.
+  }
+  apply (nth_log_prod_list_last 0).
+  replace (n + 0 + 3) with (S (S (S n))) by flia.
+  now replace (n + 1) with (S n) by flia.
+}
+destruct l as [| a l]; [ easy | ].
+cbn in Hfirst, Hnl; cbn.
+rewrite Hnl, Nat_sub_succ_1 in Hlast.
+rewrite Hfirst.
+remember (length l) as len eqn:Hlen; symmetry in Hlen.
+destruct len; [ flia Hnl Hn | ].
+specialize (@app_removelast_last _ l f_zero) as H1.
+assert (H : l ≠ []). {
+  now intros H; rewrite H in Hlen.
+}
+specialize (H1 H); clear H.
+cbn in Hlast.
+rewrite H1, List.fold_right_app; cbn.
+rewrite f_add_0_r.
+replace (last l f_zero) with (nth len l f_zero). 2: {
+  clear - Hlen.
+  revert l Hlen.
+  induction len; intros. {
+    destruct l as [| a1 l]; [ easy | ].
+    cbn in Hlen; cbn.
+    now destruct l.
+  }
+  destruct l as [| a1 l]; [ easy | ].
+  cbn in Hlen.
+  apply Nat.succ_inj in Hlen.
+  specialize (IHlen _ Hlen) as H1.
+  cbn; rewrite H1.
+  now destruct l.
+}
+rewrite Hlast.
+rewrite (Hs 1); [ | flia ].
+rewrite Nat.mul_1_r.
+destruct (Nat.eq_dec n 2) as [Hn2| Hn2]. {
+  move Hn2 at top; subst n.
+  clear Hn; do 2 apply Nat.succ_inj in Hnl; subst len.
+  destruct l as [| a1 l]; [ easy | ].
+  destruct l as [| a2 l]; [ | easy ].
+  cbn; apply f_add_opp_diag_r.
+}
+assert (H : 2 < n) by flia Hn Hn2.
+clear Hn; rename H into Hn.
+rewrite <- Hlen in Hnl.
+rewrite Hnl in Hn.
+apply Nat.succ_lt_mono in Hn.
+rewrite Hnl in Hbetw.
+rewrite Nat_sub_succ_1 in Hbetw.
+clear - Hn Hbetw.
+revert a Hbetw.
+induction l as [| a1 l]; intros. {
+  cbn; apply f_add_opp_diag_r.
+}
+cbn.
+destruct l as [ | a2 l]. {
+  cbn; apply f_add_opp_diag_r.
+}
+cbn - [ removelast ].
+replace a1 with f_zero. 2: {
+  specialize (Hbetw 1) as H2.
+  cbn in H2; rewrite H2; [ easy | flia ].
+}
+rewrite f_add_0_l.
+destruct l as [| a3 l]. {
+  cbn; apply f_add_opp_diag_r.
+}
+assert (H : 1 < length (a2 :: a3 :: l)) by (cbn; flia).
+specialize (IHl H); clear H.
+apply (IHl a1).
+intros i Hi.
+specialize (Hbetw (i + 1)) as H1.
+assert (H : 0 < i + 1 ∧ i + 1 < length (a1 :: a2 :: a3 :: l)). {
+  split; [ flia | cbn in Hi; cbn; flia Hi ].
+}
+specialize (H1 H); clear H.
+replace (i + 1) with (S i) in H1 by flia.
+remember (a1 :: a2 :: a3 :: l) as l'.
+now cbn in H1.
+Qed.
+
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, 0 < i → ls s i = ls s (n * i))
   → 1 < n
@@ -1460,269 +1617,14 @@ intros * Hs Hn i.
 remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
 destruct m. {
   replace (ls _ (i + 1)) with f_zero by now cbn; rewrite Hm.
+  symmetry.
   apply Nat.mod_divides in Hm; [ | flia Hn ].
   destruct Hm as (m, Hm).
   destruct m; [ flia Hm | ].
   destruct m. {
-    rewrite Nat.mul_1_r in Hm.
-    rewrite Hm.
-    unfold ".*", "*"%LS.
-    cbn - [ ls_of_pol ].
-    clear i Hm.
-    unfold log_prod.
-    (* log_prod_list ... =
-       [1*s_n*ε; 0*s_{n-1}*ε; 0*s_{n-2}*ε; ... 0*s_2*ε; (-1)*s_1)*ε] *)
-    remember
-      (log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) n n)
-      as l eqn:Hl.
-    assert (Hfirst : List.nth 0 l f_zero = ls s n). {
-      subst l.
-      destruct n; [ flia Hn | ].
-      rewrite log_prod_list_succ.
-      unfold nth.
-      rewrite Nat_sub_succ_diag_l.
-      unfold log_prod_term.
-      rewrite Nat.div_1_r.
-      replace (ε _ _) with f_one by easy.
-      rewrite f_mul_1_r.
-      destruct n; [ flia Hn | ].
-      replace (ls _ 1) with f_one. 2: {
-        now destruct n; cbn; rewrite f_opp_0, f_add_0_r.
-      }
-      apply f_mul_1_l.
-    }
-    assert (Hnl : n = length l). {
-      subst l.
-      symmetry; apply length_log_prod_list.
-    }
-    assert (Hbetw : ∀ i, 0 < i < n - 1 → List.nth i l f_zero = f_zero). {
-      intros i (Hi, Hin).
-      move i before n.
-      destruct i; [ flia Hi | clear Hi ].
-      destruct l as [| a l]; [ easy | cbn ].
-      destruct n; [ easy | ].
-      rewrite log_prod_list_succ in Hl.
-      remember ls_of_pol as f; remember (S n) as sn.
-      injection Hl; clear Hl; intros Hl Ha; subst f sn.
-      cbn in Hnl.
-      apply Nat.succ_inj in Hnl.
-      rewrite Nat_sub_succ_1 in Hin.
-      destruct n; [ flia Hin | clear Hn ].
-      apply Nat.succ_lt_mono in Hin.
-      eapply nth_log_prod_list; [ apply Hl | flia | easy | flia Hin ].
-    }
-    assert (Hlast : List.nth (n - 1) l f_zero = (- ls s 1)%F). {
-      clear Hfirst Hs.
-      destruct n; [ flia Hn | ].
-      rewrite Nat_sub_succ_1.
-      destruct n; [ flia Hn | ].
-      clear Hn.
-      destruct l as [| a l]; [ easy | cbn ].
-      rewrite log_prod_list_succ in Hl.
-      rewrite Nat_sub_succ_diag_l in Hl.
-      remember ls_of_pol as f; remember (S n) as sn.
-      injection Hl; clear Hl; intros Hl Ha; subst f sn.
-      cbn in Hnl; apply Nat.succ_inj in Hnl.
-      rewrite log_prod_list_succ in Hl.
-      clear a Ha Hbetw.
-      destruct l as [| a l]; [ easy | cbn ].
-      remember ls_of_pol as f; remember (S n) as sn; remember Nat.sub as m.
-      injection Hl; clear Hl; intros Hl Ha; subst f sn m.
-      cbn in Hnl; apply Nat.succ_inj in Hnl.
-      destruct n. {
-        rewrite Ha; cbn.
-        unfold log_prod_term.
-        rewrite f_add_0_l, Nat.div_same; [ | easy ].
-        unfold ε; cbn.
-        now rewrite f_mul_1_r, f_mul_opp_l, f_mul_1_l.
-      }
-      apply (nth_log_prod_list_last 0).
-      replace (n + 0 + 3) with (S (S (S n))) by flia.
-      now replace (n + 1) with (S n) by flia.
-    }
-    destruct l as [| a l]; [ easy | ].
-    cbn in Hfirst, Hnl; cbn.
-    rewrite Hnl, Nat_sub_succ_1 in Hlast.
-    rewrite Hfirst.
-    remember (length l) as len eqn:Hlen; symmetry in Hlen.
-    destruct len; [ flia Hnl Hn | ].
-    specialize (@app_removelast_last _ l f_zero) as H1.
-    assert (H : l ≠ []). {
-      now intros H; rewrite H in Hlen.
-    }
-    specialize (H1 H); clear H.
-    cbn in Hlast.
-    rewrite H1, List.fold_right_app; cbn.
-    rewrite f_add_0_r.
-    replace (last l f_zero) with (nth len l f_zero). 2: {
-      clear - Hlen.
-      revert l Hlen.
-      induction len; intros. {
-        destruct l as [| a1 l]; [ easy | ].
-        cbn in Hlen; cbn.
-        now destruct l.
-      }
-      destruct l as [| a1 l]; [ easy | ].
-      cbn in Hlen.
-      apply Nat.succ_inj in Hlen.
-      specialize (IHlen _ Hlen) as H1.
-      cbn; rewrite H1.
-      now destruct l.
-    }
-    rewrite Hlast.
-    rewrite (Hs 1); [ | flia ].
-    rewrite Nat.mul_1_r.
-    destruct (Nat.eq_dec n 2) as [Hn2| Hn2]. {
-      move Hn2 at top; subst n.
-      clear Hn; do 2 apply Nat.succ_inj in Hnl; subst len.
-      destruct l as [| a1 l]; [ easy | ].
-      destruct l as [| a2 l]; [ | easy ].
-      cbn; symmetry; apply f_add_opp_diag_r.
-    }
-    assert (H : 2 < n) by flia Hn Hn2.
-    clear Hn; rename H into Hn.
-    rewrite <- Hlen in Hnl.
-    rewrite Hnl in Hn.
-    apply Nat.succ_lt_mono in Hn.
-    rewrite Hnl in Hbetw.
-    rewrite Nat_sub_succ_1 in Hbetw.
-    clear - Hn Hbetw.
-    revert a Hbetw.
-    induction l as [| a1 l]; intros. {
-      cbn; symmetry; apply f_add_opp_diag_r.
-    }
-    cbn.
-    destruct l as [ | a2 l]. {
-      cbn; symmetry; apply f_add_opp_diag_r.
-    }
-    cbn - [ removelast ].
-    replace a1 with f_zero. 2: {
-      specialize (Hbetw 1) as H2.
-      cbn in H2; rewrite H2; [ easy | flia ].
-    }
-    rewrite f_add_0_l.
-    destruct l as [| a3 l]. {
-      cbn; symmetry; apply f_add_opp_diag_r.
-    }
-    assert (H : 1 < length (a2 :: a3 :: l)) by (cbn; flia).
-    specialize (IHl H); clear H.
-    apply (IHl a1).
-    intros i Hi.
-    specialize (Hbetw (i + 1)) as H1.
-    assert (H : 0 < i + 1 ∧ i + 1 < length (a1 :: a2 :: a3 :: l)). {
-      split; [ flia | cbn in Hi; cbn; flia Hi ].
-    }
-    specialize (H1 H); clear H.
-    replace (i + 1) with (S i) in H1 by flia.
-    remember (a1 :: a2 :: a3 :: l) as l'.
-    now cbn in H1.
+    rewrite Nat.mul_1_r in Hm; rewrite Hm.
+    now apply mul_pol_1_sub_pow_ser_at_pow.
   }
-...
-intros * Hs Hn i.
-unfold ".*".
-unfold "*"%LS.
-cbn - [ series_but_mul_of ls_of_pol ].
-replace (i + 1) with (S i) at 2 3 by flia.
-rewrite log_prod_succ.
-rewrite Nat_sub_succ_diag_l.
-replace (S i) with (i + 1) by flia.
-unfold log_prod_term.
-rewrite Nat.div_1_r.
-unfold lp_sub at 1.
-specialize (ls_of_pol_add (pol_pow 1) (- pol_pow n)%LP 0) as H.
-rewrite Nat.add_0_l in H; rewrite H; clear H.
-rewrite ls_ls_add.
-specialize (ls_of_pol_opp (pol_pow n) 0) as H.
-rewrite Nat.add_0_l in H; rewrite H; clear H.
-rewrite ls_of_opp, fold_f_sub.
-replace (ls _ 1) with f_one by easy.
-replace (ls _ 1) with f_zero. 2: {
-  destruct n; [ flia Hn | ].
-  destruct n; [ flia Hn | easy ].
-}
-rewrite f_sub_0_r, f_mul_1_l.
-replace (ε _ 1) with f_one by now unfold ε; rewrite Nat.add_comm.
-rewrite f_mul_1_r.
-unfold series_but_mul_of.
-cbn - [ "mod" ls_of_pol ].
-remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
-destruct m. {
-  apply Nat.mod_divides in Hm; [ | flia Hn ].
-  destruct Hm as (m, Hm).
-  destruct i. {
-    symmetry in Hm.
-    apply Nat.eq_mul_1 in Hm.
-    flia Hn Hm.
-  }
-  rewrite log_prod_succ.
-  replace (S i + 1) with (i + 2) by flia.
-  replace (i + 2 - i) with 2 by flia.
-  unfold log_prod_term, ε.
-  replace (i + 2) with (i + 1 * 2) by flia.
-  rewrite Nat.div_add; [ | easy ].
-  rewrite Nat.mod_add; [ | easy ].
-  rewrite Nat.mul_1_l.
-...
-intros * Hs Hn i.
-unfold lp_sub.
-rewrite ls_mul_pol_add_distr_r, ls_ls_add.
-rewrite ls_mul_pol_1_l.
-rewrite ls_mul_pol_opp_l.
-cbn - [ series_but_mul_of log_prod ls_of_pol ".*" ].
-rewrite fold_f_sub.
-unfold series_but_mul_of.
-cbn - [ pol_pow ".*" ].
-symmetry.
-remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
-destruct m. {
-  destruct n; [ flia Hn | ].
-  replace (S n) with (n + 1) in Hm by flia.
-  unfold ".*", "*"%LS.
-  cbn - [ "/" "mod" ls_of_pol pol_pow ].
-  rewrite Nat.add_1_r.
-  rewrite log_prod_succ.
-  rewrite Nat_sub_succ_diag_l.
-  unfold log_prod_term.
-  rewrite Nat.div_1_r.
-  replace (ε (S i) 1) with f_one by easy.
-  rewrite f_mul_1_r.
-  destruct n; [ flia Hn | clear Hn ].
-  replace (ls _ 1) with f_zero by easy.
-  rewrite f_mul_0_l, f_add_0_l.
-  apply Nat.mod_divides in Hm; [ | easy ].
-  destruct Hm as (m, Hm).
-  do 2 rewrite Nat.add_1_r in Hm.
-  destruct i. {
-    destruct m; [ flia Hm | ].
-    cbn in Hm; flia Hm.
-  }
-  rewrite log_prod_succ.
-  replace (S (S i) - i) with 2 by flia.
-  unfold log_prod_term.
-  replace (ε _ 2) with (ε i 2). 2: {
-    unfold ε.
-    replace (S (S i)) with (i + 1 * 2) by flia.
-    now rewrite Nat.mod_add.
-  }
-  destruct i. {
-    destruct m; [ flia Hm | ].
-    destruct m; [ | cbn in Hm; flia Hm ].
-    replace n with 0 in Hs |-* by flia Hm.
-    cbn; rewrite f_mul_1_l, f_mul_1_r.
-    rewrite (Hs 1); [ cbn | flia ].
-    rewrite f_add_0_r.
-    apply f_sub_diag.
-  }
-  replace (S (S n)) with (n + 2) in Hs, Hm |-* by flia.
-  replace (S (S (S i))) with (i + 3) in Hm |-* by flia.
-  replace (S i) with (i + 1) by flia.
-  rewrite f_sub_add_distr.
-  replace (i + 1) with (S i) by flia.
-  rewrite log_prod_succ.
-  replace (S i) with (i + 1) by flia.
-  replace (i + 3 - i) with 3 by flia.
-  rewrite f_sub_add_distr.
-  unfold log_prod_term.
 ...
 
 Theorem step_1 {F : field} :
