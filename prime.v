@@ -1617,11 +1617,11 @@ intros * Hn Hs.
 unfold ".*", "*"%LS.
 cbn - [ ls_of_pol ].
 unfold log_prod.
+Print log_prod_list.
 (* log_prod_list ... =
        [1*s[n*(m+1)]*ε; 0*s[n*(m+1)-1]*ε; ... ; 0*s[n*m+1]*ε;
         0*s[n*m]*ε; 0*s[n*m-1]*ε; ... ; 0*s[(n-1)*m+1]*ε;
-
-        (-1)*s[m+1]*ε] *)
+        (-1)*s[m+1]*ε; 0*s[m]*e; 0*s[m-1]*ε; ... ; 0*s[1]*ε] *)
 ...
 
 Theorem step_1 {F : field} : ∀ s n,
