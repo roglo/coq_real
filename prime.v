@@ -1608,6 +1608,7 @@ remember (a1 :: a2 :: a3 :: l) as l'.
 now cbn in H1.
 Qed.
 
+(* perhaps the previous theorem is no more required if this one works *)
 Theorem mul_pol_1_sub_pow_ser_at_nth_pow {F : field} : ∀ n m s,
   1 < n
   → (∀ i : nat, 0 < i → ls s i = ls s (n * i))
@@ -1622,6 +1623,26 @@ Print log_prod_list.
        [1*s[n*(m+1)]*ε; 0*s[n*(m+1)-1]*ε; ... ; 0*s[n*m+1]*ε;
         0*s[n*m]*ε; 0*s[n*m-1]*ε; ... ; 0*s[(n-1)*m+1]*ε;
         (-1)*s[m+1]*ε; 0*s[m]*e; 0*s[m-1]*ε; ... ; 0*s[1]*ε] *)
+remember
+  (log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) (n * (m + 1))
+     (n * (m + 1))) as l eqn:Hl.
+assert (Hfirst : List.nth 0 l f_zero = ls s (n * (m + 1))). {
+  subst l.
+  destruct n; [ flia Hn | ].
+  replace (S n * (m + 1)) with (S (n * (m + 1) + m)) by flia.
+  rewrite log_prod_list_succ.
+  unfold nth.
+  rewrite Nat_sub_succ_diag_l.
+  unfold log_prod_term.
+  rewrite Nat.div_1_r.
+  replace (ε _ _) with f_one by easy.
+  rewrite f_mul_1_r.
+  destruct n; [ flia Hn | ].
+  replace (ls _ 1) with f_one. 2: {
+    now destruct n; cbn; rewrite f_opp_0, f_add_0_r.
+  }
+  apply f_mul_1_l.
+}
 ...
 
 Theorem step_1 {F : field} : ∀ s n,
