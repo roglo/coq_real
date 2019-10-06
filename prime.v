@@ -1643,6 +1643,31 @@ assert (Hfirst : List.nth 0 l f_zero = ls s (n * (m + 1))). {
   }
   apply f_mul_1_l.
 }
+assert (Hnl : n * (m + 1) = length l). {
+  subst l.
+  symmetry; apply length_log_prod_list.
+}
+assert (Hbetw : ∀ i, 0 < i < n - 1 → List.nth i l f_zero = f_zero). {
+  intros i (Hi, Hin).
+  move i before n.
+  destruct i; [ flia Hi | clear Hi ].
+  destruct l as [| a l]; [ easy | cbn ].
+  destruct n; [ easy | ].
+  replace (S n * (m + 1)) with (S (n * (m + 1) + m)) in Hl by flia.
+  rewrite log_prod_list_succ in Hl.
+  remember ls_of_pol as f; remember (S n) as sn.
+  injection Hl; clear Hl; intros Hl Ha; subst f sn.
+  rewrite Nat_sub_succ_1 in Hin.
+  cbn in Hnl.
+  replace (m + 1 + n * (m + 1)) with (S (n * (m + 1) + m)) in Hnl by flia.
+  apply Nat.succ_inj in Hnl.
+  destruct n; [ flia Hin | clear Hn ].
+  apply Nat.succ_lt_mono in Hin.
+Check nth_log_prod_list.
+...
+  eapply nth_log_prod_list; [ apply Hl | flia | easy | flia Hin ].
+}
+assert (Hbetw2 : ∀ i, n < i < n * (m + 1) - 1 → List.nth i l f_zero = f_zero). {
 ...
 
 Theorem step_1 {F : field} : ∀ s n,
