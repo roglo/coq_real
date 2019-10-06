@@ -1397,18 +1397,18 @@ destruct i. 2: {
 }
 rewrite Ha.
 unfold log_prod_term.
+...
 replace (ls _ (n * (m + 1) - k)) with f_zero. 2: {
   remember (n * (m + 1) - k) as p eqn:Hp; symmetry in Hp.
   destruct p; [ easy | cbn ].
   destruct n; [ flia Hln | ].
   rewrite Nat_sub_succ_1.
   destruct n; [ now cbn; rewrite f_add_opp_diag_r | cbn ].
-...
-  destruct p; [ lia | ].
-  destruct m; [ flia Hm Hkn | ].
-  destruct n; [ flia Hkn Hik | cbn ].
+  destruct p; [ flia Hln Hp | ].
+  destruct n; [ flia Hin | cbn ].
   rewrite f_add_opp_diag_r.
-  destruct m; [ easy | ].
+  destruct p; [ easy | ].
+...
   assert (Hmn : m < n) by flia Hik Hm.
   clear - Hmn.
   revert m Hmn.
