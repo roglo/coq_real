@@ -1380,6 +1380,44 @@ Theorem new_nth_log_prod_list {F : field} : ∀ m n i u l,
 Proof.
 intros * Hl Hln Hin.
 remember (length l) as k eqn:Hk.
+revert n i l Hk Hl Hln Hin.
+induction k; intros; [ now rewrite Hl; destruct i | ].
+rewrite log_prod_list_succ in Hl.
+destruct l as [| a l]; [ easy | ].
+cbn in Hk; apply Nat.succ_inj in Hk.
+remember ls_of_pol as f; remember (S n) as sn.
+injection Hl; clear Hl; intros Hl Ha; subst f sn.
+cbn.
+destruct i. 2: {
+  specialize (IHk n i l Hk Hl) as H1.
+  assert (H : k < n * (m + 1)) by flia Hln.
+  specialize (H1 H); clear H.
+  assert (H : i < n - 2) by flia Hin.
+  now specialize (H1 H); clear H.
+}
+rewrite Ha.
+unfold log_prod_term.
+replace (ls _ (n * (m + 1) - k)) with f_zero. 2: {
+  remember (n * (m + 1) - k) as p eqn:Hp; symmetry in Hp.
+  destruct p; [ easy | cbn ].
+  destruct n; [ flia Hln | ].
+  rewrite Nat_sub_succ_1.
+  destruct n; [ now cbn; rewrite f_add_opp_diag_r | cbn ].
+...
+  destruct p; [ lia | ].
+  destruct m; [ flia Hm Hkn | ].
+  destruct n; [ flia Hkn Hik | cbn ].
+  rewrite f_add_opp_diag_r.
+  destruct m; [ easy | ].
+  assert (Hmn : m < n) by flia Hik Hm.
+  clear - Hmn.
+  revert m Hmn.
+  induction n; intros; [ flia Hmn | ].
+  destruct m; [ symmetry; apply f_add_opp_diag_r | cbn ].
+  apply IHn; flia Hmn.
+}
+now do 2 rewrite f_mul_0_l.
+Qed.
 ...
 
 (* likely no more required if new_nth_log_prod_list above has been proven *)
