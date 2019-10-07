@@ -1370,18 +1370,58 @@ induction n; intros. {
 ...
 *)
 
-Theorem new_nth_log_prod_list {F : field} : ∀ m n i u l,
+Theorem new_nth_log_prod_list {F : field} : ∀ m n i k u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u
-        (n * (m + 1)) (length l)
-  → length l < n * (m + 1)
+        (n * (m + 1)) k
+  → n * m < k < n * (m + 1)
   → 0 < i < n - 2
   → nth i l f_zero = f_zero.
 Proof.
-intros * Hl Hln (Hi, Hin).
-(* re-réfléchir à l'énoncé de ce théorème, sur papier *)
-....
-remember (length l) as k eqn:Hk.
+intros * Hl Hknm (Hi, Hin).
 destruct i; [ flia Hi | clear Hi ].
+revert m n i l Hl Hknm Hin.
+induction k; intros; [ now rewrite Hl; destruct i | ].
+rewrite log_prod_list_succ in Hl.
+destruct l as [| a l]; [ easy | ].
+remember ls_of_pol as f; remember (S n) as sn.
+injection Hl; clear Hl; intros Hl Ha; subst f sn; cbn.
+destruct i. 2: {
+  destruct (Nat.eq_dec (n * m) k) as [H1| H1]. 2: {
+    specialize (IHk m n i l Hl) as H2.
+    assert (H : n * m < k < n * (m + 1)). {
+      split; [ flia Hknm H1 | flia Hknm ].
+    }
+    specialize (H2 H); clear H.
+    assert (H : S i < n - 2) by flia Hin.
+    now specialize (H2 H); clear H.
+  }
+...
+ by flia Hknm.
+  assert (H n * m < k
+  specialize (H1 H); clear H.
+  assert (H : S i < n - 2) by flia Hin.
+  now specialize (H1 H); clear H.
+}
+rewrite Hl.
+destruct k; [ easy | ].
+rewrite log_prod_list_succ.
+cbn - [ ls_of_pol ].
+unfold log_prod_term.
+...
+replace (ls _ (n * (m + 1) - k)) with f_zero. 2: {
+  remember (n * (m + 1) - k) as p eqn:Hp.
+  symmetry in Hp.
+  destruct p; [ flia Hln Hp | cbn ].
+  destruct n; [ flia Hin | ].
+  rewrite Nat_sub_succ_1.
+  destruct n; [ now cbn; rewrite f_add_opp_diag_r | cbn ].
+  destruct p; [ flia Hln Hp | ].
+  destruct n; [ flia Hin | cbn ].
+  rewrite f_add_opp_diag_r.
+  destruct p; [ easy | ].
+  destruct n; [ flia Hin | ].
+(* bon, ça va pas *)
+...
 revert n i l Hk Hl Hln Hin.
 induction k; intros; [ now rewrite Hl; destruct i | ].
 rewrite log_prod_list_succ in Hl.
@@ -1469,6 +1509,7 @@ replace (ls _ (n * (m + 1) - k)) with f_zero. 2: {
 now do 2 rewrite f_mul_0_l.
 Qed.
 ...
+*)
 
 (* likely no more required if new_nth_log_prod_list above has been proven *)
 Theorem nth_log_prod_list {F : field} : ∀ n i k u l,
@@ -1769,10 +1810,11 @@ assert (Hbetw : ∀ i, 1 < i < n - 1 → List.nth i l f_zero = f_zero). {
   replace (S (m' - 1)) with m' in Hl by (ring_simplify in Hm'; flia Hm').
   replace (S (S n)) with (n + 2) in Hl by flia.
   subst m'.
-  rewrite Hnl in Hl.
+  apply Nat.succ_lt_mono in Hi.
 ...
   eapply new_nth_log_prod_list; [ apply Hl | | flia Hi Hin ].
-  rewrite <- Hnl; ring_simplify; flia.
+  split; [ flia | ring_simplify; flia ].
+...
 }
 assert (Hbetw2 : ∀ i, n < i < n * (m + 1) - 1 → List.nth i l f_zero = f_zero). {
 ...
