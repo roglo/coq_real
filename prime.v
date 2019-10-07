@@ -1375,10 +1375,11 @@ Theorem new_nth_log_prod_list {F : field} : ∀ m n i u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u
         (n * (m + 1)) (length l)
   → length l < n * (m + 1)
-  → i < n - 2
+  → 0 < i < n - 2
   → nth i l f_zero = f_zero.
 Proof.
 intros * Hl Hln Hin.
+...
 remember (length l) as k eqn:Hk.
 revert n i l Hk Hl Hln Hin.
 induction k; intros; [ now rewrite Hl; destruct i | ].
@@ -1397,6 +1398,7 @@ destruct i. 2: {
 }
 rewrite Ha.
 unfold log_prod_term.
+...
 destruct (Nat.eq_dec (n * m) k) as [Hnmk| Hnmk]. {
   replace (n * (m + 1) - k) with n by flia Hnmk.
   unfold ε.
@@ -1705,10 +1707,10 @@ assert (Hnl : n * (m + 1) = length l). {
   subst l.
   symmetry; apply length_log_prod_list.
 }
-assert (Hbetw : ∀ i, 0 < i < n - 1 → List.nth i l f_zero = f_zero). {
+assert (Hbetw : ∀ i, 1 < i < n - 1 → List.nth i l f_zero = f_zero). {
   intros i (Hi, Hin).
   move i before n.
-  destruct i; [ flia Hi | clear Hi ].
+  destruct i; [ flia Hi | ].
   destruct l as [| a l]; [ easy | cbn ].
   destruct n; [ easy | ].
   replace (S n * (m + 1)) with (S (n * (m + 1) + m)) in Hl by flia.
@@ -1728,7 +1730,7 @@ assert (Hbetw : ∀ i, 0 < i < n - 1 → List.nth i l f_zero = f_zero). {
   subst m'.
   rewrite Hnl in Hl.
 ...
-  eapply new_nth_log_prod_list; [ apply Hl | | flia Hin ].
+  eapply new_nth_log_prod_list; [ apply Hl | | flia Hi Hin ].
   rewrite <- Hnl; ring_simplify; flia.
 }
 assert (Hbetw2 : ∀ i, n < i < n * (m + 1) - 1 → List.nth i l f_zero = f_zero). {
