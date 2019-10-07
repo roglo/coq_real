@@ -1401,32 +1401,45 @@ destruct i. 2: {
   rewrite log_prod_list_succ.
   cbn - [ ls_of_pol ].
   clear.
-  revert n i.
+remember (S (k + n)) as j eqn:Hj.
+assert (Hnj : n + k < j) by flia Hj.
+clear Hj.
+  revert n i j Hnj.
   induction k; intros; [ now cbn; destruct i | ].
   rewrite log_prod_list_succ.
   destruct i. {
-    replace (S (S k + n) - k) with (n + 2) by flia.
     cbn - [ ls_of_pol ].
     unfold log_prod_term.
-    replace (ls _ (n + 2)) with f_zero. 2: {
+    replace (ls _ (j - k)) with f_zero. 2: {
       symmetry.
       unfold lp_sub.
-      replace (n + 2) with (n + 1 + 1) by flia.
+      replace (j - k) with (j - k - 1 + 1) by flia Hnj.
       rewrite ls_of_pol_add, ls_ls_add, ls_of_pol_opp, ls_of_opp.
-      replace (n + 1 + 1) with (2 + n) by flia; cbn.
+      replace (j - k - 1 + 1) with (j - k) by flia Hnj.
       destruct n; [ cbn; apply f_add_opp_diag_r | ].
-      rewrite f_add_0_l.
-      rewrite Nat_sub_succ_1.
-      rewrite List.nth_overflow; [ apply f_opp_0 | ].
-      rewrite List.app_length, List.repeat_length; cbn.
-      flia.
+      cbn.
+      remember (j - k) as jk eqn:Hjk; symmetry in Hjk.
+      destruct jk; [ apply f_add_opp_diag_r | ].
+      destruct jk; [ flia Hnj Hjk | cbn ].
+      replace (match _ with 0 | _ => f_zero end) with f_zero. 2: {
+        now destruct jk.
+      }
+      rewrite f_add_0_l, Nat.sub_0_r.
+      clear - Hnj Hjk.
+      revert j k jk Hnj Hjk.
+      induction n; intros; [ cbn; destruct jk; apply f_opp_0 | cbn ].
+      destruct jk; [ flia Hnj Hjk | cbn ].
+      replace (S (S n) + S k) with (S n + S (S k)) in Hnj by flia.
+      eapply IHn; [ apply Hnj | cbn ].
+      flia Hnj Hjk.
     }
     rewrite <- f_mul_assoc.
     apply f_mul_0_l.
   }
   cbn - [ ls_of_pol ].
-  replace (S (S (k + n))) with (S (k + S n)) by flia.
-(* pute vierge; ça va pas, ça *)
+  apply IHk.
+  flia Hnj.
+}
 ...
 revert n i l Hk Hl Hln Hin.
 induction k; intros; [ now rewrite Hl; destruct i | ].
