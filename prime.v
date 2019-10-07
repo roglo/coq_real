@@ -567,7 +567,7 @@ rewrite Nat.div_small in H1; [ | flia Hn ].
 now rewrite Nat.mul_0_r in H1.
 Qed.
 
-Theorem length_log_prod_list {F : field} : ∀ u v n i,
+Theorem log_prod_list_length {F : field} : ∀ u v n i,
   length (log_prod_list u v n i) = i.
 Proof.
 intros.
@@ -1395,32 +1395,38 @@ destruct i. 2: {
     assert (H : S i < n - 2) by flia Hin.
     now specialize (H2 H); clear H.
   }
-...
- by flia Hknm.
-  assert (H n * m < k
-  specialize (H1 H); clear H.
-  assert (H : S i < n - 2) by flia Hin.
-  now specialize (H1 H); clear H.
-}
-rewrite Hl.
-destruct k; [ easy | ].
-rewrite log_prod_list_succ.
-cbn - [ ls_of_pol ].
-unfold log_prod_term.
-...
-replace (ls _ (n * (m + 1) - k)) with f_zero. 2: {
-  remember (n * (m + 1) - k) as p eqn:Hp.
-  symmetry in Hp.
-  destruct p; [ flia Hln Hp | cbn ].
-  destruct n; [ flia Hin | ].
-  rewrite Nat_sub_succ_1.
-  destruct n; [ now cbn; rewrite f_add_opp_diag_r | cbn ].
-  destruct p; [ flia Hln Hp | ].
-  destruct n; [ flia Hin | cbn ].
-  rewrite f_add_opp_diag_r.
-  destruct p; [ easy | ].
-  destruct n; [ flia Hin | ].
-(* bon, ça va pas *)
+  rewrite Hl.
+  rewrite Nat.mul_add_distr_l, Nat.mul_1_r, H1.
+  destruct k; [ easy | ].
+  rewrite log_prod_list_succ.
+  cbn - [ ls_of_pol ].
+  clear.
+  revert n i.
+  induction k; intros; [ now cbn; destruct i | ].
+  rewrite log_prod_list_succ.
+  destruct i. {
+    replace (S (S k + n) - k) with (n + 2) by flia.
+    cbn - [ ls_of_pol ].
+    unfold log_prod_term.
+    replace (ls _ (n + 2)) with f_zero. 2: {
+      symmetry.
+      unfold lp_sub.
+      replace (n + 2) with (n + 1 + 1) by flia.
+      rewrite ls_of_pol_add, ls_ls_add, ls_of_pol_opp, ls_of_opp.
+      replace (n + 1 + 1) with (2 + n) by flia; cbn.
+      destruct n; [ cbn; apply f_add_opp_diag_r | ].
+      rewrite f_add_0_l.
+      rewrite Nat_sub_succ_1.
+      rewrite List.nth_overflow; [ apply f_opp_0 | ].
+      rewrite List.app_length, List.repeat_length; cbn.
+      flia.
+    }
+    rewrite <- f_mul_assoc.
+    apply f_mul_0_l.
+  }
+  cbn - [ ls_of_pol ].
+  replace (S (S (k + n))) with (S (k + S n)) by flia.
+(* pute vierge; ça va pas, ça *)
 ...
 revert n i l Hk Hl Hln Hin.
 induction k; intros; [ now rewrite Hl; destruct i | ].
