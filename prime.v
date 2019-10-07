@@ -1397,6 +1397,13 @@ destruct i. 2: {
 }
 rewrite Ha.
 unfold log_prod_term.
+destruct (Nat.eq_dec (n * m) k) as [Hnmk| Hnmk]. {
+  replace (n * (m + 1) - k) with n by flia Hnmk.
+  unfold ε.
+  replace (n * (m + 1)) with (0 + (m + 1) * n) by flia.
+  rewrite Nat.mod_add; [ | flia Hin ].
+  rewrite Nat.mod_0_l; [ | flia Hin ].
+(* does not work; the theorem must be false *)
 ...
 replace (ls _ (n * (m + 1) - k)) with f_zero. 2: {
   remember (n * (m + 1) - k) as p eqn:Hp; symmetry in Hp.
