@@ -1370,7 +1370,6 @@ induction n; intros. {
 ...
 *)
 
-
 Theorem new_nth_log_prod_list {F : field} : ∀ m n i u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u
         (n * (m + 1)) (length l)
@@ -1378,9 +1377,11 @@ Theorem new_nth_log_prod_list {F : field} : ∀ m n i u l,
   → 0 < i < n - 2
   → nth i l f_zero = f_zero.
 Proof.
-intros * Hl Hln Hin.
-...
+intros * Hl Hln (Hi, Hin).
+(* re-réfléchir à l'énoncé de ce théorème, sur papier *)
+....
 remember (length l) as k eqn:Hk.
+destruct i; [ flia Hi | clear Hi ].
 revert n i l Hk Hl Hln Hin.
 induction k; intros; [ now rewrite Hl; destruct i | ].
 rewrite log_prod_list_succ in Hl.
@@ -1393,9 +1394,49 @@ destruct i. 2: {
   specialize (IHk n i l Hk Hl) as H1.
   assert (H : k < n * (m + 1)) by flia Hln.
   specialize (H1 H); clear H.
-  assert (H : i < n - 2) by flia Hin.
+  assert (H : S i < n - 2) by flia Hin.
   now specialize (H1 H); clear H.
 }
+rewrite Hl.
+destruct k; [ easy | ].
+rewrite log_prod_list_succ.
+cbn - [ ls_of_pol ].
+unfold log_prod_term.
+replace (ls _ (n * (m + 1) - k)) with f_zero. 2: {
+  remember (n * (m + 1) - k) as p eqn:Hp.
+  symmetry in Hp.
+  destruct p; [ flia Hln Hp | cbn ].
+  destruct n; [ flia Hin | ].
+  rewrite Nat_sub_succ_1.
+  destruct n; [ now cbn; rewrite f_add_opp_diag_r | cbn ].
+  destruct p; [ flia Hln Hp | ].
+  destruct n; [ flia Hin | cbn ].
+  rewrite f_add_opp_diag_r.
+  destruct p; [ easy | ].
+  destruct n; [ flia Hin | ].
+(* bon, ça va pas *)
+...
+  clear - Hp.
+  revert k m p Hp.
+  induction n; intros. {
+    cbn.
+    destruct p; [ cbn; symmetry; apply f_add_opp_diag_r | cbn ].
+    destruct p; [ | now destruct p ].
+...
+  destruct p; [ cbn; symmetry; apply f_add_opp_diag_r | cbn ].
+  clear.
+  revert p.
+  induction n; intros. {
+    cbn.
+...
+  assert (Hmn : m < n) by flia Hik Hm.
+  clear - Hmn.
+  revert m Hmn.
+  induction n; intros; [ flia Hmn | ].
+  destruct m; [ symmetry; apply f_add_opp_diag_r | cbn ].
+  apply IHn; flia Hmn.
+...
+cbn.
 rewrite Ha.
 unfold log_prod_term.
 ...
