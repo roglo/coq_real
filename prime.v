@@ -1370,6 +1370,7 @@ induction n; intros. {
 ...
 *)
 
+... fait chier, marche pas, faut re-réfléchir
 Theorem nth_log_prod_list2 {F : field} : ∀ m n i k u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u
         (n * (m + 1)) k
