@@ -1370,7 +1370,7 @@ induction n; intros. {
 ...
 *)
 
-Theorem new_nth_log_prod_list {F : field} : ∀ m n i k u l,
+Theorem nth_log_prod_list2 {F : field} : ∀ m n i k u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u
         (n * (m + 1)) k
   → k < n * m - 2
@@ -1443,7 +1443,6 @@ destruct k; [ easy | ].
 rewrite log_prod_list_succ.
 cbn - [ ls_of_pol ].
 unfold log_prod_term.
-(**)
 replace (ls _ (n * (m + 1) - k)) with f_zero. 2: {
   remember (n * (m + 1) - k) as p eqn:Hp; symmetry in Hp.
   destruct p; [ easy | cbn ].
@@ -1475,7 +1474,6 @@ replace (ls _ (n * (m + 1) - k)) with f_zero. 2: {
 now do 2 rewrite f_mul_0_l.
 Qed.
 
-(* likely no more required if new_nth_log_prod_list above has been proven *)
 Theorem nth_log_prod_list {F : field} : ∀ n i k u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u n k
   → k < n
@@ -1483,9 +1481,6 @@ Theorem nth_log_prod_list {F : field} : ∀ n i k u l,
   → i < k - 1
   → nth i l f_zero = f_zero.
 Proof.
-intros * Hl Hkn Hn Hik.
-Inspect 1.
-...
 intros * Hl Hkn Hn Hik.
 revert n i l Hl Hn Hkn Hik.
 induction k; intros; [ now rewrite Hl; destruct i | ].
@@ -1592,7 +1587,7 @@ assert (Hfirst : List.nth 0 l f_zero = ls s n). {
 }
 assert (Hnl : n = length l). {
   subst l.
-  symmetry; apply length_log_prod_list.
+  symmetry; apply log_prod_list_length.
 }
 assert (Hbetw : ∀ i, 0 < i < n - 1 → List.nth i l f_zero = f_zero). {
   intros i (Hi, Hin).
@@ -1754,8 +1749,15 @@ assert (Hfirst : List.nth 0 l f_zero = ls s (n * (m + 1))). {
 }
 assert (Hnl : n * (m + 1) = length l). {
   subst l.
-  symmetry; apply length_log_prod_list.
+  symmetry; apply log_prod_list_length.
 }
+Check nth_log_prod_list2.
+(* en fait, ça va pas : nth_log_prod_list2 s'applique pour i entre
+   0 et n(m+1)-1 (et non pas entre 1 et n-1) et seulement pour
+   k<nm-2 et non pas k<n(m+1)-1 *)
+(* donc, c'est nth_log_prod_list2 qui, pourtant est prouvé, qui ne
+   va pas *)
+...
 assert (Hbetw : ∀ i, 1 < i < n - 1 → List.nth i l f_zero = f_zero). {
   intros i (Hi, Hin).
   move i before n.
@@ -1779,7 +1781,7 @@ assert (Hbetw : ∀ i, 1 < i < n - 1 → List.nth i l f_zero = f_zero). {
   subst m'.
   apply Nat.succ_lt_mono in Hi.
 ...
-  eapply new_nth_log_prod_list; [ apply Hl | | flia Hi Hin ].
+  eapply nth_log_prod_list2; [ apply Hl | | flia Hi Hin ].
   split; [ flia | ring_simplify; flia ].
 ...
 }
