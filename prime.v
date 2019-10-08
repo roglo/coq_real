@@ -1440,6 +1440,7 @@ clear Hj.
   apply IHk.
   flia Hnj.
 }
+...
 rewrite Hl.
 destruct k; [ easy | ].
 rewrite log_prod_list_succ.
