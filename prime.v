@@ -1373,7 +1373,7 @@ induction n; intros. {
 Theorem nth_log_prod_list2 {F : field} : ∀ m n i k u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u
         (n * (m + 1)) k
-  → k < n * m - 2
+  → k < n * (m + 1)
   → 0 < i < n * (m + 1) - 1
   → nth i l f_zero = f_zero.
 Proof.
@@ -1388,7 +1388,7 @@ injection Hl; clear Hl; intros Hl Ha; subst f sn; cbn.
 destruct i. 2: {
   destruct (Nat.eq_dec (n * m) k) as [H1| H1]. 2: {
     specialize (IHk m n i l Hl) as H2.
-    assert (H : k < n * m - 2) by flia Hknm.
+    assert (H : k < n * (m + 1)) by flia Hknm.
     specialize (H2 H); clear H.
     assert (H : S i < n * (m + 1) - 1) by flia Hin.
     now specialize (H2 H); clear H.
@@ -1462,15 +1462,29 @@ replace (ls _ (n * (m + 1) - k)) with f_zero. 2: {
   cbn.
   rewrite f_add_opp_diag_r.
   destruct p; [ easy | ].
-  assert (Hnp : n + 4 < p) by lia.
-  clear - Hnp.
-  revert p Hnp.
-  induction n; intros. {
-    destruct p; [ flia Hnp | now destruct p ].
+  destruct (lt_dec (n + 4) p) as [Hnp| Hnp]. {
+    clear - Hnp.
+    revert p Hnp.
+    induction n; intros. {
+      destruct p; [ flia Hnp | now destruct p ].
+    }
+    destruct p; [ symmetry; apply f_add_opp_diag_r | cbn ].
+    apply IHn; flia Hnp.
   }
-  destruct p; [ symmetry; apply f_add_opp_diag_r | cbn ].
-  apply IHn; flia Hnp.
-}
+  rewrite List.nth_overflow; [ easy | ].
+  rewrite List.map_length.
+  rewrite List.combine_length.
+  rewrite List.repeat_length.
+  rewrite List.map_length.
+  rewrite List.app_length; cbn.
+  rewrite List.repeat_length.
+  rewrite Nat.min_idempotent.
+  apply Nat.nlt_ge in Hnp.
+ring_simplify in Hp.
+rewrite Nat.mul_add_distr_l, Nat.mul_1_r in Hp.
+rewrite Nat.mul_add_distr_r in Hp.
+(* fichtre bougre diantre *)
+...
 now do 2 rewrite f_mul_0_l.
 Qed.
 
