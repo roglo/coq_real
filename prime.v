@@ -1445,28 +1445,29 @@ destruct k; [ easy | ].
 rewrite log_prod_list_succ.
 cbn - [ ls_of_pol ].
 unfold log_prod_term.
-replace (ls _ (n * (m + 1) - k)) with f_zero. 2: {
-  remember (n * (m + 1) - k) as p eqn:Hp.
-  symmetry in Hp; symmetry.
-  destruct p; [ flia Hknm Hp | cbn ].
-  destruct n; [ flia Hin | ].
-  rewrite Nat_sub_succ_1.
-  destruct n; [ now cbn; rewrite f_add_opp_diag_r | cbn ].
-  destruct p; [ flia Hknm Hp | ].
-  destruct n; [ flia Hin | cbn ].
-  rewrite f_add_opp_diag_r.
-  destruct p; [ easy | ].
-  destruct n; [ flia Hin | cbn ].
-  rewrite f_add_opp_diag_r.
-  destruct p; [ easy | ].
-  destruct n. {
-    cbn.
-    destruct p; [ | now destruct p ].
-    rewrite Nat.mul_add_distr_l, Nat.mul_1_r in Hp.
-    replace k with (4 * m) in Hknm by flia Hp.
-    destruct m. {
-      cbn in Hknm.
-(* marche pas *)
+(**)
+unfold ε.
+remember ((n * (m + 1)) mod (n * (m + 1) - k)) as p eqn:Hp.
+symmetry in Hp.
+destruct p; [ | now rewrite f_mul_0_r ].
+apply Nat.mod_divides in Hp; [ | flia Hknm ].
+destruct Hp as (p, Hp).
+destruct p; [ flia Hknm Hp | ].
+destruct p. {
+  rewrite Nat.mul_1_r in Hp.
+  replace k with 0 in * by flia Hknm Hp; clear Hp.
+  rewrite Nat.sub_0_r.
+  destruct m. {
+    rewrite Nat.add_0_l, Nat.mul_1_r.
+...
+    replace (ls _ n) with f_zero. 2: {
+      cbn.
+      destruct n; [ easy | cbn ].
+      destruct n; [ easy | cbn ].
+      destruct n; [ flia Hknm | cbn ].
+      destruct n; [ flia Hin | cbn ].
+      destruct n. {
+        cbn.
 ...
 
 (* likely no more required if new_nth_log_prod_list above has been proven *)
