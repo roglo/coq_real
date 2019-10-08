@@ -1751,13 +1751,6 @@ assert (Hnl : n * (m + 1) = length l). {
   subst l.
   symmetry; apply log_prod_list_length.
 }
-Check nth_log_prod_list2.
-(* en fait, ça va pas : nth_log_prod_list2 s'applique pour i entre
-   0 et n(m+1)-1 (et non pas entre 1 et n-1) et seulement pour
-   k<nm-2 et non pas k<n(m+1)-1 *)
-(* donc, c'est nth_log_prod_list2 qui, pourtant est prouvé, qui ne
-   va pas *)
-...
 assert (Hbetw : ∀ i, 1 < i < n - 1 → List.nth i l f_zero = f_zero). {
   intros i (Hi, Hin).
   move i before n.
@@ -1780,9 +1773,17 @@ assert (Hbetw : ∀ i, 1 < i < n - 1 → List.nth i l f_zero = f_zero). {
   replace (S (S n)) with (n + 2) in Hl by flia.
   subst m'.
   apply Nat.succ_lt_mono in Hi.
-...
-  eapply nth_log_prod_list2; [ apply Hl | | flia Hi Hin ].
-  split; [ flia | ring_simplify; flia ].
+(* en fait, ça va pas : nth_log_prod_list2 s'applique pour i entre
+   0 et n(m+1)-1 (et non pas entre 1 et n-1) et seulement pour
+   k<nm-2 et non pas k<n(m+1)-1 *)
+(* donc, c'est nth_log_prod_list2 qui, pourtant est prouvé, qui ne
+   va pas *)
+  eapply nth_log_prod_list2; [ apply Hl | | ].
+  2: {
+    split; [ flia Hi | ].
+    rewrite Nat.mul_add_distr_l, Nat.mul_1_r, Nat.add_assoc.
+    flia Hin.
+  }
 ...
 }
 assert (Hbetw2 : ∀ i, n < i < n * (m + 1) - 1 → List.nth i l f_zero = f_zero). {
