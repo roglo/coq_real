@@ -1374,7 +1374,7 @@ Theorem new_nth_log_prod_list {F : field} : ∀ m n i k u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u
         (n * (m + 1)) k
   → n * m < k < n * (m + 1)
-  → 0 < i < n - 2
+  → 0 < i < n * (m + 1) - 1
   → nth i l f_zero = f_zero.
 Proof.
 intros * Hl Hknm (Hi, Hin).
@@ -1392,7 +1392,7 @@ destruct i. 2: {
       split; [ flia Hknm H1 | flia Hknm ].
     }
     specialize (H2 H); clear H.
-    assert (H : S i < n - 2) by flia Hin.
+    assert (H : S i < n * (m + 1) - 1) by flia Hin.
     now specialize (H2 H); clear H.
   }
   rewrite Hl.
@@ -1401,9 +1401,9 @@ destruct i. 2: {
   rewrite log_prod_list_succ.
   cbn - [ ls_of_pol ].
   clear.
-remember (S (k + n)) as j eqn:Hj.
-assert (Hnj : n + k < j) by flia Hj.
-clear Hj.
+  remember (S (k + n)) as j eqn:Hj.
+  assert (Hnj : n + k < j) by flia Hj.
+  clear Hj.
   revert n i j Hnj.
   induction k; intros; [ now cbn; destruct i | ].
   rewrite log_prod_list_succ.
@@ -1440,35 +1440,48 @@ clear Hj.
   apply IHk.
   flia Hnj.
 }
-...
 rewrite Hl.
 destruct k; [ easy | ].
 rewrite log_prod_list_succ.
 cbn - [ ls_of_pol ].
 unfold log_prod_term.
 (**)
-unfold ε.
-remember ((n * (m + 1)) mod (n * (m + 1) - k)) as p eqn:Hp.
-symmetry in Hp.
-destruct p; [ | now rewrite f_mul_0_r ].
-apply Nat.mod_divides in Hp; [ | flia Hknm ].
-destruct Hp as (p, Hp).
-destruct p; [ flia Hknm Hp | ].
-destruct p. {
-  rewrite Nat.mul_1_r in Hp.
-  replace k with 0 in * by flia Hknm Hp; clear Hp.
-  rewrite Nat.sub_0_r.
-  destruct m. {
-    rewrite Nat.add_0_l, Nat.mul_1_r.
-...
-    replace (ls _ n) with f_zero. 2: {
+replace (ls _ (n * (m + 1) - k)) with f_zero. 2: {
+  remember (n * (m + 1) - k) as p eqn:Hp; symmetry in Hp.
+  destruct p; [ easy | cbn ].
+  destruct n; [ flia Hp | ].
+  rewrite Nat_sub_succ_1.
+  destruct n. {
+    cbn.
+    rewrite f_add_opp_diag_r.
+    destruct p; [ easy | now destruct p ].
+  }
+  cbn.
+  destruct p; [ flia Hknm Hp | ].
+  destruct n. {
+    destruct p; [ | now destruct p ].
+    flia Hknm Hp.
+  }
+  cbn.
+  rewrite f_add_opp_diag_r.
+  destruct p; [ easy | ].
+  assert (Hpn : p < n + 2) by flia Hknm Hp.
+  destruct p. {
+    destruct n. {
       cbn.
-      destruct n; [ easy | cbn ].
-      destruct n; [ easy | cbn ].
-      destruct n; [ flia Hknm | cbn ].
-      destruct n; [ flia Hin | cbn ].
-      destruct n. {
-        cbn.
+      replace k with (3 * m) in * by flia Hp.
+...
+  clear - Hpn.
+  revert p Hpn.
+  induction n; intros. {
+    cbn.
+...
+  induction n; intros; [ flia Hpn | ].
+  destruct m; [ symmetry; apply f_add_opp_diag_r | cbn ].
+  apply IHn; flia Hmn.
+}
+now do 2 rewrite f_mul_0_l.
+Qed.
 ...
 
 (* likely no more required if new_nth_log_prod_list above has been proven *)
