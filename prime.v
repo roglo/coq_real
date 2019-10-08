@@ -1373,7 +1373,7 @@ induction n; intros. {
 Theorem new_nth_log_prod_list {F : field} : ∀ m n i k u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u
         (n * (m + 1)) k
-  → n * m < k < n * (m + 1)
+  → k < n * m - 2
   → 0 < i < n * (m + 1) - 1
   → nth i l f_zero = f_zero.
 Proof.
@@ -1388,9 +1388,7 @@ injection Hl; clear Hl; intros Hl Ha; subst f sn; cbn.
 destruct i. 2: {
   destruct (Nat.eq_dec (n * m) k) as [H1| H1]. 2: {
     specialize (IHk m n i l Hl) as H2.
-    assert (H : n * m < k < n * (m + 1)). {
-      split; [ flia Hknm H1 | flia Hknm ].
-    }
+    assert (H : k < n * m - 2) by flia Hknm.
     specialize (H2 H); clear H.
     assert (H : S i < n * (m + 1) - 1) by flia Hin.
     now specialize (H2 H); clear H.
@@ -1465,24 +1463,17 @@ replace (ls _ (n * (m + 1) - k)) with f_zero. 2: {
   cbn.
   rewrite f_add_opp_diag_r.
   destruct p; [ easy | ].
-  assert (Hpn : p < n + 2) by flia Hknm Hp.
-  destruct p. {
-    destruct n. {
-      cbn.
-      replace k with (3 * m) in * by flia Hp.
-...
-  clear - Hpn.
-  revert p Hpn.
+  assert (Hnp : n + 4 < p) by lia.
+  clear - Hnp.
+  revert p Hnp.
   induction n; intros. {
-    cbn.
-...
-  induction n; intros; [ flia Hpn | ].
-  destruct m; [ symmetry; apply f_add_opp_diag_r | cbn ].
-  apply IHn; flia Hmn.
+    destruct p; [ flia Hnp | now destruct p ].
+  }
+  destruct p; [ symmetry; apply f_add_opp_diag_r | cbn ].
+  apply IHn; flia Hnp.
 }
 now do 2 rewrite f_mul_0_l.
 Qed.
-...
 
 (* likely no more required if new_nth_log_prod_list above has been proven *)
 Theorem nth_log_prod_list {F : field} : ∀ n i k u l,
@@ -1492,6 +1483,9 @@ Theorem nth_log_prod_list {F : field} : ∀ n i k u l,
   → i < k - 1
   → nth i l f_zero = f_zero.
 Proof.
+intros * Hl Hkn Hn Hik.
+Inspect 1.
+...
 intros * Hl Hkn Hn Hik.
 revert n i l Hl Hn Hkn Hik.
 induction k; intros; [ now rewrite Hl; destruct i | ].
