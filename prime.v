@@ -577,23 +577,32 @@ revert i.
 induction cnt; intros; [ easy | now cbn; rewrite IHcnt ].
 Qed.
 
+Theorem log_prod_list_succ {F : field} : ∀ cnt u v n i,
+  log_prod_list (S cnt) u v n i =
+    log_prod_term u v n i :: log_prod_list cnt u v n (i + 1).
+Proof. easy. Qed.
+
 (*
-Theorem log_prod_list_succ {F : field} : ∀ u v n i,
-  log_prod_list u v n (S i) =
-    log_prod_term u v n (n - i) :: log_prod_list u v n i.
-Proof. easy. Qed.
-
-Theorem log_prod_succ {F : field} : ∀ u v n i,
-  log_prod u v n (S i) =
-    (log_prod_term u v n (n - i) + log_prod u v n i)%F.
-Proof. easy. Qed.
-
-Theorem log_prod_0_l {F : field} : ∀ u v n i,
-  (∀ n, u n = f_zero) → log_prod u v n i = f_zero.
+Theorem log_prod_succ {F : field} : ∀ u v i,
+  log_prod u v (S i) =
+    (log_prod_term u v (S i) 1 + log_prod u v i)%F.
 Proof.
-intros * Hu.
-revert n.
-induction i; intros; [ easy | ].
+intros.
+cbn.
+unfold log_prod.
+cbn.
+...
+ easy. Qed.
+*)
+
+Theorem log_prod_0_l {F : field} : ∀ u v,
+  (∀ n, u n = f_zero) → ∀ i, log_prod u v i = f_zero.
+Proof.
+intros * Hu i.
+destruct i; intros; [ easy | ].
+cbn; unfold log_prod_term.
+rewrite Hu, f_mul_0_l, f_mul_0_l, f_add_0_l.
+...
 rewrite log_prod_succ.
 cbn - [ Nat.div Nat.modulo ].
 rewrite IHi, f_add_0_r.
@@ -602,21 +611,20 @@ remember (n mod (n - i)) as r eqn:Hr; symmetry in Hr.
 destruct r; [ | now rewrite f_mul_0_r ].
 now rewrite Hu, f_mul_0_l, f_mul_1_r.
 Qed.
-*)
 
-...
-
-Theorem log_prod_list_0_l {F : field} :
+(*
+Theorem log_prod_list_0_l {F : field} : ∀ u v k,
   (∀ n, u n = f_zero)
+  → ∀ i, List.nth i (log_prod_list (i + 1) u v (k + 1) 1) f_zero = f_zero.
   → log_prod_list (i + 1) (ls s1) (ls s2) (i + 1) 1) = [0; 0; ... 0].
 ...
+*)
 
 Theorem ls_mul_0_l {F : field} : ∀ s1 s2,
   (∀ n, ls s1 n = f_zero) → ls_eq (ls_mul s1 s2) {| ls _ := f_zero |}.
 Proof.
 intros * Hs1 i.
 cbn - [ "/" "mod" ].
-unfold log_prod.
 ...
 
 replace (i + 1) with (S i) by flia.
