@@ -496,23 +496,23 @@ Definition ζ_but_mul_of {F : field} n :=
        | _ => f_one
        end |}.
 
-Definition ε {F: field} n i :=
+Definition ε2 {F: field} i n :=
   match n mod i with
   | 0 => f_one
   | _ => f_zero
   end.
 
-Definition log_prod_term {F : field} u v n i :=
-  (u i * v (n / i)%nat * ε n i)%F.
+Definition log_prod_term2 {F : field} u v i n :=
+  (u i * v (n / i)%nat * ε2 i n)%F.
 
-Fixpoint log_prod_list {F : field} cnt u v n i :=
+Fixpoint log_prod_list2 {F : field} cnt u v i n :=
   match cnt with
   | 0 => []
-  | S cnt' => log_prod_term u v n i :: log_prod_list cnt' u v n (i + 1)
+  | S cnt' => log_prod_term2 u v i n :: log_prod_list2 cnt' u v (i + 1) n
   end.
 
 Definition log_prod {F : field} u v n :=
-  List.fold_right f_add f_zero (log_prod_list n u v n 1).
+  List.fold_right f_add f_zero (log_prod_list2 n u v 1 n).
 
 (* Σ (i = 1, ∞) s1_i x^ln(i) + Σ (i = 1, ∞) s2_i x^ln(i) *)
 Definition ls_add {F : field} s1 s2 :=
@@ -567,27 +567,27 @@ rewrite Nat.div_small in H1; [ | flia Hn ].
 now rewrite Nat.mul_0_r in H1.
 Qed.
 
-Theorem log_prod_list_length {F : field} : ∀ cnt u v n i,
-  length (log_prod_list cnt u v n i) = cnt.
+Theorem log_prod_list2_length {F : field} : ∀ cnt u v i n,
+  length (log_prod_list2 cnt u v i n) = cnt.
 Proof.
 intros.
 revert i.
 induction cnt; intros; [ easy | now cbn; rewrite IHcnt ].
 Qed.
 
-Theorem log_prod_list_succ {F : field} : ∀ cnt u v n i,
-  log_prod_list (S cnt) u v n i =
-    log_prod_term u v n i :: log_prod_list cnt u v n (i + 1).
+Theorem log_prod_list_succ2 {F : field} : ∀ cnt u v i n,
+  log_prod_list2 (S cnt) u v i n =
+    log_prod_term2 u v i n :: log_prod_list2 cnt u v (i + 1) n.
 Proof. easy. Qed.
 
-Theorem fold_log_prod_list_0_l {F : field} : ∀ cnt u v n i,
+Theorem fold_log_prod_list2_0_l {F : field} : ∀ cnt u v i n,
   (∀ n, u n = f_zero)
-  → List.fold_right f_add f_zero (log_prod_list cnt u v n i) = f_zero.
+  → List.fold_right f_add f_zero (log_prod_list2 cnt u v i n) = f_zero.
 Proof.
 intros * Hu.
 revert i.
 induction cnt; intros; [ easy | cbn ].
-unfold log_prod_term.
+unfold log_prod_term2.
 rewrite Hu, IHcnt.
 rewrite <- f_mul_assoc, f_mul_0_l.
 apply f_add_0_r.
@@ -598,9 +598,9 @@ Theorem log_prod_0_l {F : field} : ∀ u v,
 Proof.
 intros * Hu i.
 destruct i; intros; [ easy | ].
-cbn; unfold log_prod_term.
+cbn; unfold log_prod_term2.
 rewrite Hu, f_mul_0_l, f_mul_0_l, f_add_0_l.
-now apply fold_log_prod_list_0_l.
+now apply fold_log_prod_list2_0_l.
 Qed.
 
 Theorem ls_mul_0_l {F : field} : ∀ s1 s2,
@@ -679,10 +679,10 @@ destruct c.
  now apply IHly.
 Qed.
 
-Theorem fold_log_prod_list_add {F : field} : ∀ cnt x y u n i,
-  fold_right f_add f_zero (log_prod_list cnt (ls (ls_of_pol (x + y))) u n i) =
-  (fold_right f_add f_zero (log_prod_list cnt (ls (ls_of_pol x)) u n i) +
-   fold_right f_add f_zero (log_prod_list cnt (ls (ls_of_pol y)) u n i))%F.
+Theorem fold_log_prod_list2_add {F : field} : ∀ cnt x y u n i,
+  fold_right f_add f_zero (log_prod_list2 cnt (ls (ls_of_pol (x + y))) u i n) =
+  (fold_right f_add f_zero (log_prod_list2 cnt (ls (ls_of_pol x)) u i n) +
+   fold_right f_add f_zero (log_prod_list2 cnt (ls (ls_of_pol y)) u i n))%F.
 Proof.
 intros.
 revert i.
@@ -691,7 +691,7 @@ cbn - [ ls_of_pol ].
 rewrite IHcnt.
 do 2 rewrite f_add_assoc; f_equal.
 rewrite f_add_add_swap; f_equal.
-unfold log_prod_term.
+unfold log_prod_term2.
 destruct i. {
   cbn.
   do 2 rewrite f_mul_0_l.
@@ -710,7 +710,7 @@ Theorem log_prod_pol_add {F : field} : ∀ x y u n,
 Proof.
 intros.
 unfold log_prod.
-apply fold_log_prod_list_add.
+apply fold_log_prod_list2_add.
 Qed.
 
 Theorem ls_mul_pol_add_distr_r {F : field} : ∀ x y s,
@@ -722,38 +722,38 @@ cbn - [ "/" "mod" ls_of_pol "-" log_prod ].
 apply log_prod_pol_add.
 Qed.
 
-Theorem fold_log_prod_list_1_l {F : field} : ∀ cnt u i n,
-  2 ≤ n
+Theorem fold_log_prod_list2_1_l {F : field} : ∀ cnt u i n,
+  2 ≤ i
   → fold_right f_add f_zero
-       (log_prod_list cnt (ls (ls_of_pol (pol_pow 1))) u i n) = f_zero.
+       (log_prod_list2 cnt (ls (ls_of_pol (pol_pow 1))) u i n) = f_zero.
 Proof.
-intros * Hn.
-revert n Hn.
+intros * Hi.
+revert i Hi.
 induction cnt; intros; [ easy | ].
 cbn - [ ls_of_pol ].
-unfold log_prod_term.
-replace (ls _ n) with f_zero. 2: {
-  destruct n; [ easy | ].
-  destruct n; [ flia Hn | now destruct n ].
+unfold log_prod_term2.
+replace (ls _ i) with f_zero. 2: {
+  destruct i; [ easy | ].
+  destruct i; [ flia Hi | now destruct i ].
 }
 rewrite <- f_mul_assoc, f_mul_0_l, f_add_0_l.
-apply IHcnt; flia Hn.
+apply IHcnt; flia Hi.
 Qed.
 
 Theorem ls_mul_pol_1_l {F : field} : ∀ s,
   (pol_pow 1 .* s = s)%LS.
 Proof.
-intros * i.
+intros * n.
 cbn - [ "/" "mod" ls_of_pol ].
 rewrite Nat.add_1_r.
 cbn - [ ls_of_pol ].
-unfold log_prod_term.
+unfold log_prod_term2.
 rewrite Nat.div_1_r.
 unfold ls_of_pol at 1.
 cbn - [ ls_of_pol ].
 rewrite f_mul_1_l, f_mul_1_r.
 rewrite <- f_add_0_r; f_equal.
-now apply fold_log_prod_list_1_l.
+now apply fold_log_prod_list2_1_l.
 Qed.
 
 Theorem ls_of_pol_opp {F : field} : ∀ p,
@@ -770,9 +770,9 @@ destruct i; [ easy | ].
 apply IHcl.
 Qed.
 
-Theorem fold_log_prod_list_opp_l {F : field} : ∀ cnt u i n p,
-  fold_right f_add f_zero (log_prod_list cnt (ls (ls_of_pol (- p))) u n i) =
-  (- fold_right f_add f_zero (log_prod_list cnt (ls (ls_of_pol p)) u n i))%F.
+Theorem fold_log_prod_list2_opp_l {F : field} : ∀ cnt u i n p,
+  fold_right f_add f_zero (log_prod_list2 cnt (ls (ls_of_pol (- p))) u i n) =
+  (- fold_right f_add f_zero (log_prod_list2 cnt (ls (ls_of_pol p)) u i n))%F.
 Proof.
 intros.
 revert i.
@@ -780,7 +780,7 @@ induction cnt; intros; [ cbn; symmetry; apply f_opp_0 | ].
 cbn - [ ls_of_pol ].
 rewrite IHcnt.
 rewrite f_opp_add_distr; f_equal.
-unfold log_prod_term.
+unfold log_prod_term2.
 destruct i. {
   cbn.
   rewrite <- f_mul_assoc, f_mul_0_l.
@@ -798,7 +798,7 @@ Proof.
 intros * i.
 cbn - [ "/" "mod" ls_of_pol ].
 unfold log_prod.
-apply fold_log_prod_list_opp_l.
+apply fold_log_prod_list2_opp_l.
 Qed.
 
 (*
@@ -1788,9 +1788,9 @@ destruct m. {
   clear i Hm.
   cbn - [ ls_of_pol ].
   unfold log_prod.
-Print log_prod_list.
-Print log_prod_term.
-Print ε.
+Print log_prod_list2.
+Print log_prod_term2.
+Print ε2.
 ...
   replace (S m) with (m + 1) by flia.
   revert m.
