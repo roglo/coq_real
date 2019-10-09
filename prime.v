@@ -522,8 +522,6 @@ Definition ls_add {F : field} s1 s2 :=
 Definition ls_mul {F : field} s1 s2 :=
   {| ls := log_prod (ls s1) (ls s2) |}.
 
-...
-
 Definition ls_of_pol {F : field} p :=
   {| ls n :=
        match n with
@@ -568,6 +566,8 @@ specialize (H1 H); clear H.
 rewrite Nat.div_small in H1; [ | flia Hn ].
 now rewrite Nat.mul_0_r in H1.
 Qed.
+
+...
 
 Theorem log_prod_list_length {F : field} : ∀ u v n i,
   length (log_prod_list u v n i) = i.
