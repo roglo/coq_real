@@ -25,12 +25,13 @@ value ε n i =
 value log_prod_term u v n i =
   u i *. v (n / i) *. ε n i.
 
-value rec log_prod u v n i =
-  match i with
+value rec log_prod cnt u v n i =
+  match cnt with
   | 0 → f_zero
-  | _ → log_prod_term u v n (n - (i - 1)) +. log_prod u v n (i - 1)
+  | _ → log_prod_term u v n i +. log_prod (cnt - 1) u v n (i + 1)
   end.
 
+(*
 value log_prod_term' u v n i =
   let q = n / i in
   if q < i then f_zero
@@ -47,15 +48,17 @@ value rec log_prod' u v n i =
    | 0 → f_zero
    | _ → log_prod_term' u v n (n - (i - 1)) +. log_prod' u v n (i - 1)
    end.
+*)
 
-(* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
+(* Σ (i = 1, ∞) s1_i x^ln(i) + Σ (i = 1, ∞) s2_i x^ln(i) *)
 value ls_add s1 s2 =
   { ls n = s1.ls n +. s2.ls n }.
 
 (* Σ (i = 1, ∞) s1_i x^ln(i) * Σ (i = 1, ∞) s2_i x^ln(i) *)
 value ls_mul s1 s2 =
-  { ls n = log_prod' s1.ls s2.ls n n }.
+  { ls = log_prod s1.ls s2.ls }.
 
+(*
 (* c*x^ln(n) * Σ (i = 1, ∞) s_(i-1) x^ln(i) =
    Σ (i = 1, ∞) c*s_(i-1) x^ln(n*i) *)
 value ls_mul_elem c n s =
@@ -77,6 +80,9 @@ value rec ls_mul_l_upto k s1 s2 =
       ls_add (ls_mul_l_upto (k - 1) s1 s2)
         (ls_mul_elem (s1.ls k) k s2)
   end.
+*)
+
+...
 
 value ls_of_pol p =
   { ls n =

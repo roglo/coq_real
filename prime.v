@@ -505,22 +505,24 @@ Definition ε {F: field} i n :=
 Definition log_prod_term {F : field} u v n i :=
   (u i * v (n / i)%nat * ε n i)%F.
 
-Fixpoint log_prod_list {F : field} u v n i :=
-  match i with
+Fixpoint log_prod_list {F : field} cnt u v n i :=
+  match cnt with
   | 0 => []
-  | S i' => log_prod_term u v n (n - i') :: log_prod_list u v n i'
+  | S cnt' => log_prod_term u v n i :: log_prod_list cnt' u v n (i + 1)
   end.
 
-Definition log_prod {F : field} u v n i :=
-  List.fold_right f_add f_zero (log_prod_list u v n i).
+Definition log_prod {F : field} u v n :=
+  List.fold_right f_add f_zero (log_prod_list n u v n 1).
 
-(* Σ (i = 1, ∞) s1_(i-1) x^ln(i) + Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
+(* Σ (i = 1, ∞) s1_i x^ln(i) + Σ (i = 1, ∞) s2_i x^ln(i) *)
 Definition ls_add {F : field} s1 s2 :=
   {| ls n := (ls s1 n + ls s2 n)%F |}.
 
-(* Σ (i = 1, ∞) s1_(i-1) x^ln(i) * Σ (i = 1, ∞) s2_(i-1) x^ln(i) *)
+(* Σ (i = 1, ∞) s1_i x^ln(i) * Σ (i = 1, ∞) s2_i x^ln(i) *)
 Definition ls_mul {F : field} s1 s2 :=
-  {| ls n := log_prod (ls s1) (ls s2) n n |}.
+  {| ls := log_prod (ls s1) (ls s2) |}.
+
+...
 
 Definition ls_of_pol {F : field} p :=
   {| ls n :=
