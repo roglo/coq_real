@@ -567,16 +567,17 @@ rewrite Nat.div_small in H1; [ | flia Hn ].
 now rewrite Nat.mul_0_r in H1.
 Qed.
 
-...
+Print log_prod_list.
 
-Theorem log_prod_list_length {F : field} : ∀ u v n i,
-  length (log_prod_list u v n i) = i.
+Theorem log_prod_list_length {F : field} : ∀ cnt u v n i,
+  length (log_prod_list cnt u v n i) = cnt.
 Proof.
 intros.
-revert n.
-induction i; intros; [ easy | now cbn; rewrite IHi ].
+revert i.
+induction cnt; intros; [ easy | now cbn; rewrite IHcnt ].
 Qed.
 
+(*
 Theorem log_prod_list_succ {F : field} : ∀ u v n i,
   log_prod_list u v n (S i) =
     log_prod_term u v n (n - i) :: log_prod_list u v n i.
@@ -601,13 +602,19 @@ remember (n mod (n - i)) as r eqn:Hr; symmetry in Hr.
 destruct r; [ | now rewrite f_mul_0_r ].
 now rewrite Hu, f_mul_0_l, f_mul_1_r.
 Qed.
+*)
 
 Theorem ls_mul_0_l {F : field} : ∀ s1 s2,
   (∀ n, ls s1 n = f_zero) → ls_eq (ls_mul s1 s2) {| ls _ := f_zero |}.
 Proof.
 intros * Hs1 i.
 cbn - [ "/" "mod" ].
-unfold log_prod_term, ε.
+unfold log_prod.
+...
+
+replace (i + 1) with (S i) by flia.
+cbn.
+...
 now apply log_prod_0_l.
 Qed.
 
