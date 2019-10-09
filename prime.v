@@ -604,6 +604,13 @@ now rewrite Hu, f_mul_0_l, f_mul_1_r.
 Qed.
 *)
 
+...
+
+Theorem log_prod_list_0_l {F : field} :
+  (∀ n, u n = f_zero)
+  → log_prod_list (i + 1) (ls s1) (ls s2) (i + 1) 1) = [0; 0; ... 0].
+...
+
 Theorem ls_mul_0_l {F : field} : ∀ s1 s2,
   (∀ n, ls s1 n = f_zero) → ls_eq (ls_mul s1 s2) {| ls _ := f_zero |}.
 Proof.
