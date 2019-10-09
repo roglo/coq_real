@@ -1370,6 +1370,7 @@ induction n; intros. {
 ...
 *)
 
+(*
 ... fait chier, marche pas, faut re-réfléchir
 Theorem nth_log_prod_list2 {F : field} : ∀ m n i k u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u
@@ -1488,6 +1489,7 @@ rewrite Nat.mul_add_distr_r in Hp.
 ...
 now do 2 rewrite f_mul_0_l.
 Qed.
+*)
 
 Theorem nth_log_prod_list {F : field} : ∀ n i k u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u n k
@@ -1766,6 +1768,7 @@ assert (Hnl : n * (m + 1) = length l). {
   subst l.
   symmetry; apply log_prod_list_length.
 }
+...
 assert (Hbetw : ∀ i, 1 < i < n - 1 → List.nth i l f_zero = f_zero). {
   intros i (Hi, Hin).
   move i before n.
@@ -1788,6 +1791,10 @@ assert (Hbetw : ∀ i, 1 < i < n - 1 → List.nth i l f_zero = f_zero). {
   replace (S (S n)) with (n + 2) in Hl by flia.
   subst m'.
   apply Nat.succ_lt_mono in Hi.
+remember (n + 2) as n'.
+Print log_prod_list.
+Print log_prod_term.
+...
 (* en fait, ça va pas : nth_log_prod_list2 s'applique pour i entre
    0 et n(m+1)-1 (et non pas entre 1 et n-1) et seulement pour
    k<nm-2 et non pas k<n(m+1)-1 *)
