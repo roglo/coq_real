@@ -496,8 +496,8 @@ Definition ζ_but_mul_of {F : field} n :=
        | _ => f_one
        end |}.
 
-Definition ε {F: field} i n :=
-  match i mod n with
+Definition ε {F: field} n i :=
+  match n mod i with
   | 0 => f_one
   | _ => f_zero
   end.
@@ -1788,6 +1788,9 @@ destruct m. {
   clear i Hm.
   cbn - [ ls_of_pol ].
   unfold log_prod.
+Print log_prod_list.
+Print log_prod_term.
+Print ε.
 ...
   replace (S m) with (m + 1) by flia.
   revert m.
