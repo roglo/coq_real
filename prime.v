@@ -770,51 +770,35 @@ destruct i; [ easy | ].
 apply IHcl.
 Qed.
 
-...
-
-Theorem log_prod_pol_opp_l {F : field} : ∀ p s n i,
-  log_prod (ls (ls_of_pol (- p))) (ls s) n i =
-  (- log_prod (ls (ls_of_pol p)) (ls s) n i)%F.
+Theorem fold_log_prod_list_opp_l {F : field} : ∀ cnt u i n p,
+  fold_right f_add f_zero (log_prod_list cnt (ls (ls_of_pol (- p))) u n i) =
+  (- fold_right f_add f_zero (log_prod_list cnt (ls (ls_of_pol p)) u n i))%F.
 Proof.
 intros.
-induction i; [ now cbn; rewrite f_opp_0 | ].
-do 2 rewrite log_prod_succ.
+revert i.
+induction cnt; intros; [ cbn; symmetry; apply f_opp_0 | ].
+cbn - [ ls_of_pol ].
+rewrite IHcnt.
+rewrite f_opp_add_distr; f_equal.
 unfold log_prod_term.
-rewrite IHi, f_opp_add_distr; f_equal.
-rewrite <- f_mul_opp_l; f_equal.
-rewrite <- f_mul_opp_l; f_equal.
-destruct (Nat.eq_dec n i) as [Hni| Hni]. {
-  subst n; rewrite Nat.sub_diag; cbn.
+destruct i. {
+  cbn.
+  rewrite <- f_mul_assoc, f_mul_0_l.
   symmetry; apply f_opp_0.
 }
-destruct (lt_dec n i) as [Hnlti| Hngei]. {
-  replace (n - i) with 0 by flia Hnlti.
-  symmetry; apply f_opp_0.
-}
-remember (n - i) as m eqn:Hm; symmetry in Hm.
-destruct m; [ flia Hni Hngei Hm | ].
-specialize (ls_of_pol_opp p m) as H1.
-now rewrite Nat.add_1_r in H1.
+rewrite <- Nat.add_1_r.
+rewrite ls_of_pol_opp.
+rewrite ls_of_opp.
+now do 2 rewrite f_mul_opp_l.
 Qed.
-
-(*
-Theorem log_prod_term_0 {F : field} : ∀ u v n,
-  log_prod_term u v n 0 = (u 0 * v n)%F.
-Proof.
-intros.
-unfold log_prod_term, ε.
-cbn - [ "/" ].
-...
-now rewrite Nat.div_1_r, Nat_sub_succ_1, f_mul_1_r.
-Qed.
-*)
 
 Theorem ls_mul_pol_opp_l {F : field} : ∀ p s,
   (- p .* s = - (p .* s))%LS.
 Proof.
 intros * i.
 cbn - [ "/" "mod" ls_of_pol ].
-apply log_prod_pol_opp_l.
+unfold log_prod.
+apply fold_log_prod_list_opp_l.
 Qed.
 
 (*
@@ -1461,7 +1445,6 @@ rewrite Nat.mul_add_distr_r in Hp.
 ...
 now do 2 rewrite f_mul_0_l.
 Qed.
-*)
 
 Theorem nth_log_prod_list {F : field} : ∀ n i k u l,
   l = log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) u n k
@@ -1543,6 +1526,7 @@ destruct n. {
 apply (IHl _ (k + 1)).
 now replace (n + (k + 1) + 3) with (S n + k + 3) by flia.
 Qed.
+*)
 
 Theorem mul_pol_1_sub_pow_ser_at_pow {F : field} : ∀ n s,
   1 < n
@@ -1553,6 +1537,7 @@ intros * Hn Hs.
 unfold ".*", "*"%LS.
 cbn - [ ls_of_pol ].
 unfold log_prod.
+...
 (* log_prod_list ... =
        [1*s_n*ε; 0*s_{n-1}*ε; 0*s_{n-2}*ε; ... 0*s_2*ε; (-1)*s_1)*ε] *)
 remember
