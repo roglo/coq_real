@@ -1528,6 +1528,7 @@ now replace (n + (k + 1) + 3) with (S n + k + 3) by flia.
 Qed.
 *)
 
+(*
 Theorem mul_pol_1_sub_pow_ser_at_pow {F : field} : ∀ n s,
   1 < n
   → (∀ i : nat, 0 < i → ls s i = ls s (n * i))
@@ -1537,7 +1538,6 @@ intros * Hn Hs.
 unfold ".*", "*"%LS.
 cbn - [ ls_of_pol ].
 unfold log_prod.
-...
 (* log_prod_list ... =
        [1*s_n*ε; 0*s_{n-1}*ε; 0*s_{n-2}*ε; ... 0*s_2*ε; (-1)*s_1)*ε] *)
 remember
@@ -1685,7 +1685,9 @@ replace (i + 1) with (S i) in H1 by flia.
 remember (a1 :: a2 :: a3 :: l) as l'.
 now cbn in H1.
 Qed.
+*)
 
+(*
 (* perhaps the previous theorem is no more required if this one works *)
 Theorem mul_pol_1_sub_pow_ser_at_nth_pow {F : field} : ∀ n m s,
   1 < n
@@ -1767,6 +1769,7 @@ Print log_prod_term.
 }
 assert (Hbetw2 : ∀ i, n < i < n * (m + 1) - 1 → List.nth i l f_zero = f_zero). {
 ...
+*)
 
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, 0 < i → ls s i = ls s (n * i))
@@ -1783,6 +1786,7 @@ destruct m. {
   destruct m; [ flia Hm | ].
   rewrite Hm.
   clear i Hm.
+...
   replace (S m) with (m + 1) by flia.
   revert m.
   induction m; intros. {
