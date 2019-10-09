@@ -1767,6 +1767,7 @@ assert (Hnl : n * (m + 1) = length l). {
   subst l.
   symmetry; apply log_prod_list_length.
 }
+Print log_prod_list.
 ...
 assert (Hbetw : ∀ i, 1 < i < n - 1 → List.nth i l f_zero = f_zero). {
   intros i (Hi, Hin).
