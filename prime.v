@@ -1791,6 +1791,12 @@ destruct m. {
 Print log_prod_list.
 Print log_prod_term.
 Print ε.
+remember (log_prod_list (n * S m) (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) 1 (n * S m)) as l eqn:Hl.
+Check List.nth_split.
+(* one must cut at 1 and at n *)
+(* l = [] ++ t 1 ++ l1 + t n ++ l2
+   with t 1 = 1 and t n = -1
+   and prove l1 and l2 contain only zeroes *)
 ...
   replace (S m) with (m + 1) by flia.
   revert m.
