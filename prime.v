@@ -1786,6 +1786,8 @@ destruct m. {
   destruct m; [ flia Hm | ].
   rewrite Hm.
   clear i Hm.
+  cbn - [ ls_of_pol ].
+  unfold log_prod.
 ...
   replace (S m) with (m + 1) by flia.
   revert m.
