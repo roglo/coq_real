@@ -1835,7 +1835,7 @@ destruct m. {
     as l eqn:Hl.
 Compute (List.hd 0 [1;2;3;4;5;6;7]).
 Compute (let n := 5 in List.firstn (n - 2) (List.tl [1;2;3;4;5;6;7])).
-Compute (let n := 5 in List.firstn 1 (List.skipn (n - 1) [1;2;3;4;5;6;7])).
+Compute (let n := 5 in List.hd 0 (List.skipn (n - 1) [1;2;3;4;5;6;7])).
 Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
   assert (H11 : List.hd f_zero l = ls s (S m)). {
     destruct l as [| a l]. {
@@ -1880,10 +1880,7 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
     rewrite Nat.sub_0_r, Nat.add_0_r.
     now replace (S c) with ((n + 2) * (m + 1)) in Hx by flia Hc.
   }
-  assert
-    (Hn1 : ∀ x,
-     List.In x (List.firstn 1 (List.skipn (n - 1) l)) → x = (- f_one)%F). {
-    intros x Hx.
+  assert (Hn1 : List.hd f_zero (List.skipn (n - 1) l) = (- f_one)%F). {
 ...
   assert
     (Hz2 : ∀ x,
