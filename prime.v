@@ -1792,14 +1792,51 @@ destruct m. {
     (log_prod_list (n * S m) (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s)
         1 (n * S m))
     as l eqn:Hl.
-(* one must cut at 1 and at n *)
-(* l = [t 1] ++ l1 ++ [t n] ++ l2
-   with t 1 = 1 and t n = -1
-   and prove l1 and l2 contain only zeroes *)
 Compute (List.firstn 1 [1;2;3;4;5;6;7]).
 Compute (let n := 5 in List.firstn (n - 2) (List.skipn 1 [1;2;3;4;5;6;7])).
 Compute (let n := 5 in List.firstn 1 (List.skipn (n - 1) [1;2;3;4;5;6;7])).
 Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
+  assert (H11 : ∀ x, List.In x (List.firstn 1 l) → x = ls s (S m)). {
+    intros x Hx; cbn in Hx.
+    destruct l as [| a l]; [ easy | cbn in Hx ].
+    destruct Hx as [Hx| Hx]; [ subst a | easy ].
+    remember (n * S m) as cnt eqn:Hcnt; symmetry in Hcnt.
+    rewrite <- Hcnt in Hl at 2.
+    destruct cnt; [ easy | ].
+    cbn - [ ls_of_pol ] in Hl.
+    remember ls_of_pol as f.
+    injection Hl; clear Hl; intros Hl Hx; subst f.
+    subst x.
+    unfold log_prod_term.
+    rewrite Nat.div_1_r.
+    replace (ls _ 1) with f_one. 2: {
+      symmetry; cbn.
+      destruct n; [ easy | ].
+      destruct n; [ flia Hn | cbn ].
+      destruct n; cbn; rewrite f_opp_0; apply f_add_0_r.
+    }
+    rewrite f_mul_1_l.
+    unfold ε.
+    rewrite Nat.mod_1_r, f_mul_1_r.
+    rewrite <- Hs; [ easy | flia ].
+  }
+...
+  assert
+    (Hz1 : ∀ x,
+     List.In x (List.firstn (n - 2) (List.skipn 1 l))
+     → x = f_zero).
+  assert
+    (Hn1 : ∀ x,
+     List.In x (List.firstn 1 (List.skipn (n - 1) l)) → x = (- f_one)%F).
+  assert
+    (Hz2 : ∀ x,
+     List.In x (List.firstn (n - 2) (List.skipn 1 l))
+     → x = f_zero).
+...
+(* one must cut at 1 and at n *)
+(* l = [t 1] ++ l1 ++ [t n] ++ l2
+   with t 1 = 1 and t n = -1
+   and prove l1 and l2 contain only zeroes *)
 ...
   replace (S m) with (m + 1) by flia.
   revert m.
