@@ -1894,7 +1894,7 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
     rewrite Nat.sub_0_r, Nat.add_0_r.
     now replace (S c) with ((n + 2) * (m + 1)) in Hx by flia Hc.
   }
-  assert (Hn1 : List.hd f_zero (List.skipn (n - 1) l) = (- f_one)%F). {
+  assert (Hn1 : List.hd f_zero (List.skipn (n - 1) l) = (- ls s (S m))%F). {
     destruct n; [ flia Hn | ].
     rewrite Nat_sub_succ_1.
     destruct n; [ flia Hn | cbn ].
@@ -1911,11 +1911,21 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
     replace (ls _ (S (S n))) with (- f_one)%F. 2: {
       symmetry; clear; cbn.
       destruct n; [ now cbn; rewrite f_add_0_l | ].
-      destruct n; [ now cbn; rewrite f_add_0_l | ].
-      destruct n; [ now cbn; rewrite f_add_0_l | ].
-      destruct n; [ now cbn; rewrite f_add_0_l | ].
-      destruct n; [ now cbn; rewrite f_add_0_l | ].
-...
+      induction n; [ now cbn; rewrite f_add_0_l | ].
+      apply IHn.
+    }
+    unfold ε.
+    remember (ls s (S p / S (S n))) as x.
+    replace (S p) with (0 + (m + 1) * S (S n)) by flia Hp.
+    rewrite Nat.mod_add; [ | easy ].
+    rewrite Nat.mod_0_l; [ | easy ].
+    rewrite f_mul_opp_l, f_mul_1_l, f_mul_1_r.
+    f_equal; subst x.
+    replace (S p) with (0 + (m + 1) * S (S n)) by flia Hp.
+    rewrite Nat.div_add; [ | easy ].
+    rewrite Nat.div_0_l; [ | easy ].
+    now rewrite Nat.add_0_l, Nat.add_1_r.
+  }
   assert
     (Hz2 : ∀ x,
      List.In x (List.firstn (n - 2) (List.skipn 1 l))
