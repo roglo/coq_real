@@ -1771,6 +1771,47 @@ assert (Hbetw2 : ∀ i, n < i < n * (m + 1) - 1 → List.nth i l f_zero = f_zero
 ...
 *)
 
+Theorem in_firstn_log_prod_list {F : field} : ∀ x n i c m k u,
+  1 < i
+  → In x
+       (firstn (n - k)
+          (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2)))) u (2 + k)
+             ((n + 2) * (m + 1))))
+  → x = f_zero.
+Proof.
+intros * Hi Hx.
+revert n i m k Hi Hx.
+induction c; intros; [ now destruct (n - k) | ].
+cbn - [ ls_of_pol ] in Hx.
+remember (n - k) as p eqn:Hp; symmetry in Hp.
+destruct p; [ easy | ].
+cbn - [ ls_of_pol ] in Hx.
+destruct Hx as [Hx| Hx]. {
+  subst x.
+  unfold log_prod_term.
+  replace (ls _ (S (S k))) with f_zero. 2: {
+    symmetry; cbn.
+    replace (n + 2 - 1) with (S n) by flia.
+    cbn.
+    clear - Hp.
+    destruct n; [ flia Hp | ].
+    revert k p Hp.
+    induction n; intros. {
+      cbn.
+      rewrite f_add_opp_diag_r.
+      destruct k; [ easy | flia Hp ].
+    }
+    destruct k; [ apply f_add_opp_diag_r | ].
+    assert (H : S n - k = S p) by flia Hp.
+    now specialize (IHn _ _ H).
+  }
+  now rewrite <- f_mul_assoc, f_mul_0_l.
+}
+replace p with (n - S k) in Hx by flia Hp.
+replace (S (S (k + 1))) with (2 + S k) in Hx by flia.
+now specialize (IHc n i m (S k) Hi Hx) as H1.
+Qed.
+
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, 0 < i → ls s i = ls s (n * i))
   → 1 < n
@@ -1835,64 +1876,19 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
     clear - Hx.
     remember ((n + 2) * m + n + 1) as c eqn:Hc.
     replace (S (S n)) with (n + 2) in Hx by flia.
-Theorem glop {F : field} : ∀ x n i c m k u,
-  1 < i
-  → In x
-       (firstn (n - k)
-          (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2)))) u (2 + k)
-             ((n + 2) * (m + 1))))
-  → x = f_zero.
-Proof.
-intros * Hi Hx.
-revert n i m k Hi Hx.
-induction c; intros; [ now destruct (n - k) | ].
-cbn - [ ls_of_pol ] in Hx.
-remember (n - k) as p eqn:Hp; symmetry in Hp.
-destruct p; [ easy | ].
-cbn - [ ls_of_pol ] in Hx.
-destruct Hx as [Hx| Hx]. {
-  subst x.
-  unfold log_prod_term.
-  replace (ls _ (S (S k))) with f_zero. 2: {
-    symmetry; cbn.
-    replace (n + 2 - 1) with (S n) by flia.
-    cbn.
-    clear - Hp.
-    destruct n; [ flia Hp | ].
-    revert k p Hp.
-    induction n; intros. {
-      cbn.
-      rewrite f_add_opp_diag_r.
-      destruct k; [ easy | flia Hp ].
-    }
-    destruct k; [ apply f_add_opp_diag_r | ].
-...
-    remember (S k) as sk; cbn; subst sk.
-    rewrite f_add_opp_diag_r.
-    destruct k; [ easy | ].
-...
-apply glop in Hx.
-...
+    apply (in_firstn_log_prod_list _ n 2 c m 0 (ls s)); [ flia | ].
+    rewrite Nat.sub_0_r, Nat.add_0_r.
+    now replace (S c) with ((n + 2) * (m + 1)) in Hx by flia Hc.
+  }
   assert
     (Hn1 : ∀ x,
-     List.In x (List.firstn 1 (List.skipn (n - 1) l)) → x = (- f_one)%F).
+     List.In x (List.firstn 1 (List.skipn (n - 1) l)) → x = (- f_one)%F). {
+    intros x Hx.
+...
   assert
     (Hz2 : ∀ x,
      List.In x (List.firstn (n - 2) (List.skipn 1 l))
      → x = f_zero).
-...
-(* one must cut at 1 and at n *)
-(* l = [t 1] ++ l1 ++ [t n] ++ l2
-   with t 1 = 1 and t n = -1
-   and prove l1 and l2 contain only zeroes *)
-...
-  replace (S m) with (m + 1) by flia.
-  revert m.
-  induction m; intros. {
-    rewrite Nat.mul_1_r.
-    now apply mul_pol_1_sub_pow_ser_at_pow.
-  }
-  replace (S m + 1) with (m + 2) by flia.
 ...
 
 Theorem step_1 {F : field} :
