@@ -1812,6 +1812,20 @@ replace (S (S (k + 1))) with (2 + S k) in Hx by flia.
 now specialize (IHc n i m (S k) Hi Hx) as H1.
 Qed.
 
+Theorem skipn_log_prod_list {F : field} : ∀ m cnt u v i n,
+  skipn m (log_prod_list cnt u v i n) =
+  log_prod_list (cnt - m) u v (i + m) n.
+Proof.
+intros.
+revert i m n.
+induction cnt; intros; [ apply List.skipn_nil | ].
+cbn - [ "-" ].
+destruct m; [ now rewrite Nat.add_0_r | ].
+rewrite Nat.sub_succ, List.skipn_cons.
+replace (i + S m) with (i + 1 + m) by flia.
+apply IHcnt.
+Qed.
+
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, 0 < i → ls s i = ls s (n * i))
   → 1 < n
@@ -1881,6 +1895,26 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
     now replace (S c) with ((n + 2) * (m + 1)) in Hx by flia Hc.
   }
   assert (Hn1 : List.hd f_zero (List.skipn (n - 1) l) = (- f_one)%F). {
+    destruct n; [ flia Hn | ].
+    rewrite Nat_sub_succ_1.
+    destruct n; [ flia Hn | cbn ].
+    destruct l as [| a l]; [ easy | ].
+    remember ((n + 2) * m + n + 1) as p eqn:Hp.
+    replace (S (S n) * S m) with (S p) in Hl by flia Hp.
+    cbn - [ ls_of_pol ] in Hl.
+    remember ls_of_pol as f.
+    injection Hl; clear Hl; intros Hl Ha; subst f.
+    rewrite Hl, skipn_log_prod_list.
+    replace (p - n) with (S ((n + 2) * m)) by flia Hp.
+    cbn - [ ls_of_pol ].
+    unfold log_prod_term.
+    replace (ls _ (S (S n))) with (- f_one)%F. 2: {
+      symmetry; clear; cbn.
+      destruct n; [ now cbn; rewrite f_add_0_l | ].
+      destruct n; [ now cbn; rewrite f_add_0_l | ].
+      destruct n; [ now cbn; rewrite f_add_0_l | ].
+      destruct n; [ now cbn; rewrite f_add_0_l | ].
+      destruct n; [ now cbn; rewrite f_add_0_l | ].
 ...
   assert
     (Hz2 : ∀ x,
