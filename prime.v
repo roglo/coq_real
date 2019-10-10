@@ -1792,21 +1792,21 @@ destruct m. {
     (log_prod_list (n * S m) (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s)
         1 (n * S m))
     as l eqn:Hl.
-Compute (List.firstn 1 [1;2;3;4;5;6;7]).
+Compute (List.hd 0 [1;2;3;4;5;6;7]).
 Compute (let n := 5 in List.firstn (n - 2) (List.skipn 1 [1;2;3;4;5;6;7])).
 Compute (let n := 5 in List.firstn 1 (List.skipn (n - 1) [1;2;3;4;5;6;7])).
 Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
-  assert (H11 : ∀ x, List.In x (List.firstn 1 l) → x = ls s (S m)). {
-    intros x Hx; cbn in Hx.
-    destruct l as [| a l]; [ easy | cbn in Hx ].
-    destruct Hx as [Hx| Hx]; [ subst a | easy ].
+  assert (H11 : List.hd f_zero l = ls s (S m)). {
+    destruct l as [| a l]. {
+      destruct n; [ flia Hn | easy ].
+    }
     remember (n * S m) as cnt eqn:Hcnt; symmetry in Hcnt.
     rewrite <- Hcnt in Hl at 2.
     destruct cnt; [ easy | ].
     cbn - [ ls_of_pol ] in Hl.
     remember ls_of_pol as f.
-    injection Hl; clear Hl; intros Hl Hx; subst f.
-    subst x.
+    injection Hl; clear Hl; intros Hl Hx; subst f; cbn.
+    subst a.
     unfold log_prod_term.
     rewrite Nat.div_1_r.
     replace (ls _ 1) with f_one. 2: {
@@ -1820,11 +1820,22 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
     rewrite Nat.mod_1_r, f_mul_1_r.
     rewrite <- Hs; [ easy | flia ].
   }
-...
   assert
     (Hz1 : ∀ x,
      List.In x (List.firstn (n - 2) (List.skipn 1 l))
-     → x = f_zero).
+     → x = f_zero). {
+    intros x Hx.
+    remember (n * S m) as cnt eqn:Hcnt; symmetry in Hcnt.
+    destruct n; [ flia Hn | ].
+    destruct n; [ flia Hn | clear Hn ].
+    replace (S (S n) - 2) with n in Hx by flia.
+    assert (H : cnt = S ((n + 2) * m + n + 1)) by flia Hcnt.
+    clear Hcnt; subst cnt.
+    rewrite Hl in Hx.
+    cbn - [ ls_of_pol ] in Hx.
+    clear - Hx.
+    remember ((n + 2) * m + n + 1) as c eqn:Hc.
+...
   assert
     (Hn1 : ∀ x,
      List.In x (List.firstn 1 (List.skipn (n - 1) l)) → x = (- f_one)%F).
