@@ -1835,28 +1835,41 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
     clear - Hx.
     remember ((n + 2) * m + n + 1) as c eqn:Hc.
     replace (S (S n)) with (n + 2) in Hx by flia.
-...
-    replace (S c) with ((n + 2) * (m + 1)) in Hx by flia Hc.
-    clear Hc.
-...
 Theorem glop {F : field} : ∀ x n i c m k u,
   1 < i
   → In x
-       (firstn k
-          (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2)))) u i
+       (firstn (n - k)
+          (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2)))) u (2 + k)
              ((n + 2) * (m + 1))))
   → x = f_zero.
 Proof.
 intros * Hi Hx.
 revert n i m k Hi Hx.
-induction c; intros; [ now destruct k | ].
+induction c; intros; [ now destruct (n - k) | ].
 cbn - [ ls_of_pol ] in Hx.
-destruct k; [ easy | ].
+remember (n - k) as p eqn:Hp; symmetry in Hp.
+destruct p; [ easy | ].
 cbn - [ ls_of_pol ] in Hx.
 destruct Hx as [Hx| Hx]. {
   subst x.
   unfold log_prod_term.
-  unfold ε.
+  replace (ls _ (S (S k))) with f_zero. 2: {
+    symmetry; cbn.
+    replace (n + 2 - 1) with (S n) by flia.
+    cbn.
+    clear - Hp.
+    destruct n; [ flia Hp | ].
+    revert k p Hp.
+    induction n; intros. {
+      cbn.
+      rewrite f_add_opp_diag_r.
+      destruct k; [ easy | flia Hp ].
+    }
+    destruct k; [ apply f_add_opp_diag_r | ].
+...
+    remember (S k) as sk; cbn; subst sk.
+    rewrite f_add_opp_diag_r.
+    destruct k; [ easy | ].
 ...
 apply glop in Hx.
 ...
