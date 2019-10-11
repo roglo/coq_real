@@ -733,6 +733,15 @@ symmetry.
 apply step_1; [ easy | flia ].
 Qed.
 
+Theorem step_42_ζ {F : field} : ∀ n,
+  1 < n
+  → ((pol_pow 1 - pol_pow n) .* ζ = series_but_mul_of ζ n)%LS.
+Proof.
+intros * Hn.
+symmetry.
+now apply step_1.
+Qed.
+
 Theorem ζ_Euler_product_eq : False.
 Proof.
 Inspect 1.
