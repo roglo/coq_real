@@ -728,13 +728,16 @@ replace 2 with (0 + 2) by flia.
 apply H.
 Qed.
 
-Theorem step_2 {F : field} : ∀ s a b,
-  (∀ i, 0 < i → ls s i = ls s (a * i))
-  → 1 < a
-  → ((pol_pow 1 - pol_pow b) .* (pol_pow 1 - pol_pow a) .* s =
-      series_but_mul_of b (series_but_mul_of a s))%LS.
+Require Import Morphisms.
+
+Instance series_but_mul_of_morph {F : field} :
+  Proper (eq ==> ls_eq ==> ls_eq) series_but_mul_of.
 Proof.
-...
+intros x y Hxy s1 s2 Hss i.
+subst x; cbn.
+destruct ((i + 1) mod y) as [H| H]; [ easy | ].
+apply Hss.
+Qed.
 
 Theorem step_1_ζ {F : field} :
   ((pol_pow 1 - pol_pow 2) .* ζ = series_but_mul_of 2 ζ)%LS.
@@ -749,6 +752,45 @@ Proof.
 intros * Hn.
 now apply step_1.
 Qed.
+
+Theorem step_2 {F : field} : ∀ s a b,
+  (∀ i, 0 < i → ls s i = ls s (a * i))
+  → (∀ i, 0 < i → ls s i = ls s (b * i))
+  → 1 < a
+  → 1 < b
+  → ((pol_pow 1 - pol_pow b) .* (pol_pow 1 - pol_pow a) .* s =
+      series_but_mul_of b (series_but_mul_of a s))%LS.
+Proof.
+intros * Ha Hb H1a H1b.
+rewrite step_1; [ now rewrite step_1 | | easy ].
+intros i Hi.
+cbn - [ ls_of_pol ].
+unfold log_prod.
+f_equal.
+destruct i; [ easy | clear Hi ].
+cbn - [ ls_of_pol ].
+unfold log_prod_term.
+rewrite pol_1_sub_pow_coeff_1; [ | easy ].
+unfold ε.
+rewrite Nat.mod_1_r, Nat.div_1_r.
+rewrite f_mul_1_l, f_mul_1_r.
+cbn - [ ls_of_pol ].
+destruct i. {
+  cbn - [ ls_of_pol ].
+  rewrite Nat.mul_1_r; symmetry.
+  destruct b; [ flia H1b | ].
+  cbn - [ ls_of_pol ].
+  unfold log_prod_term.
+  rewrite pol_1_sub_pow_coeff_1; [ | easy ].
+  unfold ε.
+  rewrite Nat.mod_1_r, Nat.div_1_r, f_mul_1_l, f_mul_1_r.
+  symmetry; rewrite Hb; [ | flia ]; symmetry.
+  rewrite Nat.mul_1_r; f_equal.
+  destruct b; [ easy | ].
+  destruct b. {
+    cbn - [ ls_of_pol ].
+    unfold log_prod_term.
+...
 
 Theorem ζ_Euler_product_eq : False.
 Proof.
