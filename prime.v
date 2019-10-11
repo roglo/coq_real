@@ -829,6 +829,7 @@ replace (i + S m) with (i + 1 + m) by flia.
 apply IHcnt.
 Qed.
 
+(* a version using firstn_log_prod_list could be better, perhaps *)
 Theorem in_firstn_log_prod_list {F : field} : ∀ x n c m k u,
   In x
     (firstn (n - k)
@@ -836,11 +837,6 @@ Theorem in_firstn_log_prod_list {F : field} : ∀ x n c m k u,
           u (2 + k) ((n + 2) * (m + 1))))
   → x = f_zero.
 Proof.
-intros * Hx.
-rewrite firstn_log_prod_list in Hx.
-revert k Hx.
-induction c; intros; [ now destruct (n - k) | ].
-...
 intros * Hx.
 revert k Hx.
 induction c; intros; [ now destruct (n - k) | ].
@@ -991,7 +987,6 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
     replace (S (S c)) with ((n + 2) * m + n + 2) in Hx by flia Hc.
     clear c Hc.
     remember ((n + 2) * m) as c eqn:Hc.
-Check in_firstn_log_prod_list.
 ...
     clear Hc.
     induction c; [ easy | ].
