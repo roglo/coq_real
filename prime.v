@@ -774,7 +774,11 @@ rewrite pol_1_sub_pow_coeff_1; [ | easy ].
 unfold ε.
 rewrite Nat.mod_1_r, Nat.div_1_r.
 rewrite f_mul_1_l, f_mul_1_r.
-cbn - [ ls_of_pol ].
+remember (series_but_mul_of a s) as sa eqn:Hsa.
+assert (H : ∀ i : nat, 0 < i → ls sa i = ls sa (b * i)). {
+  clear i.
+  intros i Hi.
+...
 destruct i. {
   cbn - [ ls_of_pol ].
   rewrite Nat.mul_1_r; symmetry.
