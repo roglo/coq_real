@@ -1032,18 +1032,21 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
       replace (n - 1) with (S (n - 2)) by flia Hn.
       apply List.firstn_cons.
     }
-    destruct n; [ flia Hn | ].
-    rewrite Nat_sub_succ_1.
-    destruct l as [| a l]. {
-      destruct n; [ flia Hn | easy ].
+    assert (Hlen : n ≤ List.length l). {
+      rewrite Hl.
+      rewrite log_prod_list_length.
+      rewrite Nat.mul_comm; cbn; flia.
     }
     destruct n; [ flia Hn | ].
-    clear.
-    revert a l.
-    induction n; intros. {
-      cbn; clear a.
-      destruct l as [| a l]. {
-...
+    rewrite Nat_sub_succ_1.
+    clear - Hlen.
+    revert n Hlen.
+    induction l as [| a l]; intros; [ easy | ].
+    destruct n; [ easy | ].
+    rewrite List.skipn_cons.
+    remember (S n) as sn; cbn; subst sn.
+    cbn in Hlen.
+    apply IHl; flia Hlen.
   }
   cbn; rewrite List.fold_right_app; cbn.
   rewrite H11, Hn1.
