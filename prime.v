@@ -1052,6 +1052,31 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
   rewrite H11, Hn1.
   replace (List.fold_right _ _ (skipn n _)) with f_zero. 2: {
     symmetry.
+    remember (skipn n l) as l'.
+    clear - Hz2; rename l' into l.
+    induction l as [| a l]; [ easy | ].
+    cbn in Hz2 |- *.
+    rewrite (Hz2 a); [ | now left ].
+    rewrite f_add_0_l.
+    apply IHl; intros x Hx.
+    now apply Hz2; right.
+  }
+  rewrite f_add_0_r.
+  replace (fold_right f_add _ _) with (- ls s (S m))%F. 2: {
+    symmetry.
+    remember (- ls s (S m))%F as x.
+    remember (firstn _ (tl l)) as l'.
+    clear - Hz1.
+    rename l' into l.
+    induction l as [| a l]; [ easy | cbn ].
+    rewrite (Hz1 a); [ | now left ].
+    rewrite f_add_0_l.
+    apply IHl; intros y Hy.
+    apply Hz1; cbn.
+    now right.
+  }
+  apply f_add_opp_diag_r.
+}
 ...
 
 Theorem step_1 {F : field} :
