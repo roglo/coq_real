@@ -350,7 +350,7 @@ Notation "x - y" := (lp_sub x y) : lp_scope.
 
 Definition ζ {F : field} := {| ls _ := f_one |}.
 
-Definition series_but_mul_of {F : field} s n :=
+Definition series_but_mul_of {F : field} n s :=
   {| ls i :=
        match i mod n with
        | 0 => f_zero
@@ -393,7 +393,8 @@ Arguments ls_of_pol _ p%LP.
 Arguments ls_pol_mul_l _ p%LP s%LS.
 
 Notation "x = y" := (ls_eq x y) : ls_scope.
-Notation "p .* s" := (ls_pol_mul_l p s) (at level 40) : ls_scope.
+Notation "p .* s" := (ls_pol_mul_l p s) (at level 41, right associativity) :
+   ls_scope.
 
 Theorem log_prod_list_length {F : field} : ∀ cnt u v i n,
   length (log_prod_list cnt u v i n) = cnt.
@@ -524,7 +525,7 @@ Qed.
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, 0 < i → ls s i = ls s (n * i))
   → 1 < n
-  → ((pol_pow 1 - pol_pow n) .* s = series_but_mul_of s n)%LS.
+  → ((pol_pow 1 - pol_pow n) .* s = series_but_mul_of n s)%LS.
 Proof.
 intros * Hs Hn i.
 symmetry.
@@ -727,15 +728,23 @@ replace 2 with (0 + 2) by flia.
 apply H.
 Qed.
 
+Theorem step_2 {F : field} : ∀ s a b,
+  (∀ i, 0 < i → ls s i = ls s (a * i))
+  → 1 < a
+  → ((pol_pow 1 - pol_pow b) .* (pol_pow 1 - pol_pow a) .* s =
+      series_but_mul_of b (series_but_mul_of a s))%LS.
+Proof.
+...
+
 Theorem step_1_ζ {F : field} :
-  ((pol_pow 1 - pol_pow 2) .* ζ = series_but_mul_of ζ 2)%LS.
+  ((pol_pow 1 - pol_pow 2) .* ζ = series_but_mul_of 2 ζ)%LS.
 Proof.
 apply step_1; [ easy | flia ].
 Qed.
 
 Theorem step_42_ζ {F : field} : ∀ n,
   1 < n
-  → ((pol_pow 1 - pol_pow n) .* ζ = series_but_mul_of ζ n)%LS.
+  → ((pol_pow 1 - pol_pow n) .* ζ = series_but_mul_of n ζ)%LS.
 Proof.
 intros * Hn.
 now apply step_1.
