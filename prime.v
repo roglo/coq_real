@@ -524,9 +524,10 @@ Qed.
 Theorem step_1 {F : field} : ∀ s n,
   (∀ i, 0 < i → ls s i = ls s (n * i))
   → 1 < n
-  → (series_but_mul_of s n = (pol_pow 1 - pol_pow n) .* s)%LS.
+  → ((pol_pow 1 - pol_pow n) .* s = series_but_mul_of s n)%LS.
 Proof.
 intros * Hs Hn i.
+symmetry.
 remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
 destruct m. {
   replace (ls _ (i + 1)) with f_zero by now cbn; rewrite Hm.
@@ -729,7 +730,6 @@ Qed.
 Theorem step_1_ζ {F : field} :
   ((pol_pow 1 - pol_pow 2) .* ζ = series_but_mul_of ζ 2)%LS.
 Proof.
-symmetry.
 apply step_1; [ easy | flia ].
 Qed.
 
@@ -738,7 +738,6 @@ Theorem step_42_ζ {F : field} : ∀ n,
   → ((pol_pow 1 - pol_pow n) .* ζ = series_but_mul_of ζ n)%LS.
 Proof.
 intros * Hn.
-symmetry.
 now apply step_1.
 Qed.
 
