@@ -801,16 +801,48 @@ unfold log_prod.
 apply fold_log_prod_list_opp_l.
 Qed.
 
-Theorem in_firstn_log_prod_list {F : field} : ∀ x n i c m k u,
-  1 < i
-  → In x
-       (firstn (n - k)
-          (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2))))
-             u (2 + k) ((n + 2) * (m + 1))))
+Theorem firstn_log_prod_list {F : field} : ∀ m cnt u v i n,
+  firstn m (log_prod_list cnt u v i n) =
+  log_prod_list (min m cnt) u v i n.
+Proof.
+intros.
+revert i m n.
+induction cnt; intros; [ now rewrite Nat.min_0_r, List.firstn_nil | ].
+cbn - [ "-" ].
+destruct m; [ easy | ].
+rewrite List.firstn_cons.
+rewrite <- Nat.succ_min_distr; cbn.
+f_equal; apply IHcnt.
+Qed.
+
+Theorem skipn_log_prod_list {F : field} : ∀ m cnt u v i n,
+  skipn m (log_prod_list cnt u v i n) =
+  log_prod_list (cnt - m) u v (i + m) n.
+Proof.
+intros.
+revert i m n.
+induction cnt; intros; [ apply List.skipn_nil | ].
+cbn - [ "-" ].
+destruct m; [ now rewrite Nat.add_0_r | ].
+rewrite Nat.sub_succ, List.skipn_cons.
+replace (i + S m) with (i + 1 + m) by flia.
+apply IHcnt.
+Qed.
+
+Theorem in_firstn_log_prod_list {F : field} : ∀ x n c m k u,
+  In x
+    (firstn (n - k)
+       (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2))))
+          u (2 + k) ((n + 2) * (m + 1))))
   → x = f_zero.
 Proof.
-intros * Hi Hx.
-revert n i m k Hi Hx.
+intros * Hx.
+rewrite firstn_log_prod_list in Hx.
+revert k Hx.
+induction c; intros; [ now destruct (n - k) | ].
+...
+intros * Hx.
+revert k Hx.
 induction c; intros; [ now destruct (n - k) | ].
 cbn - [ ls_of_pol ] in Hx.
 remember (n - k) as p eqn:Hp; symmetry in Hp.
@@ -839,21 +871,7 @@ destruct Hx as [Hx| Hx]. {
 }
 replace p with (n - S k) in Hx by flia Hp.
 replace (S (S (k + 1))) with (2 + S k) in Hx by flia.
-now specialize (IHc n i m (S k) Hi Hx) as H1.
-Qed.
-
-Theorem skipn_log_prod_list {F : field} : ∀ m cnt u v i n,
-  skipn m (log_prod_list cnt u v i n) =
-  log_prod_list (cnt - m) u v (i + m) n.
-Proof.
-intros.
-revert i m n.
-induction cnt; intros; [ apply List.skipn_nil | ].
-cbn - [ "-" ].
-destruct m; [ now rewrite Nat.add_0_r | ].
-rewrite Nat.sub_succ, List.skipn_cons.
-replace (i + S m) with (i + 1 + m) by flia.
-apply IHcnt.
+now specialize (IHc (S k) Hx) as H1.
 Qed.
 
 Theorem step_1 {F : field} : ∀ s n,
@@ -920,7 +938,7 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
     clear - Hx.
     remember ((n + 2) * m + n + 1) as c eqn:Hc.
     replace (S (S n)) with (n + 2) in Hx by flia.
-    apply (in_firstn_log_prod_list _ n 2 c m 0 (ls s)); [ flia | ].
+    apply (in_firstn_log_prod_list _ n c m 0 (ls s)).
     rewrite Nat.sub_0_r, Nat.add_0_r.
     now replace (S c) with ((n + 2) * (m + 1)) in Hx by flia Hc.
   }
@@ -968,7 +986,16 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
     clear - Hx.
     remember ((n + 2) * m + n) as c eqn:Hc.
     replace (S (S n)) with (n + 2) in Hx by flia.
+    rewrite skipn_log_prod_list in Hx.
+    replace (c - n) with ((n + 2) * m) in Hx by flia Hc.
+    replace (S (S c)) with ((n + 2) * m + n + 2) in Hx by flia Hc.
+    clear c Hc.
+    remember ((n + 2) * m) as c eqn:Hc.
 Check in_firstn_log_prod_list.
+...
+    clear Hc.
+    induction c; [ easy | ].
+    cbn - [ ls_of_pol ] in Hx.
 ...
     apply (in_firstn_log_prod_list _ n 2 c m 0 (ls s)); [ flia | ].
     rewrite Nat.sub_0_r, Nat.add_0_r.
