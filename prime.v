@@ -921,10 +921,6 @@ destruct m. {
     (log_prod_list (n * S m) (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s)
         1 (n * S m))
     as l eqn:Hl.
-Compute (List.hd 0 [1;2;3;4;5;6;7]).
-Compute (let n := 5 in List.firstn (n - 2) (List.tl [1;2;3;4;5;6;7])).
-Compute (let n := 5 in List.hd 0 (List.skipn (n - 1) [1;2;3;4;5;6;7])).
-Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
   assert (H11 : List.hd f_zero l = ls s (S m)). {
     destruct l as [| a l]. {
       destruct n; [ flia Hn | easy ].
@@ -1077,6 +1073,8 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
   }
   apply f_add_opp_diag_r.
 }
+cbn - [ ls_of_pol ].
+rewrite Hm; symmetry; unfold log_prod.
 ...
 
 Theorem step_1 {F : field} :
