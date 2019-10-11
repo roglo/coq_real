@@ -13,11 +13,6 @@ Notation "x < y ≤ z" := (x < y ∧ y <= z)%nat (at level 70, y at next level).
 Theorem Nat_sub_succ_1 : ∀ n, S n - 1 = n.
 Proof. now intros; rewrite Nat.sub_succ, Nat.sub_0_r. Qed.
 
-Theorem Nat_sub_succ_diag_l : ∀ n, S n - n = 1.
-Proof.
-intros; induction n; [ easy | now rewrite Nat.sub_succ ].
-Qed.
-
 Theorem fold_mod_succ : ∀ n d, d - snd (Nat.divmod n d 0 d) = n mod (S d).
 Proof. easy. Qed.
 
@@ -164,7 +159,6 @@ Class field :=
     f_mul : f_type → f_type → f_type;
     f_opp : f_type → f_type;
     f_inv : f_type → f_type;
-    f_pow : nat → f_type → f_type;
     f_add_comm : ∀ x y, f_add x y = f_add y x;
     f_add_assoc : ∀ x y z, f_add x (f_add y z) = f_add (f_add x y) z;
     f_add_0_r : ∀ x, f_add x f_zero = x;
@@ -174,25 +168,17 @@ Class field :=
     f_mul_1_l : ∀ x, f_mul f_one x = x;
     f_mul_inv_diag_l : ∀ x, x ≠ f_zero → f_mul (f_inv x) x = f_one;
     f_mul_add_distr_l : ∀ x y z,
-      f_mul x (f_add y z) = f_add (f_mul x y) (f_mul x z);
-    f_pow_mul_l : ∀ a b x, f_pow (a * b) x = f_mul (f_pow a x) (f_pow b x);
-    f_pow_nonzero : ∀ n x, n ≠ 0 → f_pow n x ≠ f_zero }.
+      f_mul x (f_add y z) = f_add (f_mul x y) (f_mul x z) }.
 
 Declare Scope field_scope.
 Delimit Scope field_scope with F.
 
 Definition f_sub {F : field} x y := f_add x (f_opp y).
-Definition f_div {F : field} x y := f_mul x (f_inv y).
 
 Notation "- x" := (f_opp x) : field_scope.
 Notation "x + y" := (f_add x y) : field_scope.
 Notation "x - y" := (f_sub x y) : field_scope.
 Notation "x * y" := (f_mul x y) : field_scope.
-Notation "x / y" := (f_div x y) : field_scope.
-Notation "n ^ x" := (f_pow n x) : field_scope.
-
-Theorem fold_f_sub {F : field} : ∀ x y, (x + - y = x - y)%F.
-Proof. easy. Qed.
 
 Theorem f_add_0_l {F : field} : ∀ x, (f_zero + x)%F = x.
 Proof.
@@ -213,15 +199,6 @@ intros.
 rewrite f_add_comm.
 apply f_add_opp_diag_l.
 Qed.
-
-Theorem f_sub_diag {F : field} : ∀ x, (x - x = f_zero)%F.
-Proof. apply f_add_opp_diag_r. Qed.
-
-Theorem f_sub_0_l {F : field} : ∀ x, (f_zero - x = -x)%F.
-Proof. intros; unfold f_sub; apply f_add_0_l. Qed.
-
-Theorem f_sub_0_r {F : field} : ∀ x, (x - f_zero = x)%F.
-Proof. intros; unfold f_sub; rewrite f_opp_0; apply f_add_0_r. Qed.
 
 Theorem f_add_sub {F : field} : ∀ x y, (x + y - y)%F = x.
 Proof.
@@ -299,136 +276,11 @@ rewrite f_add_opp_diag_l.
 apply f_mul_0_l.
 Qed.
 
-Theorem f_mul_opp_r {F : field} : ∀ x y, (x * - y = - (x * y))%F.
-Proof.
-intros.
-now rewrite f_mul_comm, f_mul_opp_l, f_mul_comm.
-Qed.
-
-Theorem f_mul_sub_distr_l {F : field} : ∀ x y z,
-  (x * (y - z))%F = (x * y - x * z)%F.
-Proof.
-intros.
-unfold f_sub; rewrite f_mul_add_distr_l.
-now rewrite f_mul_opp_r.
-Qed.
-
-Theorem f_mul_sub_distr_r {F : field} : ∀ x y z,
-  ((x - y) * z)%F = (x * z - y * z)%F.
-Proof.
-intros.
-rewrite f_mul_comm, f_mul_sub_distr_l.
-now do 2 rewrite (f_mul_comm z).
-Qed.
-
-Theorem f_opp_add_distr {F : field} : ∀ x y, (- (x + y))%F = (- x + - y)%F.
-Proof.
-intros.
-symmetry.
-apply f_add_move_0_r.
-rewrite (f_add_comm x).
-rewrite f_add_assoc.
-rewrite <- (f_add_assoc _ (- y)%F).
-Search (- _ + _)%F.
-rewrite f_add_opp_diag_l.
-rewrite f_add_0_r.
-apply f_add_opp_diag_l.
-Qed.
-
-Theorem f_sub_add_distr {F : field} : ∀ x y z,
-  (x - (y + z) = x - y - z)%F.
-Proof.
-intros.
-unfold f_sub.
-rewrite f_opp_add_distr.
-apply f_add_assoc.
-Qed.
-
-Theorem f_add_add_swap {F : field} : ∀ x y z, (x + y + z = x + z + y)%F.
-Proof.
-intros.
-do 2 rewrite <- f_add_assoc.
-f_equal.
-apply f_add_comm.
-Qed.
-
-Theorem f_opp_involutive {F : field} : ∀ x, (- - x)%F = x.
-Proof.
-intros.
-symmetry.
-apply f_add_move_0_r.
-apply f_add_opp_diag_r.
-Qed.
-
-Theorem f_mul_inv_diag_r {F : field} : ∀ x,
-  x ≠ f_zero → f_mul x (f_inv x) = f_one.
-Proof.
-intros * Hx.
-rewrite f_mul_comm.
-now apply f_mul_inv_diag_l.
-Qed.
-
 Theorem f_mul_1_r {F : field} : ∀ x, (x * f_one)%F = x.
 Proof.
 intros.
 rewrite f_mul_comm.
 apply f_mul_1_l.
-Qed.
-
-Theorem f_mul_eq_0_l {F : field} : ∀ x y,
-  (x * y)%F = f_zero → y ≠ f_zero → x = f_zero.
-Proof.
-intros * Hxy Hx.
-assert (H1 : (x * y * f_inv y = f_zero * f_inv y)%F) by now f_equal.
-rewrite <- f_mul_assoc in H1.
-rewrite f_mul_inv_diag_r in H1; [ | easy ].
-rewrite f_mul_1_r in H1.
-now rewrite f_mul_0_l in H1.
-Qed.
-
-Theorem f_mul_eq_0_r {F : field} : ∀ x y,
-  (x * y)%F = f_zero → x ≠ f_zero → y = f_zero.
-Proof.
-intros * Hxy Hx.
-rewrite f_mul_comm in Hxy.
-now apply f_mul_eq_0_l in Hxy.
-Qed.
-
-Theorem f_mul_cancel_l {F : field} : ∀ x y z,
-  z ≠ f_zero → (z * x = z * y)%F ↔ x = y.
-Proof.
-intros * Hz.
-split; [ | now intros; subst x ].
-intros H.
-replace (z * y)%F with (- - (z * y))%F in H by apply f_opp_involutive.
-apply f_add_move_0_r in H.
-rewrite <- f_mul_opp_r in H.
-rewrite <- f_mul_add_distr_l in H.
-apply f_mul_eq_0_r in H; [ | easy ].
-apply f_add_move_0_r in H.
-now rewrite f_opp_involutive in H.
-Qed.
-
-Theorem f_inv_mul_inv {F : field} : ∀ x y,
-  x ≠ f_zero → y ≠ f_zero →
-  (f_inv x * f_inv y = f_inv (x * y))%F.
-Proof.
-intros * Hx Hy.
-apply (f_mul_cancel_l _ _ (x * y)%F). {
-  intros H.
-  apply Hy.
-  now apply f_mul_eq_0_r in H.
-}
-rewrite f_mul_assoc.
-rewrite (f_mul_comm x).
-rewrite <- (f_mul_assoc y).
-rewrite f_mul_inv_diag_r; [ | easy ].
-rewrite f_mul_1_r.
-rewrite f_mul_inv_diag_r; [ | easy ].
-rewrite f_mul_inv_diag_r; [ easy | ].
-intros H.
-apply Hy.
-now apply f_mul_eq_0_l in H.
 Qed.
 
 (* Euler product formula *)
@@ -494,8 +346,6 @@ Definition lp_add {F : field} p q :=
 Definition lp_opp {F : field} p := {| lp := List.map f_opp (lp p) |}.
 Definition lp_sub {F : field} p q := lp_add p (lp_opp q).
 
-Notation "- x" := (lp_opp x) : lp_scope.
-Notation "x + y" := (lp_add x y) : lp_scope.
 Notation "x - y" := (lp_sub x y) : lp_scope.
 
 Definition ζ {F : field} := {| ls _ := f_one |}.
@@ -506,15 +356,6 @@ Definition series_but_mul_of {F : field} s n :=
        | 0 => f_zero
        | _ => ls s i
        end |}.
-
-(*
-Definition ζ_but_mul_of {F : field} n :=
-  {| ls i :=
-       match i mod n with
-       | 0 => f_zero
-       | _ => f_one
-       end |}.
-*)
 
 Definition ε {F: field} i n :=
   match n mod i with
@@ -534,10 +375,6 @@ Fixpoint log_prod_list {F : field} cnt u v i n :=
 Definition log_prod {F : field} u v n :=
   List.fold_right f_add f_zero (log_prod_list n u v 1 n).
 
-(* Σ (i = 1, ∞) s1_i x^ln(i) + Σ (i = 1, ∞) s2_i x^ln(i) *)
-Definition ls_add {F : field} s1 s2 :=
-  {| ls n := (ls s1 n + ls s2 n)%F |}.
-
 (* Σ (i = 1, ∞) s1_i x^ln(i) * Σ (i = 1, ∞) s2_i x^ln(i) *)
 Definition ls_mul {F : field} s1 s2 :=
   {| ls := log_prod (ls s1) (ls s2) |}.
@@ -552,40 +389,11 @@ Definition ls_of_pol {F : field} p :=
 Definition ls_pol_mul_l {F : field} p s :=
   ls_mul (ls_of_pol p) s.
 
-Definition ls_opp {F : field} s := {| ls n := (- ls s n)%F |}.
-Definition ls_sub {F : field} s1 s2 := ls_add s1 (ls_opp s2).
-
 Arguments ls_of_pol _ p%LP.
 Arguments ls_pol_mul_l _ p%LP s%LS.
 
-(* 1+1/3^s+1/5^s+1/7^s+... = (1-1/2^s)ζ(s) *)
-(* 1+1/3^s+1/5^s+1/7^s+... = ζ_but_mul_of 2
-   (1-1/2^s) = {| lp := [f_one; (- f_one)%F] |} *)
-
 Notation "x = y" := (ls_eq x y) : ls_scope.
-Notation "x + y" := (ls_add x y) : ls_scope.
-Notation "x * y" := (ls_mul x y) : ls_scope.
-Notation "x - y" := (ls_sub x y) : ls_scope.
-Notation "- x" := (ls_opp x) : ls_scope.
 Notation "p .* s" := (ls_pol_mul_l p s) (at level 40) : ls_scope.
-
-Theorem fold_ls_sub {F : field} : ∀ x y, (x + - y = x - y)%LS.
-Proof. easy. Qed.
-
-Theorem ls_of_opp {F : field} : ∀ x n, ls (- x) n = (- ls x n)%F.
-Proof. easy. Qed.
-
-Theorem Nat_succ_mod : ∀ n, 2 ≤ n → S n mod n = 1.
-Proof.
-intros * Hn.
-replace (S n) with (1 + 1 * n) by flia.
-rewrite Nat.mod_add; [ | flia Hn ].
-specialize (Nat.div_mod 1 n) as H1.
-assert (H : n ≠ 0) by flia Hn.
-specialize (H1 H); clear H.
-rewrite Nat.div_small in H1; [ | flia Hn ].
-now rewrite Nat.mul_0_r in H1.
-Qed.
 
 Theorem log_prod_list_length {F : field} : ∀ cnt u v i n,
   length (log_prod_list cnt u v i n) = cnt.
@@ -600,240 +408,8 @@ Theorem log_prod_list_succ {F : field} : ∀ cnt u v i n,
     log_prod_term u v i n :: log_prod_list cnt u v (i + 1) n.
 Proof. easy. Qed.
 
-Theorem fold_log_prod_list_0_l {F : field} : ∀ cnt u v i n,
-  (∀ n, u n = f_zero)
-  → List.fold_right f_add f_zero (log_prod_list cnt u v i n) = f_zero.
-Proof.
-intros * Hu.
-revert i.
-induction cnt; intros; [ easy | cbn ].
-unfold log_prod_term.
-rewrite Hu, IHcnt.
-rewrite <- f_mul_assoc, f_mul_0_l.
-apply f_add_0_r.
-Qed.
-
-Theorem log_prod_0_l {F : field} : ∀ u v,
-  (∀ n, u n = f_zero) → ∀ i, log_prod u v i = f_zero.
-Proof.
-intros * Hu i.
-destruct i; intros; [ easy | ].
-cbn; unfold log_prod_term.
-rewrite Hu, f_mul_0_l, f_mul_0_l, f_add_0_l.
-now apply fold_log_prod_list_0_l.
-Qed.
-
-Theorem ls_mul_0_l {F : field} : ∀ s1 s2,
-  (∀ n, ls s1 n = f_zero) → ls_eq (ls_mul s1 s2) {| ls _ := f_zero |}.
-Proof.
-intros * Hs1 i.
-cbn - [ "/" "mod" ].
-now apply log_prod_0_l.
-Qed.
-
-Theorem ls_ls_add {F : field} : ∀ s1 s2 i,
-  ls (ls_add s1 s2) i = (ls s1 i + ls s2 i)%F.
-Proof. easy. Qed.
-
-Theorem ζ_is_one {F : field} : ∀ n, ls ζ n = f_one.
-Proof.
-intros; now unfold ζ.
-Qed.
-
 Definition pol_pow {F : field} n :=
   {| lp := List.repeat f_zero (n - 1) ++ [f_one] |}.
-
-Theorem ls_of_pol_add {F : field} : ∀ x y,
-  (ls_of_pol (x + y) = ls_of_pol x + ls_of_pol y)%LS.
-Proof.
-intros * i.
-unfold ls_of_pol, "+"%LS; cbn.
-rewrite Nat.add_1_r.
-remember (lp x) as lx eqn:Hlx.
-remember (lp y) as ly eqn:Hly.
-clear x y Hlx Hly.
-unfold List_combine_all.
-remember (length lx ?= length ly) as c eqn:Hc; symmetry in Hc.
-destruct c.
--apply Nat.compare_eq in Hc.
- revert i ly Hc.
- induction lx as [| x lx]; intros. {
-   destruct ly as [| y ly]; [ cbn | easy ].
-   now destruct i; rewrite f_add_0_r.
- }
- destruct ly as [| y ly]; [ easy | cbn ].
- destruct i; [ easy | ].
- cbn in Hc; apply Nat.succ_inj in Hc; clear x y.
- now apply IHlx.
--apply Nat.compare_lt_iff in Hc.
- revert i ly Hc.
- induction lx as [| x lx]; intros. {
-   cbn in Hc |-*; rewrite Nat.sub_0_r.
-   replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
-   rewrite f_add_0_l.
-   clear Hc; revert i.
-   induction ly as [| y ly]; intros; [ easy | cbn ].
-   destruct i; [ now rewrite f_add_0_l | ].
-   apply IHly.
- }
- destruct ly as [| y ly]; [ cbn in Hc; flia Hc | cbn ].
- destruct i; [ easy | ].
- cbn in Hc.
- apply Nat.succ_lt_mono in Hc.
- now apply IHlx.
--apply Nat.compare_gt_iff in Hc.
- revert i lx Hc.
- induction ly as [| y ly]; intros. {
-   cbn in Hc |-*; rewrite Nat.sub_0_r.
-   replace (match i with 0 | _ => f_zero end) with f_zero by now destruct i.
-   rewrite f_add_0_r.
-   clear Hc; revert i.
-   induction lx as [| x lx]; intros; [ easy | cbn ].
-   destruct i; [ now rewrite f_add_0_r | ].
-   apply IHlx.
- }
- destruct lx as [| x lx]; [ cbn in Hc; flia Hc | cbn ].
- destruct i; [ easy | ].
- cbn in Hc.
- apply Nat.succ_lt_mono in Hc.
- now apply IHly.
-Qed.
-
-Theorem fold_log_prod_list_add {F : field} : ∀ cnt x y u n i,
-  fold_right f_add f_zero (log_prod_list cnt (ls (ls_of_pol (x + y))) u i n) =
-  (fold_right f_add f_zero (log_prod_list cnt (ls (ls_of_pol x)) u i n) +
-   fold_right f_add f_zero (log_prod_list cnt (ls (ls_of_pol y)) u i n))%F.
-Proof.
-intros.
-revert i.
-induction cnt; intros; [ cbn; symmetry; apply f_add_0_l | ].
-cbn - [ ls_of_pol ].
-rewrite IHcnt.
-do 2 rewrite f_add_assoc; f_equal.
-rewrite f_add_add_swap; f_equal.
-unfold log_prod_term.
-destruct i. {
-  cbn.
-  do 2 rewrite f_mul_0_l.
-  symmetry; apply f_add_0_l.
-}
-rewrite <- Nat.add_1_r.
-rewrite ls_of_pol_add.
-rewrite ls_ls_add.
-now do 2 rewrite f_mul_add_distr_r.
-Qed.
-
-Theorem log_prod_pol_add {F : field} : ∀ x y u n,
-  log_prod (ls (ls_of_pol (x + y))) u n =
-     (log_prod (ls (ls_of_pol x)) u n +
-      log_prod (ls (ls_of_pol y)) u n)%F.
-Proof.
-intros.
-unfold log_prod.
-apply fold_log_prod_list_add.
-Qed.
-
-Theorem ls_mul_pol_add_distr_r {F : field} : ∀ x y s,
-  ((x + y) .* s = x .* s + y .* s)%LS.
-Proof.
-intros * i.
-rewrite Nat.add_1_r.
-cbn - [ "/" "mod" ls_of_pol "-" log_prod ].
-apply log_prod_pol_add.
-Qed.
-
-Theorem fold_log_prod_list_1_l {F : field} : ∀ cnt u i n,
-  2 ≤ i
-  → fold_right f_add f_zero
-       (log_prod_list cnt (ls (ls_of_pol (pol_pow 1))) u i n) = f_zero.
-Proof.
-intros * Hi.
-revert i Hi.
-induction cnt; intros; [ easy | ].
-cbn - [ ls_of_pol ].
-unfold log_prod_term.
-replace (ls _ i) with f_zero. 2: {
-  destruct i; [ easy | ].
-  destruct i; [ flia Hi | now destruct i ].
-}
-rewrite <- f_mul_assoc, f_mul_0_l, f_add_0_l.
-apply IHcnt; flia Hi.
-Qed.
-
-Theorem ls_mul_pol_1_l {F : field} : ∀ s,
-  (pol_pow 1 .* s = s)%LS.
-Proof.
-intros * n.
-cbn - [ "/" "mod" ls_of_pol ].
-rewrite Nat.add_1_r.
-cbn - [ ls_of_pol ].
-unfold log_prod_term.
-rewrite Nat.div_1_r.
-unfold ls_of_pol at 1.
-cbn - [ ls_of_pol ].
-rewrite f_mul_1_l, f_mul_1_r.
-rewrite <- f_add_0_r; f_equal.
-now apply fold_log_prod_list_1_l.
-Qed.
-
-Theorem ls_of_pol_opp {F : field} : ∀ p,
-  (ls_of_pol (- p) = - ls_of_pol p)%LS.
-Proof.
-intros * i; cbn.
-rewrite Nat.add_1_r.
-revert i.
-induction (lp p) as [| c cl]; intros. {
-  now cbn; destruct i; rewrite f_opp_0.
-}
-cbn.
-destruct i; [ easy | ].
-apply IHcl.
-Qed.
-
-Theorem fold_log_prod_list_opp_l {F : field} : ∀ cnt u i n p,
-  fold_right f_add f_zero (log_prod_list cnt (ls (ls_of_pol (- p))) u i n) =
-  (- fold_right f_add f_zero (log_prod_list cnt (ls (ls_of_pol p)) u i n))%F.
-Proof.
-intros.
-revert i.
-induction cnt; intros; [ cbn; symmetry; apply f_opp_0 | ].
-cbn - [ ls_of_pol ].
-rewrite IHcnt.
-rewrite f_opp_add_distr; f_equal.
-unfold log_prod_term.
-destruct i. {
-  cbn.
-  rewrite <- f_mul_assoc, f_mul_0_l.
-  symmetry; apply f_opp_0.
-}
-rewrite <- Nat.add_1_r.
-rewrite ls_of_pol_opp.
-rewrite ls_of_opp.
-now do 2 rewrite f_mul_opp_l.
-Qed.
-
-Theorem ls_mul_pol_opp_l {F : field} : ∀ p s,
-  (- p .* s = - (p .* s))%LS.
-Proof.
-intros * i.
-cbn - [ "/" "mod" ls_of_pol ].
-unfold log_prod.
-apply fold_log_prod_list_opp_l.
-Qed.
-
-Theorem firstn_log_prod_list {F : field} : ∀ m cnt u v i n,
-  firstn m (log_prod_list cnt u v i n) =
-  log_prod_list (min m cnt) u v i n.
-Proof.
-intros.
-revert i m n.
-induction cnt; intros; [ now rewrite Nat.min_0_r, List.firstn_nil | ].
-cbn - [ "-" ].
-destruct m; [ easy | ].
-rewrite List.firstn_cons.
-rewrite <- Nat.succ_min_distr; cbn.
-f_equal; apply IHcnt.
-Qed.
 
 Theorem skipn_log_prod_list {F : field} : ∀ m cnt u v i n,
   skipn m (log_prod_list cnt u v i n) =
