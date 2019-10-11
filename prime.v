@@ -997,25 +997,30 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
     replace (S (S c)) with ((n + 2) * m + n + 2) in Hx by flia Hc.
     clear c Hc.
     remember ((n + 2) * m) as c eqn:Hc.
-    enough
-      (H : ∀ k,
-       In x
-         (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2))))
-            (ls s) (3 + n) (k + n + 2)) → x = f_zero). {
-      now apply (H c).
-    }
-    intros k H.
-    clear - H.
-    revert k H.
-    induction c; intros; [ easy | ].
-    cbn - [ ls_of_pol ] in H.
-    destruct H as [Hx| Hx]. {
-      rewrite <- Hx.
+    clear Hc.
+    destruct c; [ easy | ].
+    destruct c. {
+      cbn - [ ls_of_pol ] in Hx.
+      destruct Hx as [Hx| Hx]; [ | easy ].
+      subst x.
       unfold log_prod_term.
       rewrite pol_1_sub_pow_coeff_0; [ | flia ].
       now rewrite <- f_mul_assoc, f_mul_0_l.
     }
-    (* ah non ça marche pas ; le enough ci-dessus n'est pas bon *)
+    destruct c. {
+      cbn - [ ls_of_pol ] in Hx.
+      destruct Hx as [Hx| Hx]. {
+        subst x.
+        unfold log_prod_term.
+        rewrite pol_1_sub_pow_coeff_0; [ | flia ].
+        now rewrite <- f_mul_assoc, f_mul_0_l.
+      }
+      destruct Hx as [Hx| Hx]; [ | easy ].
+      subst x.
+      unfold log_prod_term.
+      rewrite pol_1_sub_pow_coeff_0; [ | flia ].
+      now rewrite <- f_mul_assoc, f_mul_0_l.
+    }
 ...
 
 Theorem step_1 {F : field} :
