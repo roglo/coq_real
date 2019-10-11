@@ -778,6 +778,20 @@ remember (series_but_mul_of a s) as sa eqn:Hsa.
 assert (H : ∀ i : nat, 0 < i → ls sa i = ls sa (b * i)). {
   clear i.
   intros i Hi.
+  subst sa.
+  unfold series_but_mul_of; cbn.
+  rewrite <- Nat.mul_mod_idemp_r; [ | flia H1a ].
+  rewrite Nat.mul_comm.
+  remember (i mod a) as n eqn:Hn; symmetry in Hn.
+  destruct n. {
+    cbn; rewrite Nat.mod_0_l; [ easy | flia H1a ].
+  }
+  rewrite <- Hb; [ | easy ].
+  remember ((S n * b) mod a) as m eqn:Hm; symmetry in Hm.
+  destruct m; [ | easy ].
+  apply Nat.mod_divides in Hm; [ | flia H1a ].
+  destruct Hm as (m, Hm).
+  move m before n.
 ...
 destruct i. {
   cbn - [ ls_of_pol ].
