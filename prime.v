@@ -1,7 +1,7 @@
 (* playing with prime numbers, as a break *)
 
 Set Nested Proofs Allowed.
-Require Import Utf8 Arith Psatz.
+Require Import Utf8 Arith Psatz Setoid.
 Import List List.ListNotations.
 
 (* "fast" lia, to improve compilation speed *)
@@ -460,6 +460,24 @@ Arguments lp {_}.
 Definition ls_eq {F : field} s1 s2 := ∀ n, ls s1 (n + 1) = ls s2 (n + 1).
 Arguments ls_eq _ s1%LS s2%LS.
 
+Theorem ls_eq_refl {F : field} : reflexive _ ls_eq.
+Proof. easy. Qed.
+
+Theorem ls_eq_sym {F : field} : symmetric _ ls_eq.
+Proof. easy. Qed.
+
+Theorem ls_eq_trans {F : field} : transitive _ ls_eq.
+Proof.
+intros x y z Hxy Hyz i.
+eapply eq_trans; [ apply Hxy | apply Hyz ].
+Qed.
+
+Add Parametric Relation {F : field} : (ln_series) ls_eq
+ reflexivity proved by ls_eq_refl
+ symmetry proved by ls_eq_sym
+ transitivity proved by ls_eq_trans
+ as ls_eq_rel.
+
 Definition List_combine_all {A} (l1 l2 : list A) (d : A) :=
   let '(l'1, l'2) :=
     match List.length l1 ?= List.length l2 with
@@ -489,12 +507,14 @@ Definition series_but_mul_of {F : field} s n :=
        | _ => ls s i
        end |}.
 
+(*
 Definition ζ_but_mul_of {F : field} n :=
   {| ls i :=
        match i mod n with
        | 0 => f_zero
        | _ => f_one
        end |}.
+*)
 
 Definition ε {F: field} i n :=
   match n mod i with
@@ -829,11 +849,36 @@ replace (i + S m) with (i + 1 + m) by flia.
 apply IHcnt.
 Qed.
 
-Theorem pol_1_sub_pow_coeff_0 {F : field} : ∀ n i,
-  1 < i ∧ i ≠ n + 2
-  → ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2))) i = f_zero.
+Theorem pol_1_sub_pow_coeff_1 {F : field} : ∀ n,
+  1 < n
+  → ls (ls_of_pol (pol_pow 1 - pol_pow n)) 1 = f_one.
 Proof.
-intros * (Hi, Hin); cbn.
+intros * Hn; cbn.
+destruct n; [ flia Hn | ].
+destruct n; [ flia Hn | ].
+destruct n; cbn; rewrite f_opp_0; apply f_add_0_r.
+Qed.
+
+Theorem pol_1_sub_pow_coeff_minus_1 {F : field} : ∀ n,
+  1 < n
+  → ls (ls_of_pol (pol_pow 1 - pol_pow n)) n = (- f_one)%F.
+Proof.
+intros * Hn; cbn.
+destruct n; [ flia Hn | ].
+destruct n; [ flia Hn | clear Hn ].
+destruct n; [ now cbn; rewrite f_add_0_l | ].
+induction n; [ now cbn; rewrite f_add_0_l | ].
+apply IHn.
+Qed.
+
+Theorem pol_1_sub_pow_coeff_0 {F : field} : ∀ n i,
+  1 < n
+  → 1 < i ∧ i ≠ n
+  → ls (ls_of_pol (pol_pow 1 - pol_pow n)) i = f_zero.
+Proof.
+intros * Hn (Hi, Hin); cbn.
+destruct n; [ flia Hn | ].
+destruct n; [ flia Hn | clear Hn ].
 destruct i; [ easy | ].
 destruct i; [ flia Hi | clear Hi ].
 destruct n. {
@@ -872,7 +917,7 @@ cbn - [ ls_of_pol ] in Hx.
 destruct Hx as [Hx| Hx]. {
   subst x.
   unfold log_prod_term.
-  rewrite pol_1_sub_pow_coeff_0; [ | flia Hp ].
+  rewrite pol_1_sub_pow_coeff_0; [ | flia | flia Hp ].
   now rewrite <- f_mul_assoc, f_mul_0_l.
 }
 replace p with (n - S k) in Hx by flia Hp.
@@ -893,7 +938,7 @@ cbn - [ ls_of_pol ] in Hx.
 destruct Hx as [Hx| Hx]. {
   subst x.
   unfold log_prod_term.
-  rewrite pol_1_sub_pow_coeff_0; [ | flia ].
+  rewrite pol_1_sub_pow_coeff_0; [ | flia | flia ].
   now rewrite <- f_mul_assoc, f_mul_0_l.
 }
 apply (IHc k (S m)).
@@ -934,12 +979,7 @@ destruct m. {
     subst a.
     unfold log_prod_term.
     rewrite Nat.div_1_r.
-    replace (ls _ 1) with f_one. 2: {
-      symmetry; cbn.
-      destruct n; [ easy | ].
-      destruct n; [ flia Hn | cbn ].
-      destruct n; cbn; rewrite f_opp_0; apply f_add_0_r.
-    }
+    rewrite pol_1_sub_pow_coeff_1; [ | easy ].
     rewrite f_mul_1_l.
     unfold ε.
     rewrite Nat.mod_1_r, f_mul_1_r.
@@ -978,12 +1018,7 @@ destruct m. {
     replace (p - n) with (S ((n + 2) * m)) by flia Hp.
     cbn - [ ls_of_pol ].
     unfold log_prod_term.
-    replace (ls _ (S (S n))) with (- f_one)%F. 2: {
-      symmetry; clear; cbn.
-      destruct n; [ now cbn; rewrite f_add_0_l | ].
-      induction n; [ now cbn; rewrite f_add_0_l | ].
-      apply IHn.
-    }
+    rewrite pol_1_sub_pow_coeff_minus_1; [ | flia ].
     unfold ε.
     remember (ls s (S p / S (S n))) as x.
     replace (S p) with (0 + (m + 1) * S (S n)) by flia Hp.
@@ -1075,86 +1110,51 @@ destruct m. {
 }
 cbn - [ ls_of_pol ].
 rewrite Hm; symmetry; unfold log_prod.
-...
-
-Theorem step_1 {F : field} :
-  (ζ_but_mul_of 2 = (pol_pow 1 - pol_pow 2) .* ζ)%LS.
-Proof.
-intros i.
-unfold pol_pow.
-cbn - [ ζ_but_mul_of ζ ".*" ].
-unfold lp_sub, lp_opp, "+"%LP.
-cbn - [ ζ_but_mul_of ζ ".*" ].
-rewrite f_add_0_l, f_opp_0, f_add_0_r.
-cbn - [ "mod" ls_pol_mul_l ].
-remember (S i mod 2) as p eqn:Hp; symmetry in Hp.
-symmetry.
-destruct p. {
-  apply Nat.mod_divides in Hp; [ | easy ].
-  destruct Hp as (m & Hm).
-  destruct m; [ flia Hm | ].
-  assert (Hn : i = 2 * m + 1) by flia Hm; clear Hm.
-  unfold ls_pol_mul_l.
-  cbn - [ "/" "mod" ls_of_pol ζ ].
-  rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
-  destruct (lt_dec i 0) as [H| H]; [ easy | clear H ].
-  destruct (Nat.eq_dec i 0) as [H| H]; [ flia Hn H | clear H ].
-  unfold ls_of_pol at 1 2.
-  cbn - [ ls_of_pol log_prod ζ ].
-  destruct i; [ flia Hn | ].
-  destruct i. {
-    cbn; rewrite f_mul_1_r.
-    now rewrite f_mul_1_r, f_add_opp_diag_r, f_add_0_l.
-  }
-  replace (match _ with 0 | _ => f_zero end) with f_zero by now destruct i.
-  rewrite f_mul_0_l, f_add_0_r, f_mul_1_l.
-  rewrite ζ_is_one.
-  assert (Hnn : 3 ≤ S (S i)). {
-    destruct i. {
-      destruct m; [ easy | ].
-      destruct m; [ easy | flia Hn ].
+replace (i + 1) with (S i) by flia.
+rewrite log_prod_list_succ.
+cbn - [ ls_of_pol ].
+unfold log_prod_term.
+rewrite pol_1_sub_pow_coeff_1; [ | easy ].
+unfold ε.
+rewrite Nat.mod_1_r, f_mul_1_l, f_mul_1_r.
+rewrite Nat.div_1_r, <- f_add_0_r; f_equal.
+assert
+  (H : ∀ c k,
+   fold_right f_add f_zero
+     (log_prod_list c
+        (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) (k + 2) (S i)) =
+     f_zero). {
+  intros *.
+  revert k.
+  induction c; intros; [ easy | ].
+  cbn - [ ls_of_pol ].
+  replace (log_prod_term _ _ _ _) with f_zero. 2: {
+    symmetry; unfold log_prod_term.
+    unfold ε.
+    remember (S i mod (k + 2)) as p eqn:Hp; symmetry in Hp.
+    destruct p. {
+      rewrite pol_1_sub_pow_coeff_0; [ | easy | ]. 2: {
+        split; [ flia | ].
+        intros H; rewrite H, <- Nat.add_1_r in Hp.
+        now rewrite Hp in Hm.
+      }
+      now rewrite <- f_mul_assoc, f_mul_0_l.
     }
-    flia.
+    apply f_mul_0_r.
   }
-  rewrite log_prod_pol_ζ; [ apply f_add_opp_diag_r | easy | ].
-  rewrite Hn, Nat.add_comm, Nat.mul_comm.
-  now rewrite Nat.mod_add.
+  rewrite f_add_0_l.
+  replace (k + 2 + 1) with (k + 1 + 2) by flia.
+  apply IHc.
 }
-destruct p. 2: {
-  specialize (Nat.mod_upper_bound (S i) 2 (Nat.neq_succ_0 _)) as H1.
-  flia Hp H1.
-}
-unfold ls_pol_mul_l.
-cbn - [ "/" "mod" ls_of_pol ζ ].
-rewrite Nat.sub_diag, Nat.div_1_r, Nat.sub_succ, Nat.sub_0_r.
-destruct (lt_dec i 0) as [H| H]; [ easy | clear H ].
-rewrite Nat.mod_1_r.
-do 2 rewrite ζ_is_one.
-do 2 rewrite f_mul_1_r.
-unfold ls_of_pol at 1 2.
-cbn - [ ls_of_pol log_prod ζ ].
-destruct (Nat.eq_dec i 0) as [Hn| Hn]. {
-  subst i; cbn; apply f_add_0_r.
-}
-assert (H : i mod 2 = 0). {
-  specialize (Nat.div_mod (S i) 2 (Nat.neq_succ_0 _)) as H1.
-  rewrite Hp in H1.
-  replace i with (0 + (S i / 2) * 2) by flia H1.
-  now rewrite Nat.mod_add.
-}
-clear Hp; rename H into Hp.
-apply Nat.mod_divides in Hp; [ | easy ].
-destruct Hp as (p, Hp).
-remember (ls_of_pol _) as q eqn:Hq.
-replace (ls q i) with f_zero. 2: {
-  destruct i; [ easy | ].
-  destruct i; [ flia Hp | ].
-  subst q; cbn; now destruct i.
-}
-rewrite f_add_0_r.
-rewrite Hq, log_prod_pol_ζ'; [ apply f_add_0_r | | easy ].
-replace i with (0 + p * 2) by flia Hp.
-now rewrite Nat.mod_add.
+replace 2 with (0 + 2) by flia.
+apply H.
+Qed.
+
+Theorem step_1_ζ {F : field} :
+  ((pol_pow 1 - pol_pow 2) .* ζ = series_but_mul_of ζ 2)%LS.
+Proof.
+symmetry.
+apply step_1; [ easy | flia ].
 Qed.
 
 Theorem ζ_Euler_product_eq : False.
