@@ -855,7 +855,7 @@ cbn.
 apply IHn; flia Hi.
 Qed.
 
-Theorem in_firstn_log_prod_list {F : field} : ∀ x n c m k u,
+Theorem step_1_lemma_1 {F : field} : ∀ x n c m k u,
   In x
     (firstn (n - k)
        (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2))))
@@ -878,6 +878,26 @@ destruct Hx as [Hx| Hx]. {
 replace p with (n - S k) in Hx by flia Hp.
 replace (S (S (k + 1))) with (2 + S k) in Hx by flia.
 now specialize (IHc (S k) Hx) as H1.
+Qed.
+
+Theorem step_1_lemma_2 {F : field} : ∀ m k x c n u,
+  In x
+    (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2)))) u
+       (3 + n + m) k)
+  → x = f_zero.
+Proof.
+intros * Hx.
+revert k m Hx.
+induction c; intros; [ easy | ].
+cbn - [ ls_of_pol ] in Hx.
+destruct Hx as [Hx| Hx]. {
+  subst x.
+  unfold log_prod_term.
+  rewrite pol_1_sub_pow_coeff_0; [ | flia ].
+  now rewrite <- f_mul_assoc, f_mul_0_l.
+}
+apply (IHc k (S m)).
+now replace (3 + n + S m) with (S (S (S (n + m + 1)))) by flia.
 Qed.
 
 Theorem step_1 {F : field} : ∀ s n,
@@ -944,7 +964,7 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
     clear - Hx.
     remember ((n + 2) * m + n + 1) as c eqn:Hc.
     replace (S (S n)) with (n + 2) in Hx by flia.
-    apply (in_firstn_log_prod_list _ n c m 0 (ls s)).
+    apply (step_1_lemma_1 _ n c m 0 (ls s)).
     rewrite Nat.sub_0_r, Nat.add_0_r.
     now replace (S c) with ((n + 2) * (m + 1)) in Hx by flia Hc.
   }
@@ -993,34 +1013,42 @@ Compute (let n := 5 in List.skipn n [1;2;3;4;5;6;7]).
     remember ((n + 2) * m + n) as c eqn:Hc.
     replace (S (S n)) with (n + 2) in Hx by flia.
     rewrite skipn_log_prod_list in Hx.
-    replace (c - n) with ((n + 2) * m) in Hx by flia Hc.
-    replace (S (S c)) with ((n + 2) * m + n + 2) in Hx by flia Hc.
-    clear c Hc.
-    remember ((n + 2) * m) as c eqn:Hc.
-    clear Hc.
-    destruct c; [ easy | ].
-    destruct c. {
-      cbn - [ ls_of_pol ] in Hx.
-      destruct Hx as [Hx| Hx]; [ | easy ].
-      subst x.
-      unfold log_prod_term.
-      rewrite pol_1_sub_pow_coeff_0; [ | flia ].
-      now rewrite <- f_mul_assoc, f_mul_0_l.
-    }
-    destruct c. {
-      cbn - [ ls_of_pol ] in Hx.
-      destruct Hx as [Hx| Hx]. {
-        subst x.
-        unfold log_prod_term.
-        rewrite pol_1_sub_pow_coeff_0; [ | flia ].
-        now rewrite <- f_mul_assoc, f_mul_0_l.
+    eapply (step_1_lemma_2 0).
+    rewrite Nat.add_0_r.
+    apply Hx.
+  }
+  replace l with
+     (List.hd f_zero l :: List.firstn (n - 2) (tl l) ++
+      List.hd f_zero (skipn (n - 1) l) :: skipn n l). 2: {
+    rewrite List.app_comm_cons.
+    symmetry.
+    rewrite <- (firstn_skipn (n - 1) l) at 1.
+    f_equal. {
+      rewrite <- List.firstn_cons.
+      destruct l as [| a l]. {
+        destruct n; [ flia Hn | easy ].
       }
-      destruct Hx as [Hx| Hx]; [ | easy ].
-      subst x.
-      unfold log_prod_term.
-      rewrite pol_1_sub_pow_coeff_0; [ | flia ].
-      now rewrite <- f_mul_assoc, f_mul_0_l.
+      cbn.
+      replace (n - 1) with (S (n - 2)) by flia Hn.
+      apply List.firstn_cons.
     }
+    destruct n; [ flia Hn | ].
+    rewrite Nat_sub_succ_1.
+    destruct l as [| a l]. {
+      destruct n; [ flia Hn | easy ].
+    }
+    destruct n; [ flia Hn | ].
+    clear.
+    revert a l.
+    induction n; intros. {
+      cbn; clear a.
+      destruct l as [| a l]. {
+...
+  }
+  cbn; rewrite List.fold_right_app; cbn.
+  rewrite H11, Hn1.
+  replace (List.fold_right _ _ (skipn n _)) with f_zero. 2: {
+    symmetry.
 ...
 
 Theorem step_1 {F : field} :
