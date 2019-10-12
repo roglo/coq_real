@@ -989,14 +989,14 @@ i.e.
 But actually, our theorem is a little more general:
 
 1/ we do not do it for 2, 3, 5 ... p but for any list of natural numbers
-   (n1, n2, n3, ... nm) such that gcd(ni,nj) = 1 for i≠j
+   (n1, n2, n3, ... nm) such that gcd(ni,nj) = 1 for i≠j, what is true
+   for a list of prime numbers.
 
 2/ It is not the ζ function but any series r with logarithm powers such that
        ∀ i, r_{i} = r_{n*i}
    for any n in (n1, n2, n3 ... nm)
+   what is true for ζ function since ∀ i ζ_{i}=1.
 *)
-
-Check List.nth.
 
 Theorem step_3 {F : field} : ∀ (r : ln_series) (l : list nat),
   (∀ a, List.In a l → 2 ≤ a)
@@ -1047,125 +1047,21 @@ destruct m1. {
 apply IHl. {
   intros a Ha; apply Hge2.
   destruct Ha as [Ha| Ha]; [ now left | now right; right ].
-} {
+}  {
   intros a Ha j Hj.
   apply Hai; [ | easy ].
   destruct Ha as [Ha| Ha]; [ now left | now right; right ].
 } {
   intros na nb Hnn.
   destruct na, nb; [ easy | | | ]. {
-    cbn.
-    apply (Hgcd 0 ...
-...
-intros * Hge2 Ha Hgcd.
-induction l as [| a1 l]; [ easy | cbn ].
-rewrite <- IHl; cycle 1. {
-  now intros; apply Hge2; right.
-} {
-  now intros a Ha'; apply Ha; right.
-} {
-  intros x y Hx Hy Hxy.
-  apply Hgcd; [ now right | now right | easy ].
-}
-remember
-  (fold_right (λ (a : nat) (c : ln_series), (pol_pow 1 - pol_pow a) .* c) r
-      l)%LS as r' eqn:Hr'.
-apply step_1; [ now apply Hge2; left | ].
-intros i Hi.
-clear IHl.
-subst r'.
-revert i a1 Hi Hge2 Ha Hgcd.
-induction l as [| a2 l]; intros. {
-  apply Ha; [ now left | easy ].
-}
-rewrite List_fold_right_cons.
-rewrite step_1; [ | | | easy ]; cycle 1. {
-  now apply Hge2; right; left.
-} {
-  intros j Hj.
-  apply IHl; [ easy | | | ]. {
-    intros b Hb.
-    apply Hge2.
-    now right.
+    now apply (Hgcd 0 (S (S nb))).
   } {
-    intros b Hb k Hk.
-    apply Ha; [ now right | easy ].
+    now apply (Hgcd (S (S na)) 0).
+  } {
+    apply (Hgcd (S (S na)) (S (S nb))); flia Hnn.
   }
-  intros a b Ha2 Hb2 Hab.
-  apply Hgcd; [ now right | now right | easy ].
 }
-...
-revert a Hge2 Ha Hgcd.
-induction l as [| a2 l]; intros. {
-  cbn.
-  apply step_1; [ now apply Hge2; left | ].
-  now apply Ha; left.
-}
-cbn.
-...
-destruct l as [| a3 l]. {
-  cbn.
-  apply step_2.
-...
-}
-cbn.
-destruct l as [| a4 l]. {
-  cbn.
-  apply step_2.
-}
-...
-intros * Hge2 Ha Hgcd.
-induction l as [| n l]; [ easy | cbn ].
-rewrite step_1; cycle 1; [ now apply Hge2; left | | ]. {
-  intros i Hi.
-...
-(*
-  destruct i; [ flia Hi | clear Hi ].
-*)
-  destruct l as [ | a1 l]. {
-    cbn; apply Ha; [ now left | easy ].
-  }
-  cbn - [ ls_of_pol ].
-  unfold log_prod.
-  f_equal.
-...
-rewrite IHl; cycle 1. {
-  now intros; apply Hge2; right.
-} {
-  now intros a Ha'; apply Ha; right.
-} {
-  intros x y Hx Hy Hxy.
-  apply Hgcd; [ now right | now right | easy ].
-}
-...
-apply step_1; [ now apply Hge2; left | ].
-intros i Hi.
-destruct i; [ easy | clear Hi ].
-replace (S i) with (i + 1) by flia.
-destruct l as [| x l]. {
-  cbn.
-  apply Ha; [ now left | flia ].
-}
-destruct l as [| x1 l]. {
-  cbn.
-  remember ((i + 1) mod x) as x1 eqn:Hx1; symmetry in Hx1.
-  destruct x1. {
-    destruct x; [ easy | ].
-    rewrite <- Nat.mul_mod_idemp_r; [ | easy ].
-    now rewrite Hx1, Nat.mul_0_r, Nat.mod_0_l.
-  }
-  destruct x; [ easy | ].
-  rewrite <- Nat.mul_mod_idemp_r; [ | easy ].
-  rewrite Hx1.
-  destruct n. {
-    specialize (Hge2 0 (or_introl eq_refl)).
-    flia Hge2.
-  }
-...
-}
-...
+Qed.
 
-Theorem ζ_Euler_product_eq : False.
-Proof.
-Inspect 1.
-...
+Theorem ζ_Euler_product_eq : ...
+
