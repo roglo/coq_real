@@ -933,19 +933,110 @@ But actually, our theorem is a little more general:
 1/ we do not do it for 2, 3, 5 ... p but for any list of natural numbers
    (n1, n2, n3, ... nm) such that gcd(ni,nj) = 1 for i≠j
 
-2/ It is not the η function but any series r with logarithm powers such that
+2/ It is not the ζ function but any series r with logarithm powers such that
        ∀ i, r_{i} = r_{n*i}
    for any n in (n1, n2, n3 ... nm)
+*)
+
+Instance ls_mul_but_mul_of_morph {F : field} :
+  Proper (ls_eq ==> ls_eq ==> ls_eq) ls_mul.
+Proof.
+intros r1 r2 Hrr r'1 r'2 Hrr' i Hi; cbn.
+destruct i; [ flia Hi | clear Hi ].
+unfold log_prod.
+f_equal.
+...
+assert (H : ∀ cnt k i, cnt ≤ i → k ≠ 0 →
+  fold_right f_add f_zero (log_prod_list cnt (ls r1) (ls r'1) k i) =
+  fold_right f_add f_zero (log_prod_list cnt (ls r2) (ls r'2) k i)). {
+  clear i.
+  intros * Hcnt Hk.
+  destruct k; [ easy | clear Hk ].
+  revert i k Hcnt.
+  induction cnt; intros; [ easy | cbn ].
+  unfold log_prod_term.
+  f_equal. {
+    rewrite Hrr; [ | easy ].
+    rewrite Hrr'; [ easy | ].
+    intros H.
+    apply Nat.div_small_iff in H; [ flia H | easy ].
+  }
+  destruct i. 2: {
+    replace (S (k + S i)) with (S (k + 1 + i)) by flia.
+    apply IHcnt.
+  }
+  rewrite Nat.add_0_r.
+  destruct cnt; [ easy | ].
+  cbn.
+
+...
+  destruct k.
+2: {
+  apply IHcnt.
+flia Hki.
+
+  apply IHcnt.
+lia.
+...
+...
+  rewrite IHcnt.
+    unfold log_prod_term.
+  unfold log_prod_term.
+  rewrite Hrr; [ | easy ].
+...
+apply H; [ easy | flia ].
+...
+
+(*
+Instance ls_pol_mul_but_mul_of_morph {F : field} :
+  Proper (eq ==> ls_eq ==> ls_eq) ls_pol_mul_l.
+Proof.
+intros p1 p2 Hpp r1 r2 Hrr i Hi.
+subst p1.
+cbn - [ ls_of_pol ].
+unfold log_prod.
+Print ls_pol_mul_l.
+...
+assert (H : ∀ k, k ≠ 0 →
+  fold_right f_add f_zero (log_prod_list i (ls (ls_of_pol p2)) (ls r1) k i) =
+  fold_right f_add f_zero (log_prod_list i (ls (ls_of_pol p2)) (ls r2) k i)). {
+  intros k Hk.
+  destruct k; [ flia Hk | clear Hk ].
+  destruct i; [ flia Hi | clear Hi ].
+  revert k.
+  induction i; intros. {
+    cbn - [ ls_of_pol ].
+    unfold log_prod_term.
+    rewrite Hrr; [ easy | ].
+    destruct k.
+cbn.
+cbn.
+}
+remember (S i) as si; cbn - [ ls_of_pol ]; subst si.
+...
 *)
 
 Theorem step_3 {F : field} : ∀ (r : ln_series) (l : list nat),
   (∀ a, List.In a l → 2 ≤ a)
   → (∀ a, a ∈ l → ∀ i, i ≠ 0 → r~{i} = r~{a*i})
   → (∀ a b, List.In a l → List.In b l → a ≠ b → Nat.gcd a b = 1)
-  → List.fold_right (λ a c, ((pol_pow 1 - pol_pow a) .* c)%LS) r l =
-     List.fold_right series_but_mul_of r l.
+  → (List.fold_right (λ a c, ((pol_pow 1 - pol_pow a) .* c)) r l =
+      List.fold_right series_but_mul_of r l)%LS.
 Proof.
 intros * Hge2 Ha Hgcd.
+induction l as [| n l]; [ easy | cbn ].
+...
+unfold ".*".
+rewrite IHl; cycle 1. {
+  now intros; apply Hge2; right.
+} {
+  now intros a Ha'; apply Ha; right.
+} {
+  intros x y Hx Hy Hxy.
+  apply Hgcd; [ now right | now right | easy ].
+}
+Check step_1.
+apply step_1.
 ...
 
 Theorem ζ_Euler_product_eq : False.
