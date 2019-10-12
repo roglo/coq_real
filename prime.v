@@ -1000,9 +1000,38 @@ Theorem step_3 {F : field} : ∀ (r : ln_series) (l : list nat),
       List.fold_right series_but_mul_of r l)%LS.
 Proof.
 intros * Hge2 Ha Hgcd.
+induction l as [| a1 l]; [ easy | cbn ].
+rewrite <- IHl.
+remember
+  (fold_right (λ (a : nat) (c : ln_series), (pol_pow 1 - pol_pow a) .* c) r
+      l)%LS as r' eqn:Hr'.
+apply step_1.
+...
+revert a Hge2 Ha Hgcd.
+induction l as [| a2 l]; intros. {
+  cbn.
+  apply step_1; [ now apply Hge2; left | ].
+  now apply Ha; left.
+}
+cbn.
+...
+destruct l as [| a3 l]. {
+  cbn.
+  apply step_2; admit.
+}
+cbn.
+destruct l as [| a4 l]. {
+  cbn.
+  apply step_2.
+}
+
+...
+
+intros * Hge2 Ha Hgcd.
 induction l as [| n l]; [ easy | cbn ].
 rewrite step_1; cycle 1; [ now apply Hge2; left | | ]. {
   intros i Hi.
+...
 (*
   destruct i; [ flia Hi | clear Hi ].
 *)
