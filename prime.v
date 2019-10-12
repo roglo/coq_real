@@ -16,6 +16,10 @@ Proof. now intros; rewrite Nat.sub_succ, Nat.sub_0_r. Qed.
 Theorem fold_mod_succ : ∀ n d, d - snd (Nat.divmod n d 0 d) = n mod (S d).
 Proof. easy. Qed.
 
+Theorem List_fold_right_cons {A B} : ∀ (f : B → A → A) (a : A) x l,
+  List.fold_right f a (x :: l) = f x (List.fold_right f a l).
+Proof. easy. Qed.
+
 (* *)
 
 Fixpoint prime_test n d :=
@@ -1001,6 +1005,26 @@ Theorem step_3 {F : field} : ∀ (r : ln_series) (l : list nat),
 Proof.
 intros * Hge2 Ha Hgcd.
 induction l as [| a1 l]; [ easy | cbn ].
+rewrite IHl; cycle 1. {
+  now intros; apply Hge2; right.
+} {
+  now intros a Ha'; apply Ha; right.
+} {
+  intros x y Hx Hy Hxy.
+  apply Hgcd; [ now right | now right | easy ].
+}
+clear IHl.
+apply step_1; [ now apply Hge2; left | ].
+intros i Hi.
+destruct i; [ flia Hi | clear Hi ].
+revert i.
+induction l as [| a2 l]; intros. {
+  apply Ha; [ now left | easy ].
+}
+cbn.
+...
+intros * Hge2 Ha Hgcd.
+induction l as [| a1 l]; [ easy | cbn ].
 rewrite <- IHl; cycle 1. {
   now intros; apply Hge2; right.
 } {
@@ -1014,6 +1038,28 @@ remember
       l)%LS as r' eqn:Hr'.
 apply step_1; [ now apply Hge2; left | ].
 intros i Hi.
+clear IHl.
+subst r'.
+revert i a1 Hi Hge2 Ha Hgcd.
+induction l as [| a2 l]; intros. {
+  apply Ha; [ now left | easy ].
+}
+rewrite List_fold_right_cons.
+rewrite step_1; [ | | | easy ]; cycle 1. {
+  now apply Hge2; right; left.
+} {
+  intros j Hj.
+  apply IHl; [ easy | | | ]. {
+    intros b Hb.
+    apply Hge2.
+    now right.
+  } {
+    intros b Hb k Hk.
+    apply Ha; [ now right | easy ].
+  }
+  intros a b Ha2 Hb2 Hab.
+  apply Hgcd; [ now right | now right | easy ].
+}
 ...
 revert a Hge2 Ha Hgcd.
 induction l as [| a2 l]; intros. {
