@@ -1001,6 +1001,18 @@ Theorem step_3 {F : field} : ∀ (r : ln_series) (l : list nat),
 Proof.
 intros * Hge2 Ha Hgcd.
 induction l as [| n l]; [ easy | cbn ].
+rewrite step_1; cycle 1; [ now apply Hge2; left | | ]. {
+  intros i Hi.
+(*
+  destruct i; [ flia Hi | clear Hi ].
+*)
+  destruct l as [ | a1 l]. {
+    cbn; apply Ha; [ now left | easy ].
+  }
+  cbn - [ ls_of_pol ].
+  unfold log_prod.
+  f_equal.
+...
 rewrite IHl; cycle 1. {
   now intros; apply Hge2; right.
 } {
@@ -1009,6 +1021,14 @@ rewrite IHl; cycle 1. {
   intros x y Hx Hy Hxy.
   apply Hgcd; [ now right | now right | easy ].
 }
+
+subgoal 3 (ID 746) is:
+ ∀ i : nat,
+   i ≠ 0
+   → (fold_right (λ (a : nat) (c : ln_series), ((pol_pow 1 - pol_pow a) .* c)%LS) r l)~{i} =
+     (fold_right (λ (a : nat) (c : ln_series), ((pol_pow 1 - pol_pow a) .* c)%LS) r l)~{
+     n * i}
+
 apply step_1; [ now apply Hge2; left | ].
 intros i Hi.
 destruct i; [ easy | clear Hi ].
