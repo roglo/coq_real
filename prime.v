@@ -1013,6 +1013,23 @@ apply step_1; [ now apply Hge2; left | ].
 intros i Hi.
 destruct i; [ easy |].
 replace (S i) with (i + 1) by flia.
+clear Hi IHl.
+induction l as [| n1 l]. {
+  cbn.
+  apply Ha; [ now left | flia ].
+}
+cbn.
+destruct n1; [ easy | ].
+remember ((i + 1) mod S n1) as m1 eqn:Hm1; symmetry in Hm1.
+rewrite <- Nat.mul_mod_idemp_r; [ | easy ].
+rewrite Hm1.
+destruct m1; [ now rewrite Nat.mul_0_r, Nat.mod_0_l | ].
+remember ((n * S m1) mod S n1) as m2 eqn:Hm2; symmetry in Hm2.
+destruct m2. {
+  apply Nat.mod_divides in Hm2; [ | easy ].
+  destruct Hm2 as (m2, Hm2).
+  move m2 before m1.
+  destruct (Nat.eq_dec n (S n1)) as [Hnn| Hnn]. {
 ...
 
 Theorem ζ_Euler_product_eq : False.
