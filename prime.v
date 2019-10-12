@@ -938,17 +938,16 @@ But actually, our theorem is a little more general:
    for any n in (n1, n2, n3 ... nm)
 *)
 
-Instance ls_mul_but_mul_of_morph {F : field} :
+Instance ls_mul_morph {F : field} :
   Proper (ls_eq ==> ls_eq ==> ls_eq) ls_mul.
 Proof.
 intros r1 r2 Hrr r'1 r'2 Hrr' i Hi; cbn.
 destruct i; [ flia Hi | clear Hi ].
 unfold log_prod.
 f_equal.
-...
-assert (H : ∀ cnt k i, cnt ≤ i → k ≠ 0 →
-  fold_right f_add f_zero (log_prod_list cnt (ls r1) (ls r'1) k i) =
-  fold_right f_add f_zero (log_prod_list cnt (ls r2) (ls r'2) k i)). {
+assert (H : ∀ cnt k i, cnt ≤ S i → k ≠ 0 →
+  log_prod_list cnt (ls r1) (ls r'1) k (k + i) =
+  log_prod_list cnt (ls r2) (ls r'2) k (k + i)). {
   clear i.
   intros * Hcnt Hk.
   destruct k; [ easy | clear Hk ].
@@ -959,62 +958,26 @@ assert (H : ∀ cnt k i, cnt ≤ i → k ≠ 0 →
     rewrite Hrr; [ | easy ].
     rewrite Hrr'; [ easy | ].
     intros H.
-    apply Nat.div_small_iff in H; [ flia H | easy ].
+    apply Nat.div_small_iff in H; [ | easy ].
+    flia H.
   }
   destruct i. 2: {
     replace (S (k + S i)) with (S (k + 1 + i)) by flia.
     apply IHcnt.
+    flia Hcnt.
   }
-  rewrite Nat.add_0_r.
-  destruct cnt; [ easy | ].
-  cbn.
+  destruct cnt; [ easy | flia Hcnt ].
+}
+now apply H.
+Qed.
 
-...
-  destruct k.
-2: {
-  apply IHcnt.
-flia Hki.
-
-  apply IHcnt.
-lia.
-...
-...
-  rewrite IHcnt.
-    unfold log_prod_term.
-  unfold log_prod_term.
-  rewrite Hrr; [ | easy ].
-...
-apply H; [ easy | flia ].
-...
-
-(*
-Instance ls_pol_mul_but_mul_of_morph {F : field} :
+Instance ls_pol_mul_morph {F : field} :
   Proper (eq ==> ls_eq ==> ls_eq) ls_pol_mul_l.
 Proof.
 intros p1 p2 Hpp r1 r2 Hrr i Hi.
 subst p1.
-cbn - [ ls_of_pol ].
-unfold log_prod.
-Print ls_pol_mul_l.
-...
-assert (H : ∀ k, k ≠ 0 →
-  fold_right f_add f_zero (log_prod_list i (ls (ls_of_pol p2)) (ls r1) k i) =
-  fold_right f_add f_zero (log_prod_list i (ls (ls_of_pol p2)) (ls r2) k i)). {
-  intros k Hk.
-  destruct k; [ flia Hk | clear Hk ].
-  destruct i; [ flia Hi | clear Hi ].
-  revert k.
-  induction i; intros. {
-    cbn - [ ls_of_pol ].
-    unfold log_prod_term.
-    rewrite Hrr; [ easy | ].
-    destruct k.
-cbn.
-cbn.
-}
-remember (S i) as si; cbn - [ ls_of_pol ]; subst si.
-...
-*)
+now apply ls_mul_morph.
+Qed.
 
 Theorem step_3 {F : field} : ∀ (r : ln_series) (l : list nat),
   (∀ a, List.In a l → 2 ≤ a)
@@ -1025,8 +988,6 @@ Theorem step_3 {F : field} : ∀ (r : ln_series) (l : list nat),
 Proof.
 intros * Hge2 Ha Hgcd.
 induction l as [| n l]; [ easy | cbn ].
-...
-unfold ".*".
 rewrite IHl; cycle 1. {
   now intros; apply Hge2; right.
 } {
@@ -1035,7 +996,7 @@ rewrite IHl; cycle 1. {
   intros x y Hx Hy Hxy.
   apply Hgcd; [ now right | now right | easy ].
 }
-Check step_1.
+...
 apply step_1.
 ...
 
