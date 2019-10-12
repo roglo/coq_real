@@ -287,18 +287,91 @@ Qed.
 
 (* https://en.wikipedia.org/wiki/Proof_of_the_Euler_product_formula_for_the_Riemann_zeta_function *)
 
-(* representation of ζ function as series in x where x=1/e^s; we have
-     Σ 1/n^s = Σ x^ln(n)
- *)
+(*
+Riemann zeta function is
+   ζ(s) = 1 + 1/2^s + 1/3^s + 1/4^s + 1/5^s + ...
 
-(* {| ls := u |} represents Σ (n=1,∞) u(n)/n^s = Σ (n=1,∞) u(n)x^ln(n) =
-   Σ (n=1,∞) u(n)(x⊗n) where a⊗b=a^ln(b)=b^ln(a)=e^(ln(a)ln(b)) *)
+Euler product formula is the fact that
+                    1
+   ζ(s) = -----------------------------------------------
+          (1-1/2^s) (1-1/3^s) (1-1/5^s) ... (1-1/p^s) ...
+
+where the product in the denominateur applies on all prime numbers
+and only them.
+
+The proof is the following.
+
+We first prove that
+   (1-1/2^s) ζ(s) = 1 + 1/3^s + 1/5^s + 1/7^s + ...
+
+i.e. all terms but the multiples of 2
+i.e. all odd numbers
+
+(this is easy to verify on a paper)
+
+Then we continue by proving
+   (1-1/3^s) (1-1/2^s) ζ(s) =
+       1 + 1/5^s + 1/7^s + 1/11^s + ... + 1/23^s + 1/25^s + ...
+
+i.e. all terms but the multiples of 2 and 3
+
+Then we do it for the number (5) in the second term (1/5^s) of the series.
+
+This number in the second term is always the next prime number, like in the
+Sieve of Eratosthenes.
+
+Up to prime number p, we have, using commutativity
+  (1-1/2^s) (1-1/3^s) ... (1-1/p^s) ζ(s) = 1 + 1/q^s + ...
+
+where q is the prime number after p and the rest holds terms whose
+number is greater than q and not divisible by the primes between
+2 and p.
+
+When p tends towards infinity, the term to the right is just 1
+and we get Euler's formula.
+
+    ---
+
+Implementation.
+
+ζ(s) and all the expressions above are actually of the form
+    a₁ + a₂/2^s + a₃/3^s + a₄/4^s + ...
+
+We can represent them as the sequence
+    (a_n) = (a₁, a₂, a₃, ...)
+
+For example, ζ is (1, 1, 1, 1, ...)
+and (1-1/3^s) is (1, 0, -1, 0, 0, 0, ...)
+
+We call them "series with logarithm powers" because they can be
+written
+    a₁ + a₂ x^ln(2) + a₃ x^ln(3) + a₄ x^ln(4) + a₅ x^ln(5) + ...
+
+with x = e^(-s). Easy to verify.
+
+Note that we do not consider the parameter s or x. The fact that
+they are supposed to be complex number is irrelevant in this proof.
+We just consider they belong to a field (type "field" defined
+above).
+*)
+
+(* Definition of the type of such a series *)
 
 Class ln_series {F : field} :=
   { ls : nat → f_type }.
 
+(* Definition of the type of a polynomial (a finite series) *) 
+
 Class ln_polyn {F : field} :=
   { lp : list f_type }.
+
+(* Syntactic scopes, allowing to use operations on series and
+   polynomials with usual mathematical forms. For example we can
+   write e.g.
+        (s1 * s2 + s3)%LS
+   instead of the less readable
+        ls_add (ls_mul s1 s2) s3
+*)
 
 Declare Scope ls_scope.
 Delimit Scope ls_scope with LS.
@@ -309,19 +382,25 @@ Delimit Scope lp_scope with LP.
 Arguments ls {_} _%LS _%nat.
 Arguments lp {_}.
 
-Definition ls_eq {F : field} s1 s2 := ∀ n, ls s1 (n + 1) = ls s2 (n + 1).
+(* Equality between series; since these series start with 1, the
+   comparison is only on natural indices different from 0 *)
+
+Definition ls_eq {F : field} s1 s2 := ∀ n, n ≠ 0 → ls s1 n = ls s2 n.
 Arguments ls_eq _ s1%LS s2%LS.
 
 Theorem ls_eq_refl {F : field} : reflexive _ ls_eq.
 Proof. easy. Qed.
 
 Theorem ls_eq_sym {F : field} : symmetric _ ls_eq.
-Proof. easy. Qed.
+Proof.
+intros x y Hxy i Hi.
+now symmetry; apply Hxy.
+Qed.
 
 Theorem ls_eq_trans {F : field} : transitive _ ls_eq.
 Proof.
-intros x y z Hxy Hyz i.
-eapply eq_trans; [ apply Hxy | apply Hyz ].
+intros x y z Hxy Hyz i Hi.
+now eapply eq_trans; [ apply Hxy | apply Hyz ].
 Qed.
 
 Add Parametric Relation {F : field} : (ln_series) ls_eq
@@ -527,7 +606,8 @@ Theorem step_1 {F : field} : ∀ s n,
   → 1 < n
   → ((pol_pow 1 - pol_pow n) .* s = series_but_mul_of n s)%LS.
 Proof.
-intros * Hs Hn i.
+intros * Hs Hn i Hi.
+destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
 symmetry.
 remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
 destruct m. {
@@ -733,10 +813,11 @@ Require Import Morphisms.
 Instance series_but_mul_of_morph {F : field} :
   Proper (eq ==> ls_eq ==> ls_eq) series_but_mul_of.
 Proof.
-intros x y Hxy s1 s2 Hss i.
+intros x y Hxy s1 s2 Hss i Hi.
+destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
 subst x; cbn.
 destruct ((i + 1) mod y) as [H| H]; [ easy | ].
-apply Hss.
+apply Hss; flia.
 Qed.
 
 Theorem step_1_ζ {F : field} :
@@ -765,15 +846,22 @@ Proof.
 intros * Ha Hb H1a H1b Gab.
 rewrite step_1; [ now rewrite step_1 | | easy ].
 intros i Hi.
-destruct i; [ flia Hi | clear Hi ].
-replace (S i) with (i + 1) by flia.
-rewrite step_1; [ | easy | easy ].
+rewrite step_1; [ | easy | easy | flia Hi ].
+(*
+destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
 replace b with (b - 1 + 1) by flia H1b.
 replace ((b - 1 + 1) * (i + 1)) with (i + (b - 1) * S i + 1) by flia H1b.
-rewrite step_1; [ | easy | easy ].
+*)
+rewrite step_1; [ | easy | easy | ]. 2: {
+  intros Hbi.
+  apply Nat.eq_mul_0 in Hbi.
+  flia H1b Hi Hbi.
+}
 remember (series_but_mul_of a s) as sa eqn:Hsa.
+(*
 replace (i + (b - 1) * S i + 1) with ((b - 1 + 1) * (i + 1)) by flia.
 rewrite Nat.sub_add by flia H1b.
+*)
 assert (Hsai : ∀ i : nat, 0 < i → ls sa i = ls sa (b * i)). {
   subst sa.
   clear - H1a Hb Gab.
@@ -807,45 +895,16 @@ assert (Hsai : ∀ i : nat, 0 < i → ls sa i = ls sa (b * i)). {
   apply Nat.nle_gt in H1.
   apply H1; cbn; flia.
 }
-apply Hsai; flia.
+now apply Hsai.
 Qed.
 
 (*
-Riemann zeta function
-   ζ(s) = 1 + 1/2^s + 1/3^s + 1/4^s + 1/5^s + ...
-
-We now define η as
-   η(x) = 1 + x^ln(2) + x^ln(3) + x^ln(4) + x^ln(5) + ...
-which is actually another form of zeta function, because writing
-   x = e^(-s)
-we can verify that
-   x^ln(n) = 1/n^s
-and therefore
-   ζ(s) = η(e^(-s))
-
-Any series with logarithm powers such as
-   a_1 + a_2 x^ln(2) + a_3 x^ln(3) + a_4 x^ln(4) + ...
-is just represented as the sequence (a_n), i.e.
-   (a_1, a_2, a_3, a_4, ...)
-we don't have an x in this representation, because x is just a
-virtual variable: we never give it a value, in these proofs.
-
-Then η(x) above is represented by the sequence
-   (1, 1, 1, 1, ...)
-
 Here, we try to prove that
    (1 - 1/2^s) (1 - 1/3^s) (1 - 1/5^s) ... (1 - 1/p^s) ζ(s)
 is equal to
    ζ(s) without terms whose rank is divisible by 2, 3, 5, ... or p
 i.e.
    1 + 1/q^s + ... where q is the next prime after p
-
-Here, implemented as
-   (1 - x^ln(2)) (1 - x^ln(3)) (1 - x^ln(5)) ... (1 - x^ln(p)) η(x)
-is equal to
-   η(x) without terms whose rank is divisible by 2, 3, 5, ... or p =
-i.e.
-   1 + x^ln(q) + ... where q is the next prime after p
 
 But actually, our theorem is a little more general:
 
