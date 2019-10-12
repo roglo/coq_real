@@ -1022,6 +1022,19 @@ induction l as [| a2 l]; intros. {
   apply Ha; [ now left | easy ].
 }
 cbn.
+remember (S i mod a2) as m2 eqn:Hm2; symmetry in Hm2.
+assert (Ha2 : a2 ≠ 0). {
+  enough (H : 2 ≤ a2) by flia H.
+  now apply Hge2; right; left.
+}
+rewrite <- Nat.mul_mod_idemp_r; [ | easy ].
+rewrite Hm2.
+destruct m2; [ now rewrite Nat.mul_0_r, Nat.mod_0_l | ].
+remember ((a1 * S m2) mod a2) as m1 eqn:Hm1; symmetry in Hm1.
+destruct m1. {
+  apply Nat.mod_divide in Hm1; [ | easy ].
+  apply Nat.gauss in Hm1. 2: {
+    apply Hgcd; [ now right; left | now left | ].
 ...
 intros * Hge2 Ha Hgcd.
 induction l as [| a1 l]; [ easy | cbn ].
