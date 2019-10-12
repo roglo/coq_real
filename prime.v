@@ -811,33 +811,63 @@ apply Hsai; flia.
 Qed.
 
 (*
-   (1 - 1/2^s) (1 - 1/3^s) (1 - 1/5^s) ... (1 - 1/p^s) ζ (s) =
-   ζ (s) without terms whose rank is divisible by 2, 3, 5, ... or p =
-   1 + 1/q^s + ... where q is the next prime after p
-Here, implemented as
-   (1 - x^ln(2)) (1 - x^ln(3)) (1 - x^ln(5)) ... (1 - x^ln(p)) η (x) =
-   η (x) without terms whose rank is divisible by 2, 3, 5, ... or p =
-   1 + x^ln(q) + ... where q is the next prime after p
-where
-   ζ (s) = 1 + 1/2^s + 1/3^s + 1/4^s + 1/5^s + ... (Riemann zeta function)
-   η (x) = 1 + x^ln(2) + x^ln(3) + x^ln(4) + x^ln(5) + ...
+Riemann zeta function
+   ζ(s) = 1 + 1/2^s + 1/3^s + 1/4^s + 1/5^s + ...
+
+We now define η as
+   η(x) = 1 + x^ln(2) + x^ln(3) + x^ln(4) + x^ln(5) + ...
+which is actually another form of zeta function, because writing
+   x = e^(-s)
+we can verify that
+   x^ln(n) = 1/n^s
 and therefore
-   ζ (s) = η (e^(-s))
-because
-   (e^(-s))^ln(n) = e^(-s ln(n)) = n^(-s) = 1/2^s
+   ζ(s) = η(e^(-s))
+
+Any series with logarithm powers such as
+   a_1 + a_2 x^ln(2) + a_3 x^ln(3) + a_4 x^ln(4) + ...
+is just represented as the sequence (a_n), i.e.
+   (a_1, a_2, a_3, a_4, ...)
+we don't have an x in this representation, because x is just a
+virtual variable: we never give it a value, in these proofs.
+
+Then η(x) above is represented by the sequence
+   (1, 1, 1, 1, ...)
+
+Here, we try to prove that
+   (1 - 1/2^s) (1 - 1/3^s) (1 - 1/5^s) ... (1 - 1/p^s) ζ(s)
+is equal to
+   ζ(s) without terms whose rank is divisible by 2, 3, 5, ... or p
+i.e.
+   1 + 1/q^s + ... where q is the next prime after p
+
+Here, implemented as
+   (1 - x^ln(2)) (1 - x^ln(3)) (1 - x^ln(5)) ... (1 - x^ln(p)) η(x)
+is equal to
+   η(x) without terms whose rank is divisible by 2, 3, 5, ... or p =
+i.e.
+   1 + x^ln(q) + ... where q is the next prime after p
+
+But actually, our theorem is a little more general:
+
+1/ we do not do it for 2, 3, 5 ... p but for any list of natural numbers
+   (n1, n2, n3, ... nm) such that gcd(ni,nj) = 1 for i≠j
+
+2/ It is not the η function but any series r with logarithm powers such that
+       ∀ i, r_{i} = r_{n*i}
+   for any n in (n1, n2, n3 ... nm)
 *)
 
-Notation "s ~[ i ]" := (ls s i) (at level 1, format "s ~[ i ]").
+Notation "r ~{ i }" := (ls r i) (at level 1, format "r ~{ i }").
 Notation "x '∈' l" := (List.In x l) (at level 60).
 
-Theorem step_3 {F : field} : ∀ (s : ln_series) (l : list nat),
-  (∀ a, List.In a l → ∀ i, 0 < i → s~[i] = s~[a*i])
-  → (∀ a, List.In a l → 1 < a)
+Theorem step_3 {F : field} : ∀ (r : ln_series) (l : list nat),
+  (∀ a, a ∈ l → ∀ i, 0 < i → r~{i} = r~{a*i})
+  → (∀ a, List.In a l → 2 ≤ a)
   → (∀ a b, List.In a l → List.In b l → a ≠ b → Nat.gcd a b = 1)
-  → List.fold_right (λ a c, ((pol_pow 1 - pol_pow a) .* c)%LS) s l =
-     List.fold_right series_but_mul_of s l.
+  → List.fold_right (λ a c, ((pol_pow 1 - pol_pow a) .* c)%LS) r l =
+     List.fold_right series_but_mul_of r l.
 Proof.
-intros * Ha H1a Gab.
+intros * Ha Hge2 Hgcd.
 ...
 
 Theorem ζ_Euler_product_eq : False.
