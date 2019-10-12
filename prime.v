@@ -775,9 +775,9 @@ remember (series_but_mul_of a s) as sa eqn:Hsa.
 replace (i + (b - 1) * S i + 1) with ((b - 1 + 1) * (i + 1)) by flia.
 rewrite Nat.sub_add by flia H1b.
 assert (Hsai : ∀ i : nat, 0 < i → ls sa i = ls sa (b * i)). {
-  clear i.
-  intros i Hi.
   subst sa.
+  clear - H1a Hb Gab.
+  intros i Hi.
   unfold series_but_mul_of; cbn.
   rewrite <- Nat.mul_mod_idemp_r; [ | flia H1a ].
   rewrite Nat.mul_comm.
