@@ -419,6 +419,9 @@ Definition List_combine_all {A} (l1 l2 : list A) (d : A) :=
   in
   List.combine l'1 l'2.
 
+Notation "r ~{ i }" := (ls r i) (at level 1, format "r ~{ i }").
+Notation "x '∈' l" := (List.In x l) (at level 60).
+
 Definition lp_add {F : field} p q :=
   {| lp :=
        List.map (prod_curry f_add) (List_combine_all (lp p) (lp q) f_zero) |}.
@@ -506,7 +509,7 @@ apply IHcnt.
 Qed.
 
 Theorem pol_1_sub_pow_coeff_1 {F : field} : ∀ n,
-  1 < n
+  2 ≤ n
   → ls (ls_of_pol (pol_pow 1 - pol_pow n)) 1 = f_one.
 Proof.
 intros * Hn; cbn.
@@ -516,7 +519,7 @@ destruct n; cbn; rewrite f_opp_0; apply f_add_0_r.
 Qed.
 
 Theorem pol_1_sub_pow_coeff_minus_1 {F : field} : ∀ n,
-  1 < n
+  2 ≤ n
   → ls (ls_of_pol (pol_pow 1 - pol_pow n)) n = (- f_one)%F.
 Proof.
 intros * Hn; cbn.
@@ -528,8 +531,8 @@ apply IHn.
 Qed.
 
 Theorem pol_1_sub_pow_coeff_0 {F : field} : ∀ n i,
-  1 < n
-  → 1 < i ∧ i ≠ n
+  2 ≤ n
+  → 2 ≤ i ∧ i ≠ n
   → ls (ls_of_pol (pol_pow 1 - pol_pow n)) i = f_zero.
 Proof.
 intros * Hn (Hi, Hin); cbn.
@@ -601,12 +604,40 @@ apply (IHc k (S m)).
 now replace (3 + n + S m) with (S (S (S (n + m + 1)))) by flia.
 Qed.
 
+(*
+Here, we prove that
+   (1 - 1/2^s) ζ(s)
+is equal to
+   ζ(s) without terms whose rank is divisible by 2
+   (only odd ones are remaining)
+
+But actually, our theorem is more general.
+We prove, for any n and r, that
+   (1 - 1/n^s) r(s)
+
+where r is a series having the following property
+   ∀ i, r(s)_{i} = r(s)_{n*i}
+
+(the i-th coefficient of the series is equal to its (n*i)-th coefficient)
+
+which is true for ζ since all its coefficients are 1.
+
+The resulting series (1-1/n^s) ζ(s) has this property for all m
+such as gcd(n,m)=1, allowing us at the next theorems to restart
+with that series and another prime number. We can then iterate
+for all prime numbers.
+
+Note that we can then apply that whatever order of prime numbers
+and even not prime numbers if we want, providing their gcd two by
+two is 1.
+*)
+
 Theorem step_1 {F : field} : ∀ s n,
-  (∀ i, 0 < i → ls s i = ls s (n * i))
-  → 1 < n
+  2 ≤ n
+  → (∀ i, i ≠ 0 → ls s i = ls s (n * i))
   → ((pol_pow 1 - pol_pow n) .* s = series_but_mul_of n s)%LS.
 Proof.
-intros * Hs Hn i Hi.
+intros * Hn Hs i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
 symmetry.
 remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
@@ -823,11 +854,11 @@ Qed.
 Theorem step_1_ζ {F : field} :
   ((pol_pow 1 - pol_pow 2) .* ζ = series_but_mul_of 2 ζ)%LS.
 Proof.
-apply step_1; [ easy | flia ].
+apply step_1; [ flia | easy ].
 Qed.
 
 Theorem step_42_ζ {F : field} : ∀ n,
-  1 < n
+  2 ≤ n
   → ((pol_pow 1 - pol_pow n) .* ζ = series_but_mul_of n ζ)%LS.
 Proof.
 intros * Hn.
@@ -835,49 +866,40 @@ now apply step_1.
 Qed.
 
 Theorem step_2 {F : field} : ∀ s a b,
-  (∀ i, 0 < i → ls s i = ls s (a * i))
-  → (∀ i, 0 < i → ls s i = ls s (b * i))
-  → 1 < a
-  → 1 < b
+  2 ≤ a
+  → 2 ≤ b
+  → (∀ i, i ≠ 0 → ls s i = ls s (a * i))
+  → (∀ i, i ≠ 0 → ls s i = ls s (b * i))
   → Nat.gcd a b = 1
   → ((pol_pow 1 - pol_pow b) .* (pol_pow 1 - pol_pow a) .* s =
       series_but_mul_of b (series_but_mul_of a s))%LS.
 Proof.
-intros * Ha Hb H1a H1b Gab.
-rewrite step_1; [ now rewrite step_1 | | easy ].
+intros * H2a H2b Ha Hb Gab.
+rewrite step_1; [ now rewrite step_1 | easy | ].
 intros i Hi.
 rewrite step_1; [ | easy | easy | flia Hi ].
-(*
-destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
-replace b with (b - 1 + 1) by flia H1b.
-replace ((b - 1 + 1) * (i + 1)) with (i + (b - 1) * S i + 1) by flia H1b.
-*)
 rewrite step_1; [ | easy | easy | ]. 2: {
   intros Hbi.
   apply Nat.eq_mul_0 in Hbi.
-  flia H1b Hi Hbi.
+  flia H2b Hi Hbi.
 }
 remember (series_but_mul_of a s) as sa eqn:Hsa.
-(*
-replace (i + (b - 1) * S i + 1) with ((b - 1 + 1) * (i + 1)) by flia.
-rewrite Nat.sub_add by flia H1b.
-*)
-assert (Hsai : ∀ i : nat, 0 < i → ls sa i = ls sa (b * i)). {
+assert (Hsai : ∀ i : nat, i ≠ 0 → ls sa i = ls sa (b * i)). {
   subst sa.
-  clear - H1a Hb Gab.
+  clear - H2a Hb Gab.
   intros i Hi.
   unfold series_but_mul_of; cbn.
-  rewrite <- Nat.mul_mod_idemp_r; [ | flia H1a ].
+  rewrite <- Nat.mul_mod_idemp_r; [ | flia H2a ].
   rewrite Nat.mul_comm.
   remember (i mod a) as n eqn:Hn; symmetry in Hn.
   destruct n. {
-    cbn; rewrite Nat.mod_0_l; [ easy | flia H1a ].
+    cbn; rewrite Nat.mod_0_l; [ easy | flia H2a ].
   }
   rewrite <- Hb; [ | easy ].
   remember ((S n * b) mod a) as m eqn:Hm; symmetry in Hm.
   destruct m; [ | easy ].
   exfalso.
-  apply Nat.mod_divides in Hm; [ | flia H1a ].
+  apply Nat.mod_divides in Hm; [ | flia H2a ].
   destruct Hm as (m, Hm).
   move m before n.
   specialize (Nat.gauss a b (S n)) as H1.
@@ -889,7 +911,7 @@ assert (Hsai : ∀ i : nat, 0 < i → ls sa i = ls sa (b * i)). {
   destruct H1 as (z, Hz).
   destruct z; [ now rewrite Hn in Hz | ].
   specialize (Nat.mod_upper_bound i a) as H1.
-  assert (H : a ≠ 0) by flia H1a.
+  assert (H : a ≠ 0) by flia H2a.
   specialize (H1 H); clear H.
   rewrite Hz in H1.
   apply Nat.nle_gt in H1.
@@ -916,17 +938,14 @@ But actually, our theorem is a little more general:
    for any n in (n1, n2, n3 ... nm)
 *)
 
-Notation "r ~{ i }" := (ls r i) (at level 1, format "r ~{ i }").
-Notation "x '∈' l" := (List.In x l) (at level 60).
-
 Theorem step_3 {F : field} : ∀ (r : ln_series) (l : list nat),
-  (∀ a, a ∈ l → ∀ i, 0 < i → r~{i} = r~{a*i})
-  → (∀ a, List.In a l → 2 ≤ a)
+  (∀ a, List.In a l → 2 ≤ a)
+  → (∀ a, a ∈ l → ∀ i, i ≠ 0 → r~{i} = r~{a*i})
   → (∀ a b, List.In a l → List.In b l → a ≠ b → Nat.gcd a b = 1)
   → List.fold_right (λ a c, ((pol_pow 1 - pol_pow a) .* c)%LS) r l =
      List.fold_right series_but_mul_of r l.
 Proof.
-intros * Ha Hge2 Hgcd.
+intros * Hge2 Ha Hgcd.
 ...
 
 Theorem ζ_Euler_product_eq : False.
