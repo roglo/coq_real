@@ -161,7 +161,7 @@ Class field :=
     f_inv : f_type → f_type;
     f_add_comm : ∀ x y, f_add x y = f_add y x;
     f_add_assoc : ∀ x y z, f_add x (f_add y z) = f_add (f_add x y) z;
-    f_add_0_r : ∀ x, f_add x f_zero = x;
+    f_add_0_l : ∀ x, f_add f_zero x = x;
     f_add_opp_diag_l : ∀ x, f_add (f_opp x) x = f_zero;
     f_mul_comm : ∀ x y, f_mul x y = f_mul y x;
     f_mul_assoc : ∀ x y z, f_mul x (f_mul y z) = f_mul (f_mul x y) z;
@@ -180,11 +180,11 @@ Notation "x + y" := (f_add x y) : field_scope.
 Notation "x - y" := (f_sub x y) : field_scope.
 Notation "x * y" := (f_mul x y) : field_scope.
 
-Theorem f_add_0_l {F : field} : ∀ x, (f_zero + x)%F = x.
+Theorem f_add_0_r {F : field} : ∀ x, (x + f_zero)%F = x.
 Proof.
 intros.
 rewrite f_add_comm.
-apply f_add_0_r.
+apply f_add_0_l.
 Qed.
 
 Theorem f_opp_0 {F : field} : (- f_zero)%F = f_zero.
@@ -809,6 +809,36 @@ assert (Hsai : ∀ i : nat, 0 < i → ls sa i = ls sa (b * i)). {
 }
 apply Hsai; flia.
 Qed.
+
+(*
+   (1 - 1/2^s) (1 - 1/3^s) (1 - 1/5^s) ... (1 - 1/p^s) ζ (s) =
+   ζ (s) without terms whose rank is divisible by 2, 3, 5, ... or p =
+   1 + 1/q^s + ... where q is the next prime after p
+Here, implemented as
+   (1 - x^ln(2)) (1 - x^ln(3)) (1 - x^ln(5)) ... (1 - x^ln(p)) η (x) =
+   η (x) without terms whose rank is divisible by 2, 3, 5, ... or p =
+   1 + x^ln(q) + ... where q is the next prime after p
+where
+   ζ (s) = 1 + 1/2^s + 1/3^s + 1/4^s + 1/5^s + ... (Riemann zeta function)
+   η (x) = 1 + x^ln(2) + x^ln(3) + x^ln(4) + x^ln(5) + ...
+and therefore
+   ζ (s) = η (e^(-s))
+because
+   (e^(-s))^ln(n) = e^(-s ln(n)) = n^(-s) = 1/2^s
+*)
+
+Notation "s ~[ i ]" := (ls s i) (at level 1, format "s ~[ i ]").
+Notation "x '∈' l" := (List.In x l) (at level 60).
+
+Theorem step_3 {F : field} : ∀ (s : ln_series) (l : list nat),
+  (∀ a, List.In a l → ∀ i, 0 < i → s~[i] = s~[a*i])
+  → (∀ a, List.In a l → 1 < a)
+  → (∀ a b, List.In a l → List.In b l → a ≠ b → Nat.gcd a b = 1)
+  → List.fold_right (λ a c, ((pol_pow 1 - pol_pow a) .* c)%LS) s l =
+     List.fold_right series_but_mul_of s l.
+Proof.
+intros * Ha H1a Gab.
+...
 
 Theorem ζ_Euler_product_eq : False.
 Proof.
