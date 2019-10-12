@@ -765,12 +765,17 @@ Proof.
 intros * Ha Hb H1a H1b Gab.
 rewrite step_1; [ now rewrite step_1 | | easy ].
 intros i Hi.
-destruct i; [ flia Hi | ].
+destruct i; [ flia Hi | clear Hi ].
 replace (S i) with (i + 1) by flia.
 rewrite step_1; [ | easy | easy ].
+replace b with (b - 1 + 1) by flia H1b.
+replace ((b - 1 + 1) * (i + 1)) with (i + (b - 1) * S i + 1) by flia H1b.
+rewrite step_1; [ | easy | easy ].
 remember (series_but_mul_of a s) as sa eqn:Hsa.
+replace (i + (b - 1) * S i + 1) with ((b - 1 + 1) * (i + 1)) by flia.
+rewrite Nat.sub_add by flia H1b.
 assert (Hsai : ∀ i : nat, 0 < i → ls sa i = ls sa (b * i)). {
-  clear i Hi.
+  clear i.
   intros i Hi.
   subst sa.
   unfold series_but_mul_of; cbn.
@@ -802,20 +807,8 @@ assert (Hsai : ∀ i : nat, 0 < i → ls sa i = ls sa (b * i)). {
   apply Nat.nle_gt in H1.
   apply H1; cbn; flia.
 }
-...
-(*
-cbn - [ ls_of_pol ].
-unfold log_prod.
-f_equal.
-destruct i; [ easy | clear Hi ].
-cbn - [ ls_of_pol ].
-unfold log_prod_term.
-rewrite pol_1_sub_pow_coeff_1; [ | easy ].
-unfold ε.
-rewrite Nat.mod_1_r, Nat.div_1_r.
-rewrite f_mul_1_l, f_mul_1_r.
-*)
-...
+apply Hsai; flia.
+Qed.
 
 Theorem ζ_Euler_product_eq : False.
 Proof.
