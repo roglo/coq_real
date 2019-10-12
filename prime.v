@@ -996,22 +996,24 @@ But actually, our theorem is a little more general:
    for any n in (n1, n2, n3 ... nm)
 *)
 
+Check List.nth.
+
 Theorem step_3 {F : field} : ∀ (r : ln_series) (l : list nat),
   (∀ a, List.In a l → 2 ≤ a)
   → (∀ a, a ∈ l → ∀ i, i ≠ 0 → r~{i} = r~{a*i})
-  → (∀ a b, List.In a l → List.In b l → a ≠ b → Nat.gcd a b = 1)
+  → (∀ na nb, na ≠ nb → Nat.gcd (List.nth na l 1) (List.nth nb l 1) = 1)
   → (List.fold_right (λ a c, ((pol_pow 1 - pol_pow a) .* c)) r l =
       List.fold_right series_but_mul_of r l)%LS.
 Proof.
-intros * Hge2 Ha Hgcd.
+intros * Hge2 Hai Hgcd.
 induction l as [| a1 l]; [ easy | cbn ].
 rewrite IHl; cycle 1. {
   now intros; apply Hge2; right.
 } {
-  now intros a Ha'; apply Ha; right.
+  now intros a Ha'; apply Hai; right.
 } {
-  intros x y Hx Hy Hxy.
-  apply Hgcd; [ now right | now right | easy ].
+  intros na nb Hnn.
+  apply (Hgcd (S na) (S nb)); flia Hnn.
 }
 clear IHl.
 apply step_1; [ now apply Hge2; left | ].
@@ -1019,7 +1021,7 @@ intros i Hi.
 destruct i; [ flia Hi | clear Hi ].
 revert i.
 induction l as [| a2 l]; intros. {
-  apply Ha; [ now left | easy ].
+  apply Hai; [ now left | easy ].
 }
 cbn.
 remember (S i mod a2) as m2 eqn:Hm2; symmetry in Hm2.
@@ -1033,8 +1035,27 @@ destruct m2; [ now rewrite Nat.mul_0_r, Nat.mod_0_l | ].
 remember ((a1 * S m2) mod a2) as m1 eqn:Hm1; symmetry in Hm1.
 destruct m1. {
   apply Nat.mod_divide in Hm1; [ | easy ].
-  apply Nat.gauss in Hm1. 2: {
-    apply Hgcd; [ now right; left | now left | ].
+  apply Nat.gauss in Hm1; [ | now apply (Hgcd 1 0) ].
+  destruct Hm1 as (m1, Hm1).
+  destruct m1; [ easy | ].
+  destruct a2; [ easy | ].
+  rewrite <- Hm2 in Hm1.
+  specialize (Nat.mod_upper_bound (S i) (S a2) Ha2) as H1.
+  rewrite Hm1 in H1.
+  cbn in H1; flia H1.
+}
+apply IHl. {
+  intros a Ha; apply Hge2.
+  destruct Ha as [Ha| Ha]; [ now left | now right; right ].
+} {
+  intros a Ha j Hj.
+  apply Hai; [ | easy ].
+  destruct Ha as [Ha| Ha]; [ now left | now right; right ].
+} {
+  intros na nb Hnn.
+  destruct na, nb; [ easy | | | ]. {
+    cbn.
+    apply (Hgcd 0 ...
 ...
 intros * Hge2 Ha Hgcd.
 induction l as [| a1 l]; [ easy | cbn ].
