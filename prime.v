@@ -1,7 +1,7 @@
 (* playing with prime numbers, as a break *)
 
 Set Nested Proofs Allowed.
-Require Import Utf8 Arith Psatz Setoid.
+Require Import Utf8 Arith Psatz Setoid Morphisms.
 Import List List.ListNotations.
 
 (* "fast" lia, to improve compilation speed *)
@@ -478,6 +478,72 @@ Notation "x = y" := (ls_eq x y) : ls_scope.
 Notation "p .* s" := (ls_pol_mul_l p s) (at level 41, right associativity) :
    ls_scope.
 
+(* allows to rewrite
+      Hn : n = n'
+      Hs : s = s'
+   in expression
+      series_but_mul_of n s *)
+Instance series_but_mul_of_morph {F : field} :
+  Proper (eq ==> ls_eq ==> ls_eq) series_but_mul_of.
+Proof.
+intros x y Hxy s1 s2 Hss i Hi.
+destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
+subst x; cbn.
+destruct ((i + 1) mod y) as [H| H]; [ easy | ].
+apply Hss; flia.
+Qed.
+
+(* allows to rewrite
+      H1 : s1 = s3
+      H2 : s2 = s4
+   in expression
+      (s1 * s2)%F *)
+Instance ls_mul_morph {F : field} :
+  Proper (ls_eq ==> ls_eq ==> ls_eq) ls_mul.
+Proof.
+intros r1 r2 Hrr r'1 r'2 Hrr' i Hi; cbn.
+destruct i; [ flia Hi | clear Hi ].
+unfold log_prod.
+f_equal.
+assert (H : ∀ cnt k i, cnt ≤ S i → k ≠ 0 →
+  log_prod_list cnt (ls r1) (ls r'1) k (k + i) =
+  log_prod_list cnt (ls r2) (ls r'2) k (k + i)). {
+  clear i.
+  intros * Hcnt Hk.
+  destruct k; [ easy | clear Hk ].
+  revert i k Hcnt.
+  induction cnt; intros; [ easy | cbn ].
+  unfold log_prod_term.
+  f_equal. {
+    rewrite Hrr; [ | easy ].
+    rewrite Hrr'; [ easy | ].
+    intros H.
+    apply Nat.div_small_iff in H; [ | easy ].
+    flia H.
+  }
+  destruct i. 2: {
+    replace (S (k + S i)) with (S (k + 1 + i)) by flia.
+    apply IHcnt.
+    flia Hcnt.
+  }
+  destruct cnt; [ easy | flia Hcnt ].
+}
+now apply H.
+Qed.
+
+(* allows to rewrite
+      Hp : p1 = p2
+      Hs : s1 = s2
+   in expression
+      (p1 .* s2)%F *)
+Instance ls_pol_mul_morph {F : field} :
+  Proper (eq ==> ls_eq ==> ls_eq) ls_pol_mul_l.
+Proof.
+intros p1 p2 Hpp r1 r2 Hrr i Hi.
+subst p1.
+now apply ls_mul_morph.
+Qed.
+
 Theorem log_prod_list_length {F : field} : ∀ cnt u v i n,
   length (log_prod_list cnt u v i n) = cnt.
 Proof.
@@ -839,18 +905,6 @@ replace 2 with (0 + 2) by flia.
 apply H.
 Qed.
 
-Require Import Morphisms.
-
-Instance series_but_mul_of_morph {F : field} :
-  Proper (eq ==> ls_eq ==> ls_eq) series_but_mul_of.
-Proof.
-intros x y Hxy s1 s2 Hss i Hi.
-destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
-subst x; cbn.
-destruct ((i + 1) mod y) as [H| H]; [ easy | ].
-apply Hss; flia.
-Qed.
-
 Theorem step_1_ζ {F : field} :
   ((pol_pow 1 - pol_pow 2) .* ζ = series_but_mul_of 2 ζ)%LS.
 Proof.
@@ -938,47 +992,6 @@ But actually, our theorem is a little more general:
    for any n in (n1, n2, n3 ... nm)
 *)
 
-Instance ls_mul_morph {F : field} :
-  Proper (ls_eq ==> ls_eq ==> ls_eq) ls_mul.
-Proof.
-intros r1 r2 Hrr r'1 r'2 Hrr' i Hi; cbn.
-destruct i; [ flia Hi | clear Hi ].
-unfold log_prod.
-f_equal.
-assert (H : ∀ cnt k i, cnt ≤ S i → k ≠ 0 →
-  log_prod_list cnt (ls r1) (ls r'1) k (k + i) =
-  log_prod_list cnt (ls r2) (ls r'2) k (k + i)). {
-  clear i.
-  intros * Hcnt Hk.
-  destruct k; [ easy | clear Hk ].
-  revert i k Hcnt.
-  induction cnt; intros; [ easy | cbn ].
-  unfold log_prod_term.
-  f_equal. {
-    rewrite Hrr; [ | easy ].
-    rewrite Hrr'; [ easy | ].
-    intros H.
-    apply Nat.div_small_iff in H; [ | easy ].
-    flia H.
-  }
-  destruct i. 2: {
-    replace (S (k + S i)) with (S (k + 1 + i)) by flia.
-    apply IHcnt.
-    flia Hcnt.
-  }
-  destruct cnt; [ easy | flia Hcnt ].
-}
-now apply H.
-Qed.
-
-Instance ls_pol_mul_morph {F : field} :
-  Proper (eq ==> ls_eq ==> ls_eq) ls_pol_mul_l.
-Proof.
-intros p1 p2 Hpp r1 r2 Hrr i Hi.
-subst p1.
-now apply ls_mul_morph.
-Qed.
-
 Theorem step_3 {F : field} : ∀ (r : ln_series) (l : list nat),
   (∀ a, List.In a l → 2 ≤ a)
   → (∀ a, a ∈ l → ∀ i, i ≠ 0 → r~{i} = r~{a*i})
@@ -996,8 +1009,10 @@ rewrite IHl; cycle 1. {
   intros x y Hx Hy Hxy.
   apply Hgcd; [ now right | now right | easy ].
 }
-...
-apply step_1.
+apply step_1; [ now apply Hge2; left | ].
+intros i Hi.
+destruct i; [ easy |].
+replace (S i) with (i + 1) by flia.
 ...
 
 Theorem ζ_Euler_product_eq : False.
