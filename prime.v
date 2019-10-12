@@ -758,25 +758,19 @@ Theorem step_2 {F : field} : ∀ s a b,
   → (∀ i, 0 < i → ls s i = ls s (b * i))
   → 1 < a
   → 1 < b
+  → Nat.gcd a b = 1
   → ((pol_pow 1 - pol_pow b) .* (pol_pow 1 - pol_pow a) .* s =
       series_but_mul_of b (series_but_mul_of a s))%LS.
 Proof.
-intros * Ha Hb H1a H1b.
+intros * Ha Hb H1a H1b Gab.
 rewrite step_1; [ now rewrite step_1 | | easy ].
 intros i Hi.
-cbn - [ ls_of_pol ].
-unfold log_prod.
-f_equal.
-destruct i; [ easy | clear Hi ].
-cbn - [ ls_of_pol ].
-unfold log_prod_term.
-rewrite pol_1_sub_pow_coeff_1; [ | easy ].
-unfold ε.
-rewrite Nat.mod_1_r, Nat.div_1_r.
-rewrite f_mul_1_l, f_mul_1_r.
+destruct i; [ flia Hi | ].
+replace (S i) with (i + 1) by flia.
+rewrite step_1; [ | easy | easy ].
 remember (series_but_mul_of a s) as sa eqn:Hsa.
-assert (H : ∀ i : nat, 0 < i → ls sa i = ls sa (b * i)). {
-  clear i.
+assert (Hsai : ∀ i : nat, 0 < i → ls sa i = ls sa (b * i)). {
+  clear i Hi.
   intros i Hi.
   subst sa.
   unfold series_but_mul_of; cbn.
@@ -789,25 +783,38 @@ assert (H : ∀ i : nat, 0 < i → ls sa i = ls sa (b * i)). {
   rewrite <- Hb; [ | easy ].
   remember ((S n * b) mod a) as m eqn:Hm; symmetry in Hm.
   destruct m; [ | easy ].
+  exfalso.
   apply Nat.mod_divides in Hm; [ | flia H1a ].
   destruct Hm as (m, Hm).
   move m before n.
+  specialize (Nat.gauss a b (S n)) as H1.
+  rewrite Nat.mul_comm, Hm in H1.
+  specialize (Nat.divide_factor_l a m) as H.
+  specialize (H1 H Gab); clear H.
+  rewrite <- Hn in H1.
+  unfold Nat.divide in H1.
+  destruct H1 as (z, Hz).
+  destruct z; [ now rewrite Hn in Hz | ].
+  specialize (Nat.mod_upper_bound i a) as H1.
+  assert (H : a ≠ 0) by flia H1a.
+  specialize (H1 H); clear H.
+  rewrite Hz in H1.
+  apply Nat.nle_gt in H1.
+  apply H1; cbn; flia.
+}
 ...
-destruct i. {
-  cbn - [ ls_of_pol ].
-  rewrite Nat.mul_1_r; symmetry.
-  destruct b; [ flia H1b | ].
-  cbn - [ ls_of_pol ].
-  unfold log_prod_term.
-  rewrite pol_1_sub_pow_coeff_1; [ | easy ].
-  unfold ε.
-  rewrite Nat.mod_1_r, Nat.div_1_r, f_mul_1_l, f_mul_1_r.
-  symmetry; rewrite Hb; [ | flia ]; symmetry.
-  rewrite Nat.mul_1_r; f_equal.
-  destruct b; [ easy | ].
-  destruct b. {
-    cbn - [ ls_of_pol ].
-    unfold log_prod_term.
+(*
+cbn - [ ls_of_pol ].
+unfold log_prod.
+f_equal.
+destruct i; [ easy | clear Hi ].
+cbn - [ ls_of_pol ].
+unfold log_prod_term.
+rewrite pol_1_sub_pow_coeff_1; [ | easy ].
+unfold ε.
+rewrite Nat.mod_1_r, Nat.div_1_r.
+rewrite f_mul_1_l, f_mul_1_r.
+*)
 ...
 
 Theorem ζ_Euler_product_eq : False.
