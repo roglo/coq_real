@@ -1001,11 +1001,19 @@ Theorem step_3 {F : field} : ∀ (r : ln_series) (l : list nat),
 Proof.
 intros * Hge2 Ha Hgcd.
 induction l as [| a1 l]; [ easy | cbn ].
-rewrite <- IHl.
+rewrite <- IHl; cycle 1. {
+  now intros; apply Hge2; right.
+} {
+  now intros a Ha'; apply Ha; right.
+} {
+  intros x y Hx Hy Hxy.
+  apply Hgcd; [ now right | now right | easy ].
+}
 remember
   (fold_right (λ (a : nat) (c : ln_series), (pol_pow 1 - pol_pow a) .* c) r
       l)%LS as r' eqn:Hr'.
-apply step_1.
+apply step_1; [ now apply Hge2; left | ].
+intros i Hi.
 ...
 revert a Hge2 Ha Hgcd.
 induction l as [| a2 l]; intros. {
@@ -1017,16 +1025,15 @@ cbn.
 ...
 destruct l as [| a3 l]. {
   cbn.
-  apply step_2; admit.
+  apply step_2.
+...
 }
 cbn.
 destruct l as [| a4 l]. {
   cbn.
   apply step_2.
 }
-
 ...
-
 intros * Hge2 Ha Hgcd.
 induction l as [| n l]; [ easy | cbn ].
 rewrite step_1; cycle 1; [ now apply Hge2; left | | ]. {
@@ -1050,14 +1057,7 @@ rewrite IHl; cycle 1. {
   intros x y Hx Hy Hxy.
   apply Hgcd; [ now right | now right | easy ].
 }
-
-subgoal 3 (ID 746) is:
- ∀ i : nat,
-   i ≠ 0
-   → (fold_right (λ (a : nat) (c : ln_series), ((pol_pow 1 - pol_pow a) .* c)%LS) r l)~{i} =
-     (fold_right (λ (a : nat) (c : ln_series), ((pol_pow 1 - pol_pow a) .* c)%LS) r l)~{
-     n * i}
-
+...
 apply step_1; [ now apply Hge2; left | ].
 intros i Hi.
 destruct i; [ easy | clear Hi ].
