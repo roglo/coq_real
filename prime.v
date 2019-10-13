@@ -588,6 +588,56 @@ destruct i; [ easy | clear Hi ].
 cbn - [ log_prod ls_one ].
 unfold log_prod.
 rewrite log_prod_list_1_l.
+cbn; rewrite <- f_add_0_r; f_equal.
+induction i; [ easy | ].
+now cbn; rewrite f_add_0_l.
+Qed.
+
+Theorem log_prod_list_rev {F : field} : ∀ cnt u v i n,
+  log_prod_list cnt u v i n = List.rev (log_prod_list cnt v u i n).
+Proof.
+intros.
+destruct cnt; [ easy | cbn ].
+destruct cnt. {
+  cbn.
+  unfold log_prod_term.
+...
+
+Theorem log_prod_comm {F : field} : ∀ u v i,
+  log_prod u v i = log_prod v u i.
+Proof.
+intros.
+unfold log_prod.
+destruct i; [ easy | ].
+...
+rewrite log_prod_list_rev.
+Search (fold_left _ (rev _) _).
+Search (rev (fold_right _ _ _)).
+...
+
+Theorem log_prod_prod_swap {F : field} : ∀ u v w i,
+  i ≠ 0
+  → log_prod (log_prod u v) w i = log_prod (log_prod u w) v i.
+Proof.
+intros * Hi.
+unfold log_prod.
+...
+
+Theorem log_prod_assoc {F : field} : ∀ u v w i,
+  i ≠ 0
+  → log_prod u (log_prod v w) i = log_prod (log_prod u v) w i.
+Proof.
+intros * Hi.
+...
+rewrite log_prod_comm.
+rewrite log_prod_prod_swap; [ | easy ].
+...
+
+Theorem ls_mul_assoc {F : field} : ∀ x y z,
+  (x * (y * z) = x * y * z)%LS.
+Proof.
+intros * i Hi.
+cbn.
 ...
 
 Theorem log_prod_list_length {F : field} : ∀ cnt u v i n,
@@ -993,8 +1043,14 @@ intros * Hge2 Hai Hgcd.
 induction l as [| a1 l]. {
   intros i Hi.
   cbn - [ ".*" ls_mul ls_one ].
+  now apply ls_mul_1_l.
+}
+cbn.
+remember (Π (a ∈ l), (pol_pow 1 - pol_pow a))%LS as p eqn:Hp.
+unfold ".*".
 ...
-now apply ls_mul_1_l.
+rewrite <- ls_mul_assoc.
+rewrite IHl.
 ...
 
 Theorem list_of_pow_1_sub_pol_times_series {F : field} : ∀ l r,
@@ -1005,7 +1061,6 @@ Theorem list_of_pow_1_sub_pol_times_series {F : field} : ∀ l r,
       List.fold_right series_but_mul_of r l)%LS.
 Proof.
 intros * Hge2 Hai Hgcd.
-*)
 induction l as [| a1 l]; [ easy | cbn ].
 rewrite IHl; cycle 1. {
   now intros; apply Hge2; right.
