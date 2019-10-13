@@ -629,7 +629,7 @@ cbn.
 apply IHn; flia Hi.
 Qed.
 
-Theorem step_1_lemma_1 {F : field} : ∀ x n c m k u,
+Theorem pol_1_sub_pow_times_series_lemma_1 {F : field} : ∀ x n c m k u,
   In x
     (firstn (n - k)
        (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2))))
@@ -654,7 +654,7 @@ replace (S (S (k + 1))) with (2 + S k) in Hx by flia.
 now specialize (IHc (S k) Hx) as H1.
 Qed.
 
-Theorem step_1_lemma_2 {F : field} : ∀ m k x c n u,
+Theorem pol_1_sub_pow_times_series_lemma_2 {F : field} : ∀ m k x c n u,
   In x
     (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2)))) u
        (3 + n + m) k)
@@ -702,7 +702,7 @@ and even not prime numbers if we want, providing their gcd two by
 two is 1.
 *)
 
-Theorem step_1 {F : field} : ∀ s n,
+Theorem pol_1_sub_pow_times_series {F : field} : ∀ s n,
   2 ≤ n
   → (∀ i, i ≠ 0 → ls s i = ls s (n * i))
   → ((pol_pow 1 - pol_pow n) .* s = series_but_mul_of n s)%LS.
@@ -759,7 +759,7 @@ destruct m. {
     clear - Hx.
     remember ((n + 2) * m + n + 1) as c eqn:Hc.
     replace (S (S n)) with (n + 2) in Hx by flia.
-    apply (step_1_lemma_1 _ n c m 0 (ls s)).
+    apply (pol_1_sub_pow_times_series_lemma_1 _ n c m 0 (ls s)).
     rewrite Nat.sub_0_r, Nat.add_0_r.
     now replace (S c) with ((n + 2) * (m + 1)) in Hx by flia Hc.
   }
@@ -803,7 +803,7 @@ destruct m. {
     remember ((n + 2) * m + n) as c eqn:Hc.
     replace (S (S n)) with (n + 2) in Hx by flia.
     rewrite skipn_log_prod_list in Hx.
-    eapply (step_1_lemma_2 0).
+    eapply (pol_1_sub_pow_times_series_lemma_2 0).
     rewrite Nat.add_0_r.
     apply Hx.
   }
@@ -909,73 +909,12 @@ replace 2 with (0 + 2) by flia.
 apply H.
 Qed.
 
-Theorem step_1_ζ {F : field} :
-  ((pol_pow 1 - pol_pow 2) .* ζ = series_but_mul_of 2 ζ)%LS.
-Proof.
-apply step_1; [ flia | easy ].
-Qed.
-
-Theorem step_42_ζ {F : field} : ∀ n,
+Corollary pol_1_sub_pow_times_series_ζ {F : field} : ∀ n,
   2 ≤ n
   → ((pol_pow 1 - pol_pow n) .* ζ = series_but_mul_of n ζ)%LS.
 Proof.
 intros * Hn.
-now apply step_1.
-Qed.
-
-Theorem step_2 {F : field} : ∀ s a b,
-  2 ≤ a
-  → 2 ≤ b
-  → (∀ i, i ≠ 0 → ls s i = ls s (a * i))
-  → (∀ i, i ≠ 0 → ls s i = ls s (b * i))
-  → Nat.gcd a b = 1
-  → ((pol_pow 1 - pol_pow b) .* (pol_pow 1 - pol_pow a) .* s =
-      series_but_mul_of b (series_but_mul_of a s))%LS.
-Proof.
-intros * H2a H2b Ha Hb Gab.
-rewrite step_1; [ now rewrite step_1 | easy | ].
-intros i Hi.
-rewrite step_1; [ | easy | easy | flia Hi ].
-rewrite step_1; [ | easy | easy | ]. 2: {
-  intros Hbi.
-  apply Nat.eq_mul_0 in Hbi.
-  flia H2b Hi Hbi.
-}
-remember (series_but_mul_of a s) as sa eqn:Hsa.
-assert (Hsai : ∀ i : nat, i ≠ 0 → ls sa i = ls sa (b * i)). {
-  subst sa.
-  clear - H2a Hb Gab.
-  intros i Hi.
-  unfold series_but_mul_of; cbn.
-  rewrite <- Nat.mul_mod_idemp_r; [ | flia H2a ].
-  rewrite Nat.mul_comm.
-  remember (i mod a) as n eqn:Hn; symmetry in Hn.
-  destruct n. {
-    cbn; rewrite Nat.mod_0_l; [ easy | flia H2a ].
-  }
-  rewrite <- Hb; [ | easy ].
-  remember ((S n * b) mod a) as m eqn:Hm; symmetry in Hm.
-  destruct m; [ | easy ].
-  exfalso.
-  apply Nat.mod_divides in Hm; [ | flia H2a ].
-  destruct Hm as (m, Hm).
-  move m before n.
-  specialize (Nat.gauss a b (S n)) as H1.
-  rewrite Nat.mul_comm, Hm in H1.
-  specialize (Nat.divide_factor_l a m) as H.
-  specialize (H1 H Gab); clear H.
-  rewrite <- Hn in H1.
-  unfold Nat.divide in H1.
-  destruct H1 as (z, Hz).
-  destruct z; [ now rewrite Hn in Hz | ].
-  specialize (Nat.mod_upper_bound i a) as H1.
-  assert (H : a ≠ 0) by flia H2a.
-  specialize (H1 H); clear H.
-  rewrite Hz in H1.
-  apply Nat.nle_gt in H1.
-  apply H1; cbn; flia.
-}
-now apply Hsai.
+now apply pol_1_sub_pow_times_series.
 Qed.
 
 (*
@@ -998,7 +937,7 @@ But actually, our theorem is a little more general:
    what is true for ζ function since ∀ i ζ_{i}=1.
 *)
 
-Theorem step_3 {F : field} : ∀ (r : ln_series) (l : list nat),
+Theorem list_of_pow_1_sub_pol_times_series {F : field} : ∀ l r,
   (∀ a, List.In a l → 2 ≤ a)
   → (∀ a, a ∈ l → ∀ i, i ≠ 0 → r~{i} = r~{a*i})
   → (∀ na nb, na ≠ nb → Nat.gcd (List.nth na l 1) (List.nth nb l 1) = 1)
@@ -1016,7 +955,7 @@ rewrite IHl; cycle 1. {
   apply (Hgcd (S na) (S nb)); flia Hnn.
 }
 clear IHl.
-apply step_1; [ now apply Hge2; left | ].
+apply pol_1_sub_pow_times_series; [ now apply Hge2; left | ].
 intros i Hi.
 destruct i; [ flia Hi | clear Hi ].
 revert i.
@@ -1063,5 +1002,35 @@ apply IHl. {
 }
 Qed.
 
-Theorem ζ_Euler_product_eq : ...
+(* just the case of multiplication with two polynomials  *)
+Corollary two_pow_1_sub_pol_times_series {F : field} : ∀ s a b,
+  2 ≤ a
+  → 2 ≤ b
+  → (∀ i, i ≠ 0 → ls s i = ls s (a * i))
+  → (∀ i, i ≠ 0 → ls s i = ls s (b * i))
+  → Nat.gcd a b = 1
+  → ((pol_pow 1 - pol_pow b) .* (pol_pow 1 - pol_pow a) .* s =
+      series_but_mul_of b (series_but_mul_of a s))%LS.
+Proof.
+intros * H2a H2b Ha Hb Gab.
+apply (list_of_pow_1_sub_pol_times_series [b; a] s). {
+  intros x [Hxa| [Hxb | ]]; [ now subst x | now subst x | easy ].
+} {
+  intros x [Hxa| [Hxb | ]]; [ now subst x | now subst x | easy ].
+} {
+  intros na nb Hab.
+  destruct na. {
+    destruct nb; [ easy | ].
+    destruct nb; [ now rewrite Nat.gcd_comm | ].
+    destruct nb; apply Nat.gcd_1_r.
+  }
+  destruct na. {
+    destruct nb; [ easy | ].
+    destruct nb; [ easy | ].
+    destruct nb; apply Nat.gcd_1_r.
+  }
+  now destruct na.
+}
+Qed.
 
+Theorem ζ_Euler_product_eq : ...
