@@ -413,6 +413,9 @@ Add Parametric Relation {F : field} : (ln_series) ls_eq
  transitivity proved by ls_eq_trans
  as ls_eq_rel.
 
+Definition ls_one {F : field} :=
+  {| ls n := match n with 1 => f_one | _ => f_zero end |}.
+
 Definition List_combine_all {A} (l1 l2 : list A) (d : A) :=
   let '(l'1, l'2) :=
     match List.length l1 ?= List.length l2 with
@@ -479,6 +482,7 @@ Arguments ls_of_pol _ p%LP.
 Arguments ls_pol_mul_l _ p%LP s%LS.
 
 Notation "x = y" := (ls_eq x y) : ls_scope.
+Notation "x * y" := (ls_mul x y) : ls_scope.
 Notation "p .* s" := (ls_pol_mul_l p s) (at level 41, right associativity) :
    ls_scope.
 
@@ -547,6 +551,44 @@ intros p1 p2 Hpp r1 r2 Hrr i Hi.
 subst p1.
 now apply ls_mul_morph.
 Qed.
+
+(*
+Theorem log_prod_1_l {F : field} : ∀ u i,
+  log_prod (ls ls_one) u i = u i.
+Proof.
+intros.
+unfold log_prod.
+*)
+
+Theorem ls_mul_1_l {F : field} : ∀ r, (ls_one * r = r)%LS.
+Proof.
+intros * i Hi.
+destruct i; [ easy | clear Hi ].
+cbn - [ log_prod ls_one ].
+unfold log_prod.
+Print log_prod_list.
+
+Theorem log_prod_list_1_l {F : field} : ∀ u cnt i n,
+  log_prod_list cnt (ls ls_one) u i n =
+..
+
+Theorem log_prod_list_1_l {F : field} : ∀ u cnt n i,
+  i ≤ cnt
+  → n ≤ i
+  → i ≠ 0
+  → log_prod_list cnt (ls ls_one) u n i = [u i].
+Proof.
+intros * Hcnt Hn Hi.
+destruct i; [ easy | clear Hi ].
+revert n i Hcnt Hn.
+induction cnt; intros; [ flia Hcnt | ].
+cbn - [ ls_one ].
+unfold log_prod_term.
+
+Abort.
+...
+rewrite log_prod_list_1_l.
+...
 
 Theorem log_prod_list_length {F : field} : ∀ cnt u v i n,
   length (log_prod_list cnt u v i n) = cnt.
@@ -937,6 +979,24 @@ But actually, our theorem is a little more general:
    what is true for ζ function since ∀ i ζ_{i}=1.
 *)
 
+Notation "'Π' ( a ∈ l ) , e" := (List.fold_right (λ a c, (e .* c)%LS) ls_one l)
+  (at level 36, a at level 0, l at level 60, e at level 36) : ls_scope.
+
+Theorem list_of_pow_1_sub_pol_times_series {F : field} : ∀ l r,
+  (∀ a, List.In a l → 2 ≤ a)
+  → (∀ a, a ∈ l → ∀ i, i ≠ 0 → r~{i} = r~{a*i})
+  → (∀ na nb, na ≠ nb → Nat.gcd (List.nth na l 1) (List.nth nb l 1) = 1)
+  → (Π (a ∈ l), (pol_pow 1 - pol_pow a) * r =
+     fold_right series_but_mul_of r l)%LS.
+Proof.
+intros * Hge2 Hai Hgcd.
+induction l as [| a1 l]. {
+  intros i Hi.
+  cbn - [ ".*" ls_mul ls_one ].
+...
+now apply ls_mul_1_l.
+...
+
 Theorem list_of_pow_1_sub_pol_times_series {F : field} : ∀ l r,
   (∀ a, List.In a l → 2 ≤ a)
   → (∀ a, a ∈ l → ∀ i, i ≠ 0 → r~{i} = r~{a*i})
@@ -945,6 +1005,7 @@ Theorem list_of_pow_1_sub_pol_times_series {F : field} : ∀ l r,
       List.fold_right series_but_mul_of r l)%LS.
 Proof.
 intros * Hge2 Hai Hgcd.
+*)
 induction l as [| a1 l]; [ easy | cbn ].
 rewrite IHl; cycle 1. {
   now intros; apply Hge2; right.
