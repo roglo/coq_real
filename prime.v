@@ -593,8 +593,9 @@ induction i; [ easy | ].
 now cbn; rewrite f_add_0_l.
 Qed.
 
-Theorem log_prod_list_rev {F : field} : ∀ u v n,
-  log_prod_list n u v 1 n = List.rev (log_prod_list n v u 1 n).
+Theorem fold_log_prod_list_comm {F : field} : ∀ u v n,
+  fold_right f_add f_zero (log_prod_list n u v 1 n) =
+  fold_right f_add f_zero (log_prod_list n v u 1 n).
 Proof.
 intros.
 destruct n; [ easy | cbn ].
@@ -604,39 +605,58 @@ destruct n. {
   now rewrite Nat.div_1_r, (f_mul_comm (u 1)).
 }
 destruct n. {
-  cbn.
-  unfold log_prod_term.
-  rewrite Nat.div_1_r, Nat.div_same; [ | easy ].
-  now rewrite (f_mul_comm (u 1)), (f_mul_comm (u 2)).
+  cbn; unfold log_prod_term; cbn.
+  do 2 rewrite f_add_0_r.
+  do 4 rewrite f_mul_1_r.
+  rewrite (f_mul_comm (v 1)), (f_mul_comm (v 2)).
+  apply f_add_comm.
 }
 destruct n. {
-  cbn.
-  unfold log_prod_term.
-  rewrite Nat.div_1_r, Nat.div_same; [ | easy ].
-  rewrite (f_mul_comm (u 1)), (f_mul_comm (u 3)).
-  replace (ε 2 3) with f_zero by easy.
-  now do 2 rewrite f_mul_0_r.
+  cbn; unfold log_prod_term; cbn.
+  do 2 rewrite f_add_0_r.
+  do 4 rewrite f_mul_1_r.
+  do 2 rewrite f_mul_0_r, f_add_0_l.
+  rewrite (f_mul_comm (v 1)), (f_mul_comm (v 3)).
+  apply f_add_comm.
 }
 destruct n. {
-  cbn.
-  unfold log_prod_term.
-  rewrite Nat.div_1_r, Nat.div_same; [ | easy ].
-  replace (ε 3 4) with f_zero by easy.
-  do 2 rewrite f_mul_0_r.
-  replace (ε 1 4) with f_one by easy.
-  replace (ε 4 4) with f_one by easy.
-  rewrite (f_mul_comm (u 1)), (f_mul_comm (u 4)).
-  f_equal.
-  setoid_rewrite <- rev_involutive; f_equal; cbn.
-  f_equal.
-  do 2 rewrite f_mul_1_r.
-(* donc, c'est faux, en fait *)
+  cbn; unfold log_prod_term; cbn.
+  do 2 rewrite f_add_0_r.
+  do 6 rewrite f_mul_1_r.
+  do 2 rewrite f_mul_0_r, f_add_0_l.
+  rewrite (f_mul_comm (v 1)), (f_mul_comm (v 2)), (f_mul_comm (v 4)).
+  rewrite f_add_comm, f_add_assoc; f_equal.
+  apply f_add_comm.
+}
+destruct n. {
+  cbn; unfold log_prod_term; cbn.
+  do 2 rewrite f_add_0_r.
+  do 4 rewrite f_mul_1_r.
+  do 6 rewrite f_mul_0_r, f_add_0_l.
+  rewrite (f_mul_comm (v 1)), (f_mul_comm (v 5)).
+  apply f_add_comm.
+}
+destruct n. {
+  cbn; unfold log_prod_term; cbn.
+  do 2 rewrite f_add_0_r.
+  do 8 rewrite f_mul_1_r.
+  do 4 rewrite f_mul_0_r, f_add_0_l.
+  rewrite (f_mul_comm (v 1)), (f_mul_comm (v 2)).
+  rewrite (f_mul_comm (v 3)), (f_mul_comm (v 6)).
+  rewrite f_add_comm.
+  do 3 rewrite f_add_assoc; f_equal.
+  rewrite f_add_comm.
+  rewrite <- f_add_assoc; f_equal.
+  apply f_add_comm.
+}
 ...
 
 Theorem log_prod_comm {F : field} : ∀ u v i,
   log_prod u v i = log_prod v u i.
 Proof.
 intros.
+...
+apply fold_log_prod_list_comm.
 unfold log_prod.
 destruct i; [ easy | ].
 ...
