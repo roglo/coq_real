@@ -593,14 +593,44 @@ induction i; [ easy | ].
 now cbn; rewrite f_add_0_l.
 Qed.
 
-Theorem log_prod_list_rev {F : field} : ∀ cnt u v i n,
-  log_prod_list cnt u v i n = List.rev (log_prod_list cnt v u i n).
+Theorem log_prod_list_rev {F : field} : ∀ u v n,
+  log_prod_list n u v 1 n = List.rev (log_prod_list n v u 1 n).
 Proof.
 intros.
-destruct cnt; [ easy | cbn ].
-destruct cnt. {
+destruct n; [ easy | cbn ].
+destruct n. {
   cbn.
   unfold log_prod_term.
+  now rewrite Nat.div_1_r, (f_mul_comm (u 1)).
+}
+destruct n. {
+  cbn.
+  unfold log_prod_term.
+  rewrite Nat.div_1_r, Nat.div_same; [ | easy ].
+  now rewrite (f_mul_comm (u 1)), (f_mul_comm (u 2)).
+}
+destruct n. {
+  cbn.
+  unfold log_prod_term.
+  rewrite Nat.div_1_r, Nat.div_same; [ | easy ].
+  rewrite (f_mul_comm (u 1)), (f_mul_comm (u 3)).
+  replace (ε 2 3) with f_zero by easy.
+  now do 2 rewrite f_mul_0_r.
+}
+destruct n. {
+  cbn.
+  unfold log_prod_term.
+  rewrite Nat.div_1_r, Nat.div_same; [ | easy ].
+  replace (ε 3 4) with f_zero by easy.
+  do 2 rewrite f_mul_0_r.
+  replace (ε 1 4) with f_one by easy.
+  replace (ε 4 4) with f_one by easy.
+  rewrite (f_mul_comm (u 1)), (f_mul_comm (u 4)).
+  f_equal.
+  setoid_rewrite <- rev_involutive; f_equal; cbn.
+  f_equal.
+  do 2 rewrite f_mul_1_r.
+(* donc, c'est faux, en fait *)
 ...
 
 Theorem log_prod_comm {F : field} : ∀ u v i,
