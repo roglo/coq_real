@@ -552,39 +552,42 @@ subst p1.
 now apply ls_mul_morph.
 Qed.
 
-(*
-Theorem log_prod_1_l {F : field} : ∀ u i,
-  log_prod (ls ls_one) u i = u i.
+Theorem log_prod_list_1_l_from_2 {F : field} : ∀ u cnt i n,
+  log_prod_list cnt (ls ls_one) u (i + 2) n =
+     List.repeat f_zero cnt.
 Proof.
-intros.
-unfold log_prod.
-*)
-
-(*
-Theorem log_prod_list_1_r {F : field} : ∀ u cnt i n,
-  i ≠ 0
-  → i ≤ n
-  → log_prod_list cnt u (ls ls_one) i n = List.map u (List.seq i cnt).
-Proof.
-intros * Hi Hin.
-destruct i; [ easy | clear Hi ].
-revert i n Hin.
+intros *.
+revert i.
 induction cnt; intros; [ easy | ].
-cbn - [ ls_one ]; f_equal. {
-  unfold log_prod_term, ε.
-Print log_prod_list.
-...
-  cbn - [ "/" "mod" ].
-...
-*)
+cbn - [ ls_one ].
+unfold log_prod_term.
+replace ls_one~{i + 2} with f_zero by now rewrite Nat.add_comm.
+rewrite f_mul_0_l, f_mul_0_l; f_equal.
+rewrite Nat.add_shuffle0.
+apply IHcnt.
+Qed.
 
-Theorem ls_mul_1_r {F : field} : ∀ r, (r * ls_one = r)%LS.
+Theorem log_prod_list_1_l {F : field} : ∀ u i,
+  log_prod_list (S i) (ls ls_one) u 1 (S i) =
+     u (S i) :: List.repeat f_zero i.
+Proof.
+intros *.
+cbn - [ ls_one ].
+unfold log_prod_term.
+replace ls_one~{1} with f_one by easy.
+replace (ε 1 (S i)) with f_one by easy.
+rewrite f_mul_1_l, Nat.div_1_r, f_mul_1_r; f_equal.
+replace 2 with (0 + 2) by flia.
+apply log_prod_list_1_l_from_2.
+Qed.
+
+Theorem ls_mul_1_l {F : field} : ∀ r, (ls_one * r = r)%LS.
 Proof.
 intros * i Hi.
 destruct i; [ easy | clear Hi ].
 cbn - [ log_prod ls_one ].
 unfold log_prod.
-Print log_prod_list.
+rewrite log_prod_list_1_l.
 ...
 
 Theorem log_prod_list_length {F : field} : ∀ cnt u v i n,
