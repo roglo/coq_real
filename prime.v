@@ -560,34 +560,31 @@ intros.
 unfold log_prod.
 *)
 
-Theorem ls_mul_1_l {F : field} : ∀ r, (ls_one * r = r)%LS.
+(*
+Theorem log_prod_list_1_r {F : field} : ∀ u cnt i n,
+  i ≠ 0
+  → i ≤ n
+  → log_prod_list cnt u (ls ls_one) i n = List.map u (List.seq i cnt).
+Proof.
+intros * Hi Hin.
+destruct i; [ easy | clear Hi ].
+revert i n Hin.
+induction cnt; intros; [ easy | ].
+cbn - [ ls_one ]; f_equal. {
+  unfold log_prod_term, ε.
+Print log_prod_list.
+...
+  cbn - [ "/" "mod" ].
+...
+*)
+
+Theorem ls_mul_1_r {F : field} : ∀ r, (r * ls_one = r)%LS.
 Proof.
 intros * i Hi.
 destruct i; [ easy | clear Hi ].
 cbn - [ log_prod ls_one ].
 unfold log_prod.
 Print log_prod_list.
-
-Theorem log_prod_list_1_l {F : field} : ∀ u cnt i n,
-  log_prod_list cnt (ls ls_one) u i n =
-..
-
-Theorem log_prod_list_1_l {F : field} : ∀ u cnt n i,
-  i ≤ cnt
-  → n ≤ i
-  → i ≠ 0
-  → log_prod_list cnt (ls ls_one) u n i = [u i].
-Proof.
-intros * Hcnt Hn Hi.
-destruct i; [ easy | clear Hi ].
-revert n i Hcnt Hn.
-induction cnt; intros; [ flia Hcnt | ].
-cbn - [ ls_one ].
-unfold log_prod_term.
-
-Abort.
-...
-rewrite log_prod_list_1_l.
 ...
 
 Theorem log_prod_list_length {F : field} : ∀ cnt u v i n,
