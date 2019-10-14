@@ -756,6 +756,19 @@ Compute (number_of_nat 1001).
 
 (* end play *)
 
+Theorem glip {F : field} : ∀ u v n l,
+  fold_right (log_prod_add u v n) f_zero l =
+  fold_right (log_prod_add u v n) f_zero (List.rev l).
+Proof.
+intros.
+revert n.
+induction l as [| a l]; intros; [ easy | ].
+cbn; rewrite IHl.
+unfold log_prod_add at 1.
+rewrite List.fold_right_app.
+cbn.
+...
+
 Theorem glop {F : field} : ∀ u v n,
   fold_right (log_prod_add u v n) f_zero (divisors_of n) =
   fold_right (log_prod_add v u n) f_zero (List.rev (divisors_of n)).
@@ -804,10 +817,6 @@ Theorem fold_log_prod_comm {F : field} : ∀ u v i,
 Proof.
 intros.
 Search (fold_right _ _ (rev _)).
-...
-Theorem glip {F : field} : ∀ u v n,
-  fold_right (log_prod_add u v n) f_zero (divisors_of n) =
-  fold_right (log_prod_add u v n) f_zero (List.rev (divisors_of n)).
 ...
 rewrite glop.
 now rewrite glip.
