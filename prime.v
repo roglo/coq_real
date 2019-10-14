@@ -757,35 +757,19 @@ Compute (number_of_nat 1001).
 (* end play *)
 
 Theorem divisors_loop_rev_map : ∀ k n,
-  n ≤ k
+  k ≤ n
   → divisors_loop k (n - k + 1) n =
        List.rev
          (List.map (Nat.div n) (divisors_loop k (n - k + 1) n)).
 Proof.
-intros * Hnk.
-revert n Hnk.
-induction k; intros; [ easy | ].
-...
-replace (n - S k + 1) with (n - k) by flia Hkn.
-  cbn.
-  rewrite Nat.sub_add; [ | easy ].
-  rewrite Nat.mod_same; [ | flia Hkn ].
-  cbn.
-...
-
+intros * Hkn.
+revert n Hkn.
 induction k; intros; [ easy | cbn ].
 replace (n - S k + 1) with (n - k) by flia Hkn.
 remember (n mod (n - k)) as m eqn:Hm; symmetry in Hm.
 destruct m. {
   cbn.
   rewrite <- IHk; [ | flia Hkn ].
-...
-  clear IHk.
-  revert n Hkn Hm.
-  induction k; intros. {
-    cbn.
-    rewrite Nat.sub_0_r.
-    rewrite Nat.div_same; [ | flia Hkn ].
 ...
 }
 apply IHk.
