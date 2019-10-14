@@ -524,6 +524,36 @@ unfold log_prod.
 remember (log_prod_list i 1 i) as l eqn:Hl.
 assert (Ha : ∀ a, a ∈ l → a ≠ 0 ∧ i / a ≠ 0). {
   intros a Ha.
+  subst l.
+  destruct i; [ easy | cbn in Ha ].
+  destruct Ha as [Ha| Ha]. {
+    subst a.
+    now rewrite Nat.div_1_r.
+  }
+  destruct i; [ easy | cbn - [ "mod" ] in Ha ].
+  replace (S (S i)) with (i + 1 * 2) in Ha at 1 by flia.
+  rewrite Nat.mod_add in Ha; [ | easy ].
+  remember (i mod 2) as m eqn:Hm; symmetry in Hm.
+  destruct m. {
+    destruct Ha as [Ha| Ha]. {
+      subst a.
+      split; [ easy | intros H ].
+      apply Nat.div_small_iff in H; [ | easy ].
+      flia H.
+    }
+    destruct i; [ easy | ].
+    cbn - [ "mod" ] in Ha.
+    replace (S (S (S i))) with (i + 1 * 3) in Ha at 1 by flia.
+    rewrite Nat.mod_add in Ha; [ | easy ].
+    remember (i mod 3) as m3 eqn:Hm3; symmetry in Hm3.
+    destruct m3. {
+      destruct Ha as [Ha| Ha]. {
+        subst a.
+        split; [ easy | intros H ].
+        apply Nat.div_small_iff in H; [ | easy ].
+        flia H.
+      }
+      destruct i; [ easy | ].
 ...
   assert
     (H : ∀ cnt k j, cnt ≤ S j → k ≠ 0 →
