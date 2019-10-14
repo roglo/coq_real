@@ -593,6 +593,76 @@ induction i; [ easy | ].
 now cbn; rewrite f_add_0_l.
 Qed.
 
+(* mmm... ne garantit pas l'unicité d'un nombre ;
+   par exemple, 6 a deux représentations
+      (Times 2 eq_refl (Times 3 eq_refl One)
+      (Times 3 eq_refl (Times 2 eq_refl One) ;
+   on pourrait faire un type dépendant mais c'est la
+   merde parce que deux nombres ne seraient pas du
+   même type ; il va donc nous falloir une comparaison,
+   une équivalence entre deux représentations ;
+   par chance, on a une valeur canonique (premiers
+   dans l'ordre croissant) *)
+Inductive number :=
+  | One : number
+  | Times : ∀ p, is_prime p = true → number → number.
+
+Check (Times 2 eq_refl One).
+Check (Times 3 eq_refl (Times 7 eq_refl One)).
+Check (Times 5 eq_refl (Times 5 eq_refl One)).
+
+Fixpoint nat_of_number n :=
+  match n with
+  | One => 1
+  | Times p _ n' => p * nat_of_number n'
+  end.
+
+Compute (nat_of_number (Times 2 eq_refl One)).
+Compute (nat_of_number (Times 3 eq_refl (Times 7 eq_refl One))).
+Compute (nat_of_number (Times 5 eq_refl (Times 5 eq_refl One))).
+
+Fixpoint fpd_loop cnt n d :=
+  match cnt with
+  | 0 => 2
+  | S cnt' =>
+      match n mod d with
+      | 0 => d
+      | _ => fpd_loop cnt' n (d + 1)
+      end
+  end.
+
+Definition first_prime_divisor n := fpd_loop n n 2.
+
+Compute (first_prime_divisor 343).
+
+Theorem fpd_loop_is_prime :
+  ∀ cnt n d, 2 ≤ d → is_prime (fpd_loop cnt n d) = true.
+Proof.
+intros * Hd.
+revert n d Hd.
+induction cnt; intros; [ easy | cbn ].
+remember (n mod d) as nd eqn:Hnd; symmetry in Hnd.
+destruct nd; [ | apply IHcnt; flia Hd ].
+...
+
+Theorem first_prime_divisor_is_prime :
+  ∀ n, is_prime (first_prime_divisor n) = true.
+Proof.
+intros.
+unfold first_prime_divisor.
+...
+
+Fixpoint number_of_nat n :=
+  match n with
+  | 0 | 1 => One
+  | S (S n') =>
+      let d := first_prime_divisor n in
+      let p := first_prime_divisor_is_prime n in
+      Times d p (number_of_nat (n / d))
+  end.
+
+...
+
 Theorem fold_log_prod_list_comm {F : field} : ∀ u v n,
   fold_right f_add f_zero (log_prod_list n u v 1 n) =
   fold_right f_add f_zero (log_prod_list n v u 1 n).
