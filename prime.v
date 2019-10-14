@@ -756,10 +756,26 @@ Compute (number_of_nat 1001).
 
 (* end play *)
 
+Theorem divisors_loop_rev_map : ∀ cnt n,
+  divisors_loop cnt (n - cnt + 1) n =
+    List.rev (List.map (λ i : nat, n / i) (divisors_loop cnt (n - cnt + 1) n)).
+Proof.
+intros.
+revert n.
+induction cnt; intros; [ easy | cbn ].
+destruct (le_dec (S cnt) n) as [Hcn| Hcn]. {
+  replace (n - S cnt + 1) with (n - cnt) by flia Hcn.
+  remember (n mod (n - cnt)) as m eqn:Hm; symmetry in Hm.
+  destruct m. {
+    cbn.
+    rewrite <- IHcnt.
+...
+
 Theorem pouet : ∀ n,
   divisors_of n = List.rev (List.map (λ i, n / i) (divisors_of n)).
 Proof.
 intros.
+unfold divisors_of.
 remember (divisors_of n) as l eqn:Hl.
 revert n Hl.
 induction l as [| a l]; intros; [ easy | ].
