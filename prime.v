@@ -756,12 +756,59 @@ Compute (number_of_nat 1001).
 
 (* end play *)
 
+Theorem glop {F : field} : ∀ u v n,
+  fold_right (log_prod_add u v n) f_zero (divisors_of n) =
+  fold_right (log_prod_add v u n) f_zero (List.rev (divisors_of n)).
+Proof.
+intros.
+induction n; [ easy | ].
+destruct n. {
+  cbn.
+  unfold log_prod_add.
+  now rewrite f_mul_comm.
+}
+destruct n. {
+  cbn.
+  unfold log_prod_add.
+  now rewrite (f_mul_comm (v 1)), (f_mul_comm (v 2)).
+}
+destruct n. {
+  cbn.
+  unfold log_prod_add.
+  now rewrite (f_mul_comm (v 1)), (f_mul_comm (v 3)).
+}
+destruct n. {
+  cbn.
+  unfold log_prod_add.
+  now rewrite (f_mul_comm (v 1)), (f_mul_comm (v 2)), (f_mul_comm (v 4)).
+}
+destruct n. {
+  cbn.
+  unfold log_prod_add.
+  now rewrite (f_mul_comm (v 1)), (f_mul_comm (v 5)).
+}
+destruct n. {
+  cbn.
+  unfold log_prod_add.
+  rewrite (f_mul_comm (v 1)), (f_mul_comm (v 2)).
+  rewrite (f_mul_comm (v 3)), (f_mul_comm (v 6)).
+  easy.
+}
+...
+
 Theorem fold_log_prod_comm {F : field} : ∀ u v i,
   fold_right (log_prod_add u v i) f_zero (divisors_of i) =
   fold_right (log_prod_add v u i) f_zero (divisors_of i).
 Proof.
 intros.
 Search (fold_right _ _ (rev _)).
+...
+Theorem glip {F : field} : ∀ u v n,
+  fold_right (log_prod_add u v n) f_zero (divisors_of n) =
+  fold_right (log_prod_add u v n) f_zero (List.rev (divisors_of n)).
+Admitted.
+rewrite glop.
+now rewrite glip.
 ...
 destruct i; [ easy | cbn ].
 unfold log_prod_add; cbn - [ "/" ].
