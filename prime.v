@@ -511,6 +511,7 @@ destruct ((i + 1) mod y) as [H| H]; [ easy | ].
 apply Hss; flia.
 Qed.
 
+(*
 (* allows to rewrite
       H1 : s1 = s3
       H2 : s2 = s4
@@ -581,9 +582,7 @@ assert (Ha : ∀ a, a ∈ l → a ≠ 0 ∧ i / a ≠ 0). {
     now rewrite Hl in Ha.
   }
 ...
-
 unfold log_prod_add.
-
 assert (H : ∀ cnt k i, cnt ≤ S i → k ≠ 0 →
   log_prod_list cnt (ls r1) (ls r'1) k (k + i) =
   log_prod_list cnt (ls r2) (ls r'2) k (k + i)). {
@@ -609,7 +608,9 @@ assert (H : ∀ cnt k i, cnt ≤ S i → k ≠ 0 →
 }
 now apply H.
 Qed.
+*)
 
+(*
 (* allows to rewrite
       Hp : p1 = p2
       Hs : s1 = s2
@@ -622,47 +623,58 @@ intros p1 p2 Hpp r1 r2 Hrr i Hi.
 subst p1.
 now apply ls_mul_morph.
 Qed.
+*)
 
-Theorem log_prod_list_1_l_from_2 {F : field} : ∀ u cnt i n,
-  log_prod_list cnt (ls ls_one) u (i + 2) n =
-     List.repeat f_zero cnt.
+Theorem fold_log_prod_1_l_from_2nd {F : field} : ∀ r i l,
+  (∀ j, j ∈ l → 2 ≤ j)
+  → fold_right (log_prod_add (ls ls_one) (ls r) (S i)) f_zero l = f_zero.
 Proof.
-intros *.
+intros * Hin.
 revert i.
-induction cnt; intros; [ easy | ].
+induction l as [| a l]; intros; [ easy | ].
 cbn - [ ls_one ].
-unfold log_prod_term.
-replace ls_one~{i + 2} with f_zero by now rewrite Nat.add_comm.
-rewrite f_mul_0_l, f_mul_0_l; f_equal.
-rewrite Nat.add_shuffle0.
-apply IHcnt.
+rewrite IHl. 2: {
+  intros j Hj.
+  now apply Hin; right.
+}
+unfold log_prod_add.
+replace ls_one~{a} with f_zero. 2: {
+  cbn.
+  destruct a; [ easy | ].
+  destruct a; [ exfalso | now destruct a ].
+  specialize (Hin 1 (or_introl eq_refl)); flia Hin.
+}
+now rewrite f_add_0_l, f_mul_0_l.
 Qed.
 
-Theorem log_prod_list_1_l {F : field} : ∀ u i,
-  log_prod_list (S i) (ls ls_one) u 1 (S i) =
-     u (S i) :: List.repeat f_zero i.
+Theorem log_prod_list_from_2nd {F : field} : ∀ cnt i n,
+   2 ≤ i → ∀ j, j ∈ log_prod_list cnt i n → 2 ≤ j.
 Proof.
-intros *.
-cbn - [ ls_one ].
-unfold log_prod_term.
-replace ls_one~{1} with f_one by easy.
-replace (ε 1 (S i)) with f_one by easy.
-rewrite f_mul_1_l, Nat.div_1_r, f_mul_1_r; f_equal.
-replace 2 with (0 + 2) by flia.
-apply log_prod_list_1_l_from_2.
+intros * Hi * Hj.
+revert i j Hi Hj.
+induction cnt; intros; [ easy | ].
+cbn in Hj.
+destruct (n mod i). {
+  destruct Hj as [Hj| Hj]; [ now rewrite Hj in Hi | ].
+  apply (IHcnt (i + 1)); [ flia Hi | easy ].
+}
+apply (IHcnt (i + 1)); [ flia Hi | easy ].
 Qed.
 
 Theorem ls_mul_1_l {F : field} : ∀ r, (ls_one * r = r)%LS.
 Proof.
 intros * i Hi.
 destruct i; [ easy | clear Hi ].
-cbn - [ log_prod ls_one ].
-unfold log_prod.
-rewrite log_prod_list_1_l.
-cbn; rewrite <- f_add_0_r; f_equal.
-induction i; [ easy | ].
-now cbn; rewrite f_add_0_l.
+cbn - [ ls_one ].
+unfold log_prod_add at 1.
+replace ls_one~{1} with f_one by easy.
+rewrite f_mul_1_l, Nat.div_1_r.
+rewrite <- f_add_0_l; f_equal.
+apply fold_log_prod_1_l_from_2nd.
+now apply log_prod_list_from_2nd.
 Qed.
+
+(* playing with numbers represented multiplicativelly *)
 
 (* mmm... ne garantit pas l'unicité d'un nombre ;
    par exemple, 6 a deux représentations
@@ -751,60 +763,48 @@ Compute (number_of_nat 2).
 Compute (number_of_nat 24).
 Compute (number_of_nat 1001).
 
-Theorem fold_log_prod_list_comm {F : field} : ∀ u v n,
-  fold_right f_add f_zero (log_prod_list n u v 1 n) =
-  fold_right f_add f_zero (log_prod_list n v u 1 n).
+(* end play *)
+
+Theorem fold_log_prod_comm {F : field} : ∀ u v i,
+  fold_right (log_prod_add u v i) f_zero (log_prod_list i 1 i) =
+  fold_right (log_prod_add v u i) f_zero (log_prod_list i 1 i).
 Proof.
 intros.
-destruct n; [ easy | cbn ].
-destruct n. {
-  cbn.
-  unfold log_prod_term.
-  now rewrite Nat.div_1_r, (f_mul_comm (u 1)).
+destruct i; [ easy | cbn ].
+unfold log_prod_add; cbn - [ "/" ].
+rewrite Nat.div_1_r.
+destruct i. {
+  cbn; rewrite f_add_0_l, f_add_0_l.
+  apply f_mul_comm.
 }
-destruct n. {
-  cbn; unfold log_prod_term; cbn.
-  do 2 rewrite f_add_0_r.
-  do 4 rewrite f_mul_1_r.
+destruct i. {
+  cbn; do 2 rewrite f_add_0_l.
   rewrite (f_mul_comm (v 1)), (f_mul_comm (v 2)).
   apply f_add_comm.
 }
-destruct n. {
-  cbn; unfold log_prod_term; cbn.
-  do 2 rewrite f_add_0_r.
-  do 4 rewrite f_mul_1_r.
-  do 2 rewrite f_mul_0_r, f_add_0_l.
+destruct i. {
+  cbn; do 2 rewrite f_add_0_l.
   rewrite (f_mul_comm (v 1)), (f_mul_comm (v 3)).
   apply f_add_comm.
 }
-destruct n. {
-  cbn; unfold log_prod_term; cbn.
-  do 2 rewrite f_add_0_r.
-  do 6 rewrite f_mul_1_r.
-  do 2 rewrite f_mul_0_r, f_add_0_l.
+destruct i. {
+  cbn; do 2 rewrite f_add_0_l.
   rewrite (f_mul_comm (v 1)), (f_mul_comm (v 2)), (f_mul_comm (v 4)).
-  rewrite f_add_comm, f_add_assoc; f_equal.
+  rewrite f_add_comm, <- f_add_assoc; f_equal.
   apply f_add_comm.
 }
-destruct n. {
-  cbn; unfold log_prod_term; cbn.
-  do 2 rewrite f_add_0_r.
-  do 4 rewrite f_mul_1_r.
-  do 6 rewrite f_mul_0_r, f_add_0_l.
+destruct i. {
+  cbn; do 2 rewrite f_add_0_l.
   rewrite (f_mul_comm (v 1)), (f_mul_comm (v 5)).
   apply f_add_comm.
 }
-destruct n. {
-  cbn; unfold log_prod_term; cbn.
-  do 2 rewrite f_add_0_r.
-  do 8 rewrite f_mul_1_r.
-  do 4 rewrite f_mul_0_r, f_add_0_l.
+destruct i. {
+  cbn; do 2 rewrite f_add_0_l.
   rewrite (f_mul_comm (v 1)), (f_mul_comm (v 2)).
   rewrite (f_mul_comm (v 3)), (f_mul_comm (v 6)).
   rewrite f_add_comm.
-  do 3 rewrite f_add_assoc; f_equal.
-  rewrite f_add_comm.
-  rewrite <- f_add_assoc; f_equal.
+  do 3 rewrite <- f_add_assoc; f_equal.
+  rewrite f_add_comm, f_add_assoc; f_equal.
   apply f_add_comm.
 }
 ...
@@ -813,7 +813,11 @@ Theorem log_prod_comm {F : field} : ∀ u v i,
   log_prod u v i = log_prod v u i.
 Proof.
 intros.
+unfold log_prod.
 ...
+apply fold_log_prod_comm.
+...
+intros.
 apply fold_log_prod_list_comm.
 unfold log_prod.
 destruct i; [ easy | ].
