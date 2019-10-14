@@ -447,21 +447,23 @@ Definition series_but_mul_of {F : field} n s :=
        | _ => ls s i
        end |}.
 
-Fixpoint log_prod_list cnt i n :=
+Fixpoint divisors_loop cnt i n :=
   match cnt with
   | 0 => []
   | S cnt' =>
       match n mod i with
-      | 0 => i :: log_prod_list cnt' (i + 1) n
-      | _ => log_prod_list cnt' (i + 1) n
+      | 0 => i :: divisors_loop cnt' (i + 1) n
+      | _ => divisors_loop cnt' (i + 1) n
       end
   end.
+
+Definition divisors_of n := divisors_loop n 1 n.
 
 Definition log_prod_add {F : field} u v n i c :=
   (c + u i * v (n / i))%F.
 
 Definition log_prod {F : field} u v n :=
-  List.fold_right (log_prod_add u v n) f_zero (log_prod_list n 1 n).
+  List.fold_right (log_prod_add u v n) f_zero (divisors_of n).
 
 (* Σ (i = 1, ∞) s1_i x^ln(i) * Σ (i = 1, ∞) s2_i x^ln(i) *)
 Definition ls_mul {F : field} s1 s2 :=
@@ -636,8 +638,8 @@ replace ls_one~{a} with f_zero. 2: {
 now rewrite f_add_0_l, f_mul_0_l.
 Qed.
 
-Theorem log_prod_list_from_2nd {F : field} : ∀ cnt i n,
-   2 ≤ i → ∀ j, j ∈ log_prod_list cnt i n → 2 ≤ j.
+Theorem divisors_from_2nd {F : field} : ∀ cnt i n,
+   2 ≤ i → ∀ j, j ∈ divisors_loop cnt i n → 2 ≤ j.
 Proof.
 intros * Hi * Hj.
 revert i j Hi Hj.
@@ -660,7 +662,7 @@ replace ls_one~{1} with f_one by easy.
 rewrite f_mul_1_l, Nat.div_1_r.
 rewrite <- f_add_0_l; f_equal.
 apply fold_log_prod_1_l_from_2nd.
-now apply log_prod_list_from_2nd.
+now apply divisors_from_2nd.
 Qed.
 
 (* playing with numbers represented multiplicativelly *)
@@ -755,8 +757,8 @@ Compute (number_of_nat 1001).
 (* end play *)
 
 Theorem fold_log_prod_comm {F : field} : ∀ u v i,
-  fold_right (log_prod_add u v i) f_zero (log_prod_list i 1 i) =
-  fold_right (log_prod_add v u i) f_zero (log_prod_list i 1 i).
+  fold_right (log_prod_add u v i) f_zero (divisors_of i) =
+  fold_right (log_prod_add v u i) f_zero (divisors_of i).
 Proof.
 intros.
 destruct i; [ easy | cbn ].
