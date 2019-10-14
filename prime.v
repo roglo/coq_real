@@ -761,6 +761,8 @@ Theorem fold_log_prod_comm {F : field} : ∀ u v i,
   fold_right (log_prod_add v u i) f_zero (divisors_of i).
 Proof.
 intros.
+Search (fold_right _ _ (rev _)).
+...
 destruct i; [ easy | cbn ].
 unfold log_prod_add; cbn - [ "/" ].
 rewrite Nat.div_1_r.
@@ -798,7 +800,6 @@ destruct i. {
   rewrite f_add_comm, f_add_assoc; f_equal.
   apply f_add_comm.
 }
-Search (fold_right _ _ (rev _)).
 ...
 
 Theorem log_prod_comm {F : field} : ∀ u v i,
