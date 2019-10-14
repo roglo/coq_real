@@ -9,6 +9,7 @@ Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 
 Notation "x ≤ y ≤ z" := (x <= y ∧ y <= z)%nat (at level 70, y at next level).
 Notation "x < y ≤ z" := (x < y ∧ y <= z)%nat (at level 70, y at next level).
+Notation "x ≤ y < z" := (x ≤ y ∧ y < z)%nat (at level 70, y at next level).
 
 Theorem Nat_sub_succ_1 : ∀ n, S n - 1 = n.
 Proof. now intros; rewrite Nat.sub_succ, Nat.sub_0_r. Qed.
