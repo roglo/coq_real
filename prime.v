@@ -447,6 +447,7 @@ Definition series_but_mul_of {F : field} n s :=
        | _ => ls s i
        end |}.
 
+(*
 Definition ε {F: field} i n :=
   match n mod i with
   | 0 => f_one
@@ -455,15 +456,23 @@ Definition ε {F: field} i n :=
 
 Definition log_prod_term {F : field} u v i n :=
   (u i * v (n / i)%nat * ε i n)%F.
+*)
 
-Fixpoint log_prod_list {F : field} cnt u v i n :=
+Fixpoint log_prod_list cnt i n :=
   match cnt with
   | 0 => []
-  | S cnt' => log_prod_term u v i n :: log_prod_list cnt' u v (i + 1) n
+  | S cnt' =>
+      match n mod i with
+      | 0 => i :: log_prod_list cnt' (i + 1) n
+      | _ => log_prod_list cnt' (i + 1) n
+      end
   end.
 
+Definition log_prod_add {F : field} u v n i c :=
+  (c + u i * v (n / i))%F.
+
 Definition log_prod {F : field} u v n :=
-  List.fold_right f_add f_zero (log_prod_list n u v 1 n).
+  List.fold_right (log_prod_add u v n) f_zero (log_prod_list n 1 n).
 
 (* Σ (i = 1, ∞) s1_i x^ln(i) * Σ (i = 1, ∞) s2_i x^ln(i) *)
 Definition ls_mul {F : field} s1 s2 :=
@@ -511,9 +520,61 @@ Instance ls_mul_morph {F : field} :
   Proper (ls_eq ==> ls_eq ==> ls_eq) ls_mul.
 Proof.
 intros r1 r2 Hrr r'1 r'2 Hrr' i Hi; cbn.
-destruct i; [ flia Hi | clear Hi ].
 unfold log_prod.
-f_equal.
+remember (log_prod_list i 1 i) as l eqn:Hl.
+assert (Ha : ∀ a, a ∈ l → a ≠ 0 ∧ i / a ≠ 0). {
+  intros a Ha.
+  assert
+    (H : ∀ cnt j n, j ≠ 0 → cnt < n →
+     ∀ a, a ∈ log_prod_list cnt j n → a ≠ 0 ∧ a < n). {
+    clear a Ha.
+    intros cnt j n Hj Hcnt a Ha.
+    destruct j; [ easy | clear Hj ].
+    revert j Ha.
+    induction cnt; intros; [ easy | ].
+    cbn - [ "mod" ] in Ha.
+    remember (n mod S j) as m eqn:Hm; symmetry in Hm.
+    destruct m. {
+      apply Nat.mod_divides in Hm; [ | easy ].
+      destruct Hm as (m, Hm).
+...
+      destruct Ha as [Ha| Ha]. {
+        subst a.
+        split; [ easy | ].
+        destruct m; [ flia Hcnt Hm | ].
+        destruct m; [ rewrite Nat.mul_1_r in Hm | ].
+        rewrite Hm, Nat.mul_comm; cbn.
+...
+        apply (IHcnt j).
+        destruct cnt.
+cbn.
+        split; [ easy | ].
+        subst a; rewrite Nat.div_same.
+      }
+      specialize (IHcnt (i + 1) Ha) as H1.
+      now apply (IHcnt (i + 1)).
+    }
+    now apply (IHcnt (i + 1)).
+  }
+...
+  apply (H i 1 i); [ easy | ].
+
+  apply (H (S i) 1 (S i)); [ easy | ].
+  now rewrite Hl in Ha.
+}
+clear Hl.
+induction l as [| a l]; [ easy | cbn ].
+rewrite IHl. 2: {
+  intros b Hb.
+  now apply Ha; right.
+}
+unfold log_prod_add at 1 3.
+rewrite Hrr; [ | now apply Ha; left ].
+rewrite Hrr'.
+...
+
+unfold log_prod_add.
+
 assert (H : ∀ cnt k i, cnt ≤ S i → k ≠ 0 →
   log_prod_list cnt (ls r1) (ls r'1) k (k + i) =
   log_prod_list cnt (ls r2) (ls r'2) k (k + i)). {
@@ -680,8 +741,6 @@ Compute (number_of_nat 21).
 Compute (number_of_nat 2).
 Compute (number_of_nat 24).
 Compute (number_of_nat 1001).
-
-...
 
 Theorem fold_log_prod_list_comm {F : field} : ∀ u v n,
   fold_right f_add f_zero (log_prod_list n u v 1 n) =
