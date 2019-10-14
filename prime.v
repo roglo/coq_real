@@ -756,6 +756,10 @@ Compute (number_of_nat 1001).
 
 (* end play *)
 
+Compute (divisors_loop 1000 1 24).
+
+...
+
 Theorem pouet : ∀ n,
   divisors_of n = List.rev (List.map (λ i, n / i) (divisors_of n)).
 Proof.
