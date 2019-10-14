@@ -757,42 +757,22 @@ Compute (number_of_nat 1001).
 (* end play *)
 
 Theorem divisors_loop_rev_map : ∀ k n,
-  k < n
-  → divisors_loop (2 * k - n) (n - k + 1) n =
+  k ≤ n
+  → divisors_loop k (n - k + 1) n =
        List.rev
-         (List.map (λ i, n / i) (divisors_loop (2 * k - n) (n - k + 1) n)).
+         (List.map (Nat.div n) (divisors_loop k (n - k + 1) n)).
 Proof.
 intros * Hkn.
-...
 revert n Hkn.
-induction k; intros; [ easy | ].
-cbn.
-rewrite Nat.add_0_r.
-destruct n; [ flia Hkn | ].
-rewrite Nat.sub_succ.
-apply Nat.succ_lt_mono in Hkn.
-destruct (lt_dec n (2 * k + 1)) as [Hn2k| Hn2k]. {
-  replace (k + S k - n) with (S (2 * k - n)) by flia Hn2k.
+induction k; intros; [ easy | cbn ].
+replace (n - S k + 1) with (n - k) by flia Hkn.
+remember (n mod (n - k)) as m eqn:Hm; symmetry in Hm.
+destruct m. {
   cbn.
+  rewrite <- IHk; [ | flia Hkn ].
 ...
-induction k; intros; [ easy | ].
-cbn - [ "-" ].
-rewrite Nat.add_0_r.
-destruct n; [ easy | clear Hn ].
-do 2 rewrite Nat.sub_succ.
-replace (k + S k - n) with (2 * k + 1 - n) by flia.
-...
-  cbn.
-  replace (k + S k) with (S (k + k)) by flia.
-  cbn.
-...
-
-destruct (le_dec (S cnt) n) as [Hcn| Hcn]. {
-  replace (n - S cnt + 1) with (n - cnt) by flia Hcn.
-  remember (n mod (n - cnt)) as m eqn:Hm; symmetry in Hm.
-  destruct m. {
-    cbn.
-    rewrite <- IHcnt.
+}
+apply IHk.
 ...
 
 Theorem pouet : ∀ n,
