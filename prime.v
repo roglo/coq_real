@@ -762,6 +762,8 @@ Theorem glop {F : field} : ∀ u v n,
 Proof.
 intros.
 destruct n; [ easy | ].
+Print log_prod_add.
+...
 destruct n. {
   cbn.
   unfold log_prod_add.
