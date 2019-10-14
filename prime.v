@@ -763,6 +763,18 @@ Theorem divisors_loop_rev_map : ∀ k n,
          (List.map (Nat.div n) (divisors_loop k (n - k + 1) n)).
 Proof.
 intros * Hkn.
+Compute (divisors_loop 24 1 24).
+Compute (divisors_loop 22 2 24).
+Compute (divisors_loop 11 2 24).
+Compute (divisors_loop 9 3 24).
+Compute (divisors_loop 6 3 24).
+Compute (divisors_loop 4 4 24).
+Compute (divisors_loop 3 4 24).
+Compute (divisors_loop 1 5 24).
+Compute (divisors_loop 60 1 60).
+Compute (divisors_loop 58 2 60).
+Compute (divisors_loop 29 2 60).
+Compute (divisors_loop 29 3 60).
 revert n Hkn.
 induction k; intros; [ easy | cbn ].
 replace (n - S k + 1) with (n - k) by flia Hkn.
