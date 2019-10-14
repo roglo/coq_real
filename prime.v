@@ -761,7 +761,7 @@ Theorem glop {F : field} : ∀ u v n,
   fold_right (log_prod_add v u n) f_zero (List.rev (divisors_of n)).
 Proof.
 intros.
-induction n; [ easy | ].
+destruct n; [ easy | ].
 destruct n. {
   cbn.
   unfold log_prod_add.
@@ -806,7 +806,7 @@ Search (fold_right _ _ (rev _)).
 Theorem glip {F : field} : ∀ u v n,
   fold_right (log_prod_add u v n) f_zero (divisors_of n) =
   fold_right (log_prod_add u v n) f_zero (List.rev (divisors_of n)).
-Admitted.
+...
 rewrite glop.
 now rewrite glip.
 ...
