@@ -447,17 +447,6 @@ Definition series_but_mul_of {F : field} n s :=
        | _ => ls s i
        end |}.
 
-(*
-Definition ε {F: field} i n :=
-  match n mod i with
-  | 0 => f_one
-  | _ => f_zero
-  end.
-
-Definition log_prod_term {F : field} u v i n :=
-  (u i * v (n / i)%nat * ε i n)%F.
-*)
-
 Fixpoint log_prod_list cnt i n :=
   match cnt with
   | 0 => []
