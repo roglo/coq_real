@@ -622,45 +622,64 @@ Compute (nat_of_number (Times 2 eq_refl One)).
 Compute (nat_of_number (Times 3 eq_refl (Times 7 eq_refl One))).
 Compute (nat_of_number (Times 5 eq_refl (Times 5 eq_refl One))).
 
-Fixpoint fpd_loop cnt n d :=
+Fixpoint fd_loop cnt n d :=
   match cnt with
   | 0 => 2
   | S cnt' =>
-      match n mod d with
-      | 0 => d
-      | _ => fpd_loop cnt' n (d + 1)
+      if is_prime d then
+        match n mod d with
+        | 0 => d
+        | _ => fd_loop cnt' n (d + 1)
+        end
+      else fd_loop cnt' n (d + 1)
+  end.
+
+Definition first_divisor n := fd_loop n n 2.
+
+Compute (first_divisor 343).
+
+Theorem fd_loop_is_prime :
+  ∀ cnt n d, 2 ≤ d → is_prime (fd_loop cnt n d) = true.
+Proof.
+intros * Hd.
+revert d Hd.
+induction cnt; intros; [ easy | cbn ].
+remember (is_prime d) as p eqn:Hp; symmetry in Hp.
+destruct p. {
+  remember (n mod d) as nd eqn:Hnd; symmetry in Hnd.
+  destruct nd; [ easy | apply IHcnt ].
+  transitivity d; [ easy | apply Nat.le_add_r ].
+}
+apply IHcnt.
+transitivity d; [ easy | apply Nat.le_add_r ].
+Qed.
+
+Theorem first_divisor_is_prime :
+  ∀ n, is_prime (first_divisor n) = true.
+Proof.
+intros.
+now apply fd_loop_is_prime.
+Qed.
+
+Fixpoint non_loop cnt n :=
+  match cnt with
+  | 0 => One
+  | S cnt' =>
+      match n with
+      | 0 | 1 => One
+      | S (S n') =>
+          let d := first_divisor n in
+          let p := first_divisor_is_prime n in
+          Times d p (non_loop cnt' (n / d))
       end
   end.
 
-Definition first_prime_divisor n := fpd_loop n n 2.
+Definition number_of_nat n := non_loop n n.
 
-Compute (first_prime_divisor 343).
-
-Theorem fpd_loop_is_prime :
-  ∀ cnt n d, 2 ≤ d → is_prime (fpd_loop cnt n d) = true.
-Proof.
-intros * Hd.
-revert n d Hd.
-induction cnt; intros; [ easy | cbn ].
-remember (n mod d) as nd eqn:Hnd; symmetry in Hnd.
-destruct nd; [ | apply IHcnt; flia Hd ].
-...
-
-Theorem first_prime_divisor_is_prime :
-  ∀ n, is_prime (first_prime_divisor n) = true.
-Proof.
-intros.
-unfold first_prime_divisor.
-...
-
-Fixpoint number_of_nat n :=
-  match n with
-  | 0 | 1 => One
-  | S (S n') =>
-      let d := first_prime_divisor n in
-      let p := first_prime_divisor_is_prime n in
-      Times d p (number_of_nat (n / d))
-  end.
+Compute (number_of_nat 21).
+Compute (number_of_nat 2).
+Compute (number_of_nat 24).
+Compute (number_of_nat 1001).
 
 ...
 
