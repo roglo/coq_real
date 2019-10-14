@@ -798,6 +798,7 @@ destruct i. {
   rewrite f_add_comm, f_add_assoc; f_equal.
   apply f_add_comm.
 }
+Search (fold_right _ _ (rev _)).
 ...
 
 Theorem log_prod_comm {F : field} : ∀ u v i,
