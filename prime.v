@@ -525,52 +525,25 @@ remember (log_prod_list i 1 i) as l eqn:Hl.
 assert (Ha : ∀ a, a ∈ l → a ≠ 0 ∧ i / a ≠ 0). {
   intros a Ha.
   assert
-    (H : ∀ cnt j n, j ≠ 0 → cnt < n →
-     ∀ a, a ∈ log_prod_list cnt j n → a ≠ 0 ∧ a < n). {
+    (H : ∀ cnt j n, j ≠ 0 →
+     ∀ a, a ∈ log_prod_list cnt j n → a ≠ 0). {
     clear a Ha.
-    intros cnt j n Hj Hcnt a Ha.
+    intros cnt j n Hj a Ha.
     destruct j; [ easy | clear Hj ].
     revert j Ha.
     induction cnt; intros; [ easy | ].
     cbn - [ "mod" ] in Ha.
     remember (n mod S j) as m eqn:Hm; symmetry in Hm.
     destruct m. {
-      apply Nat.mod_divides in Hm; [ | easy ].
-      destruct Hm as (m, Hm).
-...
-      destruct Ha as [Ha| Ha]. {
-        subst a.
-        split; [ easy | ].
-        destruct m; [ flia Hcnt Hm | ].
-        destruct m; [ rewrite Nat.mul_1_r in Hm | ].
-        rewrite Hm, Nat.mul_comm; cbn.
-...
-        apply (IHcnt j).
-        destruct cnt.
-cbn.
-        split; [ easy | ].
-        subst a; rewrite Nat.div_same.
-      }
-      specialize (IHcnt (i + 1) Ha) as H1.
-      now apply (IHcnt (i + 1)).
+      destruct Ha as [Ha| Ha]; [ now subst a | ].
+      now apply (IHcnt (j + 1)).
     }
-    now apply (IHcnt (i + 1)).
+    now apply (IHcnt (j + 1)).
   }
-...
-  apply (H i 1 i); [ easy | ].
-
-  apply (H (S i) 1 (S i)); [ easy | ].
-  now rewrite Hl in Ha.
-}
-clear Hl.
-induction l as [| a l]; [ easy | cbn ].
-rewrite IHl. 2: {
-  intros b Hb.
-  now apply Ha; right.
-}
-unfold log_prod_add at 1 3.
-rewrite Hrr; [ | now apply Ha; left ].
-rewrite Hrr'.
+  split. {
+    apply (H i 1 i); [ easy | ].
+    now rewrite Hl in Ha.
+  }
 ...
 
 unfold log_prod_add.
