@@ -524,23 +524,29 @@ unfold log_prod.
 remember (log_prod_list i 1 i) as l eqn:Hl.
 assert (Ha : ∀ a, a ∈ l → a ≠ 0 ∧ i / a ≠ 0). {
   intros a Ha.
+...
   assert
-    (H : ∀ cnt j n, j ≠ 0 →
-     ∀ a, a ∈ log_prod_list cnt j n → a ≠ 0). {
-    clear a Ha.
-    intros cnt j n Hj a Ha.
-    destruct j; [ easy | clear Hj ].
-    revert j Ha.
+    (H : ∀ cnt k j, cnt ≤ S j → k ≠ 0 →
+     ∀ a, a ∈ log_prod_list cnt k (k + i) → a ≠ 0). {
+    clear a i Ha Hi Hl.
+    intros * Hcnt Hk a Ha.
+    destruct k; [ easy | clear Hk ].
+    revert i k Hcnt Ha.
     induction cnt; intros; [ easy | ].
     cbn - [ "mod" ] in Ha.
-    remember (n mod S j) as m eqn:Hm; symmetry in Hm.
+    remember (S (k + i) mod S k) as m eqn:Hm; symmetry in Hm.
     destruct m. {
       destruct Ha as [Ha| Ha]; [ now subst a | ].
-      now apply (IHcnt (j + 1)).
+      apply (IHcnt (i - 1) (k + 1)); [ flia Hcnt | ].
+      replace (S (k + 1) + (i - 1)) with (S (k + i)) by flia Hcnt.
     }
-    now apply (IHcnt (j + 1)).
+    apply (IHcnt (k + 1) (n - 1)); [ flia Hcnt | ].
+    now replace (S (k + 1) + (n - 1)) with (S (k + n)) by flia Hcnt.
   }
+  destruct i; [ easy | clear Hi ].
   split. {
+    apply (H (S i) 1 i).
+...
     apply (H i 1 i); [ easy | ].
     now rewrite Hl in Ha.
   }
@@ -640,7 +646,7 @@ Qed.
    dans l'ordre croissant) *)
 Inductive number :=
   | One : number
-  | Times : ∀ p, is_prime p = true → number → number.
+  | Times : ∀ p : nat, is_prime p = true → number → number.
 
 Check (Times 2 eq_refl One).
 Check (Times 3 eq_refl (Times 7 eq_refl One)).
