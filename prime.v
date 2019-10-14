@@ -756,6 +756,21 @@ Compute (number_of_nat 1001).
 
 (* end play *)
 
+Theorem pouet : ∀ n,
+  divisors_of n = List.rev (List.map (λ i, n / i) (divisors_of n)).
+Proof.
+intros.
+unfold divisors_of.
+Print divisors_loop.
+...
+destruct n; [ easy | ].
+destruct n; [ easy | ].
+destruct n; [ easy | ].
+destruct n; [ easy | ].
+destruct n; [ easy | ].
+destruct n; [ easy | ].
+...
+
 Theorem glip {F : field} : ∀ u v n l,
   fold_right (log_prod_add u v n) f_zero l =
   fold_right (log_prod_add u v n) f_zero (List.rev l).
