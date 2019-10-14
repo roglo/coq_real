@@ -638,7 +638,7 @@ replace ls_one~{a} with f_zero. 2: {
 now rewrite f_add_0_l, f_mul_0_l.
 Qed.
 
-Theorem divisors_from_2nd {F : field} : ∀ cnt i n,
+Theorem divisors_but_1_ge_2 {F : field} : ∀ cnt i n,
    2 ≤ i → ∀ j, j ∈ divisors_loop cnt i n → 2 ≤ j.
 Proof.
 intros * Hi * Hj.
@@ -662,7 +662,7 @@ replace ls_one~{1} with f_one by easy.
 rewrite f_mul_1_l, Nat.div_1_r.
 rewrite <- f_add_0_l; f_equal.
 apply fold_log_prod_1_l_from_2nd.
-now apply divisors_from_2nd.
+now apply divisors_but_1_ge_2.
 Qed.
 
 (* playing with numbers represented multiplicativelly *)
