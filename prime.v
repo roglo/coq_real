@@ -1019,6 +1019,7 @@ Theorem fold_log_prod_comm {F : field} : ∀ u v i,
   fold_right (log_prod_add v u i) f_zero (divisors_of i).
 Proof.
 intros.
+Check fold_log_prod_add_on_rev.
 ...
 (*
 Search (fold_right _ _ (rev _)).
