@@ -756,6 +756,7 @@ Compute (number_of_nat 1001).
 
 (* end play *)
 
+(*
 Theorem divisors_loop_rev_map : ∀ k n,
   k ≤ n
   → divisors_loop k (n - k + 1) n =
@@ -786,6 +787,7 @@ destruct m. {
 }
 apply IHk.
 ...
+*)
 
 Theorem pouet : ∀ n,
   divisors_of n = List.rev (List.map (λ i, n / i) (divisors_of n)).
@@ -794,8 +796,18 @@ intros.
 unfold divisors_of.
 remember (divisors_of n) as l eqn:Hl.
 revert n Hl.
-induction l as [| a l]; intros; [ easy | ].
-cbn.
+induction l as [| a l]; intros. {
+  destruct n; [ easy | now destruct n ].
+}
+destruct n; [ easy | ].
+destruct n; [ easy | ].
+cbn - [ "mod" ] in Hl.
+rewrite Nat.mod_1_r in Hl.
+replace (S (S n)) with (n + 1 * 2) in Hl at 1 by flia.
+rewrite Nat.mod_add in Hl; [ | easy ].
+remember Nat.modulo as f.
+injection Hl; clear Hl; intros Hl Ha; subst f.
+clear a Ha.
 ...
 unfold divisors_of.
 Print divisors_loop.
