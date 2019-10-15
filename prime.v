@@ -768,6 +768,53 @@ Qed.
 Theorem List_filter_empty {A} : ∀ f (l : list A),
   filter f l = [] → ∀ a, a ∈ l → f a = false.
 Proof.
+intros * Hf a Ha.
+revert a Ha.
+induction l as [| b l]; intros; [ easy | ].
+destruct Ha as [Ha| Ha]. {
+  subst b; cbn in Hf.
+  now destruct (f a).
+}
+apply IHl; [ | easy ].
+cbn in Hf.
+now destruct (f b).
+Qed.
+
+Theorem List_last_seq : ∀ i n, n ≠ 0 → last (seq i n) 0 = i + n - 1.
+Proof.
+intros * Hn.
+destruct n; [ easy | clear Hn ].
+revert i; induction n; intros. {
+  cbn; symmetry.
+  apply Nat.add_sub.
+}
+remember (S n) as sn; cbn; subst sn.
+remember (seq (S i) (S n)) as l eqn:Hl.
+destruct l; [ easy | ].
+rewrite Hl.
+replace (i + S (S n)) with (S i + S n) by flia.
+apply IHn.
+Qed.
+
+Theorem List_last_In {A} : ∀ (d : A) l, l ≠ [] → last l d ∈ l.
+Proof.
+intros * Hl.
+destruct l as [| a l]; [ easy | clear Hl ].
+revert a.
+induction l as [| b l]; intros; [ now left | ].
+remember (b :: l) as l'; cbn; subst l'.
+right; apply IHl.
+Qed.
+
+Theorem List_filter_app {A} : ∀ f (l1 l2 : list A),
+  List.filter f (l1 ++ l2) = List.filter f l1 ++ List.filter f l2.
+Proof.
+intros.
+revert l2.
+induction l1 as [| a l1]; intros; [ easy | ].
+cbn.
+destruct (f a). {
+  cbn; f_equal.
 ...
 
 Theorem last_divisor : ∀ n, n ≠ 0 → List.last (divisors_of n) 0 = n.
@@ -776,19 +823,31 @@ intros n Hn.
 remember (divisors_of n) as l eqn:Hl.
 symmetry in Hl.
 unfold divisors_of, divisors_from in Hl.
-destruct l as [| a l]; [ now destruct n | ].
-assert (H : a :: l ≠ []) by easy.
-specialize (app_removelast_last 0 H) as H1; clear H.
-cbn in H1; cbn.
-destruct l as [| a2 l]. {
-  cbn.
-  destruct n; [ easy | clear Hn ].
-  cbn in Hl.
-  injection Hl; clear Hl; intros Hl Ha.
-  subst a.
-  destruct n; [ easy | exfalso ].
-  specialize (List_filter_empty _ _ Hl) as H2.
-  cbn in H2.
+specialize (List_last_seq 1 n Hn) as H1.
+replace (1 + n - 1) with n in H1 by flia.
+specialize (proj2 (filter_In (λ a, n mod a =? 0) n (seq 1 n))) as H2.
+rewrite Hl in H2.
+rewrite Nat.mod_same in H2; [ | easy ].
+cbn in H2.
+assert (H3 : n ∈ seq 1 n). {
+  rewrite <- H1 at 1.
+  apply List_last_In.
+  now destruct n.
+}
+assert (H : n ∈ seq 1 n ∧ true = true) by easy.
+specialize (H2 H); clear H.
+specialize (@app_removelast_last nat l 0) as H4.
+assert (H : l ≠ []) by now intros H; rewrite H in H2.
+specialize (H4 H); clear H.
+specialize (@app_removelast_last nat (seq 1 n) 0) as H5.
+rewrite H1 in H5.
+assert (H : seq 1 n ≠ []); [ now intros H; rewrite H in H3 | ].
+specialize (H5 H); clear H.
+rewrite H5 in Hl.
+Search (filter _ (_ ++ _)).
+rewrite filter_app in Hl.
+...
+Check List_last_In.
 ...
 
 Theorem last_divisor : ∀ n, n ≠ 0 → List.hd 0 (List.rev (divisors_of n)) = n.
