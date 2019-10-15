@@ -933,6 +933,7 @@ unfold log_prod_add at 1.
 symmetry; apply fold_log_prod_add_assoc.
 Qed.
 
+(*
 Theorem glip {F : field} : ∀ u v n l c,
   fold_right (log_prod_add u v n) c l =
   fold_right (log_prod_add v u n) c l.
@@ -941,9 +942,10 @@ intros.
 revert c n.
 induction l as [| a l]; intros; [ easy | cbn ].
 rewrite <- IHl.
-remember (fold_right (log_prod_add u v n) c l) as l' eqn:Hl'.
-unfold log_prod_add.
+unfold log_prod_add at 1 3.
+rewrite (f_mul_comm (v a)).
 ...
+*)
 
 (*
 Theorem glip {F : field} : ∀ u v n l,
