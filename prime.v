@@ -631,87 +631,6 @@ replace ls_one~{a} with f_zero. 2: {
 now rewrite f_add_0_l, f_mul_0_l.
 Qed.
 
-(*
-Theorem divisors_but_1_ge_2 {F : field} : ∀ cnt i n,
-   2 ≤ i → ∀ j, j ∈ divisors_loop cnt i n → 2 ≤ j.
-Proof.
-intros * Hi * Hj.
-revert i j Hi Hj.
-induction cnt; intros; [ easy | ].
-cbn in Hj.
-destruct (n mod i). {
-  destruct Hj as [Hj| Hj]; [ now rewrite Hj in Hi | ].
-  apply (IHcnt (i + 1)); [ flia Hi | easy ].
-}
-apply (IHcnt (i + 1)); [ flia Hi | easy ].
-Qed.
-*)
-
-Theorem Sorted_Sorted_seq : ∀ start len, Sorted.Sorted lt (seq start len).
-Proof.
-intros.
-revert start.
-induction len; intros; [ apply Sorted.Sorted_nil | ].
-cbn; apply Sorted.Sorted_cons; [ apply IHlen | ].
-clear IHlen.
-induction len; [ apply Sorted.HdRel_nil | ].
-cbn. apply Sorted.HdRel_cons.
-apply Nat.lt_succ_diag_r.
-Qed.
-
-Theorem Sorted_hd_le : ∀ l i,
-  i ∈ l
-  → Sorted.Sorted lt l
-  → List.hd 0 l ≤ i.
-Proof.
-intros * Hi Hl.
-induction l as [| a1 l]; intros; [ easy | cbn ].
-destruct Hi as [H1| Hi]; [ now subst a1 | ].
-apply Sorted.Sorted_inv in Hl.
-specialize (IHl Hi (proj1 Hl)).
-transitivity (hd 0 l); [ | easy ].
-destruct Hl as (Hl, Hr).
-inversion Hr; [ now subst l | ].
-cbn; flia H.
-Qed.
-
-Theorem filter_mod_seq_but_1_ge_2 : ∀ i j,
-  j ∈ filter (λ a : nat, S i mod a =? 0) (seq 2 i) → 2 ≤ j.
-Proof.
-intros i j Hj.
-specialize (SetoidList.filter_sort eq_equivalence Nat.lt_strorder) as H1.
-specialize (H1 Nat.lt_wd).
-specialize (H1 (λ a, S i mod a =? 0) (seq 2 i)).
-specialize (H1 (Sorted_Sorted_seq _ _)).
-specialize (Sorted_hd_le _ _ Hj H1) as H2.
-...
-etransitivity; [ clear H2 | apply H2 ].
-destruct i; [ easy | ].
-destruct i; [ easy | ].
-cbn - [ "mod" ].
-...
-intros * Hi Hl.
-apply Sorted.Sorted_LocallySorted_iff in Hl.
-destruct l as [| a l]; [ easy | cbn ].
-destruct Hi as [Hi| Hi]; [ now subst i | ].
-Search (Sorted.LocallySorted).
-...
-apply Sorted.Sorted_inv in Hl.
-destruct Hl as (Hl, Hr).
-revert i a Hi Hr.
-induction l as [| b l]; intros; [ easy | ].
-destruct Hi as [Hi| Hi]. {
-  subst b.
-  apply Sorted.HdRel_inv in Hr.
-  flia Hr.
-}
-apply IHl; [ | easy | ]. {
-  now apply Sorted.Sorted_inv in Hl.
-}
-inversion Hr; subst.
-Search Sorted.HdRel.
-...
-
 Theorem ls_mul_1_l {F : field} : ∀ r, (ls_one * r = r)%LS.
 Proof.
 intros * i Hi.
@@ -722,7 +641,11 @@ replace ls_one~{1} with f_one by easy.
 rewrite f_mul_1_l, Nat.div_1_r.
 rewrite <- f_add_0_l; f_equal.
 apply fold_log_prod_1_l_from_2nd.
-...
+intros j Hj.
+apply List.filter_In in Hj.
+destruct Hj as (Hj, _).
+now apply List.in_seq in Hj.
+Qed.
 
 (* playing with numbers represented multiplicativelly *)
 
@@ -844,6 +767,10 @@ Qed.
 
 Theorem last_divisor : ∀ n, n ≠ 0 → List.hd 0 (List.rev (divisors_of n)) = n.
 Proof.
+intros * Hn.
+remember (divisors_of n) as l eqn:Hl.
+unfold divisors_of, divisors_from in Hl.
+...
 intros * Hn.
 destruct n; [ easy | clear Hn ].
 induction n; [ easy | ].
