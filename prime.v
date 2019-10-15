@@ -647,6 +647,29 @@ apply (IHcnt (i + 1)); [ flia Hi | easy ].
 Qed.
 *)
 
+Theorem Sorted_Sorted_seq : ∀ start len, Sorted.Sorted lt (seq start len).
+Proof.
+intros.
+revert start.
+induction len; intros; [ apply Sorted.Sorted_nil | ].
+cbn; apply Sorted.Sorted_cons; [ apply IHlen | ].
+clear IHlen.
+induction len; [ apply Sorted.HdRel_nil | ].
+cbn. apply Sorted.HdRel_cons.
+apply Nat.lt_succ_diag_r.
+Qed.
+
+Theorem filter_mod_seq_but_1_ge_2 : ∀ i j,
+  j ∈ filter (λ a : nat, S i mod a =? 0) (seq 2 i) → 2 ≤ j.
+Proof.
+intros i j Hj.
+specialize (SetoidList.filter_sort eq_equivalence Nat.lt_strorder) as H1.
+specialize (H1 Nat.lt_wd).
+specialize (H1 (λ a, S i mod a =? 0) (seq 2 i)).
+specialize (H1 (Sorted_Sorted_seq _ _)).
+Search Sorted.Sorted.
+...
+
 Theorem ls_mul_1_l {F : field} : ∀ r, (ls_one * r = r)%LS.
 Proof.
 intros * i Hi.
@@ -657,11 +680,7 @@ replace ls_one~{1} with f_one by easy.
 rewrite f_mul_1_l, Nat.div_1_r.
 rewrite <- f_add_0_l; f_equal.
 apply fold_log_prod_1_l_from_2nd.
-intros j Hj.
 ...
-induction i; intros j Hj; [ easy | ].
-cbn - [ "mod" ] in Hj.
-Qed.
 
 (* playing with numbers represented multiplicativelly *)
 
