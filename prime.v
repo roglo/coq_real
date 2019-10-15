@@ -970,6 +970,7 @@ rewrite f_add_0_l.
 ...
 *)
 
+(*
 Theorem glop {F : field} : ∀ u v n,
   fold_right (log_prod_add u v n) f_zero (divisors_of n) =
   fold_right (log_prod_add v u n) f_zero (List.rev (divisors_of n)).
@@ -1011,12 +1012,15 @@ destruct n. {
   easy.
 }
 ...
+*)
 
 Theorem fold_log_prod_comm {F : field} : ∀ u v i,
   fold_right (log_prod_add u v i) f_zero (divisors_of i) =
   fold_right (log_prod_add v u i) f_zero (divisors_of i).
 Proof.
 intros.
+...
+(*
 Search (fold_right _ _ (rev _)).
 ...
 rewrite glop.
@@ -1060,6 +1064,7 @@ destruct i. {
   apply f_add_comm.
 }
 ...
+*)
 
 Theorem log_prod_comm {F : field} : ∀ u v i,
   log_prod u v i = log_prod v u i.
