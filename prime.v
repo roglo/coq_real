@@ -707,9 +707,9 @@ Fixpoint fd_loop cnt n d :=
       else fd_loop cnt' n (d + 1)
   end.
 
-Definition first_divisor n := fd_loop n n 2.
+Definition first_divisor_of_number n := fd_loop n n 2.
 
-Compute (first_divisor 343).
+Compute (first_divisor_of_number 343).
 
 Theorem fd_loop_is_prime :
   ∀ cnt n d, 2 ≤ d → is_prime (fd_loop cnt n d) = true.
@@ -728,7 +728,7 @@ transitivity d; [ easy | apply Nat.le_add_r ].
 Qed.
 
 Theorem first_divisor_is_prime :
-  ∀ n, is_prime (first_divisor n) = true.
+  ∀ n, is_prime (first_divisor_of_number n) = true.
 Proof.
 intros.
 now apply fd_loop_is_prime.
@@ -741,7 +741,7 @@ Fixpoint non_loop cnt n :=
       match n with
       | 0 | 1 => One
       | S (S n') =>
-          let d := first_divisor n in
+          let d := first_divisor_of_number n in
           let p := first_divisor_is_prime n in
           Times d p (non_loop cnt' (n / d))
       end
@@ -764,18 +764,6 @@ Theorem divisors_loop_rev_map : ∀ k n,
          (List.map (Nat.div n) (divisors_loop k (n - k + 1) n)).
 Proof.
 intros * Hkn.
-Compute (divisors_loop 24 1 24).
-Compute (divisors_loop 22 2 24).
-Compute (divisors_loop 11 2 24).
-Compute (divisors_loop 9 3 24).
-Compute (divisors_loop 6 3 24).
-Compute (divisors_loop 4 4 24).
-Compute (divisors_loop 3 4 24).
-Compute (divisors_loop 1 5 24).
-Compute (divisors_loop 60 1 60).
-Compute (divisors_loop 58 2 60).
-Compute (divisors_loop 29 2 60).
-Compute (divisors_loop 29 3 60).
 revert n Hkn.
 induction k; intros; [ easy | cbn ].
 replace (n - S k + 1) with (n - k) by flia Hkn.
@@ -789,9 +777,59 @@ apply IHk.
 ...
 *)
 
+Theorem first_divisor : ∀ n, n ≠ 0 → List.hd 0 (divisors_of n) = 1.
+Proof.
+intros.
+now destruct n.
+Qed.
+
+Theorem last_divisor : ∀ n, n ≠ 0 → List.hd 0 (List.rev (divisors_of n)) = n.
+Proof.
+intros * Hn.
+destruct n; [ easy | clear Hn ].
+induction n; [ easy | ].
+cbn in IHn; cbn - [ "mod" ].
+rewrite Nat.mod_1_r.
+cbn - [ "mod" ].
+...
+
+Theorem tagada : ∀ n l,
+  l = divisors_of n
+  → List.hd 0 l = n / List.hd 0 (List.rev l).
+Proof.
+intros * Hl.
+subst l.
+destruct n; [ easy | ].
+destruct n; [ easy | ].
+cbn.
+...
+
 Theorem pouet : ∀ n,
   divisors_of n = List.rev (List.map (λ i, n / i) (divisors_of n)).
 Proof.
+intros.
+remember (length (divisors_of n)) as len eqn:Hlen.
+symmetry in Hlen.
+revert n Hlen.
+induction len; intros. {
+  destruct n; [ easy | now destruct n ].
+}
+...
+
+Compute (divisors_loop 24 1 24).
+Compute (divisors_loop 22 2 24).
+Compute (divisors_loop 11 2 24).
+Compute (divisors_loop 9 3 24).
+Compute (divisors_loop 6 3 24).
+Compute (divisors_loop 4 4 24).
+Compute (divisors_loop 3 4 24).
+Compute (divisors_loop 1 5 24).
+Compute (divisors_loop 60 1 60).
+Compute (divisors_loop 58 2 60).
+Compute (divisors_loop 29 2 60).
+Compute (divisors_loop 29 3 60).
+
+...
 intros.
 unfold divisors_of.
 remember (divisors_of n) as l eqn:Hl.
