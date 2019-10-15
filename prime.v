@@ -667,7 +667,12 @@ specialize (SetoidList.filter_sort eq_equivalence Nat.lt_strorder) as H1.
 specialize (H1 Nat.lt_wd).
 specialize (H1 (λ a, S i mod a =? 0) (seq 2 i)).
 specialize (H1 (Sorted_Sorted_seq _ _)).
+...
 Search Sorted.Sorted.
+revert j Hj.
+induction H1; intros; [ easy | ].
+destruct Hj as [Hj| Hj]; [ | now apply IHSorted ].
+subst a.
 ...
 
 Theorem ls_mul_1_l {F : field} : ∀ r, (ls_one * r = r)%LS.
