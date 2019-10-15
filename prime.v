@@ -689,9 +689,9 @@ Fixpoint fd_loop cnt n d :=
       else fd_loop cnt' n (d + 1)
   end.
 
-Definition first_divisor_of_number n := fd_loop n n 2.
+Definition first_prime_divisor n := fd_loop n n 2.
 
-Compute (first_divisor_of_number 343).
+Compute (first_prime_divisor 343).
 
 Theorem fd_loop_is_prime :
   ∀ cnt n d, 2 ≤ d → is_prime (fd_loop cnt n d) = true.
@@ -710,7 +710,7 @@ transitivity d; [ easy | apply Nat.le_add_r ].
 Qed.
 
 Theorem first_divisor_is_prime :
-  ∀ n, is_prime (first_divisor_of_number n) = true.
+  ∀ n, is_prime (first_prime_divisor n) = true.
 Proof.
 intros.
 now apply fd_loop_is_prime.
@@ -723,7 +723,7 @@ Fixpoint non_loop cnt n :=
       match n with
       | 0 | 1 => One
       | S (S n') =>
-          let d := first_divisor_of_number n in
+          let d := first_prime_divisor n in
           let p := first_divisor_is_prime n in
           Times d p (non_loop cnt' (n / d))
       end
@@ -759,7 +759,7 @@ apply IHk.
 ...
 *)
 
-Theorem first_divisor : ∀ n, n ≠ 0 → List.hd 0 (divisors_of n) = 1.
+Theorem eq_first_divisor_1 : ∀ n, n ≠ 0 → List.hd 0 (divisors_of n) = 1.
 Proof.
 intros.
 now destruct n.
@@ -1014,12 +1014,104 @@ destruct n. {
 ...
 *)
 
+Theorem divisor_iff : ∀ n d,
+  n ≠ 0 → d ∈ divisors_of n ↔ n mod d = 0 ∧ d ≠ 0.
+Proof.
+intros * Hn.
+unfold divisors_of, divisors_from.
+split. {
+  intros Hd.
+  apply filter_In in Hd.
+  destruct Hd as (Hd, Hnd).
+  split; [ now apply Nat.eqb_eq | ].
+  apply in_seq in Hd; flia Hd.
+}
+intros (Hnd, Hd).
+apply filter_In.
+split; [ | now apply Nat.eqb_eq ].
+apply in_seq.
+split; [ flia Hd | ].
+apply Nat.mod_divides in Hnd; [ | easy ].
+destruct Hnd as (c, Hc).
+rewrite Nat.mul_comm in Hc; rewrite Hc.
+destruct c; [ easy | ].
+cbn; flia.
+Qed.
+
+Theorem mem_first_divisor_divisors : ∀ n,
+  2 ≤ n → first_prime_divisor n ∈ divisors_of n.
+Proof.
+intros n Hn.
+apply divisor_iff; [ flia Hn | ].
+split. 2: {
+  intros H.
+  specialize (first_divisor_is_prime n) as H1.
+  now rewrite H in H1.
+}
+...
+destruct n; [ easy | ].
+destruct n; [ flia Hn | clear Hn ].
+remember (S n) as sn; cbn - [ "mod" ]; subst sn.
+rewrite Nat.mod_1_r.
+remember (S n) as sn; cbn - [ "mod" ]; subst sn.
+remember (S (S n) mod 2) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  right; cbn - [ "mod" ].
+  now rewrite Hm; left.
+}
+cbn - [ "mod" ].
+replace (3 mod 2) with 1 by easy.
+...
+destruct n; [ now cbn; right; left | ].
+...
+
 Theorem fold_log_prod_comm {F : field} : ∀ u v i,
   fold_right (log_prod_add u v i) f_zero (divisors_of i) =
   fold_right (log_prod_add v u i) f_zero (divisors_of i).
 Proof.
-intros.
-Check fold_log_prod_add_on_rev.
+intros u v n.
+remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
+destruct l as [| a l]; [ easy | cbn ].
+unfold log_prod_add at 1 3; cbn.
+destruct l as [| a2 l]. {
+  specialize (first_divisor_is_prime n) as H1.
+  remember (first_prime_divisor n) as d eqn:Hd; symmetry in Hd.
+...
+Search divisors_of.
+...
+  cbn; do 2 rewrite f_add_0_l; rewrite (f_mul_comm (v a)).
+  destruct n; [ easy | cbn in Hl ].
+  injection Hl; clear Hl; intros Hl Ha.
+  subst a; rewrite Nat.div_1_r.
+...
+  destruct n; [ easy | ].
+  cbn - [ "mod" ] in Hl.
+  replace (S (S n)) with (n + 1 * 2) in Hl at 1 by flia.
+  rewrite Nat.mod_add in Hl; [ | easy ].
+  remember (n mod 2) as m eqn:Hm; symmetry in Hm.
+  destruct m; [ easy | cbn in Hl ].
+  destruct n; [ easy | ].
+  cbn - [ "mod" ] in Hl.
+  replace (S (S (S n))) with (n + 1 * 3) in Hl at 1 by flia.
+  rewrite Nat.mod_add in Hl; [ | easy ].
+  remember (n mod 3) as m3 eqn:Hm3; symmetry in Hm3.
+  destruct m3; [ easy | cbn in Hl ].
+  move m3 before m.
+  (* at end, n would be divisible by no prime number at all;
+     this leads to a contradiction, but how to prove it? *)
+Print first_divisor.
+...
+specialize app_removelast_last as H1.
+...
+intros u v n.
+(*
+rewrite fold_log_prod_add_on_rev.
+*)
+remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
+destruct l as [| a l]; [ easy | cbn ].
+rewrite fold_right_app; cbn.
+unfold log_prod_add at 2 3; cbn.
+rewrite f_add_0_l.
 ...
 (*
 Search (fold_right _ _ (rev _)).
