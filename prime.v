@@ -906,6 +906,46 @@ destruct n; [ easy | ].
 ...
 *)
 
+Theorem fold_log_prod_add_assoc {F : field} : ∀ a b l u v n,
+  List.fold_right (log_prod_add u v n) (a + b)%F l =
+  (List.fold_right (log_prod_add u v n) a l + b)%F.
+Proof.
+intros.
+revert a b.
+induction l as [| c l]; intros; [ easy | cbn ].
+rewrite IHl.
+unfold log_prod_add at 1 3.
+do 2 rewrite <- f_add_assoc; f_equal.
+apply f_add_comm.
+Qed.
+
+Theorem fold_log_prod_add_on_rev {F : field} : ∀ u v n l c,
+  fold_right (log_prod_add u v n) c l =
+  fold_right (log_prod_add u v n) c (List.rev l).
+Proof.
+intros.
+revert c.
+induction l as [| a l]; intros; [ easy | cbn ].
+rewrite List.fold_right_app; cbn.
+rewrite <- IHl.
+unfold log_prod_add at 4; cbn.
+unfold log_prod_add at 1.
+symmetry; apply fold_log_prod_add_assoc.
+Qed.
+
+Theorem glip {F : field} : ∀ u v n l c,
+  fold_right (log_prod_add u v n) c l =
+  fold_right (log_prod_add v u n) c l.
+Proof.
+intros.
+revert c n.
+induction l as [| a l]; intros; [ easy | cbn ].
+rewrite <- IHl.
+remember (fold_right (log_prod_add u v n) c l) as l' eqn:Hl'.
+unfold log_prod_add.
+...
+
+(*
 Theorem glip {F : field} : ∀ u v n l,
   fold_right (log_prod_add u v n) f_zero l =
   fold_right (log_prod_add u v n) f_zero (List.rev l).
@@ -913,11 +953,20 @@ Proof.
 intros.
 revert n.
 induction l as [| a l]; intros; [ easy | ].
+(**)
+cbn.
+rewrite List.fold_right_app; cbn.
+unfold log_prod_add at 4; cbn.
+rewrite f_add_0_l.
+...
 cbn; rewrite IHl.
 unfold log_prod_add at 1.
 rewrite List.fold_right_app.
 cbn.
+unfold log_prod_add at 3.
+rewrite f_add_0_l.
 ...
+*)
 
 Theorem glop {F : field} : ∀ u v n,
   fold_right (log_prod_add u v n) f_zero (divisors_of n) =
@@ -925,7 +974,7 @@ Theorem glop {F : field} : ∀ u v n,
 Proof.
 intros.
 destruct n; [ easy | ].
-Print log_prod_add.
+rewrite <- fold_log_prod_add_on_rev.
 ...
 destruct n. {
   cbn.
