@@ -806,16 +806,24 @@ remember (b :: l) as l'; cbn; subst l'.
 right; apply IHl.
 Qed.
 
+(*
 Theorem List_filter_app {A} : ∀ f (l1 l2 : list A),
   List.filter f (l1 ++ l2) = List.filter f l1 ++ List.filter f l2.
 Proof.
 intros.
-revert l2.
-induction l1 as [| a l1]; intros; [ easy | ].
+induction l1 as [| a l1]; [ easy | cbn ].
+destruct (f a); [ cbn; f_equal | ]; apply IHl1.
+Qed.
+*)
+
+Theorem List_last_app {A} : ∀ l (d a : A), List.last (l ++ [a]) d = a.
+Proof.
+intros.
+induction l; [ easy | ].
 cbn.
-destruct (f a). {
-  cbn; f_equal.
-...
+remember (l ++ [a]) as l' eqn:Hl'.
+destruct l'; [ now destruct l | apply IHl ].
+Qed.
 
 Theorem last_divisor : ∀ n, n ≠ 0 → List.last (divisors_of n) 0 = n.
 Proof.
@@ -836,51 +844,26 @@ assert (H3 : n ∈ seq 1 n). {
 }
 assert (H : n ∈ seq 1 n ∧ true = true) by easy.
 specialize (H2 H); clear H.
-specialize (@app_removelast_last nat l 0) as H4.
-assert (H : l ≠ []) by now intros H; rewrite H in H2.
-specialize (H4 H); clear H.
-specialize (@app_removelast_last nat (seq 1 n) 0) as H5.
-rewrite H1 in H5.
 assert (H : seq 1 n ≠ []); [ now intros H; rewrite H in H3 | ].
-specialize (H5 H); clear H.
-rewrite H5 in Hl.
-Search (filter _ (_ ++ _)).
-rewrite filter_app in Hl.
-...
-Check List_last_In.
-...
+specialize (app_removelast_last 0 H) as H4; clear H.
+rewrite H1 in H4.
+assert (H : seq 1 n ≠ []); [ now intros H; rewrite H in H3 | ].
+rewrite H4, filter_app in Hl; cbn in Hl.
+rewrite Nat.mod_same in Hl; [ | easy ].
+cbn in Hl; rewrite <- Hl.
+apply List_last_app.
+Qed.
 
-Theorem last_divisor : ∀ n, n ≠ 0 → List.hd 0 (List.rev (divisors_of n)) = n.
-Proof.
-intros * Hn.
-Search last.
-...
-intros * Hn.
-unfold divisors_of, divisors_from.
-destruct n; [ easy | clear Hn ].
-destruct n; [ easy | ].
-cbn - [ "mod" ].
-rewrite Nat.mod_1_r.
-cbn - [ "mod" ].
-...
-intros * Hn.
-destruct n; [ easy | clear Hn ].
-induction n; [ easy | ].
-cbn in IHn; cbn - [ "mod" ].
-rewrite Nat.mod_1_r.
-cbn - [ "mod" ].
-...
-
-Theorem tagada : ∀ n l,
+Theorem first_last_divisor : ∀ n l,
   l = divisors_of n
-  → List.hd 0 l = n / List.hd 0 (List.rev l).
+  → List.hd 0 l = n / List.last l 0.
 Proof.
 intros * Hl.
 subst l.
 destruct n; [ easy | ].
-destruct n; [ easy | ].
-cbn.
-...
+rewrite last_divisor; [ | easy ].
+now rewrite Nat.div_same.
+Qed.
 
 Theorem pouet : ∀ n,
   divisors_of n = List.rev (List.map (λ i, n / i) (divisors_of n)).
