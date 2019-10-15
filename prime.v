@@ -768,8 +768,12 @@ Qed.
 Theorem last_divisor : ∀ n, n ≠ 0 → List.hd 0 (List.rev (divisors_of n)) = n.
 Proof.
 intros * Hn.
-remember (divisors_of n) as l eqn:Hl.
-unfold divisors_of, divisors_from in Hl.
+unfold divisors_of, divisors_from.
+destruct n; [ easy | clear Hn ].
+destruct n; [ easy | ].
+cbn - [ "mod" ].
+rewrite Nat.mod_1_r.
+cbn - [ "mod" ].
 ...
 intros * Hn.
 destruct n; [ easy | clear Hn ].
