@@ -447,17 +447,10 @@ Definition series_but_mul_of {F : field} n s :=
        | _ => ls s i
        end |}.
 
-Fixpoint divisors_loop cnt i n :=
-  match cnt with
-  | 0 => []
-  | S cnt' =>
-      match n mod i with
-      | 0 => i :: divisors_loop cnt' (i + 1) n
-      | _ => divisors_loop cnt' (i + 1) n
-      end
-  end.
+Definition divisors_from d n :=
+  List.filter (λ a, n mod a =? 0) (List.seq d n).
 
-Definition divisors_of n := divisors_loop n 1 n.
+Definition divisors_of := divisors_from 1.
 
 Definition log_prod_add {F : field} u v n i c :=
   (c + u i * v (n / i))%F.
@@ -638,6 +631,7 @@ replace ls_one~{a} with f_zero. 2: {
 now rewrite f_add_0_l, f_mul_0_l.
 Qed.
 
+(*
 Theorem divisors_but_1_ge_2 {F : field} : ∀ cnt i n,
    2 ≤ i → ∀ j, j ∈ divisors_loop cnt i n → 2 ≤ j.
 Proof.
@@ -651,6 +645,7 @@ destruct (n mod i). {
 }
 apply (IHcnt (i + 1)); [ flia Hi | easy ].
 Qed.
+*)
 
 Theorem ls_mul_1_l {F : field} : ∀ r, (ls_one * r = r)%LS.
 Proof.
@@ -662,7 +657,10 @@ replace ls_one~{1} with f_one by easy.
 rewrite f_mul_1_l, Nat.div_1_r.
 rewrite <- f_add_0_l; f_equal.
 apply fold_log_prod_1_l_from_2nd.
-now apply divisors_but_1_ge_2.
+intros j Hj.
+...
+induction i; intros j Hj; [ easy | ].
+cbn - [ "mod" ] in Hj.
 Qed.
 
 (* playing with numbers represented multiplicativelly *)
