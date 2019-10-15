@@ -765,8 +765,17 @@ intros.
 now destruct n.
 Qed.
 
+Theorem last_divisor : ∀ n, n ≠ 0 → List.last (divisors_of n) 0 = n.
+Proof.
+intros n Hn.
+unfold divisors_of, divisors_from.
+...
+
 Theorem last_divisor : ∀ n, n ≠ 0 → List.hd 0 (List.rev (divisors_of n)) = n.
 Proof.
+intros * Hn.
+Search last.
+...
 intros * Hn.
 unfold divisors_of, divisors_from.
 destruct n; [ easy | clear Hn ].
