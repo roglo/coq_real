@@ -765,10 +765,30 @@ intros.
 now destruct n.
 Qed.
 
+Theorem List_filter_empty {A} : ∀ f (l : list A),
+  filter f l = [] → ∀ a, a ∈ l → f a = false.
+Proof.
+...
+
 Theorem last_divisor : ∀ n, n ≠ 0 → List.last (divisors_of n) 0 = n.
 Proof.
 intros n Hn.
-unfold divisors_of, divisors_from.
+remember (divisors_of n) as l eqn:Hl.
+symmetry in Hl.
+unfold divisors_of, divisors_from in Hl.
+destruct l as [| a l]; [ now destruct n | ].
+assert (H : a :: l ≠ []) by easy.
+specialize (app_removelast_last 0 H) as H1; clear H.
+cbn in H1; cbn.
+destruct l as [| a2 l]. {
+  cbn.
+  destruct n; [ easy | clear Hn ].
+  cbn in Hl.
+  injection Hl; clear Hl; intros Hl Ha.
+  subst a.
+  destruct n; [ easy | exfalso ].
+  specialize (List_filter_empty _ _ Hl) as H2.
+  cbn in H2.
 ...
 
 Theorem last_divisor : ∀ n, n ≠ 0 → List.hd 0 (List.rev (divisors_of n)) = n.
