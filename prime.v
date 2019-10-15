@@ -659,6 +659,22 @@ cbn. apply Sorted.HdRel_cons.
 apply Nat.lt_succ_diag_r.
 Qed.
 
+Theorem Sorted_hd_le : ∀ l i,
+  i ∈ l
+  → Sorted.Sorted lt l
+  → List.hd 0 l ≤ i.
+Proof.
+intros * Hi Hl.
+induction l as [| a1 l]; intros; [ easy | cbn ].
+destruct Hi as [H1| Hi]; [ now subst a1 | ].
+apply Sorted.Sorted_inv in Hl.
+specialize (IHl Hi (proj1 Hl)).
+transitivity (hd 0 l); [ | easy ].
+destruct Hl as (Hl, Hr).
+inversion Hr; [ now subst l | ].
+cbn; flia H.
+Qed.
+
 Theorem filter_mod_seq_but_1_ge_2 : ∀ i j,
   j ∈ filter (λ a : nat, S i mod a =? 0) (seq 2 i) → 2 ≤ j.
 Proof.
@@ -667,12 +683,33 @@ specialize (SetoidList.filter_sort eq_equivalence Nat.lt_strorder) as H1.
 specialize (H1 Nat.lt_wd).
 specialize (H1 (λ a, S i mod a =? 0) (seq 2 i)).
 specialize (H1 (Sorted_Sorted_seq _ _)).
+specialize (Sorted_hd_le _ _ Hj H1) as H2.
 ...
-Search Sorted.Sorted.
-revert j Hj.
-induction H1; intros; [ easy | ].
-destruct Hj as [Hj| Hj]; [ | now apply IHSorted ].
-subst a.
+etransitivity; [ clear H2 | apply H2 ].
+destruct i; [ easy | ].
+destruct i; [ easy | ].
+cbn - [ "mod" ].
+...
+intros * Hi Hl.
+apply Sorted.Sorted_LocallySorted_iff in Hl.
+destruct l as [| a l]; [ easy | cbn ].
+destruct Hi as [Hi| Hi]; [ now subst i | ].
+Search (Sorted.LocallySorted).
+...
+apply Sorted.Sorted_inv in Hl.
+destruct Hl as (Hl, Hr).
+revert i a Hi Hr.
+induction l as [| b l]; intros; [ easy | ].
+destruct Hi as [Hi| Hi]. {
+  subst b.
+  apply Sorted.HdRel_inv in Hr.
+  flia Hr.
+}
+apply IHl; [ | easy | ]. {
+  now apply Sorted.Sorted_inv in Hl.
+}
+inversion Hr; subst.
+Search Sorted.HdRel.
 ...
 
 Theorem ls_mul_1_l {F : field} : ∀ r, (ls_one * r = r)%LS.
