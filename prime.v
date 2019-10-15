@@ -875,21 +875,7 @@ revert n Hlen.
 induction len; intros. {
   destruct n; [ easy | now destruct n ].
 }
-...
-
-Compute (divisors_loop 24 1 24).
-Compute (divisors_loop 22 2 24).
-Compute (divisors_loop 11 2 24).
-Compute (divisors_loop 9 3 24).
-Compute (divisors_loop 6 3 24).
-Compute (divisors_loop 4 4 24).
-Compute (divisors_loop 3 4 24).
-Compute (divisors_loop 1 5 24).
-Compute (divisors_loop 60 1 60).
-Compute (divisors_loop 58 2 60).
-Compute (divisors_loop 29 2 60).
-Compute (divisors_loop 29 3 60).
-
+Abort. (*
 ...
 intros.
 unfold divisors_of.
@@ -918,6 +904,7 @@ destruct n; [ easy | ].
 destruct n; [ easy | ].
 destruct n; [ easy | ].
 ...
+*)
 
 Theorem glip {F : field} : ∀ u v n l,
   fold_right (log_prod_add u v n) f_zero l =
