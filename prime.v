@@ -715,38 +715,45 @@ destruct p. {
 Abort.
 
 Theorem fd_loop_is_prime :
-  ∀ cnt n d, 2 ≤ d ≤ n → cnt + d = n + 1 → is_prime (fd_loop cnt n d) = true.
+  ∀ cnt n d,
+  2 ≤ d ≤ n
+  → cnt + d = n + 1
+  → (∀ e, 2 ≤ e < d → n mod e ≠ 0)
+  → is_prime (fd_loop cnt n d) = true.
 Proof.
-intros * Hd Hcnt.
-revert d Hd Hcnt.
+intros * Hd Hcnt He.
+revert d Hd Hcnt He.
 induction cnt; intros; [ flia Hd Hcnt | cbn ].
+assert (H : cnt + d = n) by flia Hcnt.
+move H before Hcnt; clear Hcnt; rename H into Hcnt.
 remember (is_prime d) as p eqn:Hp; symmetry in Hp.
 destruct p. {
   remember (n mod d) as nd eqn:Hnd; symmetry in Hnd.
   destruct nd; [ easy | ].
   destruct (lt_dec (d + 1) n) as [Hdn| Hdn]. {
-    apply IHcnt; [ flia Hd Hdn | flia Hcnt ].
+    apply IHcnt; [ flia Hd Hdn | flia Hcnt | ].
+    intros e Hed.
+    destruct (Nat.eq_dec d e) as [Hde| Hde]. {
+      now subst e; rewrite Hnd.
+    }
+    apply He.
+    flia Hed Hde.
   }
   apply Nat.nlt_ge in Hdn.
-  destruct (Nat.eq_dec n d) as [H1| H1]. {
-    subst d.
+  destruct (Nat.eq_dec n d) as [Hn| Hn]. {
+    rewrite Hn in Hnd.
     rewrite Nat.mod_same in Hnd; [ easy | flia Hd ].
   }
-  replace cnt with 1 in Hcnt |-* by lia.
+  assert (Hn' : n = d + 1) by flia Hd Hn Hdn.
+  replace cnt with 1 by flia Hcnt Hn'.
   cbn.
-  replace n with (d + 1) in * by flia Hd Hdn H1.
-  rewrite Nat.mod_same; [ | flia ].
-  remember (is_prime (d + 1)) as q eqn:Hq; symmetry in Hq.
-  destruct q; [ easy | ].
-  cbn.
-Compute (fd_loop 2 4 3).
+  rewrite <- Hn'.
+  rewrite Nat.mod_same; [ | flia Hd ].
+  remember (is_prime n) as q eqn:Hq; symmetry in Hq.
+  destruct q; [ easy | exfalso ].
+  clear Hdn Hn.
 ...
-
-  transitivity d; [ easy | apply Nat.le_add_r ].
-}
-apply IHcnt.
-transitivity d; [ easy | apply Nat.le_add_r ].
-Qed.
+Compute (fd_loop 3 4 2).
 ...
 
 Theorem fd_loop_is_prime :
