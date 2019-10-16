@@ -679,7 +679,7 @@ Compute (nat_of_number (Times 5 eq_refl (Times 5 eq_refl One))).
 
 Fixpoint fd_loop cnt n d :=
   match cnt with
-  | 0 => 2
+  | 0 => 0
   | S cnt' =>
       if is_prime d then
         match n mod d with
@@ -689,11 +689,64 @@ Fixpoint fd_loop cnt n d :=
       else fd_loop cnt' n (d + 1)
   end.
 
-Definition first_prime_divisor n := fd_loop n n 2.
+Definition first_prime_divisor n := fd_loop (n - 1) n 2.
 
+Theorem fd_loop_is_prime :
+  ∀ cnt n d, 2 ≤ d ≤ n → cnt + d = n + 1 → fd_loop cnt n d ≠ 0.
+Proof.
+intros * Hd Hnd.
+revert d Hd Hnd.
+induction cnt; intros; [ flia Hd Hnd | cbn ].
+remember (is_prime d) as p eqn:Hp; symmetry in Hp.
+destruct p. {
+  remember (n mod d) as m eqn:Hm; symmetry in Hm.
+  destruct m; [ flia Hd | ].
+  destruct cnt. {
+    exfalso.
+    replace d with n in Hm by flia Hnd.
+    rewrite Nat.mod_same in Hm; [ easy | flia Hd ].
+  }
+  cbn.
+  remember (is_prime (d + 1)) as q eqn:Hq; symmetry in Hq.
+  destruct q. {
+    remember (n mod (d + 1)) as m1 eqn:Hm1; symmetry in Hm1.
+    destruct m1; [ flia | ].
+    destruct (Nat.eq_dec d n) as [Hdn| Hdn]; [ flia Hnd Hdn | ].
 ...
 
-Compute (first_prime_divisor 343).
+Theorem fd_loop_is_prime :
+  ∀ cnt n d, 2 ≤ d ≤ n → cnt + d = n + 1 → is_prime (fd_loop cnt n d) = true.
+Proof.
+intros * Hd Hcnt.
+revert d Hd Hcnt.
+induction cnt; intros; [ flia Hd Hcnt | cbn ].
+remember (is_prime d) as p eqn:Hp; symmetry in Hp.
+destruct p. {
+  remember (n mod d) as nd eqn:Hnd; symmetry in Hnd.
+  destruct nd; [ easy | ].
+  destruct (lt_dec (d + 1) n) as [Hdn| Hdn]. {
+    apply IHcnt; [ flia Hd Hdn | flia Hcnt ].
+  }
+  apply Nat.nlt_ge in Hdn.
+  destruct (Nat.eq_dec n d) as [H1| H1]. {
+    subst d.
+    rewrite Nat.mod_same in Hnd; [ easy | flia Hd ].
+  }
+  replace cnt with 1 in Hcnt |-* by lia.
+  cbn.
+  replace n with (d + 1) in * by flia Hd Hdn H1.
+  rewrite Nat.mod_same; [ | flia ].
+  remember (is_prime (d + 1)) as q eqn:Hq; symmetry in Hq.
+  destruct q; [ easy | ].
+  cbn.
+...
+
+  transitivity d; [ easy | apply Nat.le_add_r ].
+}
+apply IHcnt.
+transitivity d; [ easy | apply Nat.le_add_r ].
+Qed.
+...
 
 Theorem fd_loop_is_prime :
   ∀ cnt n d, 2 ≤ d → is_prime (fd_loop cnt n d) = true.
