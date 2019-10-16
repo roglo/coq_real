@@ -23,6 +23,7 @@ Proof. easy. Qed.
 
 (* *)
 
+(*
 Fixpoint prime_test n d :=
   match d with
   | 0 | 1 => true
@@ -38,7 +39,39 @@ Definition is_prime n :=
   | 0 | 1 => false
   | S n' => prime_test n n'
   end.
+*)
 
+Fixpoint prime_test cnt n d :=
+  match cnt with
+  | 0 => true
+  | S c =>
+      match n mod d with
+      | 0 => false
+      | S _ => prime_test c n (d + 1)
+      end
+  end.
+
+Definition is_prime n :=
+  match n with
+  | 0 | 1 => false
+  | S (S c) => prime_test c n 2
+  end.
+
+Theorem not_prime_exists_prime_div : ∀ n d, 2 ≤ n → 2 ≤ d ≤ n →
+  prime_test (n - d) n d = false
+  → ∃ m, is_prime m = true ∧ Nat.divide m n.
+Proof.
+intros * Hn Hd Hp.
+remember (n - d) as cnt eqn:Hcnt; symmetry in Hcnt.
+destruct cnt; [ easy | ].
+cbn in Hp.
+remember (n mod d) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  exists d; clear Hp.
+  apply Nat.mod_divide in Hm; [ | flia Hd ].
+  split; [ | easy ].
+...
+(*
 Theorem not_prime_div : ∀ n d, 2 ≤ n → d < n →
   prime_test n d = false
   → ∃ m, is_prime m = true ∧ Nat.divide m n.
@@ -68,6 +101,7 @@ apply IHd in Hp; [ | easy | flia Hd ].
 destruct Hp as (p & Hp & Hpn).
 now exists p.
 Qed.
+*)
 
 Theorem prime_divisor : ∀ n, 2 ≤ n →
   ∃ d, is_prime d = true ∧ Nat.divide d n.
@@ -79,6 +113,14 @@ clear Hn.
 remember (is_prime (S (S n))) as b eqn:Hb.
 symmetry in Hb.
 destruct b; [ now exists (S (S n)) | ].
+unfold is_prime in Hb.
+replace n with (S (S n) - 2) in Hb at 1 by flia.
+apply (not_prime_div (S (S n)) 2); [ flia | flia | easy ].
+...
+apply (not_prime_div _ 2); [ flia | flia | ].
+replace (S (S n) - S n) with 1 by flia.
+unfold is_prime in Hb.
+...
 apply (not_prime_div _ (S n)); [ flia | flia | easy ].
 Qed.
 
@@ -714,12 +756,22 @@ destruct p. {
     destruct (Nat.eq_dec d n) as [Hdn| Hdn]; [ flia Hnd Hdn | ].
 Abort.
 
-Theorem is_not_prime_twice : ∀ n, is_prime (2 * S (S n)) = false.
+Theorem is_not_prime_twice : ∀ n, is_prime (2 * (n + 2)) = false.
 Proof.
 intros.
+remember (2 * (n + 2)) as m eqn:Hm.
+symmetry in Hm.
 unfold is_prime.
-cbn - [ prime_test ].
-replace (n + S (S (n + 0))) with (S (2 * n + 1)) by flia.
+destruct m; [ easy | ].
+destruct m; [ easy | ].
+replace (S (S m)) with (m + 2) in Hm |-* by flia.
+replace (S m) with (m + 1) by flia.
+assert (H : m = 2 * (n + 1)) by flia Hm.
+clear Hm; rename H into Hm.
+Print is_prime.
+Print prime_test.
+...
+replace (S (S (n + S (S (n + 0))))) with (2 * S (S n)) by flia.
 remember (2 * n + 1) as d eqn:Hd.
 remember (S (S (S d))) as k eqn:Hk.
 cbn - [ "mod" ].
