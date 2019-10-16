@@ -756,6 +756,17 @@ destruct p. {
   destruct d; [ flia Hd | ].
   destruct d; [ flia Hd | ].
   clear Hd.
+  assert (Hdo : d mod 2 = 1). {
+    remember (d mod 2) as d2 eqn:Hd2; symmetry in Hd2.
+    destruct d2. {
+      apply Nat.mod_divides in Hd2; [ | easy ].
+      destruct Hd2 as (c, Hc).
+      rewrite Hc in Hp.
+      replace (S (S (2 * c))) with (2 * S c) in Hp by flia.
+      destruct c; [ now rewrite Hc in Hq | ].
+(* Hp contradiction *)
+...
+
 (* therefore d is odd (otherwize Hp would be false),
    therefore n is even greater than 2 because of Hn'
    which contradicts He *)
