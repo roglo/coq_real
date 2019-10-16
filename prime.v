@@ -1038,18 +1038,36 @@ destruct c; [ easy | ].
 cbn; flia.
 Qed.
 
-Theorem glop : ∀ cnt n,
+Theorem glop : ∀ cnt n d,
   2 ≤ n ≤ cnt
-  → fd_loop cnt n 2 = hd 0 (tl (divisors_of n)).
+  → fd_loop cnt n d ∈ divisors_of n.
 Proof.
 intros * (Hn, Hcnt).
-revert n Hn Hcnt.
-induction cnt; intros. {
-  apply Nat.le_0_r in Hcnt; subst n.
-  flia Hn.
-}
-cbn - [ "mod" ].
-(* chiasse de pute fd_looop cnt n 3 *)
+destruct cnt; [ flia Hn Hcnt | ].
+destruct n; [ easy | ].
+destruct n; [ flia Hn | clear Hn ].
+apply Nat.succ_le_mono in Hcnt.
+revert n d Hcnt.
+induction cnt; intros; [ flia Hcnt | ].
+remember (S cnt) as s; cbn - [ "mod" ]; subst s.
+rewrite Nat.mod_1_r.
+remember (S cnt) as s; cbn - [ "mod" ]; subst s.
+remember (is_prime d) as p eqn:Hp; symmetry in Hp.
+destruct p. {
+  remember (S (S n) mod d) as m eqn:Hm; symmetry in Hm.
+  destruct m. {
+    destruct d; [ easy | ].
+    destruct d; [ easy | right ].
+...
+
+remember (is_prime d) as p eqn:Hp; symmetry in Hp.
+destruct p. {
+  remember (n mod d) as m eqn:Hm; symmetry in Hm.
+  destruct m. {
+    apply divisor_iff; [ easy | ].
+    split; [ easy | ].
+    now intros H; rewrite H in Hp.
+  }
 ...
 
 Theorem mem_first_divisor_divisors : ∀ n,
