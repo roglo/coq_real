@@ -712,7 +712,7 @@ destruct p. {
     remember (n mod (d + 1)) as m1 eqn:Hm1; symmetry in Hm1.
     destruct m1; [ flia | ].
     destruct (Nat.eq_dec d n) as [Hdn| Hdn]; [ flia Hnd Hdn | ].
-...
+Abort.
 
 Theorem fd_loop_is_prime :
   ∀ cnt n d, 2 ≤ d ≤ n → cnt + d = n + 1 → is_prime (fd_loop cnt n d) = true.
@@ -739,6 +739,7 @@ destruct p. {
   remember (is_prime (d + 1)) as q eqn:Hq; symmetry in Hq.
   destruct q; [ easy | ].
   cbn.
+Compute (fd_loop 2 4 3).
 ...
 
   transitivity d; [ easy | apply Nat.le_add_r ].
