@@ -57,6 +57,7 @@ Definition is_prime n :=
   | S (S c) => prime_test c n 2
   end.
 
+(*
 Theorem not_prime_exists_prime_div : ∀ n d, 2 ≤ n → 2 ≤ d ≤ n →
   prime_test (n - d) n d = false
   → ∃ m, is_prime m = true ∧ Nat.divide m n.
@@ -71,6 +72,7 @@ destruct m. {
   apply Nat.mod_divide in Hm; [ | flia Hd ].
   split; [ | easy ].
 ...
+*)
 (*
 Theorem not_prime_div : ∀ n d, 2 ≤ n → d < n →
   prime_test n d = false
@@ -107,6 +109,7 @@ Theorem prime_divisor : ∀ n, 2 ≤ n →
   ∃ d, is_prime d = true ∧ Nat.divide d n.
 Proof.
 intros * Hn.
+...
 destruct n; [ flia Hn | ].
 destruct n; [ flia Hn | ].
 clear Hn.
