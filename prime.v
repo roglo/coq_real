@@ -764,7 +764,31 @@ destruct p. {
       rewrite Hc in Hp.
       replace (S (S (2 * c))) with (2 * S c) in Hp by flia.
       destruct c; [ now rewrite Hc in Hq | ].
-(* Hp contradiction *)
+      clear - Hp; exfalso.
+(*lemma*)
+assert (H : is_prime (2 * S (S c)) = false). {
+clear Hp.
+unfold is_prime.
+cbn - [ prime_test ].
+replace (c + S (S (c + 0))) with (2 * c + 2) by flia.
+remember (2 * c + 2) as d eqn:Hd.
+Print prime_test.
+...
+      cbn - [ "mod" ] in Hp.
+      rewrite Nat.add_0_r in Hp.
+      rewrite <- Nat.add_succ_comm in Hp.
+      cbn - [ "mod" ] in Hp.
+      replace (S (S (c + S c))) with (2 * c + 3) in Hp at 1 2 by flia.
+      replace (S (2 * c + 3)) with (1 + 1 * (2 * c + 3)) in Hp by flia.
+      rewrite Nat.mod_add in Hp; [ | flia ].
+      rewrite Nat.mod_1_l in Hp; [ | flia ].
+      rewrite <- Nat.add_succ_comm in Hp.
+      cbn - [ "mod" ] in Hp.
+      replace (S (S (c + c))) with (2 * c + 2) in Hp by flia.
+      replace (S (S (2 * c + 2))) with (2 + 1 * (2 * c + 2)) in Hp at 1 by flia.
+      rewrite Nat.mod_add in Hp; [ | flia ].
+      destruct c; [ easy | ].
+        cbn - [ "mod" ] in Hp.
 ...
 
 (* therefore d is odd (otherwize Hp would be false),
