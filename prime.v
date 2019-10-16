@@ -719,15 +719,24 @@ Proof.
 intros.
 unfold is_prime.
 cbn - [ prime_test ].
-replace (n + S (S (n + 0))) with (2 * n + 2) by flia.
-remember (2 * n + 2) as d eqn:Hd.
-assert (H : 3 ≤ S d) by flia Hd.
-remember (S d) as e eqn:He.
-clear n d Hd He; rename e into d.
-destruct d; [ flia H | ].
-destruct d; [ flia H | clear H ].
-induction d. {
-  cbn.
+replace (n + S (S (n + 0))) with (S (2 * n + 1)) by flia.
+remember (2 * n + 1) as d eqn:Hd.
+remember (S (S (S d))) as k eqn:Hk.
+cbn - [ "mod" ].
+Print prime_test.
+remember (k mod S (S d)) as m eqn:Hm; symmetry in Hm.
+destruct m; [ easy | ].
+replace d with (S (n * 2)) by flia Hd.
+replace (S (n * 2)) with d by flia Hd.
+remember (k mod S d) as m1 eqn:Hm1; symmetry in Hm1.
+destruct m1; [ easy | ].
+destruct d; [ flia Hd | ].
+cbn - [ "mod" ].
+destruct d; [ now subst k | ].
+remember (k mod (S (S d))) as m2 eqn:Hm2; symmetry in Hm2.
+destruct m2; [ easy | ].
+cbn - [ "mod" ].
+destruct d; [ subst k; flia Hd | ].
 ...
 
 Theorem fd_loop_is_prime :
