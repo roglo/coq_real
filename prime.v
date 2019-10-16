@@ -691,6 +691,8 @@ Fixpoint fd_loop cnt n d :=
 
 Definition first_prime_divisor n := fd_loop n n 2.
 
+...
+
 Compute (first_prime_divisor 343).
 
 Theorem fd_loop_is_prime :
@@ -1038,6 +1040,7 @@ destruct c; [ easy | ].
 cbn; flia.
 Qed.
 
+(*
 Theorem glop : ∀ cnt n d,
   2 ≤ n ≤ cnt
   → fd_loop cnt n d ∈ divisors_of n.
@@ -1069,7 +1072,9 @@ destruct p. {
     now intros H; rewrite H in Hp.
   }
 ...
+*)
 
+(*
 Theorem first_prime_divisor_is_2nd_divisor : ∀ n,
   2 ≤ n → first_prime_divisor n = List.hd 0 (List.tl (divisors_of n)).
 Proof.
@@ -1081,7 +1086,63 @@ destruct n; [ easy | ].
 cbn - [ "mod" ].
 rewrite Nat.mod_1_r.
 cbn - [ "mod" ].
+...
+*)
 
+Theorem mod_first_prime_divisor : ∀ n,
+  2 ≤ n
+  → n mod first_prime_divisor n = 0.
+Proof.
+intros * Hn.
+destruct n; [ easy | ].
+destruct n; [ flia Hn | clear Hn ].
+remember (S n) as s; cbn - [ "mod" ]; subst s.
+remember (S (S n) mod 2) as m eqn:Hm; symmetry in Hm.
+destruct m; [ easy | ].
+Print fd_loop.
+Print first_prime_divisor.
+Compute (fd_loop 22 23 2).
+Compute (fd_loop 23 24 2).
+Compute (fd_loop 10 10 2).
+Compute (fd_loop 9 10 3).
+Compute (fd_loop 8 10 4).
+Compute (fd_loop 7 10 5).
+Compute (fd_loop 6 10 6).
+Compute (fd_loop 15 15 2).
+Compute (fd_loop 14 15 3).
+Compute (fd_loop 13 15 4).
+Compute (fd_loop 12 15 5).
+Compute (fd_loop 11 15 6).
+...
+cnt + d = n + 2
+Theorem glop : ∀ cnt n d, 2 ≤ n → n + 2 ≤ cnt + d → n mod fd_loop cnt n d = 0.
+Proof.
+intros * Hn Hcnt.
+revert d Hcnt.
+induction cnt; intros. {
+  cbn - [ "mod" ].
+
+  destruct n; [ flia Hn | ].
+  destruct n; [ flia Hn | clear Hn ].
+...
+
+; [ flia Hcnt | cbn ].
+remember (is_prime d) as b eqn:Hb; symmetry in Hb.
+destruct b. {
+  remember (n mod d) as m eqn:Hm; symmetry in Hm.
+  destruct m; [ easy | ].
+  destruct (lt_dec (S d) n) as [H1| H1]. {
+    apply IHcnt; [ flia H1 | flia Hndc H1 ].
+  }
+  apply Nat.nlt_ge in H1.
+Print fd_loop.
+
+    apply Nat.succ_le_mono.
+  transitivity (n - d + 2); [ | easy ].
+enough (S d ≤ n).
+  replace (S (n - (d + 1) + 2)) with (S n - S d + 2) by lia.
+
+  rewrite Nat.sub_add_distr.
 ...
 
 Theorem mem_first_divisor_divisors : ∀ n,
@@ -1094,6 +1155,7 @@ split. 2: {
   specialize (first_divisor_is_prime n) as H1.
   now rewrite H in H1.
 }
+...
 unfold first_prime_divisor.
 destruct n; [ easy | ].
 cbn - [ "mod" ].
