@@ -752,6 +752,13 @@ destruct p. {
   remember (is_prime n) as q eqn:Hq; symmetry in Hq.
   destruct q; [ easy | exfalso ].
   clear Hdn Hn.
+  rewrite Hn' in Hq.
+  destruct d; [ flia Hd | ].
+  destruct d; [ flia Hd | ].
+  clear Hd.
+(* therefore d is odd (otherwize Hp would be false),
+   therefore n is even greater than 2 because of Hn'
+   which contradicts He *)
 ...
 Compute (fd_loop 3 4 2).
 ...
