@@ -714,6 +714,22 @@ destruct p. {
     destruct (Nat.eq_dec d n) as [Hdn| Hdn]; [ flia Hnd Hdn | ].
 Abort.
 
+Theorem is_not_prime_twice : ∀ n, is_prime (2 * S (S n)) = false.
+Proof.
+intros.
+unfold is_prime.
+cbn - [ prime_test ].
+replace (n + S (S (n + 0))) with (2 * n + 2) by flia.
+remember (2 * n + 2) as d eqn:Hd.
+assert (H : 3 ≤ S d) by flia Hd.
+remember (S d) as e eqn:He.
+clear n d Hd He; rename e into d.
+destruct d; [ flia H | ].
+destruct d; [ flia H | clear H ].
+induction d. {
+  cbn.
+...
+
 Theorem fd_loop_is_prime :
   ∀ cnt n d,
   2 ≤ d ≤ n
@@ -765,14 +781,6 @@ destruct p. {
       replace (S (S (2 * c))) with (2 * S c) in Hp by flia.
       destruct c; [ now rewrite Hc in Hq | ].
       clear - Hp; exfalso.
-(*lemma*)
-assert (H : is_prime (2 * S (S c)) = false). {
-clear Hp.
-unfold is_prime.
-cbn - [ prime_test ].
-replace (c + S (S (c + 0))) with (2 * c + 2) by flia.
-remember (2 * c + 2) as d eqn:Hd.
-Print prime_test.
 ...
       cbn - [ "mod" ] in Hp.
       rewrite Nat.add_0_r in Hp.
