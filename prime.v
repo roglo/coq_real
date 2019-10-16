@@ -1070,7 +1070,7 @@ destruct p. {
   }
 ...
 
-Theorem mem_first_divisor_divisors : ∀ n,
+Theorem first_prime_divisor_is_2nd_divisor : ∀ n,
   2 ≤ n → first_prime_divisor n = List.hd 0 (List.tl (divisors_of n)).
 Proof.
 intros n Hn.
