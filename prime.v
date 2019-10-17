@@ -113,11 +113,24 @@ intros * Hn.
 remember (is_prime n) as b eqn:Hb; symmetry in Hb.
 destruct b; [ now exists n | ].
 specialize (not_prime_exists_div n Hn Hb) as (a & b & Han & Hbn & Hnab).
-subst n.
 remember (is_prime a) as pa eqn:Hpa; symmetry in Hpa.
 destruct pa. {
-  exists a; split; [ easy | apply Nat.divide_factor_l ].
+  exists a; split; [ easy | subst n; apply Nat.divide_factor_l ].
 }
+assert (Ha : 2 ≤ a). {
+  subst n.
+  destruct a; [ flia Han | ].
+  destruct a; [ flia Hbn | flia ].
+}
+enough (H : ∃ d, is_prime d = true ∧ Nat.divide d a). {
+  destruct H as (d & Hp & Hd).
+  exists d; split; [ easy | ].
+  subst n.
+  now apply Nat.divide_mul_l.
+}
+clear Hbn Han.
+specialize (not_prime_exists_div a Ha Hpa) as (c & d & Hca & Hda & Hacd).
+...
 assert (Ha : 2 ≤ a). {
   destruct a; [ flia Han | ].
   destruct a; [ flia Hbn | flia ].
@@ -127,13 +140,7 @@ enough (H : ∃ d, is_prime d = true ∧ Nat.divide d a). {
   exists d; split; [ easy | ].
   now apply Nat.divide_mul_l.
 }
-remember (a * b) as n.
-assert (Hna : Nat.divide a n). {
-  subst n.
-  now apply Nat.divide_mul_l.
-}
-clear - Hb Han Ha Hpa Hn Hna.
-move Han before Hna.
+clear Hbn Han.
 ...
 Fixpoint toto c n (Hn : 2 ≤ n) (Hp : is_prime n = false) :=
   match c with
