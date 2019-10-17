@@ -113,6 +113,18 @@ intros * Hn.
 remember (is_prime n) as b eqn:Hb; symmetry in Hb.
 destruct b; [ now exists n | ].
 specialize (not_prime_exists_div n Hn Hb) as (a & b & Han & Hbn & Hnab).
+subst n.
+remember (is_prime a) as pa eqn:Hpa; symmetry in Hpa.
+destruct pa. {
+  exists a; split; [ easy | apply Nat.divide_factor_l ].
+}
+assert (Ha : 2 ≤ a). {
+  destruct a; [ flia Han | ].
+  destruct a; [ flia Hbn | flia ].
+}
+clear Hb Hn Hbn.
+specialize (not_prime_exists_div a Ha Hpa) as (a1 & b1 & Han1 & Hbn & Hnab).
+subst a.
 ...
 Fixpoint toto c n (Hn : 2 ≤ n) (Hp : is_prime n = false) :=
   match c with
