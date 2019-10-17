@@ -130,17 +130,27 @@ enough (H : ∃ d, is_prime d = true ∧ Nat.divide d a). {
 }
 clear Hbn Han.
 specialize (not_prime_exists_div a Ha Hpa) as (c & d & Hca & Hda & Hacd).
-...
-assert (Ha : 2 ≤ a). {
-  destruct a; [ flia Han | ].
-  destruct a; [ flia Hbn | flia ].
+assert (Hc : 2 ≤ c). {
+  destruct c; [ flia Hacd Ha | ].
+  destruct c; [ flia Hacd Hda | flia ].
 }
-enough (H : ∃ d, is_prime d = true ∧ Nat.divide d a). {
-  destruct H as (d & Hp & Hd).
-  exists d; split; [ easy | ].
+enough (H : ∃ d, is_prime d = true ∧ Nat.divide d c). {
+  destruct H as (e & Hp & Hd).
+  exists e; split; [ easy | ].
+  rewrite Hacd.
   now apply Nat.divide_mul_l.
 }
-clear Hbn Han.
+clear Hca Hda.
+...
+  n : nat
+  Hn : 2 ≤ n
+  Hb : is_prime n = false
+  a, b : nat
+  Hnab : n = a * b
+  Hpa : is_prime a = false
+  Ha : 2 ≤ a
+  ============================
+  ∃ d : nat, is_prime d = true ∧ Nat.divide d a
 ...
 Fixpoint toto c n (Hn : 2 ≤ n) (Hp : is_prime n = false) :=
   match c with
