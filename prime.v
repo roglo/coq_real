@@ -57,22 +57,88 @@ Definition is_prime n :=
   | S (S c) => prime_test c n 2
   end.
 
-(*
+Theorem false_prime_test_exists_div : ∀ n, 2 ≤ n →
+  prime_test (n - 2) n 2 = false
+  → ∃ a b, a < n ∧ b < n ∧ n = a * b.
+Proof.
+intros n Hn Hp.
+destruct n; [ flia Hn | ].
+destruct n; [ flia Hn | clear Hn ].
+replace (S (S n) - 2) with n in Hp by flia.
+replace (S (S n)) with (n + 2) in Hp |-* by flia.
+destruct n; [ easy | ].
+replace (S n + 2) with (n + 3) in Hp |-* by flia.
+cbn - [ "mod" ] in Hp.
+remember ((n + 3) mod 2) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  apply Nat.mod_divides in Hm; [ | easy ].
+  destruct Hm as (m, Hm).
+  destruct m; [ flia Hm | ].
+  exists 2, (S m).
+  split; [ flia | ].
+  split; [ | easy ].
+  rewrite Hm; flia.
+}
+destruct n; [ easy | ].
+replace (S n + 3) with (n + 4) in Hm, Hp |-* by flia.
+cbn - [ "mod" ] in Hp.
+remember ((n + 4) mod 3) as m1 eqn:Hm1; symmetry in Hm1.
+move m1 before m.
+destruct m1. {
+  apply Nat.mod_divides in Hm1; [ | easy ].
+  destruct Hm1 as (m1, Hm1).
+  destruct m1; [ flia Hm1 | ].
+  exists 3, (S m1).
+  split; [ flia | ].
+  split; [ | easy ].
+  rewrite Hm1; flia.
+}
+destruct n; [ easy | ].
+replace (S n + 4) with (n + 5) in Hm, Hm1, Hp |-* by flia.
+cbn - [ "mod" ] in Hp.
+remember ((n + 5) mod 4) as m2 eqn:Hm2; symmetry in Hm2.
+move m2 before m1.
+destruct m2. {
+  apply Nat.mod_divides in Hm2; [ | easy ].
+  destruct Hm2 as (m2, Hm2).
+  destruct m2; [ flia Hm2 | ].
+  exists 4, (S m2).
+  split; [ flia | ].
+  split; [ | easy ].
+  rewrite Hm2; flia.
+}
+destruct n; [ easy | ].
+replace (S n + 5) with (n + 6) in Hm, Hm1, Hm2, Hp |-* by flia.
+...
+
+Theorem not_prime_exists_div : ∀ n, 2 ≤ n →
+  is_prime n = false
+  → ∃ a b, a < n ∧ b < n ∧ n = a * b.
+Proof.
+intros n Hn Hp.
+unfold is_prime in Hp.
+destruct n; [ flia Hn | ].
+destruct n; [ flia Hn | ].
+...
+
 Theorem not_prime_exists_prime_div : ∀ n d, 2 ≤ n → 2 ≤ d ≤ n →
   prime_test (n - d) n d = false
   → ∃ m, is_prime m = true ∧ Nat.divide m n.
 Proof.
 intros * Hn Hd Hp.
 remember (n - d) as cnt eqn:Hcnt; symmetry in Hcnt.
-destruct cnt; [ easy | ].
+revert d Hd Hcnt Hp.
+induction cnt; intros; [ easy | ].
 cbn in Hp.
 remember (n mod d) as m eqn:Hm; symmetry in Hm.
 destruct m. {
+  clear Hp.
+  apply Nat.mod_divide in Hm; [ | flia Hd ].
+...
   exists d; clear Hp.
   apply Nat.mod_divide in Hm; [ | flia Hd ].
   split; [ | easy ].
 ...
-*)
 (*
 Theorem not_prime_div : ∀ n d, 2 ≤ n → d < n →
   prime_test n d = false
@@ -109,7 +175,6 @@ Theorem prime_divisor : ∀ n, 2 ≤ n →
   ∃ d, is_prime d = true ∧ Nat.divide d n.
 Proof.
 intros * Hn.
-...
 destruct n; [ flia Hn | ].
 destruct n; [ flia Hn | ].
 clear Hn.
@@ -118,6 +183,7 @@ symmetry in Hb.
 destruct b; [ now exists (S (S n)) | ].
 unfold is_prime in Hb.
 replace n with (S (S n) - 2) in Hb at 1 by flia.
+...
 apply (not_prime_div (S (S n)) 2); [ flia | flia | easy ].
 ...
 apply (not_prime_div _ 2); [ flia | flia | ].
