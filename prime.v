@@ -114,6 +114,29 @@ remember (is_prime n) as b eqn:Hb; symmetry in Hb.
 destruct b; [ now exists n | ].
 specialize (not_prime_exists_div n Hn Hb) as (a & b & Han & Hbn & Hnab).
 ...
+induction n as (n, IHn) using (well_founded_ind lt_wf).
+apply (well_founded_ind lt_wf).
+Print Wf.
+Check well_founded_ind.
+Require Wf.
+Search Wf.well_founded.
+specialize (well_founded_ind lt_wf (λ n, n < 2 ∨ is_prime n = true)) as H1.
+cbn in H1.
+assert (∀ x, (∀ y, y < x → y < 2 ∨ is_prime y = true) → x < 2 ∨ is_prime x = true). {
+  clear.
+  intros n Hn.
+  specialize (Decidable.not_and (2 ≤ n) (is_prime n = false)) as H1.
+  specialize (H1 (Nat.le_decidable _ _)).
+  enough (¬ 2 ≤ n ∨ is_prime n ≠ false). {
+    destruct H as [H| H]; [ now left; apply Nat.nle_gt | ].
+    now right; apply Bool.not_false_is_true.
+  }
+  apply H1; clear H1.
+  intros (H1, H2).
+  apply not_prime_exists_div in H2; [ | easy ].
+  destruct H2 as (a & b & Ha & Hb & Hnab).
+  specialize (Hn a Ha) as H2.
+...
 
 Theorem Nat_fact_succ : ∀ n, fact (S n) = S n * fact n.
 Proof. easy. Qed.
