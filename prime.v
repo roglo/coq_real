@@ -122,9 +122,13 @@ assert (Ha : 2 ≤ a). {
   destruct a; [ flia Han | ].
   destruct a; [ flia Hbn | flia ].
 }
-clear Hb Hn Hbn.
-specialize (not_prime_exists_div a Ha Hpa) as (a1 & b1 & Han1 & Hbn & Hnab).
-subst a.
+enough (H : ∃ d, is_prime d = true ∧ Nat.divide d a). {
+  destruct H as (d & Hp & Hd).
+  exists d; split; [ easy | ].
+  now apply Nat.divide_mul_l.
+}
+remember (a * b) as n.
+clear - Hb Han Ha.
 ...
 Fixpoint toto c n (Hn : 2 ≤ n) (Hp : is_prime n = false) :=
   match c with
