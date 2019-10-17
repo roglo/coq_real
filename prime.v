@@ -128,7 +128,12 @@ enough (H : ∃ d, is_prime d = true ∧ Nat.divide d a). {
   now apply Nat.divide_mul_l.
 }
 remember (a * b) as n.
-clear - Hb Han Ha.
+assert (Hna : Nat.divide a n). {
+  subst n.
+  now apply Nat.divide_mul_l.
+}
+clear - Hb Han Ha Hpa Hn Hna.
+move Han before Hna.
 ...
 Fixpoint toto c n (Hn : 2 ≤ n) (Hp : is_prime n = false) :=
   match c with
