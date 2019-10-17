@@ -114,6 +114,15 @@ remember (is_prime n) as b eqn:Hb; symmetry in Hb.
 destruct b; [ now exists n | ].
 specialize (not_prime_exists_div n Hn Hb) as (a & b & Han & Hbn & Hnab).
 ...
+Fixpoint toto c n (Hn : 2 ≤ n) (Hp : is_prime n = false) :=
+  match c with
+  | 0 => 0
+  | S c' =>
+      match not_prime_exists_div n Hn Hp with
+      | ex_intro _ a (ex_intro _ b P) => 42
+      end
+  end.
+...
 induction n as (n, IHn) using (well_founded_ind lt_wf).
 apply (well_founded_ind lt_wf).
 Print Wf.
