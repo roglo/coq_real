@@ -1443,6 +1443,21 @@ destruct (le_dec (length l) k) as [Hlk| Hlk]. {
   rewrite Hl.
   cbn - [ removelast ].
   unfold log_prod_add at 2.
+  rewrite (f_mul_comm (v 1)).
+  rewrite Nat.div_same; [ | easy ].
+  rewrite Nat.div_1_r, f_add_0_l.
+  rewrite <- H2.
+  remember (u n * v 1)%F as x eqn:Hx.
+  replace x with (f_zero + x)%F at 1 by now rewrite f_add_0_l.
+  rewrite fold_log_prod_add_assoc; f_equal.
+  clear x Hx.
+  replace (firstn (length l) (a :: l)) with (removelast (a :: l)). 2: {
+    clear; revert a; induction l as [| b l]; intros; [ easy | ].
+    remember (b :: l) as l'; cbn; subst l'.
+    now rewrite IHl.
+  }
+  remember (a :: l) as l'.
+  clear a l Heql'; rename l' into l.
 ...
 intros * Hl.
 symmetry in Hl.
