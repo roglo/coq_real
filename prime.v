@@ -23,24 +23,6 @@ Proof. easy. Qed.
 
 (* *)
 
-(*
-Fixpoint prime_test n d :=
-  match d with
-  | 0 | 1 => true
-  | S d' =>
-      match n mod d with
-      | 0 => false
-      | _ => prime_test n d'
-      end
-  end.
-
-Definition is_prime n :=
-  match n with
-  | 0 | 1 => false
-  | S n' => prime_test n n'
-  end.
-*)
-
 Fixpoint prime_test cnt n d :=
   match cnt with
   | 0 => true
@@ -57,40 +39,68 @@ Definition is_prime n :=
   | S (S c) => prime_test c n 2
   end.
 
-Theorem prime_test_false_exists_div : ∀ n k,
+Theorem prime_test_false_exists_div_iff : ∀ n k,
   2 ≤ k
   → (∀ d, 2 ≤ d < k → n mod d ≠ 0)
   → prime_test (n - k) n k = false
-  → ∃ a b : nat, a < n ∧ b < n ∧ n = a * b.
+  ↔ ∃ a b : nat, a < n ∧ b < n ∧ n = a * b.
 Proof.
-intros * Hk Hd Hp.
-remember (n - k) as cnt eqn:Hcnt; symmetry in Hcnt.
-revert n k Hk Hd Hcnt Hp.
-induction cnt; intros; [ easy | ].
-cbn in Hp.
-remember (n mod k) as m eqn:Hm; symmetry in Hm.
-destruct m. {
-  destruct k; [ easy | ].
-  apply Nat.mod_divides in Hm; [ | easy ].
-  destruct Hm as (m, Hm).
-  destruct m; [ now rewrite Hm, Nat.mul_0_r in Hcnt | ].
-  destruct k; [ flia Hk | ].
-  destruct m. {
-    now rewrite Hm, Nat.mul_1_r, Nat.sub_diag in Hcnt.
-  }
-  exists (S (S k)), (S (S m)).
-  rewrite Hm.
-  replace (S (S k) * S (S m)) with (S (S k) + k * m + k + 2 * m + 2) by flia.
-  split; [ flia | ].
-  split; [ flia | easy ].
-}
-destruct n; [ flia Hcnt | ].
-apply (IHcnt (S n) (k + 1)); [ flia Hk | | flia Hcnt | easy ].
-intros d Hdk.
-destruct (Nat.eq_dec d k) as [Hdk1| Hdk1]. {
-  now intros H; rewrite <- Hdk1, H in Hm.
-}
-apply Hd; flia Hdk Hdk1.
+intros * Hk Hd.
+split.
+-intros Hp.
+ remember (n - k) as cnt eqn:Hcnt; symmetry in Hcnt.
+ revert n k Hk Hd Hcnt Hp.
+ induction cnt; intros; [ easy | ].
+ cbn in Hp.
+ remember (n mod k) as m eqn:Hm; symmetry in Hm.
+ destruct m. {
+   destruct k; [ easy | ].
+   apply Nat.mod_divides in Hm; [ | easy ].
+   destruct Hm as (m, Hm).
+   destruct m; [ now rewrite Hm, Nat.mul_0_r in Hcnt | ].
+   destruct k; [ flia Hk | ].
+   destruct m. {
+     now rewrite Hm, Nat.mul_1_r, Nat.sub_diag in Hcnt.
+   }
+   exists (S (S k)), (S (S m)).
+   rewrite Hm.
+   replace (S (S k) * S (S m)) with (S (S k) + k * m + k + 2 * m + 2) by flia.
+   split; [ flia | ].
+   split; [ flia | easy ].
+ }
+ destruct n; [ flia Hcnt | ].
+ apply (IHcnt (S n) (k + 1)); [ flia Hk | | flia Hcnt | easy ].
+ intros d Hdk.
+ destruct (Nat.eq_dec d k) as [Hdk1| Hdk1]. {
+   now intros H; rewrite <- Hdk1, H in Hm.
+ }
+ apply Hd; flia Hdk Hdk1.
+-intros (a & b & Han & Hbn & Hnab).
+ remember (n - k) as cnt eqn:Hcnt; symmetry in Hcnt.
+ revert n a b k Hk Hd Hcnt Han Hbn Hnab.
+ induction cnt; intros. {
+   specialize (Hd a) as H1.
+   assert (H : 2 ≤ a < k). {
+     split. {
+       destruct a; [ flia Hnab Han | ].
+       destruct a; [ flia Hnab Han Hbn | flia ].
+     }
+     flia Han Hcnt.
+   }
+   specialize (H1 H).
+   exfalso; apply H1; rewrite Hnab, Nat.mul_comm.
+   apply Nat.mod_mul; flia H.
+ }
+ cbn.
+ remember (n mod k) as m eqn:Hm; symmetry in Hm.
+ destruct m; [ easy | ].
+ apply (IHcnt _ a b); [ flia Hk | | flia Hcnt | easy | easy | easy ].
+ intros d (H2d, Hdk).
+ destruct (Nat.eq_dec d k) as [Hdk1| Hdk1]. {
+   now intros H; rewrite <- Hdk1, H in Hm.
+ }
+ apply Hd.
+ flia H2d Hdk Hdk1.
 Qed.
 
 Theorem not_prime_decomp : ∀ n, 2 ≤ n →
@@ -102,7 +112,7 @@ unfold is_prime in Hp.
 destruct n; [ flia Hn | ].
 destruct n; [ flia Hn | ].
 replace n with (S (S n) - 2) in Hp at 1 by flia.
-apply (prime_test_false_exists_div _ 2); [ easy | | easy ].
+apply (prime_test_false_exists_div_iff _ 2); [ easy | | easy ].
 intros * H; flia H.
 Qed.
 
@@ -769,37 +779,16 @@ Abort.
 Theorem is_not_prime_twice : ∀ n, is_prime (2 * (n + 2)) = false.
 Proof.
 intros.
-remember (2 * (n + 2)) as m eqn:Hm.
-symmetry in Hm.
 unfold is_prime.
-destruct m; [ easy | ].
-destruct m; [ easy | ].
-replace (S (S m)) with (m + 2) in Hm |-* by flia.
-replace (S m) with (m + 1) by flia.
-assert (H : m = 2 * (n + 1)) by flia Hm.
-clear Hm; rename H into Hm.
-Print is_prime.
-Print prime_test.
-...
-replace (S (S (n + S (S (n + 0))))) with (2 * S (S n)) by flia.
-remember (2 * n + 1) as d eqn:Hd.
-remember (S (S (S d))) as k eqn:Hk.
-cbn - [ "mod" ].
-Print prime_test.
-remember (k mod S (S d)) as m eqn:Hm; symmetry in Hm.
-destruct m; [ easy | ].
-replace d with (S (n * 2)) by flia Hd.
-replace (S (n * 2)) with d by flia Hd.
-remember (k mod S d) as m1 eqn:Hm1; symmetry in Hm1.
-destruct m1; [ easy | ].
-destruct d; [ flia Hd | ].
-cbn - [ "mod" ].
-destruct d; [ now subst k | ].
-remember (k mod (S (S d))) as m2 eqn:Hm2; symmetry in Hm2.
-destruct m2; [ easy | ].
-cbn - [ "mod" ].
-destruct d; [ subst k; flia Hd | ].
-...
+replace (2 * (n + 2)) with (S (S (2 * (n + 1)))) by flia.
+remember (2 * (n + 1)) as m eqn:Hm.
+replace m with (S (S m) - 2) at 1 by flia.
+apply prime_test_false_exists_div_iff; [ easy | | ]. {
+  intros d Hd; flia Hd.
+} {
+  exists 2, (n + 2); flia Hm.
+}
+Qed.
 
 Theorem fd_loop_is_prime :
   ∀ cnt n d,
@@ -852,24 +841,10 @@ destruct p. {
       replace (S (S (2 * c))) with (2 * S c) in Hp by flia.
       destruct c; [ now rewrite Hc in Hq | ].
       clear - Hp; exfalso.
+      replace (S (S c)) with (c + 2) in Hp by flia.
+      now rewrite is_not_prime_twice in Hp.
+    }
 ...
-      cbn - [ "mod" ] in Hp.
-      rewrite Nat.add_0_r in Hp.
-      rewrite <- Nat.add_succ_comm in Hp.
-      cbn - [ "mod" ] in Hp.
-      replace (S (S (c + S c))) with (2 * c + 3) in Hp at 1 2 by flia.
-      replace (S (2 * c + 3)) with (1 + 1 * (2 * c + 3)) in Hp by flia.
-      rewrite Nat.mod_add in Hp; [ | flia ].
-      rewrite Nat.mod_1_l in Hp; [ | flia ].
-      rewrite <- Nat.add_succ_comm in Hp.
-      cbn - [ "mod" ] in Hp.
-      replace (S (S (c + c))) with (2 * c + 2) in Hp by flia.
-      replace (S (S (2 * c + 2))) with (2 + 1 * (2 * c + 2)) in Hp at 1 by flia.
-      rewrite Nat.mod_add in Hp; [ | flia ].
-      destruct c; [ easy | ].
-        cbn - [ "mod" ] in Hp.
-...
-
 (* therefore d is odd (otherwize Hp would be false),
    therefore n is even greater than 2 because of Hn'
    which contradicts He *)
