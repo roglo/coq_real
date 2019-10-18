@@ -93,7 +93,7 @@ destruct (Nat.eq_dec d k) as [Hdk1| Hdk1]. {
 apply Hd; flia Hdk Hdk1.
 Qed.
 
-Theorem not_prime_exists_div : ∀ n, 2 ≤ n →
+Theorem not_prime_decomp : ∀ n, 2 ≤ n →
   is_prime n = false
   → ∃ a b, a < n ∧ b < n ∧ n = a * b.
 Proof.
@@ -106,13 +106,26 @@ apply (prime_test_false_exists_div _ 2); [ easy | | easy ].
 intros * H; flia H.
 Qed.
 
+Theorem not_prime_exists_div : ∀ n, 2 ≤ n →
+  is_prime n = false
+  → ∃ a, 2 ≤ a < n ∧ Nat.divide a n.
+Proof.
+intros n Hn Hp.
+specialize (not_prime_decomp n Hn Hp) as (a & b & Ha & Hb & Hab).
+exists a.
+split; [ | now rewrite Hab; apply Nat.divide_mul_l ].
+split; [ | easy ].
+destruct a; [ flia Hab Hb | ].
+destruct a; [ flia Hab Hb | flia ].
+Qed.
+
 Theorem prime_divisor : ∀ n, 2 ≤ n →
   ∃ d, is_prime d = true ∧ Nat.divide d n.
 Proof.
 intros * Hn.
 remember (is_prime n) as b eqn:Hb; symmetry in Hb.
 destruct b; [ now exists n | ].
-specialize (not_prime_exists_div n Hn Hb) as (a & b & Han & Hbn & Hnab).
+specialize (not_prime_decomp n Hn Hb) as (a & b & Han & Hbn & Hnab).
 remember (is_prime a) as pa eqn:Hpa; symmetry in Hpa.
 destruct pa. {
   exists a; split; [ easy | subst n; apply Nat.divide_factor_l ].
@@ -129,7 +142,7 @@ enough (H : ∃ d, is_prime d = true ∧ Nat.divide d a). {
   now apply Nat.divide_mul_l.
 }
 clear Hbn Han.
-specialize (not_prime_exists_div a Ha Hpa) as (c & d & Hca & Hda & Hacd).
+specialize (not_prime_decomp a Ha Hpa) as (c & d & Hca & Hda & Hacd).
 assert (Hc : 2 ≤ c). {
   destruct c; [ flia Hacd Ha | ].
   destruct c; [ flia Hacd Hda | flia ].
@@ -141,25 +154,6 @@ enough (H : ∃ d, is_prime d = true ∧ Nat.divide d c). {
   now apply Nat.divide_mul_l.
 }
 clear Hca Hda.
-...
-  n : nat
-  Hn : 2 ≤ n
-  Hb : is_prime n = false
-  a, b : nat
-  Hnab : n = a * b
-  Hpa : is_prime a = false
-  Ha : 2 ≤ a
-  ============================
-  ∃ d : nat, is_prime d = true ∧ Nat.divide d a
-...
-Fixpoint toto c n (Hn : 2 ≤ n) (Hp : is_prime n = false) :=
-  match c with
-  | 0 => 0
-  | S c' =>
-      match not_prime_exists_div n Hn Hp with
-      | ex_intro _ a (ex_intro _ b P) => 42
-      end
-  end.
 ...
 induction n as (n, IHn) using (well_founded_ind lt_wf).
 apply (well_founded_ind lt_wf).
