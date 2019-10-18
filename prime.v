@@ -17,9 +17,33 @@ Proof. now intros; rewrite Nat.sub_succ, Nat.sub_0_r. Qed.
 Theorem fold_mod_succ : ∀ n d, d - snd (Nat.divmod n d 0 d) = n mod (S d).
 Proof. easy. Qed.
 
+Theorem Nat_sub_succ_diag_l : ∀ n, S n - n = 1.
+Proof.
+intros; induction n; [ easy | now rewrite Nat.sub_succ ].
+Qed.
+
 Theorem List_fold_right_cons {A B} : ∀ (f : B → A → A) (a : A) x l,
   List.fold_right f a (x :: l) = f x (List.fold_right f a l).
 Proof. easy. Qed.
+
+Theorem List_removelast_firstn {A} : ∀ l : list A,
+  List.removelast l = List.firstn (List.length l - 1) l.
+Proof.
+intros.
+induction l as [| a l]; [ easy | cbn ].
+rewrite Nat.sub_0_r.
+destruct l as [| b l]; [ easy | ].
+rewrite IHl.
+now cbn; rewrite Nat.sub_0_r.
+Qed.
+
+Theorem Nat_sub_sub_swap : ∀ a b c, a - b - c = a - c - b.
+Proof.
+intros.
+rewrite <- Nat.sub_add_distr.
+rewrite Nat.add_comm.
+now rewrite Nat.sub_add_distr.
+Qed.
 
 (* *)
 
@@ -1365,6 +1389,47 @@ specialize (last_divisor (S (S n)) (Nat.neq_succ_0 _)) as H1.
 now rewrite Hl in H1.
 Qed.
 
+Theorem glop {F : field} : ∀ k n u v l,
+  l = divisors_of n
+  → fold_right (log_prod_add u v n) f_zero (skipn k l) =
+     fold_right (log_prod_add v u n) f_zero (firstn (length l - k) l).
+Proof.
+intros * Hl.
+symmetry in Hl.
+revert k n Hl.
+induction l as [| a l]; intros; [ now destruct k | ].
+cbn - [ "-" ].
+assert (Hn : n ≠ 0) by now intros H; subst n.
+specialize (eq_first_divisor_1 n Hn) as H1.
+rewrite Hl in H1; cbn in H1; subst a.
+assert (H : 1 :: l ≠ []) by easy.
+specialize (app_removelast_last 0 H) as H1; clear H.
+rewrite List_removelast_firstn in H1.
+cbn - [ last ] in H1.
+rewrite Nat.sub_0_r in H1.
+rewrite <- Hl in H1.
+rewrite last_divisor in H1; [ | easy ].
+move H1 before Hl.
+rewrite <- Hl at 2; rewrite H1.
+rewrite Hl at 1.
+rewrite List.firstn_app.
+rewrite List.firstn_firstn.
+rewrite List.firstn_length.
+rewrite (Nat.min_l (length l)); [ | cbn; flia ].
+rewrite Nat_sub_sub_swap.
+rewrite Nat_sub_succ_diag_l.
+destruct k. {
+  do 2 rewrite Nat.sub_0_r.
+  rewrite Nat.min_r; [ | flia ].
+  cbn; rewrite fold_right_app; cbn.
+  unfold log_prod_add at 1 4.
+  rewrite (f_mul_comm (v n)), f_add_0_l.
+  rewrite Nat.div_1_r, Nat.div_same; [ | easy ].
+  remember (u 1 * v n)%F as x.
+  replace x with (f_zero + x)%F at 2 by now rewrite f_add_0_l.
+  rewrite fold_log_prod_add_assoc; f_equal; clear x Heqx.
+...
+
 Theorem fold_log_prod_comm {F : field} : ∀ u v i,
   fold_right (log_prod_add u v i) f_zero (divisors_of i) =
   fold_right (log_prod_add v u i) f_zero (divisors_of i).
@@ -1391,6 +1456,15 @@ rewrite Nat.div_1_r.
 replace (u 1 * v n)%F with (f_zero + u 1 * v n)%F at 2 by
   now rewrite f_add_0_l.
 rewrite fold_log_prod_add_assoc; f_equal.
+replace l with (List.tl (divisors_of n)) at 1 by now rewrite Hl.
+remember (divisors_of n) as l'.
+replace (tl _) with (List.skipn 1 l') by easy.
+replace (removelast _) with (List.firstn (length l' - 1) l'). 2: {
+  rewrite Heql'; symmetry.
+  apply List_removelast_firstn.
+}
+...
+apply glop.
 ...
 
 Theorem log_prod_comm {F : field} : ∀ u v i,
