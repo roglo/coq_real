@@ -1426,6 +1426,23 @@ destruct (le_dec (length l) k) as [Hlk| Hlk]. {
   replace x with (f_zero + x)%F at 2 by now rewrite f_add_0_l.
   rewrite fold_log_prod_add_assoc; f_equal.
   rewrite List.firstn_all2; [ | easy ].
+  clear k Hlk x Hx.
+  destruct l as [| a l]; [ easy | ].
+  assert (H : a :: l ≠ []) by easy.
+  specialize (app_removelast_last 0 H) as H2; clear H.
+  rewrite H2 in Hl.
+  specialize (last_divisor _ Hn) as H3.
+  rewrite Hl in H3.
+  rewrite List.app_comm_cons in H3.
+  rewrite List_last_app in H3.
+  rewrite H3 in Hl, H2.
+  rewrite H2 at 1.
+  rewrite fold_right_app.
+  cbn - [ removelast firstn ].
+  unfold log_prod_add at 2.
+  rewrite Hl.
+  cbn - [ removelast ].
+  unfold log_prod_add at 2.
 ...
 intros * Hl.
 symmetry in Hl.
