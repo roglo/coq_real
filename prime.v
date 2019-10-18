@@ -125,35 +125,25 @@ Proof.
 intros * Hn.
 remember (is_prime n) as b eqn:Hb; symmetry in Hb.
 destruct b; [ now exists n | ].
-specialize (not_prime_decomp n Hn Hb) as (a & b & Han & Hbn & Hnab).
-remember (is_prime a) as pa eqn:Hpa; symmetry in Hpa.
-destruct pa. {
-  exists a; split; [ easy | subst n; apply Nat.divide_factor_l ].
-}
-assert (Ha : 2 ≤ a). {
-  subst n.
-  destruct a; [ flia Han | ].
-  destruct a; [ flia Hbn | flia ].
-}
-enough (H : ∃ d, is_prime d = true ∧ Nat.divide d a). {
-  destruct H as (d & Hp & Hd).
-  exists d; split; [ easy | ].
-  subst n.
-  now apply Nat.divide_mul_l.
-}
-clear Hbn Han.
-specialize (not_prime_decomp a Ha Hpa) as (c & d & Hca & Hda & Hacd).
-assert (Hc : 2 ≤ c). {
-  destruct c; [ flia Hacd Ha | ].
-  destruct c; [ flia Hacd Hda | flia ].
-}
-enough (H : ∃ d, is_prime d = true ∧ Nat.divide d c). {
-  destruct H as (e & Hp & Hd).
-  exists e; split; [ easy | ].
-  rewrite Hacd.
-  now apply Nat.divide_mul_l.
-}
-clear Hca Hda.
+specialize (not_prime_exists_div n Hn Hb) as (a & Han & Hd).
+move a before n; move Han before Hn.
+remember (is_prime a) as b1 eqn:Hb1; symmetry in Hb1.
+destruct b1; [ now exists a | move Hb1 before Hb ].
+specialize (not_prime_exists_div a (proj1 Han) Hb1) as (a2 & Ha2a & Hd2).
+move a2 before a; move Ha2a before Han.
+apply (Nat.divide_trans a2 _ n) in Hd2; [ | easy ].
+remember (is_prime a2) as b2 eqn:Hb2; symmetry in Hb2.
+destruct b2; [ now exists a2 | move Hb2 before Hb1 ].
+specialize (not_prime_exists_div a2 (proj1 Ha2a) Hb2) as (a3 & Ha3a & Hd3).
+move a3 before a2; move Ha3a before Ha2a.
+apply (Nat.divide_trans a3 _ n) in Hd3; [ | easy ].
+remember (is_prime a3) as b3 eqn:Hb3; symmetry in Hb3.
+destruct b3; [ now exists a3 | move Hb3 before Hb2 ].
+specialize (not_prime_exists_div a3 (proj1 Ha3a) Hb3) as (a4 & Ha4a & Hd4).
+move a4 before a3; move Ha4a before Ha3a.
+apply (Nat.divide_trans a4 _ n) in Hd4; [ | easy ].
+remember (is_prime a4) as b4 eqn:Hb4; symmetry in Hb4.
+destruct b4; [ now exists a4 | move Hb4 before Hb3 ].
 ...
 induction n as (n, IHn) using (well_founded_ind lt_wf).
 apply (well_founded_ind lt_wf).
