@@ -1375,6 +1375,9 @@ destruct l as [| a2 l]. {
   remember (S (S n) mod 2) as m eqn:Hm; symmetry in Hm.
   destruct m; [ easy | ].
   cbn in Hl.
+  replace (S (S n)) with (n + 1 * 2) in Hm by flia.
+  rewrite Nat.mod_add in Hm; [ | easy ].
+...
   assert
     (H : ∀ n k,
      k ≠ 0
