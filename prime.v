@@ -1350,134 +1350,46 @@ destruct n; [ now cbn; right; left | ].
 ...
 *)
 
+Theorem only_1_has_one_divisor : ∀ n, length (divisors_of n) = 1 → n = 1.
+Proof.
+intros * Hn.
+remember (divisors_of n) as l eqn:Hl.
+destruct l as [| a l]; [ easy | ].
+destruct l as [| a2 l]; [ | easy ].
+clear Hn; symmetry in Hl.
+destruct n; [ easy | ].
+destruct n; [ easy | exfalso ].
+specialize (eq_first_divisor_1 (S (S n)) (Nat.neq_succ_0 _)) as H1.
+rewrite Hl in H1; cbn in H1; subst a.
+specialize (last_divisor (S (S n)) (Nat.neq_succ_0 _)) as H1.
+now rewrite Hl in H1.
+Qed.
+
 Theorem fold_log_prod_comm {F : field} : ∀ u v i,
   fold_right (log_prod_add u v i) f_zero (divisors_of i) =
   fold_right (log_prod_add v u i) f_zero (divisors_of i).
 Proof.
 intros u v n.
 remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
-destruct l as [| a l]; [ easy | cbn ].
-unfold log_prod_add at 1 3; cbn.
-destruct l as [| a2 l]. {
-  cbn; do 2 rewrite f_add_0_l.
-  rewrite (f_mul_comm (v a)).
-  (* only 1 has one only divisor *)
-  destruct n; [ easy | ].
-  destruct n. {
-    cbn in Hl.
-    now injection Hl; clear Hl; intros Ha; subst a.
-  }
-  cbn - [ "mod" ] in Hl.
-  rewrite Nat.mod_1_r in Hl.
-  cbn - [ "mod" ] in Hl.
-  remember Nat.modulo as f.
-  injection Hl; clear Hl; intros Hl Ha; subst f.
-  remember (S (S n) mod 2) as m eqn:Hm; symmetry in Hm.
-  destruct m; [ easy | ].
-  cbn in Hl.
-  replace (S (S n)) with (n + 1 * 2) in Hm by flia.
-  rewrite Nat.mod_add in Hm; [ | easy ].
-...
-  assert
-    (H : ∀ n k,
-     k ≠ 0
-     → n mod k ≠ 0
-     → filter (λ a, (n + k) mod a =? 0) (seq (k + 1) n) ≠ []). {
-    clear; intros * Hk Hnk.
-    destruct k; [ easy | clear Hk ].
-    revert k Hnk.
-    induction n; intros; [ now rewrite Nat.mod_0_l in Hnk | ].
-    cbn - [ "mod" ].
-(* mouais, bof, faut que je réfléchisse *)
-...
-  destruct n; [ easy | ].
-  cbn - [ "mod" ] in Hl.
-
-...
-  specialize (smallest_divisor_is_prime n) as H1.
-  remember (smallest_prime_divisor n) as d eqn:Hd; symmetry in Hd.
-...
-Search divisors_of.
-...
-  cbn; do 2 rewrite f_add_0_l; rewrite (f_mul_comm (v a)).
-  destruct n; [ easy | cbn in Hl ].
-  injection Hl; clear Hl; intros Hl Ha.
-  subst a; rewrite Nat.div_1_r.
-...
-  destruct n; [ easy | ].
-  cbn - [ "mod" ] in Hl.
-  replace (S (S n)) with (n + 1 * 2) in Hl at 1 by flia.
-  rewrite Nat.mod_add in Hl; [ | easy ].
-  remember (n mod 2) as m eqn:Hm; symmetry in Hm.
-  destruct m; [ easy | cbn in Hl ].
-  destruct n; [ easy | ].
-  cbn - [ "mod" ] in Hl.
-  replace (S (S (S n))) with (n + 1 * 3) in Hl at 1 by flia.
-  rewrite Nat.mod_add in Hl; [ | easy ].
-  remember (n mod 3) as m3 eqn:Hm3; symmetry in Hm3.
-  destruct m3; [ easy | cbn in Hl ].
-  move m3 before m.
-  (* at end, n would be divisible by no prime number at all;
-     this leads to a contradiction, but how to prove it? *)
-Print first_divisor.
-...
-specialize app_removelast_last as H1.
-...
-intros u v n.
-(*
-rewrite fold_log_prod_add_on_rev.
-*)
-remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
-destruct l as [| a l]; [ easy | cbn ].
-rewrite fold_right_app; cbn.
-unfold log_prod_add at 2 3; cbn.
+destruct l as [| a l]; [ easy | ].
+assert (H : a :: l ≠ []) by easy.
+specialize (app_removelast_last 0 H) as H1; clear H.
+rewrite <- Hl in H1.
+assert (Hn : n ≠ 0) by now intros H; subst n.
+rewrite last_divisor in H1; [ | easy ].
+rewrite <- Hl at 2.
+rewrite H1.
+rewrite fold_right_app.
+cbn.
+unfold log_prod_add at 1 4.
 rewrite f_add_0_l.
-...
-(*
-Search (fold_right _ _ (rev _)).
-...
-rewrite glop.
-now rewrite glip.
-...
-destruct i; [ easy | cbn ].
-unfold log_prod_add; cbn - [ "/" ].
+rewrite (f_mul_comm (v n)).
+rewrite Nat.div_same; [ | easy ].
+specialize (eq_first_divisor_1 _ Hn) as H2.
+rewrite Hl in H2; cbn in H2; subst a.
 rewrite Nat.div_1_r.
-destruct i. {
-  cbn; rewrite f_add_0_l, f_add_0_l.
-  apply f_mul_comm.
-}
-destruct i. {
-  cbn; do 2 rewrite f_add_0_l.
-  rewrite (f_mul_comm (v 1)), (f_mul_comm (v 2)).
-  apply f_add_comm.
-}
-destruct i. {
-  cbn; do 2 rewrite f_add_0_l.
-  rewrite (f_mul_comm (v 1)), (f_mul_comm (v 3)).
-  apply f_add_comm.
-}
-destruct i. {
-  cbn; do 2 rewrite f_add_0_l.
-  rewrite (f_mul_comm (v 1)), (f_mul_comm (v 2)), (f_mul_comm (v 4)).
-  rewrite f_add_comm, <- f_add_assoc; f_equal.
-  apply f_add_comm.
-}
-destruct i. {
-  cbn; do 2 rewrite f_add_0_l.
-  rewrite (f_mul_comm (v 1)), (f_mul_comm (v 5)).
-  apply f_add_comm.
-}
-destruct i. {
-  cbn; do 2 rewrite f_add_0_l.
-  rewrite (f_mul_comm (v 1)), (f_mul_comm (v 2)).
-  rewrite (f_mul_comm (v 3)), (f_mul_comm (v 6)).
-  rewrite f_add_comm.
-  do 3 rewrite <- f_add_assoc; f_equal.
-  rewrite f_add_comm, f_add_assoc; f_equal.
-  apply f_add_comm.
-}
+(* j'y suis presque *)
 ...
-*)
 
 Theorem log_prod_comm {F : field} : ∀ u v i,
   log_prod u v i = log_prod v u i.
