@@ -1388,7 +1388,9 @@ rewrite Nat.div_same; [ | easy ].
 specialize (eq_first_divisor_1 _ Hn) as H2.
 rewrite Hl in H2; cbn in H2; subst a.
 rewrite Nat.div_1_r.
-(* j'y suis presque *)
+replace (u 1 * v n)%F with (f_zero + u 1 * v n)%F at 2 by
+  now rewrite f_add_0_l.
+rewrite fold_log_prod_add_assoc; f_equal.
 ...
 
 Theorem log_prod_comm {F : field} : ∀ u v i,
