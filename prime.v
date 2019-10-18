@@ -751,7 +751,7 @@ Fixpoint fd_loop cnt n d :=
       else fd_loop cnt' n (d + 1)
   end.
 
-Definition first_prime_divisor n := fd_loop (n - 1) n 2.
+Definition smallest_prime_divisor n := fd_loop (n - 1) n 2.
 
 Theorem fd_loop_is_prime :
   ∀ cnt n d, 2 ≤ d ≤ n → cnt + d = n + 1 → fd_loop cnt n d ≠ 0.
@@ -790,6 +790,7 @@ apply prime_test_false_exists_div_iff; [ easy | | ]. {
 }
 Qed.
 
+(*
 Theorem fd_loop_is_prime :
   ∀ cnt n d,
   2 ≤ d ≤ n
@@ -832,6 +833,7 @@ destruct p. {
   destruct d; [ flia Hd | ].
   destruct d; [ flia Hd | ].
   clear Hd.
+  (* therefore d is odd (otherwize Hp would be false), *)
   assert (Hdo : d mod 2 = 1). {
     remember (d mod 2) as d2 eqn:Hd2; symmetry in Hd2.
     destruct d2. {
@@ -844,10 +846,13 @@ destruct p. {
       replace (S (S c)) with (c + 2) in Hp by flia.
       now rewrite is_not_prime_twice in Hp.
     }
+    destruct d2; [ easy | exfalso ].
+    specialize (Nat.mod_upper_bound d 2 (Nat.neq_succ_0 _)) as H1.
+    flia Hd2 H1.
+  }
+  (* therefore n is even greater than 2 because of Hn' *)
 ...
-(* therefore d is odd (otherwize Hp would be false),
-   therefore n is even greater than 2 because of Hn'
-   which contradicts He *)
+  (* which contradicts He *)
 ...
 Compute (fd_loop 3 4 2).
 ...
@@ -867,10 +872,16 @@ destruct p. {
 apply IHcnt.
 transitivity d; [ easy | apply Nat.le_add_r ].
 Qed.
+*)
 
+(*
 Theorem first_divisor_is_prime :
-  ∀ n, is_prime (first_prime_divisor n) = true.
+  ∀ n, is_prime (smallest_prime_divisor n) = true.
 Proof.
+intros.
+Print smallest_prime_divisor.
+Search is_prime.
+...
 intros.
 now apply fd_loop_is_prime.
 Qed.
@@ -882,8 +893,8 @@ Fixpoint non_loop cnt n :=
       match n with
       | 0 | 1 => One
       | S (S n') =>
-          let d := first_prime_divisor n in
-          let p := first_divisor_is_prime n in
+          let d := smallest_prime_divisor n in
+          let p := smallest_divisor_is_prime n in
           Times d p (non_loop cnt' (n / d))
       end
   end.
@@ -894,6 +905,7 @@ Compute (number_of_nat 21).
 Compute (number_of_nat 2).
 Compute (number_of_nat 24).
 Compute (number_of_nat 1001).
+*)
 
 (* end play *)
 
@@ -1244,11 +1256,10 @@ cbn - [ "mod" ].
 rewrite Nat.mod_1_r.
 cbn - [ "mod" ].
 ...
-*)
 
-Theorem mod_first_prime_divisor : ∀ n,
+Theorem mod_smallest_prime_divisor : ∀ n,
   2 ≤ n
-  → n mod first_prime_divisor n = 0.
+  → n mod smallest_prime_divisor n = 0.
 Proof.
 intros * Hn.
 destruct n; [ easy | ].
@@ -1302,14 +1313,14 @@ enough (S d ≤ n).
   rewrite Nat.sub_add_distr.
 ...
 
-Theorem mem_first_divisor_divisors : ∀ n,
-  2 ≤ n → first_prime_divisor n ∈ divisors_of n.
+Theorem mem_smallest_divisor_divisors : ∀ n,
+  2 ≤ n → smallest_prime_divisor n ∈ divisors_of n.
 Proof.
 intros n Hn.
 apply divisor_iff; [ flia Hn | ].
 split. 2: {
   intros H.
-  specialize (first_divisor_is_prime n) as H1.
+  specialize (smallest_divisor_is_prime n) as H1.
   now rewrite H in H1.
 }
 ...
@@ -1337,6 +1348,7 @@ replace (3 mod 2) with 1 by easy.
 ...
 destruct n; [ now cbn; right; left | ].
 ...
+*)
 
 Theorem fold_log_prod_comm {F : field} : ∀ u v i,
   fold_right (log_prod_add u v i) f_zero (divisors_of i) =
@@ -1347,8 +1359,40 @@ remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
 destruct l as [| a l]; [ easy | cbn ].
 unfold log_prod_add at 1 3; cbn.
 destruct l as [| a2 l]. {
-  specialize (first_divisor_is_prime n) as H1.
-  remember (first_prime_divisor n) as d eqn:Hd; symmetry in Hd.
+  cbn; do 2 rewrite f_add_0_l.
+  rewrite (f_mul_comm (v a)).
+  (* only 1 has one only divisor *)
+  destruct n; [ easy | ].
+  destruct n. {
+    cbn in Hl.
+    now injection Hl; clear Hl; intros Ha; subst a.
+  }
+  cbn - [ "mod" ] in Hl.
+  rewrite Nat.mod_1_r in Hl.
+  cbn - [ "mod" ] in Hl.
+  remember Nat.modulo as f.
+  injection Hl; clear Hl; intros Hl Ha; subst f.
+  remember (S (S n) mod 2) as m eqn:Hm; symmetry in Hm.
+  destruct m; [ easy | ].
+  cbn in Hl.
+  assert
+    (H : ∀ n k,
+     k ≠ 0
+     → n mod k ≠ 0
+     → filter (λ a, (n + k) mod a =? 0) (seq (k + 1) n) ≠ []). {
+    clear; intros * Hk Hnk.
+    destruct k; [ easy | clear Hk ].
+    revert k Hnk.
+    induction n; intros; [ now rewrite Nat.mod_0_l in Hnk | ].
+    cbn - [ "mod" ].
+(* mouais, bof, faut que je réfléchisse *)
+...
+  destruct n; [ easy | ].
+  cbn - [ "mod" ] in Hl.
+
+...
+  specialize (smallest_divisor_is_prime n) as H1.
+  remember (smallest_prime_divisor n) as d eqn:Hd; symmetry in Hd.
 ...
 Search divisors_of.
 ...
