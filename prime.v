@@ -1406,6 +1406,7 @@ rewrite <- (List.seq_length n 1) at 2.
 apply List_filter_length_upper_bound.
 Qed.
 
+(*
 (* chais pas si ça sert à quelque chose, mais c'est pour le sport *)
 Theorem divisors_symmetry : ∀ n k l,
   l = divisors_of n
@@ -1441,8 +1442,9 @@ induction k; intros. {
 destruct l as [| a l]; [ easy | ].
 cbn - [ nth ].
 ...
+*)
 
-Theorem glop {F : field} : ∀ k n u v l,
+Theorem fold_log_prod_add_first_last {F : field} : ∀ k n u v l,
   l = divisors_of n
   → fold_right (log_prod_add u v n) f_zero (firstn k l) =
      fold_right (log_prod_add v u n) f_zero (skipn (length l - k) l).
@@ -1543,6 +1545,7 @@ destruct k. {
 }
 rewrite Nat.sub_succ.
 ...
+*)
 
 Theorem fold_log_prod_comm {F : field} : ∀ u v i,
   fold_right (log_prod_add u v i) f_zero (divisors_of i) =
@@ -1577,8 +1580,10 @@ replace (removelast _) with (List.firstn (length l' - 1) l'). 2: {
   rewrite Heql'; symmetry.
   apply List_removelast_firstn.
 }
-...
-apply glop.
+rewrite (fold_log_prod_add_first_last (length l' - 1) n v u l' Heql').
+f_equal; f_equal.
+rewrite Hl; cbn - [ "-" ].
+now rewrite Nat_sub_succ_1, Nat_sub_succ_diag_l.
 ...
 
 Theorem log_prod_comm {F : field} : ∀ u v i,
