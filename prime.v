@@ -22,6 +22,14 @@ Proof.
 intros; induction n; [ easy | now rewrite Nat.sub_succ ].
 Qed.
 
+Theorem Nat_sub_sub_swap : ∀ a b c, a - b - c = a - c - b.
+Proof.
+intros.
+rewrite <- Nat.sub_add_distr.
+rewrite Nat.add_comm.
+now rewrite Nat.sub_add_distr.
+Qed.
+
 Theorem List_fold_right_cons {A B} : ∀ (f : B → A → A) (a : A) x l,
   List.fold_right f a (x :: l) = f x (List.fold_right f a l).
 Proof. easy. Qed.
@@ -37,12 +45,13 @@ rewrite IHl.
 now cbn; rewrite Nat.sub_0_r.
 Qed.
 
-Theorem Nat_sub_sub_swap : ∀ a b c, a - b - c = a - c - b.
+Theorem List_filter_length_upper_bound {A} : ∀ (f : A → bool) l,
+  List.length (List.filter f l) ≤ List.length l.
 Proof.
 intros.
-rewrite <- Nat.sub_add_distr.
-rewrite Nat.add_comm.
-now rewrite Nat.sub_add_distr.
+induction l as [| a l]; [ easy | cbn ].
+destruct (f a); [ now apply Nat.succ_le_mono in IHl | ].
+transitivity (length l); [ easy | apply Nat.le_succ_diag_r ].
 Qed.
 
 (* *)
@@ -1389,11 +1398,57 @@ specialize (last_divisor (S (S n)) (Nat.neq_succ_0 _)) as H1.
 now rewrite Hl in H1.
 Qed.
 
+Theorem divisors_length_upper_bound : ∀ n, List.length (divisors_of n) ≤ n.
+Proof.
+intros.
+unfold divisors_of, divisors_from.
+rewrite <- (List.seq_length n 1) at 2.
+apply List_filter_length_upper_bound.
+Qed.
+
+(* chais pas si ça sert à quelque chose, mais c'est pour le sport *)
+Theorem divisor_symmetry : ∀ n k,
+  k < length (divisors_of n)
+  → List.nth k (divisors_of n) 0 * List.nth (n - k) (divisors_of n) 0 = n.
+Proof.
+intros * Hk.
+remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
+induction k. {
+  destruct l as [| a l]; [ easy | clear Hk ].
+  rewrite Nat.sub_0_r; cbn.
+  destruct n; [ easy | ].
+  specialize (eq_first_divisor_1 (S n) (Nat.neq_succ_0 _)) as H1.
+  rewrite Hl in H1; cbn in H1; subst a; rewrite Nat.mul_1_l.
+  assert (H : 1 :: l ≠ []) by easy.
+  specialize (app_removelast_last 0 H) as H1; clear H.
+  rewrite <- Hl in H1.
+  rewrite last_divisor in H1; [ | easy ].
+  rewrite Hl in H1.
+  assert (Hrn : length (removelast (1 :: l)) ≤ n). {
+    apply (f_equal (@List.length nat)) in H1.
+    rewrite List.app_length in H1.
+    cbn - [ removelast ] in H1.
+    rewrite Nat.add_1_r in H1.
+    apply Nat.succ_inj in H1.
+    rewrite <- H1.
+    specialize (divisors_length_upper_bound (S n)) as H2.
+    rewrite Hl in H2; cbn in H2; flia H2.
+  }
+  assert (H : List.nth (S n) (1 :: l) 0 = S n). {
+    rewrite H1.
+    rewrite List.app_nth2; [ | flia Hrn ].
+    rewrite Nat.sub_succ_l; [ | easy ].
+    cbn - [ "-" removelast ].
+(* ah bin non, ça va pas ; où est-ce que j'ai déconné ? *)
+...
+
 Theorem glop {F : field} : ∀ k n u v l,
   l = divisors_of n
   → fold_right (log_prod_add u v n) f_zero (firstn k l) =
      fold_right (log_prod_add v u n) f_zero (skipn (length l - k) l).
 Proof.
+intros * Hl.
+...
 intros * Hl.
 symmetry in Hl.
 destruct k. {
