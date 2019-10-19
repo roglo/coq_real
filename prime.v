@@ -1409,14 +1409,14 @@ Qed.
 (* chais pas si ça sert à quelque chose, mais c'est pour le sport *)
 Theorem divisor_symmetry : ∀ n k,
   k < length (divisors_of n)
-  → List.nth k (divisors_of n) 0 * List.nth (n - k) (divisors_of n) 0 = n.
+  → List.nth k (divisors_of n) 0 * List.nth (n - S k) (divisors_of n) 0 = n.
 Proof.
 intros * Hk.
 remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
 induction k. {
   destruct l as [| a l]; [ easy | clear Hk ].
-  rewrite Nat.sub_0_r; cbn.
   destruct n; [ easy | ].
+  rewrite Nat_sub_succ_1.
   specialize (eq_first_divisor_1 (S n) (Nat.neq_succ_0 _)) as H1.
   rewrite Hl in H1; cbn in H1; subst a; rewrite Nat.mul_1_l.
   assert (H : 1 :: l ≠ []) by easy.
@@ -1434,12 +1434,12 @@ induction k. {
     specialize (divisors_length_upper_bound (S n)) as H2.
     rewrite Hl in H2; cbn in H2; flia H2.
   }
-  assert (H : List.nth (S n) (1 :: l) 0 = S n). {
-    rewrite H1.
-    rewrite List.app_nth2; [ | flia Hrn ].
-    rewrite Nat.sub_succ_l; [ | easy ].
-    cbn - [ "-" removelast ].
-(* ah bin non, ça va pas ; où est-ce que j'ai déconné ? *)
+  rewrite H1.
+...
+  rewrite List.app_nth2; [ | flia Hrn ].
+  remember (n - length (removelast (1 :: l))) as m eqn:Hm; symmetry in Hm.
+  destruct m; [ easy | exfalso ].
+(* ah bin non, ça va pas *)
 ...
 
 Theorem glop {F : field} : ∀ k n u v l,
