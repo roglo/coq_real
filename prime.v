@@ -1464,6 +1464,16 @@ apply Nat.mod_divides in Hnlk. 2: {
 }
 destruct Hnlk as (k'', Hk'').
 move k'' before k'.
+assert (Hn : n ≠ 0) by now intros H; rewrite <- Hl, H in Hk.
+destruct l as [| a l]; [ easy | ].
+specialize (eq_first_divisor_1 n Hn) as H1.
+rewrite Hl in H1; cbn in H1.
+subst a.
+...
+Check eq_first_divisor_1.
+Search (nth 0).
+Search (nth _ (divisors_of _)).
+
 ...
 rewrite Hk'; f_equal.
 apply (Nat.mul_cancel_r _ _ k''). {
