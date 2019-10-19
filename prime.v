@@ -590,120 +590,6 @@ destruct ((i + 1) mod y) as [H| H]; [ easy | ].
 apply Hss; flia.
 Qed.
 
-(*
-(* allows to rewrite
-      H1 : s1 = s3
-      H2 : s2 = s4
-   in expression
-      (s1 * s2)%F *)
-Instance ls_mul_morph {F : field} :
-  Proper (ls_eq ==> ls_eq ==> ls_eq) ls_mul.
-Proof.
-intros r1 r2 Hrr r'1 r'2 Hrr' i Hi; cbn.
-unfold log_prod.
-remember (log_prod_list i 1 i) as l eqn:Hl.
-assert (Ha : ∀ a, a ∈ l → a ≠ 0 ∧ i / a ≠ 0). {
-  intros a Ha.
-  subst l.
-  destruct i; [ easy | cbn in Ha ].
-  destruct Ha as [Ha| Ha]. {
-    subst a.
-    now rewrite Nat.div_1_r.
-  }
-  destruct i; [ easy | cbn - [ "mod" ] in Ha ].
-  replace (S (S i)) with (i + 1 * 2) in Ha at 1 by flia.
-  rewrite Nat.mod_add in Ha; [ | easy ].
-  remember (i mod 2) as m eqn:Hm; symmetry in Hm.
-  destruct m. {
-    destruct Ha as [Ha| Ha]. {
-      subst a.
-      split; [ easy | intros H ].
-      apply Nat.div_small_iff in H; [ | easy ].
-      flia H.
-    }
-    destruct i; [ easy | ].
-    cbn - [ "mod" ] in Ha.
-    replace (S (S (S i))) with (i + 1 * 3) in Ha at 1 by flia.
-    rewrite Nat.mod_add in Ha; [ | easy ].
-    remember (i mod 3) as m3 eqn:Hm3; symmetry in Hm3.
-    destruct m3. {
-      destruct Ha as [Ha| Ha]. {
-        subst a.
-        split; [ easy | intros H ].
-        apply Nat.div_small_iff in H; [ | easy ].
-        flia H.
-      }
-      destruct i; [ easy | ].
-...
-  assert
-    (H : ∀ cnt k j, cnt ≤ S j → k ≠ 0 →
-     ∀ a, a ∈ log_prod_list cnt k (k + i) → a ≠ 0). {
-    clear a i Ha Hi Hl.
-    intros * Hcnt Hk a Ha.
-    destruct k; [ easy | clear Hk ].
-    revert i k Hcnt Ha.
-    induction cnt; intros; [ easy | ].
-    cbn - [ "mod" ] in Ha.
-    remember (S (k + i) mod S k) as m eqn:Hm; symmetry in Hm.
-    destruct m. {
-      destruct Ha as [Ha| Ha]; [ now subst a | ].
-      apply (IHcnt (i - 1) (k + 1)); [ flia Hcnt | ].
-      replace (S (k + 1) + (i - 1)) with (S (k + i)) by flia Hcnt.
-    }
-    apply (IHcnt (k + 1) (n - 1)); [ flia Hcnt | ].
-    now replace (S (k + 1) + (n - 1)) with (S (k + n)) by flia Hcnt.
-  }
-  destruct i; [ easy | clear Hi ].
-  split. {
-    apply (H (S i) 1 i).
-...
-    apply (H i 1 i); [ easy | ].
-    now rewrite Hl in Ha.
-  }
-...
-unfold log_prod_add.
-assert (H : ∀ cnt k i, cnt ≤ S i → k ≠ 0 →
-  log_prod_list cnt (ls r1) (ls r'1) k (k + i) =
-  log_prod_list cnt (ls r2) (ls r'2) k (k + i)). {
-  clear i.
-  intros * Hcnt Hk.
-  destruct k; [ easy | clear Hk ].
-  revert i k Hcnt.
-  induction cnt; intros; [ easy | cbn ].
-  unfold log_prod_term.
-  f_equal. {
-    rewrite Hrr; [ | easy ].
-    rewrite Hrr'; [ easy | ].
-    intros H.
-    apply Nat.div_small_iff in H; [ | easy ].
-    flia H.
-  }
-  destruct i. 2: {
-    replace (S (k + S i)) with (S (k + 1 + i)) by flia.
-    apply IHcnt.
-    flia Hcnt.
-  }
-  destruct cnt; [ easy | flia Hcnt ].
-}
-now apply H.
-Qed.
-*)
-
-(*
-(* allows to rewrite
-      Hp : p1 = p2
-      Hs : s1 = s2
-   in expression
-      (p1 .* s2)%F *)
-Instance ls_pol_mul_morph {F : field} :
-  Proper (eq ==> ls_eq ==> ls_eq) ls_pol_mul_l.
-Proof.
-intros p1 p2 Hpp r1 r2 Hrr i Hi.
-subst p1.
-now apply ls_mul_morph.
-Qed.
-*)
-
 Theorem fold_log_prod_1_l_from_2nd {F : field} : ∀ r i l,
   (∀ j, j ∈ l → 2 ≤ j)
   → fold_right (log_prod_add (ls ls_one) (ls r) (S i)) f_zero l = f_zero.
@@ -929,17 +815,32 @@ destruct l as [| a l]. {
   specialize (H1 eq_refl); subst n; flia Hn.
 }
 cbn.
-unfold is_prime.
-destruct a. {
-...
-}
-destruct a. {
-...
-}
-destruct a; [ easy | ].
-destruct a; [ easy | ].
-destruct a. {
-  exfalso; cbn in Hl.
+destruct n; [ easy | ].
+destruct n; [ easy | clear Hn ].
+cbn - [ "mod" ] in Hl.
+rewrite Nat.mod_1_r in Hl.
+cbn - [ "mod" ] in Hl.
+remember Nat.modulo as f.
+injection Hl; clear Hl; intros Hl; subst f.
+replace (S (S n)) with (n + 1 * 2) in Hl at 1 by flia.
+rewrite Nat.mod_add in Hl; [ | easy ].
+Theorem glop : ∀ n a d l,
+  2 ≤ d
+  → (if n mod d =? 0
+      then d :: filter (λ a, S (S n) mod a =? 0) (seq (d + 1) n)
+      else filter (λ a, S (S n) mod a =? 0) (seq (d + 1) n)) =
+         a :: l
+  → is_prime a = true.
+Proof.
+intros * Hd Hn.
+destruct d; [ flia Hd | ].
+destruct d; [ flia Hd | clear Hd ].
+revert a l Hn.
+induction d; intros. {
+  cbn - [ "mod" ] in Hn.
+  remember (n mod 2 =? 0) as m eqn:Hm; symmetry in Hm.
+  destruct m; [ now injection Hn; intros; subst a | ].
+  apply Nat.eqb_neq in Hm.
 ...
 intros * Hn.
 unfold smallest_divisor_after_1.
