@@ -815,6 +815,23 @@ destruct l as [| a l]. {
   specialize (H1 eq_refl); subst n; flia Hn.
 }
 cbn.
+apply Bool.not_false_is_true.
+intros Ha.
+specialize (not_prime_exists_div a) as H1.
+assert (H : 2 ≤ a). {
+  destruct a. {
+(* make a lemma saying that divisors are sorted *)
+(* and get a contradiction *)
+...
+}
+specialize (H1 H Ha) as (b & Hb & Hba).
+...
+not_prime_exists_div:
+  ∀ n : nat, 2 ≤ n → is_prime n = false → ∃ a : nat, 2 ≤ a < n ∧ Nat.divide a n
+not_prime_decomp:
+  ∀ n : nat,
+    2 ≤ n → is_prime n = false → ∃ a b : nat, a < n ∧ b < n ∧ n = a * b
+...
 destruct n; [ easy | ].
 destruct n; [ easy | clear Hn ].
 cbn - [ "mod" ] in Hl.
@@ -824,6 +841,7 @@ remember Nat.modulo as f.
 injection Hl; clear Hl; intros Hl; subst f.
 replace (S (S n)) with (n + 1 * 2) in Hl at 1 by flia.
 rewrite Nat.mod_add in Hl; [ | easy ].
+
 Theorem glop : ∀ n a d l,
   2 ≤ d
   → (if n mod d =? 0
