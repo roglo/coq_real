@@ -1464,6 +1464,7 @@ apply Nat.mod_divides in Hnlk. 2: {
 }
 destruct Hnlk as (k'', Hk'').
 move k'' before k'.
+...
 rewrite Hk'; f_equal.
 apply (Nat.mul_cancel_r _ _ k''). {
   intros H; rewrite H, Nat.mul_0_r in Hk''.
