@@ -742,6 +742,141 @@ destruct Hj as (Hj, _).
 now apply List.in_seq in Hj.
 Qed.
 
+Theorem divisor_iff : ∀ n d,
+  n ≠ 0 → d ∈ divisors_of n ↔ n mod d = 0 ∧ d ≠ 0.
+Proof.
+intros * Hn.
+unfold divisors_of, divisors_from.
+split. {
+  intros Hd.
+  apply filter_In in Hd.
+  destruct Hd as (Hd, Hnd).
+  split; [ now apply Nat.eqb_eq | ].
+  apply in_seq in Hd; flia Hd.
+}
+intros (Hnd, Hd).
+apply filter_In.
+split; [ | now apply Nat.eqb_eq ].
+apply in_seq.
+split; [ flia Hd | ].
+apply Nat.mod_divides in Hnd; [ | easy ].
+destruct Hnd as (c, Hc).
+rewrite Nat.mul_comm in Hc; rewrite Hc.
+destruct c; [ easy | ].
+cbn; flia.
+Qed.
+
+Theorem List_last_seq : ∀ i n, n ≠ 0 → last (seq i n) 0 = i + n - 1.
+Proof.
+intros * Hn.
+destruct n; [ easy | clear Hn ].
+revert i; induction n; intros. {
+  cbn; symmetry.
+  apply Nat.add_sub.
+}
+remember (S n) as sn; cbn; subst sn.
+remember (seq (S i) (S n)) as l eqn:Hl.
+destruct l; [ easy | ].
+rewrite Hl.
+replace (i + S (S n)) with (S i + S n) by flia.
+apply IHn.
+Qed.
+
+Theorem List_last_In {A} : ∀ (d : A) l, l ≠ [] → last l d ∈ l.
+Proof.
+intros * Hl.
+destruct l as [| a l]; [ easy | clear Hl ].
+revert a.
+induction l as [| b l]; intros; [ now left | ].
+remember (b :: l) as l'; cbn; subst l'.
+right; apply IHl.
+Qed.
+
+Theorem List_last_app {A} : ∀ l (d a : A), List.last (l ++ [a]) d = a.
+Proof.
+intros.
+induction l; [ easy | ].
+cbn.
+remember (l ++ [a]) as l' eqn:Hl'.
+destruct l'; [ now destruct l | apply IHl ].
+Qed.
+
+Theorem eq_first_divisor_1 : ∀ n, n ≠ 0 → List.hd 0 (divisors_of n) = 1.
+Proof.
+intros.
+now destruct n.
+Qed.
+
+Theorem last_divisor : ∀ n, n ≠ 0 → List.last (divisors_of n) 0 = n.
+Proof.
+intros n Hn.
+remember (divisors_of n) as l eqn:Hl.
+symmetry in Hl.
+unfold divisors_of, divisors_from in Hl.
+specialize (List_last_seq 1 n Hn) as H1.
+replace (1 + n - 1) with n in H1 by flia.
+specialize (proj2 (filter_In (λ a, n mod a =? 0) n (seq 1 n))) as H2.
+rewrite Hl in H2.
+rewrite Nat.mod_same in H2; [ | easy ].
+cbn in H2.
+assert (H3 : n ∈ seq 1 n). {
+  rewrite <- H1 at 1.
+  apply List_last_In.
+  now destruct n.
+}
+assert (H : n ∈ seq 1 n ∧ true = true) by easy.
+specialize (H2 H); clear H.
+assert (H : seq 1 n ≠ []); [ now intros H; rewrite H in H3 | ].
+specialize (app_removelast_last 0 H) as H4; clear H.
+rewrite H1 in H4.
+assert (H : seq 1 n ≠ []); [ now intros H; rewrite H in H3 | ].
+rewrite H4, filter_app in Hl; cbn in Hl.
+rewrite Nat.mod_same in Hl; [ | easy ].
+cbn in Hl; rewrite <- Hl.
+apply List_last_app.
+Qed.
+
+Theorem first_last_divisor : ∀ n l,
+  l = divisors_of n
+  → List.hd 0 l = n / List.last l 0.
+Proof.
+intros * Hl.
+subst l.
+destruct n; [ easy | ].
+rewrite last_divisor; [ | easy ].
+now rewrite Nat.div_same.
+Qed.
+
+Theorem List_filter_empty {A} : ∀ f (l : list A),
+  filter f l = [] → ∀ a, a ∈ l → f a = false.
+Proof.
+intros * Hf a Ha.
+revert a Ha.
+induction l as [| b l]; intros; [ easy | ].
+destruct Ha as [Ha| Ha]. {
+  subst b; cbn in Hf.
+  now destruct (f a).
+}
+apply IHl; [ | easy ].
+cbn in Hf.
+now destruct (f b).
+Qed.
+
+Theorem only_1_has_one_divisor : ∀ n, length (divisors_of n) = 1 → n = 1.
+Proof.
+intros * Hn.
+remember (divisors_of n) as l eqn:Hl.
+destruct l as [| a l]; [ easy | ].
+destruct l as [| a2 l]; [ | easy ].
+clear Hn; symmetry in Hl.
+destruct n; [ easy | ].
+destruct n; [ easy | exfalso ].
+specialize (eq_first_divisor_1 (S (S n)) (Nat.neq_succ_0 _)) as H1.
+rewrite Hl in H1; cbn in H1; subst a.
+specialize (last_divisor (S (S n)) (Nat.neq_succ_0 _)) as H1.
+now rewrite Hl in H1.
+Qed.
+
 (* playing with numbers represented multiplicativelly *)
 
 (* mmm... ne garantit pas l'unicité d'un nombre ;
@@ -772,152 +907,74 @@ Compute (nat_of_number (Times 2 eq_refl One)).
 Compute (nat_of_number (Times 3 eq_refl (Times 7 eq_refl One))).
 Compute (nat_of_number (Times 5 eq_refl (Times 5 eq_refl One))).
 
-Fixpoint fd_loop cnt n d :=
-  match cnt with
-  | 0 => 0
-  | S cnt' =>
-      if is_prime d then
-        match n mod d with
-        | 0 => d
-        | _ => fd_loop cnt' n (d + 1)
-        end
-      else fd_loop cnt' n (d + 1)
-  end.
+Definition smallest_divisor_after_1 n := List.hd 0 (List.tl (divisors_of n)).
 
-Definition smallest_prime_divisor n := fd_loop (n - 1) n 2.
-
-(*
-Theorem is_not_prime_twice : ∀ n, is_prime (2 * (n + 2)) = false.
-Proof.
-intros.
-unfold is_prime.
-replace (2 * (n + 2)) with (S (S (2 * (n + 1)))) by flia.
-remember (2 * (n + 1)) as m eqn:Hm.
-replace m with (S (S m) - 2) at 1 by flia.
-apply prime_test_false_exists_div_iff; [ easy | | ]. {
-  intros d Hd; flia Hd.
-} {
-  exists 2, (n + 2); flia Hm.
-}
-Qed.
-
-Theorem fd_loop_is_prime :
-  ∀ cnt n d,
-  2 ≤ d ≤ n
-  → cnt + d = n + 1
-  → (∀ e, 2 ≤ e < d → n mod e ≠ 0)
-  → is_prime (fd_loop cnt n d) = true.
-Proof.
-intros * Hd Hcnt He.
-revert d Hd Hcnt He.
-induction cnt; intros; [ flia Hd Hcnt | cbn ].
-assert (H : cnt + d = n) by flia Hcnt.
-move H before Hcnt; clear Hcnt; rename H into Hcnt.
-remember (is_prime d) as p eqn:Hp; symmetry in Hp.
-destruct p. {
-  remember (n mod d) as nd eqn:Hnd; symmetry in Hnd.
-  destruct nd; [ easy | ].
-  destruct (lt_dec (d + 1) n) as [Hdn| Hdn]. {
-    apply IHcnt; [ flia Hd Hdn | flia Hcnt | ].
-    intros e Hed.
-    destruct (Nat.eq_dec d e) as [Hde| Hde]. {
-      now subst e; rewrite Hnd.
-    }
-    apply He.
-    flia Hed Hde.
-  }
-  apply Nat.nlt_ge in Hdn.
-  destruct (Nat.eq_dec n d) as [Hn| Hn]. {
-    rewrite Hn in Hnd.
-    rewrite Nat.mod_same in Hnd; [ easy | flia Hd ].
-  }
-  assert (Hn' : n = d + 1) by flia Hd Hn Hdn.
-  replace cnt with 1 by flia Hcnt Hn'.
-  cbn.
-  rewrite <- Hn'.
-  rewrite Nat.mod_same; [ | flia Hd ].
-  remember (is_prime n) as q eqn:Hq; symmetry in Hq.
-  destruct q; [ easy | exfalso ].
-  clear Hdn Hn.
-  rewrite Hn' in Hq.
-  destruct d; [ flia Hd | ].
-  destruct d; [ flia Hd | ].
-  clear Hd.
-  (* therefore d is odd (otherwize Hp would be false), *)
-  assert (Hdo : d mod 2 = 1). {
-    remember (d mod 2) as d2 eqn:Hd2; symmetry in Hd2.
-    destruct d2. {
-      apply Nat.mod_divides in Hd2; [ | easy ].
-      destruct Hd2 as (c, Hc).
-      rewrite Hc in Hp.
-      replace (S (S (2 * c))) with (2 * S c) in Hp by flia.
-      destruct c; [ now rewrite Hc in Hq | ].
-      clear - Hp; exfalso.
-      replace (S (S c)) with (c + 2) in Hp by flia.
-      now rewrite is_not_prime_twice in Hp.
-    }
-    destruct d2; [ easy | exfalso ].
-    specialize (Nat.mod_upper_bound d 2 (Nat.neq_succ_0 _)) as H1.
-    flia Hd2 H1.
-  }
-  (* therefore n is even greater than 2 because of Hn' *)
-...
-  (* which contradicts He *)
-...
-Compute (fd_loop 3 4 2).
-...
-*)
-
-Theorem fd_loop_is_prime :
-  ∀ cnt n d, 2 ≤ n < cnt + d → 2 ≤ d ≤ n → is_prime (fd_loop cnt n d) = true.
-Proof.
-intros * (Hn, Hcnt) Hd.
-revert d Hcnt Hd.
-induction cnt; intros; [ cbn in Hcnt; flia Hcnt Hd | cbn ].
-remember (is_prime d) as p eqn:Hp; symmetry in Hp.
-destruct p. {
-  remember (n mod d) as m eqn:Hm; symmetry in Hm.
-  destruct m; [ easy | ].
-  apply IHcnt; [ flia Hcnt | ].
-  split; [ flia Hd | ].
-  assert (H : d ≠ 0) by flia Hd.
-  specialize (Nat.div_mod n d H) as H1; clear H.
-  rewrite Hm in H1; rewrite H1.
-  assert (Hnd : 1 ≤ n / d). {
-...
-    clear - Hd.
-    assert (H : d ≠ 0) by flia Hd.
-    specialize (Nat.div_mod n d H) as H1; clear H.
-...
-    apply (Nat.mul_le_mono_pos_r _ _ d); [ flia Hd | ].
-Search (_ * (_ / _)).
-Search (_ / _ * _).
-...
-    rewrite <- Nat.divide_div_mul_exact.
-...
-Print fd_loop.
-Print smallest_prime_divisor.
-...
-induction cnt; intros; [ easy | cbn ].
-induction cnt; intros; [ easy | cbn ].
-remember (is_prime d) as p eqn:Hp; symmetry in Hp.
-destruct p. {
-  remember (n mod d) as nd eqn:Hnd; symmetry in Hnd.
-  destruct nd; [ easy | apply IHcnt ].
-  transitivity d; [ easy | apply Nat.le_add_r ].
-}
-apply IHcnt.
-transitivity d; [ easy | apply Nat.le_add_r ].
-Qed.
-
-...
-
-Theorem first_divisor_is_prime :
-  ∀ n, 2 ≤ n → is_prime (smallest_prime_divisor n) = true.
+Theorem smallest_divisor_is_prime :
+  ∀ n, 2 ≤ n → is_prime (smallest_divisor_after_1 n) = true.
 Proof.
 intros * Hn.
-unfold smallest_prime_divisor.
+unfold smallest_divisor_after_1.
+remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
+destruct l as [| a l]. {
+  destruct n; [ flia Hn | now destruct n ].
+}
+cbn.
+assert (H : n ≠ 0) by flia Hn.
+specialize (eq_first_divisor_1 n H) as H1; clear H.
+rewrite Hl in H1; cbn in H1; subst a.
+destruct l as [| a l]. {
+  exfalso.
+  specialize (only_1_has_one_divisor n) as H1.
+  rewrite Hl in H1; cbn in H1.
+  specialize (H1 eq_refl); subst n; flia Hn.
+}
+cbn.
+unfold is_prime.
+destruct a. {
+...
+
+intros * Hn.
+unfold smallest_divisor_after_1.
+remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
+destruct l as [| a l]. {
+  destruct n; [ flia Hn | now destruct n ].
+}
+cbn.
+assert (H : n ≠ 0) by flia Hn.
+specialize (eq_first_divisor_1 n H) as H1; clear H.
+rewrite Hl in H1; cbn in H1; subst a.
+destruct l as [| a l]. {
+  destruct n; [ flia Hn | ].
+  destruct n; [ flia Hn | clear Hn ].
+  cbn - [ "mod" ] in Hl.
+  rewrite Nat.mod_1_r in Hl.
+  cbn - [ "mod" ] in Hl.
+  replace (S (S n)) with (n + 1 * 2) in Hl at 1 by flia.
+  rewrite Nat.mod_add in Hl; [ | easy ].
+  remember (n mod 2 =? 0) as m eqn:Hm; symmetry in Hm.
+  destruct m; [ easy | ].
+  apply Nat.eqb_neq in Hm.
+  injection Hl; clear Hl; intros Hl.
+  specialize (List_filter_empty _ _ Hl) as H1.
+  cbn in H1.
+  destruct n; [ easy | ].
+  destruct n; [ easy | ].
+  destruct n; [ easy | ].
+  specialize (H1 3).
+  assert (H : 3 ∈ seq 3 (S (S (S n)))) by now left.
+  specialize (H1 H); clear H.
+  apply Nat.eqb_neq in H1.
+  replace (S (S (S (S (S n))))) with (n + 2 + 1 * 3) in H1 by flia.
+  rewrite Nat.mod_add in H1; [ | easy ].
+...
+intros * Hn.
+remember (smallest_divisor_after_1 n) as d eqn:Hd.
+unfold smallest_divisor_after_1 in Hd.
+remember (divisors_of
+...
 destruct n; [ easy | ].
+cbn.
+
 cbn; rewrite Nat.sub_0_r.
 destruct n; [ flia Hn | clear Hn ].
 cbn - [ "mod" ].
@@ -982,53 +1039,6 @@ apply IHk.
 ...
 *)
 
-Theorem eq_first_divisor_1 : ∀ n, n ≠ 0 → List.hd 0 (divisors_of n) = 1.
-Proof.
-intros.
-now destruct n.
-Qed.
-
-Theorem List_filter_empty {A} : ∀ f (l : list A),
-  filter f l = [] → ∀ a, a ∈ l → f a = false.
-Proof.
-intros * Hf a Ha.
-revert a Ha.
-induction l as [| b l]; intros; [ easy | ].
-destruct Ha as [Ha| Ha]. {
-  subst b; cbn in Hf.
-  now destruct (f a).
-}
-apply IHl; [ | easy ].
-cbn in Hf.
-now destruct (f b).
-Qed.
-
-Theorem List_last_seq : ∀ i n, n ≠ 0 → last (seq i n) 0 = i + n - 1.
-Proof.
-intros * Hn.
-destruct n; [ easy | clear Hn ].
-revert i; induction n; intros. {
-  cbn; symmetry.
-  apply Nat.add_sub.
-}
-remember (S n) as sn; cbn; subst sn.
-remember (seq (S i) (S n)) as l eqn:Hl.
-destruct l; [ easy | ].
-rewrite Hl.
-replace (i + S (S n)) with (S i + S n) by flia.
-apply IHn.
-Qed.
-
-Theorem List_last_In {A} : ∀ (d : A) l, l ≠ [] → last l d ∈ l.
-Proof.
-intros * Hl.
-destruct l as [| a l]; [ easy | clear Hl ].
-revert a.
-induction l as [| b l]; intros; [ now left | ].
-remember (b :: l) as l'; cbn; subst l'.
-right; apply IHl.
-Qed.
-
 (*
 Theorem List_filter_app {A} : ∀ f (l1 l2 : list A),
   List.filter f (l1 ++ l2) = List.filter f l1 ++ List.filter f l2.
@@ -1037,96 +1047,6 @@ intros.
 induction l1 as [| a l1]; [ easy | cbn ].
 destruct (f a); [ cbn; f_equal | ]; apply IHl1.
 Qed.
-*)
-
-Theorem List_last_app {A} : ∀ l (d a : A), List.last (l ++ [a]) d = a.
-Proof.
-intros.
-induction l; [ easy | ].
-cbn.
-remember (l ++ [a]) as l' eqn:Hl'.
-destruct l'; [ now destruct l | apply IHl ].
-Qed.
-
-Theorem last_divisor : ∀ n, n ≠ 0 → List.last (divisors_of n) 0 = n.
-Proof.
-intros n Hn.
-remember (divisors_of n) as l eqn:Hl.
-symmetry in Hl.
-unfold divisors_of, divisors_from in Hl.
-specialize (List_last_seq 1 n Hn) as H1.
-replace (1 + n - 1) with n in H1 by flia.
-specialize (proj2 (filter_In (λ a, n mod a =? 0) n (seq 1 n))) as H2.
-rewrite Hl in H2.
-rewrite Nat.mod_same in H2; [ | easy ].
-cbn in H2.
-assert (H3 : n ∈ seq 1 n). {
-  rewrite <- H1 at 1.
-  apply List_last_In.
-  now destruct n.
-}
-assert (H : n ∈ seq 1 n ∧ true = true) by easy.
-specialize (H2 H); clear H.
-assert (H : seq 1 n ≠ []); [ now intros H; rewrite H in H3 | ].
-specialize (app_removelast_last 0 H) as H4; clear H.
-rewrite H1 in H4.
-assert (H : seq 1 n ≠ []); [ now intros H; rewrite H in H3 | ].
-rewrite H4, filter_app in Hl; cbn in Hl.
-rewrite Nat.mod_same in Hl; [ | easy ].
-cbn in Hl; rewrite <- Hl.
-apply List_last_app.
-Qed.
-
-Theorem first_last_divisor : ∀ n l,
-  l = divisors_of n
-  → List.hd 0 l = n / List.last l 0.
-Proof.
-intros * Hl.
-subst l.
-destruct n; [ easy | ].
-rewrite last_divisor; [ | easy ].
-now rewrite Nat.div_same.
-Qed.
-
-Theorem pouet : ∀ n,
-  divisors_of n = List.rev (List.map (λ i, n / i) (divisors_of n)).
-Proof.
-intros.
-remember (length (divisors_of n)) as len eqn:Hlen.
-symmetry in Hlen.
-revert n Hlen.
-induction len; intros. {
-  destruct n; [ easy | now destruct n ].
-}
-Abort. (*
-...
-intros.
-unfold divisors_of.
-remember (divisors_of n) as l eqn:Hl.
-revert n Hl.
-induction l as [| a l]; intros. {
-  destruct n; [ easy | now destruct n ].
-}
-destruct n; [ easy | ].
-destruct n; [ easy | ].
-cbn - [ "mod" ] in Hl.
-rewrite Nat.mod_1_r in Hl.
-replace (S (S n)) with (n + 1 * 2) in Hl at 1 by flia.
-rewrite Nat.mod_add in Hl; [ | easy ].
-remember Nat.modulo as f.
-injection Hl; clear Hl; intros Hl Ha; subst f.
-clear a Ha.
-...
-unfold divisors_of.
-Print divisors_loop.
-...
-destruct n; [ easy | ].
-destruct n; [ easy | ].
-destruct n; [ easy | ].
-destruct n; [ easy | ].
-destruct n; [ easy | ].
-destruct n; [ easy | ].
-...
 *)
 
 Theorem fold_log_prod_add_assoc {F : field} : ∀ a b l u v n,
@@ -1236,30 +1156,6 @@ destruct n. {
 }
 ...
 *)
-
-Theorem divisor_iff : ∀ n d,
-  n ≠ 0 → d ∈ divisors_of n ↔ n mod d = 0 ∧ d ≠ 0.
-Proof.
-intros * Hn.
-unfold divisors_of, divisors_from.
-split. {
-  intros Hd.
-  apply filter_In in Hd.
-  destruct Hd as (Hd, Hnd).
-  split; [ now apply Nat.eqb_eq | ].
-  apply in_seq in Hd; flia Hd.
-}
-intros (Hnd, Hd).
-apply filter_In.
-split; [ | now apply Nat.eqb_eq ].
-apply in_seq.
-split; [ flia Hd | ].
-apply Nat.mod_divides in Hnd; [ | easy ].
-destruct Hnd as (c, Hc).
-rewrite Nat.mul_comm in Hc; rewrite Hc.
-destruct c; [ easy | ].
-cbn; flia.
-Qed.
 
 (*
 Theorem glop : ∀ cnt n d,
@@ -1401,21 +1297,6 @@ replace (3 mod 2) with 1 by easy.
 destruct n; [ now cbn; right; left | ].
 ...
 *)
-
-Theorem only_1_has_one_divisor : ∀ n, length (divisors_of n) = 1 → n = 1.
-Proof.
-intros * Hn.
-remember (divisors_of n) as l eqn:Hl.
-destruct l as [| a l]; [ easy | ].
-destruct l as [| a2 l]; [ | easy ].
-clear Hn; symmetry in Hl.
-destruct n; [ easy | ].
-destruct n; [ easy | exfalso ].
-specialize (eq_first_divisor_1 (S (S n)) (Nat.neq_succ_0 _)) as H1.
-rewrite Hl in H1; cbn in H1; subst a.
-specialize (last_divisor (S (S n)) (Nat.neq_succ_0 _)) as H1.
-now rewrite Hl in H1.
-Qed.
 
 Theorem divisors_length_upper_bound : ∀ n, List.length (divisors_of n) ≤ n.
 Proof.
