@@ -1407,16 +1407,22 @@ apply List_filter_length_upper_bound.
 Qed.
 
 (* chais pas si ça sert à quelque chose, mais c'est pour le sport *)
-Theorem divisor_symmetry : ∀ n k,
-  k < length (divisors_of n)
-  → List.nth k (divisors_of n) 0 * List.nth (n - S k) (divisors_of n) 0 = n.
+Theorem divisor_symmetry : ∀ n k l,
+  l = divisors_of n
+  → k < length l
+  → List.nth k l 0 * List.nth (length l - S k) l 0 = n.
 Proof.
-intros * Hk.
-remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
-induction k. {
+intros * Hl Hk.
+symmetry in Hl.
+unfold divisors_of, divisors_from in Hl.
+...
+intros * Hl Hk.
+symmetry in Hl.
+revert n l Hl Hk.
+induction k; intros. {
   destruct l as [| a l]; [ easy | clear Hk ].
   destruct n; [ easy | ].
-  rewrite Nat_sub_succ_1.
+  cbn - [ nth ]; rewrite Nat.sub_0_r.
   specialize (eq_first_divisor_1 (S n) (Nat.neq_succ_0 _)) as H1.
   rewrite Hl in H1; cbn in H1; subst a; rewrite Nat.mul_1_l.
   assert (H : 1 :: l ≠ []) by easy.
@@ -1424,22 +1430,16 @@ induction k. {
   rewrite <- Hl in H1.
   rewrite last_divisor in H1; [ | easy ].
   rewrite Hl in H1.
-  assert (Hrn : length (removelast (1 :: l)) ≤ n). {
-    apply (f_equal (@List.length nat)) in H1.
-    rewrite List.app_length in H1.
-    cbn - [ removelast ] in H1.
-    rewrite Nat.add_1_r in H1.
-    apply Nat.succ_inj in H1.
-    rewrite <- H1.
-    specialize (divisors_length_upper_bound (S n)) as H2.
-    rewrite Hl in H2; cbn in H2; flia H2.
+  assert (Hrl : ∀ a, length (removelast (a :: l)) = length l). {
+    clear; induction l as [| b l]; intros; [ easy | ].
+    cbn; f_equal; apply IHl.
   }
   rewrite H1.
-...
-  rewrite List.app_nth2; [ | flia Hrn ].
-  remember (n - length (removelast (1 :: l))) as m eqn:Hm; symmetry in Hm.
-  destruct m; [ easy | exfalso ].
-(* ah bin non, ça va pas *)
+  rewrite List.app_nth2; [ | now rewrite Hrl; unfold ge ].
+  now rewrite Hrl, Nat.sub_diag.
+}
+destruct l as [| a l]; [ easy | ].
+cbn - [ nth ].
 ...
 
 Theorem glop {F : field} : ∀ k n u v l,
