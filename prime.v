@@ -1407,7 +1407,7 @@ apply List_filter_length_upper_bound.
 Qed.
 
 (* chais pas si ça sert à quelque chose, mais c'est pour le sport *)
-Theorem divisor_symmetry : ∀ n k l,
+Theorem divisors_symmetry : ∀ n k l,
   l = divisors_of n
   → k < length l
   → List.nth k l 0 * List.nth (length l - S k) l 0 = n.
