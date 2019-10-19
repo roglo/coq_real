@@ -786,29 +786,7 @@ Fixpoint fd_loop cnt n d :=
 
 Definition smallest_prime_divisor n := fd_loop (n - 1) n 2.
 
-Theorem fd_loop_is_prime :
-  ∀ cnt n d, 2 ≤ d ≤ n → cnt + d = n + 1 → fd_loop cnt n d ≠ 0.
-Proof.
-intros * Hd Hnd.
-revert d Hd Hnd.
-induction cnt; intros; [ flia Hd Hnd | cbn ].
-remember (is_prime d) as p eqn:Hp; symmetry in Hp.
-destruct p. {
-  remember (n mod d) as m eqn:Hm; symmetry in Hm.
-  destruct m; [ flia Hd | ].
-  destruct cnt. {
-    exfalso.
-    replace d with n in Hm by flia Hnd.
-    rewrite Nat.mod_same in Hm; [ easy | flia Hd ].
-  }
-  cbn.
-  remember (is_prime (d + 1)) as q eqn:Hq; symmetry in Hq.
-  destruct q. {
-    remember (n mod (d + 1)) as m1 eqn:Hm1; symmetry in Hm1.
-    destruct m1; [ flia | ].
-    destruct (Nat.eq_dec d n) as [Hdn| Hdn]; [ flia Hnd Hdn | ].
-Abort.
-
+(*
 Theorem is_not_prime_twice : ∀ n, is_prime (2 * (n + 2)) = false.
 Proof.
 intros.
@@ -823,7 +801,6 @@ apply prime_test_false_exists_div_iff; [ easy | | ]. {
 }
 Qed.
 
-(*
 Theorem fd_loop_is_prime :
   ∀ cnt n d,
   2 ≤ d ≤ n
@@ -889,12 +866,39 @@ destruct p. {
 ...
 Compute (fd_loop 3 4 2).
 ...
+*)
 
 Theorem fd_loop_is_prime :
-  ∀ cnt n d, 2 ≤ d → is_prime (fd_loop cnt n d) = true.
+  ∀ cnt n d, 2 ≤ n < cnt + d → 2 ≤ d ≤ n → is_prime (fd_loop cnt n d) = true.
 Proof.
-intros * Hd.
-revert d Hd.
+intros * (Hn, Hcnt) Hd.
+revert d Hcnt Hd.
+induction cnt; intros; [ cbn in Hcnt; flia Hcnt Hd | cbn ].
+remember (is_prime d) as p eqn:Hp; symmetry in Hp.
+destruct p. {
+  remember (n mod d) as m eqn:Hm; symmetry in Hm.
+  destruct m; [ easy | ].
+  apply IHcnt; [ flia Hcnt | ].
+  split; [ flia Hd | ].
+  assert (H : d ≠ 0) by flia Hd.
+  specialize (Nat.div_mod n d H) as H1; clear H.
+  rewrite Hm in H1; rewrite H1.
+  assert (Hnd : 1 ≤ n / d). {
+...
+    clear - Hd.
+    assert (H : d ≠ 0) by flia Hd.
+    specialize (Nat.div_mod n d H) as H1; clear H.
+...
+    apply (Nat.mul_le_mono_pos_r _ _ d); [ flia Hd | ].
+Search (_ * (_ / _)).
+Search (_ / _ * _).
+...
+    rewrite <- Nat.divide_div_mul_exact.
+...
+Print fd_loop.
+Print smallest_prime_divisor.
+...
+induction cnt; intros; [ easy | cbn ].
 induction cnt; intros; [ easy | cbn ].
 remember (is_prime d) as p eqn:Hp; symmetry in Hp.
 destruct p. {
@@ -905,13 +909,27 @@ destruct p. {
 apply IHcnt.
 transitivity d; [ easy | apply Nat.le_add_r ].
 Qed.
-*)
 
-(*
+...
+
 Theorem first_divisor_is_prime :
-  ∀ n, is_prime (smallest_prime_divisor n) = true.
+  ∀ n, 2 ≤ n → is_prime (smallest_prime_divisor n) = true.
 Proof.
-intros.
+intros * Hn.
+unfold smallest_prime_divisor.
+destruct n; [ easy | ].
+cbn; rewrite Nat.sub_0_r.
+destruct n; [ flia Hn | clear Hn ].
+cbn - [ "mod" ].
+replace (S (S n)) with (n + 1 * 2) at 1 by flia.
+rewrite Nat.mod_add; [ | easy ].
+remember (n mod 2) as m eqn:Hm; symmetry in Hm.
+destruct m; [ easy | ].
+Search smallest_prime_divisor.
+...
+
+Print fd_loop.
+
 Print smallest_prime_divisor.
 Search is_prime.
 ...
@@ -934,6 +952,7 @@ Fixpoint non_loop cnt n :=
 
 Definition number_of_nat n := non_loop n n.
 
+(*
 Compute (number_of_nat 21).
 Compute (number_of_nat 2).
 Compute (number_of_nat 24).
