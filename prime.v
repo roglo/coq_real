@@ -1406,16 +1406,71 @@ rewrite <- (List.seq_length n 1) at 2.
 apply List_filter_length_upper_bound.
 Qed.
 
-(*
+Theorem divisor_inv : ∀ n d, d ∈ divisors_of n → n / d ∈ divisors_of n.
+Proof.
+intros * Hd.
+apply List.filter_In in Hd.
+apply List.filter_In.
+destruct Hd as (Hd, Hm).
+apply List.in_seq in Hd.
+apply Nat.eqb_eq in Hm.
+apply Nat.mod_divides in Hm; [ | flia Hd ].
+destruct Hm as (m, Hm).
+rewrite Hm at 1.
+rewrite Nat.mul_comm, Nat.div_mul; [ | flia Hd ].
+split.
+-apply List.in_seq.
+ split.
+ +apply (Nat.mul_lt_mono_pos_l d); [ flia Hd | ].
+  flia Hm Hd.
+ +rewrite Hm.
+  destruct d; [ flia Hd | cbn; flia ].
+-apply Nat.eqb_eq.
+ rewrite Hm at 2.
+ rewrite Nat.mul_comm, Nat.div_mul; [ | flia Hd ].
+ rewrite Hm.
+ apply Nat.mod_mul; lia.
+Qed.
+
 (* chais pas si ça sert à quelque chose, mais c'est pour le sport *)
 Theorem divisors_symmetry : ∀ n k l,
   l = divisors_of n
-  → k < length l
-  → List.nth k l 0 * List.nth (length l - S k) l 0 = n.
+  → k < List.length l
+  → List.nth k l 0 * List.nth (List.length l - S k) l 0 = n.
 Proof.
 intros * Hl Hk.
 symmetry in Hl.
-unfold divisors_of, divisors_from in Hl.
+assert (H1 : List.nth k l 0 ∈ l) by now apply List.nth_In.
+assert (H2 : List.nth (List.length l - S k) l 0 ∈ l). {
+  apply List.nth_In; flia Hk.
+}
+rewrite <- Hl in H1, H2.
+apply List.filter_In in H1.
+apply List.filter_In in H2.
+rewrite Hl in H1, H2.
+destruct H1 as (Hks, Hnk).
+destruct H2 as (Hlks, Hnlk).
+move Hlks before Hks.
+apply Nat.eqb_eq in Hnk.
+apply Nat.eqb_eq in Hnlk.
+apply Nat.mod_divides in Hnk. 2: {
+  intros H1; rewrite H1 in Hks.
+  apply List.in_seq in Hks; flia Hks.
+}
+destruct Hnk as (k', Hk').
+apply Nat.mod_divides in Hnlk. 2: {
+  intros H1; rewrite H1 in Hlks.
+  apply List.in_seq in Hlks; flia Hlks.
+}
+destruct Hnlk as (k'', Hk'').
+move k'' before k'.
+rewrite Hk'; f_equal.
+apply (Nat.mul_cancel_r _ _ k''). {
+  intros H; rewrite H, Nat.mul_0_r in Hk''.
+  now rewrite Hk'' in Hks.
+}
+rewrite <- Hk''.
+(* mouais, bof *)
 ...
 intros * Hl Hk.
 symmetry in Hl.
