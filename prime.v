@@ -932,7 +932,15 @@ cbn.
 unfold is_prime.
 destruct a. {
 ...
-
+}
+destruct a. {
+...
+}
+destruct a; [ easy | ].
+destruct a; [ easy | ].
+destruct a. {
+  exfalso; cbn in Hl.
+...
 intros * Hn.
 unfold smallest_divisor_after_1.
 remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
