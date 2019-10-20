@@ -1238,8 +1238,72 @@ Theorem divisors_symmetry : ∀ n k l,
 Proof.
 intros * Hl Hk.
 symmetry in Hl.
-Search divisors.
+remember (List.length l) as len eqn:Hlen.
+symmetry in Hlen.
+revert n k l Hl Hlen Hk.
+induction len; intros; [ easy | ].
+rewrite Nat.sub_succ.
+destruct k. {
+  clear Hk.
+  rewrite Nat.sub_0_r.
+  destruct l as [| a l]; [ easy | ].
+  cbn in Hlen.
+  apply Nat.succ_inj in Hlen.
+  assert (Hn : n ≠ 0) by now intros H; subst n.
+  specialize (eq_first_divisor_1 n Hn) as H1.
+  rewrite Hl in H1; cbn in H1; subst a.
+  rewrite Nat.mul_1_l.
+  specialize (eq_last_divisor n Hn) as H1.
+  rewrite Hl in H1.
+  assert (H : 1 :: l ≠ []) by easy.
+  specialize (app_removelast_last 0 H) as H2.
+  rewrite H1 in H2.
+  rewrite H2.
+  assert (Hlr : ∀ a, List.length (removelast (a :: l)) = len). {
+    rewrite <- Hlen; clear.
+    induction l as [| b l]; intros; [ easy | ].
+    remember (b :: l) as l'; cbn; subst l'.
+    now cbn - [ removelast ]; rewrite IHl.
+  }
+  specialize (Hlr 1).
+  rewrite List.app_nth2; [ | flia Hlr ].
+  now rewrite Hlr, Nat.sub_diag.
+}
+destruct l as [| a l]; [ easy | ].
+cbn in Hlen.
+apply Nat.succ_inj in Hlen.
+assert (Hn : n ≠ 0) by now intros H; subst n.
+specialize (eq_first_divisor_1 n Hn) as H1.
+rewrite Hl in H1; cbn in H1; subst a.
+assert (H : 1 :: l ≠ []) by easy.
+specialize (eq_last_divisor n Hn) as H1.
+rewrite Hl in H1.
+specialize (app_removelast_last 0 H) as H2.
+rewrite H1 in H2.
+rewrite H2.
+assert (Hlr : ∀ a, List.length (removelast (a :: l)) = len). {
+  rewrite <- Hlen; clear.
+  induction l as [| b l]; intros; [ easy | ].
+  remember (b :: l) as l'; cbn; subst l'.
+  now cbn - [ removelast ]; rewrite IHl.
+}
+specialize (Hlr 1).
+apply Nat.succ_lt_mono in Hk.
+destruct (Nat.eq_dec (S k) len) as [Hklen| Hklen]. {
+  rewrite Hklen, Nat.sub_diag.
+  rewrite List.app_nth2; [ | flia Hlr ].
+  rewrite Hlr, Nat.sub_diag.
+  cbn - [ removelast ].
+  rewrite List.app_nth1; [ | flia Hlr Hk ].
+  destruct l as [| a l]; [ cbn in Hlr; flia Hlr Hklen | ].
+  now cbn; rewrite Nat.mul_1_r.
+}
+destruct l as [| a l]; [ cbn in Hlen; flia Hk Hlen | ].
+(* mmm... marche pas ; il faudrait peut-être définir une
+   fonction divisors_but_firstn_and_lastn *)
 ...
+intros * Hl Hk.
+symmetry in Hl.
 assert (H1 : List.nth k l 0 ∈ l) by now apply List.nth_In.
 assert (H2 : List.nth (List.length l - S k) l 0 ∈ l). {
   apply List.nth_In; flia Hk.
