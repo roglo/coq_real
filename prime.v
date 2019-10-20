@@ -1023,6 +1023,7 @@ destruct l as [| a l]; [ easy | clear Hlz ].
 destruct n; [ easy | ].
 assert (Hn : n ≠ 0) by now intros H; subst n.
 cbn - [ last ].
+
 Theorem divisors_but_firstn_and_lastn_succ : ∀ d n,
   divisors_but_firstn_and_lastn (S d) n =
   match n mod d with
