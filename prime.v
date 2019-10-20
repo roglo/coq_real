@@ -45,6 +45,15 @@ rewrite IHl.
 now cbn; rewrite Nat.sub_0_r.
 Qed.
 
+Theorem List_filter_map {A} : ∀ (f : A → bool) (g : A → A) l,
+  List.filter f (List.map g l) = List.map g (List.filter (λ x, f (g x)) l).
+Proof.
+intros.
+induction l as [| a l]; [ easy | cbn ].
+remember (f (g a)) as b eqn:Hb; symmetry in Hb.
+destruct b; [ cbn; f_equal; apply IHl | apply IHl ].
+Qed.
+
 Theorem List_filter_length_upper_bound {A} : ∀ (f : A → bool) l,
   List.length (List.filter f l) ≤ List.length l.
 Proof.
@@ -1016,31 +1025,18 @@ assert (Hn : n ≠ 0) by now intros H; subst n.
 cbn - [ last ].
 Theorem divisors_but_firstn_and_lastn_succ : ∀ d n,
   divisors_but_firstn_and_lastn (S d) n =
-    List.tl (divisors_but_firstn_and_lastn d n).
+  match n mod d with
+  | 0 => List.tl (removelast (divisors_but_firstn_and_lastn d n))
+  | _ => divisors_but_firstn_and_lastn d n
+  end.
 Proof.
 intros.
-unfold divisors_but_firstn_and_lastn.
-rewrite Nat.sub_succ.
-induction d; [ now cbn; rewrite Nat.sub_0_r | ].
-rewrite Nat.sub_succ.
-rewrite IHd.
-...
-rewrite (divisors_but_firstn_and_lastn_succ (S d) n) in Hl.
-...
-specialize (eq_first_divisor_1 n Hn) as H1.
-unfold divisors in H1.
-...
-rewrite Hl in H1; cbn in H1; subst a.
-  rewrite Nat.mul_1_l.
-  specialize (eq_last_divisor n Hn) as H1.
-  unfold divisors in H1.
-  rewrite Hl in H1.
-  assert (H : 1 :: l ≠ []) by easy.
-  specialize (app_removelast_last 0 H) as H2.
-  rewrite H1 in H2.
-  rewrite H2.
-  now rewrite List_last_app.
-}
+remember (n mod d) as m eqn:Hm; symmetry in Hm.
+destruct m. {
+  unfold divisors_but_firstn_and_lastn.
+  rewrite Nat.sub_succ.
+  rewrite <- List.seq_shift.
+  rewrite List_filter_map.
 ...
 
 Theorem divisors_symmetry : ∀ n k l,
