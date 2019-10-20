@@ -54,6 +54,18 @@ destruct (f a); [ now apply Nat.succ_le_mono in IHl | ].
 transitivity (length l); [ easy | apply Nat.le_succ_diag_r ].
 Qed.
 
+Theorem Sorted_Sorted_seq : ∀ start len, Sorted.Sorted lt (seq start len).
+Proof.
+intros.
+revert start.
+induction len; intros; [ apply Sorted.Sorted_nil | ].
+cbn; apply Sorted.Sorted_cons; [ apply IHlen | ].
+clear IHlen.
+induction len; [ apply Sorted.HdRel_nil | ].
+cbn. apply Sorted.HdRel_cons.
+apply Nat.lt_succ_diag_r.
+Qed.
+
 (* *)
 
 Fixpoint prime_test cnt n d :=
@@ -817,120 +829,79 @@ destruct l as [| a l]. {
 cbn.
 apply Bool.not_false_is_true.
 intros Ha.
+assert (Hls : Sorted.Sorted lt (divisors_of n)). {
+  unfold divisors_of, divisors_from.
+  specialize (SetoidList.filter_sort eq_equivalence Nat.lt_strorder) as H2.
+  specialize (H2 Nat.lt_wd).
+  specialize (H2 (λ a, n mod a =? 0) (seq 1 n)).
+  now specialize (H2 (Sorted_Sorted_seq _ _)).
+}
+rewrite Hl in Hls.
 specialize (not_prime_exists_div a) as H1.
 assert (H : 2 ≤ a). {
-  destruct a. {
-(* make a lemma saying that divisors are sorted *)
-(* and get a contradiction *)
-...
+  apply Sorted.Sorted_inv in Hls.
+  destruct Hls as (_, Hls).
+  now apply Sorted.HdRel_inv in Hls.
 }
-specialize (H1 H Ha) as (b & Hb & Hba).
-...
-not_prime_exists_div:
-  ∀ n : nat, 2 ≤ n → is_prime n = false → ∃ a : nat, 2 ≤ a < n ∧ Nat.divide a n
-not_prime_decomp:
-  ∀ n : nat,
-    2 ≤ n → is_prime n = false → ∃ a b : nat, a < n ∧ b < n ∧ n = a * b
-...
-destruct n; [ easy | ].
-destruct n; [ easy | clear Hn ].
-cbn - [ "mod" ] in Hl.
-rewrite Nat.mod_1_r in Hl.
-cbn - [ "mod" ] in Hl.
-remember Nat.modulo as f.
-injection Hl; clear Hl; intros Hl; subst f.
-replace (S (S n)) with (n + 1 * 2) in Hl at 1 by flia.
-rewrite Nat.mod_add in Hl; [ | easy ].
-
-Theorem glop : ∀ n a d l,
-  2 ≤ d
-  → (if n mod d =? 0
-      then d :: filter (λ a, S (S n) mod a =? 0) (seq (d + 1) n)
-      else filter (λ a, S (S n) mod a =? 0) (seq (d + 1) n)) =
-         a :: l
-  → is_prime a = true.
-Proof.
-intros * Hd Hn.
-destruct d; [ flia Hd | ].
-destruct d; [ flia Hd | clear Hd ].
-revert a l Hn.
-induction d; intros. {
-  cbn - [ "mod" ] in Hn.
-  remember (n mod 2 =? 0) as m eqn:Hm; symmetry in Hm.
-  destruct m; [ now injection Hn; intros; subst a | ].
-  apply Nat.eqb_neq in Hm.
-...
-intros * Hn.
-unfold smallest_divisor_after_1.
-remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
-destruct l as [| a l]. {
-  destruct n; [ flia Hn | now destruct n ].
+specialize (H1 H Ha) as (b & Hb & Hba); clear H.
+assert (Hbn : b ∈ divisors_of n). {
+  unfold divisors_of, divisors_from.
+  apply List.filter_In.
+  assert (Han : a ∈ divisors_of n) by now rewrite Hl; right; left.
+  apply List.filter_In in Han.
+  split. {
+    apply List.in_seq.
+    split; [ flia Hb | ].
+    transitivity a; [ easy | ].
+    destruct Han as (Han, _).
+    now apply List.in_seq in Han.
+  }
+  destruct Han as (_, Han).
+  apply Nat.eqb_eq in Han.
+  apply Nat.eqb_eq.
+  apply Nat.mod_divide in Han; [ | flia Hb ].
+  apply Nat.mod_divide; [ flia Hb | ].
+  now transitivity a.
 }
-cbn.
-assert (H : n ≠ 0) by flia Hn.
-specialize (eq_first_divisor_1 n H) as H1; clear H.
-rewrite Hl in H1; cbn in H1; subst a.
-destruct l as [| a l]. {
-  destruct n; [ flia Hn | ].
-  destruct n; [ flia Hn | clear Hn ].
-  cbn - [ "mod" ] in Hl.
-  rewrite Nat.mod_1_r in Hl.
-  cbn - [ "mod" ] in Hl.
-  replace (S (S n)) with (n + 1 * 2) in Hl at 1 by flia.
-  rewrite Nat.mod_add in Hl; [ | easy ].
-  remember (n mod 2 =? 0) as m eqn:Hm; symmetry in Hm.
-  destruct m; [ easy | ].
-  apply Nat.eqb_neq in Hm.
-  injection Hl; clear Hl; intros Hl.
-  specialize (List_filter_empty _ _ Hl) as H1.
-  cbn in H1.
-  destruct n; [ easy | ].
-  destruct n; [ easy | ].
-  destruct n; [ easy | ].
-  specialize (H1 3).
-  assert (H : 3 ∈ seq 3 (S (S (S n)))) by now left.
-  specialize (H1 H); clear H.
-  apply Nat.eqb_neq in H1.
-  replace (S (S (S (S (S n))))) with (n + 2 + 1 * 3) in H1 by flia.
-  rewrite Nat.mod_add in H1; [ | easy ].
-...
-intros * Hn.
-remember (smallest_divisor_after_1 n) as d eqn:Hd.
-unfold smallest_divisor_after_1 in Hd.
-remember (divisors_of
-...
-destruct n; [ easy | ].
-cbn.
-
-cbn; rewrite Nat.sub_0_r.
-destruct n; [ flia Hn | clear Hn ].
-cbn - [ "mod" ].
-replace (S (S n)) with (n + 1 * 2) at 1 by flia.
-rewrite Nat.mod_add; [ | easy ].
-remember (n mod 2) as m eqn:Hm; symmetry in Hm.
-destruct m; [ easy | ].
-Search smallest_prime_divisor.
-...
-
-Print fd_loop.
-
-Print smallest_prime_divisor.
-Search is_prime.
-...
-intros.
-now apply fd_loop_is_prime.
+rewrite Hl in Hbn.
+cbn in Hbn.
+destruct Hbn as [Hbn| Hbn]; [ flia Hbn Hb | ].
+destruct Hbn as [Hbn| Hbn]; [ flia Hbn Hb | ].
+apply Sorted.Sorted_inv in Hls.
+destruct Hls as (Hls, _).
+apply Sorted.Sorted_inv in Hls.
+destruct Hls as (Hls, Hr).
+clear - Hls Hr Hb Hbn.
+induction l as [| c l]; [ easy | ].
+cbn in Hbn.
+destruct Hbn as [Hbn| Hbn]. {
+  subst c.
+  apply Sorted.HdRel_inv in Hr.
+  flia Hr Hb.
+}
+apply IHl; [ | | easy ]. {
+  now apply Sorted.Sorted_inv in Hls.
+}
+clear - Hls Hr.
+destruct l as [| b l]; [ easy | ].
+constructor.
+specialize (@Sorted.HdRel_inv _ lt _ _ _ Hr) as H1.
+transitivity c; [ easy | ].
+apply Sorted.Sorted_inv in Hls.
+destruct Hls as (_, Hls).
+now apply Sorted.HdRel_inv in Hls.
 Qed.
 
 Fixpoint non_loop cnt n :=
   match cnt with
   | 0 => One
   | S cnt' =>
-      match n with
-      | 0 | 1 => One
-      | S (S n') =>
-          let d := smallest_prime_divisor n in
-          let p := smallest_divisor_is_prime n in
+      match le_dec 2 n with
+      | left P =>
+          let d := smallest_divisor_after_1 n in
+          let p := smallest_divisor_is_prime n P in
           Times d p (non_loop cnt' (n / d))
+      | right _ => One
       end
   end.
 
@@ -1267,6 +1238,7 @@ Theorem divisors_symmetry : ∀ n k l,
 Proof.
 intros * Hl Hk.
 symmetry in Hl.
+...
 assert (H1 : List.nth k l 0 ∈ l) by now apply List.nth_In.
 assert (H2 : List.nth (List.length l - S k) l 0 ∈ l). {
   apply List.nth_In; flia Hk.
