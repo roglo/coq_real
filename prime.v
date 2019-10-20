@@ -554,10 +554,10 @@ Definition series_but_mul_of {F : field} n s :=
        | _ => ls s i
        end |}.
 
-Definition divisors_from d n :=
-  List.filter (λ a, n mod a =? 0) (List.seq d n).
+Definition divisors_but_firstn_and_lastn d n :=
+  List.filter (λ a, n mod a =? 0) (List.seq d (S n - d)).
 
-Definition divisors := divisors_from 1.
+Definition divisors := divisors_but_firstn_and_lastn 1.
 
 Definition log_prod_add {F : field} u v n i c :=
   (c + u i * v (n / i))%F.
@@ -644,7 +644,7 @@ Theorem divisor_iff : ∀ n d,
   n ≠ 0 → d ∈ divisors n ↔ n mod d = 0 ∧ d ≠ 0.
 Proof.
 intros * Hn.
-unfold divisors, divisors_from.
+unfold divisors, divisors_but_firstn_and_lastn.
 split. {
   intros Hd.
   apply filter_In in Hd.
@@ -710,7 +710,8 @@ Proof.
 intros n Hn.
 remember (divisors n) as l eqn:Hl.
 symmetry in Hl.
-unfold divisors, divisors_from in Hl.
+unfold divisors, divisors_but_firstn_and_lastn in Hl.
+rewrite Nat_sub_succ_1 in Hl.
 specialize (List_last_seq 1 n Hn) as H1.
 replace (1 + n - 1) with n in H1 by flia.
 specialize (proj2 (filter_In (λ a, n mod a =? 0) n (seq 1 n))) as H2.
@@ -830,7 +831,8 @@ cbn.
 apply Bool.not_false_is_true.
 intros Ha.
 assert (Hls : Sorted.Sorted lt (divisors n)). {
-  unfold divisors, divisors_from.
+  unfold divisors, divisors_but_firstn_and_lastn.
+  rewrite Nat_sub_succ_1.
   specialize (SetoidList.filter_sort eq_equivalence Nat.lt_strorder) as H2.
   specialize (H2 Nat.lt_wd).
   specialize (H2 (λ a, n mod a =? 0) (seq 1 n)).
@@ -845,10 +847,12 @@ assert (H : 2 ≤ a). {
 }
 specialize (H1 H Ha) as (b & Hb & Hba); clear H.
 assert (Hbn : b ∈ divisors n). {
-  unfold divisors, divisors_from.
+  unfold divisors, divisors_but_firstn_and_lastn.
+  rewrite Nat_sub_succ_1.
   apply List.filter_In.
   assert (Han : a ∈ divisors n) by now rewrite Hl; right; left.
   apply List.filter_In in Han.
+  rewrite Nat_sub_succ_1 in Han.
   split. {
     apply List.in_seq.
     split; [ flia Hb | ].
@@ -946,7 +950,8 @@ Qed.
 Theorem divisors_length_upper_bound : ∀ n, List.length (divisors n) ≤ n.
 Proof.
 intros.
-unfold divisors, divisors_from.
+unfold divisors, divisors_but_firstn_and_lastn.
+rewrite Nat_sub_succ_1.
 rewrite <- (List.seq_length n 1) at 2.
 apply List_filter_length_upper_bound.
 Qed.
@@ -978,11 +983,76 @@ split.
 Qed.
 
 (* chais pas si ça sert à quelque chose, mais c'est pour le sport *)
+
+Theorem divisors_symmetry_lemma : ∀ n d l,
+  d ≠ 0
+  → l = divisors_but_firstn_and_lastn d n
+  → l ≠ []
+  → List.hd 0 l * List.last l 0 = n.
+Proof.
+intros * Hd Hl Hlz.
+symmetry in Hl.
+destruct d; [ easy | clear Hd ].
+revert n l Hl Hlz.
+induction d; intros. {
+  destruct l as [| a l]; [ now destruct n | ].
+  assert (Hn : n ≠ 0) by now intros H; subst n.
+  specialize (eq_first_divisor_1 n Hn) as H1.
+  unfold divisors in H1.
+  rewrite Hl in H1; cbn in H1; subst a.
+  rewrite Nat.mul_1_l.
+  specialize (eq_last_divisor n Hn) as H1.
+  unfold divisors in H1.
+  rewrite Hl in H1.
+  assert (H : 1 :: l ≠ []) by easy.
+  specialize (app_removelast_last 0 H) as H2.
+  rewrite H1 in H2.
+  rewrite H2.
+  now rewrite List_last_app.
+}
+destruct l as [| a l]; [ easy | clear Hlz ].
+destruct n; [ easy | ].
+assert (Hn : n ≠ 0) by now intros H; subst n.
+cbn - [ last ].
+Theorem divisors_but_firstn_and_lastn_succ : ∀ d n,
+  divisors_but_firstn_and_lastn (S d) n =
+    List.tl (divisors_but_firstn_and_lastn d n).
+Proof.
+intros.
+unfold divisors_but_firstn_and_lastn.
+rewrite Nat.sub_succ.
+induction d; [ now cbn; rewrite Nat.sub_0_r | ].
+rewrite Nat.sub_succ.
+rewrite IHd.
+...
+rewrite (divisors_but_firstn_and_lastn_succ (S d) n) in Hl.
+...
+specialize (eq_first_divisor_1 n Hn) as H1.
+unfold divisors in H1.
+...
+rewrite Hl in H1; cbn in H1; subst a.
+  rewrite Nat.mul_1_l.
+  specialize (eq_last_divisor n Hn) as H1.
+  unfold divisors in H1.
+  rewrite Hl in H1.
+  assert (H : 1 :: l ≠ []) by easy.
+  specialize (app_removelast_last 0 H) as H2.
+  rewrite H1 in H2.
+  rewrite H2.
+  now rewrite List_last_app.
+}
+...
+
 Theorem divisors_symmetry : ∀ n k l,
   l = divisors n
   → k < List.length l
   → List.nth k l 0 * List.nth (List.length l - S k) l 0 = n.
 Proof.
+intros * Hl Hk.
+unfold divisors in Hl.
+unfold divisors_but_firstn_and_lastn in Hl.
+...
+
 intros * Hl Hk.
 symmetry in Hl.
 remember (List.length l) as len eqn:Hlen.
