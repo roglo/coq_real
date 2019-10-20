@@ -1026,7 +1026,7 @@ cbn - [ last ].
 Theorem divisors_but_firstn_and_lastn_succ : ∀ d n,
   divisors_but_firstn_and_lastn (S d) n =
   match n mod d with
-  | 0 => List.tl (removelast (divisors_but_firstn_and_lastn d n))
+  | 0 => List.removelast (List.tl (divisors_but_firstn_and_lastn d n))
   | _ => divisors_but_firstn_and_lastn d n
   end.
 Proof.
@@ -1037,6 +1037,28 @@ destruct m. {
   rewrite Nat.sub_succ.
   rewrite <- List.seq_shift.
   rewrite List_filter_map.
+  remember (seq d (S n - d)) as l eqn:Hl; symmetry in Hl.
+  destruct l as [| a l]. {
+    cbn - [ "mod" ].
+    remember (S n - d) as x eqn:Hx; symmetry in Hx.
+    destruct x; [ clear Hl | easy ].
+    apply Nat.sub_0_le in Hx.
+    now replace (n - d) with 0 by flia Hx.
+  }
+  remember (S n - d) as x eqn:Hx; symmetry in Hx.
+  destruct x; [ easy | cbn in Hl ].
+  injection Hl; clear Hl; intros Hl Ha; subst a.
+  cbn - [ "mod" ].
+  rewrite Hm.
+  cbn - [ "mod" removelast ].
+  destruct x. {
+    cbn in Hl; subst l.
+    cbn - [ "mod" ].
+    now replace (n - d) with 0 by flia Hx.
+  }
+  cbn in Hl.
+  rewrite <- Hl.
+  cbn - [ "mod" ].
 ...
 
 Theorem divisors_symmetry : ∀ n k l,
