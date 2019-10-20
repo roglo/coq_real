@@ -705,7 +705,7 @@ intros.
 now destruct n.
 Qed.
 
-Theorem last_divisor : ∀ n, n ≠ 0 → List.last (divisors n) 0 = n.
+Theorem eq_last_divisor : ∀ n, n ≠ 0 → List.last (divisors n) 0 = n.
 Proof.
 intros n Hn.
 remember (divisors n) as l eqn:Hl.
@@ -741,7 +741,7 @@ Proof.
 intros * Hl.
 subst l.
 destruct n; [ easy | ].
-rewrite last_divisor; [ | easy ].
+rewrite eq_last_divisor; [ | easy ].
 now rewrite Nat.div_same.
 Qed.
 
@@ -771,7 +771,7 @@ destruct n; [ easy | ].
 destruct n; [ easy | exfalso ].
 specialize (eq_first_divisor_1 (S (S n)) (Nat.neq_succ_0 _)) as H1.
 rewrite Hl in H1; cbn in H1; subst a.
-specialize (last_divisor (S (S n)) (Nat.neq_succ_0 _)) as H1.
+specialize (eq_last_divisor (S (S n)) (Nat.neq_succ_0 _)) as H1.
 now rewrite Hl in H1.
 Qed.
 
@@ -1238,7 +1238,6 @@ Theorem divisors_symmetry : ∀ n k l,
 Proof.
 intros * Hl Hk.
 symmetry in Hl.
-Search divisors.
 Search divisors.
 ...
 assert (H1 : List.nth k l 0 ∈ l) by now apply List.nth_In.
