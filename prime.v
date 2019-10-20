@@ -557,13 +557,13 @@ Definition series_but_mul_of {F : field} n s :=
 Definition divisors_from d n :=
   List.filter (λ a, n mod a =? 0) (List.seq d n).
 
-Definition divisors_of := divisors_from 1.
+Definition divisors := divisors_from 1.
 
 Definition log_prod_add {F : field} u v n i c :=
   (c + u i * v (n / i))%F.
 
 Definition log_prod {F : field} u v n :=
-  List.fold_right (log_prod_add u v n) f_zero (divisors_of n).
+  List.fold_right (log_prod_add u v n) f_zero (divisors n).
 
 (* Σ (i = 1, ∞) s1_i x^ln(i) * Σ (i = 1, ∞) s2_i x^ln(i) *)
 Definition ls_mul {F : field} s1 s2 :=
@@ -641,10 +641,10 @@ now apply List.in_seq in Hj.
 Qed.
 
 Theorem divisor_iff : ∀ n d,
-  n ≠ 0 → d ∈ divisors_of n ↔ n mod d = 0 ∧ d ≠ 0.
+  n ≠ 0 → d ∈ divisors n ↔ n mod d = 0 ∧ d ≠ 0.
 Proof.
 intros * Hn.
-unfold divisors_of, divisors_from.
+unfold divisors, divisors_from.
 split. {
   intros Hd.
   apply filter_In in Hd.
@@ -699,18 +699,18 @@ remember (l ++ [a]) as l' eqn:Hl'.
 destruct l'; [ now destruct l | apply IHl ].
 Qed.
 
-Theorem eq_first_divisor_1 : ∀ n, n ≠ 0 → List.hd 0 (divisors_of n) = 1.
+Theorem eq_first_divisor_1 : ∀ n, n ≠ 0 → List.hd 0 (divisors n) = 1.
 Proof.
 intros.
 now destruct n.
 Qed.
 
-Theorem last_divisor : ∀ n, n ≠ 0 → List.last (divisors_of n) 0 = n.
+Theorem last_divisor : ∀ n, n ≠ 0 → List.last (divisors n) 0 = n.
 Proof.
 intros n Hn.
-remember (divisors_of n) as l eqn:Hl.
+remember (divisors n) as l eqn:Hl.
 symmetry in Hl.
-unfold divisors_of, divisors_from in Hl.
+unfold divisors, divisors_from in Hl.
 specialize (List_last_seq 1 n Hn) as H1.
 replace (1 + n - 1) with n in H1 by flia.
 specialize (proj2 (filter_In (λ a, n mod a =? 0) n (seq 1 n))) as H2.
@@ -735,7 +735,7 @@ apply List_last_app.
 Qed.
 
 Theorem first_last_divisor : ∀ n l,
-  l = divisors_of n
+  l = divisors n
   → List.hd 0 l = n / List.last l 0.
 Proof.
 intros * Hl.
@@ -760,10 +760,10 @@ cbn in Hf.
 now destruct (f b).
 Qed.
 
-Theorem only_1_has_one_divisor : ∀ n, length (divisors_of n) = 1 → n = 1.
+Theorem only_1_has_one_divisor : ∀ n, length (divisors n) = 1 → n = 1.
 Proof.
 intros * Hn.
-remember (divisors_of n) as l eqn:Hl.
+remember (divisors n) as l eqn:Hl.
 destruct l as [| a l]; [ easy | ].
 destruct l as [| a2 l]; [ | easy ].
 clear Hn; symmetry in Hl.
@@ -805,14 +805,14 @@ Compute (nat_of_number (Times 2 eq_refl One)).
 Compute (nat_of_number (Times 3 eq_refl (Times 7 eq_refl One))).
 Compute (nat_of_number (Times 5 eq_refl (Times 5 eq_refl One))).
 
-Definition smallest_divisor_after_1 n := List.hd 0 (List.tl (divisors_of n)).
+Definition smallest_divisor_after_1 n := List.hd 0 (List.tl (divisors n)).
 
 Theorem smallest_divisor_is_prime :
   ∀ n, 2 ≤ n → is_prime (smallest_divisor_after_1 n) = true.
 Proof.
 intros * Hn.
 unfold smallest_divisor_after_1.
-remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
+remember (divisors n) as l eqn:Hl; symmetry in Hl.
 destruct l as [| a l]. {
   destruct n; [ flia Hn | now destruct n ].
 }
@@ -829,8 +829,8 @@ destruct l as [| a l]. {
 cbn.
 apply Bool.not_false_is_true.
 intros Ha.
-assert (Hls : Sorted.Sorted lt (divisors_of n)). {
-  unfold divisors_of, divisors_from.
+assert (Hls : Sorted.Sorted lt (divisors n)). {
+  unfold divisors, divisors_from.
   specialize (SetoidList.filter_sort eq_equivalence Nat.lt_strorder) as H2.
   specialize (H2 Nat.lt_wd).
   specialize (H2 (λ a, n mod a =? 0) (seq 1 n)).
@@ -844,10 +844,10 @@ assert (H : 2 ≤ a). {
   now apply Sorted.HdRel_inv in Hls.
 }
 specialize (H1 H Ha) as (b & Hb & Hba); clear H.
-assert (Hbn : b ∈ divisors_of n). {
-  unfold divisors_of, divisors_from.
+assert (Hbn : b ∈ divisors n). {
+  unfold divisors, divisors_from.
   apply List.filter_In.
-  assert (Han : a ∈ divisors_of n) by now rewrite Hl; right; left.
+  assert (Han : a ∈ divisors n) by now rewrite Hl; right; left.
   apply List.filter_In in Han.
   split. {
     apply List.in_seq.
@@ -1013,8 +1013,8 @@ rewrite f_add_0_l.
 
 (*
 Theorem glop {F : field} : ∀ u v n,
-  fold_right (log_prod_add u v n) f_zero (divisors_of n) =
-  fold_right (log_prod_add v u n) f_zero (List.rev (divisors_of n)).
+  fold_right (log_prod_add u v n) f_zero (divisors n) =
+  fold_right (log_prod_add v u n) f_zero (List.rev (divisors n)).
 Proof.
 intros.
 destruct n; [ easy | ].
@@ -1058,7 +1058,7 @@ destruct n. {
 (*
 Theorem glop : ∀ cnt n d,
   2 ≤ n ≤ cnt
-  → fd_loop cnt n d ∈ divisors_of n.
+  → fd_loop cnt n d ∈ divisors n.
 Proof.
 intros * (Hn, Hcnt).
 destruct cnt; [ flia Hn Hcnt | ].
@@ -1091,7 +1091,7 @@ destruct p. {
 
 (*
 Theorem first_prime_divisor_is_2nd_divisor : ∀ n,
-  2 ≤ n → first_prime_divisor n = List.hd 0 (List.tl (divisors_of n)).
+  2 ≤ n → first_prime_divisor n = List.hd 0 (List.tl (divisors n)).
 Proof.
 intros n Hn.
 unfold first_prime_divisor.
@@ -1160,7 +1160,7 @@ enough (S d ≤ n).
 ...
 
 Theorem mem_smallest_divisor_divisors : ∀ n,
-  2 ≤ n → smallest_prime_divisor n ∈ divisors_of n.
+  2 ≤ n → smallest_prime_divisor n ∈ divisors n.
 Proof.
 intros n Hn.
 apply divisor_iff; [ flia Hn | ].
@@ -1196,15 +1196,15 @@ destruct n; [ now cbn; right; left | ].
 ...
 *)
 
-Theorem divisors_length_upper_bound : ∀ n, List.length (divisors_of n) ≤ n.
+Theorem divisors_length_upper_bound : ∀ n, List.length (divisors n) ≤ n.
 Proof.
 intros.
-unfold divisors_of, divisors_from.
+unfold divisors, divisors_from.
 rewrite <- (List.seq_length n 1) at 2.
 apply List_filter_length_upper_bound.
 Qed.
 
-Theorem divisor_inv : ∀ n d, d ∈ divisors_of n → n / d ∈ divisors_of n.
+Theorem divisor_inv : ∀ n d, d ∈ divisors n → n / d ∈ divisors n.
 Proof.
 intros * Hd.
 apply List.filter_In in Hd.
@@ -1232,12 +1232,14 @@ Qed.
 
 (* chais pas si ça sert à quelque chose, mais c'est pour le sport *)
 Theorem divisors_symmetry : ∀ n k l,
-  l = divisors_of n
+  l = divisors n
   → k < List.length l
   → List.nth k l 0 * List.nth (List.length l - S k) l 0 = n.
 Proof.
 intros * Hl Hk.
 symmetry in Hl.
+Search divisors.
+Search divisors.
 ...
 assert (H1 : List.nth k l 0 ∈ l) by now apply List.nth_In.
 assert (H2 : List.nth (List.length l - S k) l 0 ∈ l). {
@@ -1271,7 +1273,7 @@ subst a.
 ...
 Check eq_first_divisor_1.
 Search (nth 0).
-Search (nth _ (divisors_of _)).
+Search (nth _ (divisors _)).
 
 ...
 rewrite Hk'; f_equal.
@@ -1310,7 +1312,7 @@ cbn - [ nth ].
 *)
 
 Theorem fold_log_prod_add_first_last {F : field} : ∀ k n u v l,
-  l = divisors_of n
+  l = divisors n
   → fold_right (log_prod_add u v n) f_zero (firstn k l) =
      fold_right (log_prod_add v u n) f_zero (skipn (length l - k) l).
 Proof.
@@ -1413,11 +1415,11 @@ rewrite Nat.sub_succ.
 *)
 
 Theorem fold_log_prod_comm {F : field} : ∀ u v i,
-  fold_right (log_prod_add u v i) f_zero (divisors_of i) =
-  fold_right (log_prod_add v u i) f_zero (divisors_of i).
+  fold_right (log_prod_add u v i) f_zero (divisors i) =
+  fold_right (log_prod_add v u i) f_zero (divisors i).
 Proof.
 intros u v n.
-remember (divisors_of n) as l eqn:Hl; symmetry in Hl.
+remember (divisors n) as l eqn:Hl; symmetry in Hl.
 destruct l as [| a l]; [ easy | ].
 assert (H : a :: l ≠ []) by easy.
 specialize (app_removelast_last 0 H) as H1; clear H.
@@ -1438,8 +1440,8 @@ rewrite Nat.div_1_r.
 replace (u 1 * v n)%F with (f_zero + u 1 * v n)%F at 2 by
   now rewrite f_add_0_l.
 rewrite fold_log_prod_add_assoc; f_equal.
-replace l with (List.tl (divisors_of n)) at 1 by now rewrite Hl.
-remember (divisors_of n) as l'.
+replace l with (List.tl (divisors n)) at 1 by now rewrite Hl.
+remember (divisors n) as l'.
 replace (tl _) with (List.skipn 1 l') by easy.
 replace (removelast _) with (List.firstn (length l' - 1) l'). 2: {
   rewrite Heql'; symmetry.
