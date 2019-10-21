@@ -1099,6 +1099,7 @@ destruct n; [ easy | ].
 assert (Hn : n ≠ 0) by now intros H; subst n.
 cbn - [ last ].
 ...
+*)
 
 Theorem divisors_symmetry : ∀ n k l,
   l = divisors n
@@ -1108,6 +1109,7 @@ Proof.
 intros * Hl Hk.
 unfold divisors in Hl.
 unfold divisors_but_firstn_and_lastn in Hl.
+rewrite Nat_sub_succ_1 in Hl.
 ...
 intros * Hl Hk.
 symmetry in Hl.
@@ -1245,7 +1247,6 @@ induction k; intros. {
 destruct l as [| a l]; [ easy | ].
 cbn - [ nth ].
 ...
-*)
 
 (*
 Theorem fold_log_prod_add_first_last {F : field} : ∀ k n u v l,
