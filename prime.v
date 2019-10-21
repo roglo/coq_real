@@ -1105,14 +1105,13 @@ cbn - [ last ].
 ...
 *)
 
-Theorem sorted_equiv_lists : ∀ l l',
+Theorem sorted_equiv_nat_lists : ∀ l l',
   Sorted.Sorted lt l
   → Sorted.Sorted lt l'
   → (∀ a, a ∈ l ↔ a ∈ l')
   → l = l'.
 Proof.
 intros * Hl Hl' Hll.
-
 revert l' Hl' Hll.
 induction l as [| a l]; intros. {
   destruct l' as [| a' l']; [ easy | ].
@@ -1174,7 +1173,7 @@ assert (Hll : ∀ a, a ∈ l ↔ a ∈ l'). {
   -now apply Hal', Hal.
   -now apply Hal, Hal'.
 }
-now apply sorted_equiv_lists.
+now apply sorted_equiv_nat_lists.
 Qed.
 
 Theorem map_inv_divisors : ∀ n,
@@ -1189,7 +1188,7 @@ revert n l Hl H1.
 induction l as [| a l]; intros; [ easy | cbn ].
 rewrite List.map_app; cbn.
 ...
-apply sorted_equiv_lists; [ easy | easy | ].
+apply sorted_equiv_nat_lists; [ easy | easy | ].
 ...
 
 Theorem divisors_symmetry : ∀ n k l,
