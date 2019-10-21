@@ -30,6 +30,46 @@ rewrite Nat.add_comm.
 now rewrite Nat.sub_add_distr.
 Qed.
 
+Theorem Nat_mod_0_mod_div : ∀ a b,
+  0 < b ≤ a → a mod b = 0 → a mod (a / b) = 0.
+Proof.
+intros * Hba Ha.
+assert (Hbz : b ≠ 0) by flia Hba.
+assert (Habz : a / b ≠ 0). {
+  intros H.
+  apply Nat.div_small_iff in H; [ | flia Hba ].
+  now apply Nat.nle_gt in H.
+}
+specialize (Nat.div_mod a (a / b) Habz) as H1.
+specialize (Nat.div_mod a b Hbz) as H2.
+rewrite Ha, Nat.add_0_r in H2.
+rewrite H2 in H1 at 3.
+rewrite Nat.div_mul in H1; [ | easy ].
+rewrite Nat.mul_comm in H1.
+flia H1 H2.
+Qed.
+
+Theorem Nat_mod_0_div_div : ∀ a b,
+  0 < b ≤ a → a mod b = 0 → a / (a / b) = b.
+Proof.
+intros * Hba Ha.
+assert (Hbz : b ≠ 0) by flia Hba.
+assert (Habz : a / b ≠ 0). {
+  intros H.
+  apply Nat.div_small_iff in H; [ | easy ].
+  now apply Nat.nle_gt in H.
+}
+specialize (Nat.div_mod a (a / b) Habz) as H1.
+rewrite Nat_mod_0_mod_div in H1; [ | easy | easy ].
+rewrite Nat.add_0_r in H1.
+apply (Nat.mul_cancel_l _ _ (a / b)); [ easy | ].
+rewrite <- H1; symmetry.
+rewrite Nat.mul_comm.
+apply Nat.mod_divide in Ha; [ | easy ].
+rewrite <- Nat.divide_div_mul_exact; [ | easy | easy ].
+now rewrite Nat.mul_comm, Nat.div_mul.
+Qed.
+
 Theorem List_fold_right_cons {A B} : ∀ (f : B → A → A) (a : A) x l,
   List.fold_right f a (x :: l) = f x (List.fold_right f a l).
 Proof. easy. Qed.
@@ -973,24 +1013,21 @@ apply List.filter_In.
 destruct Hd as (Hd, Hm).
 apply List.in_seq in Hd.
 apply Nat.eqb_eq in Hm.
+rewrite Nat_mod_0_mod_div; [ | flia Hd | easy ].
+split; [ | easy ].
 apply Nat.mod_divides in Hm; [ | flia Hd ].
 destruct Hm as (m, Hm).
 rewrite Hm at 1.
+apply List.in_seq.
 rewrite Nat.mul_comm, Nat.div_mul; [ | flia Hd ].
 split.
--apply List.in_seq.
- split.
- +apply (Nat.mul_lt_mono_pos_l d); [ flia Hd | ].
-  flia Hm Hd.
- +rewrite Hm.
-  destruct d; [ flia Hd | cbn; flia ].
--apply Nat.eqb_eq.
- rewrite Hm at 2.
- rewrite Nat.mul_comm, Nat.div_mul; [ | flia Hd ].
- rewrite Hm.
- apply Nat.mod_mul; lia.
++apply (Nat.mul_lt_mono_pos_l d); [ flia Hd | ].
+ flia Hm Hd.
++rewrite Hm.
+ destruct d; [ flia Hd | cbn; flia ].
 Qed.
 
+(*
 Theorem divisors_but_firstn_and_lastn_succ : ∀ d n,
   divisors_but_firstn_and_lastn (S d) n =
   match n mod d with
@@ -1028,8 +1065,9 @@ destruct m. {
   rewrite <- Hl.
   cbn - [ "mod" ].
 ...
+*)
 
-(* chais pas si ça sert à quelque chose, mais c'est pour le sport *)
+(* chais pas si ça sert à quelque chose, mais c'est pour le sport
 Theorem divisors_symmetry_lemma : ∀ n d l,
   d ≠ 0
   → l = divisors_but_firstn_and_lastn d n
@@ -1071,7 +1109,6 @@ intros * Hl Hk.
 unfold divisors in Hl.
 unfold divisors_but_firstn_and_lastn in Hl.
 ...
-
 intros * Hl Hk.
 symmetry in Hl.
 remember (List.length l) as len eqn:Hlen.
@@ -1210,6 +1247,7 @@ cbn - [ nth ].
 ...
 *)
 
+(*
 Theorem fold_log_prod_add_first_last {F : field} : ∀ k n u v l,
   l = divisors n
   → fold_right (log_prod_add u v n) f_zero (firstn k l) =
@@ -1318,13 +1356,15 @@ Theorem fold_log_prod_comm {F : field} : ∀ u v i,
   fold_right (log_prod_add v u i) f_zero (divisors i).
 Proof.
 intros u v n.
+...
+intros u v n.
 remember (divisors n) as l eqn:Hl; symmetry in Hl.
 destruct l as [| a l]; [ easy | ].
 assert (H : a :: l ≠ []) by easy.
 specialize (app_removelast_last 0 H) as H1; clear H.
 rewrite <- Hl in H1.
 assert (Hn : n ≠ 0) by now intros H; subst n.
-rewrite last_divisor in H1; [ | easy ].
+rewrite eq_last_divisor in H1; [ | easy ].
 rewrite <- Hl at 2.
 rewrite H1.
 rewrite fold_right_app.
@@ -1346,6 +1386,7 @@ replace (removelast _) with (List.firstn (length l' - 1) l'). 2: {
   rewrite Heql'; symmetry.
   apply List_removelast_firstn.
 }
+...
 rewrite (fold_log_prod_add_first_last (length l' - 1) n v u l' Heql').
 f_equal; f_equal.
 rewrite Hl; cbn - [ "-" ].
