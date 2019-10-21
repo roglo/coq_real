@@ -1425,6 +1425,7 @@ unfold log_prod at 1 3.
 remember (divisors i) as l eqn:Hl; symmetry in Hl.
 destruct l as [| a l]; [ easy | cbn ].
 unfold log_prod_add at 1 3.
+...
 unfold log_prod at 2 4.
 ...
 
