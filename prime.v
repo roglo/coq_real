@@ -1386,10 +1386,17 @@ intros u v n.
 rewrite map_inv_divisors at 2.
 symmetry; rewrite <- fold_log_prod_add_on_rev at 1; symmetry.
 remember (divisors n) as l eqn:Hl; symmetry in Hl.
-induction l as [| a l]; [ easy | ].
-cbn.
-(* ouais mais non *)
-(* faut peut-être que je remplace d'abord Hl par ∀ d ∈ l, ... *)
+destruct (zerop n) as [Hn| Hn]; [ now subst n; cbn in Hl; subst l | ].
+apply Nat.neq_0_lt_0 in Hn.
+assert (Hd : ∀ d, d ∈ l → n mod d = 0 ∧ d ≠ 0). {
+  intros d Hd; apply divisor_iff; [ easy | now subst l ].
+}
+clear Hl.
+induction l as [| a l]; [ easy | cbn ].
+rewrite <- IHl. 2: {
+  intros d Hdl.
+  now apply Hd; right.
+}
 ...
 intros u v n.
 remember (divisors n) as l eqn:Hl; symmetry in Hl.
