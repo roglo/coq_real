@@ -1101,6 +1101,89 @@ cbn - [ last ].
 ...
 *)
 
+Theorem unicity_sorted_lists_with_prop : ∀ l l' P,
+  Sorted.Sorted lt l
+  → Sorted.Sorted lt l'
+  → (∀ a, P a ↔ a ∈ l)
+  → (∀ a, P a ↔ a ∈ l')
+  → l = l'.
+Proof.
+intros * Hl Hl' Hal Hal'.
+destruct l as [| a l]; intros. {
+  destruct l' as [| a' l']; [ easy | exfalso ].
+  specialize (proj2 (Hal' a') (or_introl eq_refl)) as H1.
+  now specialize (proj1 (Hal _) H1).
+}
+destruct l' as [| a' l']. {
+  specialize (proj2 (Hal a) (or_introl eq_refl)) as H1.
+  now specialize (proj1 (Hal' _) H1).
+}
+specialize (proj2 (Hal a) (or_introl eq_refl)) as H1.
+specialize (proj2 (Hal' a') (or_introl eq_refl)) as H2.
+specialize (proj1 (Hal' a) H1) as H3.
+specialize (proj1 (Hal a') H2) as H4.
+assert (Haa : a = a'). {
+  assert (Hltt : Relations_1.Transitive lt). {
+    intros x y z Hxy Hyz.
+    now transitivity y.
+  }
+  apply Sorted.Sorted_StronglySorted in Hl; [ | easy ].
+  inversion Hl; subst a0 l0.
+  specialize (proj1 (Forall_forall (lt a) l) H6) as H7.
+  apply Sorted.Sorted_StronglySorted in Hl'; [ | easy ].
+  inversion Hl'; subst a0 l0.
+  specialize (proj1 (Forall_forall (lt a') l') H9) as H10.
+  clear H5 H6 H8 H9.
+  destruct H3 as [H3| H3]; [ easy | ].
+  destruct H4 as [H4| H4]; [ easy | ].
+  specialize (H7 a' H4) as H5.
+  specialize (H10 a H3) as H6.
+  flia H5 H6.
+}
+subst a'; f_equal.
+clear H2 H3 H4.
+rename a into b.
+...
+revert a l' Hl Hl' Hal Hal' H1.
+induction l as [| b l]; intros. {
+  destruct l' as [| b' l']; [ easy | exfalso ].
+  specialize (proj2 (Hal' b') (or_intror (or_introl eq_refl))) as H2.
+  specialize (proj1 (Hal b') H2) as H3.
+  destruct H3 as [H3| H3]; [ | easy ].
+  subst b'.
+  inversion Hl'; subst.
+  inversion H4; flia H0.
+}
+destruct l' as [| b' l']. {
+  exfalso.
+  specialize (proj2 (Hal b) (or_intror (or_introl eq_refl))) as H2.
+  specialize (proj1 (Hal' b) H2) as H3.
+  destruct H3 as [H3| H3]; [ | easy ].
+  subst b.
+  inversion Hl; subst.
+  inversion H4; flia H0.
+}
+...
+apply IHl.
+-apply Sorted.StronglySorted_Sorted in Hl.
+ now apply Sorted.Sorted_inv in Hl.
+-intros b; split; intros Hb.
+ destruct (Nat.eq_dec a b) as [Hab| Hab]. {
+   subst b.
+
+
+-apply Sorted.Sorted_inv in Hl.
+...
+ +specialize (proj1 (Hal b) H) as H1.
+  destruct H1 as [H1| H1]; [ | easy ].
+  subst b.
+    (* false *)
+...
+f_equal. {
+  specialize (proj2 (Hal a) (or_introl eq_refl)) as H1.
+  specialize (proj2 (Hal' a') (or_introl eq_refl)) as H2.
+...
+
 Theorem divisors_symmetry : ∀ n k l,
   l = divisors n
   → k < List.length l
