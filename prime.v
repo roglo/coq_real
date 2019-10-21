@@ -1269,7 +1269,17 @@ split; intros Ha.
  destruct Hna as (c, Hc); subst n.
  destruct c; [ now rewrite Nat.mul_comm in Hn | ].
  rewrite Nat.mul_comm; cbn; flia.
--idtac.
+-apply List.in_rev in Ha.
+ destruct (zerop n) as [Hn| Hn]; [ now subst n | ].
+ apply Nat.neq_0_lt_0 in Hn.
+ apply divisor_iff; [ easy | ].
+ apply List.in_map_iff in Ha.
+ destruct Ha as (b & Hnb & Hb).
+ subst a.
+ apply divisor_iff; [ easy | ].
+ now apply divisor_inv.
+Qed.
+
 ...
 
 Theorem divisors_symmetry : ∀ n k l,
