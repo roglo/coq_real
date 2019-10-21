@@ -1176,19 +1176,100 @@ assert (Hll : ∀ a, a ∈ l ↔ a ∈ l'). {
 now apply sorted_equiv_nat_lists.
 Qed.
 
+Theorem sorted_gt_lt_rev : ∀ l, Sorted.Sorted gt l → Sorted.Sorted lt (rev l).
+Proof.
+intros l Hl.
+induction l as [| a l]; [ constructor | cbn ].
+apply (SetoidList.SortA_app eq_equivalence).
+-now apply IHl; inversion Hl.
+-now constructor.
+-intros x y Hx Hy.
+ apply SetoidList.InA_alt in Hy.
+ destruct Hy as (z & Haz & Hza); subst z.
+ destruct Hza; [ subst a | easy ].
+ apply SetoidList.InA_rev in Hx.
+ rewrite List.rev_involutive in Hx.
+ apply SetoidList.InA_alt in Hx.
+ destruct Hx as (z & Haz & Hza); subst z.
+ apply Sorted.Sorted_inv in Hl.
+ destruct Hl as (Hl, Hyl).
+ clear IHl.
+ induction Hyl; [ easy | ].
+ destruct Hza as [Hx| Hx]; [ now subst x | ].
+ transitivity b; [ clear H | easy ].
+ assert (Hgtt : Relations_1.Transitive gt). {
+   unfold gt.
+   clear; intros x y z Hxy Hyz.
+   now transitivity y.
+ }
+ apply Sorted.Sorted_StronglySorted in Hl; [ | easy ].
+ inversion Hl; subst.
+ specialize (proj1 (Forall_forall (gt b) l) H2) as H3.
+ now apply H3.
+Qed.
+
 Theorem map_inv_divisors : ∀ n,
-  divisors n = List.map (λ i, n / i) (List.rev (divisors n)).
+  divisors n = List.rev (List.map (λ i, n / i) (divisors n)).
 Proof.
 intros.
 specialize (divisors_are_sorted n) as H1.
-assert (H2 : Sorted.Sorted lt (map (λ i, n / i) (rev (divisors n)))). {
-remember (divisors n) as l eqn:Hl; symmetry in Hl.
-...
-revert n l Hl H1.
-induction l as [| a l]; intros; [ easy | cbn ].
-rewrite List.map_app; cbn.
-...
+assert (H2 : Sorted.Sorted lt (rev (map (λ i : nat, n / i) (divisors n)))). {
+  apply sorted_gt_lt_rev.
+  destruct n; [ constructor | ].
+  remember (divisors (S n)) as l eqn:Hl; symmetry in Hl.
+  assert (H2 : ∀ d, d ∈ l → S n mod d = 0 ∧ d ≠ 0). {
+    now intros d; subst l; apply divisor_iff.
+  }
+  clear Hl.
+  induction l as [| a l]; [ constructor | ].
+  cbn; constructor.
+  -apply IHl; [ now inversion H1 | ].
+   now intros d; intros Hd; apply H2; right.
+  -clear IHl.
+   revert a H1 H2.
+   induction l as [| b l]; intros; [ constructor | ].
+   cbn; constructor; unfold gt.
+   apply Sorted.Sorted_inv in H1.
+   destruct H1 as (_, H1).
+   apply Sorted.HdRel_inv in H1.
+   assert (Ha : a ≠ 0). {
+     intros H; subst a.
+     now specialize (H2 0 (or_introl eq_refl)) as H3.
+   }
+   assert (Hb : b ≠ 0). {
+     intros H; subst b.
+     now specialize (H2 0 (or_intror (or_introl eq_refl))) as H3.
+   }
+   specialize (Nat.div_mod (S n) a Ha) as H3.
+   specialize (Nat.div_mod (S n) b Hb) as H4.
+   specialize (H2 a (or_introl eq_refl)) as H.
+   rewrite (proj1 H), Nat.add_0_r in H3; clear H.
+   specialize (H2 b (or_intror (or_introl eq_refl))) as H.
+   rewrite (proj1 H), Nat.add_0_r in H4; clear H.
+   apply (Nat.mul_lt_mono_pos_l b); [ flia Hb | ].
+   rewrite <- H4.
+   apply (Nat.mul_lt_mono_pos_l a); [ flia Ha | ].
+   rewrite (Nat.mul_comm _ (_ * _)), Nat.mul_shuffle0.
+   rewrite <- Nat.mul_assoc, <- H3.
+   apply Nat.mul_lt_mono_pos_r; [ flia | easy ].
+}
 apply sorted_equiv_nat_lists; [ easy | easy | ].
+intros a.
+split; intros Ha.
+-apply List.in_rev; rewrite List.rev_involutive.
+ destruct (zerop n) as [Hn| Hn]; [ now subst n | ].
+ apply Nat.neq_0_lt_0 in Hn.
+ specialize (proj1 (divisor_iff n a Hn) Ha) as (Hna, Haz).
+ apply List.in_map_iff.
+ exists (n / a).
+ split; [ | now apply divisor_inv ].
+ apply Nat_mod_0_div_div; [ | easy ].
+ split; [ flia Haz | ].
+ apply Nat.mod_divides in Hna; [ | easy ].
+ destruct Hna as (c, Hc); subst n.
+ destruct c; [ now rewrite Nat.mul_comm in Hn | ].
+ rewrite Nat.mul_comm; cbn; flia.
+-idtac.
 ...
 
 Theorem divisors_symmetry : ∀ n k l,
