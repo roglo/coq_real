@@ -1109,7 +1109,8 @@ Theorem unicity_sorted_lists_with_prop : ∀ l l' P,
   → l = l'.
 Proof.
 intros * Hl Hl' Hal Hal'.
-destruct l as [| a l]; intros. {
+revert l' Hl' Hal'.
+induction l as [| a l]; intros. {
   destruct l' as [| a' l']; [ easy | exfalso ].
   specialize (proj2 (Hal' a') (or_introl eq_refl)) as H1.
   now specialize (proj1 (Hal _) H1).
@@ -1143,25 +1144,19 @@ assert (Haa : a = a'). {
 subst a'; f_equal.
 clear H2 H3 H4.
 rename a into b.
-...
-revert a l' Hl Hl' Hal Hal' H1.
-induction l as [| b l]; intros. {
-  destruct l' as [| b' l']; [ easy | exfalso ].
-  specialize (proj2 (Hal' b') (or_intror (or_introl eq_refl))) as H2.
-  specialize (proj1 (Hal b') H2) as H3.
-  destruct H3 as [H3| H3]; [ | easy ].
-  subst b'.
-  inversion Hl'; subst.
-  inversion H4; flia H0.
+destruct l as [| b1]. {
+  destruct l' as [| b'1]; [ easy | exfalso ].
+  specialize (proj2 (Hal' b'1) (or_intror (or_introl eq_refl))) as H2.
+  specialize (proj1 (Hal b'1) H2) as H3.
+  destruct H3 as [H3| H3]; [ subst b'1 | easy ].
+  inversion Hl'; inversion H4; flia H6.
 }
-destruct l' as [| b' l']. {
+destruct l' as [| b'1]. {
   exfalso.
-  specialize (proj2 (Hal b) (or_intror (or_introl eq_refl))) as H2.
-  specialize (proj1 (Hal' b) H2) as H3.
-  destruct H3 as [H3| H3]; [ | easy ].
-  subst b.
-  inversion Hl; subst.
-  inversion H4; flia H0.
+  specialize (proj2 (Hal b1) (or_intror (or_introl eq_refl))) as H2.
+  specialize (proj1 (Hal' b1) H2) as H3.
+  destruct H3 as [H3| H3]; [ subst b1 | easy ].
+  inversion Hl; inversion H4; flia H6.
 }
 ...
 apply IHl.
