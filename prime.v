@@ -991,39 +991,6 @@ split.
  apply Nat.mod_mul; lia.
 Qed.
 
-(* chais pas si ça sert à quelque chose, mais c'est pour le sport *)
-
-Theorem divisors_symmetry_lemma : ∀ n d l,
-  d ≠ 0
-  → l = divisors_but_firstn_and_lastn d n
-  → l ≠ []
-  → List.hd 0 l * List.last l 0 = n.
-Proof.
-intros * Hd Hl Hlz.
-symmetry in Hl.
-destruct d; [ easy | clear Hd ].
-revert n l Hl Hlz.
-induction d; intros. {
-  destruct l as [| a l]; [ now destruct n | ].
-  assert (Hn : n ≠ 0) by now intros H; subst n.
-  specialize (eq_first_divisor_1 n Hn) as H1.
-  unfold divisors in H1.
-  rewrite Hl in H1; cbn in H1; subst a.
-  rewrite Nat.mul_1_l.
-  specialize (eq_last_divisor n Hn) as H1.
-  unfold divisors in H1.
-  rewrite Hl in H1.
-  assert (H : 1 :: l ≠ []) by easy.
-  specialize (app_removelast_last 0 H) as H2.
-  rewrite H1 in H2.
-  rewrite H2.
-  now rewrite List_last_app.
-}
-destruct l as [| a l]; [ easy | clear Hlz ].
-destruct n; [ easy | ].
-assert (Hn : n ≠ 0) by now intros H; subst n.
-cbn - [ last ].
-
 Theorem divisors_but_firstn_and_lastn_succ : ∀ d n,
   divisors_but_firstn_and_lastn (S d) n =
   match n mod d with
@@ -1060,6 +1027,39 @@ destruct m. {
   cbn in Hl.
   rewrite <- Hl.
   cbn - [ "mod" ].
+...
+
+(* chais pas si ça sert à quelque chose, mais c'est pour le sport *)
+Theorem divisors_symmetry_lemma : ∀ n d l,
+  d ≠ 0
+  → l = divisors_but_firstn_and_lastn d n
+  → l ≠ []
+  → List.hd 0 l * List.last l 0 = n.
+Proof.
+intros * Hd Hl Hlz.
+symmetry in Hl.
+destruct d; [ easy | clear Hd ].
+revert n l Hl Hlz.
+induction d; intros. {
+  destruct l as [| a l]; [ now destruct n | ].
+  assert (Hn : n ≠ 0) by now intros H; subst n.
+  specialize (eq_first_divisor_1 n Hn) as H1.
+  unfold divisors in H1.
+  rewrite Hl in H1; cbn in H1; subst a.
+  rewrite Nat.mul_1_l.
+  specialize (eq_last_divisor n Hn) as H1.
+  unfold divisors in H1.
+  rewrite Hl in H1.
+  assert (H : 1 :: l ≠ []) by easy.
+  specialize (app_removelast_last 0 H) as H2.
+  rewrite H1 in H2.
+  rewrite H2.
+  now rewrite List_last_app.
+}
+destruct l as [| a l]; [ easy | clear Hlz ].
+destruct n; [ easy | ].
+assert (Hn : n ≠ 0) by now intros H; subst n.
+cbn - [ last ].
 ...
 
 Theorem divisors_symmetry : ∀ n k l,
