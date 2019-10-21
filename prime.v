@@ -991,6 +991,56 @@ split.
  apply Nat.mod_mul; lia.
 Qed.
 
+Search (_ mod (_ + _)).
+
+Compute (let d := 14 in (24 mod (d + 1), 24 mod d - 24 / d)).
+
+Theorem Nat_div_succ_r : ∀ a b,
+  0 < b < a → a mod b ≠ 0 → a / S b = a / b.
+Proof.
+intros * (Hb, Hba) Hab.
+destruct (Nat.eq_dec b 2) as [H1| H1]. {
+  subst b.
+  destruct (Nat.eq_dec a 5) as [H2| H2]. {
+    subst a; cbn in *.
+Compute (let d := 2 in (5 mod (d + 1), 5 mod d - 5 / d)).
+(* this was a counter example *)
+...
+intros * (Hb, Hba) Hab.
+destruct b; [ easy | clear Hb ].
+destruct b; [ now rewrite Nat.mod_1_r in Hab | ].
+destruct b. {
+  cbn - [ "mod" "/" ] in *.
+  destruct a; [ easy | ].
+  destruct a; [ easy | ].
+  destruct a; [ easy | clear Hba ].
+  replace (S (S (S a))) with (a + 1 + 1 * 2) in Hab by flia.
+  rewrite Nat.mod_add in Hab; [ | easy ].
+  replace (S (S (S a))) with (a + 1 * 3) at 1 by flia.
+  rewrite Nat.div_add; [ | easy ].
+  replace (S (S (S a))) with (a + 1 + 1 * 2) by flia.
+  rewrite Nat.div_add; [ | easy ].
+  f_equal.
+  destruct a; [ easy | ].
+  destruct a; [ easy | ].
+  destruct a. {
+    cbn in *.
+...
+  destruct a; [ easy | ].
+  destruct a; [ easy | ].
+
+...
+
+Theorem Nat_mod_succ_r : ∀ a b,
+  0 < b < a → a mod b ≠ 0 → a mod S b = a mod b - a / b.
+Proof.
+intros * Hba Hab.
+specialize (Nat.div_mod a (S b) (Nat.neq_succ_0 _)) as H1.
+assert (H : b ≠ 0) by flia Hba.
+specialize (Nat.div_mod a b H) as H2; clear H.
+assert (H3 : a / b = a / S b). {
+...
+
 Theorem divisors_but_firstn_and_lastn_succ : ∀ d n,
   divisors_but_firstn_and_lastn (S d) n =
   match n mod d with
