@@ -1397,67 +1397,35 @@ rewrite <- IHl. 2: {
   intros d Hdl.
   now apply Hd; right.
 }
-...
-intros u v n.
-remember (divisors n) as l eqn:Hl; symmetry in Hl.
-destruct l as [| a l]; [ easy | ].
-assert (H : a :: l ≠ []) by easy.
-specialize (app_removelast_last 0 H) as H1; clear H.
-rewrite <- Hl in H1.
-assert (Hn : n ≠ 0) by now intros H; subst n.
-rewrite eq_last_divisor in H1; [ | easy ].
-rewrite <- Hl at 2.
-rewrite H1.
-rewrite fold_right_app.
-cbn.
-unfold log_prod_add at 1 4.
-rewrite f_add_0_l.
-rewrite (f_mul_comm (v n)).
-rewrite Nat.div_same; [ | easy ].
-specialize (eq_first_divisor_1 _ Hn) as H2.
-rewrite Hl in H2; cbn in H2; subst a.
-rewrite Nat.div_1_r.
-replace (u 1 * v n)%F with (f_zero + u 1 * v n)%F at 2 by
-  now rewrite f_add_0_l.
-rewrite fold_log_prod_add_assoc; f_equal.
-replace l with (List.tl (divisors n)) at 1 by now rewrite Hl.
-remember (divisors n) as l'.
-replace (tl _) with (List.skipn 1 l') by easy.
-replace (removelast _) with (List.firstn (length l' - 1) l'). 2: {
-  rewrite Heql'; symmetry.
-  apply List_removelast_firstn.
-}
-...
-rewrite (fold_log_prod_add_first_last (length l' - 1) n v u l' Heql').
-f_equal; f_equal.
-rewrite Hl; cbn - [ "-" ].
-now rewrite Nat_sub_succ_1, Nat_sub_succ_diag_l.
-...
+unfold log_prod_add; f_equal.
+rewrite f_mul_comm; f_equal; f_equal.
+specialize (Hd a (or_introl eq_refl)) as (Hna, Ha).
+symmetry; apply Nat_mod_0_div_div; [ | easy ].
+split; [ flia Ha | ].
+apply Nat.mod_divides in Hna; [ | easy ].
+destruct Hna as (c, Hc); subst n.
+destruct c; [ now rewrite Nat.mul_comm in Hn | ].
+rewrite Nat.mul_comm; cbn; flia.
+Qed.
 
 Theorem log_prod_comm {F : field} : ∀ u v i,
   log_prod u v i = log_prod v u i.
 Proof.
 intros.
 unfold log_prod.
-...
 apply fold_log_prod_comm.
-...
-intros.
-apply fold_log_prod_list_comm.
-unfold log_prod.
-destruct i; [ easy | ].
-...
-rewrite log_prod_list_rev.
-Search (fold_left _ (rev _) _).
-Search (rev (fold_right _ _ _)).
-...
+Qed.
 
 Theorem log_prod_prod_swap {F : field} : ∀ u v w i,
   i ≠ 0
   → log_prod (log_prod u v) w i = log_prod (log_prod u w) v i.
 Proof.
 intros * Hi.
-unfold log_prod.
+unfold log_prod at 1 3.
+remember (divisors i) as l eqn:Hl; symmetry in Hl.
+destruct l as [| a l]; [ easy | cbn ].
+unfold log_prod_add at 1 3.
+unfold log_prod at 2 4.
 ...
 
 Theorem log_prod_assoc {F : field} : ∀ u v w i,
@@ -1465,9 +1433,9 @@ Theorem log_prod_assoc {F : field} : ∀ u v w i,
   → log_prod u (log_prod v w) i = log_prod (log_prod u v) w i.
 Proof.
 intros * Hi.
-...
 rewrite log_prod_comm.
 rewrite log_prod_prod_swap; [ | easy ].
+unfold log_prod at 1 3.
 ...
 
 Theorem ls_mul_assoc {F : field} : ∀ x y z,
