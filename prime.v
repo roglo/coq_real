@@ -1181,7 +1181,15 @@ Theorem map_inv_divisors : ∀ n,
   divisors n = List.map (λ i, n / i) (List.rev (divisors n)).
 Proof.
 intros.
-apply sorted_equiv_lists; [ apply divisors_are_sorted | | ]. {
+specialize (divisors_are_sorted n) as H1.
+assert (H2 : Sorted.Sorted lt (map (λ i, n / i) (rev (divisors n)))). {
+remember (divisors n) as l eqn:Hl; symmetry in Hl.
+...
+revert n l Hl H1.
+induction l as [| a l]; intros; [ easy | cbn ].
+rewrite List.map_app; cbn.
+...
+apply sorted_equiv_lists; [ easy | easy | ].
 ...
 
 Theorem divisors_symmetry : ∀ n k l,
