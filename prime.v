@@ -1416,6 +1416,22 @@ unfold log_prod.
 apply fold_log_prod_comm.
 Qed.
 
+
+Theorem log_prod_assoc {F : field} : ∀ u v w i,
+  i ≠ 0
+  → log_prod u (log_prod v w) i = log_prod (log_prod u v) w i.
+Proof.
+intros * Hi.
+unfold log_prod at 1 3.
+remember (divisors i) as l eqn:Hl; symmetry in Hl.
+destruct l as [| a l]; [ easy | ].
+specialize (eq_first_divisor_1 i Hi) as H1.
+rewrite Hl in H1; cbn in H1; subst a; cbn.
+unfold log_prod_add at 1 3.
+rewrite Nat.div_1_r.
+...
+
+(* other solution, if log_prod_assoc above does not work *)
 Theorem log_prod_prod_swap {F : field} : ∀ u v w i,
   i ≠ 0
   → log_prod (log_prod u v) w i = log_prod (log_prod u w) v i.
