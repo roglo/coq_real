@@ -1341,14 +1341,16 @@ Theorem log_prod_assoc {F : field} : ∀ u v w i,
 Proof.
 intros * Hi.
 unfold log_prod at 1 3.
+unfold log_prod_list.
 remember (divisors i) as l eqn:Hl; symmetry in Hl.
-...
 destruct l as [| a l]; [ easy | ].
+cbn; do 2 rewrite f_add_0_l.
 specialize (eq_first_divisor_1 i Hi) as H1.
 rewrite Hl in H1; cbn in H1; subst a; cbn.
-unfold log_prod_add at 1 3.
+unfold log_prod_term at 2 4.
 rewrite Nat.div_1_r.
 unfold log_prod at 2 4.
+...
 rewrite divisors_1.
 cbn - [ divisors ].
 unfold log_prod_add at 4.
