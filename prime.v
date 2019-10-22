@@ -637,11 +637,22 @@ Definition divisors_but_firstn_and_lastn d n :=
 
 Definition divisors := divisors_but_firstn_and_lastn 1.
 
+Definition log_prod_term {F : field} u v n i :=
+  (u i * v (n / i))%F.
+
+Definition log_prod_list {F : field} u v n :=
+  List.map (log_prod_term u v n) (divisors n).
+
+Definition log_prod {F : field} u v n :=
+  List.fold_left f_add (log_prod_list u v n) f_zero.
+
+(*
 Definition log_prod_add {F : field} u v n i c :=
   (c + u i * v (n / i))%F.
 
 Definition log_prod {F : field} u v n :=
   List.fold_right (log_prod_add u v n) f_zero (divisors n).
+*)
 
 (* Σ (i = 1, ∞) s1_i x^ln(i) * Σ (i = 1, ∞) s2_i x^ln(i) *)
 Definition ls_mul {F : field} s1 s2 :=
@@ -680,6 +691,7 @@ destruct ((i + 1) mod y) as [H| H]; [ easy | ].
 apply Hss; flia.
 Qed.
 
+(*
 Theorem fold_log_prod_1_l_from_2nd {F : field} : ∀ r i l,
   (∀ j, j ∈ l → 2 ≤ j)
   → fold_right (log_prod_add (ls ls_one) (ls r) (S i)) f_zero l = f_zero.
@@ -701,16 +713,23 @@ replace ls_one~{a} with f_zero. 2: {
 }
 now rewrite f_add_0_l, f_mul_0_l.
 Qed.
+*)
 
 Theorem ls_mul_1_l {F : field} : ∀ r, (ls_one * r = r)%LS.
 Proof.
 intros * i Hi.
 destruct i; [ easy | clear Hi ].
 cbn - [ ls_one ].
-unfold log_prod_add at 1.
+unfold log_prod_term at 2.
 replace ls_one~{1} with f_one by easy.
-rewrite f_mul_1_l, Nat.div_1_r.
+rewrite f_add_0_l, f_mul_1_l, Nat.div_1_r.
+Print log_prod_list.
+...
+Theorem glop {F : field} :
+  fold_left f_add (map
+...
 rewrite <- f_add_0_l; f_equal.
+...
 apply fold_log_prod_1_l_from_2nd.
 intros j Hj.
 apply List.filter_In in Hj.
@@ -1436,6 +1455,7 @@ rewrite divisors_1.
 cbn - [ divisors ].
 unfold log_prod_add at 4.
 rewrite f_add_0_l, Nat.div_1_r.
+Print log_prod_add.
 ...
 
 (* other solution, if log_prod_assoc above does not work *)
