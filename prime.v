@@ -691,29 +691,26 @@ destruct ((i + 1) mod y) as [H| H]; [ easy | ].
 apply Hss; flia.
 Qed.
 
-(*
-Theorem fold_log_prod_1_l_from_2nd {F : field} : ∀ r i l,
+Theorem fold_left_map_log_prod_term {F : field} : ∀ u i x l,
   (∀ j, j ∈ l → 2 ≤ j)
-  → fold_right (log_prod_add (ls ls_one) (ls r) (S i)) f_zero l = f_zero.
+  → fold_left f_add (map (log_prod_term (ls ls_one) u (S i)) l) x = x.
 Proof.
 intros * Hin.
 revert i.
 induction l as [| a l]; intros; [ easy | ].
 cbn - [ ls_one ].
-rewrite IHl. 2: {
-  intros j Hj.
-  now apply Hin; right.
-}
-unfold log_prod_add.
+unfold log_prod_term at 2.
 replace ls_one~{a} with f_zero. 2: {
   cbn.
   destruct a; [ easy | ].
   destruct a; [ exfalso | now destruct a ].
   specialize (Hin 1 (or_introl eq_refl)); flia Hin.
 }
-now rewrite f_add_0_l, f_mul_0_l.
+rewrite f_mul_0_l, f_add_0_r.
+apply IHl.
+intros j Hj.
+now apply Hin; right.
 Qed.
-*)
 
 Theorem ls_mul_1_l {F : field} : ∀ r, (ls_one * r = r)%LS.
 Proof.
@@ -723,18 +720,24 @@ cbn - [ ls_one ].
 unfold log_prod_term at 2.
 replace ls_one~{1} with f_one by easy.
 rewrite f_add_0_l, f_mul_1_l, Nat.div_1_r.
-Print log_prod_list.
-...
-Theorem glop {F : field} :
-  fold_left f_add (map
-...
-rewrite <- f_add_0_l; f_equal.
-...
-apply fold_log_prod_1_l_from_2nd.
+cbn - [ ls_one ].
+apply fold_left_map_log_prod_term.
 intros j Hj.
-apply List.filter_In in Hj.
-destruct Hj as (Hj, _).
-now apply List.in_seq in Hj.
+assert (H : ∀ s i f, 2 ≤ s → j ∈ filter f (seq s i) → 2 ≤ j). {
+  clear; intros * Hs Hj.
+  revert s j Hs Hj.
+  induction i; intros; [ easy | ].
+  cbn - [ "mod" ] in Hj.
+  remember (f s) as m eqn:Hm; symmetry in Hm.
+  destruct m. {
+    cbn in Hj.
+    destruct Hj as [Hj| Hj]; [ now subst s | ].
+    apply (IHi (S s)); [ flia Hs | easy ].
+  }
+  apply (IHi (S s)); [ flia Hs | easy ].
+}
+eapply (H 2 i); [ easy | ].
+apply Hj.
 Qed.
 
 Theorem divisor_iff : ∀ n,
@@ -1022,6 +1025,26 @@ Compute (number_of_nat 1001).
 (* end play *)
 
 Theorem fold_log_prod_add_assoc {F : field} : ∀ a b l u v n,
+  fold_left f_add (map (log_prod_term u v n) l) (a + b)%F =
+  (fold_left f_add (map (log_prod_term u v n) l) a + b)%F.
+Proof.
+intros.
+revert a b.
+induction l as [| c l]; intros; [ easy | cbn ].
+rewrite IHl.
+
+rewrite IHl; symmetry.
+
+rewrite f_add_0_l.
+rewrite f_add_comm.
+unfold log_prod_add at 1 3.
+do 2 rewrite <- f_add_assoc; f_equal.
+apply f_add_comm.
+Qed.
+...
+
+(*
+Theorem fold_log_prod_add_assoc {F : field} : ∀ a b l u v n,
   List.fold_right (log_prod_add u v n) (a + b)%F l =
   (List.fold_right (log_prod_add u v n) a l + b)%F.
 Proof.
@@ -1047,6 +1070,45 @@ unfold log_prod_add at 4; cbn.
 unfold log_prod_add at 1.
 symmetry; apply fold_log_prod_add_assoc.
 Qed.
+*)
+
+Theorem fold_log_prod_add_on_rev {F : field} : ∀ u v n l,
+  n ≠ 0
+  → (∀ d, d ∈ l → n mod d = 0 ∧ d ≠ 0)
+  → fold_left f_add (map (log_prod_term u v n) l) f_zero =
+     fold_left f_add (map (log_prod_term v u n) (rev (map (λ i, n / i) l)))
+       f_zero.
+Proof.
+intros * Hn Hd.
+induction l as [| a l]; intros; [ easy | cbn ].
+rewrite f_add_0_l.
+rewrite List.map_app.
+rewrite List.fold_left_app; cbn.
+specialize (Hd a (or_introl eq_refl)) as (H1, H2).
+rewrite <- IHl.
+-unfold log_prod_term at 2 4.
+ rewrite Nat_mod_0_div_div; [ | | easy ]; cycle 1. {
+   split; [ flia H2 | ].
+   apply Nat.mod_divides in H1; [ | easy ].
+   destruct H1 as (c, Hc).
+   destruct c; [ now rewrite Nat.mul_comm in Hc | ].
+   rewrite Hc, Nat.mul_comm; cbn; flia.
+ }
+ rewrite (f_mul_comm (v (n / a))).
+...
+ apply fold_log_prod_add_assoc.
+-idtac.
+...
+(*
+...
+symmetry; apply fold_log_prod_add_assoc.
+
+unfold log_prod_add at 4; cbn.
+unfold log_prod_add at 1.
+symmetry; apply fold_log_prod_add_assoc.
+Qed.
+...
+*)
 
 Theorem divisors_length_upper_bound : ∀ n, List.length (divisors n) ≤ n.
 Proof.
@@ -1398,6 +1460,49 @@ rewrite Nat.sub_succ.
 *)
 
 Theorem fold_log_prod_comm {F : field} : ∀ u v i,
+  fold_left f_add (log_prod_list u v i) f_zero =
+  fold_left f_add (log_prod_list v u i) f_zero.
+Proof.
+intros u v n.
+unfold log_prod_list.
+rewrite map_inv_divisors at 2.
+remember (divisors n) as l eqn:Hl; symmetry in Hl.
+destruct (zerop n) as [Hn| Hn]; [ now subst n; cbn in Hl; subst l | ].
+apply Nat.neq_0_lt_0 in Hn.
+assert (Hd : ∀ d, d ∈ l → n mod d = 0 ∧ d ≠ 0). {
+  intros d Hd; apply divisor_iff; [ easy | now subst l ].
+}
+symmetry; rewrite <- fold_log_prod_add_on_rev at 1; symmetry.
+...
+
+rewrite map_inv_divisors at 2.
+symmetry; rewrite <- fold_log_prod_add_on_rev at 1; symmetry.
+remember (divisors n) as l eqn:Hl; symmetry in Hl.
+destruct (zerop n) as [Hn| Hn]; [ now subst n; cbn in Hl; subst l | ].
+apply Nat.neq_0_lt_0 in Hn.
+assert (Hd : ∀ d, d ∈ l → n mod d = 0 ∧ d ≠ 0). {
+  intros d Hd; apply divisor_iff; [ easy | now subst l ].
+}
+clear Hl.
+induction l as [| a l]; [ easy | cbn ].
+rewrite <- IHl. 2: {
+  intros d Hdl.
+  now apply Hd; right.
+}
+unfold log_prod_add; f_equal.
+rewrite f_mul_comm; f_equal; f_equal.
+specialize (Hd a (or_introl eq_refl)) as (Hna, Ha).
+symmetry; apply Nat_mod_0_div_div; [ | easy ].
+split; [ flia Ha | ].
+apply Nat.mod_divides in Hna; [ | easy ].
+destruct Hna as (c, Hc); subst n.
+destruct c; [ now rewrite Nat.mul_comm in Hn | ].
+rewrite Nat.mul_comm; cbn; flia.
+Qed.
+...
+
+(*
+Theorem fold_log_prod_comm {F : field} : ∀ u v i,
   fold_right (log_prod_add u v i) f_zero (divisors i) =
   fold_right (log_prod_add v u i) f_zero (divisors i).
 Proof.
@@ -1426,12 +1531,14 @@ destruct Hna as (c, Hc); subst n.
 destruct c; [ now rewrite Nat.mul_comm in Hn | ].
 rewrite Nat.mul_comm; cbn; flia.
 Qed.
+*)
 
 Theorem log_prod_comm {F : field} : ∀ u v i,
   log_prod u v i = log_prod v u i.
 Proof.
 intros.
 unfold log_prod.
+...
 apply fold_log_prod_comm.
 Qed.
 
