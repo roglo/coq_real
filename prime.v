@@ -1358,6 +1358,16 @@ rewrite <- f_mul_add_distr_r.
 apply IHl.
 Qed.
 
+Theorem map_f_mul_fold_add_distr_l {F : field} : ∀ (a : nat → f_type) b f l,
+  map (λ i, (a i * fold_left f_add (f i) b)%F) l =
+  map (λ i, fold_left f_add (map (f_mul (a i)) (f i)) (a i * b)%F) l.
+Proof.
+intros a b.
+induction l as [| c l]; intros; [ easy | cbn ].
+rewrite f_mul_fold_add_distr_l; f_equal.
+apply IHl.
+Qed.
+
 Theorem log_prod_assoc {F : field} : ∀ u v w i,
   i ≠ 0
   → log_prod u (log_prod v w) i = log_prod (log_prod u v) w i.
@@ -1384,12 +1394,10 @@ rewrite <- fold_left_app.
 rewrite f_mul_fold_add_distr_r.
 rewrite f_mul_0_l.
 rewrite <- fold_left_app.
-...
-rewrite divisors_1.
-cbn - [ divisors ].
-unfold log_prod_add at 4.
-rewrite f_add_0_l, Nat.div_1_r.
-Print log_prod_add.
+unfold log_prod_term.
+unfold log_prod.
+rewrite map_f_mul_fold_add_distr_l.
+Search (map (λ _, fold_left _ _ _)).
 ...
 
 (* other solution, if log_prod_assoc above does not work *)
