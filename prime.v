@@ -653,14 +653,6 @@ Definition log_prod_list {F : field} u v n :=
 Definition log_prod {F : field} u v n :=
   List.fold_left f_add (log_prod_list u v n) f_zero.
 
-(*
-Definition log_prod_add {F : field} u v n i c :=
-  (c + u i * v (n / i))%F.
-
-Definition log_prod {F : field} u v n :=
-  List.fold_right (log_prod_add u v n) f_zero (divisors n).
-*)
-
 (* Σ (i = 1, ∞) s1_i x^ln(i) * Σ (i = 1, ∞) s2_i x^ln(i) *)
 Definition ls_mul {F : field} s1 s2 :=
   {| ls := log_prod (ls s1) (ls s2) |}.
@@ -1042,35 +1034,6 @@ rewrite <- IHl; f_equal.
 apply f_add_add_swap.
 Qed.
 
-(*
-Theorem fold_log_prod_add_assoc {F : field} : ∀ a b l u v n,
-  List.fold_right (log_prod_add u v n) (a + b)%F l =
-  (List.fold_right (log_prod_add u v n) a l + b)%F.
-Proof.
-intros.
-revert a b.
-induction l as [| c l]; intros; [ easy | cbn ].
-rewrite IHl.
-unfold log_prod_add at 1 3.
-do 2 rewrite <- f_add_assoc; f_equal.
-apply f_add_comm.
-Qed.
-
-Theorem fold_log_prod_add_on_rev {F : field} : ∀ u v n l c,
-  fold_right (log_prod_add u v n) c l =
-  fold_right (log_prod_add u v n) c (List.rev l).
-Proof.
-intros.
-revert c.
-induction l as [| a l]; intros; [ easy | cbn ].
-rewrite List.fold_right_app; cbn.
-rewrite <- IHl.
-unfold log_prod_add at 4; cbn.
-unfold log_prod_add at 1.
-symmetry; apply fold_log_prod_add_assoc.
-Qed.
-*)
-
 Theorem fold_log_prod_add_on_rev {F : field} : ∀ u v n l,
   n ≠ 0
   → (∀ d, d ∈ l → n mod d = 0 ∧ d ≠ 0)
@@ -1345,110 +1308,6 @@ intros d Hdl.
 now apply Hd; right.
 Qed.
 
-(*
-Theorem fold_log_prod_add_first_last {F : field} : ∀ k n u v l,
-  l = divisors n
-  → fold_right (log_prod_add u v n) f_zero (firstn k l) =
-     fold_right (log_prod_add v u n) f_zero (skipn (length l - k) l).
-Proof.
-intros * Hl.
-...
-intros * Hl.
-symmetry in Hl.
-destruct k. {
-  cbn; rewrite Nat.sub_0_r.
-  now rewrite List.skipn_all.
-}
-destruct l as [| a l]; [ easy | ].
-assert (Hn : n ≠ 0) by now intros H; subst n.
-specialize (eq_first_divisor_1 n Hn) as H1.
-rewrite Hl in H1; cbn in H1; subst a.
-cbn; unfold log_prod_add at 1.
-rewrite Nat.div_1_r.
-destruct (le_dec (length l) k) as [Hlk| Hlk]. {
-  rewrite (proj2 (Nat.sub_0_le _ _)); [ | easy ].
-  rewrite List.skipn_O.
-  assert (H : 1 :: l ≠ []) by easy.
-  specialize (app_removelast_last 0 H) as H1; clear H.
-  rewrite List_removelast_firstn in H1.
-  cbn - [ last ] in H1.
-  rewrite Nat.sub_0_r in H1.
-  rewrite <- Hl in H1.
-  rewrite last_divisor in H1; [ | easy ].
-  move H1 before Hl.
-  rewrite <- Hl at 1; rewrite H1.
-  rewrite List.fold_right_app; cbn.
-  unfold log_prod_add at 3.
-  rewrite f_add_0_l, (f_mul_comm (v n)).
-  rewrite Nat.div_same; [ | easy ].
-  remember (u 1 * v n)%F as x eqn:Hx.
-  replace x with (f_zero + x)%F at 2 by now rewrite f_add_0_l.
-  rewrite fold_log_prod_add_assoc; f_equal.
-  rewrite List.firstn_all2; [ | easy ].
-  clear k Hlk x Hx.
-  destruct l as [| a l]; [ easy | ].
-  assert (H : a :: l ≠ []) by easy.
-  specialize (app_removelast_last 0 H) as H2; clear H.
-  rewrite H2 in Hl.
-  specialize (last_divisor _ Hn) as H3.
-  rewrite Hl in H3.
-  rewrite List.app_comm_cons in H3.
-  rewrite List_last_app in H3.
-  rewrite H3 in Hl, H2.
-  rewrite H2 at 1.
-  rewrite fold_right_app.
-  cbn - [ removelast firstn ].
-  unfold log_prod_add at 2.
-  rewrite Hl.
-  cbn - [ removelast ].
-  unfold log_prod_add at 2.
-  rewrite (f_mul_comm (v 1)).
-  rewrite Nat.div_same; [ | easy ].
-  rewrite Nat.div_1_r, f_add_0_l.
-  rewrite <- H2.
-  remember (u n * v 1)%F as x eqn:Hx.
-  replace x with (f_zero + x)%F at 1 by now rewrite f_add_0_l.
-  rewrite fold_log_prod_add_assoc; f_equal.
-  clear x Hx.
-  replace (firstn (length l) (a :: l)) with (removelast (a :: l)). 2: {
-    clear; revert a; induction l as [| b l]; intros; [ easy | ].
-    remember (b :: l) as l'; cbn; subst l'.
-    now rewrite IHl.
-  }
-  remember (a :: l) as l'.
-  clear a l Heql'; rename l' into l.
-...
-intros * Hl.
-symmetry in Hl.
-revert k n Hl.
-induction l as [| a l]; intros; [ now destruct k | ].
-cbn - [ "-" ].
-assert (Hn : n ≠ 0) by now intros H; subst n.
-specialize (eq_first_divisor_1 n Hn) as H1.
-rewrite Hl in H1; cbn in H1; subst a.
-assert (H : 1 :: l ≠ []) by easy.
-specialize (app_removelast_last 0 H) as H1; clear H.
-rewrite List_removelast_firstn in H1.
-cbn - [ last ] in H1.
-rewrite Nat.sub_0_r in H1.
-rewrite <- Hl in H1.
-rewrite last_divisor in H1; [ | easy ].
-move H1 before Hl.
-rewrite <- Hl at 1; rewrite H1.
-rewrite List.firstn_app.
-rewrite List.firstn_firstn.
-rewrite List.firstn_length.
-rewrite Hl at 2.
-rewrite (Nat.min_l (length l)); [ | cbn; flia ].
-rewrite fold_right_app.
-destruct k. {
-  rewrite Nat.sub_0_r, Nat.sub_0_l.
-  now cbn; rewrite List.skipn_all.
-}
-rewrite Nat.sub_succ.
-...
-*)
-
 Theorem fold_log_prod_comm {F : field} : ∀ u v i,
   fold_left f_add (log_prod_list u v i) f_zero =
   fold_left f_add (log_prod_list v u i) f_zero.
@@ -1464,38 +1323,6 @@ assert (Hd : ∀ d, d ∈ l → n mod d = 0 ∧ d ≠ 0). {
 }
 now apply fold_log_prod_add_on_rev.
 Qed.
-
-(*
-Theorem fold_log_prod_comm {F : field} : ∀ u v i,
-  fold_right (log_prod_add u v i) f_zero (divisors i) =
-  fold_right (log_prod_add v u i) f_zero (divisors i).
-Proof.
-intros u v n.
-rewrite map_inv_divisors at 2.
-symmetry; rewrite <- fold_log_prod_add_on_rev at 1; symmetry.
-remember (divisors n) as l eqn:Hl; symmetry in Hl.
-destruct (zerop n) as [Hn| Hn]; [ now subst n; cbn in Hl; subst l | ].
-apply Nat.neq_0_lt_0 in Hn.
-assert (Hd : ∀ d, d ∈ l → n mod d = 0 ∧ d ≠ 0). {
-  intros d Hd; apply divisor_iff; [ easy | now subst l ].
-}
-clear Hl.
-induction l as [| a l]; [ easy | cbn ].
-rewrite <- IHl. 2: {
-  intros d Hdl.
-  now apply Hd; right.
-}
-unfold log_prod_add; f_equal.
-rewrite f_mul_comm; f_equal; f_equal.
-specialize (Hd a (or_introl eq_refl)) as (Hna, Ha).
-symmetry; apply Nat_mod_0_div_div; [ | easy ].
-split; [ flia Ha | ].
-apply Nat.mod_divides in Hna; [ | easy ].
-destruct Hna as (c, Hc); subst n.
-destruct c; [ now rewrite Nat.mul_comm in Hn | ].
-rewrite Nat.mul_comm; cbn; flia.
-Qed.
-*)
 
 Theorem log_prod_comm {F : field} : ∀ u v i,
   log_prod u v i = log_prod v u i.
