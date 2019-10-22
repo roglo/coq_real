@@ -1350,6 +1350,11 @@ rewrite Hl in H1; cbn in H1; subst a; cbn.
 unfold log_prod_term at 2 4.
 rewrite Nat.div_1_r.
 unfold log_prod at 2 4.
+(* try to change u 1 * fold_left f_add l z
+   into fold_left f_add (u 1 :: l) z
+   then continue to end with something like
+      fold_left f_add (...a list...) on both
+   sides of the equality. The compare the lists *)
 ...
 rewrite divisors_1.
 cbn - [ divisors ].
