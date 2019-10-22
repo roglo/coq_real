@@ -1335,6 +1335,29 @@ Qed.
 Theorem divisors_1 : divisors 1 = [1].
 Proof. easy. Qed.
 
+Theorem f_mul_fold_add_distr_l {F : field} : ∀ a b l,
+  (a * fold_left f_add l b)%F =
+  (fold_left f_add (map (f_mul a) l) (a * b)%F).
+Proof.
+intros.
+revert a b.
+induction l as [| c l]; intros; [ easy | cbn ].
+rewrite <- f_mul_add_distr_l.
+apply IHl.
+Qed.
+
+Theorem f_mul_fold_add_distr_r {F : field} : ∀ a b l,
+  (fold_left f_add l a * b)%F =
+  (fold_left f_add (map (f_mul b) l) (a * b)%F).
+Proof.
+intros.
+revert a b.
+induction l as [| c l]; intros; [ easy | cbn ].
+rewrite (f_mul_comm b).
+rewrite <- f_mul_add_distr_r.
+apply IHl.
+Qed.
+
 Theorem log_prod_assoc {F : field} : ∀ u v w i,
   i ≠ 0
   → log_prod u (log_prod v w) i = log_prod (log_prod u v) w i.
@@ -1355,6 +1378,12 @@ unfold log_prod at 2 4.
    then continue to end with something like
       fold_left f_add (...a list...) on both
    sides of the equality. The compare the lists *)
+rewrite f_mul_fold_add_distr_l.
+rewrite f_mul_0_r.
+rewrite <- fold_left_app.
+rewrite f_mul_fold_add_distr_r.
+rewrite f_mul_0_l.
+rewrite <- fold_left_app.
 ...
 rewrite divisors_1.
 cbn - [ divisors ].
