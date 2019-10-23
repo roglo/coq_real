@@ -1456,16 +1456,21 @@ assert (H : ∀ f l,
 rewrite H; clear H.
 do 2 rewrite <- flat_map_concat_map.
 Check map_inv_divisors.
-assert
-  (H1 : ∀ d1 d2 d3,
-   (d1 ∈ divisors n ∧ d2 ∈ divisors n ∧ d3 ∈ divisors n →
-... d1 d2 d3 = n
-   (u d1 * v d2 * w d3)%F ∈
+remember (
    flat_map
      (λ d, map (λ d', (u d * v d' * w (n / d / d'))%F)
-        (divisors (n / d)))
-     (divisors n)).
-...
+        (divisors (n / d))) (divisors n)) as l1 eqn:Hl1.
+remember (
+  flat_map (λ d, map (λ d', (u d' * v (d / d') * w (n / d))%F)
+     (divisors d)) (divisors n)) as l2 eqn:Hl2.
+assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (u d1 * v d2 * w d3)%F ∈ l1). {
+  ...
+}
+assert (H2 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (u d1 * v d2 * w d3)%F ∈ l2). {
+  ...
+}
+assert (H3 : ∀ t, t ∈ l1 ↔ t ∈ l2). {
+  ...
 
 Theorem log_prod_assoc {F : field} : ∀ u v w i,
   i ≠ 0
