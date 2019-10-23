@@ -1367,6 +1367,16 @@ rewrite f_mul_fold_add_distr_l; f_equal.
 apply IHl.
 Qed.
 
+Theorem map_f_mul_fold_add_distr_r {F : field} : ∀ a (b : nat → f_type) f l,
+  map (λ i, (fold_left f_add (f i) a * b i)%F) l =
+  map (λ i, fold_left f_add (map (f_mul (b i)) (f i)) (a * b i)%F) l.
+Proof.
+intros a b.
+induction l as [| c l]; [ easy | cbn ].
+rewrite f_mul_fold_add_distr_r; f_equal.
+apply IHl.
+Qed.
+
 Theorem fold_add_add {F : field} : ∀ a a' l l',
   (fold_left f_add l a + fold_left f_add l' a')%F =
   fold_left f_add (l ++ l') (a + a')%F.
@@ -1397,6 +1407,22 @@ rewrite (f_add_comm _ b).
 now rewrite fold_f_add_assoc.
 Qed.
 
+Theorem fold_add_flat_prod_assoc {F : field} : ∀ n u v w,
+  n ≠ 0
+  → fold_left f_add
+       (flat_map (λ d, map (f_mul (u d)) (log_prod_list v w (n / d)))
+          (divisors n))
+       f_zero =
+     fold_left f_add
+       (flat_map (λ d, map (f_mul (w (n / d))) (log_prod_list u v d))
+          (divisors n))
+       f_zero.
+Proof.
+intros * Hn.
+Search flat_map.
+do 2 rewrite flat_map_concat_map.
+...
+
 Theorem log_prod_assoc {F : field} : ∀ u v w i,
   i ≠ 0
   → log_prod u (log_prod v w) i = log_prod (log_prod u v) w i.
@@ -1407,6 +1433,39 @@ unfold log_prod_list, log_prod_term.
 unfold log_prod.
 rewrite map_f_mul_fold_add_distr_l.
 rewrite fold_add_map_fold_add.
+rewrite map_f_mul_fold_add_distr_r.
+rewrite fold_add_map_fold_add.
+assert
+  (H : ∀ (u : nat → _) f l,
+   flat_map (λ i, (u i * f_zero)%F :: f i) l =
+   flat_map (λ i, f_zero :: f i) l). {
+  clear; intros.
+  induction l as [| a l]; [ easy | cbn ].
+  now rewrite f_mul_0_r, IHl.
+}
+rewrite H; clear H.
+assert
+  (H : ∀ (u : nat → _) f l,
+   flat_map (λ i, (f_zero * u i)%F :: f i) l =
+   flat_map (λ i, f_zero :: f i) l). {
+  clear; intros.
+  induction l as [| a l]; [ easy | cbn ].
+  now rewrite f_mul_0_l, IHl.
+}
+rewrite H; clear H.
+assert
+  (H : ∀ (f : nat → _) l l',
+   fold_left f_add (flat_map (λ i, f_zero :: f i) l) l' =
+   fold_left f_add (flat_map f l) l'). {
+  clear; intros.
+  revert l'.
+  induction l as [| a l]; intros; [ easy | cbn ].
+  rewrite f_add_0_r.
+  do 2 rewrite fold_left_app.
+  apply IHl.
+}
+do 2 rewrite H.
+clear H.
 ...
 intros * Hi.
 unfold log_prod at 1 3.
