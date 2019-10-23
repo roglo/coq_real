@@ -1439,6 +1439,35 @@ induction l as [| c l]; intros; [ easy | cbn ].
 apply IHl.
 Qed.
 
+(* list_tab_pos_of (n : nat) (ll : list (list A)) return the
+   position p of n in this list, such as
+     nth p (cumul ll) 0 ≤ n < nth (p + 1) (cumul ll) 0
+   e.g.
+     ll = [l_3; l_7; l_2; l_5] where l_i is a list of i elements
+     position of 0, 1, or 2 = 0              (2 = 3 - 1)
+     position of 3, 4, 5, 6, 7, 8, 9 = 1     (9 = 3 + 7 - 1)
+     position of 10, 11 = 2                  (11 = 3 + 7 + 2 - 1)
+     position of 12, 13, 14, 15, 16 = 3      (16 = 3 + 7 + 2 + 5 - 1)
+     position of 17, 18, ... = 4
+   usage
+     if n ∈ concat ll then list_tab_pos_of n ll is the rank of
+     the list in ll where n belongs to
+*)
+
+Fixpoint list_tab_pos_loop {A} accu rank n (ll : list (list A)) :=
+  if lt_dec n accu then rank - 1
+  else
+    match ll with
+    | [] => rank
+    | x :: l => list_tab_pos_loop (accu + length x) (rank + 1) n l
+    end.
+
+Definition list_tab_pos_of {A} := @list_tab_pos_loop A 0 0.
+
+(*
+Compute (list_tab_pos_of 16 [[1;2;3]; [1;2;3;4;5;6;7]; [1;2]; [1;2;3;4;5]]).
+*)
+
 Theorem fold_add_flat_prod_assoc {F : field} : ∀ n u v w,
   n ≠ 0
   → fold_left f_add
@@ -1547,7 +1576,21 @@ assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l1). {
 assert
   (H2 : ∀ a b, List.nth a l1 (0, 0, 0) = List.nth b l1 (0, 0, 0) → a = b). {
   intros * Hll.
-  rewrite Hl1 in Hll.
+  rewrite flat_map_concat_map in Hl1.
+  remember (map
+     (λ d : nat,
+      map (λ d', (d, d', n / d / d')) (divisors (n / d)))
+       (divisors n)) as lt1 eqn:Hlt1.
+(*
+  remember (map (@length (nat * nat * nat)) lt1) as l1ll eqn:Hl1ll.
+  remember (fold_left Nat.add l1ll 0) as l1lt eqn:Hl1lt.
+*)
+  subst l1.
+  destruct (lt_dec (list_tab_pos_of a lt1) (list_tab_pos_of b lt1))
+    as [Htrab| Htrab]. {
+    (* this means the list in which "a" is before the list in
+       which "b" is in lt1, which should contradict Hll *)
+    exfalso.
 ...
 (*
   rewrite flat_map_concat_map in Hll.
