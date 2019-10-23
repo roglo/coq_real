@@ -1544,6 +1544,7 @@ assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l1). {
    rewrite Hdd at 1.
    now rewrite (Nat.mul_comm _ d''), Nat.div_mul.
 }
+...
 assert
   (H2 : ∀ a b, List.nth a l1 (0, 0, 0) = List.nth b l1 (0, 0, 0) → a = b). {
   intros * Hll.
@@ -1554,17 +1555,16 @@ assert
 Search (length (concat _)).
 Check List.fold_right.
 Compute (flat_map (λ d, 7 :: d) [[1; 2; 3]; [4; 5]]).
-Print flat_map.
-Theorem concat_length {A B} : ∀ (l : list (list A)) (f : _ → list B),
+Check flat_map.
+Theorem flat_map_length {A B} : ∀ (l : list A) (f : _ → list B),
   length (flat_map f l) =
-    List.fold_right Nat.add 0 (map (@length A) l).
-...
+    List.fold_right Nat.add 0 (map (@length B) (map f l)).
+Admitted.
 remember (length l1) as len1 eqn:Hlen1.
 rewrite Hl1 in Hlen1.
-Check @concat_length.
-Set Printing All.
-rewrite concat_length in Hlen1.
-Search (map (@length _ _)).
+rewrite flat_map_length in Hlen1.
+rewrite map_map in Hlen1.
+Search (λ _, length (map _ _)).
 ...
 assert (H2 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l2). {
   ...
