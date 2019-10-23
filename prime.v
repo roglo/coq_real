@@ -1547,6 +1547,12 @@ assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l1). {
 assert
   (H2 : ∀ a b, List.nth a l1 (0, 0, 0) = List.nth b l1 (0, 0, 0) → a = b). {
   intros * Hll.
+  rewrite Hl1 in Hll.
+  rewrite flat_map_concat_map in Hll.
+Search (length (concat _)).
+Check List.fold_right.
+Theorem concat_length {A} : ∀ (ll : list (list A)),
+  length (concat ll) = List.fold_right Nat.add 0 (map (@length A) ll).
 ...
 assert (H2 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l2). {
   ...
