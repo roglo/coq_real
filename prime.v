@@ -1416,6 +1416,27 @@ rewrite (f_add_comm _ b).
 now rewrite fold_f_add_assoc.
 Qed.
 
+...
+
+Definition flat_map_mul f l :=
+  flat_map f (List.map (λ x, let '(a, b, c) := x in (a * b * c)%F)).
+
+Fixpoint flat_map_mul {A B} (f : A → list B) (l : list A) :=
+  match l with
+  | [] => []
+  | (a, b, c) :: t =>
+      (a * b * c) ++ flat_map_mul f t
+  end.
+
+Theorem map_mul_triplet : ∀ n u v w f g,
+  fold_left f_add
+    (flat_map (λ d, map (λ d', (u d d' * v d d' * w d d')%F) (f n d) (g n)))
+    f_zero =
+  fold_left f_add
+    (flat_map_mul (λ d, map (λ d', (u d d', v d d', w d d')) (f n d) (g n)))
+    f_zero.
+...
+
 Theorem fold_add_flat_prod_assoc {F : field} : ∀ n u v w,
   n ≠ 0
   → fold_left f_add
@@ -1455,6 +1476,7 @@ assert (H : ∀ f l,
 }
 rewrite H; clear H.
 do 2 rewrite <- flat_map_concat_map.
+...
 Check map_inv_divisors.
 remember (
    flat_map
