@@ -1430,7 +1430,31 @@ Proof.
 intros * Hn.
 do 2 rewrite flat_map_concat_map.
 unfold log_prod_list.
-rewrite List_map_map_map.
+do 2 rewrite List_map_map_map.
+unfold log_prod_term.
+assert (H : ∀ f l,
+  map (λ d, map (λ d', (u d * (v d' * w (n / d / d')))%F) (f d)) l =
+  map (λ d, map (λ d', (u d * v d' * w (n / d / d'))%F) (f d)) l). {
+  intros.
+  induction l as [| a l]; [ easy | cbn ].
+  rewrite IHl; f_equal; clear.
+  induction (f a) as [| b l]; [ easy | cbn ].
+  rewrite IHl; f_equal.
+  apply f_mul_assoc.
+}
+rewrite H; clear H.
+assert (H : ∀ f l,
+  map (λ d, map (λ d', (w (n / d) * (u d' * v (d / d')))%F) (f d)) l =
+  map (λ d, map (λ d', (u d' * v (d / d') * w (n / d))%F) (f d)) l). {
+  intros.
+  induction l as [| a l]; [ easy | cbn ].
+  rewrite IHl; f_equal; clear.
+  induction (f a) as [| b l]; [ easy | cbn ].
+  rewrite IHl; f_equal.
+  apply f_mul_comm.
+}
+rewrite H; clear H.
+Search (divisors (_ / _)).
 ...
 
 Theorem log_prod_assoc {F : field} : ∀ u v w i,
