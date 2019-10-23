@@ -1367,16 +1367,35 @@ rewrite f_mul_fold_add_distr_l; f_equal.
 apply IHl.
 Qed.
 
+Theorem fold_add_add {F : field} : ∀ a a' l l',
+  (fold_left f_add l a + fold_left f_add l' a')%F =
+  fold_left f_add (l ++ l') (a + a')%F.
+Proof.
+intros.
+revert a.
+induction l as [| b l]; intros; cbn. {
+  rewrite f_add_comm, (f_add_comm _ a').
+  symmetry; apply fold_f_add_assoc.
+}
+rewrite IHl.
+now rewrite f_add_add_swap.
+Qed.
+
 Theorem fold_add_map_fold_add {F : field} : ∀ (f : nat → _) a b l,
-  fold_left f_add (map (λ i, fold_left f_add (f i) (a i)) l) b =
-  fold_left f_add (List.concat (map (λ i, a i :: f i) l)) b.
+  List.fold_left f_add (List.map (λ i, List.fold_left f_add (f i) (a i)) l)
+    b =
+  List.fold_left f_add (List.flat_map (λ i, a i :: f i) l)
+    b.
 Proof.
 intros.
 induction l as [| c l]; [ easy | cbn ].
 rewrite fold_f_add_assoc.
 rewrite fold_f_add_assoc.
-Search (fold_left _ _ _ + fold_left _ _ _)%F.
-...
+rewrite IHl, f_add_comm.
+rewrite fold_add_add.
+rewrite (f_add_comm _ b).
+now rewrite fold_f_add_assoc.
+Qed.
 
 Theorem log_prod_assoc {F : field} : ∀ u v w i,
   i ≠ 0
@@ -1387,7 +1406,6 @@ unfold log_prod at 1 3.
 unfold log_prod_list, log_prod_term.
 unfold log_prod.
 rewrite map_f_mul_fold_add_distr_l.
-...
 rewrite fold_add_map_fold_add.
 ...
 intros * Hi.
