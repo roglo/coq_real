@@ -1454,7 +1454,6 @@ assert (H : ∀ f l,
   apply f_mul_comm.
 }
 rewrite H; clear H.
-Search (divisors (_ / _)).
 ...
 
 Theorem log_prod_assoc {F : field} : ∀ u v w i,
