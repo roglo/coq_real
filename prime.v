@@ -748,7 +748,7 @@ eapply (H 2 i); [ easy | ].
 apply Hj.
 Qed.
 
-Theorem divisor_iff : ∀ n,
+Theorem in_divisors : ∀ n,
   n ≠ 0 → ∀ d, d ∈ divisors n ↔ n mod d = 0 ∧ d ≠ 0.
 Proof.
 intros * Hn *.
@@ -1215,7 +1215,7 @@ assert (H2 : Sorted.Sorted lt (rev (map (λ i : nat, n / i) (divisors n)))). {
   destruct n; [ constructor | ].
   remember (divisors (S n)) as l eqn:Hl; symmetry in Hl.
   assert (H2 : ∀ d, d ∈ l → S n mod d = 0 ∧ d ≠ 0). {
-    now intros d; subst l; apply divisor_iff.
+    now intros d; subst l; apply in_divisors.
   }
   clear Hl.
   induction l as [| a l]; [ constructor | ].
@@ -1256,7 +1256,7 @@ split; intros Ha.
 -apply List.in_rev; rewrite List.rev_involutive.
  destruct (zerop n) as [Hn| Hn]; [ now subst n | ].
  apply Nat.neq_0_lt_0 in Hn.
- specialize (proj1 (divisor_iff n Hn a) Ha) as (Hna, Haz).
+ specialize (proj1 (in_divisors n Hn a) Ha) as (Hna, Haz).
  apply List.in_map_iff.
  exists (n / a).
  split; [ | now apply divisor_inv ].
@@ -1269,11 +1269,11 @@ split; intros Ha.
 -apply List.in_rev in Ha.
  destruct (zerop n) as [Hn| Hn]; [ now subst n | ].
  apply Nat.neq_0_lt_0 in Hn.
- apply divisor_iff; [ easy | ].
+ apply in_divisors; [ easy | ].
  apply List.in_map_iff in Ha.
  destruct Ha as (b & Hnb & Hb).
  subst a.
- apply divisor_iff; [ easy | ].
+ apply in_divisors; [ easy | ].
  now apply divisor_inv.
 Qed.
 
@@ -1295,7 +1295,7 @@ rewrite Nat.sub_diag, Nat.add_0_l.
 clear H1.
 assert (Hn : n ≠ 0) by now intros H; subst n l.
 assert (Hd : ∀ d, d ∈ l → n mod d = 0 ∧ d ≠ 0). {
-  intros d Hd; apply divisor_iff; [ easy | now subst l ].
+  intros d Hd; apply in_divisors; [ easy | now subst l ].
 }
 clear Hl.
 revert l Hk Hd.
@@ -1327,7 +1327,7 @@ remember (divisors n) as l eqn:Hl; symmetry in Hl.
 destruct (zerop n) as [Hn| Hn]; [ now subst n; cbn in Hl; subst l | ].
 apply Nat.neq_0_lt_0 in Hn.
 assert (Hd : ∀ d, d ∈ l → n mod d = 0 ∧ d ≠ 0). {
-  intros d Hd; apply divisor_iff; [ easy | now subst l ].
+  intros d Hd; apply in_divisors; [ easy | now subst l ].
 }
 now apply fold_log_prod_add_on_rev.
 Qed.
@@ -1464,7 +1464,47 @@ remember (
   flat_map (λ d, map (λ d', (u d' * v (d / d') * w (n / d))%F)
      (divisors d)) (divisors n)) as l2 eqn:Hl2.
 assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (u d1 * v d2 * w d3)%F ∈ l1). {
-  ...
+ split; intros Huvw.
+  -intros.
+   assert (Hd1 : d1 ≠ 0) by now intros H; rewrite <- Huvw, H in Hn.
+   assert (Hd2 : d2 ≠ 0). {
+     now intros H; rewrite <- Huvw, H, Nat.mul_0_r in Hn.
+   }
+   assert (Hd3 : d3 ≠ 0). {
+     now intros H; rewrite <- Huvw, H, Nat.mul_comm in Hn.
+   }
+   subst l1.
+   apply List.in_flat_map.
+   exists d1.
+   split. {
+     apply in_divisors; [ easy | ].
+     split; [ | easy ].
+     rewrite <- Huvw.
+     apply Nat.mod_divides; [ easy | ].
+     exists (d2 * d3).
+     symmetry; apply Nat.mul_assoc.
+   }
+   apply List.in_map_iff.
+   exists d2.
+   rewrite <- Huvw.
+   rewrite <- Nat.mul_assoc, Nat.mul_comm.
+   rewrite Nat.div_mul; [ | easy ].
+   rewrite Nat.mul_comm.
+   rewrite Nat.div_mul; [ | easy ].
+   split; [ easy | ].
+   apply in_divisors; [ now apply Nat.neq_mul_0 | ].
+   split; [ | easy ].
+   apply Nat.mod_divides; [ easy | ].
+   exists d3; apply Nat.mul_comm.
+  -subst l1.
+   apply List.in_flat_map in Huvw.
+   destruct Huvw as (d & Hd & Hdi).
+   apply List.in_map_iff in Hdi.
+   destruct Hdi as (d' & Hd' & Hdd).
+   apply in_divisors in Hd; [ | easy ].
+   destruct Hd as (Hnd, Hd).
+(* hmmm... not sure *)
+...
 }
 assert (H2 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (u d1 * v d2 * w d3)%F ∈ l2). {
   ...
