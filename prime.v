@@ -1023,12 +1023,11 @@ Compute (number_of_nat 1001).
 
 (* end play *)
 
-Theorem fold_log_prod_add_assoc {F : field} : ∀ a b l u v n,
-  fold_left f_add (map (log_prod_term u v n) l) (a + b)%F =
-  (fold_left f_add (map (log_prod_term u v n) l) a + b)%F.
+Theorem fold_f_add_assoc {F : field} : ∀ a b l,
+  fold_left f_add l (a + b)%F = (fold_left f_add l a + b)%F.
 Proof.
 intros.
-revert a b.
+revert a.
 induction l as [| c l]; intros; [ easy | cbn ].
 rewrite <- IHl; f_equal.
 apply f_add_add_swap.
@@ -1058,7 +1057,7 @@ rewrite <- IHl.
    rewrite Hc, Nat.mul_comm; cbn; flia.
  }
  rewrite (f_mul_comm (v (n / a))).
- now rewrite <- fold_log_prod_add_assoc, f_add_0_l.
+ now rewrite <- fold_f_add_assoc, f_add_0_l.
 -intros d Hdl.
  now apply Hd; right.
 Qed.
@@ -1363,10 +1362,21 @@ Theorem map_f_mul_fold_add_distr_l {F : field} : ∀ (a : nat → f_type) b f l,
   map (λ i, fold_left f_add (map (f_mul (a i)) (f i)) (a i * b)%F) l.
 Proof.
 intros a b.
-induction l as [| c l]; intros; [ easy | cbn ].
+induction l as [| c l]; [ easy | cbn ].
 rewrite f_mul_fold_add_distr_l; f_equal.
 apply IHl.
 Qed.
+
+Theorem fold_add_map_fold_add {F : field} : ∀ (f : nat → _) a b l,
+  fold_left f_add (map (λ i, fold_left f_add (f i) (a i)) l) b =
+  fold_left f_add (List.concat (map (λ i, a i :: f i) l)) b.
+Proof.
+intros.
+induction l as [| c l]; [ easy | cbn ].
+rewrite fold_f_add_assoc.
+rewrite fold_f_add_assoc.
+Search (fold_left _ _ _ + fold_left _ _ _)%F.
+...
 
 Theorem log_prod_assoc {F : field} : ∀ u v w i,
   i ≠ 0
@@ -1377,6 +1387,8 @@ unfold log_prod at 1 3.
 unfold log_prod_list, log_prod_term.
 unfold log_prod.
 rewrite map_f_mul_fold_add_distr_l.
+...
+rewrite fold_add_map_fold_add.
 ...
 intros * Hi.
 unfold log_prod at 1 3.
