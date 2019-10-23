@@ -1531,11 +1531,20 @@ assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l1). {
    destruct Hd as (Hnd, Hd).
    injection Hd'; clear Hd'; intros Hw Hv Hu.
    subst d1 d2 d3.
-...
+   apply Nat.mod_divides in Hnd; [ | easy ].
+   destruct Hnd as (d1, Hd1).
+   rewrite Hd1, Nat.mul_comm, Nat.div_mul in Hdd; [ | easy ].
+   rewrite Hd1, (Nat.mul_comm _ d1), Nat.div_mul; [ | easy ].
+   assert (Hd1z : d1 ≠ 0) by now intros H; rewrite H in Hdd.
+   apply in_divisors in Hdd; [ | easy ].
+   destruct Hdd as (Hdd, Hd'z).
+   apply Nat.mod_divides in Hdd; [ | easy ].
+   destruct Hdd as (d'', Hdd).
+   rewrite <- Nat.mul_assoc, Nat.mul_comm; f_equal.
+   rewrite Hdd at 1.
+   now rewrite (Nat.mul_comm _ d''), Nat.div_mul.
 }
-...
-}
-assert (H2 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (u d1 * v d2 * w d3)%F ∈ l2). {
+assert (H2 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l2). {
   ...
 }
 assert (H3 : ∀ t, t ∈ l1 ↔ t ∈ l2). {
