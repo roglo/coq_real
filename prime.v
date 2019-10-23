@@ -1457,7 +1457,9 @@ rewrite H; clear H.
 do 2 rewrite <- flat_map_concat_map.
 Check map_inv_divisors.
 assert
-  (H1 : ∀ d1 d2 d3, d1 ∈ divisors n → d2 ∈ divisors n → d3 ∈ divisors n →
+  (H1 : ∀ d1 d2 d3,
+   (d1 ∈ divisors n ∧ d2 ∈ divisors n ∧ d3 ∈ divisors n →
+... d1 d2 d3 = n
    (u d1 * v d2 * w d3)%F ∈
    flat_map
      (λ d, map (λ d', (u d * v d' * w (n / d / d'))%F)
