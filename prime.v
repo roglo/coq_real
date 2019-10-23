@@ -1374,6 +1374,12 @@ Theorem log_prod_assoc {F : field} : ∀ u v w i,
 Proof.
 intros * Hi.
 unfold log_prod at 1 3.
+unfold log_prod_list, log_prod_term.
+unfold log_prod.
+rewrite map_f_mul_fold_add_distr_l.
+...
+intros * Hi.
+unfold log_prod at 1 3.
 unfold log_prod_list.
 remember (divisors i) as l eqn:Hl; symmetry in Hl.
 destruct l as [| a l]; [ easy | ].
@@ -1394,10 +1400,9 @@ rewrite <- fold_left_app.
 rewrite f_mul_fold_add_distr_r.
 rewrite f_mul_0_l.
 rewrite <- fold_left_app.
-unfold log_prod_term.
-unfold log_prod.
+unfold log_prod_term, log_prod.
 rewrite map_f_mul_fold_add_distr_l.
-Search (map (λ _, fold_left _ _ _)).
+Search (map (λ _, fold_left f_add _ _)).
 ...
 
 (* other solution, if log_prod_assoc above does not work *)
