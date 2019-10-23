@@ -1441,6 +1441,13 @@ induction l as [| c l]; intros; [ easy | cbn ].
 apply IHl.
 Qed.
 
+(*
+Check in_flat_map.
+Theorem in_flat_map_mul {A} : ∀ (f : A → list _) (l : list A) (y : (f_type * f_type * f_type)),
+  y ∈ flat_map_mul f l ↔ (∃ x : A, x ∈ l ∧ y ∈ f x).
+...
+*)
+
 Theorem fold_add_flat_prod_assoc {F : field} : ∀ n u v w,
   n ≠ 0
   → fold_left f_add
@@ -1481,7 +1488,57 @@ assert (H : ∀ f l,
 rewrite H; clear H.
 do 2 rewrite <- flat_map_concat_map.
 (**)
+do 2 rewrite flat_map_concat_map.
+...
 do 2 rewrite map_mul_triplet.
+remember (
+   flat_map_mul
+     (λ d, map (λ d', (u d, v d', w (n / d / d')))
+        (divisors (n / d))) (divisors n)) as l1 eqn:Hl1.
+remember (
+  flat_map_mul (λ d, map (λ d', (u d', v (d / d'), w (n / d)))
+     (divisors d)) (divisors n)) as l2 eqn:Hl2.
+assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (u d1, v d2, w d3) ∈ l1). {
+  split; intros Huvw.
+  -intros.
+   assert (Hd1 : d1 ≠ 0) by now intros H; rewrite <- Huvw, H in Hn.
+   assert (Hd2 : d2 ≠ 0). {
+     now intros H; rewrite <- Huvw, H, Nat.mul_0_r in Hn.
+   }
+   assert (Hd3 : d3 ≠ 0). {
+     now intros H; rewrite <- Huvw, H, Nat.mul_comm in Hn.
+   }
+   subst l1.
+...
+   apply in_flat_map_mul.
+   exists d1.
+   split. {
+     apply in_divisors; [ easy | ].
+     split; [ | easy ].
+     rewrite <- Huvw.
+     apply Nat.mod_divides; [ easy | ].
+     exists (d2 * d3).
+     symmetry; apply Nat.mul_assoc.
+   }
+   apply List.in_map_iff.
+   exists d2.
+   rewrite <- Huvw.
+   rewrite <- Nat.mul_assoc, Nat.mul_comm.
+   rewrite Nat.div_mul; [ | easy ].
+   rewrite Nat.mul_comm.
+   rewrite Nat.div_mul; [ | easy ].
+   split; [ easy | ].
+   apply in_divisors; [ now apply Nat.neq_mul_0 | ].
+   split; [ | easy ].
+   apply Nat.mod_divides; [ easy | ].
+   exists d3; apply Nat.mul_comm.
+  -subst l1.
+   apply List.in_flat_map in Huvw.
+   destruct Huvw as (d & Hd & Hdi).
+   apply List.in_map_iff in Hdi.
+   destruct Hdi as (d' & Hd' & Hdd).
+   apply in_divisors in Hd; [ | easy ].
+   destruct Hd as (Hnd, Hd).
 ...
 Check map_inv_divisors.
 remember (
