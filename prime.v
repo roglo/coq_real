@@ -1416,12 +1416,16 @@ rewrite (f_add_comm _ b).
 now rewrite fold_f_add_assoc.
 Qed.
 
-Theorem map_mul_triplet {F : field} : ∀ (u v w : nat → nat → _) f l a,
+Theorem map_mul_triplet {F : field} : ∀ u v w (f g h : nat → nat → nat) k l a,
   fold_left f_add
-    (flat_map (λ d, map (λ d', (u d d' * v d d' * w d d'))%F (f d)) l) a =
+    (flat_map
+       (λ d, map (λ d', (u (f d d') * v (g d d') * w (h d d')))%F (k d)) l)
+    a =
   fold_left f_add
-    (map (λ t, let '(x, y, z) := t in (x * y * z)%F)
-       (flat_map (λ d, map (λ d', (u d d', v d d', w d d')) (f d)) l)) a.
+    (map (λ t, let '(i, j, k) := t in (u i * v j * w k)%F)
+      (flat_map
+         (λ d, map (λ d', (f d d', g d d', h d d')) (k d)) l))
+    a.
 Proof.
 intros.
 revert a.
@@ -1429,7 +1433,7 @@ induction l as [| b l]; intros; [ easy | cbn ].
 rewrite map_app.
 do 2 rewrite fold_left_app.
 rewrite IHl; f_equal; clear.
-remember (f b) as l eqn:Hl; clear Hl.
+remember (k b) as l eqn:Hl; clear Hl.
 revert a b.
 induction l as [| c l]; intros; [ easy | cbn ].
 apply IHl.
@@ -1477,14 +1481,15 @@ rewrite H; clear H.
 do 2 rewrite <- flat_map_concat_map.
 do 2 rewrite map_mul_triplet.
 remember (
-  flat_map (λ d, map (λ d', (u d, v d', w (n / d / d'))) (divisors (n / d)))
+  flat_map (λ d, map (λ d', (d, d', n / d / d')) (divisors (n / d)))
     (divisors n))
   as l1 eqn:Hl1.
 remember (
-  flat_map (λ d, map (λ d', (u d', v (d / d'), w (n / d))) (divisors d))
+  flat_map (λ d, map (λ d', (d', d / d', n / d)) (divisors d))
     (divisors n))
   as l2 eqn:Hl2.
-assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (u d1, v d2, w d3) ∈ l1). {
+move l2 before l1.
+assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l1). {
   split; intros Huvw.
   -intros.
    assert (Hd1 : d1 ≠ 0) by now intros H; rewrite <- Huvw, H in Hn.
@@ -1525,6 +1530,9 @@ assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (u d1, v d2, w d3) ∈ l1). {
    apply in_divisors in Hd; [ | easy ].
    destruct Hd as (Hnd, Hd).
    injection Hd'; clear Hd'; intros Hw Hv Hu.
+   subst d1 d2 d3.
+...
+}
 ...
 }
 assert (H2 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (u d1 * v d2 * w d3)%F ∈ l2). {
