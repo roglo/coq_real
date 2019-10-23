@@ -132,6 +132,15 @@ destruct (f a); [ now apply Nat.succ_le_mono in IHl | ].
 transitivity (length l); [ easy | apply Nat.le_succ_diag_r ].
 Qed.
 
+Theorem List_map_map_map {A B C D} : ∀ (f : A → B → C) (g : A → D → B) h l,
+  map (λ d, map (f d) (map (g d) (h d))) l =
+  map (λ d, map (λ x, (f d (g d x))) (h d)) l.
+Proof.
+intros.
+induction l as [| a l]; [ easy | cbn ].
+now rewrite List.map_map, IHl.
+Qed.
+
 Theorem Sorted_Sorted_seq : ∀ start len, Sorted.Sorted lt (seq start len).
 Proof.
 intros.
@@ -1419,8 +1428,9 @@ Theorem fold_add_flat_prod_assoc {F : field} : ∀ n u v w,
        f_zero.
 Proof.
 intros * Hn.
-Search flat_map.
 do 2 rewrite flat_map_concat_map.
+unfold log_prod_list.
+rewrite List_map_map_map.
 ...
 
 Theorem log_prod_assoc {F : field} : ∀ u v w i,
