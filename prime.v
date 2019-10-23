@@ -1416,26 +1416,30 @@ rewrite (f_add_comm _ b).
 now rewrite fold_f_add_assoc.
 Qed.
 
-...
-
-Definition flat_map_mul f l :=
-  flat_map f (List.map (λ x, let '(a, b, c) := x in (a * b * c)%F)).
-
-Fixpoint flat_map_mul {A B} (f : A → list B) (l : list A) :=
+Fixpoint flat_map_mul {F : field} {A} (f : A → _) l :=
   match l with
   | [] => []
-  | (a, b, c) :: t =>
-      (a * b * c) ++ flat_map_mul f t
+  | x :: t =>
+      map (λ u, let '(a, b, c) := u in (a * b * c)%F) (f x) ++
+      flat_map_mul f t
   end.
 
-Theorem map_mul_triplet : ∀ n u v w f g,
+Theorem map_mul_triplet {F : field} : ∀ (u v w : nat → nat → _) f l a,
   fold_left f_add
-    (flat_map (λ d, map (λ d', (u d d' * v d d' * w d d')%F) (f n d) (g n)))
-    f_zero =
+    (flat_map (λ d, map (λ d', (u d d' * v d d' * w d d'))%F (f d)) l) a =
   fold_left f_add
-    (flat_map_mul (λ d, map (λ d', (u d d', v d d', w d d')) (f n d) (g n)))
-    f_zero.
-...
+    (flat_map_mul (λ d, map (λ d', (u d d', v d d', w d d')) (f d)) l) a.
+Proof.
+intros.
+revert a.
+induction l as [| b l]; intros; [ easy | cbn ].
+do 2 rewrite fold_left_app.
+rewrite IHl; f_equal; clear.
+remember (f b) as l eqn:Hl; clear Hl.
+revert a b.
+induction l as [| c l]; intros; [ easy | cbn ].
+apply IHl.
+Qed.
 
 Theorem fold_add_flat_prod_assoc {F : field} : ∀ n u v w,
   n ≠ 0
@@ -1476,6 +1480,8 @@ assert (H : ∀ f l,
 }
 rewrite H; clear H.
 do 2 rewrite <- flat_map_concat_map.
+(**)
+do 2 rewrite map_mul_triplet.
 ...
 Check map_inv_divisors.
 remember (
