@@ -1544,6 +1544,10 @@ assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l1). {
    rewrite Hdd at 1.
    now rewrite (Nat.mul_comm _ d''), Nat.div_mul.
 }
+assert
+  (H2 : ∀ a b, List.nth a l1 (0, 0, 0) = List.nth b l1 (0, 0, 0) → a = b). {
+  intros * Hll.
+...
 assert (H2 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l2). {
   ...
 }
