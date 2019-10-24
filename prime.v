@@ -1439,6 +1439,20 @@ induction l as [| c l]; intros; [ easy | cbn ].
 apply IHl.
 Qed.
 
+Definition xyz_zxy '((x, y, z) : (nat * nat * nat)) := (z, x, y).
+
+Theorem mul_assoc_indices_eq : ∀ n,
+  flat_map (λ d, map (λ d', (d, d', n / d / d')) (divisors (n / d)))
+    (divisors n) =
+  map xyz_zxy
+    (rev
+       (flat_map (λ d, map (λ d', (d', d / d', n / d)) (divisors d))
+          (divisors n))).
+Proof.
+intros.
+...
+
+(* probably useless...
 (* list_tab_pos_of (n : nat) (ll : list (list A)) return the
    position p of n in this list, such as
      nth p (cumul ll) 0 ≤ n < nth (p + 1) (cumul ll) 0
@@ -1463,6 +1477,7 @@ Fixpoint list_tab_pos_loop {A} accu rank n (ll : list (list A)) :=
     end.
 
 Definition list_tab_pos_of {A} := @list_tab_pos_loop A 0 0.
+*)
 
 (*
 Compute (list_tab_pos_of 16 [[1;2;3]; [1;2;3;4;5;6;7]; [1;2]; [1;2;3;4;5]]).
@@ -1620,11 +1635,7 @@ Fixpoint comp l1 l2 :=
 Compute (let n := 30 in (glop n, map change (rev (glip n)))).
 Compute (let n := 30 in comp (concat (glop n)) (concat (map change (rev (glip n))))).
 (* seems that "concat lt1" and "concat (map change (rev lt2))" are equal and sorted! *)
-Definition rot_zxy '((x, y, z) : (nat * nat * nat)) := (z, x, y).
-Theorem mul_assoc_indices_eq : ∀ n,
-  concat (map (λ d, map (λ d', (d, d', n / d / d')) (divisors (n / d))) (divisors n)) =
-  rev (map rot_zxy (concat (map (λ d, map (λ d', (d', d / d', n / d)) (divisors d)) (divisors n)))).
-Admitted.
+...
 specialize (mul_assoc_indices_eq n) as H.
 rewrite <- Hlt1, <- Hl2 in H.
 (* oui, enfin, il faut voir encore : map rot_zxy l2 ne donne pas les bons indices, puisqu'ils
