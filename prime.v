@@ -1828,6 +1828,24 @@ assert (Hl1s : Sorted.Sorted lt_trip l1). {
    +rename l0 into tl1; rename H into Htl1.
     rename H0 into H1.
     destruct (divisors (n / a)) as [| a' la]; [ easy | ].
+    cbn in Hsl.
+    apply SetoidList.InA_cons in Hsl.
+    cbn in Htl1.
+    injection Htl1; clear Htl1; intros Htl1 Ht1.
+...
+    rewrite Ht1.
+    destruct l as [| b l]; [ easy | ].
+    cbn - [ divisors ] in Hitt.
+    specialize (Hin b (or_intror (or_introl eq_refl))) as Hinb.
+    destruct Hinb as (Hnb, Hbz).
+    apply Nat.mod_divides in Hnb; [ | easy ].
+    destruct Hnb as (c, Hc).
+    move Hs at bottom.
+    apply Sorted.Sorted_inv in Hs.
+    destruct Hs as (Hs, Hr).
+    apply Sorted.HdRel_inv in Hr.
+    apply SetoidList.InA_app in Hitt.
+    destruct Hitt as [Ht2| Ht2]. {
 ...
       inversion Hr2; subst.
         now apply Sorted.Sorted_inv in Hs.
