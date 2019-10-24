@@ -1620,6 +1620,10 @@ Fixpoint comp l1 l2 :=
 Compute (let n := 30 in (glop n, map change (rev (glip n)))).
 Compute (let n := 30 in comp (concat (glop n)) (concat (map change (rev (glip n))))).
 (* seems that "concat lt1" and "concat (map change (rev lt2))" are equal and sorted! *)
+Definition rot_zxy '((x, y, z) : (nat * nat * nat)) := (z, x, y).
+Theorem mul_assoc_indices_eq : ∀ n,
+  concat (map (λ d, map (λ d', (d, d', n / d / d')) (divisors (n / d))) (divisors n)) =
+  rev (map rot_zxy (concat (map (λ d, map (λ d', (d', d / d', n / d)) (divisors d)) (divisors n)))).
 ...
 (*
   rewrite flat_map_concat_map in Hll.
