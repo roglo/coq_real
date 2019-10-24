@@ -1624,6 +1624,11 @@ Definition rot_zxy '((x, y, z) : (nat * nat * nat)) := (z, x, y).
 Theorem mul_assoc_indices_eq : ∀ n,
   concat (map (λ d, map (λ d', (d, d', n / d / d')) (divisors (n / d))) (divisors n)) =
   rev (map rot_zxy (concat (map (λ d, map (λ d', (d', d / d', n / d)) (divisors d)) (divisors n)))).
+Admitted.
+specialize (mul_assoc_indices_eq n) as H.
+rewrite <- Hlt1, <- Hl2 in H.
+(* oui, enfin, il faut voir encore : map rot_zxy l2 ne donne pas les bons indices, puisqu'ils
+   sont rotés. Y a de la sauce à ajouter à ce plat. *)
 ...
 (*
   rewrite flat_map_concat_map in Hll.
