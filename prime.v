@@ -1768,6 +1768,26 @@ assert (Hl1s : Sorted.Sorted lt_trip l1). {
     apply SetoidList.InA_app in Hitt.
     destruct Hitt as [Ht2| Ht2]. {
       clear - Ht2 Hs Hc Hn.
+      assert (Hjk2 : ∃ j2 k2, t2 = (b, j2, k2)). {
+        remember (divisors (n / b)) as db eqn:Hdb; symmetry in Hdb.
+        clear - Ht2.
+        induction db; [ now apply SetoidList.InA_nil in Ht2 | ].
+        cbn in Ht2.
+        apply SetoidList.InA_cons in Ht2.
+        destruct Ht2 as [Ht2| Ht2]. {
+          rewrite Ht2.
+          now exists a, (n / b / a).
+        }
+        now apply IHdb.
+      }
+      destruct Hjk2 as (j2 & k2 & Hjk2); rewrite Hjk2.
+      unfold lt_trip; cbn.
+      remember (a ?= b) as ab eqn:Hab; symmetry in Hab.
+        destruct ab; [ | easy | ].
+       -apply Nat.compare_eq_iff in Hab; flia Hab Hs.
+       -apply Nat.compare_gt_iff in Hab; flia Hab Hs.
+      }
+...
       remember (divisors (n / b)) as db eqn:Hdb; symmetry in Hdb.
       destruct db as [| d ]. {
         rewrite Hc, Nat.mul_comm, Nat.div_mul in Hdb; [ | easy ].
