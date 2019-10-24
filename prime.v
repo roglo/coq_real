@@ -1692,6 +1692,30 @@ fold (glop n) in Hl1.
 fold (glip n) in Hl2.
 Check mul_assoc_indices_eq.
 *)
+Print le.
+Print comparison.
+Definition compare_trip '(i1, j1, k1) '(i2, j2, k2) :=
+  match Nat.compare i1 i2 with
+  | Eq =>
+      match Nat.compare j1 j2 with
+      | Eq => Nat.compare k1 k2
+      | c => c
+      end
+  | c => c
+  end.
+Definition lt_trip t1 t2 := compare_trip t1 t2 = Lt.
+assert (Hl1s : Sorted.Sorted lt_trip l1). {
+  clear - Hn Hl1.
+  specialize (divisors_are_sorted n) as Hs.
+...
+  induction l1 as [| a l]; [ easy | ].
+  constructor.
+
+Search (Sorted.Sorted).
+Print Sorting.Sorted.LocallySorted.
+Print Sorting.Sorted.Sorted.
+Print Sorting.Sorted.HdRel.
+...
 rewrite mul_assoc_indices_eq in Hl1.
 remember (flat_map (λ d : nat, map (λ d' : nat, (d', d / d', n / d)) (divisors d))) as f.
 assert (Hll : length l1 = length l2). {
