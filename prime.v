@@ -1534,6 +1534,17 @@ Definition list_tab_pos_of {A} := @list_tab_pos_loop A 0 0.
 Compute (list_tab_pos_of 16 [[1;2;3]; [1;2;3;4;5;6;7]; [1;2]; [1;2;3;4;5]]).
 *)
 
+Definition compare_trip '(i1, j1, k1) '(i2, j2, k2) :=
+  match Nat.compare i1 i2 with
+  | Eq =>
+      match Nat.compare j1 j2 with
+      | Eq => Nat.compare k1 k2
+      | c => c
+      end
+  | c => c
+  end.
+Definition lt_trip t1 t2 := compare_trip t1 t2 = Lt.
+
 Theorem fold_add_flat_prod_assoc {F : field} : ∀ n u v w,
   n ≠ 0
   → fold_left f_add
@@ -1694,22 +1705,53 @@ Check mul_assoc_indices_eq.
 *)
 Print le.
 Print comparison.
-Definition compare_trip '(i1, j1, k1) '(i2, j2, k2) :=
-  match Nat.compare i1 i2 with
-  | Eq =>
-      match Nat.compare j1 j2 with
-      | Eq => Nat.compare k1 k2
-      | c => c
-      end
-  | c => c
-  end.
-Definition lt_trip t1 t2 := compare_trip t1 t2 = Lt.
 assert (Hl1s : Sorted.Sorted lt_trip l1). {
   clear - Hn Hl1.
-  specialize (divisors_are_sorted n) as Hs.
+  assert (Hin : ∀ d, d ∈ divisors n → n mod d = 0 ∧ d ≠ 0). {
+    now apply in_divisors.
+  }
+  remember (divisors n) as l eqn:Hl; clear Hl.
+  subst l1.
+  induction l as [| a l]; [ now cbn | ].
+  cbn - [ divisors ].
+  apply (SetoidList.SortA_app eq_equivalence).
+  -specialize (Hin a (or_introl eq_refl)); clear IHl.
+   destruct Hin as (Hna, Ha).
+   apply Nat.mod_divides in Hna; [ | easy ].
+   destruct Hna as (b, Hb).
+   rewrite Hb, Nat.mul_comm, Nat.div_mul; [ | easy ].
+   subst n.
+   assert (Hb : b ≠ 0) by now intros H; rewrite H, Nat.mul_comm in Hn.
+   clear Hn l; rename b into n; rename Hb into Hn.
+   assert (Hin : ∀ d, d ∈ divisors n → n mod d = 0 ∧ d ≠ 0). {
+     now apply in_divisors.
+   }
+   specialize (divisors_are_sorted n) as Hs.
+   remember (divisors n) as l eqn:Hl; clear Hl.
+   induction l as [| b l]; cbn; [ easy | ].
+   constructor.
+   +apply IHl; [ now intros d Hd; apply Hin; right | now inversion Hs ].
+   +clear IHl.
+    destruct l as [| c l]; cbn; [ easy | ].
+    constructor.
+    unfold lt_trip, compare_trip.
+    rewrite Nat.compare_refl.
+    remember (b ?= c) as bb eqn:Hbb; symmetry in Hbb.
+    destruct bb; [ | easy | ].
+    *apply Nat.compare_eq in Hbb; subst b.
+     inversion Hs; subst.
+     inversion H2; flia H0.
+    *apply Nat.compare_gt_iff in Hbb.
+     inversion Hs; subst.
+     inversion H2; flia H0 Hbb.
+  -now apply IHl; intros d Hd; apply Hin; right.
+  -intros t1 t2 Hsl Hitt.
+   inversion Hsl.
+   +subst y.
+    inversion Hitt.
+    *subst y.
 ...
-  induction l1 as [| a l]; [ easy | ].
-  constructor.
+
 
 Search (Sorted.Sorted).
 Print Sorting.Sorted.LocallySorted.
