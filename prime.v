@@ -1749,8 +1749,31 @@ assert (Hl1s : Sorted.Sorted lt_trip l1). {
   -intros t1 t2 Hsl Hitt.
    inversion Hsl.
    +subst y.
+    rename l0 into tl1; rename H into Htl1.
     inversion Hitt.
     *subst y.
+     rename l0 into tl2; rename H into Htl.
+     destruct l as [| b l]; [ easy | ].
+     cbn - [ divisors ] in Htl.
+     (* 1st divisor of n/a = 1
+          t1 = (a, 1, n/a)
+        1st divisor of n/b = 1
+          t2 = (b, 1, n/b)
+        but a < b by Hs
+     *)
+...
+     unfold lt_trip, compare_trip.
+     destruct t1 as ((i1, j1), k1).
+     destruct t2 as ((i2, j2), k2).
+     remember (i1 ?= i2) as bi eqn:Hbi; symmetry in Hbi.
+     remember (j1 ?= j2) as bj eqn:Hbj; symmetry in Hbj.
+     remember (k1 ?= k2) as bk eqn:Hbk; symmetry in Hbk.
+     destruct bi.
+    --apply Nat.compare_eq_iff in Hbi; subst i2.
+      destruct bj.
+     ++apply Nat.compare_eq_iff in Hbj; subst j2.
+       destruct bk; [ exfalso | easy | exfalso ].
+      **apply Nat.compare_eq_iff in Hbk; subst k2.
 ...
 
 
