@@ -141,6 +141,15 @@ induction l as [| a l]; [ easy | cbn ].
 now rewrite List.map_map, IHl.
 Qed.
 
+Theorem List_flat_map_length {A B} : ∀ (l : list A) (f : _ → list B),
+  length (flat_map f l) =
+    List.fold_right Nat.add 0 (map (@length B) (map f l)).
+Proof.
+intros.
+induction l as [| a l]; [ easy | cbn ].
+now rewrite app_length, IHl.
+Qed.
+
 Theorem Sorted_Sorted_seq : ∀ start len, Sorted.Sorted lt (seq start len).
 Proof.
 intros.
@@ -1459,6 +1468,8 @@ Theorem mul_assoc_indices_eq : ∀ n,
   map xyz_zxy (flat_map (λ d, map (λ d', (d', d / d', n / d)) (divisors d)) (rev (divisors n))).
 Proof.
 intros.
+destruct (zerop n) as [Hn| Hn]; [ now rewrite Hn | ].
+apply Nat.neq_0_lt_0 in Hn.
 do 2 rewrite flat_map_concat_map.
 rewrite map_rev.
 rewrite (map_inv_divisors n) at 2.
@@ -1468,30 +1479,29 @@ rewrite map_map.
 rewrite concat_map.
 rewrite map_map.
 f_equal.
-(* devrait le faire *)
-...
-
-Theorem mul_assoc_indices_eq_old : ∀ n,
-  flat_map (λ d, map (λ d', (d, d', n / d / d')) (divisors (n / d)))
-    (divisors n) =
-  map xyz_zxy
-    (rev
-       (flat_map (λ d, map (λ d', (d', d / d', n / d)) (divisors d))
-          (divisors n))).
-Proof.
-intros.
-do 2 rewrite flat_map_concat_map.
-rewrite rev_concat_map.
-rewrite map_rev.
-rewrite (map_inv_divisors n) at 2.
-rewrite <- map_rev.
-rewrite rev_involutive.
-rewrite map_map.
-rewrite map_map.
-rewrite concat_map.
-rewrite map_map.
+assert (Hin : ∀ d, d ∈ divisors n → n mod d = 0 ∧ d ≠ 0). {
+  now intros d; apply in_divisors.
+}
+remember (divisors n) as l eqn:Hl; clear Hl.
+induction l as [| a l]; [ easy | ].
+cbn - [ divisors ].
+rewrite IHl. 2: {
+  intros * Hd.
+  now apply Hin; right.
+}
 f_equal.
-...
+rewrite Nat_mod_0_div_div; cycle 1. {
+  specialize (Hin a (or_introl eq_refl)) as (H1, H2).
+  split; [ flia H2 | ].
+  apply Nat.mod_divides in H1; [ | easy ].
+  destruct H1 as (c, Hc); rewrite Hc.
+  destruct c; [ now rewrite Hc, Nat.mul_comm in Hn | ].
+  rewrite Nat.mul_comm; cbn; flia.
+} {
+  apply (Hin a (or_introl eq_refl)).
+}
+now rewrite map_map.
+Qed.
 
 (* probably useless...
 (* list_tab_pos_of (n : nat) (ll : list (list A)) return the
@@ -1574,7 +1584,6 @@ remember (
     (divisors n))
   as l2 eqn:Hl2.
 move l2 before l1.
-(*
 assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l1). {
   split; intros Huvw.
   -intros.
@@ -1630,6 +1639,7 @@ assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l1). {
    rewrite Hdd at 1.
    now rewrite (Nat.mul_comm _ d''), Nat.div_mul.
 }
+(*
 assert
   (H2 : ∀ a b, List.nth a l1 (0, 0, 0) = List.nth b l1 (0, 0, 0) → a = b). {
   intros * Hll.
@@ -1649,12 +1659,9 @@ assert
        which "b" is in lt1, which should contradict Hll *)
     exfalso.
 rewrite flat_map_concat_map in Hl2.
-*)
 Definition glop n := map (λ d : nat, map (λ d' : nat, (d, d', n / d / d')) (divisors (n / d))) (divisors n).
 Definition glip n := map (λ d : nat, map (λ d' : nat, (d', d / d', n / d)) (divisors d)) (divisors n).
-(*
 Definition change (l : list (nat * nat * nat)) := map (λ '(x, y, z), (z, x, y)) l.
-*)
 Fixpoint comp l1 l2 :=
   match l1 with
   | xyz1 :: l'1 =>
@@ -1680,74 +1687,30 @@ Fixpoint comp l1 l2 :=
 Inspect 4.
 Compute (let n := 30 in (concat (glop n), map xyz_zxy (concat (rev (glip n))))).
 Compute (let n := 16 in comp (concat (glop n)) (map xyz_zxy (concat (rev (glip n))))).
-(*
 rewrite flat_map_concat_map in Hl1, Hl2.
 fold (glop n) in Hl1.
 fold (glip n) in Hl2.
 Check mul_assoc_indices_eq.
 *)
-...
 rewrite mul_assoc_indices_eq in Hl1.
 remember (flat_map (λ d : nat, map (λ d' : nat, (d', d / d', n / d)) (divisors d))) as f.
-Search (rev (divisors _)).
-...
-
-  concat (map (λ d, map (λ d', (d, d', n / d / d')) (divisors (n / d))) (divisors n)) =
-  map xyz_zxy (concat (rev (map (λ d, map (λ d', (d', d / d', n / d)) (divisors d)) (divisors n)))).
-Proof.
-intros.
-rewrite <- flat_map_concat_map.
-rewrite <- map_rev.
-rewrite <- flat_map_concat_map.
-...
-Search (rev (map _ _)).
-Search (concat (rev _)).
-...
-Search (map _ (rev _)).
-rewrite map_rev.
-rewrite map_map.
-Search (concat (rev _)).
-...
-rewrite <- flat_map_concat_map.
-...
-  concat (map (λ d, map (λ d', (d, d', n / d / d')) (divisors (n / d))) (divisors n)) =
-  concat (map change (rev (map (λ d, map (λ d', (d', d / d', n / d)) (divisors d)) (divisors n)))).
-Proof.
-intros.
-rewrite <- flat_map_concat_map.
-Search (map _ (rev _)).
-Search (concat (map _ _)).
-rewrite <- flat_map_concat_map.
-Check mul_assoc_indices_eq.
-...
-rewrite <- map_rev.
-...
-
-Theorem pouet : ∀ n, concat (glop n) = concat (map change (rev (glip n))).
-
-
-...
-specialize (mul_assoc_indices_eq n) as H.
-rewrite <- Hlt1, <- Hl2 in H.
-(* oui, enfin, il faut voir encore : map rot_zxy l2 ne donne pas les bons indices, puisqu'ils
-   sont rotés. Y a de la sauce à ajouter à ce plat. *)
-...
-(*
-  rewrite flat_map_concat_map in Hll.
-*)
-Search (length (concat _)).
-Check List.fold_right.
-Compute (flat_map (λ d, 7 :: d) [[1; 2; 3]; [4; 5]]).
-Check flat_map.
-Theorem flat_map_length {A B} : ∀ (l : list A) (f : _ → list B),
-  length (flat_map f l) =
-    List.fold_right Nat.add 0 (map (@length B) (map f l)).
-...
-remember (length l1) as len1 eqn:Hlen1.
-rewrite Hl1 in Hlen1.
-rewrite flat_map_length in Hlen1.
-rewrite map_map in Hlen1.
-Search (λ _, length (map _ _)).
+assert (Hll : length l1 = length l2). {
+  subst l1 l2.
+  rewrite map_length.
+  rewrite Heqf.
+  do 2 rewrite List_flat_map_length.
+  do 2 rewrite map_rev.
+  rewrite map_map.
+  remember (map _ (divisors n)) as l eqn:Hl; clear.
+  remember 0 as a; clear Heqa.
+  revert a.
+  induction l as [| b l]; intros; [ easy | cbn ].
+  rewrite fold_right_app; cbn.
+  rewrite IHl; clear.
+  revert a b.
+  induction l as [| c l]; intros; [ easy | cbn ].
+  rewrite IHl; ring.
+}
 ...
 assert (H2 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l2). {
   ...
