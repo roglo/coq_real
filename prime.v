@@ -1723,8 +1723,7 @@ assert (Hl1s : Sorted.Sorted lt_trip l1). {
    rewrite Hb, Nat.mul_comm, Nat.div_mul; [ | easy ].
    subst n.
    assert (Hb : b ≠ 0) by now intros H; rewrite H, Nat.mul_comm in Hn.
-...
-   clear Hn l; rename b into n; rename Hb into Hn.
+   clear Hn l Hs; rename b into n; rename Hb into Hn.
    assert (Hin : ∀ d, d ∈ divisors n → n mod d = 0 ∧ d ≠ 0). {
      now apply in_divisors.
    }
@@ -1746,9 +1745,8 @@ assert (Hl1s : Sorted.Sorted lt_trip l1). {
     *apply Nat.compare_gt_iff in Hbb.
      inversion Hs; subst.
      inversion H2; flia H0 Hbb.
-  -now apply IHl; intros d Hd; apply Hin; right.
+  -apply IHl; [ now intros d Hd; apply Hin; right | now inversion Hs ].
   -intros t1 t2 Hsl Hitt.
-...
    inversion Hsl.
    +subst y.
     inversion Hitt.
