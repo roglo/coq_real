@@ -1439,9 +1439,39 @@ induction l as [| c l]; intros; [ easy | cbn ].
 apply IHl.
 Qed.
 
+Theorem rev_concat_map {A B} : ∀ (f : A → list B) l,
+  rev (concat (map f l)) = concat (map (@rev B) (map f (rev l))).
+Proof.
+intros.
+induction l as [| a l]; [ easy | cbn ].
+rewrite rev_app_distr.
+rewrite IHl.
+rewrite map_app; cbn.
+rewrite map_app; cbn.
+rewrite concat_app; cbn.
+now rewrite app_nil_r.
+Qed.
+
 Definition xyz_zxy '((x, y, z) : (nat * nat * nat)) := (z, x, y).
 
 Theorem mul_assoc_indices_eq : ∀ n,
+  flat_map (λ d, map (λ d', (d, d', n / d / d')) (divisors (n / d))) (divisors n) =
+  map xyz_zxy (flat_map (λ d, map (λ d', (d', d / d', n / d)) (divisors d)) (rev (divisors n))).
+Proof.
+intros.
+do 2 rewrite flat_map_concat_map.
+rewrite map_rev.
+rewrite (map_inv_divisors n) at 2.
+rewrite <- map_rev.
+rewrite rev_involutive.
+rewrite map_map.
+rewrite concat_map.
+rewrite map_map.
+f_equal.
+(* devrait le faire *)
+...
+
+Theorem mul_assoc_indices_eq_old : ∀ n,
   flat_map (λ d, map (λ d', (d, d', n / d / d')) (divisors (n / d)))
     (divisors n) =
   map xyz_zxy
@@ -1450,6 +1480,17 @@ Theorem mul_assoc_indices_eq : ∀ n,
           (divisors n))).
 Proof.
 intros.
+do 2 rewrite flat_map_concat_map.
+rewrite rev_concat_map.
+rewrite map_rev.
+rewrite (map_inv_divisors n) at 2.
+rewrite <- map_rev.
+rewrite rev_involutive.
+rewrite map_map.
+rewrite map_map.
+rewrite concat_map.
+rewrite map_map.
+f_equal.
 ...
 
 (* probably useless...
@@ -1533,6 +1574,7 @@ remember (
     (divisors n))
   as l2 eqn:Hl2.
 move l2 before l1.
+(*
 assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l1). {
   split; intros Huvw.
   -intros.
@@ -1607,9 +1649,12 @@ assert
        which "b" is in lt1, which should contradict Hll *)
     exfalso.
 rewrite flat_map_concat_map in Hl2.
+*)
 Definition glop n := map (λ d : nat, map (λ d' : nat, (d, d', n / d / d')) (divisors (n / d))) (divisors n).
 Definition glip n := map (λ d : nat, map (λ d' : nat, (d', d / d', n / d)) (divisors d)) (divisors n).
+(*
 Definition change (l : list (nat * nat * nat)) := map (λ '(x, y, z), (z, x, y)) l.
+*)
 Fixpoint comp l1 l2 :=
   match l1 with
   | xyz1 :: l'1 =>
@@ -1632,9 +1677,55 @@ Fixpoint comp l1 l2 :=
       | [] => true
       end
   end.
-Compute (let n := 30 in (glop n, map change (rev (glip n)))).
-Compute (let n := 30 in comp (concat (glop n)) (concat (map change (rev (glip n))))).
-(* seems that "concat lt1" and "concat (map change (rev lt2))" are equal and sorted! *)
+Inspect 4.
+Compute (let n := 30 in (concat (glop n), map xyz_zxy (concat (rev (glip n))))).
+Compute (let n := 16 in comp (concat (glop n)) (map xyz_zxy (concat (rev (glip n))))).
+(*
+rewrite flat_map_concat_map in Hl1, Hl2.
+fold (glop n) in Hl1.
+fold (glip n) in Hl2.
+Check mul_assoc_indices_eq.
+*)
+...
+rewrite mul_assoc_indices_eq in Hl1.
+remember (flat_map (λ d : nat, map (λ d' : nat, (d', d / d', n / d)) (divisors d))) as f.
+Search (rev (divisors _)).
+...
+
+  concat (map (λ d, map (λ d', (d, d', n / d / d')) (divisors (n / d))) (divisors n)) =
+  map xyz_zxy (concat (rev (map (λ d, map (λ d', (d', d / d', n / d)) (divisors d)) (divisors n)))).
+Proof.
+intros.
+rewrite <- flat_map_concat_map.
+rewrite <- map_rev.
+rewrite <- flat_map_concat_map.
+...
+Search (rev (map _ _)).
+Search (concat (rev _)).
+...
+Search (map _ (rev _)).
+rewrite map_rev.
+rewrite map_map.
+Search (concat (rev _)).
+...
+rewrite <- flat_map_concat_map.
+...
+  concat (map (λ d, map (λ d', (d, d', n / d / d')) (divisors (n / d))) (divisors n)) =
+  concat (map change (rev (map (λ d, map (λ d', (d', d / d', n / d)) (divisors d)) (divisors n)))).
+Proof.
+intros.
+rewrite <- flat_map_concat_map.
+Search (map _ (rev _)).
+Search (concat (map _ _)).
+rewrite <- flat_map_concat_map.
+Check mul_assoc_indices_eq.
+...
+rewrite <- map_rev.
+...
+
+Theorem pouet : ∀ n, concat (glop n) = concat (map change (rev (glip n))).
+
+
 ...
 specialize (mul_assoc_indices_eq n) as H.
 rewrite <- Hlt1, <- Hl2 in H.
