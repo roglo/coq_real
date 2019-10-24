@@ -1591,6 +1591,35 @@ assert
     (* this means the list in which "a" is before the list in
        which "b" is in lt1, which should contradict Hll *)
     exfalso.
+rewrite flat_map_concat_map in Hl2.
+Definition glop n := map (λ d : nat, map (λ d' : nat, (d, d', n / d / d')) (divisors (n / d))) (divisors n).
+Definition glip n := map (λ d : nat, map (λ d' : nat, (d', d / d', n / d)) (divisors d)) (divisors n).
+Definition change (l : list (nat * nat * nat)) := map (λ '(x, y, z), (z, x, y)) l.
+Fixpoint comp l1 l2 :=
+  match l1 with
+  | xyz1 :: l'1 =>
+      match l2 with
+      | xyz2 :: l'2 =>
+          let (xy1, z1) := (xyz1 : nat * nat * nat) in
+          let (x1, y1) := xy1 in
+          let (xy2, z2) := (xyz2 : nat * nat * nat) in
+          let (x2, y2) := xy2 in
+          if Nat.eq_dec x1 x2 then
+            if Nat.eq_dec y1 y2 then
+              if Nat.eq_dec z1 z2 then comp l'1 l'2 else false
+            else false
+          else false
+      | [] => false
+      end
+  | [] =>
+      match l2 with
+      | _ :: _ => false
+      | [] => true
+      end
+  end.
+Compute (let n := 30 in (glop n, map change (rev (glip n)))).
+Compute (let n := 30 in comp (concat (glop n)) (concat (map change (rev (glip n))))).
+(* seems that "concat lt1" and "concat (map change (rev lt2))" are equal and sorted! *)
 ...
 (*
   rewrite flat_map_concat_map in Hll.
