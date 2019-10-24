@@ -1756,18 +1756,17 @@ assert (Hl1s : Sorted.Sorted lt_trip l1). {
     rewrite Ht1.
     destruct l as [| b l]; [ easy | ].
     cbn - [ divisors ] in Hitt.
-(**)
     specialize (Hin b (or_intror (or_introl eq_refl))) as Hinb.
     destruct Hinb as (Hnb, Hbz).
     apply Nat.mod_divides in Hnb; [ | easy ].
     destruct Hnb as (c, Hc).
     move Hs at bottom.
     apply Sorted.Sorted_inv in Hs.
-    destruct Hs as (_, Hs).
-    apply Sorted.HdRel_inv in Hs.
+    destruct Hs as (Hs, Hr).
+    apply Sorted.HdRel_inv in Hr.
     apply SetoidList.InA_app in Hitt.
     destruct Hitt as [Ht2| Ht2]. {
-      clear - Ht2 Hs Hc Hn.
+      clear - Ht2 Hr Hc Hn.
       assert (Hjk2 : ∃ j2 k2, t2 = (b, j2, k2)). {
         remember (divisors (n / b)) as db eqn:Hdb; symmetry in Hdb.
         clear - Ht2.
@@ -1784,9 +1783,55 @@ assert (Hl1s : Sorted.Sorted lt_trip l1). {
       unfold lt_trip; cbn.
       remember (a ?= b) as ab eqn:Hab; symmetry in Hab.
         destruct ab; [ | easy | ].
-       -apply Nat.compare_eq_iff in Hab; flia Hab Hs.
-       -apply Nat.compare_gt_iff in Hab; flia Hab Hs.
+       -apply Nat.compare_eq_iff in Hab; flia Hab Hr.
+       -apply Nat.compare_gt_iff in Hab; flia Hab Hr.
+    }
+    clear - Ht2 Hs Hr Hc Hn.
+    assert (Hjk2 : ∃ i2 j2 k2, a < i2 ∧ t2 = (i2, j2, k2)). {
+      induction l as [| d l]; [ now apply SetoidList.InA_nil in Ht2 | ].
+      cbn - [ divisors ] in Ht2.
+      apply SetoidList.InA_app in Ht2.
+      destruct Ht2 as [Ht2| Ht2]. {
+        remember (divisors (n / d)) as db eqn:Hdb; symmetry in Hdb.
+        clear - Ht2 Hs Hr.
+        induction db as [| e db]; [ now apply SetoidList.InA_nil in Ht2 | ].
+        cbn in Ht2.
+        apply SetoidList.InA_cons in Ht2.
+        destruct Ht2 as [Ht2| Ht2]; [ | now apply IHdb ].
+        rewrite Ht2.
+        exists d, e, (n / d / e).
+        split; [ | easy ].
+        transitivity b; [ easy | ].
+        apply Sorted.Sorted_inv in Hs.
+        destruct Hs as (Hs, Hr2).
+        now apply Sorted.HdRel_inv in Hr2.
       }
+      apply IHl; [ easy | ].
+      constructor. {
+        apply Sorted.Sorted_inv in Hs.
+        destruct Hs as (Hs, Hr2).
+        now apply Sorted.Sorted_inv in Hs.
+      }
+      apply Sorted.Sorted_inv in Hs.
+      destruct Hs as (Hs, Hr2).
+      apply Sorted.HdRel_inv in Hr2.
+      apply Sorted.Sorted_inv in Hs.
+      destruct Hs as (Hs, Hr3).
+      eapply (SetoidList.InfA_ltA Nat.lt_strorder); [ apply Hr2 | easy ].
+    }
+    destruct Hjk2 as (i2 & j2 & k2 & Hai2 & Hijk2); subst t2.
+    unfold lt_trip; cbn.
+    remember (a ?= i2) as ab eqn:Hab; symmetry in Hab.
+    destruct ab; [ | easy | ].
+    *apply Nat.compare_eq_iff in Hab; flia Hab Hai2.
+    *apply Nat.compare_gt_iff in Hab; flia Hab Hai2.
+   +rename l0 into tl1; rename H into Htl1.
+    rename H0 into H1.
+    destruct (divisors (n / a)) as [| a' la]; [ easy | ].
+...
+      inversion Hr2; subst.
+        now apply Sorted.Sorted_inv in Hs.
+        now apply Sorted.HdRel_inv in Hr2.
 ...
       remember (divisors (n / b)) as db eqn:Hdb; symmetry in Hdb.
       destruct db as [| d ]. {
