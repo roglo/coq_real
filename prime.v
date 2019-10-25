@@ -2144,8 +2144,8 @@ assert (Hl1s : Sorted.Sorted lt_triplet l1). {
    +apply Nat.compare_eq_iff in Hai; flia Hai Hai2.
    +apply Nat.compare_gt_iff in Hai; flia Hai Hai2.
 }
-rewrite mul_assoc_indices_eq in Hl1.
 assert (Hll : length l1 = length l2). {
+  rewrite mul_assoc_indices_eq in Hl1.
   subst l1 l2.
   rewrite map_length.
   do 2 rewrite List_flat_map_length.
@@ -2166,9 +2166,6 @@ assert (H3 : ∀ t, t ∈ l1 ↔ t ∈ l2). {
   -now apply H2, H1.
   -now apply H1, H2.
 }
-(*
-clear - Hl1s Hll H3.
-*)
 assert (Hnd1 : NoDup l1). {
   clear - Hl1s.
   induction l1 as [| a1 l1]; [ constructor | ].
@@ -2190,6 +2187,82 @@ assert (Hnd1 : NoDup l1). {
   apply StrictOrder_lt_triplet.
 }
 assert (Hnd2 : NoDup l2). {
+  rewrite mul_assoc_indices_eq in Hl1.
+  remember (λ d : nat, map (λ d' : nat, (d', d / d', n / d)) (divisors d))
+    as f eqn:Hf.
+  rewrite Hl1 in Hnd1.
+  rewrite Hl2.
+  apply NoDup_map_inv in Hnd1.
+Search (rev (divisors _)).
+rewrite flat_map_concat_map in Hnd1.
+rewrite map_rev in Hnd1.
+rewrite flat_map_concat_map.
+remember (map f (divisors n)) as l eqn:Hl.
+clear - Hnd1.
+induction l as [| a l]; [ easy | ].
+cbn in Hnd1; cbn.
+Search (concat (_ ++ _)).
+rewrite concat_app in Hnd1.
+cbn in Hnd1.
+rewrite app_nil_r in Hnd1.
+...
+Search (NoDup (_ ++ _)).
+...
+destruct a as [| b a]. {
+  rewrite app_nil_r in Hnd1.
+  now apply IHl.
+}
+Search (NoDup (_ ++ _)).
+apply NoDup_remove in Hnd1.
+cbn.
+replace a with (a :: []) in Hnd1 by easy.
+...
+Search flat_map.
+remember (divisors n) as l eqn:Hl.
+clear - Hnd1.
+induction l as [| a l]; [ easy | ].
+cbn.
+cbn in Hnd1.
+Search (NoDup (_ ++ _)).
+Theorem NoDup_app_comm {A} : ∀ l l' : list A,
+  NoDup (l ++ l') → NoDup (l' ++ l).
+Admitted.
+apply NoDup_app_comm.
+Search (flat_map _ (_ ++ _)).
+rewrite flat_map_concat_map in Hnd1.
+rewrite map_app in Hnd1; cbn in Hnd1.
+Search (concat (_ ++ _)).
+rewrite concat_app in Hnd1.
+cbn in Hnd1.
+rewrite app_nil_r in Hnd1.
+(*
+rewrite map_rev in Hnd1.
+*)
+cbn in Hnd1.
+Search (NoDup (_ :: _)).
+Search (NoDup (_ ++ _)).
+Theorem NoDup_app_lr {A} : ∀ l1 l2 : list A,
+  NoDup (l1 ++ l2) → NoDup l1 ∧ NoDup l2.
+Proof.
+Admitted.
+apply NoDup_app_lr in Hnd1.
+rewrite <- flat_map_concat_map in Hnd1.
+specialize (IHl (proj1 Hnd1)) as H1.
+...
+Search (flat_map _ (rev _)).
+Search (NoDup (concat _)).
+Search (NoDup (flat_map _ _)).
+...
+Search (rev (divisors _)).
+rewrite flat_map_concat_map in Hl1.
+Search (map _ (rev _)).
+rewrite map_rev in Hl1.
+rewrite concat_map in Hl1.
+rewrite map_rev in Hl1.
+rewrite map_map in Hl1.
+Search (concat (rev _)).
+rewrite <- rev_concat_map in Hl1.
+Search (concat (
 ...
 now apply (f_sum_mixed_lists lt_triplet).
 ...
