@@ -203,17 +203,19 @@ Theorem NoDup_app_lr {A} : ∀ l1 l2 : list A,
 Proof.
 intros * Hll.
 split. {
-  revert l2 Hll.
-  induction l1 as [| a1 l1]; intros; [ constructor | ].
-  constructor. {
-    intros H.
-...
-    cbn in Hll.
-Search (NoDup (_ :: _ ++ _)).
-    apply NoDup_remove1 in Hll.
+  induction l2 as [| a2 l2]; intros; [ now rewrite app_nil_r in Hll | ].
+  apply NoDup_remove_1 in Hll.
+  now apply IHl2.
 }
-
-...
+induction l2 as [| a2 l2]; [ constructor | ].
+constructor. {
+  intros H.
+  apply NoDup_remove_2 in Hll; apply Hll.
+  now apply in_or_app; right.
+}
+apply NoDup_remove_1 in Hll.
+now apply IHl2.
+Qed.
 
 (* *)
 
@@ -2235,7 +2237,43 @@ remember (map f (divisors n)) as l eqn:Hl.
 clear - Hnd1.
 rename l into ll.
 induction ll as [| l ll]; [ easy | ].
+revert ll Hnd1 IHll.
+induction l as [| a l]; intros. {
+  cbn in Hnd1.
+  rewrite concat_app in Hnd1; cbn in Hnd1.
+  rewrite app_nil_r in Hnd1.
+  now apply IHll.
+}
 cbn in Hnd1; cbn.
+cbn in IHl.
+constructor.
+intros Ha.
+apply in_app_or in Ha.
+destruct Ha as [Ha| Ha]. {
+rewrite concat_app in Hnd1.
+apply NoDup_app_lr in Hnd1.
+destruct Hnd1 as (H1, H2).
+cbn in H2.
+rewrite app_nil_r in H2.
+clear - H2 Ha.
+now apply NoDup_cons_iff in H2.
+}
+...
+rewrite concat_app in Hnd1.
+apply NoDup_app_lr in Hnd1.
+destruct Hnd1 as (H1, H2).
+cbn in H2.
+rewrite app_nil_r in H2.
+clear - H2 Ha.
+ apply NoDup_cons_iff in H2.
+
+...
+rewrite concat_app in Hnd1.
+apply NoDup_app_comm in Hnd1.
+cbn in Hnd1.
+rewrite app_nil_r in Hnd1.
+
+
 revert ll Hnd1 IHll.
 induction l as [| a l]; intros. {
   rewrite concat_app in Hnd1; cbn in Hnd1.
