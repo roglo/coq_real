@@ -1653,10 +1653,53 @@ assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l1). {
 assert (H2 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l2). {
   intros.
   split; intros Hddd.
-  -idtac.
-  ...
+  -assert (Hd1 : d1 ≠ 0) by now intros H; rewrite <- Hddd, H in Hn.
+   assert (Hd2 : d2 ≠ 0). {
+     now intros H; rewrite <- Hddd, H, Nat.mul_0_r in Hn.
+   }
+   assert (Hd3 : d3 ≠ 0). {
+     now intros H; rewrite <- Hddd, H, Nat.mul_comm in Hn.
+   }
+   subst l2.
+   apply in_flat_map.
+   exists (d1 * d2).
+   split. {
+     apply in_divisors; [ easy | ].
+     split; [ | now apply Nat.neq_mul_0 ].
+     rewrite <- Hddd.
+     apply Nat.mod_divides; [ now apply Nat.neq_mul_0 | ].
+     now exists d3.
+   }
+   apply List.in_map_iff.
+   exists d1.
+   rewrite <- Hddd.
+   rewrite Nat.mul_comm, Nat.div_mul; [ | easy ].
+   rewrite Nat.mul_comm, Nat.div_mul; [ | now apply Nat.neq_mul_0 ].
+   split; [ easy | ].
+   apply in_divisors; [ now apply Nat.neq_mul_0 | ].
+   split; [ | easy ].
+   apply Nat.mod_divides; [ easy | ].
+   exists d2; apply Nat.mul_comm.
+  -subst l2.
+   apply List.in_flat_map in Hddd.
+   destruct Hddd as (d & Hd & Hdi).
+   apply List.in_map_iff in Hdi.
+   destruct Hdi as (d' & Hd' & Hdd).
+   apply in_divisors in Hd; [ | easy ].
+   destruct Hd as (Hnd, Hd).
+   injection Hd'; clear Hd'; intros Hd3 Hd2 Hd1.
+   subst d1 d2 d3.
+   apply Nat.mod_divides in Hnd; [ | easy ].
+   destruct Hnd as (d1, Hd1).
+   rewrite Hd1, (Nat.mul_comm d), Nat.div_mul; [ | easy ].
+   rewrite Nat.mul_comm; f_equal.
+   apply in_divisors in Hdd; [ | easy ].
+   destruct Hdd as (Hdd, Hd').
+   apply Nat.mod_divides in Hdd; [ | easy ].
+   destruct Hdd as (d'', Hdd).
+   rewrite Hdd at 1.
+   now rewrite (Nat.mul_comm _ d''), Nat.div_mul.
 }
-... suite ok
 assert (Hl1s : Sorted.Sorted lt_trip l1). {
   clear - Hn Hl1.
   assert (Hin : ∀ d, d ∈ divisors n → n mod d = 0 ∧ d ≠ 0). {
@@ -1775,9 +1818,12 @@ assert (Hll : length l1 = length l2). {
   induction l as [| c l]; intros; [ easy | cbn ].
   rewrite IHl; ring.
 }
-...
 assert (H3 : ∀ t, t ∈ l1 ↔ t ∈ l2). {
-  ...
+  intros ((d1, d2), d3); split; intros Ht.
+  -now apply H2, H1.
+  -now apply H1, H2.
+}
+...
 
 Theorem log_prod_assoc {F : field} : ∀ u v w i,
   i ≠ 0
@@ -1822,6 +1868,8 @@ assert
 }
 do 2 rewrite H.
 clear H.
+...
+now apply fold_add_flat_prod_assoc.
 ...
 intros * Hi.
 unfold log_prod at 1 3.
