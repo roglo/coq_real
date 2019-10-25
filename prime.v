@@ -2,6 +2,7 @@
 
 Set Nested Proofs Allowed.
 Require Import Utf8 Arith Psatz Setoid Morphisms.
+Require Import Sorting.Permutation.
 Import List List.ListNotations.
 
 (* "fast" lia, to improve compilation speed *)
@@ -1981,6 +1982,40 @@ cbn in *.
 ...
 *)
 
+Theorem Permutation_f_sum_add {F : field} {A} : ∀ (l1 l2 : list A) f a,
+  Permutation l1 l2
+  → fold_left f_add (map f l1) a =
+     fold_left f_add (map f l2) a.
+Proof.
+intros * Hperm.
+revert a l2 Hperm.
+induction l1 as [| a1 l1]; intros. {
+  now apply Permutation_nil in Hperm; subst l2.
+}
+destruct l2 as [| a2 l2]. {
+  symmetry in Hperm.
+  now apply Permutation_nil in Hperm.
+}
+cbn; do 2 rewrite fold_f_add_assoc.
+inversion Hperm; subst; [ now f_equal; apply IHl1 | | ]. {
+  cbn; do 2 rewrite fold_f_add_assoc.
+  do 2 rewrite <- f_add_assoc; f_equal.
+  apply f_add_comm.
+}
+rename H into Hl1.
+rename H0 into Hl2.
+...
+clear - Hl1 Hl2.
+revert a a1 a2 l1 l2 Hl1 Hl2.
+induction l' as [| a' l']; intros. {
+  now apply Permutation_nil in Hl2.
+}
+...
+apply (perm_skip a2) in Hl1.
+apply (perm_skip a1) in Hl2.
+apply IHl'.
+...
+
 Theorem fold_add_flat_prod_assoc {F : field} : ∀ n u v w,
   n ≠ 0
   → fold_left f_add
@@ -2292,6 +2327,11 @@ assert (Hnd2 : NoDup l2). {
   remember (map f (divisors n)) as l eqn:Hl.
   now apply NoDup_concat_rev.
 }
+assert (HP : Permutation l1 l2). {
+  now apply NoDup_Permutation.
+}
+...
+now apply Permutation_f_sum_add.
 ...
 clear - Hnd1.
 rename l into ll.
