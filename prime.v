@@ -1596,13 +1596,47 @@ apply IHl1.
   }
   move H' before Hll; clear Hll; rename H' into Hll.
   remember (l3 ++ l4) as l2 eqn:Hl2; clear l3 l4 Hl2; move l2 before l1.
-(*
+(**)
+  specialize (proj2 (Hll t) (or_intror Ht)) as H1.
+  destruct H1 as [H1| H1]; [ | easy ].
+  subst t; exfalso.
+...
+  revert a1 t l2 Hs Hll Hlen Ht.
+  induction l1 as [| b1 l1]; intros. {
+    symmetry in Hlen; apply length_zero_iff_nil in Hlen.
+    now rewrite Hlen in Ht.
+  }
+  destruct l2 as [| b2 l2]; [ easy | ].
+  cbn in Hlen.
+  apply Nat.succ_inj in Hlen.
+  destruct Ht as [Ht| Ht]. {
+    subst t.
+    destruct (Hdec b1 b2) as [Hbb| Hbb]; [ now subst b2; left | right ].
+    eapply IHl1; [ | | apply Hlen | ].
+3: {
+specialize (proj2 (Hll b2) (or_intror (or_introl eq_refl))) as H1.
+destruct H1 as [H1| H1]. {
+  subst b2.
+...
   destruct (Hdec t a1) as [Hta| Hta]. {
     subst t; exfalso.
+    remember (length l2) as len eqn:Hlen2; symmetry in Hlen2.
+    rename Hlen into Hlen1; move Hlen1 after Hlen2.
+    revert a1 l1 l2 Hs Hll Hlen1 Hlen2 Ht.
+    induction len; intros. {
+      now apply length_zero_iff_nil in Hlen2; rewrite Hlen2 in Ht.
+    }
+    destruct l1 as [| b1 l1]; [ easy | ].
+    destruct l2 as [| b2 l2]; [ easy | ].
+    cbn in Hlen1, Hlen2.
+    apply Nat.succ_inj in Hlen1.
+    apply Nat.succ_inj in Hlen2.
+    destruct Ht as [Ht| Ht]. {
+      subst b2.
+      specialize (IHlen b1 l1 l2) as H1.
 ...
     specialize (proj1 (Hll a1) (or_introl eq_refl)) as H1.
 ...
-*)
 Require Sorting.
 Print Permutation.
 assert (HP : Permutation.Permutation l1 l2). {
@@ -1656,7 +1690,6 @@ Search NoDup.
 Search (Permutation.Permutation (_ :: _)).
 Search NoDup.
 ...
-*)
   remember (length l2) as len eqn:Hlen2; symmetry in Hlen2.
   rename Hlen into Hlen1; move Hlen1 after Hlen2.
   revert a1 t l1 l2 Hs Hll Hlen1 Hlen2 Ht.
@@ -1731,6 +1764,7 @@ cbn in *.
   a1 ∈ l1
 ...
 ...
+*)
 
 Theorem fold_add_flat_prod_assoc {F : field} : ∀ n u v w,
   n ≠ 0
