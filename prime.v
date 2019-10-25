@@ -1503,37 +1503,6 @@ rewrite Nat_mod_0_div_div; cycle 1. {
 now rewrite map_map.
 Qed.
 
-(* probably useless...
-(* list_tab_pos_of (n : nat) (ll : list (list A)) return the
-   position p of n in this list, such as
-     nth p (cumul ll) 0 ≤ n < nth (p + 1) (cumul ll) 0
-   e.g.
-     ll = [l_3; l_7; l_2; l_5] where l_i is a list of i elements
-     position of 0, 1, or 2 = 0              (2 = 3 - 1)
-     position of 3, 4, 5, 6, 7, 8, 9 = 1     (9 = 3 + 7 - 1)
-     position of 10, 11 = 2                  (11 = 3 + 7 + 2 - 1)
-     position of 12, 13, 14, 15, 16 = 3      (16 = 3 + 7 + 2 + 5 - 1)
-     position of 17, 18, ... = 4
-   usage
-     if n ∈ concat ll then list_tab_pos_of n ll is the rank of
-     the list in ll where n belongs to
-*)
-
-Fixpoint list_tab_pos_loop {A} accu rank n (ll : list (list A)) :=
-  if lt_dec n accu then rank - 1
-  else
-    match ll with
-    | [] => rank
-    | x :: l => list_tab_pos_loop (accu + length x) (rank + 1) n l
-    end.
-
-Definition list_tab_pos_of {A} := @list_tab_pos_loop A 0 0.
-*)
-
-(*
-Compute (list_tab_pos_of 16 [[1;2;3]; [1;2;3;4;5;6;7]; [1;2]; [1;2;3;4;5]]).
-*)
-
 Definition compare_trip '(i1, j1, k1) '(i2, j2, k2) :=
   match Nat.compare i1 i2 with
   | Eq =>
@@ -1543,7 +1512,17 @@ Definition compare_trip '(i1, j1, k1) '(i2, j2, k2) :=
       end
   | c => c
   end.
-Definition lt_trip t1 t2 := compare_trip t1 t2 = Lt.
+Definition lt_triplet t1 t2 := compare_trip t1 t2 = Lt.
+
+Theorem f_sum_mixed_lists {F : field} : ∀ {A} ltA (l1 l2 : list A) (f : A → _),
+  Sorted.Sorted ltA l1
+  → length l1 = length l2
+  → (∀ t, t ∈ l1 ↔ t ∈ l2)
+  → fold_left f_add (map f l1) f_zero =
+     fold_left f_add (map f l2) f_zero.
+Proof.
+intros * Hs Hlen Hll.
+...
 
 Theorem fold_add_flat_prod_assoc {F : field} : ∀ n u v w,
   n ≠ 0
@@ -1700,7 +1679,7 @@ assert (H2 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l2). {
    rewrite Hdd at 1.
    now rewrite (Nat.mul_comm _ d''), Nat.div_mul.
 }
-assert (Hl1s : Sorted.Sorted lt_trip l1). {
+assert (Hl1s : Sorted.Sorted lt_triplet l1). {
   clear - Hn Hl1.
   assert (Hin : ∀ d, d ∈ divisors n → n mod d = 0 ∧ d ≠ 0). {
     now apply in_divisors.
@@ -1730,7 +1709,7 @@ assert (Hl1s : Sorted.Sorted lt_trip l1). {
    +clear IHl.
     destruct l as [| c l]; cbn; [ easy | ].
     constructor.
-    unfold lt_trip, compare_trip.
+    unfold lt_triplet, compare_trip.
     rewrite Nat.compare_refl.
     remember (b ?= c) as bb eqn:Hbb; symmetry in Hbb.
     destruct bb; [ | easy | ].
@@ -1795,7 +1774,7 @@ assert (Hl1s : Sorted.Sorted lt_trip l1). {
    }
    destruct Hjk2 as (i2 & j2 & k2 & Hai2 & Ht2).
    rewrite Ht2.
-   unfold lt_trip; cbn.
+   unfold lt_triplet; cbn.
    remember (a ?= i2) as ai eqn:Hai; symmetry in Hai.
    destruct ai; [ | easy | ].
    +apply Nat.compare_eq_iff in Hai; flia Hai Hai2.
@@ -1823,6 +1802,9 @@ assert (H3 : ∀ t, t ∈ l1 ↔ t ∈ l2). {
   -now apply H2, H1.
   -now apply H1, H2.
 }
+clear - Hl1s Hll H3.
+...
+now apply (f_sum_mixed_lists lt_triplet).
 ...
 
 Theorem log_prod_assoc {F : field} : ∀ u v w i,
