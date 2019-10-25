@@ -217,6 +217,18 @@ apply NoDup_remove_1 in Hll.
 now apply IHl2.
 Qed.
 
+Theorem NoDup_concat_rev {A} : ∀ (ll : list (list A)),
+  NoDup (concat (rev ll)) → NoDup (concat ll).
+Proof.
+intros * Hll.
+revert ll Hll.
+induction ll as [| l ll]; intros; [ easy | ].
+cbn; cbn in Hll.
+rewrite concat_app in Hll; cbn in Hll.
+rewrite app_nil_r in Hll.
+apply NoDup_app_comm.
+...
+
 (* *)
 
 Fixpoint prime_test cnt n d :=
@@ -2236,7 +2248,13 @@ rewrite flat_map_concat_map.
 remember (map f (divisors n)) as l eqn:Hl.
 clear - Hnd1.
 rename l into ll.
+...
 induction ll as [| l ll]; [ easy | ].
+(*
+cbn; cbn in Hnd1.
+rewrite concat_app in Hnd1; cbn in Hnd1.
+rewrite app_nil_r in Hnd1.
+*)
 revert ll Hnd1 IHll.
 induction l as [| a l]; intros. {
   cbn in Hnd1.
@@ -2258,8 +2276,27 @@ rewrite app_nil_r in H2.
 clear - H2 Ha.
 now apply NoDup_cons_iff in H2.
 }
-...
 rewrite concat_app in Hnd1.
+cbn in Hnd1.
+rewrite app_nil_r in Hnd1.
+replace (a :: l) with ([a] ++ l) in Hnd1 by easy.
+rewrite app_assoc in Hnd1.
+apply NoDup_app_lr in Hnd1.
+destruct Hnd1 as (H1, H2).
+apply NoDup_app_comm in H1; cbn in H1.
+apply NoDup_cons_iff in H1.
+destruct H1 as (H1, _); apply H1.
+...
+apply IHll.
+...
+
+Search (_ ++ _ ++ _).
+Search ([_] ++ _).
+Search (_ ++ [_]).
+Search (_ ++ _ :: l).
+...
+rewrite <- app_comm_cons in Hnd1.
+
 apply NoDup_app_lr in Hnd1.
 destruct Hnd1 as (H1, H2).
 cbn in H2.
