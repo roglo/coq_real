@@ -1596,14 +1596,49 @@ apply IHl1.
   }
   move H' before Hll; clear Hll; rename H' into Hll.
   remember (l3 ++ l4) as l2 eqn:Hl2; clear l3 l4 Hl2; move l2 before l1.
-(**)
+...
   specialize (proj2 (Hll t) (or_intror Ht)) as H1.
   destruct H1 as [H1| H1]; [ | easy ].
   subst t; exfalso.
-...
   revert a1 l1 Hs Hll Hlen Ht.
   induction l2 as [| b2 l2]; intros; [ easy | ].
-
+  destruct Ht as [Ht| Ht]. {
+    subst b2.
+    destruct l1 as [| a2 l1]; [ easy | ].
+    cbn in Hlen.
+    apply Nat.succ_inj in Hlen.
+    assert (H : ∀ t, t ∈ (a1 :: l1) ↔ t ∈ (a1 :: l2)). {
+      intros t; split; intros Ht. {
+        destruct Ht as [Ht| Ht]; [ now left | right ].
+        specialize (proj1 (Hll t) (or_intror (or_intror Ht))) as H1.
+        destruct H1 as [H1| H1]. {
+          subst t.
+          exfalso; admit. (* contradiction Hs Ht *)
+        }
+        destruct H1 as [H1| H1]; [ | easy ].
+        subst t.
+        admit. (* contradiction Hs Ht *)
+      }
+      destruct Ht as [Ht| Ht]; [ now left | ].
+      specialize (proj2 (Hll t) (or_intror (or_intror Ht))) as H1.
+      destruct H1 as [H1| H1]; [ now subst t; left | ].
+      destruct H1 as [H1| h1]. {
+        subst t; exfalso.
+        eapply IHl2; [ | | apply Hlen | apply Ht ]. {
+          admit. (* ok by Hs *)
+        }
+        intros t; split; intros Ht2. {
+          destruct Ht2 as [Ht2| Ht2]; [ now subst t; left | ].
+          specialize (proj1 (Hll t) (or_intror (or_intror Ht2))) as H1.
+          destruct H1 as [H1| H1]. {
+            subst t; admit. (* contradiction Hs Ht2 *)
+          }
+          destruct H1 as [H1| H1]. {
+            subst t; admit. (* contradiction Hs Ht2 *)
+          }
+          now right.
+        }
+        destruct Ht2 as [Ht2| Ht2]; [ now left | ].
 ...
   revert a1 t l2 Hs Hll Hlen Ht.
   induction l1 as [| b1 l1]; intros. {
