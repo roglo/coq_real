@@ -202,14 +202,26 @@ Theorem NoDup_app_app_swap {A} : ∀ l1 l2 l3 : list A,
   NoDup (l1 ++ l2 ++ l3) → NoDup (l1 ++ l3 ++ l2).
 Proof.
 intros * Hlll.
+revert l1 l3 Hlll.
+induction l2 as [| a2 l2]; intros; [ now rewrite app_nil_r | ].
+replace (l3 ++ a2 :: l2) with (l3 ++ [a2] ++ l2) by easy.
+rewrite app_assoc.
+apply IHl2.
+rewrite app_assoc.
+apply NoDup_app_comm.
+apply IHl2.
+...
+cbn; constructor.
+...
+intros * Hlll.
 revert l1 l2 Hlll.
 induction l3 as [| a3 l3]; intros. {
   now rewrite app_nil_r in Hlll.
 }
-Search (NoDup (_ ++ _)).
 rewrite app_assoc in Hlll.
 apply NoDup_remove in Hlll.
 destruct Hlll as (Hlll, Ha).
+cbn.
 ...
 rewrite app_assoc.
 replace (l1 ++ (a3 :: l3)) with (l1 ++ [a3] ++ l3) by easy.
