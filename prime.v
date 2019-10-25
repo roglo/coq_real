@@ -1601,6 +1601,10 @@ apply IHl1.
   destruct H1 as [H1| H1]; [ | easy ].
   subst t; exfalso.
 ...
+  revert a1 l1 Hs Hll Hlen Ht.
+  induction l2 as [| b2 l2]; intros; [ easy | ].
+
+...
   revert a1 t l2 Hs Hll Hlen Ht.
   induction l1 as [| b1 l1]; intros. {
     symmetry in Hlen; apply length_zero_iff_nil in Hlen.
