@@ -1533,6 +1533,65 @@ Definition compare_trip '(i1, j1, k1) '(i2, j2, k2) :=
   end.
 Definition lt_triplet t1 t2 := compare_trip t1 t2 = Lt.
 
+Theorem StrictOrder_lt_triplet : StrictOrder lt_triplet.
+Proof.
+constructor.
+-intros ((i, j), k) H.
+ unfold lt_triplet, compare_trip in H.
+ now do 3 rewrite Nat.compare_refl in H.
+-unfold lt_triplet, compare_trip.
+ intros ((a1, a2), a3) ((b1, b2), b3) ((c1, c2), c3) Hab Hbc.
+ remember (a1 ?= b1) as ab1 eqn:Hab1; symmetry in Hab1.
+ remember (a1 ?= c1) as ac1 eqn:Hac1; symmetry in Hac1.
+ remember (b1 ?= c1) as bc1 eqn:Hbc1; symmetry in Hbc1.
+ remember (a2 ?= b2) as ab2 eqn:Hab2; symmetry in Hab2.
+ remember (b2 ?= c2) as bc2 eqn:Hbc2; symmetry in Hbc2.
+ remember (a2 ?= c2) as ac2 eqn:Hac2; symmetry in Hac2.
+ move ac2 before ab1; move bc2 before ab1; move ab2 before ab1.
+ move bc1 before ab1; move ac1 before ab1.
+(**)
+ destruct ac1; [ | easy | ].
+ +apply Nat.compare_eq_iff in Hac1; subst c1.
+  destruct ac2; [ | easy | ].
+  *apply Nat.compare_eq_iff in Hac2; subst c2.
+...
+ destruct ab1.
+ +apply Nat.compare_eq_iff in Hab1; subst b1.
+  destruct ab2.
+  *apply Nat.compare_eq_iff in Hab2; subst b2.
+   apply Nat.compare_lt_iff in Hab.
+   destruct bc1; [ | | easy ].
+  --apply Nat.compare_eq_iff in Hbc1; subst c1.
+    rewrite <- Hac1, Nat.compare_refl.
+    destruct bc2; [ | | easy ].
+   ++apply Nat.compare_eq_iff in Hbc2; subst c2.
+     apply Nat.compare_lt_iff in Hbc.
+     rewrite <- Hac2, Nat.compare_refl.
+     apply Nat.compare_lt_iff.
+     now transitivity b3.
+   ++apply Nat.compare_lt_iff in Hbc2.
+     destruct ac2; [ | easy | ].
+    **apply Nat.compare_eq_iff in Hac2; subst c2.
+      flia Hbc2.
+    **apply Nat.compare_gt_iff in Hac2.
+      flia Hbc2 Hac2.
+  --apply Nat.compare_lt_iff in Hbc1.
+    destruct ac1; [ | easy | ].
+   **apply Nat.compare_eq_iff in Hac1; flia Hbc1 Hac1.
+   **apply Nat.compare_gt_iff in Hac1; flia Hbc1 Hac1.
+  *idtac.
+...
+
+destruct ac2; [ | easy | ].
+    **apply Nat.compare_gt_iff in Hac2.
+      flia Hbc2 Hac2.
+    **
+--
+
+
+ rewrite (Nat.compare_trans b1).
+...
+
 Theorem f_sum_mixed_lists {F : field} {A} :
   ∀ ltA (l1 l2 : list A) (f : A → _),
   (∀ a b : A, {a = b} + {a ≠ b})
@@ -1596,6 +1655,7 @@ apply IHl1.
   }
   move H' before Hll; clear Hll; rename H' into Hll.
   remember (l3 ++ l4) as l2 eqn:Hl2; clear l3 l4 Hl2; move l2 before l1.
+Abort. (*
 ...
   specialize (proj2 (Hll t) (or_intror Ht)) as H1.
   destruct H1 as [H1| H1]; [ | easy ].
@@ -2084,6 +2144,30 @@ assert (H3 : ∀ t, t ∈ l1 ↔ t ∈ l2). {
   -now apply H1, H2.
 }
 clear - Hl1s Hll H3.
+assert (Hnd1 : NoDup l1). {
+  clear - Hl1s.
+  induction l1 as [| a1 l1]; [ constructor | ].
+  apply Sorted.Sorted_inv in Hl1s.
+  destruct Hl1s as (Hs, Hr).
+  constructor; [ | now apply IHl1 ].
+  intros Ha.
+  clear IHl1.
+  revert a1 Hr Ha.
+  induction l1 as [| a2 l1]; intros; [ easy | ].
+  apply Sorted.HdRel_inv in Hr.
+  destruct Ha as [Ha| Ha]. {
+    subst a1; revert Hr.
+...
+    assert (H : StrictOrder lt_triplet). {
+Search lt_triplet.
+...
+    apply StrictOrder_Irreflexive.
+  }
+    apply Sorted.Sorted_inv in Hs.
+    destruct Hs as (Hs, Hr2).
+    apply (IHl a); [ easy | | easy ].
+    eapply SetoidList.InfA_ltA; [ easy | apply Hr | easy ].
+  }
 ...
 now apply (f_sum_mixed_lists lt_triplet).
 ...
