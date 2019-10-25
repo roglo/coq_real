@@ -1650,61 +1650,13 @@ assert (H1 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l1). {
    rewrite Hdd at 1.
    now rewrite (Nat.mul_comm _ d''), Nat.div_mul.
 }
-(*
-assert
-  (H2 : ∀ a b, List.nth a l1 (0, 0, 0) = List.nth b l1 (0, 0, 0) → a = b). {
-  intros * Hll.
-  rewrite flat_map_concat_map in Hl1.
-  remember (map
-     (λ d : nat,
-      map (λ d', (d, d', n / d / d')) (divisors (n / d)))
-       (divisors n)) as lt1 eqn:Hlt1.
-(*
-  remember (map (@length (nat * nat * nat)) lt1) as l1ll eqn:Hl1ll.
-  remember (fold_left Nat.add l1ll 0) as l1lt eqn:Hl1lt.
-*)
-  subst l1.
-  destruct (lt_dec (list_tab_pos_of a lt1) (list_tab_pos_of b lt1))
-    as [Htrab| Htrab]. {
-    (* this means the list in which "a" is before the list in
-       which "b" is in lt1, which should contradict Hll *)
-    exfalso.
-rewrite flat_map_concat_map in Hl2.
-Definition glop n := map (λ d : nat, map (λ d' : nat, (d, d', n / d / d')) (divisors (n / d))) (divisors n).
-Definition glip n := map (λ d : nat, map (λ d' : nat, (d', d / d', n / d)) (divisors d)) (divisors n).
-Definition change (l : list (nat * nat * nat)) := map (λ '(x, y, z), (z, x, y)) l.
-Fixpoint comp l1 l2 :=
-  match l1 with
-  | xyz1 :: l'1 =>
-      match l2 with
-      | xyz2 :: l'2 =>
-          let (xy1, z1) := (xyz1 : nat * nat * nat) in
-          let (x1, y1) := xy1 in
-          let (xy2, z2) := (xyz2 : nat * nat * nat) in
-          let (x2, y2) := xy2 in
-          if Nat.eq_dec x1 x2 then
-            if Nat.eq_dec y1 y2 then
-              if Nat.eq_dec z1 z2 then comp l'1 l'2 else false
-            else false
-          else false
-      | [] => false
-      end
-  | [] =>
-      match l2 with
-      | _ :: _ => false
-      | [] => true
-      end
-  end.
-Inspect 4.
-Compute (let n := 30 in (concat (glop n), map xyz_zxy (concat (rev (glip n))))).
-Compute (let n := 16 in comp (concat (glop n)) (map xyz_zxy (concat (rev (glip n))))).
-rewrite flat_map_concat_map in Hl1, Hl2.
-fold (glop n) in Hl1.
-fold (glip n) in Hl2.
-Check mul_assoc_indices_eq.
-*)
-Print le.
-Print comparison.
+assert (H2 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l2). {
+  intros.
+  split; intros Hddd.
+  -idtac.
+  ...
+}
+... suite ok
 assert (Hl1s : Sorted.Sorted lt_trip l1). {
   clear - Hn Hl1.
   assert (Hin : ∀ d, d ∈ divisors n → n mod d = 0 ∧ d ≠ 0). {
@@ -1747,192 +1699,69 @@ assert (Hl1s : Sorted.Sorted lt_trip l1). {
      inversion H2; flia H0 Hbb.
   -apply IHl; [ now intros d Hd; apply Hin; right | now inversion Hs ].
   -intros t1 t2 Hsl Hitt.
-   inversion Hsl.
-   +subst y.
-    rename l0 into tl1; rename H into Htl1.
-    destruct (divisors (n / a)) as [| a' la]; [ easy | ].
-    cbn in Htl1.
-    injection Htl1; clear Htl1; intros Htl1 Ht1.
-    rewrite Ht1.
-    destruct l as [| b l]; [ easy | ].
-    cbn - [ divisors ] in Hitt.
-    specialize (Hin b (or_intror (or_introl eq_refl))) as Hinb.
-    destruct Hinb as (Hnb, Hbz).
-    apply Nat.mod_divides in Hnb; [ | easy ].
-    destruct Hnb as (c, Hc).
-    move Hs at bottom.
-    apply Sorted.Sorted_inv in Hs.
-    destruct Hs as (Hs, Hr).
-    apply Sorted.HdRel_inv in Hr.
-    apply SetoidList.InA_app in Hitt.
-    destruct Hitt as [Ht2| Ht2]. {
-      clear - Ht2 Hr Hc Hn.
-      assert (Hjk2 : ∃ j2 k2, t2 = (b, j2, k2)). {
-        remember (divisors (n / b)) as db eqn:Hdb; symmetry in Hdb.
-        clear - Ht2.
-        induction db; [ now apply SetoidList.InA_nil in Ht2 | ].
-        cbn in Ht2.
-        apply SetoidList.InA_cons in Ht2.
-        destruct Ht2 as [Ht2| Ht2]. {
-          rewrite Ht2.
-          now exists a, (n / b / a).
-        }
-        now apply IHdb.
-      }
-      destruct Hjk2 as (j2 & k2 & Hjk2); rewrite Hjk2.
-      unfold lt_trip; cbn.
-      remember (a ?= b) as ab eqn:Hab; symmetry in Hab.
-        destruct ab; [ | easy | ].
-       -apply Nat.compare_eq_iff in Hab; flia Hab Hr.
-       -apply Nat.compare_gt_iff in Hab; flia Hab Hr.
-    }
-    clear - Ht2 Hs Hr Hc Hn.
-    assert (Hjk2 : ∃ i2 j2 k2, a < i2 ∧ t2 = (i2, j2, k2)). {
-      induction l as [| d l]; [ now apply SetoidList.InA_nil in Ht2 | ].
-      cbn - [ divisors ] in Ht2.
-      apply SetoidList.InA_app in Ht2.
-      destruct Ht2 as [Ht2| Ht2]. {
-        remember (divisors (n / d)) as db eqn:Hdb; symmetry in Hdb.
-        clear - Ht2 Hs Hr.
-        induction db as [| e db]; [ now apply SetoidList.InA_nil in Ht2 | ].
-        cbn in Ht2.
-        apply SetoidList.InA_cons in Ht2.
-        destruct Ht2 as [Ht2| Ht2]; [ | now apply IHdb ].
-        rewrite Ht2.
-        exists d, e, (n / d / e).
-        split; [ | easy ].
-        transitivity b; [ easy | ].
-        apply Sorted.Sorted_inv in Hs.
-        destruct Hs as (Hs, Hr2).
-        now apply Sorted.HdRel_inv in Hr2.
-      }
-      apply IHl; [ easy | ].
-      constructor. {
-        apply Sorted.Sorted_inv in Hs.
-        destruct Hs as (Hs, Hr2).
-        now apply Sorted.Sorted_inv in Hs.
-      }
-      apply Sorted.Sorted_inv in Hs.
-      destruct Hs as (Hs, Hr2).
-      apply Sorted.HdRel_inv in Hr2.
-      apply Sorted.Sorted_inv in Hs.
-      destruct Hs as (Hs, Hr3).
-      eapply (SetoidList.InfA_ltA Nat.lt_strorder); [ apply Hr2 | easy ].
-    }
-    destruct Hjk2 as (i2 & j2 & k2 & Hai2 & Hijk2); subst t2.
-    unfold lt_trip; cbn.
-    remember (a ?= i2) as ab eqn:Hab; symmetry in Hab.
-    destruct ab; [ | easy | ].
-    *apply Nat.compare_eq_iff in Hab; flia Hab Hai2.
-    *apply Nat.compare_gt_iff in Hab; flia Hab Hai2.
-   +rename l0 into tl1; rename H into Htl1.
-    rename H0 into H1.
-    destruct (divisors (n / a)) as [| a' la]; [ easy | ].
-    cbn in Hsl.
-    apply SetoidList.InA_cons in Hsl.
-    cbn in Htl1.
-    injection Htl1; clear Htl1; intros Htl1 Ht1.
-...
-    rewrite Ht1.
-    destruct l as [| b l]; [ easy | ].
-    cbn - [ divisors ] in Hitt.
-    specialize (Hin b (or_intror (or_introl eq_refl))) as Hinb.
-    destruct Hinb as (Hnb, Hbz).
-    apply Nat.mod_divides in Hnb; [ | easy ].
-    destruct Hnb as (c, Hc).
-    move Hs at bottom.
-    apply Sorted.Sorted_inv in Hs.
-    destruct Hs as (Hs, Hr).
-    apply Sorted.HdRel_inv in Hr.
-    apply SetoidList.InA_app in Hitt.
-    destruct Hitt as [Ht2| Ht2]. {
-...
-      inversion Hr2; subst.
-        now apply Sorted.Sorted_inv in Hs.
-        now apply Sorted.HdRel_inv in Hr2.
-...
-      remember (divisors (n / b)) as db eqn:Hdb; symmetry in Hdb.
-      destruct db as [| d ]. {
-        rewrite Hc, Nat.mul_comm, Nat.div_mul in Hdb; [ | easy ].
-        destruct c; [ now rewrite Hc, Nat.mul_comm in Hn | easy ].
-      }
-      cbn in Ht2.
-      apply SetoidList.InA_cons in Ht2.
-      destruct Ht2 as [Ht2| Ht2]. {
-        rewrite Ht2; unfold lt_trip; cbn.
-        remember (a ?= b) as ab eqn:Hab; symmetry in Hab.
-        destruct ab; [ | easy | ].
-       -apply Nat.compare_eq_iff in Hab; flia Hab Hs.
-       -apply Nat.compare_gt_iff in Hab; flia Hab Hs.
-      }
-...
-    move Hs at bottom.
-    apply Sorted.Sorted_inv in Hs.
-    destruct Hs as (_, Hs).
-    apply Sorted.HdRel_inv in Hs.
-    apply SetoidList.InA_cons in Hitt.
-    destruct Hitt as [Ht2| Ht2]. {
-      rewrite Ht2; unfold lt_trip; cbn.
-      remember (a ?= b) as ab eqn:Hab; symmetry in Hab.
-      destruct ab; [ | easy | ].
-     -apply Nat.compare_eq_iff in Hab; flia Hab Hs.
-     -apply Nat.compare_gt_iff in Hab; flia Hab Hs.
-    }
-    apply SetoidList.InA_app in Ht2.
-...
-(**)
-    apply SetoidList.InA_app in Hitt.
-...
-cbn in Hitt.
-    inversion Hitt.
-    *subst y.
-     rename l0 into tl2; rename H into Htl.
-     destruct l as [| b l]; [ easy | ].
-     cbn - [ divisors ] in Htl.
-     (* 1st divisor of n/a = 1
-          t1 = (a, 1, n/a)
-        1st divisor of n/b = 1
-          t2 = (b, 1, n/b)
-        but a < b by Hs
-     *)
-     specialize (Hin b (or_intror (or_introl eq_refl))) as Hinb.
-     destruct Hinb as (Hnb, Hbz).
-     apply Nat.mod_divides in Hnb; [ | easy ].
-     destruct Hnb as (c, Hc).
-     remember (divisors (n / b)) as db eqn:Hdb; symmetry in Hdb.
-     destruct db as [| d ]. {
-       rewrite Hc, Nat.mul_comm, Nat.div_mul in Hdb; [ | easy ].
-       destruct c; [ now rewrite Hc, Nat.mul_comm in Hn | easy ].
+   assert (Hjk1 : ∃ j1 k1, t1 = (a, j1, k1)). {
+     clear - Hsl.
+     remember (divisors (n / a)) as l eqn:Hl; symmetry in Hl; clear Hl.
+     induction l as [| b l]; [ now apply SetoidList.InA_nil in Hsl | ].
+     cbn in Hsl.
+     apply SetoidList.InA_cons in Hsl.
+     destruct Hsl as [Hsl| Hsl]. {
+       now rewrite Hsl; exists b, (n / a / b).
      }
-     cbn in Htl.
-     injection Htl; clear Htl; intros Htl2 Ht2.
-     rewrite Ht2.
-     unfold lt_trip; cbn.
-     move Hs at bottom.
+     now apply IHl.
+   }
+   destruct Hjk1 as (j1 & k1 & Ht1); rewrite Ht1.
+   assert (Hjk2 : ∃ i2 j2 k2, a < i2 ∧ t2 = (i2, j2, k2)). {
+     clear - Hs Hitt.
+     revert a Hs.
+     induction l as [| b l]; intros. {
+       now apply SetoidList.InA_nil in Hitt.
+     }
+     cbn - [ divisors ] in Hitt.
+     apply SetoidList.InA_app in Hitt.
+     destruct Hitt as [Hitt| Hitt]. {
+       clear - Hitt Hs.
+       assert (H2 : ∃ j2 k2, t2 = (b, j2, k2)). {
+         clear - Hitt.
+         induction (divisors (n / b)) as [| a l]. {
+           now apply SetoidList.InA_nil in Hitt.
+         }
+         cbn in Hitt.
+         apply SetoidList.InA_cons in Hitt.
+         destruct Hitt as [Hitt| Hitt]. {
+           now rewrite Hitt; exists a, (n / b / a).
+         }
+         now apply IHl.
+       }
+       destruct H2 as (j2 & k2 & H2).
+       rewrite H2.
+       exists b, j2, k2.
+       split; [ | easy ].
+       apply Sorted.Sorted_inv in Hs.
+       destruct Hs as (Hs, Hr2).
+       now apply Sorted.HdRel_inv in Hr2.
+     }
+     apply IHl; [ easy | ].
      apply Sorted.Sorted_inv in Hs.
-     destruct Hs as (_, Hs).
-     apply Sorted.HdRel_inv in Hs.
-     remember (a ?= b) as ab eqn:Hab; symmetry in Hab.
-     destruct ab; [ | easy | ].
-    --apply Nat.compare_eq_iff in Hab; flia Hab Hs.
-    --apply Nat.compare_gt_iff in Hab; flia Hab Hs.
-    *rename l0 into tl2; rename H into Htl.
-     destruct l as [| b l]; [ easy | ].
-     cbn - [ divisors ] in Htl.
-...
-
-
-Search (Sorted.Sorted).
-Print Sorting.Sorted.LocallySorted.
-Print Sorting.Sorted.Sorted.
-Print Sorting.Sorted.HdRel.
-...
+     destruct Hs as (Hs, Hr).
+     apply Sorted.Sorted_inv in Hs.
+     destruct Hs as (Hs, Hr2).
+     constructor; [ easy | ].
+     apply Sorted.HdRel_inv in Hr.
+     eapply (SetoidList.InfA_ltA Nat.lt_strorder); [ apply Hr | easy ].
+   }
+   destruct Hjk2 as (i2 & j2 & k2 & Hai2 & Ht2).
+   rewrite Ht2.
+   unfold lt_trip; cbn.
+   remember (a ?= i2) as ai eqn:Hai; symmetry in Hai.
+   destruct ai; [ | easy | ].
+   +apply Nat.compare_eq_iff in Hai; flia Hai Hai2.
+   +apply Nat.compare_gt_iff in Hai; flia Hai Hai2.
+}
 rewrite mul_assoc_indices_eq in Hl1.
-remember (flat_map (λ d : nat, map (λ d' : nat, (d', d / d', n / d)) (divisors d))) as f.
 assert (Hll : length l1 = length l2). {
   subst l1 l2.
   rewrite map_length.
-  rewrite Heqf.
   do 2 rewrite List_flat_map_length.
   do 2 rewrite map_rev.
   rewrite map_map.
@@ -1947,9 +1776,6 @@ assert (Hll : length l1 = length l2). {
   rewrite IHl; ring.
 }
 ...
-assert (H2 : ∀ d1 d2 d3, d1 * d2 * d3 = n ↔ (d1, d2, d3) ∈ l2). {
-  ...
-}
 assert (H3 : ∀ t, t ∈ l1 ↔ t ∈ l2). {
   ...
 
