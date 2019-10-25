@@ -2199,6 +2199,7 @@ rewrite map_rev in Hnd1.
 rewrite flat_map_concat_map.
 remember (map f (divisors n)) as l eqn:Hl.
 clear - Hnd1.
+...
 induction l as [| a l]; [ easy | ].
 cbn in Hnd1; cbn.
 Search (concat (_ ++ _)).
