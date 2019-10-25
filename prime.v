@@ -198,44 +198,41 @@ apply IHl'.
 now apply NoDup_remove_1 in Hll.
 Qed.
 
+Theorem List_in_app_app_swap {A} : ∀ (a : A) l1 l2 l3,
+  In a (l1 ++ l3 ++ l2)
+  → In a (l1 ++ l2 ++ l3).
+Proof.
+intros * Hin.
+revert l2 l3 Hin.
+induction l1 as [| a2 l1]; intros. {
+  cbn in Hin; cbn.
+  apply in_app_or in Hin.
+  apply in_or_app.
+  now destruct Hin; [ right | left ].
+}
+cbn in Hin; cbn.
+destruct Hin as [Hin| Hin]; [ now left | right ].
+now apply IHl1.
+Qed.
+
 Theorem NoDup_app_app_swap {A} : ∀ l1 l2 l3 : list A,
   NoDup (l1 ++ l2 ++ l3) → NoDup (l1 ++ l3 ++ l2).
 Proof.
 intros * Hlll.
-revert l1 l3 Hlll.
-induction l2 as [| a2 l2]; intros; [ now rewrite app_nil_r | ].
-replace (l3 ++ a2 :: l2) with (l3 ++ [a2] ++ l2) by easy.
-rewrite app_assoc.
-apply IHl2.
-rewrite app_assoc.
-apply NoDup_app_comm.
-apply IHl2.
-...
-cbn; constructor.
-...
-intros * Hlll.
-revert l1 l2 Hlll.
-induction l3 as [| a3 l3]; intros. {
-  now rewrite app_nil_r in Hlll.
+revert l2 l3 Hlll.
+induction l1 as [| a1 l1]; intros; [ now cbn; apply NoDup_app_comm | ].
+cbn; constructor. {
+  intros Hin.
+  cbn in Hlll.
+  apply NoDup_cons_iff in Hlll.
+  destruct Hlll as (Hin2, Hlll).
+  apply Hin2; clear Hin2.
+  now apply List_in_app_app_swap.
 }
-rewrite app_assoc in Hlll.
-apply NoDup_remove in Hlll.
-destruct Hlll as (Hlll, Ha).
-cbn.
-...
-rewrite app_assoc.
-replace (l1 ++ (a3 :: l3)) with (l1 ++ [a3] ++ l3) by easy.
-do 2 rewrite <- app_assoc.
-rewrite app_assoc.
-apply IHl3.
-apply NoDup_app_comm.
-rewrite <- app_assoc.
-apply IHl3.
-apply NoDup_app_comm.
-cbn; constructor.
-
-cbn.
-...
+apply IHl1.
+cbn in Hlll.
+now apply NoDup_cons_iff in Hlll.
+Qed.
 
 Theorem NoDup_app_lr {A} : ∀ l1 l2 : list A,
   NoDup (l1 ++ l2) → NoDup l1 ∧ NoDup l2.
@@ -260,44 +257,22 @@ Theorem NoDup_concat_rev {A} : ∀ (ll : list (list A)),
   NoDup (concat (rev ll)) → NoDup (concat ll).
 Proof.
 intros * Hll.
-revert ll Hll.
-induction ll as [| l ll]; intros; [ easy | ].
+destruct ll as [| l ll]; [ easy | ].
 cbn; cbn in Hll.
 rewrite concat_app in Hll; cbn in Hll.
 rewrite app_nil_r in Hll.
 apply NoDup_app_comm.
-clear IHll.
 revert l Hll.
 induction ll as [| l' ll]; intros; [ easy | ].
 cbn in Hll; cbn.
 rewrite concat_app in Hll; cbn in Hll.
 rewrite app_nil_r, <- app_assoc in Hll.
-apply IHll in Hll.
 rewrite <- app_assoc.
+apply NoDup_app_app_swap.
+rewrite app_assoc.
 apply NoDup_app_comm.
-rewrite <- app_assoc.
-clear IHll.
-...
-now apply NoDup_app_app_swap.
-...
-apply IHll.
-
-clear - H1.
-revert l l' H1.
-induction ll as [| l'' ll]; intros. {
-  cbn in H1; cbn.
-  now apply NoDup_app_comm.
-}
-cbn.
-rewrite <- app_assoc.
-apply NoDup_app_comm.
-rewrite <- app_assoc.
-apply IHll.
-cbn in H1.
-rewrite <- app_assoc in H1.
-apply NoDup_app_comm in H1.
-do 2 rewrite <- app_assoc in H1.
-...
+now apply IHll.
+Qed.
 
 (* *)
 
@@ -2311,11 +2286,13 @@ assert (Hnd2 : NoDup l2). {
   rewrite Hl1 in Hnd1.
   rewrite Hl2.
   apply NoDup_map_inv in Hnd1.
-Search (rev (divisors _)).
-rewrite flat_map_concat_map in Hnd1.
-rewrite map_rev in Hnd1.
-rewrite flat_map_concat_map.
-remember (map f (divisors n)) as l eqn:Hl.
+  rewrite flat_map_concat_map in Hnd1.
+  rewrite map_rev in Hnd1.
+  rewrite flat_map_concat_map.
+  remember (map f (divisors n)) as l eqn:Hl.
+  now apply NoDup_concat_rev.
+}
+...
 clear - Hnd1.
 rename l into ll.
 ...
