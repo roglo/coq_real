@@ -1514,14 +1514,60 @@ Definition compare_trip '(i1, j1, k1) '(i2, j2, k2) :=
   end.
 Definition lt_triplet t1 t2 := compare_trip t1 t2 = Lt.
 
-Theorem f_sum_mixed_lists {F : field} : ∀ {A} ltA (l1 l2 : list A) (f : A → _),
-  Sorted.Sorted ltA l1
+Theorem f_sum_mixed_lists {F : field} {A} :
+  ∀ ltA (l1 l2 : list A) (f : A → _),
+  StrictOrder ltA
+  → Sorted.Sorted ltA l1
   → length l1 = length l2
   → (∀ t, t ∈ l1 ↔ t ∈ l2)
   → fold_left f_add (map f l1) f_zero =
      fold_left f_add (map f l2) f_zero.
 Proof.
-intros * Hs Hlen Hll.
+intros * Hso Hs Hlen Hll.
+revert l2 Hlen Hll.
+induction l1 as [| a1 l1]; intros; [ now destruct l2 | ].
+specialize (proj1 (Hll a1) (or_introl eq_refl)) as H2.
+apply in_split in H2.
+destruct H2 as (l3 & l4 & Hl2).
+rewrite Hl2.
+rewrite map_app.
+rewrite fold_left_app; cbn.
+do 2 rewrite fold_f_add_assoc; f_equal.
+rewrite <- fold_left_app.
+rewrite <- map_app.
+apply IHl1.
+-now apply Sorted.Sorted_inv in Hs.
+-rewrite Hl2 in Hlen.
+ rewrite app_length, Nat.add_comm in Hlen; cbn in Hlen.
+ apply Nat.succ_inj in Hlen.
+ now rewrite Nat.add_comm, <- app_length in Hlen.
+-intros t; split; intros Ht.
+ +rewrite Hl2 in Hll.
+  specialize (proj1 (Hll t) (or_intror Ht)) as H1.
+  apply List.in_app_or in H1.
+  destruct H1 as [H1| H1]; apply List.in_or_app; [ now left | right ].
+  destruct H1 as [H1| H1]; [ | easy ].
+  subst t; exfalso; move Hs at bottom.
+  apply Sorted.Sorted_inv in Hs.
+  destruct Hs as (Hs, Hr).
+  clear - Hso Ht Hs Hr.
+  induction l1 as [| a l]; intros; [ easy | ].
+  destruct Ht as [Ht| Ht]. {
+    subst a1.
+    apply Sorted.HdRel_inv in Hr.
+    revert Hr.
+    apply StrictOrder_Irreflexive.
+  }
+  apply Sorted.Sorted_inv in Hs.
+  apply Sorted.HdRel_inv in Hr.
+  apply IHl; [ easy | easy | ].
+  eapply SetoidList.InfA_ltA; [ easy | apply Hr | easy ].
+ +subst l2.
+  rewrite app_length, Nat.add_comm in Hlen; cbn in Hlen.
+  apply Nat.succ_inj in Hlen.
+  rewrite Nat.add_comm, <- app_length in Hlen.
+  clear - Hso Hs Hll Hlen Ht.
+  move t before a1; move l4 before l1; move l3 before l1.
 ...
 
 Theorem fold_add_flat_prod_assoc {F : field} : ∀ n u v w,
