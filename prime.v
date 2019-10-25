@@ -150,6 +150,25 @@ induction l as [| a l]; [ easy | cbn ].
 now rewrite app_length, IHl.
 Qed.
 
+Theorem List_in_app_cons_in_cons_app {A} : ∀ l1 l2 a (b : A),
+  List.In b (l1 ++ a :: l2) ↔ List.In b (a :: l1 ++ l2).
+Proof.
+intros t; split; intros Ht. {
+  apply List.in_app_or in Ht.
+  rewrite List.app_comm_cons.
+  apply List.in_or_app.
+  destruct Ht as [Ht| Ht]; [ now left; right | ].
+  destruct Ht as [Ht| Ht]; [ now left; left | now right ].
+}
+apply List.in_or_app.
+rewrite List.app_comm_cons in Ht.
+apply List.in_app_or in Ht.
+destruct Ht as [Ht| Ht]. {
+  destruct Ht as [Ht| Ht]; [ now right; left | now left ].
+}
+now right; right.
+Qed.
+
 Theorem Sorted_Sorted_seq : ∀ start len, Sorted.Sorted lt (seq start len).
 Proof.
 intros.
@@ -1568,6 +1587,67 @@ apply IHl1.
   rewrite Nat.add_comm, <- app_length in Hlen.
   clear - Hso Hs Hll Hlen Ht.
   move t before a1; move l4 before l1; move l3 before l1.
+  assert (H' : ∀ t, t ∈ (a1 :: l1) ↔ t ∈ (a1 :: (l3 ++ l4))). {
+    intros t'; split; intros Ht'. {
+      now apply List_in_app_cons_in_cons_app, Hll.
+    }
+    now apply Hll, List_in_app_cons_in_cons_app.
+  }
+  move H' before Hll; clear Hll; rename H' into Hll.
+  remember (l3 ++ l4) as l2 eqn:Hl2; clear l3 l4 Hl2; move l2 before l1.
+...
+  specialize (proj2 (Hll t)) as H1.
+  assert (H : t ∈ (l3 ++ a1 :: l4)). {
+    apply List.in_app_or in Ht.
+    apply List.in_or_app.
+    destruct Ht as [Ht| Ht]; [ now left | now right; right ].
+  }
+  specialize (H1 H); clear H.
+  destruct H1 as [H1| H1]; [ | easy ].
+  subst t; exfalso.
+  apply Sorted.Sorted_inv in Hs.
+  destruct Hs as (Hs, Hr).
+  revert a1 l3 l4 Hs Hll Hlen Ht Hr.
+  induction l1 as [| a2 l1]; intros. {
+    symmetry in Hlen; apply length_zero_iff_nil in Hlen.
+    now rewrite Hlen in Ht.
+  }
+  apply Sorted.HdRel_inv in Hr.
+  apply Sorted.Sorted_inv in Hs.
+  destruct Hs as (Hs, Hr2).
+  destruct l3 as [| a3 l3]. {
+    cbn in Hlen, Ht.
+    rewrite app_nil_l in Hll.
+    destruct l4 as [| a4 l4]; [ easy | ].
+    destruct Ht as [Ht| Ht]. {
+      subst a4.
+      cbn in Hlen; apply Nat.succ_inj in Hlen.
+...
+      eapply IHl1 with (l3 := []) (l4 := l4) (a1 := a1). {
+        easy.
+      } {
+        intros t; rewrite List.app_nil_l.
+        split; intros Ht. {
+          destruct Ht as [Ht| Ht]; [ now left | ].
+          specialize (proj1 (Hll t) (or_intror (or_intror Ht))) as H1.
+          destruct H1 as [H1| H1]. {
+            subst t.
+...
+  revert a1 l3 l4 Hs Hll Hlen Ht.
+  induction l1 as [| a2]; intros. {
+    symmetry in Hlen; apply length_zero_iff_nil in Hlen.
+    now rewrite Hlen in Ht.
+  }
+
+cbn in *.
+...
+  Hs : Sorted.Sorted ltA (a1 :: l1)
+  Hll : ∀ t : A, t ∈ (a1 :: l1) ↔ t ∈ (l3 ++ a1 :: l4)
+  Hlen : length l1 = length (l3 ++ l4)
+  Ht : a1 ∈ (l3 ++ l4)
+  ============================
+  a1 ∈ l1
+...
 ...
 
 Theorem fold_add_flat_prod_assoc {F : field} : ∀ n u v w,
