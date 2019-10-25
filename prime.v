@@ -1549,15 +1549,9 @@ constructor.
  remember (a2 ?= c2) as ac2 eqn:Hac2; symmetry in Hac2.
  move ac2 before ab1; move bc2 before ab1; move ab2 before ab1.
  move bc1 before ab1; move ac1 before ab1.
-(**)
- destruct ac1; [ | easy | ].
- +apply Nat.compare_eq_iff in Hac1; subst c1.
-  destruct ac2; [ | easy | ].
-  *apply Nat.compare_eq_iff in Hac2; subst c2.
-...
- destruct ab1.
+ destruct ab1; [ | | easy ].
  +apply Nat.compare_eq_iff in Hab1; subst b1.
-  destruct ab2.
+  destruct ab2; [ | | easy ].
   *apply Nat.compare_eq_iff in Hab2; subst b2.
    apply Nat.compare_lt_iff in Hab.
    destruct bc1; [ | | easy ].
@@ -1579,18 +1573,47 @@ constructor.
     destruct ac1; [ | easy | ].
    **apply Nat.compare_eq_iff in Hac1; flia Hbc1 Hac1.
    **apply Nat.compare_gt_iff in Hac1; flia Hbc1 Hac1.
-  *idtac.
-...
-
-destruct ac2; [ | easy | ].
-    **apply Nat.compare_gt_iff in Hac2.
-      flia Hbc2 Hac2.
-    **
---
-
-
- rewrite (Nat.compare_trans b1).
-...
+  *destruct bc1; [ | | easy ].
+  --apply Nat.compare_eq_iff in Hbc1; subst c1.
+    destruct bc2; [ | | easy ].
+   ++apply Nat.compare_eq_iff in Hbc2; subst c2.
+     rewrite <- Hac2, Hab2.
+     destruct ac1; [ easy | easy | ].
+     now rewrite Nat.compare_refl in Hac1.
+   ++apply Nat.compare_lt_iff in Hab2.
+     apply Nat.compare_lt_iff in Hbc2.
+     destruct ac1; [ | easy | ].
+    **destruct ac2; [ | easy | ].
+    ---apply Nat.compare_eq_iff in Hac2; subst c2.
+       flia Hab2 Hbc2.
+    ---apply Nat.compare_gt_iff in Hac2.
+       flia Hab2 Hbc2 Hac2.
+    **now rewrite Nat.compare_refl in Hac1.
+  --now rewrite <- Hac1, Hbc1.
+ +destruct ac1; [ | easy | ].
+  *apply Nat.compare_eq_iff in Hac1; subst c1.
+   destruct ac2; [ | easy | ].
+  --apply Nat.compare_eq_iff in Hac2; subst c2.
+    destruct bc1; [ | | easy ].
+   ++apply Nat.compare_eq_iff in Hbc1; subst b1.
+     now rewrite Nat.compare_refl in Hab1.
+   ++apply Nat.compare_lt_iff in Hab1.
+     apply Nat.compare_lt_iff in Hbc1.
+     flia Hab1 Hbc1.
+  --destruct bc1; [ | | easy ].
+   ++apply Nat.compare_eq_iff in Hbc1; subst b1.
+     now rewrite Nat.compare_refl in Hab1.
+   ++apply Nat.compare_lt_iff in Hab1.
+     apply Nat.compare_lt_iff in Hbc1.
+     flia Hab1 Hbc1.
+  *destruct bc1; [ | | easy ].
+  --apply Nat.compare_eq_iff in Hbc1; subst c1.
+    now rewrite Hac1 in Hab1.
+  --apply Nat.compare_lt_iff in Hab1.
+    apply Nat.compare_lt_iff in Hbc1.
+    apply Nat.compare_gt_iff in Hac1.
+    flia Hab1 Hbc1 Hac1.
+Qed.
 
 Theorem f_sum_mixed_lists {F : field} {A} :
   ∀ ltA (l1 l2 : list A) (f : A → _),
@@ -2143,7 +2166,9 @@ assert (H3 : ∀ t, t ∈ l1 ↔ t ∈ l2). {
   -now apply H2, H1.
   -now apply H1, H2.
 }
+(*
 clear - Hl1s Hll H3.
+*)
 assert (Hnd1 : NoDup l1). {
   clear - Hl1s.
   induction l1 as [| a1 l1]; [ constructor | ].
@@ -2157,17 +2182,14 @@ assert (Hnd1 : NoDup l1). {
   apply Sorted.HdRel_inv in Hr.
   destruct Ha as [Ha| Ha]. {
     subst a1; revert Hr.
-...
-    assert (H : StrictOrder lt_triplet). {
-Search lt_triplet.
-...
-    apply StrictOrder_Irreflexive.
+    apply StrictOrder_lt_triplet.
   }
-    apply Sorted.Sorted_inv in Hs.
-    destruct Hs as (Hs, Hr2).
-    apply (IHl a); [ easy | | easy ].
-    eapply SetoidList.InfA_ltA; [ easy | apply Hr | easy ].
-  }
+  apply Sorted.Sorted_inv in Hs.
+  eapply IHl1; [ easy | | apply Ha ].
+  eapply SetoidList.InfA_ltA; [ | apply Hr | easy ].
+  apply StrictOrder_lt_triplet.
+}
+assert (Hnd2 : NoDup l2). {
 ...
 now apply (f_sum_mixed_lists lt_triplet).
 ...
