@@ -1596,7 +1596,67 @@ apply IHl1.
   }
   move H' before Hll; clear Hll; rename H' into Hll.
   remember (l3 ++ l4) as l2 eqn:Hl2; clear l3 l4 Hl2; move l2 before l1.
+(*
+  destruct (Hdec t a1) as [Hta| Hta]. {
+    subst t; exfalso.
 ...
+    specialize (proj1 (Hll a1) (or_introl eq_refl)) as H1.
+...
+*)
+Require Sorting.
+Print Permutation.
+assert (HP : Permutation.Permutation l1 l2). {
+  apply Permutation.Permutation_cons_inv with (a := a1).
+  assert (Hnd : NoDup (a1 :: l1)). {
+    clear - Hs Hso; remember (a1 :: l1) as l eqn:Hl; clear a1 l1 Hl.
+    induction l as [| a l]; [ constructor | ].
+    apply Sorted.Sorted_inv in Hs.
+    destruct Hs as (Hs, Hr).
+    constructor; [ | now apply IHl ].
+    intros Ha.
+    clear IHl.
+    revert a Hs Hr Ha.
+    induction l as [| b l]; intros; [ easy | ].
+    apply Sorted.HdRel_inv in Hr.
+    destruct Ha as [Ha| Ha]. {
+      subst b; revert Hr.
+      apply StrictOrder_Irreflexive.
+    }
+    apply Sorted.Sorted_inv in Hs.
+    destruct Hs as (Hs, Hr2).
+    apply (IHl a); [ easy | | easy ].
+    eapply SetoidList.InfA_ltA; [ easy | apply Hr | easy ].
+  }
+  apply Permutation.NoDup_Permutation; [ easy | | easy ].
+  clear - Hlen Hnd Hll.
+  assert (H : length (a1 :: l1) = length (a1 :: l2)) by now cbn; rewrite Hlen.
+  move H before Hlen; clear Hlen; rename H into Hlen.
+  remember (a1 :: l1) as l; clear l1 Heql; rename l into l1.
+  remember (a1 :: l2) as l; clear a1 l2 Heql; rename l into l2.
+  (* lemma to do *)
+  revert l2 Hll Hlen.
+  induction l1 as [| a1 l1]; intros. {
+    symmetry in Hlen; apply length_zero_iff_nil in Hlen.
+    now subst l2.
+  }
+  destruct l2 as [| a2 l2]; [ easy | ].
+  apply NoDup_cons. {
+    intros Ha2.
+    apply NoDup_cons_iff in Hnd.
+    destruct Hnd as (Ha1, Hnd).
+    apply Ha1; clear Ha1.
+    cbn in Hlen; apply Nat.succ_inj in Hlen.
+...
+
+Search NoDup.
+Search (_ → Sorted.HdRel _ _ _).
+apply (SetoidList.InfA_ltA _ _ _ _ b).
+    eapply StrictOrder_Transitive.
+Search NoDup.
+Search (Permutation.Permutation (_ :: _)).
+Search NoDup.
+...
+*)
   remember (length l2) as len eqn:Hlen2; symmetry in Hlen2.
   rename Hlen into Hlen1; move Hlen1 after Hlen2.
   revert a1 t l1 l2 Hs Hll Hlen1 Hlen2 Ht.
@@ -1612,6 +1672,7 @@ apply IHl1.
   destruct Ht as [Ht| Ht]. {
     subst t.
     destruct (Hdec b2 b1) as [Hbb| Hbb]; [ now left | right ].
+...
     eapply IHlen; [ | | easy | apply Hlen2 | ].
 3: {
 ...
