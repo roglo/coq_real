@@ -227,6 +227,31 @@ cbn; cbn in Hll.
 rewrite concat_app in Hll; cbn in Hll.
 rewrite app_nil_r in Hll.
 apply NoDup_app_comm.
+clear IHll.
+revert l Hll.
+induction ll as [| l' ll]; intros; [ easy | ].
+cbn in Hll; cbn.
+rewrite concat_app in Hll; cbn in Hll.
+rewrite app_nil_r, <- app_assoc in Hll.
+specialize (IHll _ Hll) as H1.
+rewrite <- app_assoc.
+apply NoDup_app_comm.
+rewrite <- app_assoc.
+clear - H1.
+revert l l' H1.
+induction ll as [| l'' ll]; intros. {
+  cbn in H1; cbn.
+  now apply NoDup_app_comm.
+}
+cbn.
+rewrite <- app_assoc.
+apply NoDup_app_comm.
+rewrite <- app_assoc.
+apply IHll.
+cbn in H1.
+rewrite <- app_assoc in H1.
+apply NoDup_app_comm in H1.
+do 2 rewrite <- app_assoc in H1.
 ...
 
 (* *)
