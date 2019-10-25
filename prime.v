@@ -181,6 +181,40 @@ cbn. apply Sorted.HdRel_cons.
 apply Nat.lt_succ_diag_r.
 Qed.
 
+Theorem NoDup_app_comm {A} : ∀ l l' : list A,
+  NoDup (l ++ l') → NoDup (l' ++ l).
+Proof.
+intros * Hll.
+revert l Hll.
+induction l' as [| a l']; intros; [ now rewrite app_nil_r in Hll | ].
+cbn; constructor. {
+  intros Ha.
+  apply NoDup_remove_2 in Hll; apply Hll.
+  apply in_app_or in Ha.
+  apply in_or_app.
+  now destruct Ha; [ right | left ].
+}
+apply IHl'.
+now apply NoDup_remove_1 in Hll.
+Qed.
+
+Theorem NoDup_app_lr {A} : ∀ l1 l2 : list A,
+  NoDup (l1 ++ l2) → NoDup l1 ∧ NoDup l2.
+Proof.
+intros * Hll.
+split. {
+  revert l2 Hll.
+  induction l1 as [| a1 l1]; intros; [ constructor | ].
+  constructor. {
+    intros H.
+...
+    cbn in Hll.
+Search (NoDup (_ :: _ ++ _)).
+    apply NoDup_remove1 in Hll.
+}
+
+...
+
 (* *)
 
 Fixpoint prime_test cnt n d :=
@@ -2199,6 +2233,35 @@ rewrite map_rev in Hnd1.
 rewrite flat_map_concat_map.
 remember (map f (divisors n)) as l eqn:Hl.
 clear - Hnd1.
+rename l into ll.
+induction ll as [| l ll]; [ easy | ].
+cbn in Hnd1; cbn.
+revert ll Hnd1 IHll.
+induction l as [| a l]; intros. {
+  rewrite concat_app in Hnd1; cbn in Hnd1.
+  rewrite app_nil_r in Hnd1.
+  now apply IHll.
+}
+Search (NoDup (_ ++ _)).
+cbn.
+constructor.
+intros Ha.
+apply in_app_or in Ha.
+destruct Ha as [Ha| Ha]. {
+rewrite concat_app in Hnd1.
+apply NoDup_app_lr in Hnd1.
+destruct Hnd1 as (Hll, Hal).
+cbn in Hal.
+rewrite app_nil_r in Hal.
+now apply NoDup_cons_iff in Hal.
+}
+...
+apply NoDup_app_comm.
+Search (_ ++ _ ++ _).
+Search (NoDup (_ ++ _ :: _)).
+rewrite app_comm_cons.
+cbn.
+Search (NoDup (_ :: _ ++ _)).
 ...
 induction l as [| a l]; [ easy | ].
 cbn in Hnd1; cbn.
@@ -2242,10 +2305,6 @@ rewrite map_rev in Hnd1.
 cbn in Hnd1.
 Search (NoDup (_ :: _)).
 Search (NoDup (_ ++ _)).
-Theorem NoDup_app_lr {A} : ∀ l1 l2 : list A,
-  NoDup (l1 ++ l2) → NoDup l1 ∧ NoDup l2.
-Proof.
-Admitted.
 apply NoDup_app_lr in Hnd1.
 rewrite <- flat_map_concat_map in Hnd1.
 specialize (IHl (proj1 Hnd1)) as H1.
