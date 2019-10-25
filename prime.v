@@ -198,6 +198,33 @@ apply IHl'.
 now apply NoDup_remove_1 in Hll.
 Qed.
 
+Theorem NoDup_app_app_swap {A} : ∀ l1 l2 l3 : list A,
+  NoDup (l1 ++ l2 ++ l3) → NoDup (l1 ++ l3 ++ l2).
+Proof.
+intros * Hlll.
+revert l1 l2 Hlll.
+induction l3 as [| a3 l3]; intros. {
+  now rewrite app_nil_r in Hlll.
+}
+Search (NoDup (_ ++ _)).
+rewrite app_assoc in Hlll.
+apply NoDup_remove in Hlll.
+destruct Hlll as (Hlll, Ha).
+...
+rewrite app_assoc.
+replace (l1 ++ (a3 :: l3)) with (l1 ++ [a3] ++ l3) by easy.
+do 2 rewrite <- app_assoc.
+rewrite app_assoc.
+apply IHl3.
+apply NoDup_app_comm.
+rewrite <- app_assoc.
+apply IHl3.
+apply NoDup_app_comm.
+cbn; constructor.
+
+cbn.
+...
+
 Theorem NoDup_app_lr {A} : ∀ l1 l2 : list A,
   NoDup (l1 ++ l2) → NoDup l1 ∧ NoDup l2.
 Proof.
@@ -233,10 +260,16 @@ induction ll as [| l' ll]; intros; [ easy | ].
 cbn in Hll; cbn.
 rewrite concat_app in Hll; cbn in Hll.
 rewrite app_nil_r, <- app_assoc in Hll.
-specialize (IHll _ Hll) as H1.
+apply IHll in Hll.
 rewrite <- app_assoc.
 apply NoDup_app_comm.
 rewrite <- app_assoc.
+clear IHll.
+...
+now apply NoDup_app_app_swap.
+...
+apply IHll.
+
 clear - H1.
 revert l l' H1.
 induction ll as [| l'' ll]; intros. {
