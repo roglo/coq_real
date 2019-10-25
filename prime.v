@@ -1535,14 +1535,15 @@ Definition lt_triplet t1 t2 := compare_trip t1 t2 = Lt.
 
 Theorem f_sum_mixed_lists {F : field} {A} :
   ∀ ltA (l1 l2 : list A) (f : A → _),
-  StrictOrder ltA
+  (∀ a b : A, {a = b} + {a ≠ b})
+  → StrictOrder ltA
   → Sorted.Sorted ltA l1
   → length l1 = length l2
   → (∀ t, t ∈ l1 ↔ t ∈ l2)
   → fold_left f_add (map f l1) f_zero =
      fold_left f_add (map f l2) f_zero.
 Proof.
-intros * Hso Hs Hlen Hll.
+intros * Hdec Hso Hs Hlen Hll.
 revert l2 Hlen Hll.
 induction l1 as [| a1 l1]; intros; [ now destruct l2 | ].
 specialize (proj1 (Hll a1) (or_introl eq_refl)) as H2.
@@ -1585,7 +1586,7 @@ apply IHl1.
   rewrite app_length, Nat.add_comm in Hlen; cbn in Hlen.
   apply Nat.succ_inj in Hlen.
   rewrite Nat.add_comm, <- app_length in Hlen.
-  clear - Hso Hs Hll Hlen Ht.
+  clear - Hso Hdec Hs Hll Hlen Ht.
   move t before a1; move l4 before l1; move l3 before l1.
   assert (H' : ∀ t, t ∈ (a1 :: l1) ↔ t ∈ (a1 :: (l3 ++ l4))). {
     intros t'; split; intros Ht'. {
@@ -1595,6 +1596,26 @@ apply IHl1.
   }
   move H' before Hll; clear Hll; rename H' into Hll.
   remember (l3 ++ l4) as l2 eqn:Hl2; clear l3 l4 Hl2; move l2 before l1.
+...
+  remember (length l2) as len eqn:Hlen2; symmetry in Hlen2.
+  rename Hlen into Hlen1; move Hlen1 after Hlen2.
+  revert a1 t l1 l2 Hs Hll Hlen1 Hlen2 Ht.
+  induction len; intros. {
+    apply length_zero_iff_nil in Hlen2.
+    now rewrite Hlen2 in Ht.
+  }
+  destruct l1 as [| b1 l1]; [ easy | ].
+  destruct l2 as [| b2 l2]; [ easy | ].
+  cbn in Hlen1, Hlen2.
+  apply Nat.succ_inj in Hlen1.
+  apply Nat.succ_inj in Hlen2.
+  destruct Ht as [Ht| Ht]. {
+    subst t.
+    destruct (Hdec b2 b1) as [Hbb| Hbb]; [ now left | right ].
+    eapply IHlen; [ | | easy | apply Hlen2 | ].
+3: {
+...
+    eapply IHlen.
 ...
   specialize (proj2 (Hll t)) as H1.
   assert (H : t ∈ (l3 ++ a1 :: l4)). {
