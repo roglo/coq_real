@@ -2360,7 +2360,45 @@ destruct p. {
     }
     apply f_mul_0_l.
   }
-  assert (Hnl : 1 < length (divisors n)). {
+  specialize (eq_first_divisor_1 n Hn) as H1.
+  remember (divisors n) as l eqn:Hl.
+  destruct l as [| a l]; [ easy | ].
+  cbn in H1; subst a; cbn; rewrite f_add_0_l, Ht1.
+  enough (Hml : m - 1 < length l). {
+    specialize (nth_split l 0 Hml) as (l1 & l2 & Hll & Hl1).
+    rewrite Hll, map_app, fold_left_app; cbn.
+    replace (fold_left f_add (map t l1) s~{n}) with s~{n}. 2: {
+      symmetry.
+      destruct l1 as [| d l1]; [ easy | cbn ].
+      cbn in Hll, Hl1.
+      rewrite Hll in Hl.
+...
+      clear Hll Hl1.
+      cbn.
+      specialize (Hto d) as H1.
+...
+  assert (Hml : m - 1 < length l). {
+    apply Nat.mod_divides in Hp; [ | flia Hm ].
+    destruct Hp as (p, Hp).
+...
+    destruct n; [ easy | ].
+    cbn in Hl.
+    injection Hl; clear Hl; intros Hl.
+    rewrite Hl; cbn.
+    destruct n. {
+      destruct m; [ flia Hm | ].
+      destruct m; [ flia Hm | ].
+      rewrite Nat.mod_1_l in Hp; [ flia Hp | flia ].
+    }
+    cbn - [ "mod" ].
+Search (length (filter _ _)).
+...
+  specialize (nth_split l 0 Hml) as (l1 & l2 & Hll & Hl1).
+  rewrite Hll, map_app, fold_left_app; cbn.
+  replace (fold_left f_add (map t l1) s~{n}) with s~{n}. 2: {
+    symmetry.
+...
+  assert (Hnl : m < length l). {
     destruct n; [ easy | ].
     destruct n; [ now rewrite Nat.mod_1_l in Hp | ].
     remember (length (divisors (S (S n)))) as len eqn:Hlen.
@@ -2369,10 +2407,9 @@ destruct p. {
     destruct len; [ | flia ].
     now apply only_1_has_one_divisor in Hlen.
   }
+Check nth_split.
+  specialize (nth_split l 0) as H1.
   specialize (nth_split (divisors n) 0 Hnl) as (l1 & l2 & Hll & Hl1).
-  rewrite Hll.
-  remember (divisors n) as l eqn:Hl.
-  rewrite map_app; cbn.
 ...
 intros * Hn Hs i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
