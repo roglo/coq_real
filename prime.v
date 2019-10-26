@@ -2360,6 +2360,16 @@ destruct p. {
     }
     apply f_mul_0_l.
   }
+  assert (Hnl : 1 < length (divisors n)). {
+    destruct n; [ easy | ].
+    destruct n; [ now rewrite Nat.mod_1_l in Hp | ].
+...
+    cbn - [ "mod" ].
+    rewrite Nat.mod_1_r, Nat.eqb_refl.
+...
+specialize (nth_split (divisors n) 0 Hnl) as (l1 & l2 & Hll & Hl1).
+rewrite Hll.
+cbn.
 ...
 intros * Hn Hs i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
