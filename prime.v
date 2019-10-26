@@ -2331,12 +2331,17 @@ destruct p. {
       symmetry; cbn.
       destruct d; [ easy | ].
       destruct d; [ easy | clear Hd1 ].
-      clear - Hdm.
-      induction d. {
-        destruct m; [ easy | ].
-        rewrite Nat_sub_succ_1.
-        induction m; intros; [ easy | cbn ].
-        rewrite f_opp_0.
+      destruct (lt_dec (d + 2) m) as [Hd2m| Hd2m]. {
+        clear - Hd2m.
+        revert m Hd2m.
+        induction d; intros. {
+          destruct m; [ easy | ].
+          apply Nat.succ_lt_mono in Hd2m.
+          rewrite Nat_sub_succ_1.
+          destruct m; [ easy | cbn ].
+          destruct m; [ flia Hd2m | ].
+          now cbn; rewrite f_opp_0, f_add_0_r.
+        }
 ...
 intros * Hn Hs i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
