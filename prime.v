@@ -2288,9 +2288,45 @@ intros * Hn Hs i Hi.
 cbn - [ ls_of_pol log_prod ].
 remember (i mod n) as m eqn:Hm; symmetry in Hm.
 destruct m. {
-  unfold log_prod.
-  remember (log_prod_list (ls _) (ls s) i) as l eqn:Hl.
-  unfold log_prod_list in Hl.
+  unfold log_prod, log_prod_list.
+  remember (log_prod_term (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) i)
+    as t eqn:Ht.
+  assert (Ht1 : t 1 = s~{i}). {
+    rewrite Ht; unfold log_prod_term.
+    rewrite Nat.div_1_r.
+    replace ((ls_of_pol _)~{1}) with f_one. 2: {
+      symmetry; cbn.
+      destruct n; [ flia Hn | cbn ].
+      rewrite Nat.sub_0_r.
+      destruct n; [ flia Hn | clear; cbn ].
+      now destruct n; cbn; rewrite f_opp_0, f_add_0_r.
+    }
+    apply f_mul_1_l.
+  }
+  assert (Htn : t n = (- s~{i})%F). {
+    assert (H : t n = (- s~{i/n})%F). {
+      rewrite Ht; unfold log_prod_term.
+      replace ((ls_of_pol _)~{n}) with (- f_one)%F. 2: {
+        symmetry; cbn.
+        destruct n; [ flia Hn | cbn ].
+        rewrite Nat.sub_0_r.
+        destruct n; [ flia Hn | clear; cbn ].
+        induction n; [ cbn; apply f_add_0_l | ].
+        cbn; cbn in IHn.
+        destruct n; cbn in IHn; cbn; [ easy | apply IHn ].
+      }
+      now rewrite f_mul_opp_l, f_mul_1_l.
+    }
+    apply Nat.mod_divides in Hm; [ | flia Hn ].
+    destruct Hm as (m, Hm).
+    rewrite Hm, Nat.mul_comm, Nat.div_mul in H; [ | flia Hn ].
+    destruct (zerop m) as [Hmz| Hmz]; [ now rewrite Hmz, Nat.mul_0_r in Hm | ].
+    apply Nat.neq_0_lt_0 in Hmz.
+    rewrite Hs in H; [ | easy ].
+    now rewrite <- Hm in H.
+  }
+  assert (Hto : ∀ j, j ≠ 1 → j ≠ n → t j = f_zero). {
+    intros j Hj1 Hjn.
 ...
 intros * Hn Hs i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
