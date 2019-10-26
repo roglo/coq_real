@@ -2285,22 +2285,13 @@ Theorem pol_1_sub_pow_times_series {F : field} : ∀ s n,
   → ((pol_pow 1 - pol_pow n) .* s = series_but_mul_of n s)%LS.
 Proof.
 intros * Hn Hs i Hi.
-destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
 cbn - [ ls_of_pol log_prod ].
-remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
+remember (i mod n) as m eqn:Hm; symmetry in Hm.
 destruct m. {
   unfold log_prod.
+  remember (log_prod_list (ls _) (ls s) i) as l eqn:Hl.
+  unfold log_prod_list in Hl.
 ...
-  replace (ls _ (i + 1)) with f_zero by now cbn; rewrite Hm.
-  symmetry.
-  apply Nat.mod_divides in Hm; [ | flia Hn ].
-  destruct Hm as (m, Hm).
-  destruct m; [ flia Hm | ].
-  rewrite Hm.
-  clear i Hm.
-  cbn - [ ls_of_pol log_prod ].
-...
-
 intros * Hn Hs i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
 symmetry.
