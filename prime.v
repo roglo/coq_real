@@ -2325,8 +2325,18 @@ destruct p. {
     now rewrite <- Hp in H.
   }
   assert (Hto : ∀ d, d ≠ 1 → d ≠ m → t d = f_zero). {
-    intros d Hd1 Hdn.
+    intros d Hd1 Hdm.
     rewrite Ht; unfold log_prod_term.
+    replace ((ls_of_pol (pol_pow 1 - pol_pow m))~{d}) with f_zero. 2: {
+      symmetry; cbn.
+      destruct d; [ easy | ].
+      destruct d; [ easy | clear Hd1 ].
+      clear - Hdm.
+      induction d. {
+        destruct m; [ easy | ].
+        rewrite Nat_sub_succ_1.
+        induction m; intros; [ easy | cbn ].
+        rewrite f_opp_0.
 ...
 intros * Hn Hs i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
