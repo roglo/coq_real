@@ -2279,53 +2279,52 @@ two is 1.
 *)
 
 (**)
-Theorem pol_1_sub_pow_times_series {F : field} : ∀ s n,
-  2 ≤ n
-  → (∀ i, i ≠ 0 → ls s i = ls s (n * i))
-  → ((pol_pow 1 - pol_pow n) .* s = series_but_mul_of n s)%LS.
+Theorem pol_1_sub_pow_times_series {F : field} : ∀ s m,
+  2 ≤ m
+  → (∀ i, i ≠ 0 → ls s i = ls s (m * i))
+  → ((pol_pow 1 - pol_pow m) .* s = series_but_mul_of m s)%LS.
 Proof.
-intros * Hn Hs i Hi.
+intros * Hm Hs i Hi.
 cbn - [ ls_of_pol log_prod ].
-remember (i mod n) as m eqn:Hm; symmetry in Hm.
-destruct m. {
+remember (i mod m) as p eqn:Hp; symmetry in Hp.
+destruct p. {
   unfold log_prod, log_prod_list.
-  remember (log_prod_term (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) i)
+  remember (log_prod_term (ls (ls_of_pol (pol_pow 1 - pol_pow m))) (ls s) i)
     as t eqn:Ht.
   assert (Ht1 : t 1 = s~{i}). {
     rewrite Ht; unfold log_prod_term.
     rewrite Nat.div_1_r.
     replace ((ls_of_pol _)~{1}) with f_one. 2: {
       symmetry; cbn.
-      destruct n; [ flia Hn | cbn ].
+      destruct m; [ flia Hm | cbn ].
       rewrite Nat.sub_0_r.
-      destruct n; [ flia Hn | clear; cbn ].
-      now destruct n; cbn; rewrite f_opp_0, f_add_0_r.
+      destruct m; [ flia Hm | clear; cbn ].
+      now destruct m; cbn; rewrite f_opp_0, f_add_0_r.
     }
     apply f_mul_1_l.
   }
-  assert (Htn : t n = (- s~{i})%F). {
-    assert (H : t n = (- s~{i/n})%F). {
+  assert (Htn : t m = (- s~{i})%F). {
+    assert (H : t m = (- s~{i/m})%F). {
       rewrite Ht; unfold log_prod_term.
-      replace ((ls_of_pol _)~{n}) with (- f_one)%F. 2: {
+      replace ((ls_of_pol _)~{m}) with (- f_one)%F. 2: {
         symmetry; cbn.
-        destruct n; [ flia Hn | cbn ].
+        destruct m; [ flia Hm | cbn ].
         rewrite Nat.sub_0_r.
-        destruct n; [ flia Hn | clear; cbn ].
-        induction n; [ cbn; apply f_add_0_l | ].
-        cbn; cbn in IHn.
-        destruct n; cbn in IHn; cbn; [ easy | apply IHn ].
+        destruct m; [ flia Hm | clear; cbn ].
+        induction m; [ cbn; apply f_add_0_l | cbn ].
+        destruct m; cbn in IHm; cbn; [ easy | apply IHm ].
       }
       now rewrite f_mul_opp_l, f_mul_1_l.
     }
-    apply Nat.mod_divides in Hm; [ | flia Hn ].
-    destruct Hm as (m, Hm).
-    rewrite Hm, Nat.mul_comm, Nat.div_mul in H; [ | flia Hn ].
-    destruct (zerop m) as [Hmz| Hmz]; [ now rewrite Hmz, Nat.mul_0_r in Hm | ].
-    apply Nat.neq_0_lt_0 in Hmz.
+    apply Nat.mod_divides in Hp; [ | flia Hm ].
+    destruct Hp as (p, Hp).
+    rewrite Hp, Nat.mul_comm, Nat.div_mul in H; [ | flia Hm ].
+    destruct (zerop p) as [Hpz| Hpz]; [ now rewrite Hpz, Nat.mul_0_r in Hp | ].
+    apply Nat.neq_0_lt_0 in Hpz.
     rewrite Hs in H; [ | easy ].
-    now rewrite <- Hm in H.
+    now rewrite <- Hp in H.
   }
-  assert (Hto : ∀ j, j ≠ 1 → j ≠ n → t j = f_zero). {
+  assert (Hto : ∀ j, j ≠ 1 → j ≠ m → t j = f_zero). {
     intros j Hj1 Hjn.
 ...
 intros * Hn Hs i Hi.
