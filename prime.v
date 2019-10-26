@@ -2363,13 +2363,16 @@ destruct p. {
   assert (Hnl : 1 < length (divisors n)). {
     destruct n; [ easy | ].
     destruct n; [ now rewrite Nat.mod_1_l in Hp | ].
-...
-    cbn - [ "mod" ].
-    rewrite Nat.mod_1_r, Nat.eqb_refl.
-...
-specialize (nth_split (divisors n) 0 Hnl) as (l1 & l2 & Hll & Hl1).
-rewrite Hll.
-cbn.
+    remember (length (divisors (S (S n)))) as len eqn:Hlen.
+    symmetry in Hlen.
+    destruct len; [ now apply length_zero_iff_nil in Hlen | ].
+    destruct len; [ | flia ].
+    now apply only_1_has_one_divisor in Hlen.
+  }
+  specialize (nth_split (divisors n) 0 Hnl) as (l1 & l2 & Hll & Hl1).
+  rewrite Hll.
+  remember (divisors n) as l eqn:Hl.
+  rewrite map_app; cbn.
 ...
 intros * Hn Hs i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
