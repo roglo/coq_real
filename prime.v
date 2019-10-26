@@ -2329,19 +2329,37 @@ destruct p. {
     rewrite Ht; unfold log_prod_term.
     replace ((ls_of_pol (pol_pow 1 - pol_pow m))~{d}) with f_zero. 2: {
       symmetry; cbn.
-      destruct d; [ easy | ].
+      destruct d; [ easy | cbn ].
+      destruct m; intros. {
+        cbn; rewrite f_add_opp_diag_r.
+        destruct d; [ easy | now destruct d ].
+      }
+      rewrite Nat_sub_succ_1.
+      destruct m; intros. {
+        cbn; rewrite f_add_opp_diag_r.
+        destruct d; [ easy | now destruct d ].
+      }
+      destruct m; intros. {
+        cbn; rewrite f_opp_0, f_add_0_r, f_add_0_l.
+        destruct d; [ easy | ].
+        destruct d; [ easy | ].
+        now destruct d.
+      }
+      cbn; rewrite f_opp_0, f_add_0_r, f_add_0_l.
       destruct d; [ easy | clear Hd1 ].
-      destruct (lt_dec (d + 2) m) as [Hd2m| Hd2m]. {
-        clear - Hd2m.
-        revert m Hd2m.
-        induction d; intros. {
-          destruct m; [ easy | ].
-          apply Nat.succ_lt_mono in Hd2m.
-          rewrite Nat_sub_succ_1.
-          destruct m; [ easy | cbn ].
-          destruct m; [ flia Hd2m | ].
-          now cbn; rewrite f_opp_0, f_add_0_r.
-        }
+      destruct d; [ easy | ].
+      assert (Hd : d ≠ m) by flia Hdm.
+      clear - Hd.
+      revert d Hd.
+      induction m; intros; cbn. {
+        destruct d; [ easy | now destruct d ].
+      }
+      rewrite f_opp_0, f_add_0_l.
+      destruct d; [ easy | ].
+      apply IHm; flia Hd.
+    }
+    apply f_mul_0_l.
+  }
 ...
 intros * Hn Hs i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
