@@ -2093,8 +2093,7 @@ intros * i Hi.
 now cbn; apply log_prod_assoc.
 Qed.
 
-...
-
+(*
 Theorem log_prod_list_length {F : field} : ∀ cnt u v i n,
   length (log_prod_list cnt u v i n) = cnt.
 Proof.
@@ -2107,10 +2106,12 @@ Theorem log_prod_list_succ {F : field} : ∀ cnt u v i n,
   log_prod_list (S cnt) u v i n =
     log_prod_term u v i n :: log_prod_list cnt u v (i + 1) n.
 Proof. easy. Qed.
+*)
 
 Definition pol_pow {F : field} n :=
   {| lp := List.repeat f_zero (n - 1) ++ [f_one] |}.
 
+(*
 Theorem skipn_log_prod_list {F : field} : ∀ m cnt u v i n,
   skipn m (log_prod_list cnt u v i n) =
   log_prod_list (cnt - m) u v (i + m) n.
@@ -2124,6 +2125,7 @@ rewrite Nat.sub_succ, List.skipn_cons.
 replace (i + S m) with (i + 1 + m) by flia.
 apply IHcnt.
 Qed.
+*)
 
 Theorem pol_1_sub_pow_coeff_1 {F : field} : ∀ n,
   2 ≤ n
@@ -2176,6 +2178,7 @@ cbn.
 apply IHn; flia Hi.
 Qed.
 
+(*
 Theorem pol_1_sub_pow_times_series_lemma_1 {F : field} : ∀ x n c m k u,
   In x
     (firstn (n - k)
@@ -2200,7 +2203,9 @@ replace p with (n - S k) in Hx by flia Hp.
 replace (S (S (k + 1))) with (2 + S k) in Hx by flia.
 now specialize (IHc (S k) Hx) as H1.
 Qed.
+*)
 
+(*
 Theorem pol_1_sub_pow_times_series_lemma_2 {F : field} : ∀ m k x c n u,
   In x
     (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2)))) u
@@ -2220,6 +2225,7 @@ destruct Hx as [Hx| Hx]. {
 apply (IHc k (S m)).
 now replace (3 + n + S m) with (S (S (S (n + m + 1)))) by flia.
 Qed.
+*)
 
 (*
 Here, we prove that
@@ -2249,6 +2255,7 @@ and even not prime numbers if we want, providing their gcd two by
 two is 1.
 *)
 
+(*
 Theorem pol_1_sub_pow_times_series {F : field} : ∀ s n,
   2 ≤ n
   → (∀ i, i ≠ 0 → ls s i = ls s (n * i))
@@ -2455,7 +2462,9 @@ assert
 replace 2 with (0 + 2) by flia.
 apply H.
 Qed.
+*)
 
+(*
 Corollary pol_1_sub_pow_times_series_ζ {F : field} : ∀ n,
   2 ≤ n
   → ((pol_pow 1 - pol_pow n) .* ζ = series_but_mul_of n ζ)%LS.
@@ -2463,6 +2472,7 @@ Proof.
 intros * Hn.
 now apply pol_1_sub_pow_times_series.
 Qed.
+*)
 
 (*
 Here, we try to prove that
@@ -2503,8 +2513,8 @@ induction l as [| a1 l]. {
 cbn.
 remember (Π (a ∈ l), (pol_pow 1 - pol_pow a))%LS as p eqn:Hp.
 unfold ".*".
-...
 rewrite <- ls_mul_assoc.
+...
 rewrite IHl.
 ...
 
