@@ -2284,14 +2284,14 @@ Theorem pol_1_sub_pow_times_series {F : field} : ∀ s m,
   → (∀ i, i ≠ 0 → ls s i = ls s (m * i))
   → ((pol_pow 1 - pol_pow m) .* s = series_but_mul_of m s)%LS.
 Proof.
-intros * Hm Hs i Hi.
+intros * Hm Hs n Hn.
 cbn - [ ls_of_pol log_prod ].
-remember (i mod m) as p eqn:Hp; symmetry in Hp.
+remember (n mod m) as p eqn:Hp; symmetry in Hp.
 destruct p. {
   unfold log_prod, log_prod_list.
-  remember (log_prod_term (ls (ls_of_pol (pol_pow 1 - pol_pow m))) (ls s) i)
+  remember (log_prod_term (ls (ls_of_pol (pol_pow 1 - pol_pow m))) (ls s) n)
     as t eqn:Ht.
-  assert (Ht1 : t 1 = s~{i}). {
+  assert (Ht1 : t 1 = s~{n}). {
     rewrite Ht; unfold log_prod_term.
     rewrite Nat.div_1_r.
     replace ((ls_of_pol _)~{1}) with f_one. 2: {
@@ -2303,8 +2303,8 @@ destruct p. {
     }
     apply f_mul_1_l.
   }
-  assert (Htn : t m = (- s~{i})%F). {
-    assert (H : t m = (- s~{i/m})%F). {
+  assert (Htn : t m = (- s~{n})%F). {
+    assert (H : t m = (- s~{n/m})%F). {
       rewrite Ht; unfold log_prod_term.
       replace ((ls_of_pol _)~{m}) with (- f_one)%F. 2: {
         symmetry; cbn.
@@ -2324,8 +2324,9 @@ destruct p. {
     rewrite Hs in H; [ | easy ].
     now rewrite <- Hp in H.
   }
-  assert (Hto : ∀ j, j ≠ 1 → j ≠ m → t j = f_zero). {
-    intros j Hj1 Hjn.
+  assert (Hto : ∀ d, d ≠ 1 → d ≠ m → t d = f_zero). {
+    intros d Hd1 Hdn.
+    rewrite Ht; unfold log_prod_term.
 ...
 intros * Hn Hs i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
