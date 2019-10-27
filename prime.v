@@ -182,6 +182,59 @@ cbn. apply Sorted.HdRel_cons.
 apply Nat.lt_succ_diag_r.
 Qed.
 
+Theorem Sorted_Sorted_lt_app_not_in_l : ∀ a l1 l2,
+  Sorted.Sorted lt (l1 ++ a :: l2)
+  → not (List.In a l1).
+Proof.
+intros * Hs Ha.
+apply Sorted.Sorted_StronglySorted in Hs; [ | apply Nat.lt_strorder ].
+induction l1 as [| b l]; intros; [ easy | cbn ].
+destruct Ha as [Ha| Ha]. {
+  subst b.
+  clear IHl.
+  cbn in Hs.
+  induction l as [| b l]; intros. {
+    cbn in Hs.
+    apply Sorted.StronglySorted_inv in Hs.
+    destruct Hs as (_, Hr).
+    apply Forall_inv in Hr; flia Hr.
+  }
+  apply IHl.
+  apply Sorted.StronglySorted_inv in Hs.
+  destruct Hs as (Hs, Hr).
+  cbn in Hs, Hr.
+  constructor. {
+    now apply Sorted.StronglySorted_inv in Hs.
+  }
+  now apply Forall_inv_tail in Hr.
+}
+apply IHl; [ | easy ].
+cbn in Hs.
+now apply Sorted.StronglySorted_inv in Hs.
+Qed.
+
+Theorem Sorted_Sorted_lt_cons_not_in : ∀ a l,
+  Sorted.Sorted lt (a :: l)
+  → not (List.In a l).
+Proof.
+intros * Hs Ha.
+apply Sorted.Sorted_StronglySorted in Hs; [ | apply Nat.lt_strorder ].
+induction l as [| b l]; intros; [ easy | cbn ].
+destruct Ha as [Ha| Ha]. {
+  subst a.
+  apply Sorted.StronglySorted_inv in Hs.
+  destruct Hs as (_, Hr).
+  apply Forall_inv in Hr; flia Hr.
+}
+apply IHl; [ | easy ].
+apply Sorted.StronglySorted_inv in Hs.
+destruct Hs as (Hs, Hr).
+apply Sorted.StronglySorted_inv in Hs.
+destruct Hs as (Hs, Hr2).
+constructor; [ easy | ].
+now apply Forall_inv_tail in Hr.
+Qed.
+
 Theorem NoDup_app_comm {A} : ∀ l l' : list A,
   NoDup (l ++ l') → NoDup (l' ++ l).
 Proof.
@@ -752,6 +805,7 @@ Definition List_combine_all {A} (l1 l2 : list A) (d : A) :=
 
 Notation "r ~{ i }" := (ls r i) (at level 1, format "r ~{ i }").
 Notation "x '∈' l" := (List.In x l) (at level 60).
+Notation "x '∉' l" := (¬ List.In x l) (at level 60).
 
 Definition lp_add {F : field} p q :=
   {| lp :=
@@ -2383,40 +2437,70 @@ destruct p. {
     rewrite <- Hkn, H1 in Hm; flia Hm.
   }
   rewrite Hll in H1; cbn in H1; subst a.
-  cbn; rewrite f_add_0_l, Ht1.
+  cbn; rewrite f_add_0_l, Ht1, Htn.
   rewrite fold_left_app; cbn.
   rewrite fold_f_add_assoc.
-  assert (H : ∀ d, d ∈ l1 → t d = f_zero). {
-    intros d Hd; apply Hto. {
-      specialize (divisors_are_sorted n) as Hds.
-      rewrite <- Heql, Hll in Hds.
+  assert (Hdl : ∀ d, d ∈ l1 → t d = f_zero). {
+    intros d Hd.
+    specialize (divisors_are_sorted n) as Hds.
+    rewrite <- Heql, Hll in Hds; cbn in Hds.
+    apply Hto. {
       intros H; subst d.
-      clear - Hd Hds.
-      cbn in Hds.
-      apply Sorted.Sorted_inv in Hds.
-      destruct Hds as (_, Hr).
-...
-      induction l1 as [| a l1]; [ easy | cbn ].
-      cbn in Hd.
-      destruct Hd as [Hd| Hd]. {
-        subst a; cbn in Hr.
-        apply Sorted.HdRel_inv in Hr; flia Hr.
+      assert (H : 1 ∈ (l1 ++ m :: l2)). {
+        now apply in_or_app; left.
       }
-      apply IHl1; [ easy | ].
-      cbn in Hr; cbn.
-      apply Sorted.HdRel_inv in Hr.
+      revert H.
+      now apply Sorted_Sorted_lt_cons_not_in.
+    }
+    intros H; subst d.
+    assert (H : m ∈ (1 :: l1)) by now right.
+    rewrite app_comm_cons in Hds.
+    revert H.
+    now apply Sorted_Sorted_lt_app_not_in_l in Hds.
+  }
+  assert (H1 : ∀ a, fold_left f_add (map t l1) a = a). {
+    intros a; clear - Hdl.
+    revert a.
+    induction l1 as [| b l]; intros; [ easy | ].
+    cbn; rewrite Hdl; [ | now left ].
+    rewrite f_add_0_r.
+    apply IHl; intros c Hc.
+    now apply Hdl; right.
+  }
+  rewrite H1.
 ...
-
-
-  assert (H : ∀ a, fold_left f_add (map t l1) a = a). {
-    intros a.
-    cbn in Hll.
-    clear - Hto Hll.
+  assert (Hdl2 : ∀ d, d ∈ l2 → t d = f_zero). {
+    intros d Hd.
+    specialize (divisors_are_sorted n) as Hds.
+    rewrite <- Heql, Hll in Hds; cbn in Hds.
+    apply Hto. {
+      intros H; subst d.
+      assert (H : 1 ∈ (l1 ++ m :: l2)). {
+        now apply in_or_app; left.
+      }
+      revert H.
+      now apply Sorted_Sorted_lt_cons_not_in.
+    }
+    intros H; subst d.
+    assert (H : m ∈ (1 :: l1)) by now right.
+    rewrite app_comm_cons in Hds.
+    revert H.
+    now apply Sorted_Sorted_lt_app_not_in_l in Hds.
+  }
 ...
-    revert a m l2 l Hll.
-    induction l1 as [| b l1]; intros; [ easy | cbn ].
-    rewrite f_add_comm, fold_f_add_assoc.
-    erewrite IHl1.
+  assert (H2 : ∀ a, fold_left f_add (map t l2) a = a). {
+    intros a; clear - Hdl.
+    revert a.
+    induction l2 as [| b l]; intros; [ easy | ].
+    cbn; rewrite Hdl.
+
+    cbn; rewrite Hdl; [ | now left ].
+    rewrite f_add_0_r.
+    apply IHl; intros c Hc.
+    now apply Hdl; right.
+  }
+
+...
 ...
 intros * Hn Hs i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
