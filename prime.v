@@ -2565,7 +2565,9 @@ rewrite IHl; cycle 1. {
 apply pol_1_sub_pow_times_series; [ now apply Hge2; left | ].
 intros i Hi.
 ...
+(*
 clear - Hi Hai Hgcd.
+*)
 induction l as [| a l]. {
   cbn; apply Hai; [ now left | easy ].
 }
