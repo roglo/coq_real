@@ -188,7 +188,7 @@ Theorem Sorted_Sorted_lt_app_not_in_l : ∀ a l1 l2,
 Proof.
 intros * Hs Ha.
 apply Sorted.Sorted_StronglySorted in Hs; [ | apply Nat.lt_strorder ].
-induction l1 as [| b l]; intros; [ easy | cbn ].
+induction l1 as [| b l]; [ easy | cbn ].
 destruct Ha as [Ha| Ha]. {
   subst b.
   clear IHl.
@@ -213,26 +213,22 @@ cbn in Hs.
 now apply Sorted.StronglySorted_inv in Hs.
 Qed.
 
-Theorem Sorted_Sorted_lt_cons_not_in : ∀ a l,
-  Sorted.Sorted lt (a :: l)
-  → not (List.In a l).
+Theorem Sorted_Sorted_lt_app_not_in_r : ∀ a l1 l2,
+  Sorted.Sorted lt (l1 ++ a :: l2)
+  → not (List.In a l2).
 Proof.
 intros * Hs Ha.
 apply Sorted.Sorted_StronglySorted in Hs; [ | apply Nat.lt_strorder ].
-induction l as [| b l]; intros; [ easy | cbn ].
-destruct Ha as [Ha| Ha]. {
-  subst a.
+induction l1 as [| b l]. {
+  cbn in Hs.
   apply Sorted.StronglySorted_inv in Hs.
-  destruct Hs as (_, Hr).
-  apply Forall_inv in Hr; flia Hr.
+  destruct Hs as (Hs, Hr).
+  specialize (proj1 (Forall_forall _ _) Hr) as H1.
+  specialize (H1 _ Ha); flia H1.
 }
-apply IHl; [ | easy ].
+cbn in Hs.
 apply Sorted.StronglySorted_inv in Hs.
-destruct Hs as (Hs, Hr).
-apply Sorted.StronglySorted_inv in Hs.
-destruct Hs as (Hs, Hr2).
-constructor; [ easy | ].
-now apply Forall_inv_tail in Hr.
+now apply IHl.
 Qed.
 
 Theorem NoDup_app_comm {A} : ∀ l l' : list A,
@@ -2332,7 +2328,6 @@ and even not prime numbers if we want, providing their gcd two by
 two is 1.
 *)
 
-(**)
 Theorem pol_1_sub_pow_times_series {F : field} : ∀ s m,
   2 ≤ m
   → (∀ i, i ≠ 0 → ls s i = ls s (m * i))
@@ -2414,12 +2409,6 @@ destruct p. {
     }
     apply f_mul_0_l.
   }
-(*
-  specialize (eq_first_divisor_1 n Hn) as H1.
-  remember (divisors n) as l eqn:Hl.
-  destruct l as [| a l]; [ easy | ].
-  cbn in H1; subst a; cbn; rewrite f_add_0_l, Ht1.
-*)
   assert (Hmd : m ∈ divisors n). {
     apply in_divisors_iff; [ easy | ].
     split; [ easy | flia Hm ].
@@ -2450,8 +2439,9 @@ destruct p. {
         assert (H : 1 ∈ (l1 ++ m :: l2)). {
           now apply in_or_app; left.
         }
-        revert H.
-        now apply Sorted_Sorted_lt_cons_not_in.
+        replace (1 :: l1 ++ m :: l2) with ([] ++ 1 :: l1 ++ m :: l2)
+          in Hds by easy.
+        now apply Sorted_Sorted_lt_app_not_in_r in Hds.
       }
       intros H; subst d.
       assert (H : m ∈ (1 :: l1)) by now right.
@@ -2468,39 +2458,39 @@ destruct p. {
     now apply Hdl; right.
   }
   rewrite H1.
-...
-  assert (Hdl2 : ∀ d, d ∈ l2 → t d = f_zero). {
-    intros d Hd.
-    specialize (divisors_are_sorted n) as Hds.
-    rewrite <- Heql, Hll in Hds; cbn in Hds.
-    apply Hto. {
-      intros H; subst d.
-      assert (H : 1 ∈ (l1 ++ m :: l2)). {
-        now apply in_or_app; left.
-      }
-      revert H.
-      now apply Sorted_Sorted_lt_cons_not_in.
-    }
-    intros H; subst d.
-    assert (H : m ∈ (1 :: l1)) by now right.
-    rewrite app_comm_cons in Hds.
-    revert H.
-    now apply Sorted_Sorted_lt_app_not_in_l in Hds.
-  }
-...
   assert (H2 : ∀ a, fold_left f_add (map t l2) a = a). {
+    assert (Hdl : ∀ d, d ∈ l2 → t d = f_zero). {
+      intros d Hd.
+      clear Hs.
+      specialize (divisors_are_sorted n) as Hs.
+      rewrite <- Heql, Hll in Hs; cbn in Hs.
+      apply Hto. {
+        intros H; subst d.
+        apply Sorted.Sorted_StronglySorted in Hs; [ | apply Nat.lt_strorder ].
+        apply Sorted.StronglySorted_inv in Hs.
+        destruct Hs as (Hds, Hall).
+        specialize (proj1 (Forall_forall _ _) Hall 1) as H2.
+        assert (H : 1 ∈ (l1 ++ m :: l2)). {
+          now apply in_or_app; right; right.
+        }
+        specialize (H2 H); flia H2.
+      }
+      intros H; subst d.
+      apply Sorted.Sorted_inv in Hs.
+      destruct Hs as (Hs, Hr).
+      now apply Sorted_Sorted_lt_app_not_in_r in Hs.
+    }
     intros a; clear - Hdl.
     revert a.
     induction l2 as [| b l]; intros; [ easy | ].
-    cbn; rewrite Hdl.
-
     cbn; rewrite Hdl; [ | now left ].
     rewrite f_add_0_r.
     apply IHl; intros c Hc.
     now apply Hdl; right.
   }
-
-...
+  rewrite H2.
+  apply f_add_opp_diag_r.
+}
 ...
 intros * Hn Hs i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
