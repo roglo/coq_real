@@ -2564,7 +2564,8 @@ rewrite IHl; cycle 1. {
 }
 apply pol_1_sub_pow_times_series; [ now apply Hge2; left | ].
 intros i Hi.
-clear - Hi Hai.
+...
+clear - Hi Hai Hgcd.
 induction l as [| a l]. {
   cbn; apply Hai; [ now left | easy ].
 }
@@ -2580,6 +2581,15 @@ destruct m. {
 destruct a; [ easy | ].
 remember ((a1 * i) mod S a) as n eqn:Hn; symmetry in Hn.
 destruct n. {
+destruct (Nat.eq_dec (S a) a1) as [Hss| Hss]. {
+  subst a1.
+...
+  rewrite Nat.mul_comm in Hn.
+
+apply Nat.mod_divide in Hn; [ | easy ].
+Check Nat.gauss.
+specialize (Nat.gauss (S a) a1 i Hn) as H1.
+specialize (Hgcd (S a) a1) as H2.
   apply Nat.mod_divides in Hn; [ | easy ].
   destruct Hn as (n, Hn).
   move n before m.
