@@ -2440,25 +2440,25 @@ destruct p. {
   cbn; rewrite f_add_0_l, Ht1, Htn.
   rewrite fold_left_app; cbn.
   rewrite fold_f_add_assoc.
-  assert (Hdl : ∀ d, d ∈ l1 → t d = f_zero). {
-    intros d Hd.
-    specialize (divisors_are_sorted n) as Hds.
-    rewrite <- Heql, Hll in Hds; cbn in Hds.
-    apply Hto. {
-      intros H; subst d.
-      assert (H : 1 ∈ (l1 ++ m :: l2)). {
-        now apply in_or_app; left.
-      }
-      revert H.
-      now apply Sorted_Sorted_lt_cons_not_in.
-    }
-    intros H; subst d.
-    assert (H : m ∈ (1 :: l1)) by now right.
-    rewrite app_comm_cons in Hds.
-    revert H.
-    now apply Sorted_Sorted_lt_app_not_in_l in Hds.
-  }
   assert (H1 : ∀ a, fold_left f_add (map t l1) a = a). {
+    assert (Hdl : ∀ d, d ∈ l1 → t d = f_zero). {
+      intros d Hd.
+      specialize (divisors_are_sorted n) as Hds.
+      rewrite <- Heql, Hll in Hds; cbn in Hds.
+      apply Hto. {
+        intros H; subst d.
+        assert (H : 1 ∈ (l1 ++ m :: l2)). {
+          now apply in_or_app; left.
+        }
+        revert H.
+        now apply Sorted_Sorted_lt_cons_not_in.
+      }
+      intros H; subst d.
+      assert (H : m ∈ (1 :: l1)) by now right.
+      rewrite app_comm_cons in Hds.
+      revert H.
+      now apply Sorted_Sorted_lt_app_not_in_l in Hds.
+    }
     intros a; clear - Hdl.
     revert a.
     induction l1 as [| b l]; intros; [ easy | ].
