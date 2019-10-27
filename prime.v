@@ -2336,22 +2336,22 @@ Proof.
 intros * Hm Hs n Hn.
 cbn - [ ls_of_pol log_prod ].
 remember (n mod m) as p eqn:Hp; symmetry in Hp.
-destruct p. {
-  unfold log_prod, log_prod_list.
-  remember (log_prod_term (ls (ls_of_pol (pol_pow 1 - pol_pow m))) (ls s) n)
-    as t eqn:Ht.
-  assert (Ht1 : t 1 = s~{n}). {
-    rewrite Ht; unfold log_prod_term.
-    rewrite Nat.div_1_r.
-    replace ((ls_of_pol _)~{1}) with f_one. 2: {
-      symmetry; cbn.
-      destruct m; [ flia Hm | cbn ].
-      rewrite Nat.sub_0_r.
-      destruct m; [ flia Hm | clear; cbn ].
-      now destruct m; cbn; rewrite f_opp_0, f_add_0_r.
-    }
-    apply f_mul_1_l.
+unfold log_prod, log_prod_list.
+remember (log_prod_term (ls (ls_of_pol (pol_pow 1 - pol_pow m))) (ls s) n)
+  as t eqn:Ht.
+assert (Ht1 : t 1 = s~{n}). {
+  rewrite Ht; unfold log_prod_term.
+  rewrite Nat.div_1_r.
+  replace ((ls_of_pol _)~{1}) with f_one. 2: {
+    symmetry; cbn.
+    destruct m; [ flia Hm | cbn ].
+    rewrite Nat.sub_0_r.
+    destruct m; [ flia Hm | clear; cbn ].
+    now destruct m; cbn; rewrite f_opp_0, f_add_0_r.
   }
+  apply f_mul_1_l.
+}
+destruct p. {
   assert (Htn : t m = (- s~{n})%F). {
     assert (H : t m = (- s~{n/m})%F). {
       rewrite Ht; unfold log_prod_term.
@@ -2491,6 +2491,58 @@ destruct p. {
   rewrite H2.
   apply f_add_opp_diag_r.
 }
+assert (Hto : ∀ d, d ∈ divisors n → d ≠ 1 → t d = f_zero). {
+  intros d Hd Hd1.
+  rewrite Ht; unfold log_prod_term.
+  replace ((ls_of_pol (pol_pow 1 - pol_pow m))~{d}) with f_zero. 2: {
+    symmetry.
+...
+    symmetry; cbn.
+    destruct d; [ easy | cbn ].
+    destruct m; intros. {
+      cbn; rewrite f_add_opp_diag_r.
+      destruct d; [ easy | now destruct d ].
+    }
+    rewrite Nat_sub_succ_1.
+    apply in_divisors in Hd; [ | easy ].
+    destruct Hd as (Hd, _).
+    apply Nat.mod_divides in Hd; [ | easy ].
+    destruct Hd as (k, Hk).
+    destruct m; intros. {
+      cbn; rewrite f_add_opp_diag_r.
+      destruct d; [ easy | now destruct d ].
+    }
+    destruct m; intros. {
+      cbn; rewrite f_opp_0, f_add_0_r, f_add_0_l.
+      destruct d; [ easy | ].
+      destruct d; [ | now destruct d ].
+      apply in_divisors in Hd; [ | easy ].
+      now rewrite Hp in Hd.
+    }
+    cbn; rewrite f_opp_0, f_add_0_r, f_add_0_l.
+    destruct d; [ easy | clear Hd1 ].
+    destruct d; [ easy | ].
+    destruct m. {
+      cbn.
+...
+
+    assert (Hdm : d ≠ m) by flia Hdm.
+      clear - Hd.
+      revert d Hd.
+      induction m; intros; cbn. {
+        destruct d; [ easy | now destruct d ].
+      }
+      rewrite f_opp_0, f_add_0_l.
+      destruct d; [ easy | ].
+      apply IHm; flia Hd.
+    }
+    apply f_mul_0_l.
+  }
+  assert (Hmd : m ∈ divisors n). {
+    apply in_divisors_iff; [ easy | ].
+    split; [ easy | flia Hm ].
+  }
+
 ...
 intros * Hn Hs i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
