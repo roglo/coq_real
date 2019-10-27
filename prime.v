@@ -2496,6 +2496,7 @@ assert (Hto : ∀ d, d ∈ divisors n → d ≠ 1 → t d = f_zero). {
   rewrite Ht; unfold log_prod_term.
   replace ((ls_of_pol (pol_pow 1 - pol_pow m))~{d}) with f_zero. 2: {
     symmetry.
+    clear - Hp Hd Hd1.
 ...
     symmetry; cbn.
     destruct d; [ easy | cbn ].
