@@ -2496,7 +2496,63 @@ assert (Hto : ∀ d, d ∈ divisors n → d ≠ 1 → t d = f_zero). {
   rewrite Ht; unfold log_prod_term.
   replace ((ls_of_pol (pol_pow 1 - pol_pow m))~{d}) with f_zero. 2: {
     symmetry.
-    clear - Hp Hd Hd1.
+    clear - Hn Hp Hd Hd1.
+    assert (Hdm : d ≠ m). {
+      intros H; subst d.
+      apply in_divisors in Hd; [ | easy ].
+      now rewrite Hp in Hd.
+    }
+    clear - Hd1 Hdm.
+...
+    destruct d; [ easy | ].
+    destruct d; [ easy | clear Hd1; cbn ].
+    destruct m; [ now destruct d | ].
+    rewrite Nat_sub_succ_1.
+    assert (H : m ≠ S d) by flia Hdm; clear Hdm.
+    revert m H.
+    induction d; intros. {
+      destruct m; [ easy | cbn ].
+      destruct m; [ easy | ].
+      cbn; rewrite f_opp_0.
+      apply f_add_0_l.
+    }
+    destruct m; [ easy | ].
+...
+    destruct m; [ now destruct d | ].
+    cbn.
+
+    destruct m; [ easy | ].
+    destruct m; [ easy | clear Hdm ].
+    revert m Hdm.
+    induction d; intros. {
+      cbn.
+      destruct m; [ easy | ].
+      rewrite Nat_sub_succ_1.
+      destruct m; [ easy | ].
+      destruct m; [ easy | clear Hdm ].
+      cbn; rewrite f_opp_0.
+      apply f_add_0_l.
+    }
+...
+assert (Hdm : d ≠ m). {
+specialize (eq_first_divisor_1 n Hn) as Hn1.
+remember (divisors n) as l eqn:Hl; symmetry in Hl.
+destruct l as [| a l]; [ easy | ].
+cbn in Hn1; subst a.
+destruct Hd as [Hd| Hd]; [ now rewrite Hd in Hd1 | clear Hd1 ].
+cbn.
+destruct d; [ easy | ].
+destruct m; [ easy | ].
+cbn; rewrite Nat.sub_0_r.
+
+induction m. {
+  cbn.
+  rewrite f_add_opp_diag_r.
+  destruct d; [ easy | now destruct d ].
+}
+cbn.
+destruct m
+cbn.
 ...
     symmetry; cbn.
     destruct d; [ easy | cbn ].
