@@ -2174,31 +2174,8 @@ unfold log_prod_list.
 apply map_length.
 Qed.
 
-(*
-Theorem log_prod_list_succ {F : field} : ∀ cnt u v i n,
-  log_prod_list (S cnt) u v i n =
-    log_prod_term u v i n :: log_prod_list cnt u v (i + 1) n.
-Proof. easy. Qed.
-*)
-
 Definition pol_pow {F : field} n :=
   {| lp := List.repeat f_zero (n - 1) ++ [f_one] |}.
-
-(*
-Theorem skipn_log_prod_list {F : field} : ∀ m cnt u v i n,
-  skipn m (log_prod_list cnt u v i n) =
-  log_prod_list (cnt - m) u v (i + m) n.
-Proof.
-intros.
-revert i m n.
-induction cnt; intros; [ apply List.skipn_nil | ].
-cbn - [ "-" ].
-destruct m; [ now rewrite Nat.add_0_r | ].
-rewrite Nat.sub_succ, List.skipn_cons.
-replace (i + S m) with (i + 1 + m) by flia.
-apply IHcnt.
-Qed.
-*)
 
 Theorem pol_1_sub_pow_coeff_1 {F : field} : ∀ n,
   2 ≤ n
@@ -2250,55 +2227,6 @@ destruct i; [ cbn; apply f_add_opp_diag_r | ].
 cbn.
 apply IHn; flia Hi.
 Qed.
-
-(*
-Theorem pol_1_sub_pow_times_series_lemma_1 {F : field} : ∀ x n c m k u,
-  In x
-    (firstn (n - k)
-       (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2))))
-          u (2 + k) ((n + 2) * (m + 1))))
-  → x = f_zero.
-Proof.
-intros * Hx.
-revert k Hx.
-induction c; intros; [ now destruct (n - k) | ].
-cbn - [ ls_of_pol ] in Hx.
-remember (n - k) as p eqn:Hp; symmetry in Hp.
-destruct p; [ easy | ].
-cbn - [ ls_of_pol ] in Hx.
-destruct Hx as [Hx| Hx]. {
-  subst x.
-  unfold log_prod_term.
-  rewrite pol_1_sub_pow_coeff_0; [ | flia | flia Hp ].
-  now rewrite <- f_mul_assoc, f_mul_0_l.
-}
-replace p with (n - S k) in Hx by flia Hp.
-replace (S (S (k + 1))) with (2 + S k) in Hx by flia.
-now specialize (IHc (S k) Hx) as H1.
-Qed.
-*)
-
-(*
-Theorem pol_1_sub_pow_times_series_lemma_2 {F : field} : ∀ m k x c n u,
-  In x
-    (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2)))) u
-       (3 + n + m) k)
-  → x = f_zero.
-Proof.
-intros * Hx.
-revert k m Hx.
-induction c; intros; [ easy | ].
-cbn - [ ls_of_pol ] in Hx.
-destruct Hx as [Hx| Hx]. {
-  subst x.
-  unfold log_prod_term.
-  rewrite pol_1_sub_pow_coeff_0; [ | flia | flia ].
-  now rewrite <- f_mul_assoc, f_mul_0_l.
-}
-apply (IHc k (S m)).
-now replace (3 + n + S m) with (S (S (S (n + m + 1)))) by flia.
-Qed.
-*)
 
 (*
 Here, we prove that
@@ -2502,326 +2430,81 @@ assert (Hto : ∀ d, d ∈ divisors n → d ≠ 1 → t d = f_zero). {
       apply in_divisors in Hd; [ | easy ].
       now rewrite Hp in Hd.
     }
-    clear - Hd1 Hdm.
-...
-    destruct d; [ easy | ].
-    destruct d; [ easy | clear Hd1; cbn ].
-    destruct m; [ now destruct d | ].
-    rewrite Nat_sub_succ_1.
-    assert (H : m ≠ S d) by flia Hdm; clear Hdm.
-    revert m H.
-    induction d; intros. {
-      destruct m; [ easy | cbn ].
-      destruct m; [ easy | ].
-      cbn; rewrite f_opp_0.
-      apply f_add_0_l.
-    }
-    destruct m; [ easy | ].
-...
-    destruct m; [ now destruct d | ].
-    cbn.
-
-    destruct m; [ easy | ].
-    destruct m; [ easy | clear Hdm ].
-    revert m Hdm.
-    induction d; intros. {
-      cbn.
-      destruct m; [ easy | ].
-      rewrite Nat_sub_succ_1.
-      destruct m; [ easy | ].
-      destruct m; [ easy | clear Hdm ].
-      cbn; rewrite f_opp_0.
-      apply f_add_0_l.
-    }
-...
-assert (Hdm : d ≠ m). {
-specialize (eq_first_divisor_1 n Hn) as Hn1.
-remember (divisors n) as l eqn:Hl; symmetry in Hl.
-destruct l as [| a l]; [ easy | ].
-cbn in Hn1; subst a.
-destruct Hd as [Hd| Hd]; [ now rewrite Hd in Hd1 | clear Hd1 ].
-cbn.
-destruct d; [ easy | ].
-destruct m; [ easy | ].
-cbn; rewrite Nat.sub_0_r.
-
-induction m. {
-  cbn.
-  rewrite f_add_opp_diag_r.
-  destruct d; [ easy | now destruct d ].
-}
-cbn.
-destruct m
-cbn.
-...
-    symmetry; cbn.
-    destruct d; [ easy | cbn ].
-    destruct m; intros. {
-      cbn; rewrite f_add_opp_diag_r.
-      destruct d; [ easy | now destruct d ].
-    }
-    rewrite Nat_sub_succ_1.
-    apply in_divisors in Hd; [ | easy ].
-    destruct Hd as (Hd, _).
-    apply Nat.mod_divides in Hd; [ | easy ].
-    destruct Hd as (k, Hk).
-    destruct m; intros. {
-      cbn; rewrite f_add_opp_diag_r.
-      destruct d; [ easy | now destruct d ].
-    }
-    destruct m; intros. {
-      cbn; rewrite f_opp_0, f_add_0_r, f_add_0_l.
-      destruct d; [ easy | ].
-      destruct d; [ | now destruct d ].
-      apply in_divisors in Hd; [ | easy ].
-      now rewrite Hp in Hd.
-    }
-    cbn; rewrite f_opp_0, f_add_0_r, f_add_0_l.
-    destruct d; [ easy | clear Hd1 ].
+    clear - Hd1 Hdm; cbn.
     destruct d; [ easy | ].
     destruct m. {
       cbn.
-...
-
-    assert (Hdm : d ≠ m) by flia Hdm.
-      clear - Hd.
-      revert d Hd.
-      induction m; intros; cbn. {
-        destruct d; [ easy | now destruct d ].
-      }
-      rewrite f_opp_0, f_add_0_l.
-      destruct d; [ easy | ].
-      apply IHm; flia Hd.
+      cbn; rewrite f_add_opp_diag_r.
+      destruct d; [ easy | now destruct d ].
     }
-    apply f_mul_0_l.
-  }
-  assert (Hmd : m ∈ divisors n). {
-    apply in_divisors_iff; [ easy | ].
-    split; [ easy | flia Hm ].
-  }
-
-...
-intros * Hn Hs i Hi.
-destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
-symmetry.
-remember ((i + 1) mod n) as m eqn:Hm; symmetry in Hm.
-destruct m. {
-  replace (ls _ (i + 1)) with f_zero by now cbn; rewrite Hm.
-  symmetry.
-  apply Nat.mod_divides in Hm; [ | flia Hn ].
-  destruct Hm as (m, Hm).
-  destruct m; [ flia Hm | ].
-  rewrite Hm.
-  clear i Hm.
-  cbn - [ ls_of_pol log_prod ].
-  unfold log_prod.
-  remember
-    (log_prod_list (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) (n * S m))
-    as l eqn:Hl.
-  assert (H11 : List.hd f_zero l = ls s (S m)). {
-    destruct l as [| a l]. {
-      destruct n; [ flia Hn | easy ].
+    apply -> Nat.succ_inj_wd_neg in Hd1.
+    apply -> Nat.succ_inj_wd_neg in Hdm.
+    rewrite Nat_sub_succ_1.
+    revert d Hd1 Hdm.
+    induction m; intros. {
+      cbn; rewrite f_add_opp_diag_r.
+      destruct d; [ easy | now destruct d ].
     }
     cbn.
-    remember (n * S m) as cnt eqn:Hcnt; symmetry in Hcnt.
-    destruct cnt; [ easy | ].
-    cbn - [ ls_of_pol ] in Hl.
-    remember ls_of_pol as f.
-    injection Hl; clear Hl; intros Hl Hx; subst f; cbn.
-    subst a.
-    unfold log_prod_term.
-    rewrite Nat.div_1_r.
-    rewrite pol_1_sub_pow_coeff_1; [ | easy ].
-    rewrite f_mul_1_l.
-    rewrite <- Hcnt; symmetry.
-    now apply Hs.
-  }
-(*
-  assert
-    (Hz1 : ∀ x,
-     List.In x (List.firstn (n - 2) (List.tl l)) → x = f_zero). {
-    intros x Hx.
-    remember (n * S m) as cnt eqn:Hcnt; symmetry in Hcnt.
-    destruct n; [ flia Hn | ].
-    destruct n; [ flia Hn | clear Hn ].
-    replace (S (S n) - 2) with n in Hx by flia.
-    assert (H : cnt = S ((n + 2) * m + n + 1)) by flia Hcnt.
-    clear Hcnt; subst cnt.
-    rewrite Hl in Hx.
-...
-Print log_prod_list.
-    rewrite log_prod_list_succ.
-(*
-    cbn - [ ls_of_pol log_prod_list ] in Hx.
-*)
-    clear - Hx.
-    remember ((n + 2) * m + n + 1) as c eqn:Hc.
-    replace (S (S n)) with (n + 2) in Hx by flia.
-  In x
-    (firstn (n - k)
-       (log_prod_list c (ls (ls_of_pol (pol_pow 1 - pol_pow (n + 2))))
-          u (2 + k) ((n + 2) * (m + 1))))
-...
-    apply (pol_1_sub_pow_times_series_lemma_1 _ n c m 0 (ls s)).
-    rewrite Nat.sub_0_r, Nat.add_0_r.
-    now replace (S c) with ((n + 2) * (m + 1)) in Hx by flia Hc.
-  }
-*)
-(*
-  assert (Hn1 : List.hd f_zero (List.skipn (n - 1) l) = (- ls s (S m))%F). {
-    destruct n; [ flia Hn | ].
-    rewrite Nat_sub_succ_1.
-    destruct n; [ flia Hn | cbn ].
-    destruct l as [| a l]; [ easy | ].
-    remember ((n + 2) * m + n + 1) as p eqn:Hp.
-    replace (S (S n) * S m) with (S p) in Hl by flia Hp.
-    cbn - [ ls_of_pol ] in Hl.
-    remember ls_of_pol as f.
-    injection Hl; clear Hl; intros Hl Ha; subst f.
-    rewrite Hl, skipn_log_prod_list.
-    replace (p - n) with (S ((n + 2) * m)) by flia Hp.
-    cbn - [ ls_of_pol ].
-    unfold log_prod_term.
-    rewrite pol_1_sub_pow_coeff_minus_1; [ | flia ].
-    unfold ε.
-    remember (ls s (S p / S (S n))) as x.
-    replace (S p) with (0 + (m + 1) * S (S n)) by flia Hp.
-    rewrite Nat.mod_add; [ | easy ].
-    rewrite Nat.mod_0_l; [ | easy ].
-    rewrite f_mul_opp_l, f_mul_1_l, f_mul_1_r.
-    f_equal; subst x.
-    replace (S p) with (0 + (m + 1) * S (S n)) by flia Hp.
-    rewrite Nat.div_add; [ | easy ].
-    rewrite Nat.div_0_l; [ | easy ].
-    now rewrite Nat.add_0_l, Nat.add_1_r.
-  }
-*)
-(*
-  assert (Hz2 : ∀ x, List.In x (List.skipn n l) → x = f_zero). {
-    intros * Hx.
-    remember (n * S m) as cnt eqn:Hcnt; symmetry in Hcnt.
-    destruct n; [ flia Hn | ].
-    destruct n; [ flia Hn | clear Hn ].
-    assert (H : cnt = S (S ((n + 2) * m + n))) by flia Hcnt.
-    clear Hcnt; subst cnt.
-    rewrite Hl in Hx.
-    cbn - [ ls_of_pol ] in Hx.
-    clear - Hx.
-    remember ((n + 2) * m + n) as c eqn:Hc.
-    replace (S (S n)) with (n + 2) in Hx by flia.
-    rewrite skipn_log_prod_list in Hx.
-    eapply (pol_1_sub_pow_times_series_lemma_2 0).
-    rewrite Nat.add_0_r.
-    apply Hx.
-  }
-*)
-(*
-  replace l with
-     (List.hd f_zero l :: List.firstn (n - 2) (tl l) ++
-      List.hd f_zero (skipn (n - 1) l) :: skipn n l). 2: {
-    rewrite List.app_comm_cons.
-    symmetry.
-    rewrite <- (firstn_skipn (n - 1) l) at 1.
-    f_equal. {
-      rewrite <- List.firstn_cons.
-      destruct l as [| a l]. {
-        destruct n; [ flia Hn | easy ].
-      }
+    destruct d; [ easy | clear Hd1 ].
+    apply -> Nat.succ_inj_wd_neg in Hdm.
+    destruct d. {
+      destruct m; [ easy | ].
+      now cbn; rewrite f_add_opp_diag_r.
+    }
+    specialize (IHm (S d) (Nat.neq_succ_0 _) Hdm) as H1.
+    destruct m. {
       cbn.
-      replace (n - 1) with (S (n - 2)) by flia Hn.
-      apply List.firstn_cons.
+      destruct d; [ easy | now destruct d ].
     }
-    assert (Hlen : n ≤ List.length l). {
-      rewrite Hl.
-      rewrite log_prod_list_length.
-      rewrite Nat.mul_comm; cbn; flia.
+    cbn in H1; cbn.
+    destruct m. {
+      cbn.
+      destruct d; [ easy | ].
+      destruct d; [ easy | now destruct d ].
     }
-    destruct n; [ flia Hn | ].
-    rewrite Nat_sub_succ_1.
-    clear - Hlen.
-    revert n Hlen.
-    induction l as [| a l]; intros; [ easy | ].
-    destruct n; [ easy | ].
-    rewrite List.skipn_cons.
-    remember (S n) as sn; cbn; subst sn.
-    cbn in Hlen.
-    apply IHl; flia Hlen.
+    cbn in H1.
+    destruct d. {
+      now cbn; rewrite f_add_opp_diag_r.
+    }
+    cbn; apply H1.
   }
-  cbn; rewrite List.fold_right_app; cbn.
-  rewrite H11, Hn1.
-  replace (List.fold_right _ _ (skipn n _)) with f_zero. 2: {
-    symmetry.
-    remember (skipn n l) as l'.
-    clear - Hz2; rename l' into l.
-    induction l as [| a l]; [ easy | ].
-    cbn in Hz2 |- *.
-    rewrite (Hz2 a); [ | now left ].
-    rewrite f_add_0_l.
-    apply IHl; intros x Hx.
-    now apply Hz2; right.
-  }
-  rewrite f_add_0_r.
-  replace (fold_right f_add _ _) with (- ls s (S m))%F. 2: {
-    symmetry.
-    remember (- ls s (S m))%F as x.
-    remember (firstn _ (tl l)) as l'.
-    clear - Hz1.
-    rename l' into l.
-    induction l as [| a l]; [ easy | cbn ].
-    rewrite (Hz1 a); [ | now left ].
-    rewrite f_add_0_l.
-    apply IHl; intros y Hy.
-    apply Hz1; cbn.
-    now right.
-  }
-  apply f_add_opp_diag_r.
+  apply f_mul_0_l.
 }
-*)
-cbn - [ ls_of_pol ].
-rewrite Hm; symmetry; unfold log_prod.
-replace (i + 1) with (S i) by flia.
-rewrite log_prod_list_succ.
-cbn - [ ls_of_pol ].
-unfold log_prod_term.
-rewrite pol_1_sub_pow_coeff_1; [ | easy ].
-unfold ε.
-rewrite Nat.mod_1_r, f_mul_1_l, f_mul_1_r.
-rewrite Nat.div_1_r, <- f_add_0_r; f_equal.
-assert
-  (H : ∀ c k,
-   fold_right f_add f_zero
-     (log_prod_list c
-        (ls (ls_of_pol (pol_pow 1 - pol_pow n))) (ls s) (k + 2) (S i)) =
-     f_zero). {
-  intros *.
-  revert k.
-  induction c; intros; [ easy | ].
-  cbn - [ ls_of_pol ].
-  replace (log_prod_term _ _ _ _) with f_zero. 2: {
-    symmetry; unfold log_prod_term.
-    unfold ε.
-    remember (S i mod (k + 2)) as p eqn:Hp; symmetry in Hp.
-    destruct p. {
-      rewrite pol_1_sub_pow_coeff_0; [ | easy | ]. 2: {
-        split; [ flia | ].
-        intros H; rewrite H, <- Nat.add_1_r in Hp.
-        now rewrite Hp in Hm.
-      }
-      now rewrite <- f_mul_assoc, f_mul_0_l.
-    }
-    apply f_mul_0_r.
+remember (divisors n) as l eqn:Hl; symmetry in Hl.
+destruct l as [| a l]; [ now destruct n | ].
+specialize (eq_first_divisor_1 n Hn) as H1.
+rewrite Hl in H1; cbn in H1; subst a.
+cbn; rewrite f_add_0_l, <- Ht1.
+assert (H1 : ∀ a, fold_left f_add (map t l) a = a). {
+  intros a.
+  specialize (divisors_are_sorted n) as Hds.
+  rewrite Hl in Hds; clear Hl.
+  apply Sorted.Sorted_StronglySorted in Hds; [ | apply Nat.lt_strorder ].
+  apply Sorted.StronglySorted_inv in Hds.
+  destruct Hds as (Hds, Hall).
+  revert a.
+  induction l as [| b l]; intros; cbn; [ easy | ].
+  rewrite f_add_comm, fold_f_add_assoc.
+  rewrite IHl; cycle 1. {
+    intros d Hd Hd1.
+    apply Hto; [ | easy ].
+    destruct Hd as [Hd| Hd]; [ now subst d | ].
+    now right; right.
+  } {
+    now apply Sorted.StronglySorted_inv in Hds.
+  } {
+    now apply Forall_inv_tail in Hall.
   }
-  rewrite f_add_0_l.
-  replace (k + 2 + 1) with (k + 1 + 2) by flia.
-  apply IHc.
+  rewrite Hto; cycle 1; [ now right; left | | ]. {
+    intros H; subst b.
+    apply Forall_inv in Hall; flia Hall.
+  }
+  apply f_add_0_l.
 }
-replace 2 with (0 + 2) by flia.
-apply H.
+apply H1.
 Qed.
 
-...
-
-(*
 Corollary pol_1_sub_pow_times_series_ζ {F : field} : ∀ n,
   2 ≤ n
   → ((pol_pow 1 - pol_pow n) .* ζ = series_but_mul_of n ζ)%LS.
@@ -2829,7 +2512,6 @@ Proof.
 intros * Hn.
 now apply pol_1_sub_pow_times_series.
 Qed.
-*)
 
 (*
 Here, we try to prove that
@@ -2880,8 +2562,8 @@ rewrite IHl; cycle 1. {
   apply (Hgcd (S na) (S nb)).
   now intros H; apply Hnn; apply Nat.succ_inj in H.
 }
-...
-apply pol_1_sub_pow_times_series.
+apply pol_1_sub_pow_times_series; [ now apply Hge2; left | ].
+intros i Hi.
 ...
 
 Theorem list_of_pow_1_sub_pol_times_series {F : field} : ∀ l r,
