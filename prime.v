@@ -2598,6 +2598,27 @@ apply (Hgcd (S (S na)) (S (S nb))).
 now apply Nat.succ_inj_wd_neg.
 Qed.
 
+Corollary list_of_1_sub_pow_primes_times_ζ {F : field} : ∀ l,
+  (∀ p, p ∈ l → is_prime p = true)
+  → NoDup l
+  → (Π (p ∈ l), (pol_pow 1 - pol_pow p) * ζ =
+     fold_right series_but_mul_of ζ l)%LS.
+Proof.
+intros * Hp Hnd.
+apply list_of_pow_1_sub_pol_times_series; [ | easy | ]. {
+  intros p Hpl.
+  specialize (Hp _ Hpl) as H1.
+  destruct p; [ easy | ].
+  destruct p; [ easy | ].
+  do 2 apply -> Nat.succ_le_mono.
+  apply Nat.le_0_l.
+} {
+  intros * Hnab.
+  destruct (lt_dec na (length l)) as [Hna| Hna]. {
+    specialize (Hp _ (nth_In l 1 Hna)) as H1.
+    destruct (lt_dec nb (length l)) as [Hnb| Hnb]. {
+      specialize (Hp _ (nth_In l 1 Hnb)) as H2.
+      move H1 before H2.
 ...
 
 Theorem list_of_pow_1_sub_pol_times_series {F : field} : ∀ l r,
