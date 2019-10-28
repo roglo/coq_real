@@ -582,11 +582,12 @@ Proof.
 intros p q Hp Hq Hpq.
 specialize (prime_divisors _ Hp) as Hpp.
 specialize (prime_divisors _ Hq) as Hqp.
-...
-apply Nat.bezout_1_gcd.
-unfold Nat.Bezout.
-Search Nat.Bezout.
-...
+specialize (Hpp (Nat.gcd p q) (Nat.gcd_divide_l _ _)) as H1.
+specialize (Hqp (Nat.gcd p q) (Nat.gcd_divide_r _ _)) as H2.
+destruct H1 as [H1| H1]; [ easy | ].
+destruct H2 as [H2| H2]; [ easy | ].
+now rewrite H1 in H2.
+Qed.
 
 (* ζ(s) = Σ (n ∈ ℕ) 1/n^s = Π (p ∈ primes) 1/(1-1/p^s) *)
 
@@ -977,7 +978,7 @@ Proof.
 intros x y Hxy s1 s2 Hss i Hi.
 destruct i; [ flia Hi | clear Hi; rewrite <- (Nat.add_1_r i) ].
 subst x; cbn.
-destruct ((i + 1) mod y) as [H| H]; [ easy | ].
+destruct ((i + 1) mod y); [ easy | ].
 apply Hss; flia.
 Qed.
 
@@ -1170,143 +1171,6 @@ specialize (H2 Nat.lt_wd).
 specialize (H2 (λ a, n mod a =? 0) (seq 1 n)).
 now specialize (H2 (Sorted_Sorted_seq _ _)).
 Qed.
-
-(* playing with numbers represented multiplicativelly *)
-
-(* mmm... ne garantit pas l'unicité d'un nombre ;
-   par exemple, 6 a deux représentations
-      (Times 2 eq_refl (Times 3 eq_refl One)
-      (Times 3 eq_refl (Times 2 eq_refl One) ;
-   on pourrait faire un type dépendant mais c'est la
-   merde parce que deux nombres ne seraient pas du
-   même type ; il va donc nous falloir une comparaison,
-   une équivalence entre deux représentations ;
-   par chance, on a une valeur canonique (premiers
-   dans l'ordre croissant) *)
-Inductive number :=
-  | One : number
-  | Times : ∀ p : nat, is_prime p = true → number → number.
-
-Check (Times 2 eq_refl One).
-Check (Times 3 eq_refl (Times 7 eq_refl One)).
-Check (Times 5 eq_refl (Times 5 eq_refl One)).
-
-Fixpoint nat_of_number n :=
-  match n with
-  | One => 1
-  | Times p _ n' => p * nat_of_number n'
-  end.
-
-Compute (nat_of_number (Times 2 eq_refl One)).
-Compute (nat_of_number (Times 3 eq_refl (Times 7 eq_refl One))).
-Compute (nat_of_number (Times 5 eq_refl (Times 5 eq_refl One))).
-
-Definition smallest_divisor_after_1 n := List.hd 0 (List.tl (divisors n)).
-
-Theorem smallest_divisor_is_prime :
-  ∀ n, 2 ≤ n → is_prime (smallest_divisor_after_1 n) = true.
-Proof.
-intros * Hn.
-unfold smallest_divisor_after_1.
-remember (divisors n) as l eqn:Hl; symmetry in Hl.
-destruct l as [| a l]. {
-  destruct n; [ flia Hn | now destruct n ].
-}
-cbn.
-assert (H : n ≠ 0) by flia Hn.
-specialize (eq_first_divisor_1 n H) as H1; clear H.
-rewrite Hl in H1; cbn in H1; subst a.
-destruct l as [| a l]. {
-  exfalso.
-  specialize (only_1_has_one_divisor n) as H1.
-  rewrite Hl in H1; cbn in H1.
-  specialize (H1 eq_refl); subst n; flia Hn.
-}
-cbn.
-apply Bool.not_false_is_true.
-intros Ha.
-specialize (divisors_are_sorted n) as Hls.
-rewrite Hl in Hls.
-specialize (not_prime_exists_div a) as H1.
-assert (H : 2 ≤ a). {
-  apply Sorted.Sorted_inv in Hls.
-  destruct Hls as (_, Hls).
-  now apply Sorted.HdRel_inv in Hls.
-}
-specialize (H1 H Ha) as (b & Hb & Hba); clear H.
-assert (Hbn : b ∈ divisors n). {
-  unfold divisors, divisors_but_firstn_and_lastn.
-  rewrite Nat_sub_succ_1.
-  apply List.filter_In.
-  assert (Han : a ∈ divisors n) by now rewrite Hl; right; left.
-  apply List.filter_In in Han.
-  rewrite Nat_sub_succ_1 in Han.
-  split. {
-    apply List.in_seq.
-    split; [ flia Hb | ].
-    transitivity a; [ easy | ].
-    destruct Han as (Han, _).
-    now apply List.in_seq in Han.
-  }
-  destruct Han as (_, Han).
-  apply Nat.eqb_eq in Han.
-  apply Nat.eqb_eq.
-  apply Nat.mod_divide in Han; [ | flia Hb ].
-  apply Nat.mod_divide; [ flia Hb | ].
-  now transitivity a.
-}
-rewrite Hl in Hbn.
-cbn in Hbn.
-destruct Hbn as [Hbn| Hbn]; [ flia Hbn Hb | ].
-destruct Hbn as [Hbn| Hbn]; [ flia Hbn Hb | ].
-apply Sorted.Sorted_inv in Hls.
-destruct Hls as (Hls, _).
-apply Sorted.Sorted_inv in Hls.
-destruct Hls as (Hls, Hr).
-clear - Hls Hr Hb Hbn.
-induction l as [| c l]; [ easy | ].
-cbn in Hbn.
-destruct Hbn as [Hbn| Hbn]. {
-  subst c.
-  apply Sorted.HdRel_inv in Hr.
-  flia Hr Hb.
-}
-apply IHl; [ | | easy ]. {
-  now apply Sorted.Sorted_inv in Hls.
-}
-clear - Hls Hr.
-destruct l as [| b l]; [ easy | ].
-constructor.
-specialize (@Sorted.HdRel_inv _ lt _ _ _ Hr) as H1.
-transitivity c; [ easy | ].
-apply Sorted.Sorted_inv in Hls.
-destruct Hls as (_, Hls).
-now apply Sorted.HdRel_inv in Hls.
-Qed.
-
-Fixpoint non_loop cnt n :=
-  match cnt with
-  | 0 => One
-  | S cnt' =>
-      match le_dec 2 n with
-      | left P =>
-          let d := smallest_divisor_after_1 n in
-          let p := smallest_divisor_is_prime n P in
-          Times d p (non_loop cnt' (n / d))
-      | right _ => One
-      end
-  end.
-
-Definition number_of_nat n := non_loop n n.
-
-(*
-Compute (number_of_nat 21).
-Compute (number_of_nat 2).
-Compute (number_of_nat 24).
-Compute (number_of_nat 1001).
-*)
-
-(* end play *)
 
 Theorem fold_f_add_assoc {F : field} : ∀ a b l,
   fold_left f_add l (a + b)%F = (fold_left f_add l a + b)%F.
@@ -2693,8 +2557,18 @@ apply list_of_pow_1_sub_pol_times_series; [ | easy | ]. {
         apply Hnab.
         apply (proj1 (NoDup_nth l 1) Hnd na nb Hna Hnb He).
       }
-...
-now apply eq_primes_gcd_1.
+      now apply eq_primes_gcd_1.
+    }
+    apply Nat.nlt_ge in Hnb.
+    rewrite (nth_overflow _ _ Hnb).
+    apply Nat.gcd_1_r.
+  }
+  apply Nat.nlt_ge in Hna.
+  rewrite (nth_overflow _ _ Hna).
+  apply Nat.gcd_1_r.
+}
+Qed.
+
 ...
 
 Theorem list_of_pow_1_sub_pol_times_series {F : field} : ∀ l r,
