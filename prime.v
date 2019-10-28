@@ -519,6 +519,64 @@ apply Nat.eq_mul_1 in Hz.
 now destruct Hz as (Hz, H); subst d.
 Qed.
 
+Theorem prime_test_mod_ne_0 : ∀ n k,
+  2 ≤ n
+  → prime_test (n - k) n k = true
+  → ∀ d, k ≤ d < n → n mod d ≠ 0.
+Proof.
+intros * Hn Hp d Hd.
+remember (n - k) as cnt eqn:Hcnt; symmetry in Hcnt.
+revert n k d Hn Hcnt Hp Hd.
+induction cnt; intros; [ flia Hcnt Hd | ].
+cbn in Hp.
+remember (n mod k) as m eqn:Hm; symmetry in Hm.
+destruct m; [ easy | ].
+destruct n; [ flia Hcnt | ].
+destruct (Nat.eq_dec k d) as [Hkd| Hkd]. {
+  now intros H; rewrite Hkd, H in Hm.
+}
+apply (IHcnt (S n) (k + 1)); [ easy | flia Hcnt | easy | flia Hd Hkd ].
+Qed.
+
+Theorem prime_divisors : ∀ p,
+  is_prime p = true → ∀ a, Nat.divide a p → a = 1 ∨ a = p.
+Proof.
+intros * Hp a * Hap.
+unfold is_prime in Hp.
+destruct (lt_dec p 2) as [Hp2| Hp2]. {
+  destruct p; [ easy | ].
+  destruct p; [ easy | flia Hp2 ].
+}
+apply Nat.nlt_ge in Hp2.
+destruct (zerop a) as [Ha| Ha]. {
+  subst a.
+  apply Nat.divide_0_l in Hap; flia Hap Hp2.
+}
+apply Nat.neq_0_lt_0 in Ha.
+apply Nat.mod_divide in Hap; [ | easy ].
+apply Nat.mod_divides in Hap; [ | easy ].
+destruct Hap as (k, Hk).
+symmetry in Hk.
+destruct p; [ easy | ].
+destruct p; [ easy | ].
+specialize (prime_test_mod_ne_0 (S (S p)) 2 Hp2) as H1.
+replace (S (S p) - 2) with p in H1 by flia.
+specialize (H1 Hp).
+...
+
+Theorem eq_primes_gcd_1 : ∀ a b,
+  is_prime a = true → is_prime b = true → a ≠ b
+  → Nat.gcd a b = 1.
+Proof.
+intros * Ha Hb Hab.
+Search Nat.gcd.
+Search is_prime.
+...
+apply Nat.bezout_1_gcd.
+unfold Nat.Bezout.
+Search Nat.Bezout.
+...
+
 (* ζ(s) = Σ (n ∈ ℕ) 1/n^s = Π (p ∈ primes) 1/(1-1/p^s) *)
 
 Class field :=
@@ -2619,6 +2677,13 @@ apply list_of_pow_1_sub_pol_times_series; [ | easy | ]. {
     destruct (lt_dec nb (length l)) as [Hnb| Hnb]. {
       specialize (Hp _ (nth_In l 1 Hnb)) as H2.
       move H1 before H2.
+      assert (Hne : nth na l 1 ≠ nth nb l 1). {
+        intros He.
+        apply Hnab.
+        apply (proj1 (NoDup_nth l 1) Hnd na nb Hna Hnb He).
+      }
+...
+now apply eq_primes_gcd_1.
 ...
 
 Theorem list_of_pow_1_sub_pol_times_series {F : field} : ∀ l r,
