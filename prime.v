@@ -562,15 +562,26 @@ destruct p; [ easy | ].
 specialize (prime_test_mod_ne_0 (S (S p)) 2 Hp2) as H1.
 replace (S (S p) - 2) with p in H1 by flia.
 specialize (H1 Hp).
-...
+destruct k; [ now rewrite Nat.mul_0_r in Hk | ].
+destruct k; [ now rewrite Nat.mul_1_r in Hk; right | left ].
+destruct a; [ easy | ].
+destruct a; [ easy | exfalso ].
+specialize (H1 (S (S k))) as H2.
+assert (H : 2 ≤ S (S k) < S (S p)). {
+  split; [ flia Hp2 | rewrite <- Hk; cbn; flia ].
+}
+specialize (H2 H); clear H.
+apply H2; rewrite <- Hk.
+now rewrite Nat.mod_mul.
+Qed.
 
 Theorem eq_primes_gcd_1 : ∀ a b,
   is_prime a = true → is_prime b = true → a ≠ b
   → Nat.gcd a b = 1.
 Proof.
-intros * Ha Hb Hab.
-Search Nat.gcd.
-Search is_prime.
+intros p q Hp Hq Hpq.
+specialize (prime_divisors _ Hp) as Hpp.
+specialize (prime_divisors _ Hq) as Hqp.
 ...
 apply Nat.bezout_1_gcd.
 unfold Nat.Bezout.
