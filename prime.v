@@ -2565,14 +2565,8 @@ rewrite IHl; cycle 1. {
 apply pol_1_sub_pow_times_series; [ now apply Hge2; left | ].
 intros i Hi.
 specialize (Hai a1 (or_introl eq_refl)) as Ha1i.
-...
-(*
-clear - Hi Hai Hgcd.
-*)
-induction l as [| a l]. {
-  cbn; apply Hai; [ now left | easy ].
-}
-cbn.
+clear - Hi Ha1i Hgcd.
+induction l as [| a l]; [ now apply Ha1i | cbn ].
 remember (i mod a) as m eqn:Hm; symmetry in Hm.
 destruct m. {
   destruct a; [ easy | ].
@@ -2581,36 +2575,29 @@ destruct m. {
   rewrite Hm, Nat.mul_comm, <- Nat.mul_assoc, Nat.mul_comm.
   now rewrite Nat.mod_mul.
 }
-destruct a; [ easy | ].
-remember ((a1 * i) mod S a) as n eqn:Hn; symmetry in Hn.
-destruct n. {
-destruct (Nat.eq_dec (S a) a1) as [Hss| Hss]. {
-  subst a1.
-...
-  rewrite Nat.mul_comm in Hn.
-
-apply Nat.mod_divide in Hn; [ | easy ].
-Check Nat.gauss.
-specialize (Nat.gauss (S a) a1 i Hn) as H1.
-specialize (Hgcd (S a) a1) as H2.
-  apply Nat.mod_divides in Hn; [ | easy ].
-  destruct Hn as (n, Hn).
-  move n before m.
-  clear IHl.
-  induction l as [| b l]. {
-    cbn.
-...
-specialize (Nat.div_mod i (S a) (Nat.neq_succ_0 _)) as H1.
-rewrite Hm in H1.
-rewrite H1 at 2.
-rewrite Nat.add_comm, Nat.mul_add_distr_l.
-rewrite Nat.mul_assoc, Nat.mul_shuffle0.
-rewrite Nat.mod_add; [ | easy ].
 remember ((a1 * i) mod a) as n eqn:Hn; symmetry in Hn.
 destruct n. {
   destruct a; [ easy | ].
-  apply Nat.mod_divides in Hn; [ | easy ].
-  destruct Hn as (n, Hn).
+  apply Nat.mod_divide in Hn; [ | easy ].
+  specialize (Nat.gauss (S a) a1 i Hn) as H1.
+  enough (H : Nat.gcd (S a) a1 = 1). {
+    specialize (H1 H); clear H.
+    apply Nat.mod_divide in H1; [ | easy ].
+    now rewrite Hm in H1.
+  }
+  specialize (Hgcd 0 1 (Nat.neq_0_succ _)) as H2.
+  now cbn in H2; rewrite Nat.gcd_comm in H2.
+}
+apply IHl; intros na nb Hnab; cbn.
+destruct na. {
+  destruct nb; [ easy | ].
+  now apply (Hgcd 0 (S (S nb))).
+}
+destruct nb; [ now apply (Hgcd (S (S na)) 0) | ].
+apply (Hgcd (S (S na)) (S (S nb))).
+now apply Nat.succ_inj_wd_neg.
+Qed.
+
 ...
 
 Theorem list_of_pow_1_sub_pol_times_series {F : field} : ∀ l r,
