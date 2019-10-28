@@ -2564,6 +2564,7 @@ rewrite IHl; cycle 1. {
 }
 apply pol_1_sub_pow_times_series; [ now apply Hge2; left | ].
 intros i Hi.
+specialize (Hai a1 (or_introl eq_refl)) as Ha1i.
 ...
 (*
 clear - Hi Hai Hgcd.
