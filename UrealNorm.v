@@ -1,10 +1,10 @@
-Require Import Utf8 Arith Psatz NPeano.
+From Stdlib Require Import Utf8 Arith Psatz.
 Require Import Misc Summation Ureal Rational.
 Import Q.Notations.
 
 Set Nested Proofs Allowed.
 
-Hint Resolve Nat.neq_0_lt_0 : core.
+Global Hint Resolve Nat.neq_0_lt_0 : core.
 
 Definition is_num_9_strict_after {r : radix} u i j :=
   if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false.
@@ -149,18 +149,18 @@ assert (Hgz : g ≠ 0). {
   now apply Nat.pow_nonzero in H.
 }
 split.
--apply Nat.div_le_mono; [ easy | ].
+-apply Nat.Div0.div_le_mono.
  replace (2 * rad ^ s1) with (rad ^ s1 + rad ^ s1) by flia.
  rewrite <- Nat.add_sub_assoc; [ apply Nat.le_add_r | easy ].
--rewrite <- Nat.divide_div_mul_exact; [ | easy | ]; cycle 1. {
+-rewrite <- Nat.Lcm0.divide_div_mul_exact. 2: {
    rewrite Hg; apply Nat.gcd_divide_r.
  }
  apply (Nat.mul_lt_mono_pos_l g); [ now apply Nat.neq_0_lt_0 | ].
- rewrite <- Nat.divide_div_mul_exact; [ | easy | ]; cycle 1. {
+ rewrite <- Nat.Lcm0.divide_div_mul_exact. 2: {
    rewrite Hg; apply Nat.gcd_divide_l.
  }
  rewrite Nat.mul_comm, Nat.div_mul; [ | easy ].
- rewrite <- Nat.divide_div_mul_exact; [ | easy | ]; cycle 1. {
+ rewrite <- Nat.Lcm0.divide_div_mul_exact. 2: {
    apply (Nat.divide_trans _ (rad ^ s1)).
    -rewrite Hg; apply Nat.gcd_divide_r.
    -apply Nat.divide_factor_r.

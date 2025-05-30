@@ -657,7 +657,7 @@ intros.
 destruct x as [| px| px]; [ easy | apply GQle_refl | apply GQle_refl ].
 Qed.
 
-Hint Resolve le_refl : core.
+Global Hint Resolve le_refl : core.
 
 Theorem le_antisymm : ∀ x y, (x ≤ y)%Q → (y ≤ x)%Q → x = y.
 Proof.
@@ -2049,7 +2049,7 @@ destruct x; [ easy | | ].
  now rewrite Nat.add_1_r.
 Qed.
 
-Hint Resolve den_neq_0 : core.
+Global Hint Resolve den_neq_0 : core.
 
 Theorem num_pair_1_r : ∀ a, num (a // 1) = a.
 Proof.
@@ -2420,7 +2420,7 @@ apply (le_pair 0 1); [ easy | easy | ].
 rewrite Nat.mul_1_l; cbn; flia.
 Qed.
 
-Hint Resolve frac_ge_0 : core.
+Global Hint Resolve frac_ge_0 : core.
 
 Theorem frac_lt_1 : ∀ x, (frac x < 1)%Q.
 Proof.

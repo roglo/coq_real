@@ -1,6 +1,6 @@
 (* Reals between 0 and 1; associativity of addition *)
 
-Require Import Utf8 Arith NPeano Psatz PeanoNat.
+From Stdlib Require Import Utf8 Arith Psatz PeanoNat.
 Require Import Misc Summation Rational Ureal UrealNorm UrealAddAssoc1.
 Import Q.Notations.
 Import List.ListNotations.
@@ -16,7 +16,6 @@ Definition digit_9 {r : radix} := mkdig _ (rad - 1) pred_rad_lt_rad.
 Definition ureal_999 {r : radix} := {| ureal i := digit_9 |}.
 
 Definition ureal_shift {r : radix} k x := {| ureal i := ureal x (k + i) |}.
-Arguments ureal_shift _ _ x%F.
 
 Theorem all_9_fA_ge_1_ε {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) = rad - 1)
@@ -130,7 +129,7 @@ rewrite Nat.mul_add_distr_r, Nat.mul_1_l in H1.
 rewrite <- Nat.add_sub_assoc in H1; [ | easy ].
 rewrite <- Nat.add_assoc in H1.
 rewrite Nat.add_comm in H1.
-rewrite Nat.mod_add in H1; [ | easy ].
+rewrite Nat.Div0.mod_add in H1.
 rewrite Nat.add_comm in H1.
 specialize (carry_upper_bound_for_adds m u i Hmz) as Hcm.
 assert (H : ∀ k, u (i + k + 1) ≤ m * (rad - 1)). {
@@ -219,7 +218,7 @@ Theorem carry_succ_lemma1 {r : radix} : ∀ u a,
 Proof.
 intros * Haz H3.
 specialize radix_ge_2 as Hr.
-rewrite Q.frac_pair in H3.
+rewrite Q.frac_pair in H3; [ | easy ].
 rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
 apply (Q.mul_lt_mono_pos_r (rad // 1)%Q) in H3. 2: {
   now apply Q.lt_0_pair.
@@ -277,7 +276,7 @@ split. {
     apply Q.le_pair; [ easy | easy | ].
     rewrite Nat.mul_1_l.
     remember (u mod rad + Q.intg a) as x eqn:Hx.
-    apply (le_trans _ (x * Q.den a)). {
+    apply (Nat.le_trans _ (x * Q.den a)). {
       apply Nat.mul_le_mono_r.
       rewrite Nat.mul_comm.
       now apply Nat.mul_div_le.
@@ -318,7 +317,7 @@ split. {
   apply Q.le_pair; [ easy | easy | ].
   rewrite Nat.mul_1_l.
   remember (u mod rad + Q.intg a) as x eqn:Hx.
-  apply (le_trans _ (x * Q.den a)). {
+  apply (Nat.le_trans _ (x * Q.den a)). {
     apply Nat.mul_le_mono_r.
     rewrite Nat.mul_comm.
     now apply Nat.mul_div_le.
@@ -347,7 +346,7 @@ rewrite <- (Q.pair_sub_l _ 1). 2: {
 apply Q.le_pair_mono_r.
 apply Nat.le_add_le_sub_r.
 rewrite Hm, Nat.mul_add_distr_r, Nat.mul_1_l.
-apply (le_trans _ (Q.intg a / rad * rad + rad)). 2: {
+apply (Nat.le_trans _ (Q.intg a / rad * rad + rad)). 2: {
   apply Nat.add_le_mono_r.
   apply Nat.mul_le_mono_r.
   apply Nat.div_le_mono; [ easy | flia ].
@@ -405,7 +404,7 @@ destruct m. {
   }
   rewrite Q.intg_add_cond; [ | apply Q.le_0_pair | easy ].
   rewrite Q.intg_pair; [ | easy ].
-  rewrite Nat.div_1_r, Q.frac_pair, Nat.mod_1_r.
+  rewrite Nat.div_1_r, Q.frac_pair, Nat.mod_1_r; [ | easy ].
   rewrite Q.add_0_l.
   destruct (Q.lt_le_dec (Q.frac a) 1) as [H3| H3]. {
     now rewrite Nat.add_0_r.
@@ -476,6 +475,7 @@ assert (H8 : rad ≤  Q.intg a mod rad + u mod rad). {
   replace (Q.den a) with (1 * Q.den a) at 1 by flia.
   apply Nat.mul_le_mono_r.
   unfold Q.intg in H8; flia H8.
+...
 }
 specialize (proj2 (Q.intg_interv (Q.intg a) a Haz) eq_refl) as H.
 eapply Q.lt_le_trans; [ apply H | ].
