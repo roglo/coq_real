@@ -2089,7 +2089,7 @@ destruct a.
 -destruct b.
  +rewrite den_0.
   rewrite Nat.gcd_0_r.
-  rewrite Nat.div_0_l; [ | easy ].
+  rewrite Nat.Div0.div_0_l.
   now rewrite den_pair_1_r.
  +unfold "//"%Q.
   unfold den.
@@ -2278,7 +2278,7 @@ assert (Hgz : g ≠ 0) by now intros H; subst g.
 rewrite Nat.div_mul; [ | easy ].
 rewrite Nat.div_mul; [ | easy ].
 assert (Hbb : bb ≠ 0) by now intros H; subst bb; rewrite Nat.mul_0_r in Hb.
-rewrite Nat.mul_mod_distr_r; [ | easy | easy ].
+rewrite Nat.Div0.mul_mod_distr_r.
 rewrite <- mul_pair; [ | easy | easy ].
 rewrite pair_diag; [ | easy ].
 now rewrite mul_1_r.
@@ -2440,7 +2440,7 @@ cbn.
 rewrite num_den; [ | easy ].
 apply le_pair; [ apply GQden_neq_0 | pauto | ].
 cbn; rewrite Nat.mul_comm.
-apply Nat.mul_le_mono_l, Nat.mod_le, GQden_neq_0.
+apply Nat.mul_le_mono_l, Nat.Div0.mod_le.
 Qed.
 
 Theorem intg_small : ∀ x, (0 ≤ x < 1)%Q → intg x = 0.
@@ -2530,23 +2530,18 @@ rewrite Nat.max_r; cycle 1. {
 }
 apply (Nat.mul_cancel_l _ _ c); [ easy | ].
 assert (Hcd : c * (den x / c) = den x). {
-  rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
+  rewrite <- Nat.Lcm0.divide_div_mul_exact.
   -now rewrite Nat.mul_comm, Nat.div_mul.
   -rewrite Hc; apply Nat.gcd_divide_r.
 }
 do 2 rewrite Nat.mul_assoc.
 rewrite Hcd, Nat.mul_comm; f_equal.
-rewrite <- Nat.mul_mod_distr_l; [ | | easy ]; cycle 1. {
-  intros H.
-  apply Nat.div_small_iff in H; [ | easy ].
-  apply Nat.nle_gt in H; apply H; rewrite Hc.
-  apply Nat_gcd_le_r; pauto.
-}
+rewrite <- Nat.Div0.mul_mod_distr_l.
 rewrite Hcd.
-rewrite <- (proj2 (Nat.div_exact _ c Hcz)).
--rewrite Nat.add_comm, Nat.mod_add; [ easy | pauto ].
+rewrite <- (proj2 (Nat.Div0.div_exact _ c)).
+-now rewrite Nat.add_comm, Nat.Div0.mod_add.
 -rewrite Hc.
- apply Nat.mod_divide; [ now rewrite <- Hc | apply Nat.gcd_divide_l ].
+ apply Nat.Lcm0.mod_divide, Nat.gcd_divide_l.
 Qed.
 
 Theorem frac_sub_nat_r : ∀ a x, (0 ≤ x)%Q → (a // 1 ≤ x)%Q →
@@ -2582,24 +2577,19 @@ rewrite Nat.max_r; cycle 1. {
 }
 apply (Nat.mul_cancel_l _ _ c); [ easy | ].
 assert (Hcd : c * (den x / c) = den x). {
-  rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
+  rewrite <- Nat.Lcm0.divide_div_mul_exact.
   -now rewrite Nat.mul_comm, Nat.div_mul.
   -rewrite Hc; apply Nat.gcd_divide_r.
 }
 do 2 rewrite Nat.mul_assoc.
 rewrite Hcd, Nat.mul_comm; f_equal.
-rewrite <- Nat.mul_mod_distr_l; [ | | easy ]; cycle 1. {
-  intros H.
-  apply Nat.div_small_iff in H; [ | easy ].
-  apply Nat.nle_gt in H; apply H; rewrite Hc.
-  apply Nat_gcd_le_r; pauto.
-}
+rewrite <- Nat.Div0.mul_mod_distr_l.
 rewrite Hcd.
-rewrite <- (proj2 (Nat.div_exact _ c Hcz)).
--rewrite <- (Nat.mod_add _ a); [ | easy ].
+rewrite <- (proj2 (Nat.Div0.div_exact _ c)).
+-rewrite <- (Nat.Div0.mod_add _ a).
  now rewrite Nat.mul_comm, Nat.sub_add.
 -rewrite Hc.
- apply Nat.mod_divide; [ now rewrite <- Hc | apply Nat.gcd_divide_l ].
+ apply Nat.Lcm0.mod_divide, Nat.gcd_divide_l.
 Qed.
 
 Theorem intg_interv : ∀ n x, (0 ≤ x)%Q →
@@ -2805,11 +2795,8 @@ rewrite Hc at 2.
 rewrite Nat.div_mul; cycle 1. {
   intros H; now apply Nat.gcd_eq_0_r in H.
 }
-rewrite Nat.div_div; cycle 1. {
-  intros H; now apply Nat.gcd_eq_0_r in H.
-}
--now intros H; subst c.
--now rewrite Nat.mul_comm, <- Hc.
+rewrite Nat.Div0.div_div.
+now rewrite Nat.mul_comm, <- Hc.
 Qed.
 
 Theorem intg_le_mono : ∀ x y, (0 ≤ x)%Q → (x ≤ y)%Q → intg x ≤ intg y.

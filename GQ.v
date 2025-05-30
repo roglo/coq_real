@@ -1298,10 +1298,7 @@ rewrite Nat.sub_succ, Nat.sub_0_r, Nat.add_1_r in Hnd.
 rewrite Ha, Hb, Hnd.
 replace (g * S bb) with (g * S bb * 1) by flia.
 rewrite Nat.mul_assoc.
-rewrite Nat.mul_mod_distr_l; [ | easy | ]; cycle 1. {
-  intros H; apply Nat.eq_mul_0 in H.
-  destruct H; [ now subst g | easy ].
-}
+rewrite Nat.Div0.mul_mod_distr_l.
 now rewrite Nat.mod_1_r, Nat.mul_comm.
 Qed.
 

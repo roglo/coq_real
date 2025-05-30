@@ -126,15 +126,15 @@ Proof. easy. Qed.
 Theorem Nat_mod_add_same_l : ∀ a b, a ≠ 0 → (a + b) mod a = b mod a.
 Proof.
 intros * Ha.
-rewrite <- Nat.add_mod_idemp_l; [ | easy ].
-now rewrite Nat.mod_same.
+rewrite <- Nat.Div0.add_mod_idemp_l.
+now rewrite Nat.Div0.mod_same.
 Qed.
 
 Theorem Nat_mod_add_same_r : ∀ a b, b ≠ 0 → (a + b) mod b = a mod b.
 Proof.
 intros * Ha.
-rewrite <- Nat.add_mod_idemp_r; [ | easy ].
-now rewrite Nat.mod_same, Nat.add_0_r.
+rewrite <- Nat.Div0.add_mod_idemp_r.
+now rewrite Nat.Div0.mod_same, Nat.add_0_r.
 Qed.
 
 Theorem Nat_div_add_same_l : ∀ a b, a ≠ 0 → (a + b) / a = 1 + b / a.
@@ -197,9 +197,9 @@ intros.
 destruct (zerop a) as [Ha| Ha]; [ now subst a | ].
 assert (Haz : a ≠ 0) by (now intros H; subst a).
 rewrite Nat_sqr_sub_1.
-rewrite <- Nat.mul_mod_idemp_l; [ | easy ].
+rewrite <- Nat.Div0.mul_mod_idemp_l.
 replace (a + 1) with (1 + 1 * a) by now rewrite Nat.mul_1_l, Nat.add_comm.
-rewrite Nat.mod_add; [ | easy ].
+rewrite Nat.Div0.mod_add.
 destruct a; [ easy | ].
 rewrite Nat.sub_succ, Nat.sub_0_r.
 destruct a; [ easy | ].
@@ -274,7 +274,7 @@ assert (Hb : b ≠ 0). {
   now intros Hb; rewrite Hb, (Nat.mul_comm (n + 1)) in Hab.
 }
 replace a with (a - n * b + n * b) at 1 by now apply Nat.sub_add.
-rewrite Nat.mod_add; [ | easy ].
+rewrite Nat.Div0.mod_add.
 apply Nat.mod_small.
 apply Nat.add_lt_mono_r with (p := n * b).
 rewrite Nat.add_comm in Hab; cbn in Hab.
@@ -516,7 +516,7 @@ assert (H1 : a = (c + d) / b). {
   now rewrite Nat.div_mul.
 }
 rewrite H1.
-apply Nat.div_le_mono; [ easy | ].
+apply Nat.Div0.div_le_mono.
 apply Nat_le_add_l.
 Qed.
 
