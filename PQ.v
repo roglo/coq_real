@@ -1,6 +1,6 @@
 (* Implementation of positive (non zero) rationals using only nat *)
 
-Require Import Utf8 Arith Morphisms Psatz.
+From Stdlib Require Import Utf8 Arith Morphisms Psatz.
 Require Import Misc.
 
 Set Nested Proofs Allowed.
@@ -8,15 +8,13 @@ Set Nested Proofs Allowed.
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 Reserved Notation "a // b" (at level 32).
 
-Declare Scope PQ_scope.
-Delimit Scope PQ_scope with PQ.
-
 (* A PQ number {PQnum1:=a; PQden1:=b} represents the rational (a+1)/(b+1) *)
 
 Record PQ := PQmake { PQnum1 : nat; PQden1 : nat }.
-Arguments PQmake _%nat _%nat.
-Arguments PQnum1 x%PQ : rename.
-Arguments PQden1 x%PQ : rename.
+
+Declare Scope PQ_scope.
+Delimit Scope PQ_scope with PQ.
+Bind Scope PQ_scope with PQ.
 
 Definition PQ_of_pair n d := PQmake (n - 1) (d - 1).
 Definition nd x y := (PQnum1 x + 1) * (PQden1 y + 1).
@@ -24,10 +22,8 @@ Definition PQeq x y := nd x y = nd y x.
 
 Theorem PQeq_dec : ∀ x y : PQ, {PQeq x y} + {¬ PQeq x y}.
 Proof. intros; apply Nat.eq_dec. Qed.
-Arguments PQeq_dec x%PQ y%PQ.
 
 Definition if_PQeq {A} (P Q : A) x y := if PQeq_dec x y then P else Q.
-Arguments if_PQeq _ _ _ x%PQ y%PQ.
 
 Definition PQlt x y := nd x y < nd y x.
 Definition PQle x y := nd x y ≤ nd y x.
@@ -42,8 +38,6 @@ Definition PQadd_den1 x y := (PQden1 x + 1) * (PQden1 y + 1) - 1.
 
 Definition PQadd x y := PQmake (PQadd_num1 x y) (PQadd_den1 x y).
 Definition PQsub x y := PQmake (PQsub_num1 x y) (PQadd_den1 x y).
-Arguments PQadd x%PQ y%PQ.
-Arguments PQsub x%PQ y%PQ.
 
 (* multiplication, inversion, division *)
 
@@ -51,7 +45,6 @@ Definition PQmul_num1 x y := (PQnum1 x + 1) * (PQnum1 y + 1) - 1.
 Definition PQmul_den1 x y := (PQden1 x + 1) * (PQden1 y + 1) - 1.
 
 Definition PQmul x y := PQmake (PQmul_num1 x y) (PQmul_den1 x y).
-Arguments PQmul x%PQ y%PQ.
 
 Definition PQinv x := PQmake (PQden1 x) (PQnum1 x).
 
@@ -88,16 +81,28 @@ Definition PQ_of_decimal_int (n : Decimal.int) : option PQ :=
   | Decimal.Neg ui => None
   end.
 
+Definition PQ_of_number (n : Number.int) : option PQ :=
+  match n with
+  | Number.IntDecimal n => PQ_of_decimal_int n
+  | Number.IntHexadecimal n => None
+  end.
+
 Definition PQ_to_decimal_uint (pq : PQ) : option Decimal.uint :=
   match PQden1 pq with
   | 0 => Some (Nat.to_uint (PQnum1 pq + 1))
   | _ => None
   end.
 
+Definition PQ_to_number (pq : PQ) : option Number.int :=
+  match PQden1 pq with
+  | 0 => Some (Number.IntDecimal (Nat.to_int (PQnum1 pq + 1)))
+  | _ => None
+  end.
+
 Definition PQ_to_decimal_int (pq : PQ) : option Decimal.int :=
   option_map Decimal.Pos (PQ_to_decimal_uint pq).
 
-Numeral Notation PQ PQ_of_decimal_int PQ_to_decimal_int : PQ_scope.
+Number Notation PQ PQ_of_number PQ_to_number : PQ_scope.
 
 (*
 Check 25%PQ.
@@ -166,7 +171,6 @@ Qed.
 (* inequality *)
 
 Definition PQcompare x y := Nat.compare (nd x y) (nd y x).
-Arguments PQcompare x%PQ y%PQ.
 
 Theorem PQcompare_eq_iff : ∀ x y, PQcompare x y = Eq ↔ (x == y)%PQ.
 Proof. intros; apply Nat.compare_eq_iff. Qed.
@@ -202,7 +206,6 @@ destruct (lt_dec ((xn + 1) * (yd + 1)) ((yn + 1) * (xd + 1))) as [H1| H1].
 -now left.
 -now right; apply Nat.nlt_ge.
 Qed.
-Arguments PQlt_le_dec x%PQ y%PQ.
 
 Theorem PQle_lt_dec : ∀ x y : PQ, {(x ≤ y)%PQ} + {(y < x)%PQ}.
 Proof.
@@ -212,7 +215,6 @@ destruct (le_dec ((xn + 1) * (yd + 1)) ((yn + 1) * (xd + 1))) as [H1| H1].
 -now left.
 -now right; apply Nat.nle_gt.
 Qed.
-Arguments PQle_lt_dec x%PQ y%PQ.
 
 Ltac split_var x :=
   let xn := fresh x in
@@ -376,7 +378,6 @@ f_equal.
 -replace (x1n * y1d * (y2d * x2d)) with (x1n * x2d * y1d * y2d) by flia.
  rewrite Hx; flia.
 Qed.
-Arguments PQsub_morph x1%PQ x2%PQ y1%PQ y2%PQ.
 
 (* allows to use rewrite inside a multiplication
    e.g.
@@ -506,7 +507,6 @@ apply (Nat.le_trans _ ((PQnum1 y + 1) * (PQden1 x + 1) * (PQden1 z + 1))).
 -setoid_rewrite Nat.mul_shuffle0.
  apply Nat.mul_le_mono_pos_r; [ flia | easy ].
 Qed.
-Arguments PQle_trans x%PQ y%PQ z%PQ.
 
 Theorem PQlt_trans : ∀ x y z, (x < y)%PQ → (y < z)%PQ → (x < z)%PQ.
 Proof.
@@ -519,7 +519,6 @@ apply (Nat.lt_trans _ ((PQnum1 y + 1) * (PQden1 x + 1) * (PQden1 z + 1))).
 -setoid_rewrite Nat.mul_shuffle0.
  apply Nat.mul_lt_mono_pos_r; [ flia | easy ].
 Qed.
-Arguments PQlt_trans x%PQ y%PQ z%PQ.
 
 Theorem PQle_lt_trans : ∀ x y z, (x ≤ y)%PQ → (y < z)%PQ → (x < z)%PQ.
 Proof.
@@ -582,7 +581,6 @@ destruct c1.
   apply PQnle_gt in Hc2.
   now exfalso; apply Hc2, PQlt_le_incl.
 Qed.
-Arguments PQcompare_morph x1%PQ x2%PQ Hx%PQ y1%PQ y2%PQ Hy%PQ : rename.
 
 Theorem PQadd_lt_mono_r : ∀ x y z, (x < y)%PQ ↔ (x + z < y + z)%PQ.
 Proof.
@@ -980,7 +978,6 @@ intros.
 setoid_rewrite PQadd_comm.
 apply PQadd_cancel_l.
 Qed.
-Arguments PQadd_cancel_r x%PQ y%PQ z%PQ.
 
 Theorem PQsub_cancel_l : ∀ x y z,
   (y < x)%PQ → (z < x)%PQ → (x - y == x - z)%PQ ↔ (y == z)%PQ.
@@ -1114,11 +1111,19 @@ intros *.
 unfold "==", "*"%PQ, "+"%PQ, "<"%PQ, nd; simpl.
 unfold PQmul_num1, PQadd_den1, PQadd_num1, PQmul_den1, nd; simpl.
 PQtac1; intros Hzy.
-repeat PQtac2.
--repeat rewrite Nat.mul_assoc; f_equal.
- +f_equal; PQtac3; f_equal; apply Nat.mul_shuffle0.
- +f_equal; apply Nat.mul_shuffle0.
--flia Hzy.
+repeat PQtac2. {
+  repeat rewrite Nat.mul_assoc; f_equal. {
+    f_equal; PQtac3; f_equal; apply Nat.mul_shuffle0.
+  }
+  f_equal; apply Nat.mul_shuffle0.
+} {
+  flia Hzy.
+} {
+  apply Nat.neq_0_le_1, Nat.neq_mul_0.
+  split; [ easy | flia Hzy ].
+} {
+  flia Hzy.
+}
 Qed.
 
 Theorem PQmul_sub_distr_l : ∀ x y z,
@@ -1217,7 +1222,6 @@ Require Import Nat_ggcd.
 Definition PQred x :=
   let '(_, (aa, bb)) := ggcd (PQnum1 x + 1) (PQden1 x + 1) in
   PQmake (aa - 1) (bb - 1).
-Arguments PQred x%PQ.
 
 Instance PQred_morph : Proper (PQeq ==> PQeq) PQred.
 Proof.
@@ -1340,7 +1344,8 @@ PQtac2.
 -do 2 PQtac2.
  replace (S yn * (S a * S xd)) with (S a * (S yn * S xd)) by flia.
  rewrite <- Nat.mul_assoc, <- Nat.mul_sub_distr_l.
- simpl; flia Hyx.
+ apply Nat.neq_0_le_1, Nat.neq_mul_0.
+ split; [ easy | flia Hyx ].
 Qed.
 
 Theorem PQred_sub_mul_one_r : ∀ x y a,
@@ -1363,6 +1368,7 @@ PQtac2.
 -do 2 PQtac2.
  replace (S xn * (S a * S yd)) with (S a * (S xn * S yd)) by flia.
  rewrite <- Nat.mul_assoc, <- Nat.mul_sub_distr_l.
+ apply Nat.neq_0_le_1, Nat.neq_mul_0.
  simpl; flia Hyx.
 Qed.
 
@@ -1611,8 +1617,8 @@ destruct a.
  rewrite Nat.sub_add.
  +rewrite Nat.sub_add.
   *rewrite Nat.sub_add; [ | easy ].
-   rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
-  --rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
+   rewrite <- Nat.Lcm0.divide_div_mul_exact.
+  --rewrite <- Nat.Lcm0.divide_div_mul_exact.
    ++replace (S a * (xn + 1)) with ((xn + 1) * S a) by apply Nat.mul_comm.
      replace (S a * (xd + 1)) with ((xd + 1) * S a) by apply Nat.mul_comm.
      rewrite Nat.div_mul; [ | easy ].
@@ -1620,7 +1626,7 @@ destruct a.
    ++rewrite Ha; apply Nat.gcd_divide_r.
   --rewrite Ha; apply Nat.gcd_divide_l.
   *rewrite Nat.sub_add; [ | easy ].
-   rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
+   rewrite <- Nat.Lcm0.divide_div_mul_exact.
   --rewrite Nat.mul_comm, Nat.div_mul; [ flia | easy ].
   --rewrite Ha; apply Nat.gcd_divide_r.
  +rewrite Nat.sub_add.
@@ -1628,11 +1634,11 @@ destruct a.
    do 2 rewrite Nat.add_1_r.
    eapply Nat.le_trans; [ | apply Nat_mul_le_pos_r; flia ].
    do 2 rewrite Nat.add_1_r in Ha.
-   rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
+   rewrite <- Nat.Lcm0.divide_div_mul_exact.
   --rewrite Nat.mul_comm, Nat.div_mul; [ flia | easy ].
   --rewrite Ha; apply Nat.gcd_divide_r.
   *rewrite Nat.sub_add; [ | easy ].
-   rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
+   rewrite <- Nat.Lcm0.divide_div_mul_exact.
   --rewrite Nat.mul_comm, Nat.div_mul; [ flia | easy ].
   --rewrite Ha; apply Nat.gcd_divide_r.
 Qed.

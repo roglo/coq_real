@@ -1,21 +1,20 @@
 (* Positive rationals where num and den are always common primes *)
 (* allowing us to use Leibnitz' equality. *)
 
-Require Import Utf8 Arith Morphisms Init.Nat.
+From Stdlib Require Import Utf8 Arith Morphisms Init.Nat.
 Require Import Misc PQ Nat_ggcd.
 Import PQ_Notations.
 
 Set Nested Proofs Allowed.
 
-Declare Scope GQ_scope.
-Delimit Scope GQ_scope with GQ.
-
 Record GQ :=
   GQmake0
     { PQ_of_GQ : PQ;
       GQprop : Nat.gcd (PQnum1 PQ_of_GQ + 1) (PQden1 PQ_of_GQ + 1) = 1 }.
-Arguments GQmake0 PQ_of_GQ%PQ.
-Arguments PQ_of_GQ x%GQ : rename.
+
+Declare Scope GQ_scope.
+Delimit Scope GQ_scope with GQ.
+Bind Scope GQ_scope with GQ.
 
 (* the use of transparentify below is to allow Numeral Notation of
    values of type Q (file NQ.v) work by always giving eq_refl as
@@ -29,10 +28,8 @@ Definition transparentify {A} (D : {A} + {¬A}) (H : A) : A :=
   end.
 
 Definition GQmake x p := GQmake0 x (transparentify (Nat.eq_dec _ _) p).
-Arguments GQmake x%PQ.
 
 Definition GQ_of_PQ x := GQmake (PQred x) (PQred_gcd x).
-Arguments GQ_of_PQ x%PQ.
 
 Definition GQ_of_pair n d := GQ_of_PQ (PQ_of_pair n d).
 
@@ -40,10 +37,6 @@ Definition GQadd x y := GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
 Definition GQsub x y := GQ_of_PQ (PQ_of_GQ x - PQ_of_GQ y).
 Definition GQmul x y := GQ_of_PQ (PQ_of_GQ x * PQ_of_GQ y).
 Definition GQinv x := GQ_of_PQ (/ PQ_of_GQ x).
-Arguments GQadd x%GQ y%GQ.
-Arguments GQsub x%GQ y%GQ.
-Arguments GQmul x%GQ y%GQ.
-Arguments GQinv x%GQ.
 
 Definition GQlt x y := PQlt (PQ_of_GQ x) (PQ_of_GQ y).
 Definition GQle x y := PQle (PQ_of_GQ x) (PQ_of_GQ y).
@@ -448,20 +441,15 @@ Qed.
 
 Theorem GQlt_trans : ∀ x y z, (x < y)%GQ → (y < z)%GQ → (x < z)%GQ.
 Proof. intros x y z; apply PQlt_trans. Qed.
-Arguments GQlt_trans x%GQ y%GQ z%GQ t%GQ.
 
-Theorem GQle_trans : ∀ x y z, (x ≤ y)%GQ → (y ≤ z)%GQ → (x ≤ z)%GQ.
+Theorem GQle_trans : ∀ x y z, (x ≤ y)%_GQ → (y ≤ z)%_GQ → (x ≤ z)%_GQ.
 Proof. intros x y z; apply PQle_trans. Qed.
 
-Theorem GQlt_le_trans : ∀ x y z, (x < y)%GQ → (y ≤ z)%GQ → (x < z)%GQ.
+Theorem GQlt_le_trans : ∀ x y z, (x < y)%_GQ → (y ≤ z)%_GQ → (x < z)%_GQ.
 Proof. intros x y z; apply PQlt_le_trans. Qed.
 
-Theorem GQle_lt_trans : ∀ x y z, (x ≤ y)%GQ → (y < z)%GQ → (x < z)%GQ.
+Theorem GQle_lt_trans : ∀ x y z, (x ≤ y)%_GQ → (y < z)%_GQ → (x < z)%_GQ.
 Proof. intros x y z; apply PQle_lt_trans. Qed.
-
-Arguments GQle_trans x%GQ y%GQ z%GQ.
-Arguments GQlt_le_trans x%GQ y%GQ z%GQ.
-Arguments GQle_lt_trans x%GQ y%GQ z%GQ.
 
 Theorem GQsub_lt : ∀ x y, (y < x)%GQ → (x - y < x)%GQ.
 Proof.
@@ -889,7 +877,6 @@ now replace (c * b) with (b * c) by apply Nat.mul_comm.
 Qed.
 
 Definition GQcompare x y := PQcompare (PQ_of_GQ x) (PQ_of_GQ y).
-Arguments GQcompare x%GQ y%GQ.
 
 Theorem GQcompare_eq_iff : ∀ x y, GQcompare x y = Eq ↔ x = y.
 Proof.
@@ -1217,8 +1204,6 @@ Qed.
 
 Definition GQnum x := PQnum1 (PQ_of_GQ x) + 1.
 Definition GQden x := PQden1 (PQ_of_GQ x) + 1.
-Arguments GQnum x%GQ.
-Arguments GQden x%GQ.
 
 (* co-fractional part = 1 - fractional part
    defined instead of fractional part because fractional part does not
@@ -1227,7 +1212,6 @@ Definition GQcfrac x := ((GQden x - GQnum x mod GQden x) // GQden x)%GQ.
 (*
 Definition GQintg x := PQintg (PQ_of_GQ x).
 *)
-Arguments GQcfrac x%GQ.
 
 Theorem GQnum_neq_0 : ∀ x, GQnum x ≠ 0.
 Proof.

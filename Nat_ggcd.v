@@ -1,6 +1,6 @@
 (* gcd a b with computation of a/gcd a b and b/gcd a b on the fly *)
 
-Require Import Utf8 Arith Psatz.
+From Stdlib Require Import Utf8 Arith Psatz.
 Require Import Misc.
 
 Set Nested Proofs Allowed.
@@ -226,8 +226,8 @@ destruct g1.
  apply Nat.gcd_eq_0 in Hg1.
  now destruct Hg1; subst a b.
 -subst g.
- rewrite Nat.div_mul_cancel_l; [ | easy | easy ].
- rewrite Nat.div_mul_cancel_l; [ | easy | easy ].
+ rewrite Nat.Div0.div_mul_cancel_l; [ | easy ].
+ rewrite Nat.Div0.div_mul_cancel_l; [ | easy ].
  now rewrite (ggcd_split _ _ (S g1)).
 Qed.
 
@@ -283,7 +283,7 @@ Theorem ggcd_1_l : ∀ n, ggcd 1 n = (1, (1, n)).
 Proof.
 intros.
 erewrite ggcd_split; [ | easy ].
-rewrite Nat.gcd_1_l.
+cbn - [ Nat.div ].
 now do 2 rewrite Nat.div_1_r.
 Qed.
 
@@ -291,7 +291,8 @@ Theorem ggcd_1_r : ∀ n, ggcd n 1 = (1, (n, 1)).
 Proof.
 intros.
 erewrite ggcd_split; [ | easy ].
-rewrite Nat.gcd_1_r.
+rewrite Nat.gcd_comm.
+cbn - [ Nat.div ].
 now do 2 rewrite Nat.div_1_r.
 Qed.
 
