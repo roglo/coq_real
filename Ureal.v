@@ -830,8 +830,10 @@ enough (H : m ≥ b → m * (r - 1) + b < r ^ m). {
 intros Hmb.
 assert (Hb2 : b ≥ 3). {
   rewrite Nat.mul_add_distr_l in Hb.
-...
-  flia Hb Hr.
+  subst b.
+  rewrite <- Nat.add_assoc.
+  eapply Nat.le_trans; [ | apply Nat.le_add_l ].
+  flia Hr.
 }
 clear - Hr Hmb Hb2; revert b Hmb Hb2.
 induction m; intros.
@@ -845,7 +847,7 @@ induction m; intros.
   apply Nat_mul_lt_pow; [ flia Hr | flia Hb2 ].
  +replace (S m * (r - 1)) with (m * (r - 1) + (r - 1)) by (cbn; flia).
   rewrite Nat.add_shuffle0.
-  apply (lt_le_trans _ (r ^ m + (r - 1))).
+  apply (Nat.lt_le_trans _ (r ^ m + (r - 1))).
   *apply Nat.add_lt_mono_r.
    apply IHm; [ flia Hmb H1 | easy ].
   *destruct r; [ flia Hr | cbn ].
@@ -902,7 +904,8 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
   rewrite Q.mul_pair; [ | easy | easy ].
   rewrite Nat.mul_1_l.
   rewrite Q.mul_pair; [ | easy | pauto ].
-  now rewrite Nat.mul_1_r.
+  rewrite Nat.mul_1_r.
+  apply Q.le_refl.
 Qed.
 
 Theorem B_gen_upper_bound_for_mul {r : radix} : ∀ u i n l,
@@ -919,7 +922,7 @@ destruct (zerop l) as [Hl| Hl].
  rewrite Nat.add_0_r.
  rewrite summation_empty; [ | flia Hn ].
  replace 0%Rg with (0 // 1)%Q by easy.
- apply Q.le_pair; [ easy | pauto | flia ].
+ apply Q.le_pair; [ easy | pauto | apply Nat.le_0_l ].
 -eapply Q.le_trans.
  +apply summation_le_compat with
     (g := λ j, (((rad - 1) ^ 2 * rad ^ i) // 1 * (j + 1) // rad ^ j)%Q).
@@ -970,7 +973,9 @@ destruct (zerop l) as [Hl| Hl].
   rewrite Nat.mul_comm.
   rewrite Nat.sub_add. 2: {
     replace (rad ^ l) with (rad ^ l * 1) at 1 by flia.
-    apply Nat.mul_le_mono_l; flia Hr.
+    apply Nat.mul_le_mono_l.
+    eapply Nat.le_trans; [ | apply Nat.le_add_l ].
+    flia Hr.
   }
   rewrite <- Nat_sub_sub_distr.
   *apply Nat.lt_le_incl, Nat.sub_lt. 2: {
@@ -1183,7 +1188,7 @@ destruct i.
       rewrite Hmz, Nat.mul_0_r, Nat.mul_0_l.
       apply Nat.neq_0_lt_0, Nat.neq_mul_0; pauto.
     }
-    apply (lt_le_trans _ (rad ^ S l * m * rad ^ S k)).
+    apply (Nat.lt_le_trans _ (rad ^ S l * m * rad ^ S k)).
    ++apply Nat.mul_lt_mono_pos_r; [ apply Nat.neq_0_lt_0; pauto | ].
      apply Nat.mul_lt_mono_pos_r; [ easy | ].
      apply Nat.sub_lt; [ | pauto ].
@@ -1210,7 +1215,7 @@ specialize radix_ge_2 as Hr.
 apply (B_upper_bound_for_adds 2); [ easy | | easy ].
 replace (n - i - k - 2) with (3 + (n - i - k - 5)) by flia Hikn.
 rewrite Nat.pow_add_r.
-apply (lt_le_trans _ (rad ^ 3 * 1)). {
+apply (Nat.lt_le_trans _ (rad ^ 3 * 1)). {
   destruct rad as [| rr]; [ easy | ].
   destruct rr; [ flia Hr | cbn; flia ].
 }
@@ -1346,7 +1351,7 @@ apply Q.nlt_ge; intros H2.
 rewrite <- ApB_A in H2; [ | easy ].
 rewrite Q.frac_add in H2; [ | easy | easy ].
 assert (Hmrk : m < rad ^ (n - i - k - 2)). {
-  eapply lt_le_trans; [ apply Hmr | ].
+  eapply Nat.lt_le_trans; [ apply Hmr | ].
   apply Nat.pow_le_mono_r; [ easy | ].
   rewrite (Nat_sub_sub_swap _ i).
   rewrite <- Nat.sub_add_distr.
@@ -1377,6 +1382,9 @@ destruct (Q.lt_le_dec (Q.frac (A i n u) + B i n u l) 1) as [H4| H4].
 -rewrite Q.frac_small in H2. 2: {
    split; [ | easy ].
    replace 0%Q with (0 + 0)%Q by easy.
+(**)
+   apply Q.add_le_mono; [ | apply HB ].
+...
    apply Q.add_le_mono; [ easy | apply HB ].
  }
  apply Q.nle_gt in H2; apply H2; clear H2.
