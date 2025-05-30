@@ -3623,6 +3623,7 @@ Qed.
   d  -  -  -  d
 *)
 
+(* to be completed
 Theorem pre_Hugo_Herbelin_82_rad_2_lemma_1 {r : radix} : ∀ u v i j k,
   rad = 2
   → (∀ k, u (i + k) ≤ 1)
@@ -5119,6 +5120,7 @@ clear nj q; rename nk into n.
 ...
 *)
 
+(* to be completed
 Theorem pre_Hugo_Herbelin_82 {r : radix} : ∀ u v i j k,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -5579,6 +5581,7 @@ specialize (H1 H); clear H.
 ...
 *)
 
+(* to be completed
 Theorem pre_Hugo_Herbelin {r : radix} : ∀ u v i,
   (∀ k, u (i + k) ≤ rad - 1)
   → (∀ k, v (i + k) ≤ 2 * (rad - 1))
@@ -6738,3 +6741,4 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
  +destruct H2 as (j2 & Hjj2 & Hj2); simpl.
   ...
 Qed.
+*)
