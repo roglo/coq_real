@@ -194,7 +194,7 @@ destruct H3 as [H3| [H3| H3]].
    --rewrite Nat.add_0_l in H4.
      specialize (H3 0); rewrite Nat.add_0_r in H3.
      rewrite H3, Nat.sub_add in H4; [ | easy ].
-     rewrite Nat.mod_same in H4; [ | easy ].
+     rewrite Nat.Div0.mod_same in H4; [ | easy ].
      flia Hr H4.
    --specialize (A_dig_seq_ub u (min_n (i + 1) 0) (i + 1)) as H6.
      assert (H : ∀ j, i + 1 < j < min_n (i + 1) 0 → u j < rad). {
@@ -413,7 +413,7 @@ destruct H3 as [H3| [H3| H3]].
      now apply Nat_pow_ge_1.
   }
   replace (rad - 2 + 1 + 1) with rad in H3 by flia Hr.
-  rewrite Nat.mod_same in H3; [ flia Hr H3 | easy ].
+  rewrite Nat.Div0.mod_same in H3; [ flia Hr H3 | easy ].
  +destruct H4 as (k & Hjk & Hk); simpl in H3.
   specialize (H2 (j + 1 + k)).
 Abort. (* à compléter
@@ -854,7 +854,7 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
  +rewrite <- Hs1.
   rewrite Nat.div_small.
   *rewrite Nat.add_0_l, Nat.sub_add; [ | flia Hr ].
-   now apply Nat.mod_same.
+   now apply Nat.Div0.mod_same.
   *apply Nat.sub_lt; [ | apply Nat.lt_0_1 ].
    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 -destruct H1 as (j & Hjj & Hj).
@@ -964,7 +964,7 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
    replace (i + k + (j - k - 1) + 1) with (i + j) by flia H2.
    rewrite Nat.div_small.
   --rewrite Nat.add_0_l, Nat.sub_add; [ | easy ].
-    now apply Nat.mod_same.
+    now apply Nat.Div0.mod_same.
   --apply Nat.sub_lt.
    ++destruct (le_dec (i + j) (n1 - 1)) as [H3| H3].
     **destruct s1.
@@ -981,7 +981,7 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
    rewrite nA_all_18; [ | apply Haft ].
    rewrite <- Hs1.
    rewrite Nat_div_less_small.
-  --rewrite Nat.sub_add; [ now apply Nat.mod_same | easy ].
+  --rewrite Nat.sub_add; [ now apply Nat.Div0.mod_same | easy ].
   --apply rad_pow_le_lt; rewrite Hs1, Hn1.
     destruct rad; [ easy | simpl; flia ].
   *specialize (Haft (k - j - 1)) as H4.

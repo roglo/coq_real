@@ -500,7 +500,7 @@ rewrite Nat.add_assoc.
 rewrite H1.
 rewrite Nat.mul_comm, <- Nat.add_assoc, (Nat.add_comm).
 apply Nat.add_le_mono_r.
-rewrite <- Nat.add_mod_idemp_r; [ | easy ].
+rewrite <- Nat.Div0.add_mod_idemp_r.
 rewrite (Nat_mod_less_small 1). 2: {
   rewrite Nat.mul_1_l; split; [ easy | ].
   rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
@@ -870,7 +870,7 @@ assert (Hci1 : carry u (i + 1) mod rad = 1). {
   rewrite Nat.add_0_r in H1.
   unfold P, d2n, prop_carr, dig in H1.
   rewrite Hu1 in H1.
-  rewrite <- Nat.add_mod_idemp_r in H1; [ | easy ].
+  rewrite <- Nat.Div0.add_mod_idemp_r in H1.
   remember (carry u (i + 1) mod rad) as c eqn:Hc.
   symmetry in Hc.
   destruct c; [ rewrite Nat.add_0_r, Nat.mod_small in H1; flia Hr H1 | ].
@@ -878,7 +878,7 @@ assert (Hci1 : carry u (i + 1) mod rad = 1). {
   replace (rad - 2 + S (S c)) with (rad + c) in H1 by flia Hr.
   rewrite Nat_mod_add_same_l in H1; [ | easy ].
   destruct c. {
-    rewrite Nat.mod_0_l in H1; [ flia Hr H1 | easy ].
+    rewrite Nat.Div0.mod_0_l in H1; flia Hr H1.
   }
   specialize (Hc3 1) as H2.
   apply Nat.nle_gt in H2; apply H2; clear H2.
@@ -896,7 +896,7 @@ assert (Hci2 : carry u (i + 2) = 1). {
   }
   destruct (Nat.eq_dec (carry u (i + 2)) 2) as [Hc22| Hc22]. {
     rewrite Hc22, Nat.sub_add in H1; [ | easy ].
-    rewrite Nat.mod_same in H1; [ flia Hr H1 | easy ].
+    rewrite Nat.Div0.mod_same in H1; flia Hr H1.
   }
   specialize (Hc3 2) as H7.
   flia Hc20 Hc22 H7.
@@ -960,7 +960,7 @@ rewrite <- Ha in Hci2.
 destruct (Q.lt_le_dec (((rad - 2) // rad)%Q + (a * 1 // rad)%Q) 1)
   as [H1| H1]. {
   rewrite Nat.add_0_r in Hci1.
-  rewrite Q.intg_small in Hci1; [ now rewrite Nat.mod_0_l in Hci1 | ].
+  rewrite Q.intg_small in Hci1; [ now rewrite Nat.Div0.mod_0_l in Hci1 | ].
   apply Q.intg_interv in Hci2; [ | now rewrite Ha ].
   rewrite Ha.
   split; [ now apply Q.le_0_mul_r | ].
@@ -1377,11 +1377,11 @@ destruct
       rewrite Nat.mod_small in H7. 2: {
         remember (carry u (i + p + 2)) as x eqn:Hx.
         symmetry in Hx.
-        destruct x; [ now rewrite Nat.mod_0_l in H7 | ].
+        destruct x; [ now rewrite Nat.Div0.mod_0_l in H7 | ].
         destruct x; [ pauto | exfalso ].
         replace (S (S x)) with (2 + x) in H7 by easy.
         rewrite Nat_mod_add_same_l in H7; [ | easy ].
-        destruct x; [ now rewrite Nat.mod_0_l in H7 | ].
+        destruct x; [ now rewrite Nat.Div0.mod_0_l in H7 | ].
         specialize (Hc3 (p + 2)) as H.
         rewrite Nat.add_assoc in H.
         flia Hx H.
@@ -1512,11 +1512,11 @@ destruct
     rewrite Nat.mod_small in H7. 2: {
       remember (carry u (i + p + 2)) as x eqn:Hx.
       symmetry in Hx.
-      destruct x; [ now rewrite Nat.mod_0_l in H7 | ].
+      destruct x; [ now rewrite Nat.Div0.mod_0_l in H7 | ].
       destruct x; [ pauto | exfalso ].
       replace (S (S x)) with (2 + x) in H7 by easy.
       rewrite Nat_mod_add_same_l in H7; [ | easy ].
-      destruct x; [ now rewrite Nat.mod_0_l in H7 | ].
+      destruct x; [ now rewrite Nat.Div0.mod_0_l in H7 | ].
       specialize (Hc3 (p + 2)) as H.
       rewrite Nat.add_assoc in H.
       flia Hx H.
@@ -2039,7 +2039,7 @@ destruct pv. {
       rewrite A_split_first in Hpv; [ | min_n_ge ].
       replace (S (i + 1)) with (i + 2) in Hpv by easy.
       rewrite (proj2 H1), Q.add_0_l in Hpv.
-      rewrite Q.intg_small in Hpv; [ now rewrite Nat.mod_0_l in Hpv | ].
+      rewrite Q.intg_small in Hpv; [ now rewrite Nat.Div0.mod_0_l in Hpv | ].
       split; [ now apply Q.le_0_mul_r | ].
       rewrite Hr2.
       apply rad_2_sum_2_half_A_lt_1; [ easy | ].
@@ -3421,9 +3421,11 @@ Fixpoint rep_2s_3_1s_0_loop m u i (in2 : bool) n2 n1 :=
 
 Definition rep_2s_3_1s_0 u i di := rep_2s_3_1s_0_loop di u i true 0 0.
 
+(*
 Compute
   (let l := [2;2;2;3;1;1;0;3;1;0;1;2;3;4;5] in
    rep_2s_3_1s_0 (λ i, List.nth i l 42) 0 (length l)).
+*)
 
 Theorem carry_0_A_lt_1 {r : radix} : ∀ u i n,
   n ≤ min_n (i + carry_cases u i)
@@ -3811,7 +3813,7 @@ u+v between i+1 and i+p+2 must be (2*31*0)*
   do 2 rewrite Nat.add_0_l.
   remember (carry v (i + 1)) as cv1 eqn:Hcv1; symmetry in Hcv1.
   destruct cv1. {
-    rewrite Nat.mod_0_l; [ | easy ].
+    rewrite Nat.Div0.mod_0_l; [ | easy ].
     rewrite Q.add_0_l.
     apply rad_2_sum_2_half_A_lt_1; [ easy | ].
     intros q; unfold "⊕"; rewrite <- Nat.add_assoc.
@@ -5650,11 +5652,11 @@ destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
   do 2 rewrite Nat.add_assoc.
   rewrite (Nat.add_comm (Q.intg (A i nuv v))).
   do 3 rewrite <- Nat.add_assoc.
-  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite <- Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite <- Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
   f_equal; f_equal.
-  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite <- Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite <- Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
   f_equal; f_equal.
   assert (HA : (0 ≤ A i nuv u < 1)%Q). {
     split; [ easy | ].
@@ -5835,8 +5837,8 @@ specialize (proj1 (frac_ge_if_all_fA_ge_1_ε v i) H3) as H.
 ...
  rewrite (all_fA_ge_1_ε_NQintg_A' 3); [ symmetry | easy | easy ].
  rewrite all_fA_ge_1_ε_NQintg_A'; [ symmetry | easy | easy ].
- rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
- rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+ rewrite <- Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
+ rewrite <- Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
  f_equal; f_equal; f_equal.
  subst kv.
  remember (Q.intg (A i nuv v)) as m eqn:Hm.
@@ -6008,15 +6010,15 @@ unfold P, add_series.
 replace (λ i, u i + v i) with (u ⊕ v) by easy.
 replace (λ i, u i + v' i) with (u ⊕ v') by easy.
 do 2 rewrite <- Nat.add_assoc.
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
 remember (v' i) as x eqn:Hx.
 rewrite Hv' in Hx; subst x; cbn.
 rewrite Nat.Div0.add_mod_idemp_l; [ | easy ].
 rewrite <- Nat.add_assoc.
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
+rewrite <- Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
 subst v'; rewrite Nat.add_comm; symmetry.
 now apply pre_Hugo_Herbelin.
@@ -6145,15 +6147,15 @@ destruct (LPO_fst (A_ge_1 (y ⊕ z) i)) as [H3| H3].
   rewrite A_ge_1_ureal_add_series_all_true in H5; [ | easy ].
   now rewrite Nat.add_0_r in H5.
  +destruct H4 as (j2 & Hjj2 & Hj2); simpl.
-  rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
-  rewrite Nat.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
   unfold ureal_add_series at 1 3.
   do 4 rewrite Nat.add_assoc.
   do 2 rewrite fold_fd2n.
   replace (fd2n z i + fd2n y i + fd2n x i) with
       (fd2n x i + fd2n y i + fd2n z i) by flia.
-  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
-  rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite <- Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
+  rewrite <- Nat.Div0.add_mod_idemp_r; [ symmetry | easy ].
   f_equal; f_equal.
   move j2 before j1.
   apply A_ge_1_false_iff in Hj1.
