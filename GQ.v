@@ -71,6 +71,12 @@ Definition GQ_of_decimal_int (n : Decimal.int) : option GQ :=
   | Decimal.Neg ui => None
   end.
 
+Definition GQ_of_number (n : Number.int) : option GQ :=
+  match n with
+  | Number.IntDecimal n => GQ_of_decimal_int n
+  | Number.IntHexadecimal n => None
+  end.
+
 Definition GQ_to_decimal_uint (gq : GQ) : option Decimal.uint :=
   let (num, den) := PQ_of_GQ gq in
   match den with
@@ -81,7 +87,14 @@ Definition GQ_to_decimal_uint (gq : GQ) : option Decimal.uint :=
 Definition GQ_to_decimal_int (gq : GQ) : option Decimal.int :=
   option_map Decimal.Pos (GQ_to_decimal_uint gq).
 
-Numeral Notation GQ GQ_of_decimal_int GQ_to_decimal_int : GQ_scope.
+Definition GQ_to_number (gq : GQ) : option Number.int :=
+  let (num, den) := PQ_of_GQ gq in
+  match den with
+  | 0 => Some (Number.IntDecimal (Nat.to_int (num + 1)))
+  | _ => None
+  end.
+
+Number Notation GQ GQ_of_number GQ_to_number : GQ_scope.
 
 (* Set Printing All. *)
 (* Check 1%GQ. *)
@@ -1258,16 +1271,17 @@ now do 2 rewrite Nat.add_sub.
 Qed.
 
 Theorem GQnum_mult_GQden : ∀ a b n,
-  GQnum (a // b)%GQ = GQden (a // b)%GQ * n
+  b ≠ 0
+  → GQnum (a // b)%GQ = GQden (a // b)%GQ * n
   → a mod b = 0.
 Proof.
-intros * Hnd.
+intros * Hbz Hnd.
 unfold GQnum, GQden in Hnd.
 unfold GQ_of_PQ in Hnd; cbn in Hnd.
 unfold PQred in Hnd.
 remember ggcd as f; cbn in Hnd; subst f.
 destruct b; [ easy | ].
-destruct a; [ now rewrite Nat.mod_0_l | ].
+destruct a; [ now rewrite Nat.Div0.mod_0_l | ].
 rewrite Nat.sub_add in Hnd; [ | flia ].
 rewrite Nat.sub_add in Hnd; [ | flia ].
 remember (ggcd (S a) (S b)) as g eqn:Hg.
