@@ -214,6 +214,12 @@ Definition of_decimal_int (n : Decimal.int) : Q :=
   | Decimal.Neg ui => (- of_decimal_uint ui)%Q
   end.
 
+Definition of_number (n : Number.int) : option Q :=
+  match n with
+  | Number.IntDecimal n => Some (of_decimal_int n)
+  | Number.IntHexadecimal n => None
+  end.
+
 Definition to_decimal_uint (gq : GQ) : option Decimal.uint :=
   let (num, den) := PQ_of_GQ gq in
   match den with
@@ -228,7 +234,13 @@ Definition to_decimal_int (q : Q) : option Decimal.int :=
   | Neg gq => option_map Decimal.Neg (to_decimal_uint gq)
   end.
 
-Number Notation Q of_decimal_int to_decimal_int : Q_scope.
+Definition to_number (q : Q) : option Number.int :=
+  match to_decimal_int q with
+  | Some n => Some (Number.IntDecimal n)
+  | None => None
+  end.
+
+Number Notation Q of_number to_number : Q_scope.
 
 End Notations.
 
@@ -583,7 +595,7 @@ Qed.
 Theorem mul_inv_l : ∀ x, x ≠ 0%Q → (x / x = 1)%Q.
 Proof.
 intros * Hx.
-unfold "/"%Q.
+progress unfold "*"%Q.
 destruct x as [| gx| gx]; [ easy | | ].
 -cbn; f_equal; apply GQmul_inv_r.
 -cbn; f_equal; apply GQmul_inv_r.
@@ -2058,7 +2070,7 @@ Proof.
 intros.
 destruct a; [ now destruct b | ].
 destruct b. {
-  rewrite den_0, Nat.gcd_1_r, num_pair_1_r.
+  rewrite den_0, Nat.gcd_comm, num_pair_1_r.
   symmetry; apply Nat.div_1_r.
 }
 unfold "//"%Q.
@@ -2241,36 +2253,35 @@ Qed.
 Definition frac x := ((num x mod den x) // den x)%Q.
 Definition intg x := num x / den x.
 
-Theorem frac_pair : ∀ a b, frac (a // b) = ((a mod b) // b)%Q.
+Theorem frac_pair : ∀ a b, b ≠ 0 → frac (a // b) = ((a mod b) // b)%Q.
 Proof.
-intros.
-destruct (zerop a) as [Ha| Ha].
--subst a; destruct b; [ easy | cbn; now rewrite Nat.sub_diag ].
--destruct a; [ easy | clear Ha ].
- unfold frac; cbn.
- destruct b.
- +rewrite GQnum_pair_0_r; [ | easy ].
-  now rewrite GQden_pair_0_r.
- +rewrite GQnum_pair.
-  rewrite GQden_pair.
-  remember Nat.gcd as f; remember Nat.modulo as g; cbn; subst f g.
-  remember (Nat_ggcd.ggcd (S a) (S b)) as g eqn:Hg.
-  destruct g as (g, (aa, bb)).
-  rewrite <- Nat_ggcd.ggcd_gcd, <- Hg.
-  remember S as f; cbn; subst f.
-  specialize (Nat_ggcd.ggcd_correct_divisors (S a) (S b)) as H.
-  rewrite <- Hg in H.
-  destruct H as (Ha, Hb).
-  rewrite Ha, Hb.
-  setoid_rewrite Nat.mul_comm.
-  assert (Hgz : g ≠ 0) by now intros H; subst g.
-  rewrite Nat.div_mul; [ | easy ].
-  rewrite Nat.div_mul; [ | easy ].
-  assert (Hbb : bb ≠ 0) by now intros H; subst bb; rewrite Nat.mul_0_r in Hb.
-  rewrite Nat.mul_mod_distr_r; [ | easy | easy ].
-  rewrite <- mul_pair; [ | easy | easy ].
-  rewrite pair_diag; [ | easy ].
-  now rewrite mul_1_r.
+intros * Hbz.
+destruct (zerop a) as [Ha| Ha]. {
+  subst a; destruct b; [ easy | cbn; now rewrite Nat.sub_diag ].
+}
+destruct a; [ easy | clear Ha ].
+unfold frac; cbn.
+destruct b; [ easy | ].
+rewrite GQnum_pair.
+rewrite GQden_pair.
+remember Nat.gcd as f; remember Nat.modulo as g; cbn; subst f g.
+remember (Nat_ggcd.ggcd (S a) (S b)) as g eqn:Hg.
+destruct g as (g, (aa, bb)).
+rewrite <- Nat_ggcd.ggcd_gcd, <- Hg.
+remember S as f; cbn; subst f.
+specialize (Nat_ggcd.ggcd_correct_divisors (S a) (S b)) as H.
+rewrite <- Hg in H.
+destruct H as (Ha, Hb).
+rewrite Ha, Hb.
+setoid_rewrite Nat.mul_comm.
+assert (Hgz : g ≠ 0) by now intros H; subst g.
+rewrite Nat.div_mul; [ | easy ].
+rewrite Nat.div_mul; [ | easy ].
+assert (Hbb : bb ≠ 0) by now intros H; subst bb; rewrite Nat.mul_0_r in Hb.
+rewrite Nat.mul_mod_distr_r; [ | easy | easy ].
+rewrite <- mul_pair; [ | easy | easy ].
+rewrite pair_diag; [ | easy ].
+now rewrite mul_1_r.
 Qed.
 
 Theorem intg_frac : ∀ x, (0 ≤ x)%Q → x = (intg x // 1 + frac x)%Q.

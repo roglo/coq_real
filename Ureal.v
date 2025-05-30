@@ -2,7 +2,7 @@
    Implemented as function of type nat → nat.
    Operations + and * implemented using LPO. *)
 
-Require Import Utf8 Arith Psatz NPeano.
+From Stdlib Require Import Utf8 Arith Psatz.
 Require Import Misc Summation Rational.
 Import Init.Nat PeanoNat.
 Import Q.Notations.
@@ -144,14 +144,13 @@ Proof. easy. Qed.
 
 (* Frac Real *)
 
+Record Ureal {r : radix} := { ureal : nat → digit }.
+
 Declare Scope ureal_scope.
 Delimit Scope ureal_scope with F.
-
-Record Ureal {r : radix} := { ureal : nat → digit }.
-Arguments ureal r _%F.
+Bind Scope ureal_scope with Ureal.
 
 Definition fd2n {r : radix} x (i : nat) := dig (ureal x i).
-Arguments fd2n _ x%F i%nat.
 
 (* *)
 
@@ -187,7 +186,7 @@ revert b; induction a; intros.
  remember 2 as t; cbn; subst t.
  replace (S (b + 3)) with (b + 3 + 1) by now rewrite Nat.add_comm.
  rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
- apply (lt_le_trans _ (2 ^ (b + 3) + 2)).
+ apply (Nat.lt_le_trans _ (2 ^ (b + 3) + 2)).
  +apply Nat.add_lt_mono_r, IHb.
  +remember (2 ^ (b + 3)) as x; cbn; subst x.
   rewrite Nat.add_0_r.
@@ -199,7 +198,7 @@ revert b; induction a; intros.
   apply Nat_pow_ge_1, Nat.lt_0_2.
 -replace (S a + 2) with (a + 2 + 1) at 1 by now rewrite Nat.add_comm.
  rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
- apply (lt_le_trans _ ((a + 2) ^ (b + 3) + (b + 3))).
+ apply (Nat.lt_le_trans _ ((a + 2) ^ (b + 3) + (b + 3))).
  +apply Nat.add_lt_mono_r, IHa.
  +clear IHa.
   revert a; induction b; intros. {
@@ -212,7 +211,7 @@ revert b; induction a; intros.
   replace (S b + 3) with (b + 3 + 1) at 3 by flia.
   remember (S b + 3) as x.
   rewrite Nat.pow_add_r, Nat.pow_1_r; subst x.
-  apply (le_trans _ (((a + 2) ^ (b + 3) + (b + 3)) * (S a + 2))).
+  apply (Nat.le_trans _ (((a + 2) ^ (b + 3) + (b + 3)) * (S a + 2))).
   2: apply Nat.mul_le_mono_r, IHb.
   rewrite Nat.mul_add_distr_r.
   replace (S b + 3) with (b + 4) by flia.
@@ -277,13 +276,10 @@ Definition normalize {r : radix} (u : nat → digit) i :=
 Definition ureal_normalize {r : radix} x :=
   {| ureal i := normalize (ureal x) i |}.
 
-Arguments ureal_normalize r x%F.
-
 Definition has_same_digits {r : radix} x y i :=
   if Nat.eq_dec (fd2n x i) (fd2n y i) then true else false.
 
 Definition ureal_norm_eq {r : radix} x y := ∀ i, fd2n x i = fd2n y i.
-Arguments ureal_norm_eq _ x%F y%F.
 
 Definition ureal_norm_lt {r : radix} x y :=
   match LPO_fst (has_same_digits x y) with
@@ -301,8 +297,6 @@ Definition ureal_norm_le {r : radix} x y :=
 
 Definition ureal_eq {r : radix} x y :=
   ureal_norm_eq (ureal_normalize x) (ureal_normalize y).
-
-Arguments ureal_eq _ x%F y%F.
 
 Definition ureal_lt {r : radix} x y :=
   ureal_norm_lt (ureal_normalize x) (ureal_normalize y).
@@ -350,7 +344,6 @@ Qed.
 (* Addition, Multiplication *)
 
 Definition ureal_add_series {r : radix} a b i := fd2n a i + fd2n b i.
-Arguments ureal_add_series _ a%F b%F.
 
 Notation "x ⊕ y" := (ureal_add_series x y) (at level 50) : ureal_scope.
 
@@ -412,7 +405,7 @@ cbn.
 rewrite Nat.mul_assoc.
 replace 3 with (3 * 1) by easy.
 apply Nat.mul_le_mono; [ | now apply Nat_pow_ge_1 ].
-apply (le_trans _ 4); [ pauto | ].
+apply (Nat.le_trans _ 4); [ pauto | ].
 replace 4 with (2 * 2) by easy.
 now apply Nat.mul_le_mono.
 Qed.
@@ -438,7 +431,6 @@ Definition ureal_mul_to_seq {r : radix} (a b : Ureal) :=
 *)
 
 Definition ureal_add {r : radix} x y := {| ureal := prop_carr (x ⊕ y)%F |}.
-Arguments ureal_add _ x%F y%F.
 
 (*
 Definition ureal_mul {r : radix} (a b : Ureal) :=
@@ -470,7 +462,7 @@ Theorem A_split {r : radix} : ∀ e u i n,
 Proof.
 intros * Hin.
 unfold A.
-rewrite summation_split with (e0 := e - 1); [ | flia Hin ].
+rewrite summation_split with (e := e - 1); [ | flia Hin ].
 remember (1 // rad ^ (e - i - 1))%Q as rr; simpl; subst rr; f_equal.
 rewrite summation_mul_distr_r.
 replace (e - 1 + 1) with (S (e - 1)) by flia.
@@ -750,7 +742,7 @@ induction n; intros.
  subst XXX.
  split.
  +rewrite Nat.mul_add_distr_r.
-  apply (le_trans _ ((b + S n) * r)); [ | apply Nat.le_add_r ].
+  apply (Nat.le_trans _ ((b + S n) * r)); [ | apply Nat.le_add_r ].
   replace (b + S n) with ((b + S n) * 1) at 1 by flia Hr.
   apply Nat.mul_le_mono_l; flia Hr.
  +rewrite Nat.pow_add_r, Nat.pow_1_r, Nat.mul_assoc.
@@ -838,6 +830,7 @@ enough (H : m ≥ b → m * (r - 1) + b < r ^ m). {
 intros Hmb.
 assert (Hb2 : b ≥ 3). {
   rewrite Nat.mul_add_distr_l in Hb.
+...
   flia Hb Hr.
 }
 clear - Hr Hmb Hb2; revert b Hmb Hb2.
@@ -1730,8 +1723,6 @@ intros i.
 subst nxy nyx; unfold fd2n; f_equal.
 apply dig_unorm_add_comm.
 Qed.
-
-Arguments ureal_add_comm _ x%F y%F.
 
 Theorem A_split_first {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
