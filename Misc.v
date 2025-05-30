@@ -1,5 +1,5 @@
-Require Import Utf8 Arith.
-Require List.
+From Stdlib Require Import Utf8 Arith.
+From Stdlib Require List.
 Import List.ListNotations.
 Open Scope list_scope.
 
@@ -380,7 +380,7 @@ destruct (eq_nat_dec m (S p)) as [Hm| Hm].
    now apply Nat.le_antisymm.
  }
  rewrite Nat.sub_succ_l; cycle 1. {
-   apply (le_trans _ m); [ now apply Nat.lt_le_incl | ].
+   apply (Nat.le_trans _ m); [ now apply Nat.lt_le_incl | ].
    apply Nat.nlt_ge; intros H; apply Hm.
    now apply Nat.le_antisymm.
  }
@@ -419,7 +419,7 @@ induction n; intros.
  specialize (H1 H); clear H.
  assert (H : b ≤ a). {
    apply (Nat.mul_le_mono_pos_l _ _ (S n)); [ apply Nat.lt_0_succ | ].
-   eapply le_trans; [ apply Hn | apply Nat.le_add_r ].
+   eapply Nat.le_trans; [ apply Hn | apply Nat.le_add_r ].
  }
  destruct b.
  +now do 2 rewrite Nat.mul_0_r in Hn.
@@ -444,7 +444,7 @@ rewrite Nat.mul_add_distr_r.
 rewrite Nat_sub_sub_swap.
 rewrite Nat_sub_sub_assoc; cycle 1. {
   split; [ now apply Nat.mul_le_mono_r | ].
-  apply (le_trans _ (a * a)).
+  apply (Nat.le_trans _ (a * a)).
   -now apply Nat.mul_le_mono_l.
   -apply Nat.le_add_r.
 }
@@ -486,7 +486,7 @@ split; [ apply Nat.div_small | ].
 intros Hab.
 destruct b; [ easy | clear Hb ].
 unfold "/" in Hab.
-specialize (Nat.divmod_spec a b 0 b (le_refl _)) as H1.
+specialize (Nat.divmod_spec a b 0 b (Nat.le_refl _)) as H1.
 remember (Nat.divmod a b 0 b) as d eqn:Hd.
 symmetry in Hd.
 destruct d as (d, m); cbn in Hab.
