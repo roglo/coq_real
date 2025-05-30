@@ -1,6 +1,6 @@
 (* Summation.v *)
 
-Require Import Utf8 Arith NPeano Psatz.
+From Stdlib Require Import Utf8 Arith Psatz.
 Require Import Misc.
 
 Class ord_ring_def :=
@@ -240,7 +240,7 @@ erewrite IHlen.
  do 2 rewrite Nat.add_succ_l, <- Nat.add_succ_r.
  apply Hgh.
  split; [ apply Nat.le_0_l | ].
- apply lt_n_S.
+ apply -> Nat.succ_lt_mono.
  now destruct Hi.
 Qed.
 
@@ -438,7 +438,9 @@ destruct b; simpl; [ now rewrite Nat.sub_0_r | ].
 rewrite Nat.sub_0_r.
 simpl in Hikb.
 eapply Nat.le_lt_trans in Hikb; eauto .
-apply lt_O_minus_lt, Nat.lt_le_incl in Hikb.
+apply Nat.lt_add_lt_sub_l in Hikb.
+rewrite Nat.add_0_r in Hikb.
+apply Nat.lt_le_incl in Hikb.
 remember (b + (k - b))%nat as x eqn:H .
 rewrite Nat.add_sub_assoc in H; auto.
 rewrite Nat.add_sub_swap in H; auto.
@@ -475,14 +477,7 @@ Proof.
 intros g i₁ i₂ H.
 apply all_0_summation_aux_0.
 intros i (H₁, H₂).
-apply H.
-split; [ easy | ].
-destruct (le_dec i₁ (S i₂)) as [H₃| H₃].
- rewrite Nat.add_sub_assoc in H₂; lia.
-
- apply not_le_minus_0 in H₃.
- rewrite H₃, Nat.add_0_r in H₂.
- now apply Nat.nle_gt in H₂.
+apply H; lia.
 Qed.
 
 Theorem summation_aux_mul_swap `{rg : ord_ring} : ∀ a g b len,
@@ -798,10 +793,10 @@ remember (e - b) as n eqn:Hn.
 assert (H : e = b + n). {
   rewrite Hn, Nat.add_comm.
   rewrite Nat.sub_add; [ easy | ].
-  now apply (le_trans _ i).
+  now apply (Nat.le_trans _ i).
 }
 subst e; clear Hn.
-rewrite summation_shift in Hs; [ | now apply (le_trans _ i)  ].
+rewrite summation_shift in Hs; [ | now apply (Nat.le_trans _ i)  ].
 rewrite Nat.add_comm, Nat.add_sub in Hs.
 revert i Hbi Hie.
 induction n; intros.
