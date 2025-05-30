@@ -366,7 +366,7 @@ Theorem carry_succ_lemma2 {r : radix} : ∀ u a,
   → u / rad + Q.intg (a * (1 // rad)%Q) + 1 = (u + Q.intg a) / rad.
 Proof.
 intros * Haz H3.
-rewrite Q.frac_pair in H3.
+rewrite Q.frac_pair in H3; [ | easy ].
 rewrite <- (Q.mul_pair_den_num _ 1) in H3; [ | easy ].
 apply (Q.mul_le_mono_pos_r (rad // 1)%Q) in H3. 2: {
   now apply Q.lt_0_pair.
@@ -475,7 +475,7 @@ assert (H8 : rad ≤  Q.intg a mod rad + u mod rad). {
   replace (Q.den a) with (1 * Q.den a) at 1 by flia.
   apply Nat.mul_le_mono_r.
   unfold Q.intg in H8; flia H8.
-...
+  now apply Nat.neq_mul_0.
 }
 specialize (proj2 (Q.intg_interv (Q.intg a) a Haz) eq_refl) as H.
 eapply Q.lt_le_trans; [ apply H | ].
@@ -542,7 +542,7 @@ specialize radix_ge_2 as Hr.
 intros Hmrr Hur.
 assert (Hmrj : ∀ j, m < rad ^ (rad * (i + j + 3) - i - j - 2)). {
   intros j.
-  eapply lt_le_trans; [ apply Hmrr | ].
+  eapply Nat.lt_le_trans; [ apply Hmrr | ].
   apply Nat.pow_le_mono_r; [ easy | ].
   rewrite Nat.sub_add_distr.
   apply Nat.sub_le_mono_r.
@@ -581,7 +581,7 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
       apply Q.le_pair; [ easy | easy | ].
       rewrite Nat.mul_1_l.
       rewrite Q.intg_pair; [ | easy ].
-      eapply le_trans. {
+      eapply Nat.le_trans. {
         apply Nat.mul_le_mono_r.
         rewrite Nat.mul_comm.
         now apply Nat.mul_div_le.
@@ -675,7 +675,7 @@ Theorem carry_succ_m_le_rad {r : radix} : ∀ m u i,
 Proof.
 intros * Hmr Hur.
 apply (carry_succ m); [ | easy ].
-apply (le_lt_trans _ rad); [ easy | ].
+apply (Nat.le_lt_trans _ rad); [ easy | ].
 specialize radix_ge_2 as Hr.
 replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
 apply Nat.pow_lt_mono_r; [ easy | ].
@@ -795,7 +795,7 @@ move k1 before j1; move Hk1 before Hj1.
 exfalso.
 apply Nat.nlt_ge in H1; apply H1; clear H1.
 rewrite H4.
-apply (lt_le_trans _ (j1 * rad)). {
+apply (Nat.lt_le_trans _ (j1 * rad)). {
   apply Nat.sub_lt; [ | flia H3 ].
   replace k1 with (1 * k1) by flia.
   apply Nat.mul_le_mono; [ easy | flia H3 Hmr ].
@@ -821,7 +821,7 @@ induction k. {
 }
 replace (i + k + 2) with (i + S k + 1) in IHk by flia.
 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in IHk.
-apply P_999_once_after_7 with (j0 := m); [ easy | | | flia Hj | easy ]. {
+apply P_999_once_after_7 with (j := m); [ easy | | | flia Hj | easy ]. {
   now intros p; rewrite <- Nat.add_assoc.
 } {
   now intros p; apply A_ge_1_add_r_true_if.
@@ -1256,7 +1256,7 @@ rewrite Q.intg_pair in Hcw; [ | easy ].
 symmetry in Hcw; rewrite <- Nat.add_assoc in Hcw.
 replace 2 with (1 + 1) in Hcw at 1 by easy.
 apply Nat.add_cancel_l in Hcw; symmetry in Hcw.
-rewrite Q.frac_pair in Hcw.
+rewrite Q.frac_pair in Hcw; [ | easy ].
 replace (3 mod 2) with 1 in Hcw by easy.
 destruct
   (Q.lt_le_dec
@@ -1741,7 +1741,7 @@ assert (H : u (i + j + 2) ≠ 0). {
       intros p; rewrite <- Nat.add_assoc.
       now apply A_ge_1_add_r_true_if.
     }
-    specialize (Hcu2 _ (le_refl _)) as H1.
+    specialize (Hcu2 _ (Nat.le_refl _)) as H1.
     unfold carry in H1.
     rewrite (all_fA_ge_1_ε_NQintg_A' 3) in H1; cycle 1. {
       apply three_lt_rad_pow.
@@ -2150,7 +2150,7 @@ destruct Huv2 as [(Hu2, Hv2)| (Hu2, Hv2)]. {
     exfalso; apply Q.nlt_ge in Hc1; apply Hc1; clear Hc1.
     rewrite A_split_first; [ | min_n_ge ].
     replace (S (i + 1)) with (i + 2) by easy.
-    replace (v (i + 2)) with 1 by flia Huv2.
+    replace (v (i + 2)) with 1 by flia Hv2.
     apply Q.lt_add_lt_sub_l; rewrite Hr2.
     replace (1 // 1 - 1 // 2)%Q with (1 * 1 // 2)%Q by easy.
     apply Q.mul_lt_mono_pos_r; [ easy | ].
@@ -2441,7 +2441,7 @@ specialize radix_ge_2 as Hr.
 intros Hmr Hur Hpu * Hum.
 enough
   (H : let k := rad - u (i + j + 1) in
-       1 ≤ k ≤ m ∧ u (i + j + 1) = rad - k) by flia H.
+       1 ≤ k ≤ m ∧ u (i + j + 1) = rad - k) by (cbn in H; flia H).
 specialize (P_999_start u (i + j) m) as H1.
 assert (H : ∀ k, u (i + j + k) ≤ m * (rad - 1)). {
   intros k; rewrite <- Nat.add_assoc; apply Hur.
@@ -2457,7 +2457,10 @@ destruct (Nat.eq_dec (u (i + j)) (m * (rad - 1))) as [H2| H2].
    rewrite H2 in Hum.
    destruct m; [ cbn in Hum; flia Hum Hr | ].
    destruct m; [ easy | ].
-   cbn in Hum; flia Hum Hr.
+   cbn in Hum.
+   apply Nat.nlt_ge in Hr.
+   exfalso; apply Hr; clear Hr.
+   flia Hum.
  }
  subst m; clear H2; rewrite Nat.mul_1_l in Hur.
  specialize (Hpu (j + 1)) as H1.
@@ -2611,7 +2614,7 @@ revert i Hmr Hur.
 induction n; intros; [ easy | cbn ].
 rewrite (carry_succ m); [ | easy | easy ].
 rewrite IHn; [ easy | | now intros; rewrite <- Nat.add_assoc ].
-eapply lt_le_trans; [ apply Hmr | ].
+eapply Nat.lt_le_trans; [ apply Hmr | ].
 apply Nat.pow_le_mono_r; [ easy | ].
 setoid_rewrite Nat.add_shuffle0.
 rewrite (Nat.sub_add_distr _ (i + 2)).
@@ -5147,7 +5150,7 @@ assert
   (Hiv : ∀ p, j ≤ p → Q.intg (A i (min_n (i + p)) v) = Q.intg (A i nj v)). {
   specialize (fA_lt_1_ε_NQintg_A 2 i v j) as H1.
   assert (H : 2 < rad ^ (min_n (i + j) - i - j - 2)). {
-    apply (le_lt_trans _ 3); [ pauto | ].
+    apply (Nat.le_lt_trans _ 3); [ pauto | ].
     unfold min_n; do 2 rewrite <- Nat.sub_add_distr.
     rewrite Nat.add_assoc.
     apply three_lt_rad_pow.
@@ -5161,7 +5164,7 @@ assert
    → Q.intg (A i (min_n (i + p)) (u ⊕ P v)) = Q.intg (A i nk (u ⊕ P v))). {
   specialize (fA_lt_1_ε_NQintg_A 2 i (u ⊕ P v) k) as H1.
   assert (H : 2 < rad ^ (min_n (i + k) - i - k - 2)). {
-    apply (le_lt_trans _ 3); [ pauto | ].
+    apply (Nat.le_lt_trans _ 3); [ pauto | ].
     unfold min_n; do 2 rewrite <- Nat.sub_add_distr.
     rewrite Nat.add_assoc.
     apply three_lt_rad_pow.
@@ -5822,7 +5825,7 @@ rewrite (Q.frac_small (A i nuv u)). 2: {
 rewrite NQfrac_P_M.
 assert (Hv3 : ∀ k, v (i + k) ≤ 3 * (rad - 1)). {
   intros.
-  intros; eapply le_trans; [ apply Hv | ].
+  intros; eapply Nat.le_trans; [ apply Hv | ].
   apply Nat.mul_le_mono_r; pauto.
 }
 destruct (LPO_fst (fA_ge_1_ε v i)) as [H3| H3].
