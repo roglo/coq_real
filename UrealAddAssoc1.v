@@ -769,7 +769,7 @@ assert (H12 : u i < rad * (m - 1)). {
   intros H12.
   exfalso.
   assert (H13 : (u i - rad * (m - 1) + carry u i) mod rad = rad - 1). {
-    rewrite <- (Nat.mod_add _ (m - 1)); [ | easy ].
+    rewrite <- (Nat.Div0.mod_add _ (m - 1)).
     rewrite Nat.add_shuffle0.
     rewrite Nat.mul_comm, Nat.sub_add; [ easy | now rewrite Nat.mul_comm ].
   }
@@ -816,7 +816,7 @@ assert (H5 : u i mod rad = rad - 1 - carry u i). {
   apply Nat.add_sub_eq_r in H5.
   rewrite <- Nat.add_sub_assoc in H5 by flia H4 Hmr.
   rewrite <- H5, Nat.add_comm, Nat.mul_comm.
-  rewrite Nat.mod_add; [ | easy ].
+  rewrite Nat.Div0.mod_add.
   apply Nat.mod_small.
   flia H4 Hmr.
 }

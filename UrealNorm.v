@@ -321,7 +321,7 @@ destruct H3 as [H3| [H3| H3]].
   rewrite eq_nA_div_1 in H4.
   *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
    replace (2 * rad - 2 + (1 + 1)) with (2 * rad) in H4 by flia Hr.
-   rewrite Nat.mod_mul in H4; [ | easy ].
+   rewrite Nat.Div0.mod_mul in H4; [ | easy ].
    flia Hr H4.
   *intros k.
    replace (i + 1 + k + 1) with (i + (1 + k) + 1) by flia.
@@ -344,7 +344,7 @@ destruct H3 as [H3| [H3| H3]].
    }
    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
    replace (2 * rad - 2 + (1 + 1)) with (2 * rad) in H4 by flia Hr.
-   rewrite Nat.mod_mul in H4; [ flia Hr H4 | easy ].
+   rewrite Nat.Div0.mod_mul in H4; [ flia Hr H4 | easy ].
  +destruct H5 as (j & Hjj & Hj); simpl in H4.
   apply A_ge_1_false_iff in Hj.
   unfold min_n in Hj, H4.
@@ -899,7 +899,7 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
  +rewrite <- Hs1.
   rewrite Nat_div_less_small.
   *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-   rewrite Nat.sub_add; [ now apply Nat.mod_mul | flia Hr ].
+   rewrite Nat.sub_add; [ now apply Nat.Div0.mod_mul | flia Hr ].
   *apply rad_pow_le_lt; rewrite Hs1, Hn1.
    destruct rad; [ easy | simpl; flia ].
 -destruct H1 as (j & Hjj & Hj).
@@ -994,7 +994,7 @@ destruct (LPO_fst (A_ge_1 u (i + k))) as [H1| H1].
   --rewrite <- Hs1.
     rewrite Nat_div_less_small.
    ++rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-     rewrite Nat.sub_add; [ now rewrite Nat.mod_mul | flia Hr ].
+     rewrite Nat.sub_add; [ now rewrite Nat.Div0.mod_mul | flia Hr ].
    ++apply rad_pow_le_lt; rewrite Hs1, Hn1.
      destruct rad; [ easy | simpl; flia ].
 -destruct H1 as (j1 & Hjj & Hj).

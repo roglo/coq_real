@@ -2028,7 +2028,7 @@ rewrite <- Nat.pow_add_r in HnA.
 rewrite Nat.sub_add in HnA; [ | easy ].
 remember (n - i - 1) as s eqn:Hs.
 assert (Hsz : rad ^ s ≠ 0) by (subst s; pauto).
-apply Nat.div_le_mono with (c := rad ^ s) in HnA; [ | easy ].
+apply Nat.Div0.div_le_mono with (c := rad ^ s) in HnA; [ | easy ].
 rewrite Nat.div_mul in HnA; [ | easy ].
 assert (H : nA i n u * rad ^ S j / rad ^ s = nA i (i + j + 2) u). {
 (**)
@@ -3184,9 +3184,9 @@ Proof.
 intros * Hr Ha Hb H1.
 replace (a₁ + b₁) with (b₁ + a₁) in H1 by apply Nat.add_comm.
 rewrite Nat.pow_add_r in H1.
-rewrite Nat.mod_mul_r in H1; try pauto.
+rewrite Nat.Div0.mod_mul_r in H1; try pauto.
 replace (a * r ^ b₁ + b) with (b + a * r ^ b₁) in H1 by apply Nat.add_comm.
-rewrite Nat.mod_add in H1; [ | pauto ].
+rewrite Nat.Div0.mod_add in H1.
 rewrite Nat.mod_small in H1; [ | easy ].
 rewrite Nat.div_add in H1; [ | pauto ].
 rewrite Nat.div_small in H1; [ | easy ].
@@ -3602,8 +3602,8 @@ assert (H1 : NA (i + j) n u mod rad ^ s = NA i n u mod rad ^ s). {
   rewrite NA_split with (e := i + j + 2); [ | flia Hijn ].
   replace (i + j + 2 - 1) with (i + S j) by flia.
   replace (n - (i + j + 2)) with s by flia Hs.
-  rewrite <- Nat.add_mod_idemp_l; [ | pauto ].
-  rewrite Nat.mod_mul; [ easy | pauto ].
+  rewrite <- Nat.Div0.add_mod_idemp_l.
+  now rewrite Nat.Div0.mod_mul.
 }
 rewrite H1 in Hu.
 replace (n - i - 1) with (s + j) by flia Hs Hijn.
@@ -3628,7 +3628,7 @@ rewrite Q.sub_pair_pos in Hu; [ | easy | pauto | ]. 2: {
 }
 do 2 rewrite Nat.mul_1_l in Hu.
 apply Q.lt_pair in Hu; [ | pauto | pauto ].
-rewrite Nat.mod_mul_r; [ | pauto | pauto ].
+rewrite Nat.Div0.mod_mul_r.
 rewrite Nat.mul_add_distr_r.
 apply
   (Nat.lt_le_trans _

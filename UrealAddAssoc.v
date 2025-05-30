@@ -279,7 +279,7 @@ split. {
     apply (Nat.le_trans _ (x * Q.den a)). {
       apply Nat.mul_le_mono_r.
       rewrite Nat.mul_comm.
-      now apply Nat.mul_div_le.
+      now apply Nat.Div0.mul_div_le.
     }
     subst x.
     rewrite Nat.mul_add_distr_r, Nat.add_comm.
@@ -287,7 +287,7 @@ split. {
       rewrite (Q.num_den a) at 1; [ | easy ].
       rewrite Q.intg_pair; [ | easy ].
       rewrite Nat.mul_comm.
-      now apply Nat.mul_div_le.
+      now apply Nat.Div0.mul_div_le.
     }
     rewrite Nat.mul_comm.
     apply Nat.mul_le_mono_l.
@@ -320,7 +320,7 @@ split. {
   apply (Nat.le_trans _ (x * Q.den a)). {
     apply Nat.mul_le_mono_r.
     rewrite Nat.mul_comm.
-    now apply Nat.mul_div_le.
+    now apply Nat.Div0.mul_div_le.
   }
   subst x.
   rewrite Nat.mul_add_distr_r.
@@ -328,7 +328,7 @@ split. {
   rewrite (Q.num_den a) at 1; [ | easy ].
   rewrite Q.intg_pair; [ | easy ].
   rewrite Nat.mul_comm.
-  now apply Nat.mul_div_le.
+  now apply Nat.Div0.mul_div_le.
 }
 apply (Q.mul_lt_mono_pos_r (rad // 1)); [ now apply Q.lt_0_pair | ].
 rewrite <- Q.mul_assoc.
@@ -349,7 +349,7 @@ rewrite Hm, Nat.mul_add_distr_r, Nat.mul_1_l.
 apply (Nat.le_trans _ (Q.intg a / rad * rad + rad)). 2: {
   apply Nat.add_le_mono_r.
   apply Nat.mul_le_mono_r.
-  apply Nat.div_le_mono; [ easy | flia ].
+  apply Nat.Div0.div_le_mono; flia.
 }
 specialize (Nat.div_mod (Q.intg a) rad radix_ne_0) as H10.
 rewrite Nat.mul_comm in H10.
@@ -427,7 +427,7 @@ assert (Hma : (m // 1 ≤ a * 1 // rad)%Q). {
   remember (u mod rad + Q.intg a) as x eqn:Hx.
   apply (Q.le_trans _ (x // 1)). {
     apply Q.le_pair_mono_r; rewrite Nat.mul_comm.
-    now apply Nat.mul_div_le.
+    now apply Nat.Div0.mul_div_le.
   }
   rewrite Hx, Nat.add_comm.
   rewrite Q.pair_add_l.
@@ -465,7 +465,7 @@ assert (H8 : rad ≤  Q.intg a mod rad + u mod rad). {
   do 2 rewrite Nat.mul_1_l.
   apply Q.lt_pair; [ easy | easy | ].
   rewrite Nat.mul_1_r.
-  rewrite Nat.mod_mul_r; [ | easy | easy ].
+  rewrite Nat.Div0.mod_mul_r.
   rewrite (Nat.mul_comm (Q.den a)).
   rewrite Nat.add_assoc, Nat.add_shuffle0, <- Nat.mul_add_distr_r.
   apply Nat.lt_add_lt_sub_l.
@@ -584,12 +584,12 @@ destruct (LPO_fst (fA_ge_1_ε u i)) as [H1| H1]. {
       eapply Nat.le_trans. {
         apply Nat.mul_le_mono_r.
         rewrite Nat.mul_comm.
-        now apply Nat.mul_div_le.
+        now apply Nat.Div0.mul_div_le.
       }
       rewrite Nat.mul_add_distr_r.
       apply Nat.add_le_mono_l.
       rewrite Nat.mul_comm.
-      now apply Nat.mul_div_le.
+      now apply Nat.Div0.mul_div_le.
     }
     specialize (Nat.div_mod (u (i + 1) + Q.intg a) rad radix_ne_0) as H3.
     rewrite Nat.add_0_r, <- Ha in H6.
@@ -6013,7 +6013,7 @@ rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 f_equal; f_equal.
 remember (v' i) as x eqn:Hx.
 rewrite Hv' in Hx; subst x; cbn.
-rewrite Nat.add_mod_idemp_l; [ | easy ].
+rewrite Nat.Div0.add_mod_idemp_l; [ | easy ].
 rewrite <- Nat.add_assoc.
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
@@ -6659,8 +6659,8 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
     rewrite Nat.div_small; [ | flia Hr2s1 ].
     rewrite Nat.add_0_r.
     rewrite Nat.add_shuffle0.
-    rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
-    rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+    rewrite <- Nat.Div0.add_mod_idemp_l; [ symmetry | easy ].
+    rewrite <- Nat.Div0.add_mod_idemp_l; [ symmetry | easy ].
     f_equal; f_equal.
     apply A_ge_1_add_all_true_if in H2.
    ++destruct H2 as [H2| [H2| H2]].
@@ -6709,8 +6709,8 @@ destruct (LPO_fst (A_ge_1 (x ⊕ (y + z)) i)) as [H1| H1].
      rewrite Nat_mod_less_small in Hj2; [ | easy ].
      rewrite Nat_div_less_small; [ clear H | easy ].
      apply Nat.lt_sub_lt_add_l in Hj2.
-     rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
-     rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+     rewrite <- Nat.Div0.add_mod_idemp_l; [ symmetry | easy ].
+     rewrite <- Nat.Div0.add_mod_idemp_l; [ symmetry | easy ].
      f_equal; f_equal.
      ...
   --now apply not_all_18_x_yz in H1.
